@@ -1,0 +1,19 @@
+name: FSZ_76H1
+template: OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "76H1"
+  bngEndsz: "49/30/179/43G1"
+  bngDownlinkPort: "1"
+  bngDownlinkSlot: "23"
+  lsz: "4C1"
+  orderNumber: "1"
+  vst: "DefaultVst"
+  reihe: "000"
+  platz: "001"
+  bgt: "056"
+  bezeichnung: "MA5600T"
+  hersteller: "Huawei"
+  seriennummer: "unbekannt"
+  firmwareVersion: "MA5600V800R016C00"
+  ipAdresse: "192.168.20.140"

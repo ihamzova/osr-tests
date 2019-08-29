@@ -1,0 +1,34 @@
+name: OltDevice
+model:
+  vpsz:
+    type: String
+  fsz:
+    type: String
+  bngEndsz:
+    type: String
+  bngDownlinkPort:
+    type: String
+  bngDownlinkSlot:
+    type: String
+  lsz:
+    type: String
+  orderNumber:
+    type: String
+  reihe:
+    type: String
+  platz:
+    type: String
+  bgt:
+    type: String
+  vst:
+    type: "@Vst"
+  bezeichnung:
+    type: String
+  hersteller:
+    type: String
+  seriennummer:
+    type: String
+  firmwareVersion:
+    type: String
+  ipAdresse:
+    type: String

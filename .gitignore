@@ -1,0 +1,56 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Compiled source ###
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+target
+
+### Logs ###
+*.log
+src/main/logFiles/
+
+### Checkstyle ###
+.checkstyle
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+.factorypath
+.toDelete
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### Angular ###
+dist/
+node/
+node_modules/
+
+### Allure ###
+.allure
+allure-results
