@@ -1,0 +1,6 @@
+image: ${GV_REGISTRY_ADDRESS}/${GV_BUILD_IMAGE_NAME}
+
+include:
+  - project: 't-magic/acc/tests/acc-aggregator-bom'
+    ref: master
+    file: '/ci/tests.yml'
