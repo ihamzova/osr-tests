@@ -8,6 +8,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
+import static com.tsystems.tm.acc.pon.inventory.complete.internal.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.get;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
