@@ -44,11 +44,6 @@
             <groupId>com.tsystems.tm.acc</groupId>
             <artifactId>soapui</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.tsystems.tm.acc.data</groupId>
-            <artifactId>generators</artifactId>
-            <version>LATEST</version>
-        </dependency>
     </dependencies>
 
     <build>
