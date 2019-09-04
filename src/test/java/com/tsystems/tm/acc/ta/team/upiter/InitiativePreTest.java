@@ -1,14 +1,21 @@
 package com.tsystems.tm.acc.ta.team.upiter;
 
+import com.tsystems.tm.acc.data.ArifactsProvider;
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
+import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.data.models.supplier.Supplier;
+import com.tsystems.tm.acc.data.osr.models.supplier.SupplierCase;
+
+import com.tsystems.tm.acc.data.osr.models.artifacts.ArtifactCase;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.SFTPHelper;
 import com.tsystems.tm.acc.ta.team.upiter.tbb.oltComissioning.OLTCommissioningTBB;
 import com.tsystems.tm.acc.ta.ui.UITest;
+import com.tsystems.tm.acc.ta.util.TestSettings;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -17,6 +24,10 @@ import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Epic("E2E")
@@ -81,7 +92,8 @@ public class InitiativePreTest extends UITest {
         rollTbb.checkSupplier(supplierData);
     }*/
 
-    @Test(/*dependsOnMethods = "manualSupplierCreation", */description = "DIGIHUB-26439. [TMI]: Automatical OLT Commissioning (New UI)")
+    @Test(/*dependsOnMethods = "manualSupplierCreation", */
+            description = "DIGIHUB-26439. [TMI]: Automatical OLT Commissioning (New UI)")
     @TmsLink("DIGIHUB-26439")
     @Description("[TMI]: Automatical OLT Commissioning (New UI)")
     public void oltCommissioning() {
