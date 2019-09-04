@@ -2,13 +2,13 @@ package com.tsystems.tm.acc.ta.team.upiter;
 
 import com.tsystems.tm.acc.data.ArifactsProvider;
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.nvt.NvtCase;
+import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.data.models.supplier.Supplier;
-import com.tsystems.tm.acc.data.models.supplier.SupplierCase;
+import com.tsystems.tm.acc.data.osr.models.supplier.SupplierCase;
 
 import com.tsystems.tm.acc.data.osr.models.artifacts.ArtifactCase;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
@@ -92,7 +92,8 @@ public class InitiativePreTest extends UITest {
         rollTbb.checkSupplier(supplierData);
     }*/
 
-    @Test(/*dependsOnMethods = "manualSupplierCreation", */description = "DIGIHUB-26439. [TMI]: Automatical OLT Commissioning (New UI)")
+    @Test(/*dependsOnMethods = "manualSupplierCreation", */
+            description = "DIGIHUB-26439. [TMI]: Automatical OLT Commissioning (New UI)")
     @TmsLink("DIGIHUB-26439")
     @Description("[TMI]: Automatical OLT Commissioning (New UI)")
     public void oltCommissioning() {
