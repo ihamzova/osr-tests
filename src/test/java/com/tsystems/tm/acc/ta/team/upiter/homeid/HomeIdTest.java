@@ -1,17 +1,13 @@
 package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
-import com.tsystems.tm.acc.home.id.generator.client.invoker.JSON;
 import com.tsystems.tm.acc.home.id.generator.client.model.SingleHomeId;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.HomeIdPool;
 import com.tsystems.tm.acc.ta.api.HomeIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -38,14 +34,8 @@ public class HomeIdTest extends ApiTest {
     @Test
     @TmsLink("")
     @Description("Create 1 Home Id")
-    public void createSingleHomeId() throws IOException {
-        File template = new File(getClass().getResource("/team/upiter/homeid/singleHomeId.json").getFile());
-        HomeIdPool homeid = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), HomeIdPool.class);
-
+    public void createSingleHomeId()  {
         SingleHomeId response = api.getClient().homeIdGeneratorController().generate().executeAs(validatedWith(shouldBeCode(201)));
-
-        assertEquals(
-                response.getHomeId(),
-                "0037W5M");
+        assertEquals(response.getHomeId().length(), 7);
     }
 }
