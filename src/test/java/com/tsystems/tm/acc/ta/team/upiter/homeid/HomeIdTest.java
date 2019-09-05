@@ -36,7 +36,7 @@ public class HomeIdTest extends ApiTest {
     @Test
     @TmsLink("")
     @Description("Create 1 Home Id")
-    public void vvmAreaCreated() throws IOException {
+    public void createSingleHomeId() throws IOException {
         File template = new File(getClass().getResource("/team/upiter/homeid/singleHomeId.json").getFile());
         HomeIdPool homeid = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), HomeIdPool.class);
 
