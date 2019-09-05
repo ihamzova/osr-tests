@@ -1,1 +1,1 @@
-Put here Api clients (wrappers for RestAssured clients generated from swagger)
+- Put here Api clients (wrappers for RestAssured clients generated from swagger)

@@ -2,7 +2,7 @@ package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
 import com.tsystems.tm.acc.area.data.management.client.invoker.JSON;
 import com.tsystems.tm.acc.area.data.management.client.model.VVMAreaImportDTO;
-import com.tsystems.tm.acc.ta.api.ProvisioningClient;
+import com.tsystems.tm.acc.ta.api.OntOltOrchestratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
@@ -22,7 +22,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 @Feature("Area Data Management")
 @Story("VVM Area")
 public class ProvisioningTests extends ApiTest {
-    private ProvisioningClient api;
+    private OntOltOrchestratorClient api;
 
     private String readFile(Path path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(path);
@@ -31,9 +31,8 @@ public class ProvisioningTests extends ApiTest {
 
     @BeforeClass
     public void init() {
-        api = new ProvisioningClient();
+        api = new OntOltOrchestratorClient();
     }
-
 
     @Test
     @TmsLink("DIGIHUB-13850")
@@ -42,7 +41,7 @@ public class ProvisioningTests extends ApiTest {
         File template = new File(getClass().getResource("/team/moon/am/ValidVvmAreaImport.json").getFile());
         VVMAreaImportDTO area = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), VVMAreaImportDTO.class);
 
-        Response response = api.getClient().ontOltOrchestrator().createOntResource().body(null)
+        Response response = api.getClient().ontOltOrchestratorExternal().createOntResource().body(null)
                 .execute(validatedWith(shouldBeCode(201)));
     }
 }
