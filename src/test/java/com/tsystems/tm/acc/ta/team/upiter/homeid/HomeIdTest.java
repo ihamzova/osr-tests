@@ -18,6 +18,7 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static org.testng.Assert.assertEquals;
 
 public class HomeIdTest extends ApiTest {
 
@@ -42,5 +43,7 @@ public class HomeIdTest extends ApiTest {
 
         Response response = api.getClient().homeIdGeneratorController().generate()
                 .execute(validatedWith(shouldBeCode(201)));
+
+        assertEquals(homeid.getHomeId(), "0037W5M");
     }
 }
