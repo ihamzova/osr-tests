@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
-public class HomeId extends ApiTest {
+public class HomeIdTest extends ApiTest {
 
     private HomeIdGeneratorClient api;
 
