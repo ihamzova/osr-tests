@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
 import com.tsystems.tm.acc.home.id.generator.client.invoker.JSON;
+import com.tsystems.tm.acc.home.id.generator.client.model.SingleHomeId;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.HomeIdPool;
 import com.tsystems.tm.acc.ta.api.HomeIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
@@ -41,9 +42,10 @@ public class HomeIdTest extends ApiTest {
         File template = new File(getClass().getResource("/team/upiter/homeid/singleHomeId.json").getFile());
         HomeIdPool homeid = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), HomeIdPool.class);
 
-        Response response = api.getClient().homeIdGeneratorController().generate()
-                .execute(validatedWith(shouldBeCode(201)));
+        SingleHomeId response = api.getClient().homeIdGeneratorController().generate().executeAs(validatedWith(shouldBeCode(201)));
 
-        assertEquals(homeid.getHomeId(), "0037W5M");
+        assertEquals(
+                response.getHomeId(),
+                "0037W5M");
     }
 }
