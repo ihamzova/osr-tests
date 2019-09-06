@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.0.16</version>
+        <version>0.0.17</version>
     </parent>
 
     <repositories>
