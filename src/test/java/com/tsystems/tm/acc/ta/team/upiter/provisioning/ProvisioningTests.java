@@ -41,7 +41,7 @@ public class ProvisioningTests extends ApiTest {
         File template = new File(getClass().getResource("/team/moon/am/ValidVvmAreaImport.json").getFile());
         VVMAreaImportDTO area = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), VVMAreaImportDTO.class);
 
-        Response response = api.getClient().ontOltOrchestratorExternal().createOntResource().body(null)
-                .execute(validatedWith(shouldBeCode(201)));
+//        Response response = api.getClient().ontOltOrchestratorExternal().createOntResource().body(null)
+//                .execute(validatedWith(shouldBeCode(201)));
     }
 }
