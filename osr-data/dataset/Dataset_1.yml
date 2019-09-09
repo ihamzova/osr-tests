@@ -2,4 +2,8 @@ name: Dataset_1
 data:
   - template: OltDevice
     name: FSZ_76H1
+  - template: LineIdBatch
+    name: lineIdBatch
+  - template: HomeIdBatch
+    name: homeIdBatch
 artifacts:
