@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.api;
 
-import com.tsystems.tm.acc.network.line.profile.external.client.invoker.ApiClient;
-import com.tsystems.tm.acc.network.line.profile.external.client.invoker.JSON;
+import com.tsystems.tm.acc.network.line.profile.client.invoker.ApiClient;
+import com.tsystems.tm.acc.network.line.profile.client.invoker.JSON;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
