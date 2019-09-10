@@ -1,14 +1,14 @@
 package com.tsystems.tm.acc.ta.api;
 
-import com.tsystems.tm.acc.network.line.profile.external.client.invoker.ApiClient;
-import com.tsystems.tm.acc.network.line.profile.external.client.invoker.JSON;
+import com.tsystems.tm.acc.network.line.profile.client.invoker.ApiClient;
+import com.tsystems.tm.acc.network.line.profile.client.invoker.JSON;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.network.line.profile.external.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.network.line.profile.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
