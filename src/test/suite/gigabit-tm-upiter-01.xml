@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="U-Piter test suite" verbose="1" data-provider-thread-count="1">
-    <test thread-count="1" name="Provisioning, Provisioning Backend Tests">
+    <test thread-count="1" name="HomeId, LineId Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.ProvisioningTests"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
         </classes>
     </test>
 </suite>
