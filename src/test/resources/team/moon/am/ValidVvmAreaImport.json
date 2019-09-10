@@ -1,0 +1,42 @@
+{
+	"areaDTO": {
+		"areaStatus": "PLANNING_ONGOING",
+		"areaType": "KGS_8",
+		"controlTraceabilityManual": true,
+		"creationDate": 1554108599,
+		"modificationDate": 1554108599,
+		"name": "VVM Area auto 1001",
+		"number": "VVM_Area_auto_1001",
+		"plannedArea": true,
+		"plannedFrom": 1585730999000,
+		"plannedTo": 1617266999000,
+		"released": true,
+		"rolloutDate": 1618044599000
+	},
+	"fibreOnLocationDTOs": [
+		{
+			"areaType": "DEVELOPMENT",
+			"demandCarrier": "FTTH",
+			"ge": 2,
+			"initiative": "SELF_EXPANSION",
+			"installationStatus": "PLANNED",
+			"klsId": 200202,
+			"rolloutSponsor": "SELF_EXPANSION",
+			"sl": 1,
+			"technology": "FTTH",
+			"we": 10
+		},
+        {
+          "areaType": "DEVELOPMENT",
+          "demandCarrier": "FTTH",
+          "ge": 1,
+          "initiative": "SELF_EXPANSION",
+          "installationStatus": "PLANNED",
+          "klsId": 200203,
+          "rolloutSponsor": "SELF_EXPANSION",
+          "sl": 0,
+          "technology": "FTTH",
+          "we": 12
+        }
+	]
+}

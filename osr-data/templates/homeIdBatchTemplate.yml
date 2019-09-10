@@ -1,0 +1,4 @@
+name: HomeIdBatch
+model:
+  numberLineIds:
+    type: Integer

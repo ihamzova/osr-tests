@@ -1,11 +1,14 @@
 package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
+import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatch;
+import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatchCase;
 import com.tsystems.tm.acc.line.id.generator.client.model.PoolLineId;
 import com.tsystems.tm.acc.line.id.generator.client.model.SingleLineId;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.invoker.JSON;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Port;
 import com.tsystems.tm.acc.ta.api.LineIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
+import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -19,12 +22,15 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.CREATED_CODE;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.BAD_REQUEST_CODE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 public class LineIdTest extends ApiTest {
 
     private LineIdGeneratorClient lineidGeneratorClient;
+    private LineIdBatch lineIdBatch;
 
     private String readFile(Path path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(path);
@@ -34,78 +40,81 @@ public class LineIdTest extends ApiTest {
     @BeforeClass
     public void init() {
         lineidGeneratorClient = new LineIdGeneratorClient();
+        lineIdBatch = OsrTestContext.get().getData()
+                .getLineIdBatchDataProvider()
+                .get(LineIdBatchCase.lineIdBatch);
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Create 1 Line Id")
-    public void createSingleLineId()  {
+    public void createSingleLineId() {
         SingleLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineId()
-                .endSzQuery("49/911/1100/76H1")
-                .executeAs(validatedWith(shouldBeCode(201)));
+                .endSzQuery(lineIdBatch.getEndSz())
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertNotNull(response);
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Create 32 Line Ids")
-    public void createPoolLineIds()  {
+    public void createPoolLineIds() {
         PoolLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery("49/911/1100/76H1")
-                .numberLineIdsQuery(32)
-                .executeAs(validatedWith(shouldBeCode(201)));
-        assertEquals(response.getLineIds().size(),32);
+                .endSzQuery(lineIdBatch.getEndSz())
+                .numberLineIdsQuery(lineIdBatch.getNumberLineIds())
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
+        assertEquals(response.getLineIds().size(), lineIdBatch.getNumberLineIds().intValue());
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Create 1 Line Id TOPAS")
-    public void createSingleLineIdTopas()  {
+    public void createSingleLineIdTopas() {
         SingleLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineId()
-                .endSzQuery("49/8571/0/76Z7")
-                .executeAs(validatedWith(shouldBeCode(201)));
+                .endSzQuery(lineIdBatch.getTopasEndSz())
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertNotNull(response);
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Create 10 Line Ids TOPAS")
-    public void createPoolOfTenLineIdsTopas()  {
+    public void createPoolOfTenLineIdsTopas() {
         PoolLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery("49/8571/0/76Z7")
-                .numberLineIdsQuery(10)
-                .executeAs(validatedWith(shouldBeCode(201)));
-        assertEquals(response.getLineIds().size(),10);
+                .endSzQuery(lineIdBatch.getTopasEndSz())
+                .numberLineIdsQuery(lineIdBatch.getTopasNumberLineIds())
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
+        assertEquals(response.getLineIds().size(), lineIdBatch.getTopasNumberLineIds().intValue());
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Invalid Number for Creation Pool Line Ids")
-    public void failCreatePoolLineIdsOver()  {
-         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery("49/911/1100/76H1")
+    public void failCreatePoolLineIdsOver() {
+        lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
+                .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(33)
-                .executeAs(validatedWith(shouldBeCode(400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Invalid number for Creation Pool of Line Ids")
-    public void failCreatePoolLineIdsMinus()  {
+    public void failCreatePoolLineIdsMinus() {
         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery("49/911/1100/76H1")
+                .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(-1)
-                .executeAs(validatedWith(shouldBeCode(400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
     @TmsLink("DIGIHUB-34654")
     @Description("Invalid EndSZ for Creation Pool Line Ids")
-    public void failCreatePoolLineIdsEndSZ()  {
+    public void failCreatePoolLineIdsEndSZ() {
         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery("49/911/1100/H176")
                 .numberLineIdsQuery(5)
-                .executeAs(validatedWith(shouldBeCode(400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -115,9 +124,9 @@ public class LineIdTest extends ApiTest {
         File template = new File(getClass().getResource("/team/upiter/lineid/portForLineIdPool.json").getFile());
         Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
         PoolLineId poolLineId = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery("49/911/1100/76H1")
-                .numberLineIdsQuery(32 - port.getLineIdPools().size())
-                .executeAs(validatedWith(shouldBeCode(201)));
-        assertEquals(poolLineId.getLineIds().size(), 32 - port.getLineIdPools().size());
+                .endSzQuery(lineIdBatch.getEndSz())
+                .numberLineIdsQuery(lineIdBatch.getNumberLineIds() - port.getLineIdPools().size())
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
+        assertEquals(poolLineId.getLineIds().size(), lineIdBatch.getNumberLineIds() - port.getLineIdPools().size());
     }
 }
