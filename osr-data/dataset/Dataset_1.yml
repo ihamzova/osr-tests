@@ -6,4 +6,8 @@ data:
     name: lineIdBatch
   - template: HomeIdBatch
     name: homeIdBatch
+  - template: PortProvisioning
+    name: portProvisioning5600
+  - template: PortProvisioning
+    name: portProvisioning5800
 artifacts:

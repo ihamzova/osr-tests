@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="U-Piter test suite" verbose="1" data-provider-thread-count="1">
-    <test thread-count="1" name="HomeId, LineId Backend Tests">
+    <test thread-count="1" name="HomeId, LineId and PortProvisioning(for 5600 and 5800 devices) Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.portprovisioning.PortProvisioning5600"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.portprovisioning.PortProvisioning5800"/>
         </classes>
     </test>
 </suite>
