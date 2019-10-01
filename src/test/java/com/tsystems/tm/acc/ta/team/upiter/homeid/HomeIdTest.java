@@ -22,7 +22,8 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.BAD_REQUEST_CODE;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.CREATED_CODE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -51,7 +52,7 @@ public class HomeIdTest extends ApiTest {
         SingleHomeId response = homeIdGeneratorClient.getClient()
                 .homeIdGeneratorController()
                 .generate()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertNotNull(response);
     }
 
@@ -61,7 +62,7 @@ public class HomeIdTest extends ApiTest {
     public void createPoolHomeIds() {
         PoolHomeId response = homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
                 .numberHomeIdsQuery(homeIdBatch.getNumberLineIds())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertEquals(response.getHomeIds().size(), homeIdBatch.getNumberLineIds().intValue());
     }
 
@@ -71,7 +72,7 @@ public class HomeIdTest extends ApiTest {
     public void failCreatePoolHomeIdOver() {
         homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
                 .numberHomeIdsQuery(33)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class HomeIdTest extends ApiTest {
     public void failCreatePoolHomeIdMinus() {
         homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
                 .numberHomeIdsQuery(-1)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class HomeIdTest extends ApiTest {
         Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
         PoolHomeId poolHomeId = homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
                 .numberHomeIdsQuery(homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertEquals(poolHomeId.getHomeIds().size(), homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size());
     }
 }
