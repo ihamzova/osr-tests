@@ -16,8 +16,11 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.*;
 
 public class PortProvisioning5600 extends ApiTest {
+
+    private final static Integer LATENCY = 2 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -34,27 +37,28 @@ public class PortProvisioning5600 extends ApiTest {
 
     @Test
     @TmsLink("DIGIHUB-28415")
-    @Description("Port Provisioning for OLT 5600")
+    @Description("Port Provisioning with 16 WG Lines for OLT 5600")
     public void portProvisioning5600() throws InterruptedException {
 
         /* Clears DataBase before test */
-        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase().execute(validatedWith(shouldBeCode(200)));
+        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Fills DataBase for Port Provisioning */
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabase()
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
                 .END_SZQuery("49/30/179/76H1")
                 .KLS_IDQuery("14653")
                 .slOTNUMBER1Query("3")
                 .slOTNUMBER2Query("4")
                 .slOTNUMBER3Query("5")
-                .execute(validatedWith(shouldBeCode(200)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Gets port before provisioning */
         Port portBeforeProvisioning = oltResourceInventoryClient.getClient().portController().findPortByDeviceEndSzSlotNumPortNum()
                 .endSzQuery(portProvisioning5600.getEndSz())
                 .slotNumberQuery(portProvisioning5600.getSlotNumber())
                 .portNumberQuery(portProvisioning5600.getPortNumber())
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Check empty port before provisioning */
         Assert.assertEquals(portBeforeProvisioning.getAccessLines().size(), portProvisioning5600.getEmptyPort().intValue());
@@ -65,34 +69,30 @@ public class PortProvisioning5600 extends ApiTest {
                         .endSz(portProvisioning5600.getEndSz())
                         .slotNumber(portProvisioning5600.getSlotNumber())
                         .portNumber(portProvisioning5600.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(201)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         /* Latency for provisioning process */
-        Thread.sleep(2 * 60000);
+        Thread.sleep(LATENCY);
 
-        /* Gets Port after provisioning */
+        /* Gets Port after provisioning process */
         Port portAfterProvisioning = oltResourceInventoryClient.getClient().portController().findPortByDeviceEndSzSlotNumPortNum()
                 .endSzQuery(portProvisioning5600.getEndSz())
                 .slotNumberQuery(portProvisioning5600.getSlotNumber())
                 .portNumberQuery(portProvisioning5600.getPortNumber())
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Clears DataBase after test */
-        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase().execute(validatedWith(shouldBeCode(200)));
+        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines()
-                .stream().map(AccessLine::getDefaultNeProfile).filter(DefaultNeProfile ->
-                        DefaultNeProfile.getState().equals
-                                (com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.DefaultNeProfile.StateEnum.ACTIVE)).count();
+        long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
+                .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
 
-        long countDefaultNetworkLineProfileActive = portAfterProvisioning.getAccessLines()
-                .stream().map(AccessLine::getDefaultNetworkLineProfile).filter(DefaultNetworkLineProfile ->
-                        DefaultNetworkLineProfile.getState().equals
-                                (com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.DefaultNetworkLineProfile.StateEnum.ACTIVE)).count();
+        long countDefaultNetworkLineProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNetworkLineProfile)
+                .filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
 
-        long countAccessLinesWG = portAfterProvisioning.getAccessLines()
-                .stream().filter(AccessLine -> AccessLine.getStatus().equals
-                        (com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.AccessLine.StatusEnum.WALLED_GARDEN)).count();
+        long countAccessLinesWG = portAfterProvisioning.getAccessLines().stream()
+                .filter(AccessLine -> AccessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
         Assert.assertEquals(portAfterProvisioning.getLineIdPools().size(), portProvisioning5600.getLineIdPool().intValue());
         Assert.assertEquals(portAfterProvisioning.getHomeIdPools().size(), portProvisioning5600.getHomeIdPool().intValue());

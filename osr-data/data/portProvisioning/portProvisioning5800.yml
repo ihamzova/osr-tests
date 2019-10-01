@@ -1,9 +1,9 @@
 name: portProvisioning5800
 template: PortProvisioning
 values:
-  endSz: ""
-  slotNumber: ""
-  portNumber: ""
+  endSz: "49/911/1100/76H2"
+  slotNumber: "3"
+  portNumber: "0"
   homeIdPool: 32
   lineIdPool: 32
   accessLinesWG: 32
