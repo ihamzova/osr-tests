@@ -45,7 +45,7 @@ public class PortProvisioning5600 extends ApiTest {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Fills DataBase for Port Provisioning */
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabase()
                 .END_SZQuery("49/30/179/76H1")
                 .KLS_IDQuery("14653")
                 .slOTNUMBER1Query("3")
