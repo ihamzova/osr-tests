@@ -6,7 +6,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.portprovisioning.PortProvisioning5600"/>
-<!--            <class name="com.tsystems.tm.acc.ta.team.upiter.portprovisioning.PortProvisioning5800"/>-->
+            <class name="com.tsystems.tm.acc.ta.team.upiter.portprovisioning.PortProvisioning5800"/>
         </classes>
     </test>
 </suite>
