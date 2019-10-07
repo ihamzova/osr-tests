@@ -94,4 +94,38 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <webdriver.gecko.driver>/usr/bin/geckodriver</webdriver.gecko.driver>
+                <webdriver.chrome.driver>/usr/local/bin/chromedriver</webdriver.chrome.driver>
+                <rhsso.restclient.oc.location>/usr/bin/oc</rhsso.restclient.oc.location>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.qameta.allure</groupId>
+                        <artifactId>allure-maven</artifactId>
+                        <configuration>
+                            <reportVersion>${allure.version}</reportVersion>
+                            <allureDownloadUrl>
+                                file://${project.build.testOutputDirectory}/bin/allure-commandline-${allure.version}.zip
+                            </allureDownloadUrl>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <openshift.restclient.oc.location>/usr/bin/oc</openshift.restclient.oc.location>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
