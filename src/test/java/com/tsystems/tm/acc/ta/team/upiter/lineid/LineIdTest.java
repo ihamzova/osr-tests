@@ -22,8 +22,8 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.*;
-
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.CREATED_CODE;
+import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.BAD_REQUEST_CODE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -51,7 +51,7 @@ public class LineIdTest extends ApiTest {
     public void createSingleLineId() {
         SingleLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineId()
                 .endSzQuery(lineIdBatch.getEndSz())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertNotNull(response);
     }
 
@@ -62,7 +62,7 @@ public class LineIdTest extends ApiTest {
         PoolLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(lineIdBatch.getNumberLineIds())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertEquals(response.getLineIds().size(), lineIdBatch.getNumberLineIds().intValue());
     }
 
@@ -72,7 +72,7 @@ public class LineIdTest extends ApiTest {
     public void createSingleLineIdTopas() {
         SingleLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineId()
                 .endSzQuery(lineIdBatch.getTopasEndSz())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertNotNull(response);
     }
 
@@ -83,7 +83,7 @@ public class LineIdTest extends ApiTest {
         PoolLineId response = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery(lineIdBatch.getTopasEndSz())
                 .numberLineIdsQuery(lineIdBatch.getTopasNumberLineIds())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertEquals(response.getLineIds().size(), lineIdBatch.getTopasNumberLineIds().intValue());
     }
 
@@ -94,7 +94,7 @@ public class LineIdTest extends ApiTest {
         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(33)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class LineIdTest extends ApiTest {
         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(-1)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class LineIdTest extends ApiTest {
         lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery("49/911/1100/H176")
                 .numberLineIdsQuery(5)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(validatedWith(shouldBeCode(BAD_REQUEST_CODE)));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class LineIdTest extends ApiTest {
         PoolLineId poolLineId = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
                 .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(lineIdBatch.getNumberLineIds() - port.getLineIdPools().size())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(CREATED_CODE)));
         assertEquals(poolLineId.getLineIds().size(), lineIdBatch.getNumberLineIds() - port.getLineIdPools().size());
     }
 }
