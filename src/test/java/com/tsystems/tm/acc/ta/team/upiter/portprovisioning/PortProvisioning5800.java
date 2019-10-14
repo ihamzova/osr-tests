@@ -42,7 +42,7 @@ public class PortProvisioning5800 extends ApiTest {
     public void portProvisioning5800() throws InterruptedException {
 
         /* Clears DataBase before test */
-        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase()
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Fills DataBase for Port Provisioning */
@@ -78,7 +78,7 @@ public class PortProvisioning5800 extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         /* Clears DataBase after test */
-        oltResourceInventoryClient.getClient().databaseInitializerController().initializeDatabase()
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
