@@ -141,6 +141,7 @@ public class Olt5600 extends ApiTest {
     }
 
     private void clearDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase();
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
