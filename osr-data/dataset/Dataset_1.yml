@@ -7,7 +7,9 @@ data:
   - template: HomeIdBatch
     name: homeIdBatch
   - template: PortProvisioning
-    name: portProvisioning5600
+    name: portEmpty5600
   - template: PortProvisioning
-    name: portProvisioning5800
+    name: portEmpty5800
+  - template: PortProvisioning
+    name: portPartlyOccupied
 artifacts:

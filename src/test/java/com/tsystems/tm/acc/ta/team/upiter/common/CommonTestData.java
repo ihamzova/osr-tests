@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.data;
+package com.tsystems.tm.acc.ta.team.upiter.common;
 
 public class CommonTestData {
 

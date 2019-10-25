@@ -22,7 +22,7 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.data.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
