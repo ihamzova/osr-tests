@@ -173,12 +173,7 @@ public class Olt5600 extends ApiTest {
 
         Assert.assertEquals(countInActiveAccessLines, portWithInActiveLines.getAccessLinesCount().intValue());
 
-        wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
-                .body(new PortDto()
-                        .endSz("49/30/179/76H1")
-                        .slotNumber("3")
-                        .portNumber("0"))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+        startPortProvisioning(portWithInActiveLines);
 
         Thread.sleep(60_000);
 
