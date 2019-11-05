@@ -12,4 +12,8 @@ data:
     name: portEmpty5800
   - template: PortProvisioning
     name: portPartlyOccupied
+  - template: PortProvisioning
+    name: portWithInActiveLines
+  - template: PortProvisioning
+    name: portFullyOccupied
 artifacts:

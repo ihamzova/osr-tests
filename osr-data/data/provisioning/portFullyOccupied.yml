@@ -1,0 +1,12 @@
+name: portFullyOccupied
+template: PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "2"
+  homeIdPool: 0
+  lineIdPool: 0
+  accessLinesWG: 31
+  defaultNEProfilesActive: 31
+  defaultNetworkLineProfilesActive: 31
+  accessLinesCount: 32
