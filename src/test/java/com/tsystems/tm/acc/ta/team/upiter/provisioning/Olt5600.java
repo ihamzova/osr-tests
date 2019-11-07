@@ -16,7 +16,9 @@ import com.tsystems.tm.acc.wg.access.internal.client.model.PortDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -38,6 +40,17 @@ public class Olt5600 extends ApiTest {
     private PortProvisioning portProvisioningFully;
     private PortProvisioning portWithInActiveLines;
 
+    @BeforeMethod
+    public void prepareData(){
+        clearDataBase();
+        fillDataBase();
+    }
+
+    @AfterMethod
+    public void clearData(){
+        clearDataBase();
+    }
+
     @BeforeClass
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient();
@@ -53,10 +66,6 @@ public class Olt5600 extends ApiTest {
     @Description("Port provisioning case when port completely free")
     public void portProvisioningEmpty() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Port portBeforeProvisioning = getPort(portEmpty);
 
         Assert.assertEquals(portBeforeProvisioning.getAccessLines().size(), portEmpty.getAccessLinesCount().intValue());
@@ -66,8 +75,6 @@ public class Olt5600 extends ApiTest {
         Thread.sleep(LATENCY_FOR_PORT_PROVISIONING);
 
         Port portAfterProvisioning = getPort(portEmpty);
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -90,10 +97,6 @@ public class Olt5600 extends ApiTest {
     @Description("Port provisioning case when port partly occupied")
     public void portProvisioningPartly() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Port portBeforeProvisioning = getPort(portProvisioningPartly);
 
         Assert.assertEquals(portBeforeProvisioning.getAccessLines().size(), portProvisioningPartly.getAccessLinesCount().intValue());
@@ -103,8 +106,6 @@ public class Olt5600 extends ApiTest {
         Thread.sleep(30_000);
 
         Port portAfterProvisioning = getPort(portProvisioningPartly);
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -127,10 +128,6 @@ public class Olt5600 extends ApiTest {
     @Description("Port provisioning case when port completely occupied")
     public void portProvisioningFully() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Port portBeforeProvisioning = getPort(portProvisioningFully);
 
         Assert.assertEquals(portBeforeProvisioning.getAccessLines().size(), portProvisioningFully.getAccessLinesCount().intValue());
@@ -138,8 +135,6 @@ public class Olt5600 extends ApiTest {
         startPortProvisioning(portProvisioningFully);
 
         Port portAfterProvisioning = getPort(portProvisioningFully);
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -162,10 +157,6 @@ public class Olt5600 extends ApiTest {
     @Description("Port provisioning case when port has InActive Lines")
     public void portProvisioningWithInactiveLines() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Port portBeforeProvisioning = getPort(portWithInActiveLines);
 
         long countInActiveAccessLines = portBeforeProvisioning.getAccessLines().stream()
@@ -178,8 +169,6 @@ public class Olt5600 extends ApiTest {
         Thread.sleep(60_000);
 
         Port portAfterProvisioning = getPort(portWithInActiveLines);
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = portAfterProvisioning.getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -202,10 +191,6 @@ public class Olt5600 extends ApiTest {
     @Description("Card provisioning case with 1 empty port")
     public void cardProvisioning() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Card cardBeforeProvisioning = oltResourceInventoryClient.getClient().cardController().findCard()
                 .endSzQuery("49/30/179/76H1")
                 .slotNumberQuery("5")
@@ -226,8 +211,6 @@ public class Olt5600 extends ApiTest {
                 .endSzQuery("49/30/179/76H1")
                 .slotNumberQuery("5")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = cardAfterProvisioning.getPorts().get(0).getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -250,10 +233,6 @@ public class Olt5600 extends ApiTest {
     @Description("Device provisioning case")
     public void deviceProvisioning() throws InterruptedException {
 
-        clearDataBase();
-
-        fillDataBase();
-
         Device deviceBeforeProvisioning = oltResourceInventoryClient.getClient().deviceInternalController()
                 .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
@@ -267,8 +246,6 @@ public class Olt5600 extends ApiTest {
 
         Device deviceAfterProvisioning = oltResourceInventoryClient.getClient().deviceInternalController()
                 .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        clearDataBase();
 
         long countDefaultNEProfileActive = deviceAfterProvisioning.getEquipmentHolders().get(2).getCard().getPorts().get(0).getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
