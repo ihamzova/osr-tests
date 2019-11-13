@@ -21,8 +21,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -41,13 +41,13 @@ public class Olt5600 extends ApiTest {
     private PortProvisioning portWithInActiveLines;
 
     @BeforeMethod
-    public void prepareData(){
+    public void prepareData() {
         clearDataBase();
         fillDataBase();
     }
 
     @AfterMethod
-    public void clearData(){
+    public void clearData() {
         clearDataBase();
     }
 
@@ -103,7 +103,7 @@ public class Olt5600 extends ApiTest {
 
         startPortProvisioning(portProvisioningPartly);
 
-        Thread.sleep(30_000);
+        Thread.sleep(40_000);
 
         Port portAfterProvisioning = getPort(portProvisioningPartly);
 
@@ -191,26 +191,18 @@ public class Olt5600 extends ApiTest {
     @Description("Card provisioning case with 1 empty port")
     public void cardProvisioning() throws InterruptedException {
 
-        Card cardBeforeProvisioning = oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/30/179/76H1")
-                .slotNumberQuery("5")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Card cardBeforeProvisioning = getCard();
 
         Assert.assertNotNull(cardBeforeProvisioning);
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 8);
 
-        List<CardDto> cardDtoList = new ArrayList<>();
-        cardDtoList.add(new CardDto().endSz("49/30/179/76H1").slotNumber("5"));
-
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(cardDtoList).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .body(Stream.of(new CardDto().endSz("49/30/179/76H1").slotNumber("5")).collect(Collectors.toList()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        Thread.sleep(LATENCY_FOR_PORT_PROVISIONING);
+        Thread.sleep(8 * LATENCY_FOR_PORT_PROVISIONING);
 
-        Card cardAfterProvisioning = oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/30/179/76H1")
-                .slotNumberQuery("5")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Card cardAfterProvisioning = getCard();
 
         long countDefaultNEProfileActive = cardAfterProvisioning.getPorts().get(0).getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -233,10 +225,10 @@ public class Olt5600 extends ApiTest {
     @Description("Device provisioning case")
     public void deviceProvisioning() throws InterruptedException {
 
-        Device deviceBeforeProvisioning = oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Device deviceBeforeProvisioning = getDevice();
 
         Assert.assertNotNull(deviceBeforeProvisioning);
+        Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(),"MA5600T");
         Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 8);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
@@ -244,8 +236,7 @@ public class Olt5600 extends ApiTest {
 
         Thread.sleep(LATENCY_FOR_DEVICE_PROVISIONING);
 
-        Device deviceAfterProvisioning = oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Device deviceAfterProvisioning = getDevice();
 
         long countDefaultNEProfileActive = deviceAfterProvisioning.getEquipmentHolders().get(2).getCard().getPorts().get(0).getAccessLines().stream().map(AccessLine::getDefaultNeProfile)
                 .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -263,13 +254,16 @@ public class Olt5600 extends ApiTest {
         Assert.assertEquals(countAccessLinesWG, portEmpty.getAccessLinesWG().intValue());
     }
 
-    private void startPortProvisioning(PortProvisioning port) {
-        wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
-                .body(new PortDto()
-                        .endSz(port.getEndSz())
-                        .slotNumber(port.getSlotNumber())
-                        .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    private Device getDevice() {
+        return oltResourceInventoryClient.getClient().deviceInternalController()
+                .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    private Card getCard() {
+        return oltResourceInventoryClient.getClient().cardController().findCard()
+                .endSzQuery("49/30/179/76H1")
+                .slotNumberQuery("5")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     private Port getPort(PortProvisioning port) {
@@ -278,6 +272,15 @@ public class Olt5600 extends ApiTest {
                 .slotNumberQuery(port.getSlotNumber())
                 .portNumberQuery(port.getPortNumber())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    private void startPortProvisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
+                .body(new PortDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber())
+                        .portNumber(port.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     private void fillDataBase() {
