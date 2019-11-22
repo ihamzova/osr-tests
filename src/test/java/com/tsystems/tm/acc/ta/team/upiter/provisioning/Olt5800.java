@@ -46,8 +46,9 @@ public class Olt5800 extends ApiTest {
     }
 
     @BeforeMethod
-    public void prepareData() {
+    public void prepareData() throws InterruptedException {
         clearDataBase();
+        Thread.sleep(100);
         fillDataBase();
     }
 
@@ -169,7 +170,7 @@ public class Olt5800 extends ApiTest {
 
     private Card getCard(){
         return oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/30/179/76H1")
+                .endSzQuery("49/911/1100/76H2")
                 .slotNumberQuery("3")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }

@@ -4,9 +4,9 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "2"
-  homeIdPool: 0
-  lineIdPool: 0
-  accessLinesWG: 31
-  defaultNEProfilesActive: 31
-  defaultNetworkLineProfilesActive: 31
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesWG: 32
+  defaultNEProfilesActive: 32
+  defaultNetworkLineProfilesActive: 32
   accessLinesCount: 32

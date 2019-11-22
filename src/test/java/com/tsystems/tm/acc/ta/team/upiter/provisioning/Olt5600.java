@@ -31,7 +31,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 public class Olt5600 extends ApiTest {
 
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 2 * 60_000;
-    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 45 * 60_000;
+    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 30 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -41,8 +41,9 @@ public class Olt5600 extends ApiTest {
     private PortProvisioning portWithInActiveLines;
 
     @BeforeMethod
-    public void prepareData() {
+    public void prepareData() throws InterruptedException {
         clearDataBase();
+        Thread.sleep(100);
         fillDataBase();
     }
 
@@ -194,13 +195,13 @@ public class Olt5600 extends ApiTest {
         Card cardBeforeProvisioning = getCard();
 
         Assert.assertNotNull(cardBeforeProvisioning);
-        Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 8);
+        Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
                 .body(Stream.of(new CardDto().endSz("49/30/179/76H1").slotNumber("5")).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        Thread.sleep(8 * LATENCY_FOR_PORT_PROVISIONING);
+        Thread.sleep(LATENCY_FOR_PORT_PROVISIONING);
 
         Card cardAfterProvisioning = getCard();
 
