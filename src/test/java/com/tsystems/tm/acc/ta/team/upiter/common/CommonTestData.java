@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.data;
+package com.tsystems.tm.acc.ta.team.upiter.common;
 
 public class CommonTestData {
 
@@ -9,5 +9,6 @@ public class CommonTestData {
     public static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
     public static final Integer HTTP_CODE_INTERNAL_SERVER_ERROR_500 = 500;
     public static final String STATUS_ACTIVE = "ACTIVE";
+    public static final String STATUS_INACTIVE = "INACTIVE";
     public static final String STATUS_WALLED_GARDEN = "WALLED_GARDEN";
 }

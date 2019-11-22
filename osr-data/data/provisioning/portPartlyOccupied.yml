@@ -1,12 +1,12 @@
-name: portProvisioning5600
+name: portPartlyOccupied
 template: PortProvisioning
 values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
-  portNumber: "4"
+  portNumber: "3"
   homeIdPool: 32
   lineIdPool: 32
   accessLinesWG: 16
   defaultNEProfilesActive: 16
   defaultNetworkLineProfilesActive: 16
-  emptyPort: 0
+  accessLinesCount: 8

@@ -16,5 +16,5 @@ model:
     type: Integer
   defaultNetworkLineProfilesActive:
     type: Integer
-  emptyPort:
+  accessLinesCount:
     type: Integer
