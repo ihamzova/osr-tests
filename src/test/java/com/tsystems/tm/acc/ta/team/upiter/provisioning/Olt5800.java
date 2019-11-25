@@ -48,7 +48,7 @@ public class Olt5800 extends ApiTest {
     @BeforeMethod
     public void prepareData() throws InterruptedException {
         clearDataBase();
-        Thread.sleep(100);
+        Thread.sleep(1000);
         fillDataBase();
     }
 
