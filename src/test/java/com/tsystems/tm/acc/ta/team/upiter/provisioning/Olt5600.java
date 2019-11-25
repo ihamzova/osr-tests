@@ -104,7 +104,7 @@ public class Olt5600 extends ApiTest {
 
         startPortProvisioning(portProvisioningPartly);
 
-        Thread.sleep(40_000);
+        Thread.sleep(30_000);
 
         Port portAfterProvisioning = getPort(portProvisioningPartly);
 
@@ -167,7 +167,7 @@ public class Olt5600 extends ApiTest {
 
         startPortProvisioning(portWithInActiveLines);
 
-        Thread.sleep(60_000);
+        Thread.sleep(30_000);
 
         Port portAfterProvisioning = getPort(portWithInActiveLines);
 
