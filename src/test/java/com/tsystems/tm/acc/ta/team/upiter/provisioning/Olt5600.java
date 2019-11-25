@@ -30,8 +30,8 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class Olt5600 extends ApiTest {
 
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 2 * 60_000;
-    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 20 * 60_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 60_000;
+    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -104,7 +104,7 @@ public class Olt5600 extends ApiTest {
 
         startPortProvisioning(portProvisioningPartly);
 
-        Thread.sleep(40_000);
+        Thread.sleep(30_000);
 
         Port portAfterProvisioning = getPort(portProvisioningPartly);
 
@@ -167,7 +167,7 @@ public class Olt5600 extends ApiTest {
 
         startPortProvisioning(portWithInActiveLines);
 
-        Thread.sleep(60_000);
+        Thread.sleep(30_000);
 
         Port portAfterProvisioning = getPort(portWithInActiveLines);
 
