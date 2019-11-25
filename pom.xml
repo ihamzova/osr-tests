@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.0.81</version>
+        <version>0.0.82</version>
     </parent>
 
     <repositories>
@@ -93,5 +93,7 @@
             </plugin>
         </plugins>
     </build>
-
+    <properties>
+        <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
+    </properties>
 </project>
