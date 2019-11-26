@@ -30,7 +30,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class Olt5800 extends ApiTest {
 
-    private static final Integer LATENCY = 3 * 60_000;
+    private static final Integer LATENCY = 2 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -48,7 +48,7 @@ public class Olt5800 extends ApiTest {
     @BeforeMethod
     public void prepareData() throws InterruptedException {
         clearDataBase();
-        Thread.sleep(100);
+        Thread.sleep(1000);
         fillDataBase();
     }
 
