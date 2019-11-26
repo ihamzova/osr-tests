@@ -21,6 +21,7 @@ public class OltCommssioningPage {
     private static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("cc-bng-equipmentholder-input");
     private static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("cc-bng-downlink-card-port-input");
     private static final By LSZ_SELECT_LOCATOR = byQaData("cc-lsz-select");
+    private static final By LSZ_VALUE_LOCATOR = byQaData("cc-lsz-select-1");
     private static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("cc-order-number-input");
     private static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("cc-olt-commissioning-start-button");
 
@@ -47,7 +48,7 @@ public class OltCommssioningPage {
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).click();
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(oltCommissioning.getBngDownlinkCardPort());
         $(LSZ_SELECT_LOCATOR).click();
-        $(LSZ_SELECT_LOCATOR).selectOptionByValue(oltCommissioning.getLsz());
+        $(LSZ_VALUE_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();

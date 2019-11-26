@@ -1,7 +1,5 @@
 name: OltCommissioning
 model:
-  oltSearchType:
-    type: String
   akz:
     type: String
   onkz:
@@ -23,8 +21,6 @@ model:
   bngEquipmentHolder:
     type: String
   bngDownlinkCardPort:
-    type: String
-  lsz:
     type: String
   orderNumber:
     type: String

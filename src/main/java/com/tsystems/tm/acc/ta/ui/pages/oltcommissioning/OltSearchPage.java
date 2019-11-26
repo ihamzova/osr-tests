@@ -20,6 +20,7 @@ public class OltSearchPage {
     static final String ENDPOINT = "/search";
 
     private static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("sc-olt-search-type-select");
+    private static final By OLT_SEARCH_TYPE_VALUE_LOCATOR = byQaData("sc-olt-search-type-value-1");
     private static final By OLT_AKZ_INPUT_LOCATOR = byQaData("sc-akz-input");
     private static final By OLT_ONKZ_INPUT_LOCATOR = byQaData("sc-onkz-input");
     private static final By OLT_VKZ_INPUT_LOCATOR = byQaData("sc-vkz-input");
@@ -43,7 +44,7 @@ public class OltSearchPage {
     @Step("Search OLT by parameters parameters")
     public OltSearchPage searchOlt(OltCommissioning oltCommissioning) {
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).selectOptionByValue(oltCommissioning.getOltSearchType());
+        $(OLT_SEARCH_TYPE_VALUE_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(oltCommissioning.getAkz());
         $(OLT_ONKZ_INPUT_LOCATOR).click();

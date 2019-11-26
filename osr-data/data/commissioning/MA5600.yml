@@ -1,7 +1,6 @@
 name: MA5600
 template: OltCommissioning
 values:
-  oltSearchType: "EndSz"
   akz: "49"
   onkz: "8571"
   vkz: "0"
@@ -13,7 +12,6 @@ values:
   bngEndSz: "49/30/179/43G1"
   bngEquipmentHolder: "1"
   bngDownlinkCardPort: "ge-1/2/3"
-  lsz: "4C1"
   orderNumber: "10"
 
 
