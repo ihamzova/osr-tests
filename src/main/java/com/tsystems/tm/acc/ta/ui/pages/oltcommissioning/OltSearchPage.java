@@ -41,8 +41,8 @@ public class OltSearchPage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Search OLT by parameters parameters")
-    public OltSearchPage searchOlt(OltCommissioning oltCommissioning) {
+    @Step("Search OLT by parameters")
+    public OltSearchPage searchOltByParameters(OltCommissioning oltCommissioning) {
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
         $(OLT_SEARCH_TYPE_VALUE_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
@@ -58,8 +58,8 @@ public class OltSearchPage {
     }
 
     @Step("Go to automatically commissioning page")
-    public OltCommssioningPage searchOlt() {
+    public OltCommissioningPage searchOlt() {
         $(AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR).click();
-        return new OltCommssioningPage();
+        return new OltCommissioningPage();
     }
 }

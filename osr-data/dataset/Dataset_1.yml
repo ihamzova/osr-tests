@@ -1,7 +1,5 @@
 name: Dataset_1
 data:
-  - template: OltDevice
-    name: FSZ_76H1
   - template: LineIdBatch
     name: lineIdBatch
   - template: HomeIdBatch
@@ -16,4 +14,6 @@ data:
     name: portWithInActiveLines
   - template: PortProvisioning
     name: portFullyOccupied
+  - template: OltCommissioning
+    name: MA5600
 artifacts:

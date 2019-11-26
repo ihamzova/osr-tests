@@ -9,7 +9,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
-public class OltCommssioningPage {
+public class OltCommissioningPage {
     static final String APP = "olt-resource-inventory-ui";
     static final String ENDPOINT = "/commissioning";
 
@@ -32,7 +32,7 @@ public class OltCommssioningPage {
     }
 
     @Step("Input params and start commissioning")
-    public void startOltCommissioning(OltCommissioning oltCommissioning) {
+    public void insertDataAndStartOltCommissioning(OltCommissioning oltCommissioning) {
         $(OLT_ENDSZ_INPUT_LOCATOR).click();
         $(OLT_ENDSZ_INPUT_LOCATOR).val(oltCommissioning.getOltEndSz());
         $(OLT_KLS_ID_INPUT_LOCATOR).click();
@@ -51,6 +51,6 @@ public class OltCommssioningPage {
         $(LSZ_VALUE_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOrderNumber());
-        $(COMMISSIONING_START_BUTTON_LOCATOR).click();
+        //$(COMMISSIONING_START_BUTTON_LOCATOR).click();
     }
 }
