@@ -11,7 +11,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
 @Slf4j
-public class OltCommssioningPage {
+public class OltCommissioningPage {
     static final String APP = "olt-resource-inventory-ui";
     static final String ENDPOINT = "/commissioning";
 
@@ -27,7 +27,7 @@ public class OltCommssioningPage {
     private static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("cc-olt-commissioning-start-button");
 
     @Step("Validate Url")
-    public void validate() {
+    public void validateUrl() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
@@ -50,6 +50,6 @@ public class OltCommssioningPage {
         $(LSZ_VALUE_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOrderNumber());
-        $(COMMISSIONING_START_BUTTON_LOCATOR).click();
+        //$(COMMISSIONING_START_BUTTON_LOCATOR).click();
     }
 }
