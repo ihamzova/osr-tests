@@ -13,6 +13,8 @@ import com.tsystems.tm.acc.ta.ui.UITest;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import io.qameta.allure.Description;
+import io.qameta.allure.TmsLink;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -28,7 +30,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class OltCommissioning5600 extends UITest {
 
-    private static final Integer LATENCY_FOR_DEVICE_COMMISSIONING = 15 * 60_000;
+    private static final Integer LATENCY_FOR_DEVICE_COMMISSIONING = 20 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -55,6 +57,8 @@ public class OltCommissioning5600 extends UITest {
     }
 
     @Test
+    @TmsLink("DIGIHUB-44733")
+    @Description("Olt-Commissioning (MA5600T) automatically case with 2 cards")
     public void automaticallyOltCommissioning() throws InterruptedException{
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
