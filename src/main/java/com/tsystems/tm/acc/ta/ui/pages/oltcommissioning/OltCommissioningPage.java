@@ -50,6 +50,6 @@ public class OltCommissioningPage {
         $(LSZ_VALUE_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOrderNumber());
-        //$(COMMISSIONING_START_BUTTON_LOCATOR).click();
+        $(COMMISSIONING_START_BUTTON_LOCATOR).click();
     }
 }

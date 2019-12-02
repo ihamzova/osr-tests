@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
-public class Olt5600 extends ApiTest {
+public class OltProvisioning5600 extends ApiTest {
 
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 60_000;
     private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * 60_000;
@@ -56,10 +56,11 @@ public class Olt5600 extends ApiTest {
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
-        portEmpty = OsrTestContext.get().getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmpty5600);
-        portProvisioningPartly = OsrTestContext.get().getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
-        portProvisioningFully = OsrTestContext.get().getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);
-        portWithInActiveLines = OsrTestContext.get().getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);
+        OsrTestContext context = OsrTestContext.get();
+        portEmpty = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmpty5600);
+        portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
+        portProvisioningFully = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);
+        portWithInActiveLines = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);
     }
 
     @Test
