@@ -1,5 +1,0 @@
-name: DefaultVst
-template: Vst
-values:
-  name: "5R"
-  address: "AddressDitzingen"

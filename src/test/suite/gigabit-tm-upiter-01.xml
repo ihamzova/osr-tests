@@ -5,8 +5,8 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.Olt5600"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.Olt5800"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5800"/>
         </classes>
     </test>
 </suite>

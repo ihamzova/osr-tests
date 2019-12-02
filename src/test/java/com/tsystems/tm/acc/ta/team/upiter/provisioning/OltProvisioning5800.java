@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
-public class Olt5800 extends ApiTest {
+public class OltProvisioning5800 extends ApiTest {
 
     private static final Integer LATENCY = 2 * 60_000;
 

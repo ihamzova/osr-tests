@@ -29,20 +29,20 @@ public class OltSearchPage {
     private static final By AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR = byQaData("sc-auto-olt-commissioning-button");
 
     @Step("Open OLT-Search page")
-    public static OltSearchPage openPage() {
+    public static OltSearchPage openSearchPage() {
         URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, OltSearchPage.class);
     }
 
     @Step("Validate Url")
-    public void validate() {
+    public void validateUrl() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Search OLT by parameters parameters")
-    public OltSearchPage searchOlt(OltCommissioning oltCommissioning) {
+    @Step("Search OLT by parameters")
+    public OltSearchPage searchOltByParameters(OltCommissioning oltCommissioning) {
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
         $(OLT_SEARCH_TYPE_VALUE_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
@@ -58,8 +58,8 @@ public class OltSearchPage {
     }
 
     @Step("Go to automatically commissioning page")
-    public OltCommssioningPage searchOlt() {
+    public OltCommissioningPage openOltCommissioningAutomaticallyPage() {
         $(AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR).click();
-        return new OltCommssioningPage();
+        return new OltCommissioningPage();
     }
 }
