@@ -30,7 +30,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class OltCommissioning5600 extends UITest {
 
-    private static final Integer LATENCY_FOR_DEVICE_COMMISSIONING = 20 * 60_000;
+    private static final Integer LATENCY_FOR_DEVICE_COMMISSIONING = 15 * 60_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
