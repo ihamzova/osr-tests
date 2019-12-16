@@ -1,0 +1,8 @@
+name: autoCommissioningResults
+template: OltCommissioningResult
+values:
+  oltEndSz: "49/8571/0/76HA"
+  expectedAccessLinesCount: 256
+  expectedLineIdPoolsSize: 512
+  expectedHomeIdPoolsSize: 512
+

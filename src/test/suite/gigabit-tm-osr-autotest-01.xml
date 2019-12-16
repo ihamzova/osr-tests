@@ -3,7 +3,7 @@
 <suite name="Domain test suites" verbose="1" data-provider-thread-count="1">
     <test thread-count="1" name="Olt-Commissioning cases (for MA5600T device)">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.commissioning.OltCommissioning5600"/>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioning5600"/>
         </classes>
     </test>
 </suite>
