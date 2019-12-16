@@ -1,0 +1,12 @@
+name: AccessLine
+model:
+  endSz:
+    type: String
+  slotNumber:
+    type: String
+  portNumber:
+    type: String
+  homeId:
+    type: String
+  lineId:
+    type: String

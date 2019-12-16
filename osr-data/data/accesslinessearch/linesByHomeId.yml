@@ -1,0 +1,8 @@
+name: linesByHomeId
+template: AccessLine
+values:
+  endSz: ""
+  slotNumber: ""
+  portNumber: ""
+  homeId: "0037WT1"
+  lineId: ""
