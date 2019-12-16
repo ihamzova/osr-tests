@@ -14,6 +14,12 @@ data:
     name: portWithInActiveLines
   - template: PortProvisioning
     name: portFullyOccupied
-  - template: OltCommissioning
-    name: MA5600
+  - template: OltDevice
+    name: FSZ_76HA
+  - template: OltDevice
+    name: FSZ_76H1
+  - template: OltCommissioningResult
+    name: manualCommissioningResults
+  - template: OltCommissioningResult
+    name: autoCommissioningResults
 artifacts:

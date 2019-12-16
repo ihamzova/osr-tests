@@ -1,30 +1,33 @@
 package com.tsystems.tm.acc.ta.ui.pages.oltcommissioning;
 
-import com.tsystems.tm.acc.data.osr.models.oltcommissioning.OltCommissioning;
+import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
 @Slf4j
 public class OltCommissioningPage {
-    static final String APP = "olt-resource-inventory-ui";
-    static final String ENDPOINT = "/commissioning";
 
-    private static final By OLT_KLS_ID_INPUT_LOCATOR = byQaData("cc-olt-kls-id-input");
-    private static final By OLT_SLOT_NUMBER_INPUT_LOCATOR = byQaData("cc-olt-slot-number-input");
-    private static final By OLT_PORT_NUMBER_INPUT_LOCATOR = byQaData("cc-olt-port-number-input");
-    private static final By OLT_BNG_ENDSZ_INPUT_LOCATOR = byQaData("cc-bng-end-sz-input");
-    private static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("cc-bng-equipmentholder-input");
-    private static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("cc-bng-downlink-card-port-input");
-    private static final By LSZ_SELECT_LOCATOR = byQaData("cc-lsz-select");
-    private static final By LSZ_VALUE_LOCATOR = byQaData("cc-lsz-select-4C11");
-    private static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("cc-order-number-input");
-    private static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("cc-olt-commissioning-start-button");
+    public static final String APP = "olt-resource-inventory-ui";
+    public static final String ENDPOINT = "/commissioning";
+
+    public static final By OLT_KLS_ID_INPUT_LOCATOR = byQaData("input-oltklsidtxt");
+    public static final By OLT_SLOT_NUMBER_INPUT_LOCATOR = byQaData("input-oltslotnumbertxt");
+    public static final By OLT_PORT_NUMBER_INPUT_LOCATOR = byQaData("input-oltportnumbertxt");
+    public static final By OLT_BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngendsztxt");
+    public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngslotnumbertxt");
+    public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngportnumbertxt");
+    public static final By LSZ_SELECT_LOCATOR = byQaData("sui-select-lsz");
+    public static final By LSZ_VALUE_LOCATOR = byQaData("sui-select-option-4C1");
+    public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
+    public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
+    public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-tab");
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -33,23 +36,25 @@ public class OltCommissioningPage {
     }
 
     @Step("Input params and start commissioning")
-    public void startOltCommissioning(OltCommissioning oltCommissioning) {
+    public OltCommissioningPage startOltCommissioning(OltDevice oltDevice, Integer timeout) {
         $(OLT_KLS_ID_INPUT_LOCATOR).click();
-        $(OLT_KLS_ID_INPUT_LOCATOR).val(oltCommissioning.getOltKlsId());
+        $(OLT_KLS_ID_INPUT_LOCATOR).val(oltDevice.getKlsId());
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOltSlotNumber());
+        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(oltDevice.getOltSlot());
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOltPortNumber());
+        $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(oltDevice.getOltPort());
         $(OLT_BNG_ENDSZ_INPUT_LOCATOR).click();
-        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).val(oltCommissioning.getBngEndSz());
+        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).val(oltDevice.getBngEndsz());
         $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).click();
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(oltCommissioning.getBngEquipmentHolder());
+        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(oltDevice.getBngDownlinkSlot());
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).click();
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(oltCommissioning.getBngDownlinkCardPort());
+        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(oltDevice.getBngDownlinkPort());
         $(LSZ_SELECT_LOCATOR).click();
         $(LSZ_VALUE_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).val(oltCommissioning.getOrderNumber());
+        $(ORDER_NUMBER_INPUT_LOCATOR).val(oltDevice.getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
+        $(CARDS_DETAILS_TAB_LOCATOR).waitUntil(appears, timeout);
+        return this;
     }
 }
