@@ -1,0 +1,8 @@
+name: linesByLineId
+template: AccessLine
+values:
+  endSz: ""
+  slotNumber: ""
+  portNumber: ""
+  homeId: ""
+  lineId: "DEU.DTAG.SQA3140925"
