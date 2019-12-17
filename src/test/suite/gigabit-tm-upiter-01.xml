@@ -7,7 +7,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5800"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.acсesslinesearch.AccessLinesSearchTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.accesslinesearch.AccessLinesSearchTest"/>
         </classes>
     </test>
 </suite>
