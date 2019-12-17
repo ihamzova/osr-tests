@@ -35,7 +35,7 @@ public class AccessLinesSearchTest {
     private AccessLine accessLineByLineId;
 
     @BeforeClass
-    public void init() {
+    public void init() throws InterruptedException {
         oltResourceInventoryClient = new OltResourceInventoryClient();
         OsrTestContext context = OsrTestContext.get();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
@@ -161,8 +161,9 @@ public class AccessLinesSearchTest {
         Assert.assertEquals(tableRows, supposedOrder);
     }
 
-    private void prepareData() {
+    private void prepareData() throws InterruptedException {
         clearDataBase();
+        Thread.sleep(1000);
         fillDataBase();
     }
 
@@ -173,6 +174,11 @@ public class AccessLinesSearchTest {
 
     private void fillDataBase() {
         oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
+                .END_SZQuery("49/30/179/76H1")
+                .KLS_IDQuery("14653")
+                .slOTNUMBER1Query("3")
+                .slOTNUMBER2Query("4")
+                .slOTNUMBER3Query("5")
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
