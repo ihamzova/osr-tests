@@ -27,23 +27,19 @@ public class OltCommissioning5600 extends UITest {
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
 
-    @BeforeClass
-    public void init() {
-        clearDataBase();
-    }
-
     @AfterClass
     public void teardown() {
         clearDataBase();
     }
 
     @BeforeMethod
-    public void setLoginData() {
+    public void prepareData() {
+        clearDataBase();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
-    @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
+    @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
     public void automaticallyOltCommissioning() {
