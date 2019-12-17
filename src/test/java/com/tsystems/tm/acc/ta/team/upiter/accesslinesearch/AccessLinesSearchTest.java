@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.acсesslinesearch;
+package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
 import com.tsystems.tm.acc.data.osr.models.accessline.AccessLine;
