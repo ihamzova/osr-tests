@@ -163,7 +163,7 @@ public class AccessLinesSearchTest {
 
     private void prepareData() throws InterruptedException {
         clearDataBase();
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         fillDataBase();
     }
 
@@ -174,11 +174,6 @@ public class AccessLinesSearchTest {
 
     private void fillDataBase() {
         oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
-                .END_SZQuery("49/30/179/76H1")
-                .KLS_IDQuery("14653")
-                .slOTNUMBER1Query("3")
-                .slOTNUMBER2Query("4")
-                .slOTNUMBER3Query("5")
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
