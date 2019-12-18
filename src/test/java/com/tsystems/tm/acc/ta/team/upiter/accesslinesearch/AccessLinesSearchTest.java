@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.olt.resource.inventory.external.client.model.AccessLineViewDto;
 import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.ui.UITest;
 import com.tsystems.tm.acc.ta.ui.pages.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.ui.pages.accessmanagement.AccessLineSearchPage.ProfileNames;
 import com.tsystems.tm.acc.ta.ui.pages.accessmanagement.AccessLineSearchPage.ProfileTypes;
@@ -27,7 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_OK_200;
 
-public class AccessLinesSearchTest {
+public class AccessLinesSearchTest extends UITest {
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private AccessLine accessLinesByEndSz;
