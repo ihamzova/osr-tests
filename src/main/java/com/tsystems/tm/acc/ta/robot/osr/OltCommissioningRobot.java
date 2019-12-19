@@ -86,4 +86,10 @@ public class OltCommissioningRobot {
                 .forEach(ports -> ports.forEach(port -> countResults.add(port.getHomeIdPools().size())));
         Assert.assertEquals(countResults.stream().mapToInt(Integer::intValue).sum(), oltCommissioningResult.getExpectedHomeIdPoolsSize().intValue());
     }
+
+    @Step("Restore OSR Database state")
+    public void restoreOsrDbState() {
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 }
