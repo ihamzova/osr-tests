@@ -3,3 +3,13 @@ global:
   homeId: "A123456"
   cplId: "XY0012"
   lineId: "DEU.DTAG.GE11000000"
+  addressBigCity:
+    city: "BigCity"
+    district: "BigCityDistrict"
+    streetFull: "BigCityStrasse"
+    streetShort: "BigCityStr."
+    hausNummer: "22"
+    zipCode: "81254"
+    onkz: "8571"
+    asb: "1"
+    klsId: "12377912"
