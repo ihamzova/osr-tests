@@ -38,7 +38,7 @@ public class OltCommissioningPage {
     @Step("Input params and start commissioning")
     public OltCommissioningPage startOltCommissioning(OltDevice oltDevice, Integer timeout) {
         $(OLT_KLS_ID_INPUT_LOCATOR).click();
-        $(OLT_KLS_ID_INPUT_LOCATOR).val(oltDevice.getKlsId());
+        $(OLT_KLS_ID_INPUT_LOCATOR).val(oltDevice.getVst().getAddress().getKlsId());
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(oltDevice.getOltSlot());
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
