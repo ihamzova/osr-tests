@@ -1,0 +1,11 @@
+name: nvtForOltCommissioning
+template: Nvt
+values:
+  id: ""
+  name: ""
+  address: "AddressBigCity"
+  splitterType: 32
+  gebietstyp: ""
+  oltDevice: "FSZ_76HA"
+  oltSlot: "19"
+  oltPort: "0"

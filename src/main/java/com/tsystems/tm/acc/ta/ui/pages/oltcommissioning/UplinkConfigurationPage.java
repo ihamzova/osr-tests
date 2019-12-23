@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.ui.pages.oltcommissioning;
 
+import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
@@ -35,17 +36,17 @@ public class UplinkConfigurationPage {
     }
 
     @Step("Input uplink parameters")
-    public UplinkConfigurationPage inputUplinkParameters(OltDevice oltDevice) {
+    public UplinkConfigurationPage inputUplinkParameters(Nvt nvt) {
         $(OLT_SLOT_SELECT_LOCATOR).click();
         $(OLT_SLOT_SELECT_OPTION_LOCATOR).click();
         $(OLT_PORT_SELECT_LOCATOR).click();
         $(OLT_PORT_SELECT_OPTION_LOCATOR).click();
-        $(BNG_ENDSZ_INPUT_LOCATOR).val(oltDevice.getBngEndsz());
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(oltDevice.getBngDownlinkSlot());
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(oltDevice.getBngDownlinkPort());
+        $(BNG_ENDSZ_INPUT_LOCATOR).val(nvt.getOltDevice().getBngEndsz());
+        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkSlot());
+        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkPort());
         $(LSZ_SELECT_LOCATOR).click();
         $(LSZ_SELECT_OPTION_LOCATOR).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).val(oltDevice.getOrderNumber());
+        $(ORDER_NUMBER_INPUT_LOCATOR).val(nvt.getOltDevice().getOrderNumber());
         return this;
     }
 

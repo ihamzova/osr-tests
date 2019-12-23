@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
+import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.osr.models.oltcommissioningresult.OltCommissioningResult;
-import com.tsystems.tm.acc.data.osr.models.oltcommissioningresult.OltCommissioningResultCase;
+import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
@@ -36,22 +36,19 @@ public class OltCommissioning5600 extends UITest {
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
     public void automaticallyOltCommissioning() {
-        OltDevice deviceForAutoCommissioning = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
-        OltCommissioningResult expectedResult = context.getData().getOltCommissioningResultDataProvider().get(OltCommissioningResultCase.autoCommissioningResults);
+        Nvt nvtForOltAutoCommissioning = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltCommissioning);
 
-        oltCommissioningRobot.startAutomaticOltCommissioning(deviceForAutoCommissioning);
-        oltCommissioningRobot.checkOltCommissioningResult(expectedResult);
+        oltCommissioningRobot.startAutomaticOltCommissioning(nvtForOltAutoCommissioning);
+        oltCommissioningRobot.checkOltCommissioningResult(nvtForOltAutoCommissioning);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-37121")
     @Description("Olt-Commissioning (MA5600T) manually case")
     public void manuallyOltCommissioning() {
-        OltDevice deviceForManualCommissioning = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76H1);
-        OltCommissioningResult expectedResult = context.getData().getOltCommissioningResultDataProvider().get(OltCommissioningResultCase.manualCommissioningResults);
+        Nvt nvtForOltManualCommissioning = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltCommissioning);
 
-        oltCommissioningRobot.startManualOltCommissioning(deviceForManualCommissioning);
-        oltCommissioningRobot.checkOltCommissioningResult(expectedResult);
+        oltCommissioningRobot.startManualOltCommissioning(nvtForOltManualCommissioning);
+        oltCommissioningRobot.checkOltCommissioningResult(nvtForOltManualCommissioning);
     }
-
 }
