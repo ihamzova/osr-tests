@@ -5,7 +5,7 @@ values:
   fsz: "76HA"
   bngEndsz: "49/30/179/43G1"
   bngDownlinkPort: "ge-1/2/3"
-  bngDownlinkSlot: "1"
+  bngDownlinkSlot: "0"
   lsz: "4C1"
   orderNumber: "10"
   oltPort: "0"
