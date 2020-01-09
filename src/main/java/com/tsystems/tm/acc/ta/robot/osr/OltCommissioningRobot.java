@@ -1,17 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
-import com.tsystems.tm.acc.olt.material.catalog.internal.client.model.CardProfile;
-import com.tsystems.tm.acc.olt.material.catalog.internal.client.model.CardType;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.EquipmentHolder;
-import com.tsystems.tm.acc.psl.adapter.client.model.PslDevice;
-import com.tsystems.tm.acc.psl.adapter.client.model.PslModule;
-import com.tsystems.tm.acc.ta.api.OltMaterialCatalogClient;
 import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.PslClient;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -19,7 +12,6 @@ import org.testng.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -30,12 +22,9 @@ public class OltCommissioningRobot {
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
     private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
     private static final Integer ACCESS_LINE_PER_PORT = 16;
-    private static final Integer HOME_ID_POOL_PER_PORT = 32;
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
-    private OltMaterialCatalogClient oltMaterialCatalogClient = new OltMaterialCatalogClient();
-    private PslClient pslClient = new PslClient();
 
     @Step("Starts automatic olt commissioning process")
     public void startAutomaticOltCommissioning(Nvt nvt) {
@@ -81,21 +70,14 @@ public class OltCommissioningRobot {
     @Step("Checks olt data in olt-ri after commissioning process")
     public void checkOltCommissioningResult(Nvt nvt) {
         String oltEndSz = nvt.getOltDevice().getVpsz() + "/" + nvt.getOltDevice().getFsz();
-        long portsCount;
-
-        PslDevice pslDevice = pslClient.getClient().equipmentController().getPslDevice().endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        List<String> materialNumbers = pslDevice.getPslModules().stream().map(PslModule::getMaterialNummer).collect(Collectors.toList());
-
-        List<CardProfile> gponCards = materialNumbers.stream().map(materialNumber -> oltMaterialCatalogClient.getClient().cardProfileController().findCardProfileByMaterialNumber()
-                .materialnumberPath(materialNumber).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
-                .filter(cardProfile -> cardProfile.getCardType().getType().equals(CardType.TypeEnum.GPON)).collect(Collectors.toList());
-
-        Optional<Long> portsCountOptional = gponCards.stream().map(CardProfile::getPortNumber).reduce(Long::sum);
-        portsCount = portsCountOptional.isPresent() ? portsCountOptional.get() : 0;
+        int portsCount;
 
         Device deviceAfterCommissioning = oltResourceInventoryClient.getClient().deviceInternalController()
                 .getOltByEndSZ().endSZQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
+        portsCount = portsCountOptional.orElse(0);
 
         List<Integer> countResults = new ArrayList<>();
 
@@ -108,10 +90,6 @@ public class OltCommissioningRobot {
                 .forEach(ports -> ports.forEach(port -> countResults.add(port.getLineIdPools().size())));
         Assert.assertEquals(countResults.stream().mapToInt(Integer::intValue).sum(), portsCount * LINE_ID_POOL_PER_PORT);
         countResults.clear();
-
-        deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard).map(Card::getPorts)
-                .forEach(ports -> ports.forEach(port -> countResults.add(port.getHomeIdPools().size())));
-        Assert.assertEquals(countResults.stream().mapToInt(Integer::intValue).sum(),portsCount * HOME_ID_POOL_PER_PORT);
     }
 
     @Step("Restore OSR Database state")
