@@ -20,7 +20,7 @@ public class OltCommissioningRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
-    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
+    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 15 * 60_000;
     private static final Integer ACCESS_LINE_PER_PORT = 16;
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
 
@@ -64,7 +64,7 @@ public class OltCommissioningRobot {
 
         oltDetailsPage = oltDetailsPage.configureAncpSession();
         oltDetailsPage = oltDetailsPage.updateAncpSessionStatus();
-        oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+        oltDetailsPage.startAccessLinesProvisioning(nvt, TIMEOUT_FOR_CARD_PROVISIONING);
     }
 
     @Step("Checks olt data in olt-ri after commissioning process")
