@@ -1,13 +1,11 @@
 package com.tsystems.tm.acc.ta.ui.pages.oltcommissioning;
 
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -55,7 +53,12 @@ public class OltCommissioningPage {
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(nvt.getOltDevice().getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
-        $(CARDS_DETAILS_TAB_LOCATOR).waitUntil(appears, timeout);
+        try {
+            Thread.sleep(timeout);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        $(CARDS_DETAILS_TAB_LOCATOR).waitUntil(appears, timeout);
         return this;
     }
 }
