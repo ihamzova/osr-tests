@@ -1,15 +1,16 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.EquipmentHolder;
+import com.tsystems.tm.acc.ta.api.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +24,10 @@ public class OltCommissioningRobot {
     private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 15 * 60_000;
     private static final Integer ACCESS_LINE_PER_PORT = 16;
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
+    private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
+    private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
     @Step("Starts automatic olt commissioning process")
     public void startAutomaticOltCommissioning(Nvt nvt) {
@@ -70,7 +73,7 @@ public class OltCommissioningRobot {
     @Step("Checks olt data in olt-ri after commissioning process")
     public void checkOltCommissioningResult(Nvt nvt) {
         String oltEndSz = nvt.getOltDevice().getVpsz() + "/" + nvt.getOltDevice().getFsz();
-        int portsCount;
+        long portsCount;
 
         Device deviceAfterCommissioning = oltResourceInventoryClient.getClient().deviceInternalController()
                 .getOltByEndSZ().endSZQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -79,22 +82,33 @@ public class OltCommissioningRobot {
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
-        List<Integer> countResults = new ArrayList<>();
+        long wgLinesCount = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
+                .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineDto.StatusEnum.WALLED_GARDEN)).count();
 
-        deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard).map(Card::getPorts)
-                .forEach(ports -> ports.forEach(port -> countResults.add(port.getAccessLines().size())));
-        Assert.assertEquals(countResults.stream().mapToInt(Integer::intValue).sum(), portsCount * ACCESS_LINE_PER_PORT);
-        countResults.clear();
+        Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
 
-        deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard).map(Card::getPorts)
-                .forEach(ports -> ports.forEach(port -> countResults.add(port.getLineIdPools().size())));
-        Assert.assertEquals(countResults.stream().mapToInt(Integer::intValue).sum(), portsCount * LINE_ID_POOL_PER_PORT);
-        countResults.clear();
+        long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdInternalController().searchHomeIds()
+                .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdDto.StatusEnum.FREE)).count();
+
+        Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
+
+        List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
+                .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdDto.StatusEnum.FREE)).count();
+        long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdDto.StatusEnum.USED)).count();
+
+        Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
+        Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
     }
 
     @Step("Restore OSR Database state")
     public void restoreOsrDbState() {
         oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
