@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.data.osr.models.accessline.AccessLine;
 import com.tsystems.tm.acc.data.osr.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.olt.resource.inventory.external.client.model.AccessLineViewDto;
-import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.ui.UITest;
 import com.tsystems.tm.acc.ta.ui.pages.accessmanagement.AccessLineSearchPage;
@@ -30,14 +30,14 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE
 
 public class AccessLinesSearchTest extends UITest {
 
-    private OltResourceInventoryClient oltResourceInventoryClient;
+    private AccessLineResourceInventoryClient alResourceInventory;
     private AccessLine accessLinesByEndSz;
     private AccessLine accessLineByHomeId;
     private AccessLine accessLineByLineId;
 
     @BeforeClass
     public void init() throws InterruptedException {
-        oltResourceInventoryClient = new OltResourceInventoryClient();
+        alResourceInventory = new AccessLineResourceInventoryClient();
         OsrTestContext context = OsrTestContext.get();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
         accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
@@ -66,8 +66,8 @@ public class AccessLinesSearchTest extends UITest {
         checkPaginationSizes(accessManagementSearchPage.getPaginatorSizes());
         accessManagementSearchPage.setWalledGardenStatus().searchAccessLinesByPortAddress(accessLinesByEndSz);
         checkBasicInformation(accessManagementSearchPage,
-                "state : ACTIVE", "Subscriber Profile",
-                "state : ACTIVE", "Subscriber Profile");
+                "state: ACTIVE", "Subscriber Profile",
+                "state: ACTIVE", "Subscriber Profile");
     }
 
     @Test
@@ -91,8 +91,8 @@ public class AccessLinesSearchTest extends UITest {
         accessManagementSearchPage.searchAccessLinesByHomeID(accessLineByHomeId);
 
         checkBasicInformation(accessManagementSearchPage,
-                "state : INACTIVE", "state : ACTIVE",
-                "state : INACTIVE", "state : ACTIVE");
+                "state: INACTIVE", "state: ACTIVE",
+                "state: INACTIVE", "state: ACTIVE");
     }
 
     @Test
@@ -104,7 +104,7 @@ public class AccessLinesSearchTest extends UITest {
         accessManagementSearchPage.searchAccessLinesByLineID(accessLineByLineId);
 
         checkBasicInformation(accessManagementSearchPage,
-                "state : ACTIVE", "Subscriber Profile",
+                "state: ACTIVE", "Subscriber Profile",
                 "Default Profile", "Subscriber Profile");
     }
 
@@ -169,12 +169,12 @@ public class AccessLinesSearchTest extends UITest {
     }
 
     private void clearDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+        alResourceInventory.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     private void fillDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
+        alResourceInventory.getClient().fillDatabase().fillDatabaseForOltCommissioning()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
