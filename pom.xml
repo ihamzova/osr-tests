@@ -94,6 +94,6 @@
         </plugins>
     </build>
     <properties>
-        <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
+        <oc.domain.name>telitcaas4.t-internal.com</oc.domain.name>
     </properties>
 </project>
