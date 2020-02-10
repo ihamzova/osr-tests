@@ -11,8 +11,14 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.0.116</version>
+        <version>0.1.0</version>
     </parent>
+
+    <properties>
+        <framework.version>${project.parent.version}</framework.version>
+        <osr.models.version>0.0.1</osr.models.version>
+        <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
+    </properties>
 
     <repositories>
         <repository>
@@ -28,6 +34,16 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.tsystems.tm.acc.tests</groupId>
+            <artifactId>acc-common-models</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tsystems.tm.acc.tests</groupId>
+            <artifactId>osr-models</artifactId>
+            <version>${osr.models.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -45,11 +61,6 @@
                 <artifactId>acc-data-maven-plugin</artifactId>
                 <configuration>
                     <commonPackageName>com.tsystems.tm.acc.data.models</commonPackageName>
-                    <extraTemplateFolders>
-                        <extraTemplateFolder>
-                            ${common.template.folder}
-                        </extraTemplateFolder>
-                    </extraTemplateFolders>
                 </configuration>
                 <executions>
                     <execution>
@@ -90,10 +101,19 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.tsystems.tm.acc.tests</groupId>
+                        <artifactId>acc-common-models</artifactId>
+                        <version>${framework.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.tsystems.tm.acc.tests</groupId>
+                        <artifactId>osr-models</artifactId>
+                        <version>${osr.models.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
-    </properties>
 </project>

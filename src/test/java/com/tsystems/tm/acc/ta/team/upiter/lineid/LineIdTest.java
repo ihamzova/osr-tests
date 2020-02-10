@@ -2,10 +2,10 @@ package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
 import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatch;
 import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatchCase;
-import com.tsystems.tm.acc.line.id.generator.client.model.PoolLineId;
-import com.tsystems.tm.acc.line.id.generator.client.model.SingleLineId;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.invoker.JSON;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.PoolLineId;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.SingleLineId;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
 import com.tsystems.tm.acc.ta.api.LineIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;

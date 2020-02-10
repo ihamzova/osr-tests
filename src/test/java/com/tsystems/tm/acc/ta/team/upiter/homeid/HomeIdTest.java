@@ -2,10 +2,10 @@ package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
 import com.tsystems.tm.acc.data.osr.models.homeidbatch.HomeIdBatch;
 import com.tsystems.tm.acc.data.osr.models.homeidbatch.HomeIdBatchCase;
-import com.tsystems.tm.acc.home.id.generator.client.model.PoolHomeId;
-import com.tsystems.tm.acc.home.id.generator.client.model.SingleHomeId;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.invoker.JSON;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.PoolHomeId;
+import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.SingleHomeId;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
 import com.tsystems.tm.acc.ta.api.HomeIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
