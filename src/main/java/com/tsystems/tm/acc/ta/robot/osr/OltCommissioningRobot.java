@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.access.line.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Card;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.EquipmentHolder;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.EquipmentHolder;
 import com.tsystems.tm.acc.ta.api.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.*;
