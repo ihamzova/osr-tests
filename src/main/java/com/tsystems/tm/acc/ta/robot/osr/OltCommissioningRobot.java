@@ -66,7 +66,6 @@ public class OltCommissioningRobot {
         oltDetailsPage = uplinkConfigurationPage.saveUplinkConfiguration();
 
         oltDetailsPage = oltDetailsPage.configureAncpSession();
-        oltDetailsPage = oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.startAccessLinesProvisioning(nvt, TIMEOUT_FOR_CARD_PROVISIONING);
     }
 

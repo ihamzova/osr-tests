@@ -27,11 +27,9 @@ public class OltDetailsPage {
 
     public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-tab");
     public static final By UPLINKS_DETAILS_TAB_LOCATOR = byQaData("a-uplinks-tab");
-    public static final By ANCP_SESSIONS_DETAILS_TAB_LOCATOR = byQaData("a-ancpsessions-tab");
     public static final By UPLINK_CONFIGURATION_BUTTON_LOCATOR = byQaData("button-uplink-configuration");
     public static final By UPLINK_EDIT_SELECT_LOCATOR = byQaData("div-uplink-edit-menu");
     public static final By UPLINK_EDIT_SELECT_ANCP_OPTION_LOCATOR = byQaData("div-configure_ancp_session");
-    public static final By ANCP_SESSION_STATUS_LOCATOR = byQaData("a-ancp-status");
     public static final By CARD_EDIT_MENU_LOCATOR = byQaData("div-card-edit-menu");
     public static final By CARD_COMMISSIONING_OPTION_LOCATOR = byQaData("div-card-commissioning");
     public static final By CARD_COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
@@ -60,13 +58,6 @@ public class OltDetailsPage {
         }
 
         $(UPLINK_EDIT_SELECT_ANCP_OPTION_LOCATOR).click();
-        return this;
-    }
-
-    @Step("Configure uplink")
-    public OltDetailsPage updateAncpSessionStatus() {
-        $(ANCP_SESSIONS_DETAILS_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(ANCP_SESSION_STATUS_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         return this;
     }
 
