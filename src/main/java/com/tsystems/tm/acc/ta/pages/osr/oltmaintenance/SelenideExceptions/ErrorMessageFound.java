@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltmaintenance.SelenideExceptions;
+package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance.SelenideExceptions;
 
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.ex.UIAssertionError;

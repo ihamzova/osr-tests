@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltresourceinventory;
+package com.tsystems.tm.acc.ta.pages.osr.oltresourceinventory;
 
 import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;

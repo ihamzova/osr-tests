@@ -1,6 +1,7 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltcommissioning;
+package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
@@ -13,8 +14,7 @@ import java.util.stream.IntStream;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltDiscoveryPage.OLT_SEARCH_PAGE_TAB_LOCATOR;
-import static com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltSearchPage.*;
+import static com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
@@ -89,9 +89,9 @@ public class OltDetailsPage {
      */
 
     private void tempSearchDevice(Nvt nvt) throws InterruptedException {
-        $(OLT_SEARCH_PAGE_TAB_LOCATOR).click();
+        Selenide.$(OltDiscoveryPage.OLT_SEARCH_PAGE_TAB_LOCATOR).click();
         Thread.sleep(2000);
-        $(OLT_SEARCH_PAGE_TAB_LOCATOR).click();
+        Selenide.$(OltDiscoveryPage.OLT_SEARCH_PAGE_TAB_LOCATOR).click();
         String[] endSz = nvt.getOltDevice().getVpsz().split("/");
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(OLT_SEARCH_TYPE_VALUE_LOCATOR).click();

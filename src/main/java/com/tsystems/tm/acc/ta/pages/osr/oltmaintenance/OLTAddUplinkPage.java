@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltmaintenance;
+package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance;
 
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;

@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.accessmanagement;
+package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
