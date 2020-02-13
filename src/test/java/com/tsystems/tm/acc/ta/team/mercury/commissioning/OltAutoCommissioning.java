@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,9 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
+@Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
-@TmsLink("DIGIHUB-XXXXX") // This is the Jira id of a TestSet if applicable
+@TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
 public class OltAutoCommissioning extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
@@ -42,7 +44,7 @@ public class OltAutoCommissioning extends BaseTest {
         clearResourceInventoryDataBase();
     }
 
-    @Test(description = "DIGIHUB-12345 Test description")
+    @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")
     public void OltAutoCommissioningDTAGTest() throws Exception {
 
         OsrTestContext context = OsrTestContext.get();
@@ -68,7 +70,7 @@ public class OltAutoCommissioning extends BaseTest {
         checkUplink(endSz);
     }
 
-    @Test(description = "DIGIHUB-12345 Test description")
+    @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
     public void OltAutoCommissioningGFNWTest() throws Exception {
 
         OsrTestContext context = OsrTestContext.get();
@@ -96,7 +98,7 @@ public class OltAutoCommissioning extends BaseTest {
 
 
     /**
-     * check device data from olt-ressource-inventory
+     * check device MA5600 data from olt-ressource-inventory
      */
     private void checkDeviceMA5600(String endsz) {
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -109,7 +111,7 @@ public class OltAutoCommissioning extends BaseTest {
     }
 
     /**
-     * check device data from olt-ressource-inventory
+     * check device MA5800 data from olt-ressource-inventory
      */
     private void checkDeviceMA5800(String endsz) {
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -138,8 +140,8 @@ public class OltAutoCommissioning extends BaseTest {
      * clears complete olt-resource-invemtory database
      */
     private void clearResourceInventoryDataBase() {
-        //oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-        //        .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
 }
