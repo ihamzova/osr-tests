@@ -6,7 +6,7 @@ import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.Poo
 import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.SingleHomeId;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
-import com.tsystems.tm.acc.ta.api.HomeIdGeneratorClient;
+import com.tsystems.tm.acc.ta.api.osr.HomeIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import io.qameta.allure.Description;

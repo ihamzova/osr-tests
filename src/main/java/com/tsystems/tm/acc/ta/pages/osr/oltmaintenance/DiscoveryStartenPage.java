@@ -1,8 +1,8 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltmaintenance;
+package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance;
 
 import com.codeborne.selenide.SelenideElement;
-import com.tsystems.tm.acc.ta.ui.pages.oltmaintenance.SelenideExceptions.ErrorMessageFound;
-import com.tsystems.tm.acc.ta.ui.pages.oltmaintenance.SelenideExceptions.MessagesNotFound;
+import com.tsystems.tm.acc.ta.pages.osr.oltmaintenance.SelenideExceptions.ErrorMessageFound;
+import com.tsystems.tm.acc.ta.pages.osr.oltmaintenance.SelenideExceptions.MessagesNotFound;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;

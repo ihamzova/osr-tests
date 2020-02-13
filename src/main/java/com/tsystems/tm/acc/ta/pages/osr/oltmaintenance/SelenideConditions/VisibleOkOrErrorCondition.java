@@ -1,11 +1,11 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltmaintenance.SelenideConditions;
+package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance.SelenideConditions;
 
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.ex.ElementNotFound;
 import com.codeborne.selenide.ex.TextsMismatch;
 import com.codeborne.selenide.impl.WebElementsCollection;
-import com.tsystems.tm.acc.ta.ui.pages.oltmaintenance.SelenideExceptions.ErrorMessageFound;
+import com.tsystems.tm.acc.ta.pages.osr.oltmaintenance.SelenideExceptions.ErrorMessageFound;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 

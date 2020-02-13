@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltmaintenance;
+package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance;
 
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;

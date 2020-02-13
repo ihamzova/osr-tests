@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.ui.pages.oltcommissioning;
+package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;

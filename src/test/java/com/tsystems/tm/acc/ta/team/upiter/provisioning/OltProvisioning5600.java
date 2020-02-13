@@ -2,9 +2,9 @@ package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.api.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.WgAccessProvisioningClient;
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
