@@ -1,13 +1,13 @@
-name: FSZ_76HA
+name: FSZ_76H1_MA5600
 template: OltDevice
 values:
-  vpsz: "49/8571/0"
-  fsz: "76HA"
-  bngEndsz: "49/30/179/43G1"
+  vpsz: "49/30/2000"
+  fsz: "76H1"
+  bngEndsz: "49/911/84/7ZJA"
   bngDownlinkPort: "ge-1/2/3"
   bngDownlinkSlot: "0"
   lsz: "4C1"
-  orderNumber: "10"
+  orderNumber: "1234567890"
   oltPort: "0"
   oltSlot: "19"
   vst: "DefaultVst"

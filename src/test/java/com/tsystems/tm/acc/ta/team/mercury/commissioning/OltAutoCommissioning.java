@@ -33,47 +33,72 @@ public class OltAutoCommissioning extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 1 * 60_000;
-    private static final String OLT_DTAG_VPSZ = "49/30/2000/";
-    private static final String OLT_DTAG_FSZ = "76H1";
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
     @BeforeClass
-    public void init() throws InterruptedException {
-
+    public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient();
-
-        OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
-        RHSSOAuthListener.startListening();
         clearResourceInventoryDataBase();
     }
 
     @Test(description = "DIGIHUB-12345 Test description")
     public void OltAutoCommissioningDTAGTest() throws Exception {
+
+        OsrTestContext context = OsrTestContext.get();
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
+        RHSSOAuthListener.startListening();
+
+        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5600);
+        OltDevice oltDevice = nvt.getOltDevice();
+        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        Thread.sleep(1000);
-        oltSearchPage.searchNotDiscoveredByParameters(getOltDeviceDTAG());
-        Thread.sleep(1000);
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
 
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
         oltCommissioningPage.validateUrl();
 
-        OsrTestContext context = OsrTestContext.get();
-        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltCommissioning);
         oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        String endSz = getOltDeviceDTAG().getVpsz() + getOltDeviceDTAG().getFsz();
-        checkDeviceDTAG(endSz);
+        checkDeviceMA5600(endSz);
         checkUplink(endSz);
     }
+
+    @Test(description = "DIGIHUB-12345 Test description")
+    public void OltAutoCommissioningGFNWTest() throws Exception {
+
+        OsrTestContext context = OsrTestContext.get();
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
+        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
+        RHSSOAuthListener.startListening();
+
+        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5800);
+        OltDevice oltDevice = nvt.getOltDevice();
+        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+
+        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        oltSearchPage.validateUrl();
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
+
+        OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
+        oltCommissioningPage.validateUrl();
+
+        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+
+        checkDeviceMA5800(endSz);
+        checkUplink(endSz);
+    }
+
 
     /**
      * check device data from olt-ressource-inventory
      */
-    private void checkDeviceDTAG(String endsz) {
+    private void checkDeviceMA5600(String endsz) {
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
                 endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
@@ -84,32 +109,37 @@ public class OltAutoCommissioning extends BaseTest {
     }
 
     /**
+     * check device data from olt-ressource-inventory
+     */
+    private void checkDeviceMA5800(String endsz) {
+        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
+                endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+
+        Assert.assertEquals(device.getEmsNbiName(), "MA5800-X7");
+        Assert.assertEquals(device.getTkz1(), "2352QCR");
+        Assert.assertEquals(device.getTkz2(), "02353310");
+        Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+    }
+
+    /**
      * check uplink and ancp-session data from olt-ressource-inventory
      */
     private void checkUplink(String endSz) {
-        List<UplinkDTO> uplinkDTOList= oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(uplinkDTOList.size(), 1L);
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L );
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(),  ANCPSession.SessionStatusEnum.ACTIVE);
+        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
+        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
     }
 
     /**
      * clears complete olt-resource-invemtory database
      */
     private void clearResourceInventoryDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        //oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+        //        .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    /**
-     * creates OLT with DTAG EndSz for Olt Search Page
-     */
-    public OltDevice getOltDeviceDTAG() {
-        OltDevice oltDevice = new OltDevice();
-        oltDevice.setVpsz(OLT_DTAG_VPSZ);
-        oltDevice.setFsz(OLT_DTAG_FSZ);
-        return oltDevice;
-    }
 }

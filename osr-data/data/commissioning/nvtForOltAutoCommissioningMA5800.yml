@@ -1,4 +1,4 @@
-name: nvtForOltAutoCommissioningMA5600
+name: nvtForOltAutoCommissioningMA5800
 template: Nvt
 values:
   id: ""
@@ -6,6 +6,6 @@ values:
   address: "AddressBigCity"
   splitterType: 32
   gebietstyp: ""
-  oltDevice: "FSZ_76H1_MA5600"
-  oltSlot: "19"
-  oltPort: "0"
+  oltDevice: "FSZ_76ZB_MA5800"
+  oltSlot: "8"
+  oltPort: "3"
