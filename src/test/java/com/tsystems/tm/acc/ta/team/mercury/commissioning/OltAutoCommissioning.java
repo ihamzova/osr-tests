@@ -5,15 +5,15 @@ import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.ANCPSession;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.olt.resource.inventory.internal.client.model.UplinkDTO;
-import com.tsystems.tm.acc.ta.api.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltCommissioningPage;
-import com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
@@ -48,7 +48,7 @@ public class OltAutoCommissioning extends BaseTest {
     public void OltAutoCommissioningDTAGTest() throws Exception {
 
         OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
         RHSSOAuthListener.startListening();
 
