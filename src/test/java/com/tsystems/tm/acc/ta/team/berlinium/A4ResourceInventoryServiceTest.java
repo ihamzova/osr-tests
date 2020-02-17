@@ -3,13 +3,13 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import io.restassured.response.Response;
 import io.qameta.allure.Owner;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class a4ResourceInventoryServiceTest {
+public class A4ResourceInventoryServiceTest {
 
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
 

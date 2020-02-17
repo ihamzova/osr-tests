@@ -4,7 +4,7 @@
 
     <test thread-count="1" name="Integration Tests for Berlinium services">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.berlinium.a4ResourceInventoryServiceTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryServiceTest"/>
         </classes>
     </test>
 </suite>
