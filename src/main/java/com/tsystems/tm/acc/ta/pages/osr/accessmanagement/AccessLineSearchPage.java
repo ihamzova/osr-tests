@@ -114,7 +114,7 @@ public class AccessLineSearchPage {
                     accessLineInfo.setPortNumber(tds.get(3).getText());
                     accessLineInfo.setLineId(tds.get(4).getText());
                     accessLineInfo.setHomeId(tds.get(5).getText());
-                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(6).getText()));
+                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(7).getText()));
                     return accessLineInfo;
                 })
                 .collect(Collectors.toList());
@@ -134,8 +134,8 @@ public class AccessLineSearchPage {
     public String getProfileText(ProfileTypes profileType, ProfileNames profileName, int rowNumber) {
         expandRow(rowNumber);
         String text = $(P_SEARCH_TABLE).find(By.className("rowexpansion"))
-                .findAll(By.className("profiles")).get(profileType.ordinal())
-                .findAll(By.className("profile")).get(profileName.ordinal())
+                .findAll(By.className("am-profiles")).get(profileType.ordinal())
+                .findAll(By.className("am-profile")).get(profileName.ordinal())
                 .text();
         expandRow(rowNumber);
         return text;
