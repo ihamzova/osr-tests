@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
@@ -10,12 +9,10 @@ import org.openqa.selenium.By;
 
 import java.util.stream.IntStream;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltDiscoveryPage.OLT_SEARCH_PAGE_TAB_LOCATOR;
-import static com.tsystems.tm.acc.ta.ui.pages.oltcommissioning.OltSearchPage.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 

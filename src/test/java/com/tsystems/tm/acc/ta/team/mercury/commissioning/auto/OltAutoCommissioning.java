@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.mercury.commissioning;
+package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
