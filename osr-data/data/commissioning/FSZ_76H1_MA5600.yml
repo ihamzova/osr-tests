@@ -1,0 +1,17 @@
+name: FSZ_76H1_MA5600
+template: OltDevice
+values:
+  vpsz: "49/30/2000"
+  fsz: "76H1"
+  bngEndsz: "49/911/84/7ZJA"
+  bngDownlinkPort: "ge-1/2/3"
+  bngDownlinkSlot: "0"
+  lsz: "4C1"
+  orderNumber: "1234567890"
+  oltPort: "0"
+  oltSlot: "19"
+  vst: "DefaultVst"
+
+
+
+

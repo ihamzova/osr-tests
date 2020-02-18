@@ -1,0 +1,17 @@
+name: FSZ_76ZB_MA5800
+template: OltDevice
+values:
+  vpsz: "49/911/1100"
+  fsz: "76ZB"
+  bngEndsz: "49/911/84/7ZJB"
+  bngDownlinkPort: "ge-1/2/4"
+  bngDownlinkSlot: "1"
+  lsz: "4Z2"
+  orderNumber: "223344"
+  oltPort: "3"
+  oltSlot: "8"
+  vst: "DefaultVst"
+
+
+
+

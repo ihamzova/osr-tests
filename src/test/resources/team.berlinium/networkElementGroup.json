@@ -1,0 +1,12 @@
+{
+  "uuid": "(for create scenario uuid is provided in PUT url)",
+  "name": "NEG_for_integration test",
+  "type": "POD",
+  "lifeCycleState": "UNINSTALLING",
+  "operationalState": "INSTALLING",
+  "centralOfficeNetworkOperator": "neg_centOffNetOp_for_integration_test",
+  "specificationVersion": "1",
+  "creationTime": "2020-02-14T07:23:03.179Z",
+  "lastUpdateTime": "2020-02-14T07:23:03.179Z",
+  "description": "NEG created during osr-test integration test"
+}
