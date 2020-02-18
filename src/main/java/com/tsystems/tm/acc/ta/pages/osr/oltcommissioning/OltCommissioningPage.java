@@ -24,8 +24,7 @@ public class OltCommissioningPage {
     public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngslotnumbertxt");
     public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngportnumbertxt");
     public static final By LSZ_SELECT_LOCATOR = byQaData("sui-select-lsz");
-    public static final By LSZ_VALUE_LOCATOR = byQaData("sui-select-option-4C1");
-    public static final By LSZ_VALUE_LOCATOR_4Z2 = byQaData("sui-select-option-4Z2");
+    public String LSZ_VALUE_LOCATOR = "//*[@qa-data='sui-select-option-%s']";
     public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
     public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
     public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-tab");
@@ -51,11 +50,7 @@ public class OltCommissioningPage {
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).click();
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkPort());
         $(LSZ_SELECT_LOCATOR).click();
-        if(nvt.getOltDevice().getLsz().equals("4Z2")) {
-            $(LSZ_VALUE_LOCATOR_4Z2).click();
-        } else {
-            $(LSZ_VALUE_LOCATOR).click();
-        }
+        $(By.xpath(String.format(LSZ_VALUE_LOCATOR, nvt.getOltDevice().getLsz()))).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).val(nvt.getOltDevice().getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
