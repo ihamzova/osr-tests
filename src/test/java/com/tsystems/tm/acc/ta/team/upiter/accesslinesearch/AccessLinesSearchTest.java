@@ -6,10 +6,10 @@ import com.tsystems.tm.acc.data.osr.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
-import com.tsystems.tm.acc.ta.ui.UITest;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileNames;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileTypes;
+import com.tsystems.tm.acc.ta.ui.UITest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
 import io.qameta.allure.Description;
@@ -120,7 +120,7 @@ public class AccessLinesSearchTest extends UITest {
     }
 
     private void checkTableHeaders(List<String> tableHeaders) {
-        List<String> supposedHeaders = Arrays.asList("EndSZ", "HomeID", "LineID", "Port", "Slot", "Status");
+        List<String> supposedHeaders = Arrays.asList("EndSZ", "HomeID", "LineID", "Port", "Slot", "Status", "Production Platform");
         Assert.assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
                 supposedHeaders.toArray());
     }
