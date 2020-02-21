@@ -20,7 +20,7 @@ public class UplinkConfigurationPage {
     public static final By OLT_SLOT_SELECT_OPTION_LOCATOR = byQaData("sui-select-option-19");
     public static final By OLT_PORT_SELECT_LOCATOR = byQaData("sui-select-oltPort");
     public static final By OLT_PORT_SELECT_OPTION_LOCATOR = byQaData("sui-select-option-1");
-    public static final By BNG_ENDSZ_INPUT_LOCATOR = byQaData("input- bngEndSz");
+    public static final By BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngEndSz");
     public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngSlot");
     public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngPort");
     public static final By LSZ_SELECT_LOCATOR = byQaData("sui-select-lsz");
