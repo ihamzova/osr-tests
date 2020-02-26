@@ -32,11 +32,12 @@ public class OltDetailsPage {
     public static final By UPLINK_DELETE_OPTION_LOCATOR= byXpath("/html/body/app-root/div/div/div/app-detail/app-olt-detail/div[3]/div[1]/table/tbody/tr/td[10]/div/div");//fehlt im gitlab
     public static final By UPLINK_EDIT_SELECT_ANCP_OPTION_LOCATOR = byQaData("div-configure_ancp_session");
     public static final By ANCP_SESSION_STATUS_LOCATOR = byQaData("a-ancp-status");//fehlt im gitlab
-    public static final By ANCP_EDIT_SELECT_LOCATOR = byXpath(("/html/body/app-root/div/div/div/app-detail/app-olt-detail/div[2]/div[1]/table/tbody/tr/td[10]/div/div"));//fehlt im gitlab
-    public static final By ANCP_EDIT_SELECT_ANCP_OPTION_LOCATOR = byXpath("/html/body/app-root/div/div/div/app-detail/app-olt-detail/div[2]/div[1]/table/tbody/tr/td[10]/div/div/div");//fehlt im gitlab
+    public static final By ANCP_EDIT_SELECT_LOCATOR = byXpath("/html/body/app-root/div/div/div/app-detail/app-olt-detail/div[2]/div[1]/table/tbody/tr/td[10]/div/div");//fehlt im gitlab
+    public static final By ANCP_EDIT_SELECT_ANCP_OPTION_LOCATOR = byXpath("/html/body/app-root/div/div/div/app-detail/app-olt-detail/div[2]/div[1]/table/tbody/tr/td[10]/div/div/div/div[2]");//fehlt im gitlab
     public static final By CARD_EDIT_MENU_LOCATOR = byQaData("div-card-edit-menu");
     public static final By CARD_COMMISSIONING_OPTION_LOCATOR = byQaData("div-card-commissioning");
     public static final By CARD_COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -76,6 +77,7 @@ public class OltDetailsPage {
     @Step("Deconfigure ANCP session")
     public OltDetailsPage deconfigureAncpSession() {
         $(ANCP_SESSIONS_DETAILS_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+       // $(ANCP_EDIT_SELECT_ANCP_OPTION_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_EDIT_SELECT_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         try {
             Thread.sleep(1000);

@@ -19,7 +19,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
-@Feature("Description: OLT auto-commissioning incl. LC commissioning")
+@Feature("Description: Manual process of commissioning and decommissioning. Without LC commissioning (domain relevant)")
 @TmsLink("DIGIHUB-12345") // This is the Jira id of a TestSet if applicable
 public class ExistingOltDeviceCommissioningManualProcess extends BaseTest {
 
@@ -27,14 +27,14 @@ public class ExistingOltDeviceCommissioningManualProcess extends BaseTest {
     @BeforeClass
     public void init() throws InterruptedException {
         OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
         RHSSOAuthListener.startListening();
     }
 
-    @Test(description = "DIGIHUB-12345 Olt discovery")
+    @Test(description = "DIGIHUB-12345 MA5800-X7. Manual process of commissioning and decommissioning. Without LC commissioning (domain relevant)")
     @TmsLink("DIGIHUB-1") // Jira Id for this test in Xray
-    @Description("Searching for new Olt. Start discovery process. Save Disco results.")
+    @Description("Manual process of commissioning and decommissioning. Without LC commissioning (domain relevant)")
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -49,8 +49,8 @@ public class ExistingOltDeviceCommissioningManualProcess extends BaseTest {
         oltDetailsPage.configureAncpSession();
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.deconfigureAncpSession();
-        UplinkConfigurationPage uplinkConfigurationPage1 = oltDetailsPage.startUplinkDeConfiguration();
-        uplinkConfigurationPage1.deleteUplinkConfiguration();
+        oltDetailsPage.startUplinkDeConfiguration();
+        uplinkConfigurationPage.deleteUplinkConfiguration();
         Thread.sleep(10000);
 
     }
