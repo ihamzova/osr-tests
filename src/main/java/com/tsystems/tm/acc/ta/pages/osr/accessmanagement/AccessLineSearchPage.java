@@ -100,7 +100,7 @@ public class AccessLineSearchPage {
 
     @Step("Get a message about found access lines")
     public String getTableMessage() {
-        return $(By.className("al-count")).text();
+        return $(By.className("am-al-count")).text();
     }
 
     @Step("Get all table rows")
@@ -133,9 +133,9 @@ public class AccessLineSearchPage {
     @Step("Get full text inside profile")
     public String getProfileText(ProfileTypes profileType, ProfileNames profileName, int rowNumber) {
         expandRow(rowNumber);
-        String text = $(P_SEARCH_TABLE).find(By.className("rowexpansion"))
-                .findAll(By.className("am-profiles")).get(profileType.ordinal())
-                .findAll(By.className("am-profile")).get(profileName.ordinal())
+        String text = $(P_SEARCH_TABLE).find(By.className("am-row-exp"))
+                .findAll(By.className("am-profile")).get(profileType.ordinal())
+                .findAll(By.className("am-profile__cell")).get(profileName.ordinal())
                 .text();
         expandRow(rowNumber);
         return text;
