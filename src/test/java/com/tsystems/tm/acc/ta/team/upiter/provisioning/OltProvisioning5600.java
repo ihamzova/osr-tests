@@ -31,7 +31,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class OltProvisioning5600 extends ApiTest {
 
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 75_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 80_000;
     private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * 75_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
