@@ -19,3 +19,4 @@ data:
   - template: Nvt
     name: nvtForOltCommissioning
 artifacts:
+  - SEAL_GetAccessNodeStub
