@@ -22,7 +22,7 @@ public class ManualCommissionungProcessSteps extends BaseTest {
     @BeforeClass
     public void init() throws InterruptedException {
         OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
         RHSSOAuthListener.startListening();
     }
@@ -93,7 +93,7 @@ public class ManualCommissionungProcessSteps extends BaseTest {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
-        //oltDetailsPage.updateAncpSessionStatus();
+        oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.deconfigureAncpSession();
         Thread.sleep(10000);
     }

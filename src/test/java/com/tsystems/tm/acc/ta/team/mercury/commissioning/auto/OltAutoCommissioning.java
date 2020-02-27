@@ -162,6 +162,7 @@ public class OltAutoCommissioning extends BaseTest {
     /**
      * clears a device in olt-resource-invemtory database.
      * only one device will be deleted.
+     *
      * @param endSz
      */
     private void deleteDeviceInResourceInventory(String endSz) {
