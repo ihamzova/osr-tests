@@ -15,6 +15,7 @@ import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
+import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -26,6 +27,7 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
+@Slf4j
 public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
@@ -35,7 +37,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
     @BeforeClass
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient();
-        clearResourceInventoryDataBase();
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -49,7 +50,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         RHSSOAuthListener.startListening();
 
         String endSz = getDevice().getVpsz() + getDevice().getFsz();
-
+        clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
@@ -59,6 +60,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
+        Thread.sleep(10000);
         UplinkConfigurationPage uplinkConfigurationPage = oltDetailsPage.startUplinkConfiguration();
         Nvt nvt = new Nvt();
         nvt.setOltPort("1");
@@ -66,14 +68,26 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         nvt.setOltDevice(getDevice());
         uplinkConfigurationPage.inputUplinkParameters(nvt);
         uplinkConfigurationPage.saveUplinkConfiguration();
+
+        oltDetailsPage.startUplinkModification();
+        uplinkConfigurationPage.modifyUplinkConfiguration();
+
         oltDetailsPage.configureAncpSession();
+        Thread.sleep(20000);
         oltDetailsPage.updateAncpSessionStatus();
-        Thread.sleep(10000);
+
+        Thread.sleep(1000);
+
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
+
         oltDetailsPage.deconfigureAncpSession();
+        Thread.sleep(10000);
+        System.out.println("Alina 1");
         oltDetailsPage.startUplinkDeConfiguration();
+        System.out.println("Alina 1 2");
         uplinkConfigurationPage.deleteUplinkConfiguration();
+        System.out.println("Alina 1 2 3");
         Thread.sleep(10000);
 
 
@@ -91,7 +105,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         device.setOrderNumber("0123456789");
         return device;
     }
-
 
 
     /**
@@ -124,8 +137,8 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
     /**
      * clears complete olt-resource-invemtory database
      */
-    private void clearResourceInventoryDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+    private void clearResourceInventoryDataBase(String endSz) {
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
