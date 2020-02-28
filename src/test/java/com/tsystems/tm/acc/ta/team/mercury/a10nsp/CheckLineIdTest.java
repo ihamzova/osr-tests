@@ -1,7 +1,5 @@
 package com.tsystems.tm.acc.ta.team.mercury.a10nsp;
 
-import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -10,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
@@ -21,16 +18,16 @@ public class CheckLineIdTest extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
 
-    private A10nspInventoryClient a10nspInventoryClient;
+    //private A10nspInventoryClient a10nspInventoryClient;
 
     @BeforeClass
     public void init() {
-        a10nspInventoryClient = new A10nspInventoryClient();
+      //  a10nspInventoryClient = new A10nspInventoryClient();
     }
 
     @Test(description = "DIGIHUB-12345")
     public void CheckLineIdTestOk() throws Exception {
-        a10nspInventoryClient.getClient().a10nspInternalController().checkLineId().body("DEU.DTAG.3WVVC000000")
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        //a10nspInventoryClient.getClient().a10nspInternalController().checkLineId().body("DEU.DTAG.3WVVC000000")
+        //        .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
