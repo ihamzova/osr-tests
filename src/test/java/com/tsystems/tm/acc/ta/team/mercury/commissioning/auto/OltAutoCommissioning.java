@@ -160,14 +160,6 @@ public class OltAutoCommissioning extends BaseTest {
     }
 
     /**
-     * clears complete olt-resource-invemtory database
-     */
-    private void clearResourceInventoryDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    /**
      * clears a device in olt-resource-invemtory database.
      * only one device will be deleted.
      *
