@@ -15,9 +15,9 @@ import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
-import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
-public class NewOltDeviceCommissioningManualProcess extends BaseTest {
+public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
 
@@ -39,13 +39,13 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltResourceInventoryClient = new OltResourceInventoryClient();
     }
 
-    @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
-    @TmsLink("DIGIHUB-53694") // Jira Id for this test in Xray
-    @Description("Perform manual commissioning for not discovered MA5800 device as DTAG user")
+    @Test(description = "DIGIHUB-53713 Manual commissioning for MA5600 with GFNW user on team environment")
+    @TmsLink("DIGIHUB-53713") // Jira Id for this test in Xray
+    @Description("Perform manual commissioning for not discovered MA5600 device as GFNW user")
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
         RHSSOAuthListener.startListening();
 
@@ -63,8 +63,8 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         //Thread.sleep(10000);
         UplinkConfigurationPage uplinkConfigurationPage = oltDetailsPage.startUplinkConfiguration();
         Nvt nvt = new Nvt();
-        nvt.setOltPort("1");
-        nvt.setOltSlot("8");
+        nvt.setOltPort("0");
+        nvt.setOltSlot("19");
         nvt.setOltDevice(getDevice());
         uplinkConfigurationPage.inputUplinkParameters(nvt);
         uplinkConfigurationPage.saveUplinkConfiguration();
@@ -78,45 +78,47 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
         //Thread.sleep(1000);
 
-        checkDeviceMA5800(endSz);
+        checkDeviceMA5600(endSz);
         checkUplink(endSz);
 
         oltDetailsPage.deconfigureAncpSession();
         //Thread.sleep(10000);
-        System.out.println("Alina 1");
+        System.out.println("test 1");
+        //Thread.sleep(10000);
         oltDetailsPage.startUplinkDeConfiguration();
-        System.out.println("Alina 1 2");
+        System.out.println("test 1 2");
         uplinkConfigurationPage.deleteUplinkConfiguration();
-        System.out.println("Alina 1 2 3");
+        System.out.println("test 1 2 3");
         //Thread.sleep(10000);
 
 
     }
 
+    // private
     private OltDevice getDevice() {
         OltDevice device = new OltDevice();
-        device.setVpsz("49/911/1100/");
+        device.setVpsz("49/8571/0/");
         device.getVpsz();
-        device.setFsz("76H1");
-        device.setLsz("4C1");
-        device.setBngEndsz("49/30/179/43G1");
-        device.setBngDownlinkPort("ge-1/2/3");
-        device.setBngDownlinkSlot("7");
+        device.setFsz("76Z7");
+        device.setLsz("4Z2");
+        device.setBngEndsz("49/911/84/7ZJE");
+        device.setBngDownlinkPort("ge-2/1/4");
+        device.setBngDownlinkSlot("2");
         device.setOrderNumber("0123456789");
         return device;
     }
 
 
     /**
-     * check device MA5800 data from olt-ressource-inventory
+     * check device MA5600 data from olt-ressource-inventory
      */
-    private void checkDeviceMA5800(String endsz) {
+    private void checkDeviceMA5600(String endsz) {
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
                 endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
 
-        Assert.assertEquals(device.getEmsNbiName(), "MA5800-X7");
-        Assert.assertEquals(device.getTkz1(), "2352QCR");
+        Assert.assertEquals(device.getEmsNbiName(), "MA5600T");
+        Assert.assertEquals(device.getTkz1(), "02351082");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
     }
