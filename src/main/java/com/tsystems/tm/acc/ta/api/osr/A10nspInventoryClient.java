@@ -10,7 +10,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.a10nsp.inventory.internal.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
