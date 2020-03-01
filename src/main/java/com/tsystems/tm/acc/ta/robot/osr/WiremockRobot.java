@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class WiremockRobot {
     @Step("Upload mock data to wiremock")
-    public void initializeWiremock() {
+    public void initializeWiremock(String pathToWiremockData) {
         WiremockMappingsPublisher publisher = new WiremockMappingsPublisher();
-        File path = new File(getClass().getResource("/team.morpheus/wiremock").getFile());
+        File path = new File(getClass().getResource(pathToWiremockData).getFile());
         try {
             publisher.publish(path);
         } catch (IOException e) {
