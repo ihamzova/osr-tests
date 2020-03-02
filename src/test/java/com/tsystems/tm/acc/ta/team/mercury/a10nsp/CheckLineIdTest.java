@@ -56,13 +56,14 @@ public class CheckLineIdTest extends BaseTest {
                 .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
 
          // init test data
+        refreshA10nspInventory();
         deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         fillDeviceInResourceInventory();
     }
 
     @AfterClass
     public void clear() {
-        deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
+       // deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
     }
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
@@ -117,6 +118,14 @@ public class CheckLineIdTest extends BaseTest {
      */
     private void fillDeviceInResourceInventory() {
         oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    /**
+     *  init the a10nsp-inventory database
+     */
+    private void refreshA10nspInventory() {
+        a10nspInventoryClient.getClient().inventoryController().refreshInventory()
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
