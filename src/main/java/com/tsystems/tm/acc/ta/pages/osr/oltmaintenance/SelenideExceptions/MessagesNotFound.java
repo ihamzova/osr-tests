@@ -7,8 +7,4 @@ public class MessagesNotFound extends UIAssertionError {
     public MessagesNotFound() {
         super(WebDriverRunner.driver(), "Not all message not were found");
     }
-
-    public String toString() {
-        return this.getClass().getSimpleName() + ' ' + this.getMessage() + this.uiDetails();
-    }
 }
