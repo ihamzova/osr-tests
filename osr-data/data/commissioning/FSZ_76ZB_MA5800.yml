@@ -3,7 +3,7 @@ template: OltDevice
 values:
   vpsz: "49/911/1100"
   fsz: "76ZB"
-  bngEndsz: "49/911/84/7ZJB"
+  bngEndsz: "49/911/84/7ZJC"
   bngDownlinkPort: "ge-1/2/4"
   bngDownlinkSlot: "1"
   lsz: "4Z2"

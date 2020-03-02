@@ -1,0 +1,7 @@
+name: checkLineIdA10nspWrongLineId
+template: CheckLineIdA10nsp
+values:
+  oltEndSz: "49/30/179/76H1"
+  bngEndSz: "49/911/84/7ZJB"
+  lineId: "EU.DTAG.SQA2096879"
+  rahmenVertragsNr: "1111113258594760"
