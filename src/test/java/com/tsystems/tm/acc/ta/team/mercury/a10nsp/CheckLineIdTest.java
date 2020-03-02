@@ -11,22 +11,20 @@ import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
-import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
 @Epic("OS&R")
 @Feature("Description a10nsp check LineId")
-@TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
+@TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
 public class CheckLineIdTest extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
@@ -58,12 +56,16 @@ public class CheckLineIdTest extends BaseTest {
                 .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
 
          // init test data
-        //deleteDeviceInResourceInventory(checkLineIdA10nsp.getBngEndSz());
         deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         fillDeviceInResourceInventory();
     }
 
-    @Test(description = "DIGIHUB-12345 test carrierConnection was found")
+    @AfterClass
+    public void clear() {
+        deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
+    }
+
+    @Test(description = "DIGIHUB-54119 test carrierConnection was found")
     public void CheckLineIdTestFound() throws Exception {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalController().checkLineId()
@@ -75,7 +77,7 @@ public class CheckLineIdTest extends BaseTest {
         assertTrue(checkLineIdResult.isCarrierConnectionAvailable());
     }
 
-    @Test(description = "DIGIHUB-12345  test carrierConnection was not found")
+    @Test(description = "DIGIHUB-54120  test carrierConnection was not found")
     public void CheckLineIdTestNotFound() throws Exception {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalController().checkLineId()
@@ -87,7 +89,7 @@ public class CheckLineIdTest extends BaseTest {
         assertTrue(!checkLineIdResult.isCarrierConnectionAvailable());
     }
 
-    @Test(description = "DIGIHUB-12345 test invalid input parameter")
+    @Test(description = "DIGIHUB-54205 test invalid input parameter")
     public void CheckLineIdTestWrongLine() throws Exception {
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalController().checkLineId()
                 .rahmenvertragsnummerQuery(checkLineIdA10nspWrongLineId.getRahmenVertragsNr())
