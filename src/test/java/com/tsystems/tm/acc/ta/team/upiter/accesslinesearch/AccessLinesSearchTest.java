@@ -120,7 +120,7 @@ public class AccessLinesSearchTest extends UITest {
     }
 
     private void checkTableHeaders(List<String> tableHeaders) {
-        List<String> supposedHeaders = Arrays.asList("EndSZ", "HomeID", "LineID", "Port", "Slot", "Status", "Production Platform");
+        List<String> supposedHeaders = Arrays.asList("EndSZ", "HomeID", "LineID", "Port", "Slot", "Status", "Access Platform");
         Assert.assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
                 supposedHeaders.toArray());
     }
