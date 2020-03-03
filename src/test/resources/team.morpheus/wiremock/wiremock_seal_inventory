@@ -19,7 +19,7 @@
         "Content-Type":"application/json"
       },
       "method":"POST",
-      "fixedDelayMilliseconds":5000,
+      "fixedDelayMilliseconds":45000,
       "jsonBody":{
         "error":null,
         "payload":{
