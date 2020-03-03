@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.team.mercury.a10nsp;
 
-import com.tsystems.tm.acc.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import com.tsystems.tm.acc.data.osr.models.checklineida10nsp.CheckLineIdA10nsp;
 import com.tsystems.tm.acc.data.osr.models.checklineida10nsp.CheckLineIdA10nspCase;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
@@ -8,6 +7,7 @@ import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
@@ -16,8 +16,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
