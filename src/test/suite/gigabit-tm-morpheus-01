@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="morpheus test suite"  verbose="1" data-provider-thread-count="1">
-    <test thread-count="1" name="Integration Tests for Morpheus services">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuCommissioning"/>
-        </classes>
-    </test>
+<suite name="morpheus test suites" verbose="1" data-provider-thread-count="1">
+<test thread-count="1" name="Integration Tests for Morpheus services">
+    <classes>
+        <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuCommissioning"/>
+    </classes>
+</test>
 </suite>
