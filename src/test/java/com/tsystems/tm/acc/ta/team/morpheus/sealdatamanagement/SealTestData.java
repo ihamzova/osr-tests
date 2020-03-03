@@ -9,7 +9,7 @@ public class SealTestData {
     private WiremockRobot wiremockRobot = new WiremockRobot();
 
     @Test
-
+    @Ignore
     public void TestMock() {
 
         wiremockRobot.initializeWiremock("/team.morpheus/wiremock");

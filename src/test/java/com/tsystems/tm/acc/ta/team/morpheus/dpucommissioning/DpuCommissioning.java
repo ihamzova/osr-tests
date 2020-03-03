@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_INTERNAL_SERVER_ERROR_500;
 
 public class DpuCommissioning extends ApiTest {
 
@@ -44,6 +45,26 @@ public class DpuCommissioning extends ApiTest {
 
         Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
         Assert.assertEquals("WAIT", response.getStatus());
+
+    }
+
+    @Test
+    public void setDpuCommissioningTestError(){
+
+        String endSZ = "49/8571/0/72GA";
+
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(endSZ);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
+
+        Assert.assertEquals("ERROR", response.getStatus());
 
     }
 
