@@ -7,7 +7,8 @@
   "response":{
     "status":202,
     "headers":{
-      "Content-Type":"application/json"
+      "Content-Type":"application/json",
+      "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}"
     }
   },
   "uuid":"a6df12e9-8cc4-4994-a7dd-436e5e5a22ad",
@@ -16,10 +17,11 @@
       "url":"{{request.headers.X-Callback-Url}}",
       "headers":{
         "X-Callback-Correlation-Id":"{{request.headers.X-Callback-Correlation-Id}}",
+        "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
         "Content-Type":"application/json"
       },
       "method":"POST",
-      "fixedDelayMilliseconds":5000,
+      "fixedDelayMilliseconds":45000,
       "jsonBody":{
         "error":null,
         "payload":{
