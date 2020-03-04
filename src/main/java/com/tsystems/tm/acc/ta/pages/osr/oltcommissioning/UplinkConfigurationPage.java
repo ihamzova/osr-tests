@@ -44,7 +44,7 @@ public class UplinkConfigurationPage {
         $(byQaData(String.format(SLOT_VALUE_LOCATOR_STRING, nvt.getOltSlot()))).click();
         $(OLT_PORT_SELECT_LOCATOR).click();
         $(byQaData(String.format(PORT_VALUE_LOCATOR_STRING, nvt.getOltPort()))).click();
-        $(OLT_PORT_SELECT_OPTION_LOCATOR).click();
+        // $(OLT_PORT_SELECT_OPTION_LOCATOR).click();
         $(BNG_ENDSZ_INPUT_LOCATOR).val(nvt.getOltDevice().getBngEndsz());
         $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkSlot());
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkPort());

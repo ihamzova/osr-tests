@@ -59,6 +59,12 @@ public class CheckLineIdTest extends BaseTest {
         refreshA10nspInventory();
         deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         fillDeviceInResourceInventory();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
     }
 
     @AfterClass

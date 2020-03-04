@@ -66,31 +66,29 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         nvt.setOltPort("0");
         nvt.setOltSlot("19");
         nvt.setOltDevice(getDevice());
+
+        log.debug("ewOltDeviceCommissioningManualProcessGFNW inputUplinkParameters");
         uplinkConfigurationPage.inputUplinkParameters(nvt);
         uplinkConfigurationPage.saveUplinkConfiguration();
 
+        log.debug("ewOltDeviceCommissioningManualProcessGFNW startUplinkModification");
         oltDetailsPage.startUplinkModification();
         uplinkConfigurationPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSession();
-        //Thread.sleep(20000);
         oltDetailsPage.updateAncpSessionStatus();
 
-        //Thread.sleep(1000);
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
-
+        log.debug("ewOltDeviceCommissioningManualProcessGFNW deconfigureAncpSession");
         oltDetailsPage.deconfigureAncpSession();
-        //Thread.sleep(10000);
-        System.out.println("test 1");
-        //Thread.sleep(10000);
-        oltDetailsPage.startUplinkDeConfiguration();
-        System.out.println("test 1 2");
-        uplinkConfigurationPage.deleteUplinkConfiguration();
-        System.out.println("test 1 2 3");
-        //Thread.sleep(10000);
 
+        log.debug("ewOltDeviceCommissioningManualProcessGFNW startUplinkDeConfiguration");
+        oltDetailsPage.startUplinkDeConfiguration();
+
+        log.debug("ewOltDeviceCommissioningManualProcessGFNW deleteUplinkConfiguration");
+        uplinkConfigurationPage.deleteUplinkConfiguration();
 
     }
 
