@@ -19,6 +19,7 @@ import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
 import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGeneratorMapper<StubMapping> {
     private static final String OPTIC_VENDOR_PART_NUMBER = "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n" +
@@ -33,11 +34,11 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
     private static final String MODULE_RESOURCE_STATE = "INSTALLING_INSTALLED";
     private static final String MODULE_RESOURCE_FULFILMENT_STATE = "IN_SERVICE";
     private static final int PORTS_NUMBER = 8;
-    private static volatile int moduleCount = 0;
+    private static volatile AtomicInteger moduleCount = new AtomicInteger(0);
 
     @Override
     public List<StubMapping> getData(Artifact artifact, RegistryRegistry registry) throws MapperError {
-        List<StubMapping> values = new ArrayList<>();
+        List<StubMapping> values = new ArrayList<>(artifact.getParameters().size());
         ObjectMapper mapper = new ObjectMapper();
 
         for (String value : artifact.getParameters()) {
@@ -75,7 +76,7 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
             module.setShelf(DEFAULT_SHELF);
             module.setInstalledEquipmentObjectType("H805GPBD");
             module.setInstalledVersion("507(2015-8-27)");
-            module.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount++));
+            module.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount.getAndIncrement()));
             module.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
                     ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
             module.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
@@ -99,7 +100,7 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
             StubMapping mapping = new StubMapping();
             StubMappingRequest request = new StubMappingRequest();
             request.setMethod("GET");
-            request.setUrlPattern("/configuration/v1/accessNodes/([\\w\\d\\_]*)/?$");
+            request.setUrlPattern("/configuration/v1/accessNodes/" + name + "/?$");
             mapping.setRequest(request);
             StubMappingResponse response = new StubMappingResponse();
             response.setStatus(202);
@@ -121,6 +122,7 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
                     null);
             mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
             mapping.setResponse(response);
+            mapping.setPriority(1);
             values.add(mapping);
         }
         return values;
