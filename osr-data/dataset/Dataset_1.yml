@@ -20,3 +20,4 @@ data:
     name: nvtForOltCommissioning
 artifacts:
   - SEAL_GetAccessNodeStub
+  - PSL_GetEquipment
