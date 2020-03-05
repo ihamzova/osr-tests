@@ -73,24 +73,14 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         uplinkConfigurationPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSession();
-        //Thread.sleep(20000);
         oltDetailsPage.updateAncpSessionStatus();
-
-        //Thread.sleep(1000);
 
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
 
         oltDetailsPage.deconfigureAncpSession();
-        //Thread.sleep(10000);
-        System.out.println("Alina 1");
         oltDetailsPage.startUplinkDeConfiguration();
-        System.out.println("Alina 1 2");
         uplinkConfigurationPage.deleteUplinkConfiguration();
-        System.out.println("Alina 1 2 3");
-        //Thread.sleep(10000);
-
-
     }
 
     private OltDevice getDevice() {
