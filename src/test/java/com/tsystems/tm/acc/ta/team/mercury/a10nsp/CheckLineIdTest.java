@@ -18,8 +18,8 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 @Epic("OS&R")
@@ -55,7 +55,7 @@ public class CheckLineIdTest extends BaseTest {
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
 
-         // init test data
+        // init test data
         refreshA10nspInventory();
         deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         fillDeviceInResourceInventory();
@@ -69,7 +69,7 @@ public class CheckLineIdTest extends BaseTest {
 
     @AfterClass
     public void clear() {
-       // deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
+        // deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
     }
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
@@ -128,7 +128,7 @@ public class CheckLineIdTest extends BaseTest {
     }
 
     /**
-     *  init the a10nsp-inventory database
+     * init the a10nsp-inventory database
      */
     private void refreshA10nspInventory() {
         a10nspInventoryClient.getClient().inventoryController().refreshInventory()
