@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
+import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
@@ -32,6 +33,8 @@ public class UplinkConfigurationPage {
     public String PORT_VALUE_LOCATOR_STRING = "sui-select-option-%s";
     public String LSZ_VALUE_LOCATOR_STRING = "sui-select-option-%s";
 
+    private static final Integer TIMEOUT_FOR_ELEMENT_APPEARS = 60_000;
+
     @Step("Validate Url")
     public void validateUrl() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
@@ -56,19 +59,19 @@ public class UplinkConfigurationPage {
 
     @Step("Save uplink configuration")
     public OltDetailsPage saveUplinkConfiguration() {
-        $(CREATE_UPLINK_BUTTON_LOCATOR).click();
+        $(CREATE_UPLINK_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_ELEMENT_APPEARS).click();
         return new OltDetailsPage();
     }
 
     @Step("Modify uplink")
     public OltDetailsPage modifyUplinkConfiguration() {
-        $(DELETE_MODIFY_UPLINK_BUTTON_LOCATOR).click();
+        $(DELETE_MODIFY_UPLINK_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_ELEMENT_APPEARS).click();
         return new OltDetailsPage();
     }
 
     @Step("Delete uplink")
     public OltDetailsPage deleteUplinkConfiguration() {
-        $(DELETE_MODIFY_UPLINK_BUTTON_LOCATOR).click();
+        $(DELETE_MODIFY_UPLINK_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_ELEMENT_APPEARS).click();
         return new OltDetailsPage();
     }
 
