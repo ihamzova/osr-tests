@@ -56,9 +56,9 @@ public class CheckLineIdTest extends BaseTest {
                 .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
 
         // init test data
-        refreshA10nspInventory();
         deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         fillDeviceInResourceInventory();
+        refreshA10nspInventory();
 
         try {
             Thread.sleep(1000);
