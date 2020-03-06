@@ -1,0 +1,10 @@
+name: CheckLineIdA10nsp
+model:
+  oltEndSz:
+    type: String
+  bngEndSz:
+    type: String
+  lineId:
+    type: String
+  rahmenVertragsNr:
+    type: String

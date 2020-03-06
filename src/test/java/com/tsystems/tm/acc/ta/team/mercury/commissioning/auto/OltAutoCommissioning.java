@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.mercury.commissioning;
+package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltresourceinventory.OltRiOltDetailPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
@@ -36,12 +37,14 @@ public class OltAutoCommissioning extends BaseTest {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 1 * 60_000;
 
+    private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
+    private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
+
     private OltResourceInventoryClient oltResourceInventoryClient;
 
     @BeforeClass
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient();
-        clearResourceInventoryDataBase();
     }
 
     @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")
@@ -56,6 +59,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltDevice oltDevice = nvt.getOltDevice();
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+        deleteDeviceInResourceInventory(endSz);
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
@@ -66,7 +70,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5600(endSz);
+        checkDeviceMA5600(nvt);
         checkUplink(endSz);
     }
 
@@ -82,6 +86,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltDevice oltDevice = nvt.getOltDevice();
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+        deleteDeviceInResourceInventory(endSz);
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
@@ -92,7 +97,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5800(endSz);
+        checkDeviceMA5800(nvt);
         checkUplink(endSz);
     }
 
@@ -100,28 +105,46 @@ public class OltAutoCommissioning extends BaseTest {
     /**
      * check device MA5600 data from olt-ressource-inventory
      */
-    private void checkDeviceMA5600(String endsz) {
-        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    private void checkDeviceMA5600(Nvt nvt) {
+        OltDevice oltDevice = nvt.getOltDevice();
+        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
-        Assert.assertEquals(device.getEmsNbiName(), "MA5600T");
+        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
+                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5600);
         Assert.assertEquals(device.getTkz1(), "02351082");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+
+
+        OltRiOltDetailPage oltRiOltDetailPage = new OltRiOltDetailPage();
+        oltRiOltDetailPage.validate();
+        Assert.assertTrue(oltRiOltDetailPage.getEndsz().endsWith(endSz));
+        Assert.assertTrue(oltRiOltDetailPage.getBezeichnung().endsWith(EMS_NBI_NAME_MA5600));
+        Assert.assertTrue(oltRiOltDetailPage.getKlsID().endsWith(nvt.getOltDevice().getVst().getAddress().getKlsId()));
     }
 
     /**
      * check device MA5800 data from olt-ressource-inventory
      */
-    private void checkDeviceMA5800(String endsz) {
+    private void checkDeviceMA5800(Nvt nvt) {
+        OltDevice oltDevice = nvt.getOltDevice();
+        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-
-        Assert.assertEquals(device.getEmsNbiName(), "MA5800-X7");
+        Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5800);
         Assert.assertEquals(device.getTkz1(), "2352QCR");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+
+        OltRiOltDetailPage oltRiOltDetailPage = new OltRiOltDetailPage();
+        oltRiOltDetailPage.validate();
+        Assert.assertTrue(oltRiOltDetailPage.getEndsz().endsWith(endSz));
+        Assert.assertTrue(oltRiOltDetailPage.getBezeichnung().endsWith(EMS_NBI_NAME_MA5800));
+        Assert.assertTrue(oltRiOltDetailPage.getKlsID().endsWith(nvt.getOltDevice().getVst().getAddress().getKlsId()));
     }
 
     /**
@@ -137,11 +160,13 @@ public class OltAutoCommissioning extends BaseTest {
     }
 
     /**
-     * clears complete olt-resource-invemtory database
+     * clears a device in olt-resource-invemtory database.
+     * only one device will be deleted.
+     *
+     * @param endSz
      */
-    private void clearResourceInventoryDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
+    private void deleteDeviceInResourceInventory(String endSz) {
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
-
 }
