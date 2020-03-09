@@ -122,7 +122,7 @@ public class OltDetailsPage {
 
     @Step("Access lines provisioning")
     public OltDetailsPage startAccessLinesProvisioning(Nvt nvt, Integer timeout) {
-        $(CARDS_DETAILS_TAB_LOCATOR).click();
+        $(CARDS_DETAILS_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(CARD_EDIT_MENU_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);
 
         IntStream.range(0, $$(CARD_EDIT_MENU_LOCATOR).size()).forEach(element -> {
