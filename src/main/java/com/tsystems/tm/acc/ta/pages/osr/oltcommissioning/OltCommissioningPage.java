@@ -27,7 +27,7 @@ public class OltCommissioningPage {
     public String LSZ_VALUE_LOCATOR = "//*[@qa-data='sui-select-option-%s']";
     public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
     public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
-    public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-tab");
+    public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-view");
 
     @Step("Validate Url")
     public void validateUrl() {

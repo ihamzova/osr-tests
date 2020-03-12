@@ -7,9 +7,11 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.Select;
 
 import java.net.URL;
 
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -21,8 +23,8 @@ public class OltSearchPage {
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/search";
 
-    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("sui-select-searchType");
-    public static final By OLT_SEARCH_TYPE_VALUE_LOCATOR = byQaData("sui-select-option-1");
+    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("select-searchType");
+    public static final String ENDSZ_SEARCH_TYPE_VALUE = "ENDSZ";
     public static final By OLT_AKZ_INPUT_LOCATOR = byQaData("input-akz");
     public static final By OLT_ONKZ_INPUT_LOCATOR = byQaData("input-nkz");
     public static final By OLT_VKZ_INPUT_LOCATOR = byQaData("input-vkz");
@@ -74,8 +76,8 @@ public class OltSearchPage {
 
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
-        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(OLT_SEARCH_TYPE_VALUE_LOCATOR).click();
+        Select selectSearchType = new Select($(OLT_SEARCH_TYPE_SELECT_LOCATOR));
+        selectSearchType.selectByValue(ENDSZ_SEARCH_TYPE_VALUE);
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSz[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();

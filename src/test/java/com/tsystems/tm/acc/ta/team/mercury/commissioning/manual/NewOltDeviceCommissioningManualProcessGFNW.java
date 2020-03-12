@@ -9,7 +9,6 @@ import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.UplinkConfigurationPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
@@ -31,6 +30,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
+    private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -53,43 +53,31 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
+
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
         oltDiscoveryPage.makeOltDiscovery();
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
+
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
-        //Thread.sleep(10000);
-        UplinkConfigurationPage uplinkConfigurationPage = oltDetailsPage.startUplinkConfiguration();
-        Nvt nvt = new Nvt();
-        nvt.setOltPort("0");
-        nvt.setOltSlot("19");
-        nvt.setOltDevice(getDevice());
-
-        log.debug("ewOltDeviceCommissioningManualProcessGFNW inputUplinkParameters");
-        uplinkConfigurationPage.inputUplinkParameters(nvt);
-        uplinkConfigurationPage.saveUplinkConfiguration();
-
-        log.debug("ewOltDeviceCommissioningManualProcessGFNW startUplinkModification");
-        oltDetailsPage.startUplinkModification();
-        uplinkConfigurationPage.modifyUplinkConfiguration();
+        oltDetailsPage.startUplinkConfiguration();
+        oltDetailsPage.inputUplinkParameters(getNvt());
+        oltDetailsPage.saveUplinkConfiguration();
+        oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSession();
         oltDetailsPage.updateAncpSessionStatus();
 
-
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
-        log.debug("ewOltDeviceCommissioningManualProcessGFNW deconfigureAncpSession");
+
         oltDetailsPage.deconfigureAncpSession();
+        oltDetailsPage.deleteUplinkConfiguration();
 
-        log.debug("ewOltDeviceCommissioningManualProcessGFNW startUplinkDeConfiguration");
-        oltDetailsPage.startUplinkDeConfiguration();
-
-        log.debug("ewOltDeviceCommissioningManualProcessGFNW deleteUplinkConfiguration");
-        uplinkConfigurationPage.deleteUplinkConfiguration();
-
+        Thread.sleep(1000); // ensure that the resource inventory database is updated
+        checkUplinkDeleted(endSz);
     }
 
     // private
@@ -106,19 +94,35 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         return device;
     }
 
+    /**
+     * Generation of the Nvt test objects with the necessary data
+     */
+    private Nvt getNvt() {
+        Nvt nvt = new Nvt();
+        nvt.setOltPort("0");
+        nvt.setOltSlot("19");
+        nvt.setOltDevice(getDevice());
+        return nvt;
+    }
 
     /**
      * check device MA5600 data from olt-ressource-inventory
      */
-    private void checkDeviceMA5600(String endsz) {
+    private void checkDeviceMA5600(String endSz) {
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
 
         Assert.assertEquals(device.getEmsNbiName(), "MA5600T");
         Assert.assertEquals(device.getTkz1(), "02351082");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
+        Assert.assertEquals(oltDetailsPage.getKlsID(), "17056514");
     }
 
     /**
@@ -133,6 +137,15 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
     }
 
+    /**
+     * check uplink is not exist in olt-resource-inventory
+     */
+    private void checkUplinkDeleted(String endSz) {
+        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+                .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertTrue(uplinkDTOList.isEmpty());
+    }
 
     /**
      * clears complete olt-resource-invemtory database

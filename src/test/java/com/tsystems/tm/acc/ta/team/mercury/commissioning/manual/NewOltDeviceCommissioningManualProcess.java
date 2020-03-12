@@ -9,15 +9,14 @@ import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.UplinkConfigurationPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
-import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,6 +30,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
+    private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -53,24 +53,19 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
+
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
         oltDiscoveryPage.makeOltDiscovery();
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
-        //Thread.sleep(10000);
-        UplinkConfigurationPage uplinkConfigurationPage = oltDetailsPage.startUplinkConfiguration();
-        Nvt nvt = new Nvt();
-        nvt.setOltPort("1");
-        nvt.setOltSlot("8");
-        nvt.setOltDevice(getDevice());
-        uplinkConfigurationPage.inputUplinkParameters(nvt);
-        uplinkConfigurationPage.saveUplinkConfiguration();
 
-        oltDetailsPage.startUplinkModification();
-        uplinkConfigurationPage.modifyUplinkConfiguration();
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
+        oltDetailsPage.startUplinkConfiguration();
+        oltDetailsPage.inputUplinkParameters( getNvt());
+        oltDetailsPage.saveUplinkConfiguration();
+        oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSession();
         oltDetailsPage.updateAncpSessionStatus();
@@ -79,10 +74,15 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         checkUplink(endSz);
 
         oltDetailsPage.deconfigureAncpSession();
-        oltDetailsPage.startUplinkDeConfiguration();
-        uplinkConfigurationPage.deleteUplinkConfiguration();
+        oltDetailsPage.deleteUplinkConfiguration();
+
+        Thread.sleep(1000); // ensure that the resource inventory database is updated
+        checkUplinkDeleted(endSz);
     }
 
+    /**
+     * Generation of the OLT test device with the necessary data
+     */
     private OltDevice getDevice() {
         OltDevice device = new OltDevice();
         device.setVpsz("49/911/1100/");
@@ -96,19 +96,35 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         return device;
     }
 
+    /**
+     * Generation of the Nvt test objects with the necessary data
+     */
+    private Nvt getNvt() {
+        Nvt nvt = new Nvt();
+        nvt.setOltPort("1");
+        nvt.setOltSlot("8");
+        nvt.setOltDevice(getDevice());
+        return nvt;
+    }
 
     /**
-     * check device MA5800 data from olt-ressource-inventory
+     * check device MA5800 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5800(String endsz) {
+    private void checkDeviceMA5800(String endSz) {
+
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endsz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-
-        Assert.assertEquals(device.getEmsNbiName(), "MA5800-X7");
+        Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5800);
         Assert.assertEquals(device.getTkz1(), "2352QCR");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
+        Assert.assertEquals(oltDetailsPage.getKlsID(), "17056514");
     }
 
     /**
@@ -123,6 +139,15 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
     }
 
+    /**
+     * check uplink is not exist in olt-resource-inventory
+     */
+    private void checkUplinkDeleted(String endSz) {
+        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+                .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertTrue(uplinkDTOList.isEmpty());
+    }
 
     /**
      * clears complete olt-resource-invemtory database
@@ -131,7 +156,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
-
 
 }
 

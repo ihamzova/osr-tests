@@ -60,10 +60,9 @@ public class OltCommissioningRobot {
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(nvt.getOltDevice());
         oltDetailsPage.validateUrl();
 
-        UplinkConfigurationPage uplinkConfigurationPage = oltDetailsPage.startUplinkConfiguration();
-        uplinkConfigurationPage.validateUrl();
-        uplinkConfigurationPage = uplinkConfigurationPage.inputUplinkParameters(nvt);
-        oltDetailsPage = uplinkConfigurationPage.saveUplinkConfiguration();
+        oltDetailsPage.startUplinkConfiguration();
+        oltDetailsPage.inputUplinkParameters(nvt);
+        oltDetailsPage.saveUplinkConfiguration();
 
         oltDetailsPage = oltDetailsPage.configureAncpSession();
         oltDetailsPage.startAccessLinesProvisioning(nvt, TIMEOUT_FOR_CARD_PROVISIONING);
