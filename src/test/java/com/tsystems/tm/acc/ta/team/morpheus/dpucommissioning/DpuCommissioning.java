@@ -1,14 +1,19 @@
 package com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning;
 
-import com.github.tomakehurst.wiremock.admin.RequestSpec;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
+import com.tsystems.tm.acc.ta.db.JDBCConnectionProperties;
+import com.tsystems.tm.acc.ta.db.JDBCConnectionPropertiesFactory;
+import com.tsystems.tm.acc.ta.db.PostgreSqlDatabase;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.sql.ResultSet;
+import java.util.function.Function;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -18,6 +23,9 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE
 public class DpuCommissioning extends ApiTest {
 
     private DpuCommissioningClient dpuCommissioningClient;
+
+    private final Function<String, String> rename = (source) -> source.replace("dpu-commissioning", "dpu-com");
+
 
     @BeforeClass
     public void init() {
@@ -29,7 +37,7 @@ public class DpuCommissioning extends ApiTest {
     }
 
     @Test
-    public void dpuCommissioningTest(){
+    public void dpuCommissioningTest() {
         String endSZ = "49/8571/0/71GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
@@ -49,7 +57,7 @@ public class DpuCommissioning extends ApiTest {
     }
 
     @Test
-    public void setDpuCommissioningTestError(){
+    public void setDpuCommissioningTestError() {
 
         String endSZ = "49/8571/0/72GA";
 
@@ -65,6 +73,25 @@ public class DpuCommissioning extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
         Assert.assertEquals("ERROR", response.getStatus());
+
+    }
+
+    @Test
+    public void dataBaseTest() {
+
+        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
+        properties.setPassword("dpu_com");
+        properties.setName("dpu_com");
+        properties.setUsername("dpu_com");
+        properties.setUri(rename.apply(properties.getUri()));
+        PostgreSqlDatabase db = new PostgreSqlDatabase(properties);
+        String sql =
+                String.format("SELECT processstate FROM businessprocess where processid = 'bae62201-bf09-43b5-aa9c-e7fa80e19724'");
+        ResultSet rs = db.executeWithResultSet(sql);
+        System.out.println(rs);
+
+        db.close();
+
 
     }
 

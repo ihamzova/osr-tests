@@ -1,0 +1,18 @@
+{
+  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b03ad",
+  "request":{
+    "method":"GET",
+    "url":"/api/oltResourceInventory/v1/device?endsz=49/8571/0/72GA"
+  },
+  "response":{
+    "status":400,
+    "headers":{
+      "Content-Type":"application/json",
+      "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}"
+    },
+    "jsonBody":{
+      "errorCode": "400",
+      "message": "error"
+    }
+  }
+}
