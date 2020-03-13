@@ -69,6 +69,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         oltDetailsPage.configureAncpSession();
         oltDetailsPage.updateAncpSessionStatus();
+        oltDetailsPage.checkAncpSessionStatus();
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);

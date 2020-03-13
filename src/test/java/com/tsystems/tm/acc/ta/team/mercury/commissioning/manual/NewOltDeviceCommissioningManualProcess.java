@@ -63,12 +63,15 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters( getNvt());
+        oltDetailsPage.inputUplinkParameters(getNvt());
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSession();
         oltDetailsPage.updateAncpSessionStatus();
+        oltDetailsPage.checkAncpSessionStatus();
+
+        // test oltDetailsPage.startAccessLinesProvisioning( getNvt(), 20000);
 
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
