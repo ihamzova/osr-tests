@@ -13,6 +13,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.function.Function;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -37,7 +38,7 @@ public class DpuCommissioning extends ApiTest {
     }
 
     @Test
-    public void dpuCommissioningTest() {
+    public void dpuCommissioningTest() throws SQLException, InterruptedException {
         String endSZ = "49/8571/0/71GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
@@ -51,8 +52,39 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
+        String processId = response.getProcessId();
+
         Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
         Assert.assertEquals("WAIT", response.getStatus());
+
+        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
+        properties.setPassword("dpu_com");
+        properties.setUsername("dpu_com");
+        properties.setUri(rename.apply(properties.getUri()));
+
+        PostgreSqlDatabase db = new PostgreSqlDatabase(properties);
+
+        String sqlOne =
+                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
+        ResultSet rsOne = db.executeWithResultSet(sqlOne);
+
+        while (rsOne.next()) {
+            String processstate = rsOne.getString("processstate");
+            Assert.assertEquals("WAIT", processstate);
+        }
+
+        Thread.sleep(50000);
+
+        String sqlTwo =
+                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
+        ResultSet rsTwo = db.executeWithResultSet(sqlTwo);
+
+        while (rsTwo.next()) {
+            String processstate = rsTwo.getString("processstate");
+            Assert.assertEquals("CLOSED", processstate);
+        }
+
+        db.close();
 
     }
 
@@ -77,18 +109,23 @@ public class DpuCommissioning extends ApiTest {
     }
 
     @Test
-    public void dataBaseTest() {
+    public void dataBaseTest() throws SQLException {
 
-        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
+      JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
         properties.setPassword("dpu_com");
-        properties.setName("dpu_com");
         properties.setUsername("dpu_com");
         properties.setUri(rename.apply(properties.getUri()));
+
         PostgreSqlDatabase db = new PostgreSqlDatabase(properties);
+
         String sql =
-                String.format("SELECT processstate FROM businessprocess where processid = 'bae62201-bf09-43b5-aa9c-e7fa80e19724'");
+                String.format("SELECT processstate FROM businessprocess order by id desc limit 1");
         ResultSet rs = db.executeWithResultSet(sql);
-        System.out.println(rs);
+
+        while (rs.next()) {
+            String processstate = rs.getString("processstate");
+            Assert.assertEquals("CLOSED", processstate);
+        }
 
         db.close();
 
