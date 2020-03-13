@@ -24,7 +24,7 @@ public class DpuCommissioning extends ApiTest {
 
     private DpuCommissioningClient dpuCommissioningClient;
 
-    private final Function<String, String> rename = (source) -> source.replace("dpu-commissioning", "dpu-com");
+    private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
 
 
     @BeforeClass
