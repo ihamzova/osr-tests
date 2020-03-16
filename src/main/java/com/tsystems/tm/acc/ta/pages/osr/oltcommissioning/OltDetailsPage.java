@@ -28,7 +28,7 @@ public class OltDetailsPage {
     public static final By UPLINK_EDIT_BUTTON_LOCATOR = byQaData("button-edit-uplink");
 
     //  input uplink values
-    public static final By OLT_SLOT_SELECT_LOCATOR = byQaData("div-oltslot");
+    public static final By OLT_SLOT_SELECT_LOCATOR = byQaData("div-oltSlot");
     public static final By OLT_PORT_SELECT_LOCATOR = byQaData("div-oltPort");
     public static final By BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngEndSz");
     public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngSlot");
