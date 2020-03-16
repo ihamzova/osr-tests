@@ -30,10 +30,12 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
     private static final String MGMT_ELEMENT_RESOURCE_STATE = "WORKING";
     private static final String MGMT_ELEMENT_COMMUNICATION_STATE = "CS_AVAILABLE";
     private static final String DEFAULT_SHELF = "1";
-    private static final String DEFAULT_SLOT = "1";
+    private static final String DEFAULT_PON_SLOT = "1";
+    private static final String DEFAULT_ETH_SLOT = "19";
     private static final String MODULE_RESOURCE_STATE = "INSTALLING_INSTALLED";
     private static final String MODULE_RESOURCE_FULFILMENT_STATE = "IN_SERVICE";
-    private static final int PORTS_NUMBER = 8;
+    private static final int PON_PORTS_NUMBER = 8;
+    private static final int ETH_PORTS_NUMBER = 2;
     private static volatile AtomicInteger moduleCount = new AtomicInteger(0);
 
     @Override
@@ -58,8 +60,8 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
             name = name.replace('/', '_');
             managedElement.setName(name);
             managedElement.setIpAddress(olt.getIpAdresse());
-            managedElement.setProductName(olt.getHersteller());
-            managedElement.setManufacturer(olt.getBezeichnung());
+            managedElement.setProductName(olt.getBezeichnung());
+            managedElement.setManufacturer(olt.getHersteller());
             managedElement.setSoftwareVersion(olt.getFirmwareVersion());
             managedElement.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.
                     ResourceStateEnum.fromValue(MGMT_ELEMENT_RESOURCE_STATE));
@@ -70,29 +72,54 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
 
             List<CallbackgetaccessnodeinventoryrequestPayloadModules> moduleList = new ArrayList<>();
 
-            CallbackgetaccessnodeinventoryrequestPayloadModules module = new CallbackgetaccessnodeinventoryrequestPayloadModules();
-            module.setSlot("1");
-            module.setManufacturer(olt.getBezeichnung());
-            module.setShelf(DEFAULT_SHELF);
-            module.setInstalledEquipmentObjectType("H805GPBD");
-            module.setInstalledVersion("507(2015-8-27)");
-            module.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount.getAndIncrement()));
-            module.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+            CallbackgetaccessnodeinventoryrequestPayloadModules ponModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
+            ponModule.setSlot("1");
+            ponModule.setManufacturer(olt.getHersteller());
+            ponModule.setShelf(DEFAULT_SHELF);
+            ponModule.setInstalledEquipmentObjectType("H805GPBD");
+            ponModule.setInstalledVersion("507(2015-8-27)");
+            ponModule.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount.getAndIncrement()));
+            ponModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
                     ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
-            module.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+            ponModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
                     ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
-            moduleList.add(module);
+            moduleList.add(ponModule);
+
+            CallbackgetaccessnodeinventoryrequestPayloadModules ethModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
+            ethModule.setSlot("19");
+            ethModule.setManufacturer(olt.getHersteller());
+            ethModule.setShelf(DEFAULT_SHELF);
+            ethModule.setInstalledEquipmentObjectType("H801X2CS");
+            ethModule.setInstalledVersion("507(2019-07-04)");
+            ethModule.setInstalledSerialNumber("H801X2715258001" + String.format("%03d", moduleCount.getAndIncrement()));
+            ethModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                    ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
+            ethModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                    ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
+            moduleList.add(ethModule);
             payload.setModules(moduleList);
 
-            List<CallbackgetaccessnodeinventoryrequestPayloadPorts> portsList = new ArrayList<>(PORTS_NUMBER);
-            for (int i = 0; i < PORTS_NUMBER; ++i) {
+            List<CallbackgetaccessnodeinventoryrequestPayloadPorts> portsList =
+                    new ArrayList<>(PON_PORTS_NUMBER + ETH_PORTS_NUMBER);
+            for (int i = 0; i < PON_PORTS_NUMBER; ++i) {
                 CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
                 port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
                 port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
                 port.setPort(String.valueOf(i));
                 port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.PON);
                 port.setShelf(DEFAULT_SHELF);
-                port.setSlot(DEFAULT_SLOT);
+                port.setSlot(DEFAULT_PON_SLOT);
+                portsList.add(port);
+            }
+
+            for (int i = 0; i < ETH_PORTS_NUMBER; ++i) {
+                CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
+                port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
+                port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
+                port.setPort(String.valueOf(i));
+                port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.ETHERNET);
+                port.setShelf(DEFAULT_SHELF);
+                port.setSlot(DEFAULT_ETH_SLOT);
                 portsList.add(port);
             }
             payload.setPorts(portsList);
