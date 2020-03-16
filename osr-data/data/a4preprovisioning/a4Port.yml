@@ -1,0 +1,12 @@
+name: a4Port
+template: PortProvisioning
+values:
+  endSz: "${scope, a4Provisioning.endSz}"
+  slotNumber: "${scope, a4Provisioning.slotNumber}"
+  portNumber: "${scope, a4Provisioning.portNumber}"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  accessLinesCount: 1
