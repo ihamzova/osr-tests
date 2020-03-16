@@ -105,7 +105,7 @@ public class DpuCommissioning extends ApiTest {
                 .xB3TraceIdHeader("2")
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
         String processId = response.getProcessId();
 
