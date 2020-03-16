@@ -71,8 +71,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
 
-        // test oltDetailsPage.startAccessLinesProvisioning( getNvt(), 20000);
-
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
 
