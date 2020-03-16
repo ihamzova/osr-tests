@@ -92,6 +92,12 @@ public class OltCommissioningRobot {
 
         Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
 
+        long backhaulIdCount = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
+                .body(new SearchBackhaulIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().filter(backhaulIdDto -> BackhaulIdDto.StatusEnum.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
+
+        Assert.assertEquals(backhaulIdCount, portsCount);
+
         List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
                 .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
