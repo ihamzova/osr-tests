@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -27,6 +28,7 @@ public class DpuCommissioning extends ApiTest {
 
     private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
 
+    PostgreSqlDatabase db;
 
     @BeforeClass
     public void init() {
@@ -35,11 +37,25 @@ public class DpuCommissioning extends ApiTest {
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock("/team.morpheus/wiremock");
 
+        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
+        properties.setPassword("dpu_com");
+        properties.setUsername("dpu_com");
+
+        //properties.setUri(properties.getUri().replace("dpu_commissioning", "dpu_com"));
+        properties.setUri(rename.apply(properties.getUri()));
+
+        db = new PostgreSqlDatabase(properties);
+
+    }
+
+    @AfterClass
+    public void afterTests(){
+        db.close();
     }
 
     @Test
     public void dpuCommissioningTest() throws SQLException, InterruptedException {
-        String endSZ = "49/8571/0/71GA";
+        String endSZ = "49/8571/0/73GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endSZ);
@@ -57,35 +73,56 @@ public class DpuCommissioning extends ApiTest {
         Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
         Assert.assertEquals("WAIT", response.getStatus());
 
-        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
-        properties.setPassword("dpu_com");
-        properties.setUsername("dpu_com");
-        properties.setUri(rename.apply(properties.getUri()));
-
-        PostgreSqlDatabase db = new PostgreSqlDatabase(properties);
-
-        String sqlOne =
+        String sqlGetProcessState =
                 String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
-        ResultSet rsOne = db.executeWithResultSet(sqlOne);
+        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
-        while (rsOne.next()) {
-            String processstate = rsOne.getString("processstate");
+        while (rs.next()) {
+            String processstate = rs.getString("processstate");
             Assert.assertEquals("WAIT", processstate);
         }
 
-        Thread.sleep(50000);
+        Thread.sleep(6000);
 
-        String sqlTwo =
-                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
-        ResultSet rsTwo = db.executeWithResultSet(sqlTwo);
+        rs = db.executeWithResultSet(sqlGetProcessState);
 
-        while (rsTwo.next()) {
-            String processstate = rsTwo.getString("processstate");
+        while (rs.next()) {
+            String processstate = rs.getString("processstate");
             Assert.assertEquals("CLOSED", processstate);
         }
 
-        db.close();
+    }
 
+    @Test
+    public void dpuCommissioningTestSealError() throws SQLException, InterruptedException {
+        String endSZ = "49/8571/0/74GA";
+
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(endSZ);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        String processId = response.getProcessId();
+
+        Assert.assertTrue(response.getComment().contains("Error while Call SEAL.createDpuConfiguration :[404 Not Found]"));
+        Assert.assertEquals("ERROR", response.getStatus());
+
+        String sqlGetProcessState =
+                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
+        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
+
+        while (rs.next()) {
+            String processstate = rs.getString("processstate");
+            Assert.assertEquals("ERROR", processstate);
+        }
+
+        db.close();
     }
 
     @Test
@@ -104,6 +141,7 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
+        Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
         Assert.assertEquals("ERROR", response.getStatus());
 
     }

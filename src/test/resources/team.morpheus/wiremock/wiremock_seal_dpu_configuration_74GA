@@ -1,18 +1,18 @@
 {
-  "id" : "a6df12e9-8cc4-4994-a7dd-436e5e5a01ad",
+  "id" : "a6df12e9-8cc4-4994-a7dd-436e5e5a05ad",
   "request" : {
-    "urlPattern":"/resource-order-resource-inventory/v1/dpu-configuration/.*",
+    "urlPattern":"/resource-order-resource-inventory/v1/dpu-configuration/49_8571_0_74GA/dpuConfigurations",
     "method" : "POST"
   },
   "response" : {
-    "status" : 202,
+    "status" : 404,
     "headers" : {
       "Content-Type" : "application/json",
       "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
       "X-B3-SpanId" : "{{request.headers.X-B3-SpanId}}"
     }
   },
-  "uuid" : "a6df12e9-8cc4-4994-a7dd-436e5e5a01ad",
+  "uuid" : "a6df12e9-8cc4-4994-a7dd-436e5e5a05ad",
   "postServeActions" : {
     "webhook" : {
       "url" : "{{request.headers.X-Callback-Url}}",
@@ -23,7 +23,7 @@
         "Content-Type" : "application/json"
       },
       "method" : "POST",
-      "fixedDelayMilliseconds" : 45000,
+      "fixedDelayMilliseconds" : 3000,
       "jsonBody" : {
         "payload": {
           "dpuConfigurationId": "a_dpuConfiguration_Id_from_seal"
