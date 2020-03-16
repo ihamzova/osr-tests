@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.9</osr.models.version>
+        <osr.models.version>0.0.10</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
