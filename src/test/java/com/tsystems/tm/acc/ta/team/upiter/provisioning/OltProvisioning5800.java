@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
-import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioning;
+import com.tsystems.tm.acc.data.models.portprovisioning.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
