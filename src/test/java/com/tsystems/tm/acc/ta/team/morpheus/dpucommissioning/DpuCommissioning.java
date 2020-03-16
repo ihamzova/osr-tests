@@ -28,7 +28,7 @@ public class DpuCommissioning extends ApiTest {
 
     private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
 
-    PostgreSqlDatabase db;
+    private PostgreSqlDatabase db;
 
     @BeforeClass
     public void init() {
@@ -49,7 +49,7 @@ public class DpuCommissioning extends ApiTest {
     }
 
     @AfterClass
-    public void afterTests(){
+    public void afterTests() {
         db.close();
     }
 
@@ -74,7 +74,7 @@ public class DpuCommissioning extends ApiTest {
         Assert.assertEquals("WAIT", response.getStatus());
 
         String sqlGetProcessState =
-                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
+                "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
         ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
@@ -90,11 +90,10 @@ public class DpuCommissioning extends ApiTest {
             String processstate = rs.getString("processstate");
             Assert.assertEquals("CLOSED", processstate);
         }
-
     }
 
     @Test
-    public void dpuCommissioningTestSealError() throws SQLException, InterruptedException {
+    public void dpuCommissioningTestSealError() throws SQLException {
         String endSZ = "49/8571/0/74GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
@@ -114,20 +113,17 @@ public class DpuCommissioning extends ApiTest {
         Assert.assertEquals("ERROR", response.getStatus());
 
         String sqlGetProcessState =
-                String.format("SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'");
+                "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
         ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
             String processstate = rs.getString("processstate");
             Assert.assertEquals("ERROR", processstate);
         }
-
-        db.close();
     }
 
     @Test
     public void setDpuCommissioningTestError() {
-
         String endSZ = "49/8571/0/72GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
@@ -143,31 +139,5 @@ public class DpuCommissioning extends ApiTest {
 
         Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
         Assert.assertEquals("ERROR", response.getStatus());
-
     }
-
-    @Test
-    public void dataBaseTest() throws SQLException {
-
-      JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
-        properties.setPassword("dpu_com");
-        properties.setUsername("dpu_com");
-        properties.setUri(rename.apply(properties.getUri()));
-
-        PostgreSqlDatabase db = new PostgreSqlDatabase(properties);
-
-        String sql =
-                String.format("SELECT processstate FROM businessprocess order by id desc limit 1");
-        ResultSet rs = db.executeWithResultSet(sql);
-
-        while (rs.next()) {
-            String processstate = rs.getString("processstate");
-            Assert.assertEquals("CLOSED", processstate);
-        }
-
-        db.close();
-
-
-    }
-
 }
