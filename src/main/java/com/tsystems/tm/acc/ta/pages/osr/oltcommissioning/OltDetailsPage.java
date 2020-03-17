@@ -115,7 +115,7 @@ public class OltDetailsPage {
     public OltDetailsPage configureAncpSession() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
-        $(ANCP_CONFIGURE_BUTTON_LOCATOR).waitUntil(visible, MAX_ANCP_COFIGURATION_TIME).isDisplayed();
+        $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).waitUntil(visible, MAX_ANCP_COFIGURATION_TIME).isDisplayed();
         return this;
     }
 
