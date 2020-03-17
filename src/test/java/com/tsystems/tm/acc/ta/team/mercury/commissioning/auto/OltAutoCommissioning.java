@@ -8,8 +8,8 @@ import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.pages.osr.oltresourceinventory.OltRiOltDetailPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
@@ -35,7 +35,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class OltAutoCommissioning extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 1 * 60_000;
+    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
 
     private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
@@ -103,7 +103,7 @@ public class OltAutoCommissioning extends BaseTest {
 
 
     /**
-     * check device MA5600 data from olt-ressource-inventory
+     * check device MA5600 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5600(Nvt nvt) {
         OltDevice oltDevice = nvt.getOltDevice();
@@ -118,15 +118,15 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
 
 
-        OltRiOltDetailPage oltRiOltDetailPage = new OltRiOltDetailPage();
-        oltRiOltDetailPage.validate();
-        Assert.assertTrue(oltRiOltDetailPage.getEndsz().endsWith(endSz));
-        Assert.assertTrue(oltRiOltDetailPage.getBezeichnung().endsWith(EMS_NBI_NAME_MA5600));
-        Assert.assertTrue(oltRiOltDetailPage.getKlsID().endsWith(nvt.getOltDevice().getVst().getAddress().getKlsId()));
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
+        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
     }
 
     /**
-     * check device MA5800 data from olt-ressource-inventory
+     * check device MA5800 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5800(Nvt nvt) {
         OltDevice oltDevice = nvt.getOltDevice();
@@ -140,15 +140,15 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
 
-        OltRiOltDetailPage oltRiOltDetailPage = new OltRiOltDetailPage();
-        oltRiOltDetailPage.validate();
-        Assert.assertTrue(oltRiOltDetailPage.getEndsz().endsWith(endSz));
-        Assert.assertTrue(oltRiOltDetailPage.getBezeichnung().endsWith(EMS_NBI_NAME_MA5800));
-        Assert.assertTrue(oltRiOltDetailPage.getKlsID().endsWith(nvt.getOltDevice().getVst().getAddress().getKlsId()));
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
+        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
     }
 
     /**
-     * check uplink and ancp-session data from olt-ressource-inventory
+     * check uplink and ancp-session data from olt-resource-inventory
      */
     private void checkUplink(String endSz) {
         List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
@@ -160,7 +160,7 @@ public class OltAutoCommissioning extends BaseTest {
     }
 
     /**
-     * clears a device in olt-resource-invemtory database.
+     * clears a device in olt-resource-inventory database.
      * only one device will be deleted.
      *
      * @param endSz
