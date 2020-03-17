@@ -6,4 +6,9 @@
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioning5600"/>
         </classes>
     </test>
+    <test thread-count="1" name="A4 preprovisioning">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.provisioning.A4PreProvisioning"/>
+        </classes>
+    </test>
 </suite>
