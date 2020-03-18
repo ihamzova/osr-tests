@@ -41,7 +41,6 @@ public class DpuCommissioning extends ApiTest {
         properties.setPassword("dpu_com");
         properties.setUsername("dpu_com");
 
-        //properties.setUri(properties.getUri().replace("dpu_commissioning", "dpu_com"));
         properties.setUri(rename.apply(properties.getUri()));
 
         db = new PostgreSqlDatabase(properties);
@@ -71,7 +70,7 @@ public class DpuCommissioning extends ApiTest {
         String processId = response.getProcessId();
 
         Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
-        Assert.assertEquals("WAIT", response.getStatus());
+        Assert.assertEquals(response.getStatus(), "WAIT");
 
         String sqlGetProcessState =
                 "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
@@ -79,21 +78,21 @@ public class DpuCommissioning extends ApiTest {
 
         while (rs.next()) {
             String processstate = rs.getString("processstate");
-            Assert.assertEquals("WAIT", processstate);
+            Assert.assertEquals(processstate, "WAIT");
         }
 
-        Thread.sleep(6000);
+        Thread.sleep(10000);
 
         rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
             String processstate = rs.getString("processstate");
-            Assert.assertEquals("CLOSED", processstate);
+            Assert.assertEquals(processstate, "CLOSED");
         }
     }
 
     @Test
-    public void dpuCommissioningTestSealError() throws SQLException {
+    public void dpuCommissioningTestSealError() throws SQLException, InterruptedException {
         String endSZ = "49/8571/0/74GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
@@ -110,7 +109,9 @@ public class DpuCommissioning extends ApiTest {
         String processId = response.getProcessId();
 
         Assert.assertTrue(response.getComment().contains("Error while Call SEAL.createDpuConfiguration :[404 Not Found]"));
-        Assert.assertEquals("ERROR", response.getStatus());
+        Assert.assertEquals(response.getStatus(), "ERROR");
+
+        Thread.sleep(10000);
 
         String sqlGetProcessState =
                 "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
@@ -118,7 +119,7 @@ public class DpuCommissioning extends ApiTest {
 
         while (rs.next()) {
             String processstate = rs.getString("processstate");
-            Assert.assertEquals("ERROR", processstate);
+            Assert.assertEquals(processstate, "CLOSED");
         }
     }
 
@@ -138,6 +139,6 @@ public class DpuCommissioning extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
         Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
-        Assert.assertEquals("ERROR", response.getStatus());
+        Assert.assertEquals(response.getStatus(), "ERROR");
     }
 }
