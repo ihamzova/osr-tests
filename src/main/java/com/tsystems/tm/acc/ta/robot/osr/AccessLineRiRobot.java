@@ -31,7 +31,7 @@ public class AccessLineRiRobot {
                 .slotNumber(port.getSlotNumber())
                 .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(homeIds.size(), port.getHomeIdPool().intValue());
+        Assert.assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
     }
 
     @Step("Checks line id count for port")
@@ -41,13 +41,14 @@ public class AccessLineRiRobot {
                 .slotNumber(port.getSlotNumber())
                 .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(lineIds.size(), port.getLineIdPool().intValue());
+        Assert.assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
     }
 
     @Step("Checks access lines parameters of port template (lines count and wg lines count, count od default NE and Network profiles)")
     public void checkPortParametersForLines(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLines(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue());
+        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
+                "Access lines count");
 
         long countDefaultNEProfileActive = accessLines.stream().map(AccessLineDto::getDefaultNeProfile)
                 .filter(defaultNeProfile -> defaultNeProfile != null && defaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -57,22 +58,24 @@ public class AccessLineRiRobot {
 
         long countAccessLinesWG = accessLines.stream()
                 .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
-
-        Assert.assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue());
-        Assert.assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue());
-        Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
+        Assert.assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue(),
+                "Default Network Line profile count");
+        Assert.assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue(),
+                "Default NE profile count");
+        Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
+                "WG access lines count");
     }
 
     @Step("Checks A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
     public void checkA4LineParameters(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLines(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue());
+        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Line ids count");
 
         AccessLineDto accessLine = accessLines.get(0);
 
-        Assert.assertNotNull(accessLine.getReference());
-        Assert.assertEquals(accessLine.getProductionPlatform(), AccessLineDto.ProductionPlatformEnum.A4);
-        Assert.assertNotNull(accessLine.getNetworkServiceProfileReference());
+        Assert.assertNotNull(accessLine.getReference(), "Reference");
+        Assert.assertEquals(accessLine.getProductionPlatform(), AccessLineDto.ProductionPlatformEnum.A4, "Production platform");
+        Assert.assertNotNull(accessLine.getNetworkServiceProfileReference(), "NSP ref");
     }
 
     private List<AccessLineDto> getAccessLines(PortProvisioning port) {

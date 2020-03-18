@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 public class A4PreProvisioning extends ApiTest {
-    private static final int WAIT_TIME = 5000;
+    private static final int WAIT_TIME = 10_000;
 
     private PortProvisioning port;
     private TpRefDto tpRef;
