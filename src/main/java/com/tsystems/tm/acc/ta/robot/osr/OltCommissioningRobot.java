@@ -21,7 +21,7 @@ public class OltCommissioningRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
-    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 15 * 60_000;
+    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 25 * 60_000;
     private static final Integer ACCESS_LINE_PER_PORT = 16;
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
     private static final Integer HOME_ID_POOL_PER_PORT = 32;
