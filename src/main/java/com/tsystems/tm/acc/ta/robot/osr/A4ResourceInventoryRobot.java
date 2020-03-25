@@ -24,28 +24,7 @@ public class A4ResourceInventoryRobot {
 
     private ApiClient a4ResourceInventoryClient = new A4ResourceInventoryClient().getClient();
 
-    public void createNegWithA4ResourceInventoryApi(String uuid) {
-
-        String endPoint = "/networkElementGroups/" + uuid;
-        String app = "a4-resource-inventory";
-        URL url = new OCUrlBuilder(app).withEndpoint(endPoint).build();
-        File networkElementGroupBody = new File(System.getProperty("user.dir") +
-                "/src/test/resources/team.berlinium/networkElementGroup.json");
-
-        Response response = given()
-//                .auth()
-//                .basic("giga", "bit")
-                .header("Content-Type", "application/json")
-                .body(networkElementGroupBody)
-                .when()
-                .put(url);
-
-        response.then().assertThat().statusCode(HttpStatus.SC_OK);
-
-    }
-
     public void deleteNegWithA4ResourceInventoryApi(String uuid) {
-
         String endPoint = "/networkElementGroups/" + uuid;
         String app = "a4-resource-inventory";
         URL url = new OCUrlBuilder(app).withEndpoint(endPoint).build();
@@ -56,7 +35,6 @@ public class A4ResourceInventoryRobot {
                 .delete(url);
 
         response.then().assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
-
     }
 
     public Response getNegAsLogicalResourceWithA4ResourceInventoryServiceApi(String uuid) {
