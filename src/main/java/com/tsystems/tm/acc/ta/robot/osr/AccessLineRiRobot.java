@@ -19,12 +19,17 @@ public class AccessLineRiRobot {
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
 
-    @Step("Fills database with test data")
+    @Step("Clear database with test data")
     public void clearDatabase() {
         accessLineResourceInventory.fillDatabase().deleteDatabase().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Checks home id count for port")
+    @Step("Fill database with test data")
+    public void fillDatabase() {
+        accessLineResourceInventory.fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Check home id count for port")
     public void checkHomeIdsCount(PortProvisioning port) {
         List<HomeIdDto> homeIds = accessLineResourceInventory.homeIdInternalController().searchHomeIds().body(new SearchHomeIdDto()
                 .endSz(port.getEndSz())
@@ -34,7 +39,7 @@ public class AccessLineRiRobot {
         Assert.assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
     }
 
-    @Step("Checks line id count for port")
+    @Step("Check line id count for port")
     public void checkLineIdsCount(PortProvisioning port) {
         List<LineIdDto> lineIds = accessLineResourceInventory.lineIdController().searchLineIds().body(new SearchLineIdDto()
                 .endSz(port.getEndSz())
@@ -44,7 +49,7 @@ public class AccessLineRiRobot {
         Assert.assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
     }
 
-    @Step("Checks access lines parameters of port template (lines count and wg lines count, count od default NE and Network profiles)")
+    @Step("Check access lines parameters of port template (lines count and wg lines count, count od default NE and Network profiles)")
     public void checkPortParametersForLines(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
@@ -66,7 +71,7 @@ public class AccessLineRiRobot {
                 "WG access lines count");
     }
 
-    @Step("Checks A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
+    @Step("Check A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
     public void checkA4LineParameters(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Line ids count");
@@ -76,6 +81,75 @@ public class AccessLineRiRobot {
         Assert.assertNotNull(accessLine.getReference(), "Reference");
         Assert.assertEquals(accessLine.getProductionPlatform(), AccessLineDto.ProductionPlatformEnum.A4, "Production platform");
         Assert.assertNotNull(accessLine.getNetworkServiceProfileReference(), "NSP ref");
+    }
+
+    @Step("Remove lines with id > 1008, change some port refs")
+    public void prepareTestDataToDeprovisioning(PortProvisioning port) {
+        // delete extra lines
+        getAccessLines(port).stream()
+                .filter(line -> line.getId() > 1008)
+                .forEach(line -> {
+                    accessLineResourceInventory.accessLineInternalController()
+                            .delete()
+                            .lineIdQuery(line.getLineId())
+                            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                });
+
+        getAccessLines(port).forEach(line -> {
+            if (line.getId() % 7 == 0) {
+                line.getReference()
+                        .id(1016L)
+                        .slotNumber("4")
+                        .portNumber("7");
+            }
+            // each id %3 line to port with id = 1003, slot = 3, port = 2
+            else if (line.getId() % 3 == 0) {
+                line.getReference()
+                        .id(1003L)
+                        .slotNumber("3")
+                        .portNumber("2");
+            }
+            // each id %4 line to port with id = 1004, slot = 3, port = 3
+            else if (line.getId() % 4 == 0) {
+                line.getReference()
+                        .id(1004L)
+                        .slotNumber("3")
+                        .portNumber("3");
+            }
+            // each id %7 line to port with id = 1016 (because backhaul id exists only on 1016 with different slot, slot = 4, port = 7
+
+            accessLineResourceInventory.accessLineInternalController()
+                    .update()
+                    .body(line)
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        });
+    }
+
+    @Step("Check absence of assigned lines, subscriber profiles")
+    public void checkDecommissioningPreconditions(PortProvisioning port) {
+        List<AccessLineDto> accessLines = getAccessLines(port);
+
+        Assert.assertEquals(accessLines.stream()
+                .filter(line -> line.getStatus().equals(AccessLineDto.StatusEnum.ASSIGNED)).count(), 0, "Assigned lines count:");
+        accessLines.forEach(line -> {
+            Assert.assertNull(line.getSubscriberNetworkLineProfile(), "Subscriber network line profile is not null");
+            if (line.getDefaultNeProfile() != null) {
+                Assert.assertNull(line.getDefaultNeProfile().getSubscriberNeProfile(), "Subscriber NE profile is not null");
+            }
+        });
+    }
+
+    @Step("Check backHaul id absence")
+    public void checkBackHaulIdAbsence(PortProvisioning port) {
+        List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
+                .backhaulIdController()
+                .searchBackhaulIds()
+                .body(new SearchBackhaulIdDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber())
+                        .portNumber(port.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(backhaulIds.size(), 0, "Backhaul ids count");
     }
 
     private List<AccessLineDto> getAccessLines(PortProvisioning port) {

@@ -1,0 +1,9 @@
+name: cardDeprovisioning
+template: PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
+  accessLinesCount: 0

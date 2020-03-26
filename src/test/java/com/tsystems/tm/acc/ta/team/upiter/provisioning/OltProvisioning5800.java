@@ -86,8 +86,8 @@ public class OltProvisioning5800 extends ApiTest {
     public void cardProvisioning() throws InterruptedException {
 
         Card cardBeforeProvisioning = getCard();
-        PortProvisioning port = getPortProvisioning("49/911/1100/76H2",
-                "3",
+        PortProvisioning port = getPortProvisioning("49/911/1100/76H1",
+                "1",
                 cardBeforeProvisioning.getPorts().get(0).getPortNumber());
 
         Assert.assertNotNull(cardBeforeProvisioning);
@@ -95,7 +95,7 @@ public class OltProvisioning5800 extends ApiTest {
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardDto().endSz("49/911/1100/76H2").slotNumber("3")).collect(Collectors.toList()))
+                .body(Stream.of(new CardDto().endSz("49/911/1100/76H1").slotNumber("1")).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY);
@@ -110,7 +110,7 @@ public class OltProvisioning5800 extends ApiTest {
 
         Device deviceBeforeProvisioning = getDevice();
 
-        PortProvisioning port = getPortProvisioning("49/911/1100/76H2",
+        PortProvisioning port = getPortProvisioning("49/911/1100/76H1",
                 deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
                 deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber());
 
@@ -120,7 +120,7 @@ public class OltProvisioning5800 extends ApiTest {
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
-                .body(new DeviceDto().endSz("49/911/1100/76H2")).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .body(new DeviceDto().endSz("49/911/1100/76H1")).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY);
 
@@ -188,13 +188,13 @@ public class OltProvisioning5800 extends ApiTest {
 
     private Device getDevice() {
         return oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery("49/911/1100/76H2").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .getOltByEndSZ().endSZQuery("49/911/1100/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     private Card getCard() {
         return oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/911/1100/76H2")
-                .slotNumberQuery("3")
+                .endSzQuery("49/911/1100/76H1")
+                .slotNumberQuery("1")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
