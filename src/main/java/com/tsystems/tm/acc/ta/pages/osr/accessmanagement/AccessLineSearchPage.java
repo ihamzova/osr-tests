@@ -25,19 +25,19 @@ public class AccessLineSearchPage {
     private static final String APP = "access-management-support-ui";
     private static final String ENDPOINT = "/search";
 
-    private static final By PORT_ADDRESS_TAB = byQaData("sc-portAddressTab-a");
-    private static final By ENDSZ_INPUT = byQaData("pac-EndSZ-input");
-    private static final By SLOT_NUMBER_INPUT = byQaData("pac-slotNumber-input");
-    private static final By PORT_NUMBER_INPUT = byQaData("pac-portNumber-input");
-    private static final By P_SEARCH_TABLE = byQaData("sc-searchTable-pTable");
+    private static final By PORT_ADDRESS_TAB = byQaData("sc-port-address-tab-a");
+    private static final By ENDSZ_INPUT = byQaData("pac-end-sz-input");
+    private static final By SLOT_NUMBER_INPUT = byQaData("pac-slot-number-input");
+    private static final By PORT_NUMBER_INPUT = byQaData("pac-port-number-input");
+    private static final By P_SEARCH_TABLE = byQaData("sc-search-table-ptable");
     private static final By PAGINATOR_DROPDOWN = By.tagName("p-dropdown");
-    private static final By ASSIGNED_STATUS = byQaData("ucc-assignedFilter-label");
-    private static final By WALLED_GARDEN_STATUS = byQaData("ucc-walled_gardenFilter-label");
-    private static final By HOMEID_TAB = byQaData("sc-homeIdTab-a");
-    private static final By HOMEID_INPUT = byQaData("hic-homeId-input");
+    private static final By ASSIGNED_STATUS = byQaData("ucc-assigned-rdq-seal-filter-label");
+    private static final By WALLED_GARDEN_STATUS = byQaData("ucc-walled-garden-filter-label");
+    private static final By HOMEID_TAB = byQaData("sc-home-id-tab-a");
+    private static final By HOMEID_INPUT = byQaData("hic-home-id-input");
     private static final By SEARCH_BUTTON = byQaData("search-button");
-    private static final By LINEID_TAB = byQaData("sc-lineIdTab-a");
-    private static final By LINEID_INPUT = byQaData("lic-lineId-input");
+    private static final By LINEID_TAB = byQaData("sc-line-id-tab-a");
+    private static final By LINEID_INPUT = byQaData("hic-line-id-input");
 
 
     @Step("Open Access-line-Search page")
