@@ -17,7 +17,7 @@ public class A4ResourceInventoryServiceRobot {
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
-    @Step("Check results")
+    @Step("Check network element group as logical resource representation")
     public void checkLogicalResourceIsNetworkElementGroup(NetworkElementGroupDto networkElementGroupDto) {
         List<LogicalResource> logicalResourceList =
                 a4ResourceInventoryService
@@ -29,5 +29,4 @@ public class A4ResourceInventoryServiceRobot {
         Assert.assertEquals(logicalResourceList.get(0).getId(), networkElementGroupDto.getUuid(), "UUID is the same");
         Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
     }
-
 }

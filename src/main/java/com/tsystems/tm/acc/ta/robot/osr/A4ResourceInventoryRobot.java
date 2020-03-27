@@ -59,5 +59,4 @@ public class A4ResourceInventoryRobot {
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
-
 }
