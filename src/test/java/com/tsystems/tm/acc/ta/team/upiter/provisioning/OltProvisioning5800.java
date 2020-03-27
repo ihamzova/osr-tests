@@ -31,7 +31,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
 
 public class OltProvisioning5800 extends ApiTest {
 
-    private static final Integer LATENCY = 2 * 70_000;
+    private static final Integer LATENCY = 2 * 75_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -86,8 +86,8 @@ public class OltProvisioning5800 extends ApiTest {
     public void cardProvisioning() throws InterruptedException {
 
         Card cardBeforeProvisioning = getCard();
-        PortProvisioning port = getPortProvisioning("49/911/1100/76H1",
-                "1",
+        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
+                portEmpty.getSlotNumber(),
                 cardBeforeProvisioning.getPorts().get(0).getPortNumber());
 
         Assert.assertNotNull(cardBeforeProvisioning);
@@ -95,7 +95,7 @@ public class OltProvisioning5800 extends ApiTest {
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardDto().endSz("49/911/1100/76H1").slotNumber("1")).collect(Collectors.toList()))
+                .body(Stream.of(new CardDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY);
@@ -110,7 +110,7 @@ public class OltProvisioning5800 extends ApiTest {
 
         Device deviceBeforeProvisioning = getDevice();
 
-        PortProvisioning port = getPortProvisioning("49/911/1100/76H1",
+        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
                 deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
                 deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber());
 
@@ -120,7 +120,7 @@ public class OltProvisioning5800 extends ApiTest {
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
-                .body(new DeviceDto().endSz("49/911/1100/76H1")).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .body(new DeviceDto().endSz(portEmpty.getSlotNumber())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY);
 

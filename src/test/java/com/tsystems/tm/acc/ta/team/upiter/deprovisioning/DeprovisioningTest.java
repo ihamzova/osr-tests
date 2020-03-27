@@ -24,8 +24,8 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE
 
 public class DeprovisioningTest extends ApiTest {
     private static final Integer LATENCY_FOR_PORT_DEPROVISIONING = 2 * 5_000;
-    private static final Integer LATENCY_FOR_CARD_DEPROVISIONING = 3 * LATENCY_FOR_PORT_DEPROVISIONING;
-    private static final Integer LATENCY_FOR_DEVICE_DEPROVISIONING = 4 * LATENCY_FOR_PORT_DEPROVISIONING;
+    private static final Integer LATENCY_FOR_CARD_DEPROVISIONING = 4 * LATENCY_FOR_PORT_DEPROVISIONING;
+    private static final Integer LATENCY_FOR_DEVICE_DEPROVISIONING = 5 * LATENCY_FOR_PORT_DEPROVISIONING;
 
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
