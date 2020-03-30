@@ -18,15 +18,15 @@ public class A4ResourceInventoryServiceRobot {
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
     @Step("Check network element group as logical resource representation")
-    public void checkLogicalResourceIsNetworkElementGroup(NetworkElementGroupDto networkElementGroupDto) {
+    public void checkLogicalResourceIsNetworkElementGroup(String uuid) {
         List<LogicalResource> logicalResourceList =
                 a4ResourceInventoryService
                 .logicalResource()
                 .retrieveLogicalResource()
-                .idPath(networkElementGroupDto.getUuid())
+                .idPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
-        Assert.assertEquals(logicalResourceList.get(0).getId(), networkElementGroupDto.getUuid(), "UUID is the same");
+        Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
         Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
     }
 }
