@@ -48,10 +48,10 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
         a4ResourceInventoryRobot.deleteNetworkElementGroup(networkElementGroup.getUuid());
     }
 
-    @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource, afterwards clean-up")
+    @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-57774")
-    @Description("Create new network element in inventory and read it as logical resource, afterwards clean-up")
+    @Description("Create new network element in inventory and read it as logical resource")
     public void testCreateNeg_checkLogicalResource_deleteNeg() {
         // GIVEN / Arrange
         // Already done in prepareData method
