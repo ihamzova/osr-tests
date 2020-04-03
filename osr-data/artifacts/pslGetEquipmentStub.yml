@@ -1,6 +1,0 @@
-name: PSL_GetEquipment
-generator: com.tsystems.tm.acc.data.generators.WiremockMappingGenerator
-mapper: com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper
-type: OltDevice
-parameters:
-  - FSZ_76HA

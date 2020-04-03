@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileNames;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileTypes;
-import com.tsystems.tm.acc.ta.ui.UITest;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
 import io.qameta.allure.Description;
@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_OK_200;
 
-public class AccessLinesSearchTest extends UITest {
+public class AccessLinesSearchTest extends BaseTest {
 
     private AccessLineResourceInventoryClient alResourceInventory;
     private AccessLine accessLinesByEndSz;

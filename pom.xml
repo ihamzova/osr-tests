@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.1.17</version>
+        <version>0.1.22</version>
     </parent>
 
     <properties>
@@ -84,19 +84,6 @@
                             <sourceFolder>${basedir}/osr-data</sourceFolder>
                             <outputFolder>${project.build.directory}/osr-data</outputFolder>
                             <outputSourceFolder>${project.build.directory}/generated-sources</outputSourceFolder>
-                            <valuesFile>${basedir}/osr-data/values.yml</valuesFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generateArtifacts</id>
-                        <goals>
-                            <goal>createArtifacts</goal>
-                        </goals>
-                        <configuration>
-                            <packageName>com.tsystems.tm.acc.data.osr.models</packageName>
-                            <sourceFolder>${basedir}/osr-data</sourceFolder>
-                            <outputFolder>${project.build.directory}/osr-data</outputFolder>
-                            <outputSourceFolder>${project.build.directory}/generated-test-sources</outputSourceFolder>
                             <valuesFile>${basedir}/osr-data/values.yml</valuesFile>
                         </configuration>
                     </execution>

@@ -13,6 +13,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -35,7 +36,7 @@ public class DpuCommissioning extends ApiTest {
 
         dpuCommissioningClient = new DpuCommissioningClient();
         WiremockRobot wiremockRobot = new WiremockRobot();
-        wiremockRobot.initializeWiremock("/team.morpheus/wiremock");
+        wiremockRobot.initializeWiremock(new File(getClass().getResource("/team/morpheus/wiremock").getFile()));
 
         JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
         properties.setPassword("dpu_com");

@@ -1,27 +1,21 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.WebhookDefinitionModel;
-import com.tsystems.tm.acc.data.AbstractGeneratorMapper;
-import com.tsystems.tm.acc.data.exceptions.MapperError;
-import com.tsystems.tm.acc.data.model.Artifact;
-import com.tsystems.tm.acc.data.model.DataKey;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
-import com.tsystems.tm.acc.data.registry.RegistryRegistry;
 import com.tsystems.tm.acc.swagger.plugin.JSONInterface;
+import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.seal.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
-import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGeneratorMapper<StubMapping> {
+public class SealAccessNodeConfigurationGeneratorMapper {
     private static final String OPTIC_VENDOR_PART_NUMBER = "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n" +
             "                                    " +
             "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n" +
@@ -38,120 +32,109 @@ public class SealAccessNodeConfigurationGeneratorMapper extends AbstractGenerato
     private static final int ETH_PORTS_NUMBER = 2;
     private static volatile AtomicInteger moduleCount = new AtomicInteger(0);
 
-    @Override
-    public List<StubMapping> getData(Artifact artifact, RegistryRegistry registry) throws MapperError {
-        List<StubMapping> values = new ArrayList<>(artifact.getParameters().size());
-        ObjectMapper mapper = new ObjectMapper();
+    public StubMapping getData(OltDevice olt) {
+        CallbackGetAccessnodeInventoryRequest entity = new CallbackGetAccessnodeInventoryRequest();
+        entity.setError(null);
+        CallbackgetaccessnodeinventoryrequestPayload payload = new CallbackgetaccessnodeinventoryrequestPayload();
+        payload.setConnections(null);
+        payload.setAncpConfigurations(null);
+        payload.setOnts(null);
 
-        for (String value : artifact.getParameters()) {
-            OltDevice olt =
-                    mapper.convertValue(registry.getObjectForKey(new DataKey(value, artifact.getType())),
-                            OltDevice.class);
+        CallbackgetaccessnodeinventoryrequestPayloadManagedElement managedElement = new CallbackgetaccessnodeinventoryrequestPayloadManagedElement();
+        String name = olt.getVpsz() + '/' + olt.getFsz();
+        name = name.replace('/', '_');
+        managedElement.setName(name);
+        managedElement.setIpAddress(olt.getIpAdresse());
+        managedElement.setProductName(olt.getBezeichnung());
+        managedElement.setManufacturer(olt.getHersteller());
+        managedElement.setSoftwareVersion(olt.getFirmwareVersion());
+        managedElement.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.
+                ResourceStateEnum.fromValue(MGMT_ELEMENT_RESOURCE_STATE));
+        managedElement.setCommunicationState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.
+                CommunicationStateEnum.fromValue(MGMT_ELEMENT_COMMUNICATION_STATE));
 
-            CallbackGetAccessnodeInventoryRequest entity = new CallbackGetAccessnodeInventoryRequest();
-            entity.setError(null);
-            CallbackgetaccessnodeinventoryrequestPayload payload = new CallbackgetaccessnodeinventoryrequestPayload();
-            payload.setConnections(null);
-            payload.setAncpConfigurations(null);
-            payload.setOnts(null);
+        payload.setManagedElement(managedElement);
 
-            CallbackgetaccessnodeinventoryrequestPayloadManagedElement managedElement = new CallbackgetaccessnodeinventoryrequestPayloadManagedElement();
-            String name = olt.getVpsz() + '/' + olt.getFsz();
-            name = name.replace('/', '_');
-            managedElement.setName(name);
-            managedElement.setIpAddress(olt.getIpAdresse());
-            managedElement.setProductName(olt.getBezeichnung());
-            managedElement.setManufacturer(olt.getHersteller());
-            managedElement.setSoftwareVersion(olt.getFirmwareVersion());
-            managedElement.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.
-                    ResourceStateEnum.fromValue(MGMT_ELEMENT_RESOURCE_STATE));
-            managedElement.setCommunicationState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.
-                    CommunicationStateEnum.fromValue(MGMT_ELEMENT_COMMUNICATION_STATE));
+        List<CallbackgetaccessnodeinventoryrequestPayloadModules> moduleList = new ArrayList<>();
 
-            payload.setManagedElement(managedElement);
+        CallbackgetaccessnodeinventoryrequestPayloadModules ponModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
+        ponModule.setSlot("1");
+        ponModule.setManufacturer(olt.getHersteller());
+        ponModule.setShelf(DEFAULT_SHELF);
+        ponModule.setInstalledEquipmentObjectType("H805GPBD");
+        ponModule.setInstalledVersion("507(2015-8-27)");
+        ponModule.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount.getAndIncrement()));
+        ponModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
+        ponModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
+        moduleList.add(ponModule);
 
-            List<CallbackgetaccessnodeinventoryrequestPayloadModules> moduleList = new ArrayList<>();
+        CallbackgetaccessnodeinventoryrequestPayloadModules ethModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
+        ethModule.setSlot("19");
+        ethModule.setManufacturer(olt.getHersteller());
+        ethModule.setShelf(DEFAULT_SHELF);
+        ethModule.setInstalledEquipmentObjectType("H801X2CS");
+        ethModule.setInstalledVersion("507(2019-07-04)");
+        ethModule.setInstalledSerialNumber("H801X2715258001" + String.format("%03d", moduleCount.getAndIncrement()));
+        ethModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
+        ethModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
+                ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
+        moduleList.add(ethModule);
+        payload.setModules(moduleList);
 
-            CallbackgetaccessnodeinventoryrequestPayloadModules ponModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
-            ponModule.setSlot("1");
-            ponModule.setManufacturer(olt.getHersteller());
-            ponModule.setShelf(DEFAULT_SHELF);
-            ponModule.setInstalledEquipmentObjectType("H805GPBD");
-            ponModule.setInstalledVersion("507(2015-8-27)");
-            ponModule.setInstalledSerialNumber("121BQW10B6123" + String.format("%03d", moduleCount.getAndIncrement()));
-            ponModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
-                    ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
-            ponModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
-                    ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
-            moduleList.add(ponModule);
-
-            CallbackgetaccessnodeinventoryrequestPayloadModules ethModule = new CallbackgetaccessnodeinventoryrequestPayloadModules();
-            ethModule.setSlot("19");
-            ethModule.setManufacturer(olt.getHersteller());
-            ethModule.setShelf(DEFAULT_SHELF);
-            ethModule.setInstalledEquipmentObjectType("H801X2CS");
-            ethModule.setInstalledVersion("507(2019-07-04)");
-            ethModule.setInstalledSerialNumber("H801X2715258001" + String.format("%03d", moduleCount.getAndIncrement()));
-            ethModule.setResourceState(CallbackgetaccessnodeinventoryrequestPayloadModules.
-                    ResourceStateEnum.fromValue(MODULE_RESOURCE_STATE));
-            ethModule.setResourceFulfillmentState(CallbackgetaccessnodeinventoryrequestPayloadModules.
-                    ResourceFulfillmentStateEnum.fromValue(MODULE_RESOURCE_FULFILMENT_STATE));
-            moduleList.add(ethModule);
-            payload.setModules(moduleList);
-
-            List<CallbackgetaccessnodeinventoryrequestPayloadPorts> portsList =
-                    new ArrayList<>(PON_PORTS_NUMBER + ETH_PORTS_NUMBER);
-            for (int i = 0; i < PON_PORTS_NUMBER; ++i) {
-                CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
-                port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
-                port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
-                port.setPort(String.valueOf(i));
-                port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.PON);
-                port.setShelf(DEFAULT_SHELF);
-                port.setSlot(DEFAULT_PON_SLOT);
-                portsList.add(port);
-            }
-
-            for (int i = 0; i < ETH_PORTS_NUMBER; ++i) {
-                CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
-                port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
-                port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
-                port.setPort(String.valueOf(i));
-                port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.ETHERNET);
-                port.setShelf(DEFAULT_SHELF);
-                port.setSlot(DEFAULT_ETH_SLOT);
-                portsList.add(port);
-            }
-            payload.setPorts(portsList);
-            entity.setPayload(payload);
-            StubMapping mapping = new StubMapping();
-            StubMappingRequest request = new StubMappingRequest();
-            request.setMethod("GET");
-            request.setUrlPattern("/configuration/v1/accessNodes/" + name + "/?$");
-            mapping.setRequest(request);
-            StubMappingResponse response = new StubMappingResponse();
-            response.setStatus(202);
-            Map<String, String> respHeaders = new HashMap<>();
-            respHeaders.put("Content-Type", "application/json");
-            response.setHeaders(respHeaders);
-            List<HttpHeader> webhookHeaders = new ArrayList<>(2);
-            webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
-            webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
-
-            JSONInterface json = new JSON();
-            json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
-
-            WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,
-                    "{{request.headers.X-Callback-Url}}",
-                    webhookHeaders,
-                    new Body(json.serialize(entity)),
-                    0,
-                    null);
-            mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
-            mapping.setResponse(response);
-            mapping.setPriority(1);
-            values.add(mapping);
+        List<CallbackgetaccessnodeinventoryrequestPayloadPorts> portsList =
+                new ArrayList<>(PON_PORTS_NUMBER + ETH_PORTS_NUMBER);
+        for (int i = 0; i < PON_PORTS_NUMBER; ++i) {
+            CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
+            port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
+            port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
+            port.setPort(String.valueOf(i));
+            port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.PON);
+            port.setShelf(DEFAULT_SHELF);
+            port.setSlot(DEFAULT_PON_SLOT);
+            portsList.add(port);
         }
-        return values;
+
+        for (int i = 0; i < ETH_PORTS_NUMBER; ++i) {
+            CallbackgetaccessnodeinventoryrequestPayloadPorts port = new CallbackgetaccessnodeinventoryrequestPayloadPorts();
+            port.setInstalledMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER);
+            port.setInstalledPartNumberSFP(OPTIC_VENDOR_PART_NUMBER);
+            port.setPort(String.valueOf(i));
+            port.setPortType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.ETHERNET);
+            port.setShelf(DEFAULT_SHELF);
+            port.setSlot(DEFAULT_ETH_SLOT);
+            portsList.add(port);
+        }
+        payload.setPorts(portsList);
+        entity.setPayload(payload);
+        StubMapping mapping = new StubMapping();
+        StubMappingRequest request = new StubMappingRequest();
+        request.setMethod("GET");
+        request.setUrlPattern("/configuration/v1/accessNodes/" + name + "/?$");
+        mapping.setRequest(request);
+        StubMappingResponse response = new StubMappingResponse();
+        response.setStatus(202);
+        Map<String, String> respHeaders = new HashMap<>();
+        respHeaders.put("Content-Type", "application/json");
+        response.setHeaders(respHeaders);
+        List<HttpHeader> webhookHeaders = new ArrayList<>(2);
+        webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
+        webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
+
+        JSONInterface json = new JSON();
+        json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
+
+        WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,
+                "{{request.headers.X-Callback-Url}}",
+                webhookHeaders,
+                new Body(json.serialize(entity)),
+                0,
+                null);
+        mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
+        mapping.setResponse(response);
+        mapping.setPriority(1);
+        return mapping;
     }
 }
