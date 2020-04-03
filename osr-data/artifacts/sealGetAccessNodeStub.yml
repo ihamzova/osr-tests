@@ -1,6 +1,0 @@
-name: SEAL_GetAccessNodeStub
-generator: com.tsystems.tm.acc.data.generators.WiremockMappingGenerator
-mapper: com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper
-type: OltDevice
-parameters:
-  - FSZ_76HA
