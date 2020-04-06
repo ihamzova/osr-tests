@@ -30,7 +30,7 @@ import java.util.UUID;
 public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiTest {
     private static final int WAIT_TIME = 15_000;
 
-    private A4PreProvisioningRobot a4PreProvisioningRobot;
+//    private A4PreProvisioningRobot a4PreProvisioningRobot;
     private A4ResourceInventoryRobot a4ResourceInventoryRobot;
     private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot;
 
@@ -39,14 +39,14 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
     private NetworkElementPortDto networkElementPort;
     private LogicalResourceUpdate terminationPointLogicalResource;
 
-    private PortProvisioning port;
+//    private PortProvisioning port;
 
     @BeforeClass
     public void init() {
-        DataBundle dataBundle = OsrTestContext.get().getData();
-        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
+//        DataBundle dataBundle = OsrTestContext.get().getData();
+//        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
 
-        a4PreProvisioningRobot = new A4PreProvisioningRobot();
+//        a4PreProvisioningRobot = new A4PreProvisioningRobot();
         a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
         a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
     }
@@ -72,7 +72,7 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
     @Test(description = "A4 preprovisioning case")
     @TmsLink("DIGIHUB-47437")
     @Description("A4 preprovisioning case")
-    public void a4ProvisioningTest() throws InterruptedException {
+    public void belasTest() throws InterruptedException {
         // GIVEN / Arrange
         terminationPointLogicalResource = setUpTerminationPointWithNepParentAsLogicalResource(networkElementPort);
 
@@ -81,7 +81,7 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
         Thread.sleep(WAIT_TIME);
 
         // THEN
-        a4PreProvisioningRobot.checkResults(port);
+//        a4PreProvisioningRobot.checkResults(port);
         // Also, a NSP should have been created. How to find it? Via it's connection to the TP?
 
         // AFTER / Clean-up
@@ -115,7 +115,7 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
                 .administrativeState("ACTIVATED")
                 .lifecycleState("PLANNING")
                 .operationalState("INSTALLING")
-                .category("OLT") // must be given, else preprovisioning will not be started
+                .category("OLT___") // must be 'OLT', else preprovisioning will not be started
                 .fsz("TODO")
                 .vpsz("TODO")
                 .klsId("1234567")
@@ -129,7 +129,6 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
     }
 
     private NetworkElementPortDto setUpNetworkElementPort() {
-
         return new NetworkElementPortDto()
                 .uuid(UUID.randomUUID().toString())
                 .description("NEP for integration test")
@@ -167,7 +166,7 @@ public class A4PreProvisioningStartedWithA4ResourceInventoryService extends ApiT
                 .value("true");
         tpCharacteristics.add(rc5);
 
-        ResourceRef resourceRef = new ResourceRef()
+        ResourceRef resourceRef = new ResourceRef() // Parent must be NEP, else preprovisioning will not be started
                 .id(nepParent.getUuid())
                 .type("NetworkElementPort");
 
