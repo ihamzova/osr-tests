@@ -18,6 +18,9 @@
         <framework.version>${project.parent.version}</framework.version>
         <osr.models.version>0.0.11</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
+
+        <oc.project.name>gigabit-tm-berlinium-01</oc.project.name>
+        <test.suite.filename>src/test/suite/gigabit-tm-berlinium-01.xml</test.suite.filename>
     </properties>
 
     <repositories>

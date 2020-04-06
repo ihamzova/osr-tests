@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -16,6 +17,15 @@ public class A4ResourceInventoryServiceRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
+
+    @Step("Create Termination Point represented as Logical Resource")
+    public void createTerminationPoint(LogicalResourceUpdate terminationPointLogicalResource) {
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePut()
+                .body(terminationPointLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
     @Step("Check network element group as logical resource representation")
     public void checkLogicalResourceIsNetworkElementGroup(String uuid) {
