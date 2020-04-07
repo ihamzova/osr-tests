@@ -15,16 +15,18 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 public class A4ResourceInventoryServiceRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
+    private static final Integer HTTP_CODE_CREATED_201 = 201;
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
-    public void createTerminationPoint(LogicalResourceUpdate terminationPointLogicalResource) {
+    public void createTerminationPoint(String uuid, LogicalResourceUpdate terminationPointLogicalResource) {
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePut()
+                .idPath(uuid)
                 .body(terminationPointLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     @Step("Check network element group as logical resource representation")

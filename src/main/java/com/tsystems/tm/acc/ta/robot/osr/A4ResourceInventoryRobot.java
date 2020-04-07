@@ -95,19 +95,34 @@ public class A4ResourceInventoryRobot {
                 .terminationPoints()
                 .deleteTerminationPoint()
                 .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Delete termination point by it's NEP parent")
-    public void deleteTerminationPointViaNepParent(NetworkElementPortDto networkElementPortParent) {
-        // As we don't know the TP UUID we have to find via it's parent, in this case the parent is a NEP
-        List<TerminationPointDto> terminationPointList = a4ResourceInventory
-                .terminationPoints()
-                .findTerminationPoints()
-                .parentUuidQuery(networkElementPortParent.getUuid())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(terminationPointList.size(), 1);
+    @Step("Check if one network service profile connected to termination point exists")
+    public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp) {
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesViaTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+    }
 
-        deleteTerminationPoint(terminationPointList.get(0).getUuid());
+    @Step("Delete network service profile connected to termination point")
+    public void deleteNetworkServiceProfileConnectedToTerminationPoint(String uuidTp) {
+        // First: Find all NSPs connected to given TP (expected: only 1 NSP connected)
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesViaTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+
+        // Second: Delete found NSP
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .deleteNetworkServiceProfileFtthAccess()
+                .uuidPath(nspList.get(0).getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    private List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfilesFtthAccess()
+                .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
