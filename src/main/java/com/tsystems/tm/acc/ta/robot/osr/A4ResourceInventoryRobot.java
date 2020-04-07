@@ -2,10 +2,9 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.AdditionalAttributeDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,44 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
+    @Step("Create network element")
+    public void createNetworkElement(NetworkElementDto networkElement) {
+        a4ResourceInventory
+                .networkElements()
+                .createOrUpdateNetworkElement()
+                .body(networkElement)
+                .uuidPath(networkElement.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Delete network element")
+    public void deleteNetworkElement(String uuid) {
+        a4ResourceInventory
+                .networkElements()
+                .deleteNetworkElement()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Create network element port")
+    public void createNetworkElementPort(NetworkElementPortDto networkElementPort) {
+        a4ResourceInventory
+                .networkElementPorts()
+                .createOrUpdateNetworkElementPort()
+                .body(networkElementPort)
+                .uuidPath(networkElementPort.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Delete network element port")
+    public void deleteNetworkElementPort(String uuid) {
+        a4ResourceInventory
+                .networkElementPorts()
+                .deleteNetworkElementPort()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
     @Step("Create termination point")
     public void createTerminationPoint(TerminationPointDto terminationPoint) {
         List<AdditionalAttributeDto> additionalAttributes = new ArrayList<>();
@@ -57,6 +94,34 @@ public class A4ResourceInventoryRobot {
                 .terminationPoints()
                 .deleteTerminationPoint()
                 .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Check if one network service profile connected to termination point exists")
+    public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp) {
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesViaTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+    }
+
+    @Step("Delete network service profile connected to termination point")
+    public void deleteNetworkServiceProfileConnectedToTerminationPoint(String uuidTp) {
+        // First: Find all NSPs connected to given TP (expected: only 1 NSP connected)
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesViaTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+
+        // Second: Delete found NSP
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .deleteNetworkServiceProfileFtthAccess()
+                .uuidPath(nspList.get(0).getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    private List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfilesFtthAccess()
+                .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
