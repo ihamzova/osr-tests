@@ -18,14 +18,13 @@ public class OltDiscoveryPage {
     public static final String ENDPOINT = "/oltdiscovery";
 
     public static final By OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR = byQaData("button-discovery-process-start");
-    public static final By AUTO_UPDATE_BUTTON_LOCATOR = byQaData("button-automatic-update");
     public static final By UPDATE_HISTORY_BUTTON_LOCATOR = byQaData("button-update-history");
     public static final By DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR = byQaData("button-discovery-result-show");
     public static final By DISCOVERY_RESULT_SAVE_BUTTON_LOCATOR = byQaData("button-save-changes");
     public static final By OLT_SEARCH_PAGE_TAB_LOCATOR = byQaData("a-olt-search-tab");
 
     private static final Integer TIMEOUT_FOR_OLT_DISCOVERY = 60_000;
-    private static final Integer TIMEOUT_FOR_ELEMENT_APPEARS = 60_000;
+    private static final Integer WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE = 15_000;
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -41,11 +40,14 @@ public class OltDiscoveryPage {
     @Step("Make olt discovery")
     public OltDiscoveryPage makeOltDiscovery() {
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).click();
-        $(AUTO_UPDATE_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_ELEMENT_APPEARS).click();
+        try {
+            Thread.sleep(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+        $(UPDATE_HISTORY_BUTTON_LOCATOR).click();
 
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).waitWhile(Condition.disabled, TIMEOUT_FOR_OLT_DISCOVERY);
-
-        $(UPDATE_HISTORY_BUTTON_LOCATOR).click();
         return this;
     }
 
