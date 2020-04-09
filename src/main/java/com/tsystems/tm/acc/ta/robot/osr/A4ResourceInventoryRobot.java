@@ -78,7 +78,10 @@ public class A4ResourceInventoryRobot {
     @Step("Create termination point")
     public void createTerminationPoint(TerminationPointDto terminationPoint) {
         List<AdditionalAttributeDto> additionalAttributes = new ArrayList<>();
-        terminationPoint.getAdditionalAttribute().forEach(attribute -> additionalAttributes.add(new AdditionalAttributeDto().key(attribute.getKey()).value(attribute.getValue())));
+        terminationPoint
+                .getAdditionalAttribute()
+                .forEach(attribute -> additionalAttributes
+                        .add(new AdditionalAttributeDto().key(attribute.getKey()).value(attribute.getValue())));
 
         a4ResourceInventory
                 .terminationPoints()
