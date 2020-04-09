@@ -11,9 +11,4 @@
             <class name="com.tsystems.tm.acc.ta.domain.provisioning.A4PreProvisioning"/>
         </classes>
     </test>
-    <test thread-count="1" name="Termination Point creation from NEMO with preprovisioning and network service profile creation">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.domain.provisioning.NewTpFromNemoWithPreprovisioningAndNspCreation"/>
-        </classes>
-    </test>
 </suite>

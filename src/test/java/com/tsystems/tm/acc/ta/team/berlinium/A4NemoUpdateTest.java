@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
 @TmsLink("DIGIHUB-xxxxx")
-public class A4NemoUpdateTest {
+public class A4NemoUpdateTest extends ApiTest {
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
 

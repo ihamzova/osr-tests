@@ -1,10 +1,7 @@
 package com.tsystems.tm.acc.ta.domain.provisioning;
 
 import com.tsystems.tm.acc.data.models.portprovisioning.PortProvisioning;
-import com.tsystems.tm.acc.data.osr.models.DataBundle;
-import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -26,6 +23,7 @@ import org.testng.annotations.Test;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
@@ -44,12 +42,12 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
 
     @BeforeClass
     public void init() {
-        DataBundle dataBundle = OsrTestContext.get().getData();
-        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
-
         a4PreProvisioningRobot = new A4PreProvisioningRobot();
         a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
         a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
+
+//        DataBundle dataBundle = OsrTestContext.get().getData();
+//        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
     }
 
     @BeforeMethod
@@ -57,6 +55,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         networkElementGroup = setUpNetworkElementGroup();
         networkElement = setUpNetworkElement();
         networkElementPort = setUpNetworkElementPort();
+
+        port = setUpPreprovisioningPort(networkElement, networkElementPort);
 
         a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(networkElement);
@@ -80,10 +80,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         terminationPointLogicalResource = setUpTerminationPointWithNepParentAsLogicalResource(networkElementPort);
 
         // WHEN / Action
-        a4ResourceInventoryServiceRobot.createTerminationPoint(uuidTp, terminationPointLogicalResource);
+        a4ResourceInventoryServiceRobot.createTerminationPoint(uuidTp, terminationPointLogicalResource); // Create TP needs to be triggered with a4-resource-inventory-service, else preprovisioning will not be started
         Thread.sleep(WAIT_TIME);
 
-        // THEN
+        // THEN / Assert
         a4PreProvisioningRobot.checkResults(port);
         a4ResourceInventoryRobot.checkNetworkServiceProfileConnectedToTerminationPointExists(uuidTp);
 
@@ -95,14 +95,14 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     private NetworkElementGroupDto setUpNetworkElementGroup() {
         return new NetworkElementGroupDto()
                 .uuid(UUID.randomUUID().toString())
-                .description("NEG for integration test")
+                .description("NEG for domain test DIGIHUB-xxxxx")
                 .type("OLT")
                 .specificationVersion("1")
                 .operationalState("INSTALLING")
                 .name("NEG_" + UUID.randomUUID().toString().substring(0, 6)) // satisfy unique constraints
                 .lifeCycleState("WORKING")
                 .lastUpdateTime(OffsetDateTime.now())
-                .description("NEG for integration test")
+                .description("NEG for domain test")
                 .creationTime(OffsetDateTime.now())
                 .centralOfficeNetworkOperator("operator")
                 .creationTime(OffsetDateTime.now())
@@ -110,18 +110,21 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     }
 
     private NetworkElementDto setUpNetworkElement() {
+        Random random = new Random();
+        int randoms = random.ints(1, 9999).findFirst().getAsInt();
+
         return new NetworkElementDto()
                 .uuid(UUID.randomUUID().toString())
-                .networkElementGroupUuid(networkElementGroup.getUuid())
-                .description("NE for integration test")
+                .networkElementGroupUuid(networkElementGroup.getUuid()) // NE needs NEG as parent
+                .description("NE for domain test DIGIHUB-xxxxx")
                 .address("address")
                 .administrativeState("ACTIVATED")
                 .lifecycleState("PLANNING")
                 .operationalState("INSTALLING")
                 .category("OLT") // must be 'OLT', else preprovisioning will not be started
-                .fsz("FSZ_" + UUID.randomUUID().toString().substring(0, 4)) // satisfy unique constraints
-                .vpsz("VPSZ")
-                .klsId("1234567")
+                .fsz(Integer.toString(randoms)) // satisfy unique constraints
+                .vpsz("49/8492/0")
+                .klsId("123456")
                 .plannedRackId("rackid")
                 .plannedRackPosition("rackpos")
                 .planningDeviceName("planname")
@@ -132,11 +135,14 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     }
 
     private NetworkElementPortDto setUpNetworkElementPort() {
+        Random random = new Random();
+        int randoms = random.ints(1, 9999).findFirst().getAsInt();
+
         return new NetworkElementPortDto()
                 .uuid(UUID.randomUUID().toString())
-                .description("NEP for integration test")
-                .networkElementUuid(networkElement.getUuid())
-                .logicalLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)) // Prefix 'LogicalLabel_' must be given, else preprovisioning will not be started. Also, satisfy unique constraints
+                .description("NEP for domain test DIGIHUB-xxxxx")
+                .networkElementUuid(networkElement.getUuid()) // NEP needs NE as parent
+                .logicalLabel("LogicalLabel_" + randoms) // Prefix 'LogicalLabel_' must be given, else preprovisioning will not be started. Also, satisfy unique constraints
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState("INSTALLING")
@@ -183,10 +189,18 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
                 .baseType("LogicalResource")
                 .type("TerminationPoint")
                 .version("1")
-                .description("TP for integration test");
+                .description("TP for domain test DIGIHUB-xxxxx");
         terminationPointLogicalResource.setCharacteristic(tpCharacteristics);
         terminationPointLogicalResource.setResourceRelationship(tpResourceRelationships);
 
         return terminationPointLogicalResource;
+    }
+
+    private PortProvisioning setUpPreprovisioningPort(NetworkElementDto networkElement, NetworkElementPortDto networkElementPort) {
+        PortProvisioning port = new PortProvisioning();
+        port.setEndSz(networkElement.getVpsz() + "/" + networkElement.getFsz());
+        port.setPortNumber(networkElementPort.getLogicalLabel().split("_")[1]);
+        port.setSlotNumber("99");
+        return port;
     }
 }
