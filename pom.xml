@@ -18,9 +18,6 @@
         <framework.version>${project.parent.version}</framework.version>
         <osr.models.version>0.0.12</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
-
-        <oc.project.name>gigabit-tm-osr-autotest-01</oc.project.name>
-        <test.suite.filename>src/test/suite/gigabit-tm-osr-autotest-01.xml</test.suite.filename>
     </properties>
 
     <repositories>

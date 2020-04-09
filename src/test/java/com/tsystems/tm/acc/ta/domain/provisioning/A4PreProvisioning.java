@@ -63,9 +63,9 @@ public class A4PreProvisioning extends ApiTest {
                 .additionalAttribute(Collections.singletonList(new AdditionalAttributeDto().key("key").value("value")));
 
         tpRef = new TpRefDto()
-                .endSz("49/8492/0/12B3")
-                .slotNumber("99")
-                .portNumber("1234")
+                .endSz("49/8492/0/76A4")
+                .slotNumber("2")
+                .portNumber("5")
                 .klsId("123456")
                 .partyId(10001L)
                 .tpRef(terminationPoint.getUuid());
