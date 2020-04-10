@@ -4,8 +4,7 @@ import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.WebhookDefinitionModel;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
-import com.tsystems.tm.acc.swagger.plugin.JSONInterface;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.seal.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
@@ -123,7 +122,7 @@ public class SealAccessNodeConfigurationGeneratorMapper {
         webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
         webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
 
-        JSONInterface json = new JSON();
+        JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
 
         WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,

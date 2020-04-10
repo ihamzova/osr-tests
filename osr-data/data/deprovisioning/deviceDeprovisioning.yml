@@ -1,5 +1,5 @@
 name: deviceDepovisioning
-template: PortProvisioning
+template: com.tsystems.tm.acc.data.models.PortProvisioning
 values:
   endSz: "49/30/179/76H1"
   accessLinesWG: 0

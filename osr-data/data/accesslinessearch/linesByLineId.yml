@@ -1,5 +1,5 @@
 name: linesByLineId
-template: AccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   endSz: ""
   slotNumber: ""

@@ -1,5 +1,5 @@
 name: FSZ_76ZB_MA5800
-template: OltDevice
+template: com.tsystems.tm.acc.data.models.OltDevice
 values:
   vpsz: "49/911/1100"
   fsz: "76ZB"
@@ -8,10 +8,6 @@ values:
   bngDownlinkSlot: "1"
   lsz: "4Z2"
   orderNumber: "223344"
+  vst: "@DefaultVst"
   oltPort: "3"
   oltSlot: "8"
-  vst: "DefaultVst"
-
-
-
-

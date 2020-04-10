@@ -1,14 +1,16 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.*;
+import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.EquipmentHolder;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 

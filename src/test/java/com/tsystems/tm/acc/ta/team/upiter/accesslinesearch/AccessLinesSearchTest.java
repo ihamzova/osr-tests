@@ -1,11 +1,11 @@
 package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
-import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.osr.models.accessline.AccessLine;
+import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.data.osr.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileNames;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileTypes;

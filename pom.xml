@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.1.22</version>
+        <version>0.1.25</version>
     </parent>
 
     <properties>
@@ -59,31 +59,17 @@
             <plugin>
                 <groupId>com.tsystems.tm.acc.tests</groupId>
                 <artifactId>acc-data-maven-plugin</artifactId>
-                <configuration>
-                    <commonPackageName>com.tsystems.tm.acc.data.models</commonPackageName>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>generateModels</id>
+                        <id>generate</id>
                         <goals>
-                            <goal>createModels</goal>
-                        </goals>
-                        <configuration>
-                            <packageName>com.tsystems.tm.acc.data.osr.models</packageName>
-                            <sourceFolder>${basedir}/osr-data</sourceFolder>
-                            <outputSourceFolder>${project.build.directory}/generated-sources</outputSourceFolder>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generateData</id>
-                        <goals>
-                            <goal>createData</goal>
+                            <goal>generate</goal>
                         </goals>
                         <configuration>
                             <packageName>com.tsystems.tm.acc.data.osr.models</packageName>
                             <sourceFolder>${basedir}/osr-data</sourceFolder>
                             <outputFolder>${project.build.directory}/osr-data</outputFolder>
-                            <outputSourceFolder>${project.build.directory}/generated-sources</outputSourceFolder>
+                            <outputSourceFolder>${project.build.directory}/generated-test-sources</outputSourceFolder>
                             <valuesFile>${basedir}/osr-data/values.yml</valuesFile>
                         </configuration>
                     </execution>
