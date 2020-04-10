@@ -68,7 +68,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
         oltCommissioningPage.validateUrl();
 
-        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         checkDeviceMA5600(nvt);
         checkUplink(endSz);
@@ -95,7 +95,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
         oltCommissioningPage.validateUrl();
 
-        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         checkDeviceMA5800(nvt);
         checkUplink(endSz);

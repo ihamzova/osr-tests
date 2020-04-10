@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
+import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -36,23 +36,23 @@ public class OltCommissioningPage {
     }
 
     @Step("Input params and start commissioning")
-    public OltCommissioningPage startOltCommissioning(Nvt nvt, Integer timeout) {
+    public OltCommissioningPage startOltCommissioning(OltDevice olt, Integer timeout) {
         $(OLT_KLS_ID_INPUT_LOCATOR).click();
-        $(OLT_KLS_ID_INPUT_LOCATOR).val(nvt.getOltDevice().getVst().getAddress().getKlsId());
+        $(OLT_KLS_ID_INPUT_LOCATOR).val(olt.getVst().getAddress().getKlsId());
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(nvt.getOltSlot());
+        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(olt.getOltSlot());
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(nvt.getOltPort());
+        $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(olt.getOltPort());
         $(OLT_BNG_ENDSZ_INPUT_LOCATOR).click();
-        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).val(nvt.getOltDevice().getBngEndsz());
+        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).val(olt.getBngEndsz());
         $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).click();
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkSlot());
+        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(olt.getBngDownlinkSlot());
         $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).click();
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkPort());
+        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(olt.getBngDownlinkPort());
         $(LSZ_SELECT_LOCATOR).click();
-        $(By.xpath(String.format(LSZ_VALUE_LOCATOR, nvt.getOltDevice().getLsz()))).click();
+        $(By.xpath(String.format(LSZ_VALUE_LOCATOR, olt.getLsz()))).click();
         $(ORDER_NUMBER_INPUT_LOCATOR).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).val(nvt.getOltDevice().getOrderNumber());
+        $(ORDER_NUMBER_INPUT_LOCATOR).val(olt.getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
         $(CARDS_DETAILS_TAB_LOCATOR).waitUntil(appears, timeout);
         return this;

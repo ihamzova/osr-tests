@@ -1,10 +1,8 @@
 package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
 import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
@@ -50,19 +48,19 @@ public class OltCommissioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
     public void automaticallyOltCommissioning() {
-        Nvt nvtForOltAutoCommissioning = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltCommissioning);
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
 
-        oltCommissioningRobot.startAutomaticOltCommissioning(nvtForOltAutoCommissioning);
-        oltCommissioningRobot.checkOltCommissioningResult(nvtForOltAutoCommissioning);
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-37121")
     @Description("Olt-Commissioning (MA5600T) manually case")
     public void manuallyOltCommissioning() {
-        Nvt nvtForOltManualCommissioning = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltCommissioning);
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
 
-        oltCommissioningRobot.startManualOltCommissioning(nvtForOltManualCommissioning);
-        oltCommissioningRobot.checkOltCommissioningResult(nvtForOltManualCommissioning);
+        oltCommissioningRobot.startManualOltCommissioning(oltDevice);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
     }
 }

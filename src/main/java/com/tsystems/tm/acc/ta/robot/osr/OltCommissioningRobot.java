@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.*;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.data.models.nvt.Nvt;
@@ -30,22 +31,22 @@ public class OltCommissioningRobot {
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
     @Step("Starts automatic olt commissioning process")
-    public void startAutomaticOltCommissioning(Nvt nvt) {
+    public void startAutomaticOltCommissioning(OltDevice olt) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(nvt.getOltDevice());
+        oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(olt);
 
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
 
         oltCommissioningPage.validateUrl();
-        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(olt, TIMEOUT_FOR_OLT_COMMISSIONING);
     }
 
     @Step("Starts manual olt commissioning process")
-    public void startManualOltCommissioning(Nvt nvt) {
+    public void startManualOltCommissioning(OltDevice olt) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(nvt.getOltDevice());
+        oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(olt);
 
         OltDiscoveryPage oltDiscoveryPage = oltSearchPage.pressManualCommissionigButton();
 
@@ -57,20 +58,20 @@ public class OltCommissioningRobot {
 
         oltSearchPage = oltDiscoveryPage.openOltSearchPage();
 
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(nvt.getOltDevice());
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.validateUrl();
 
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(nvt);
+        oltDetailsPage.inputUplinkParameters(olt);
         oltDetailsPage.saveUplinkConfiguration();
 
         oltDetailsPage = oltDetailsPage.configureAncpSession();
-        oltDetailsPage.startAccessLinesProvisioning(nvt, TIMEOUT_FOR_CARD_PROVISIONING);
+        oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
     }
 
     @Step("Checks olt data in olt-ri after commissioning process")
-    public void checkOltCommissioningResult(Nvt nvt) {
-        String oltEndSz = nvt.getOltDevice().getVpsz() + "/" + nvt.getOltDevice().getFsz();
+    public void checkOltCommissioningResult(OltDevice olt) {
+        String oltEndSz = olt.getVpsz() + "/" + olt.getFsz();
         long portsCount;
 
         Device deviceAfterCommissioning = oltResourceInventoryClient.getClient().deviceInternalController()
