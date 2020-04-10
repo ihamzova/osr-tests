@@ -1,11 +1,11 @@
 name: nvtForOltCommissioning
-template: Nvt
+template: com.tsystems.tm.acc.data.models.Nvt
 values:
   id: ""
   name: ""
-  address: "AddressBigCity"
+  address: "@AddressBigCity"
   splitterType: 32
   gebietstyp: ""
-  oltDevice: "FSZ_76HA"
+  oltDevice: "@FSZ_76HA"
   oltSlot: "19"
   oltPort: "0"

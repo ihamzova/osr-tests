@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
-import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatch;
+import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
 import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatchCase;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.PoolLineId;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.SingleLineId;
@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invo
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
 import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;

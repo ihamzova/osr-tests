@@ -18,6 +18,3 @@ data:
 #    name: FSZ_76HA
   - template: Nvt
     name: nvtForOltCommissioning
-artifacts:
-  - SEAL_GetAccessNodeStub
-  - PSL_GetEquipment

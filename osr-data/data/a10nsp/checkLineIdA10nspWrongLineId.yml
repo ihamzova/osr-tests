@@ -1,5 +1,5 @@
 name: checkLineIdA10nspWrongLineId
-template: CheckLineIdA10nsp
+template: com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp
 values:
   oltEndSz: "49/30/179/76H1"
   bngEndSz: "49/911/84/7ZJB"
