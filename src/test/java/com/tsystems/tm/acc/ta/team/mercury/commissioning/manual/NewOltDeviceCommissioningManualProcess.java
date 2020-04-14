@@ -53,7 +53,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-
+        
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
@@ -90,6 +90,8 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         device.getVpsz();
         device.setFsz("76H1");
         device.setLsz("4C1");
+        device.setOltPort("1");
+        device.setOltSlot("8");
         device.setBngEndsz("49/30/179/43G1");
         device.setBngDownlinkPort("ge-1/2/3");
         device.setBngDownlinkSlot("7");
@@ -102,8 +104,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
      */
     private Nvt getNvt() {
         Nvt nvt = new Nvt();
-        nvt.setOltPort("1");
-        nvt.setOltSlot("8");
         nvt.setOltDevice(getDevice());
         return nvt;
     }
