@@ -88,6 +88,8 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         device.getVpsz();
         device.setFsz("76Z7");
         device.setLsz("4Z2");
+        device.setOltPort("0");
+        device.setOltSlot("19");
         device.setBngEndsz("49/911/84/7ZJE");
         device.setBngDownlinkPort("ge-2/1/4");
         device.setBngDownlinkSlot("2");
@@ -100,8 +102,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
      */
     private Nvt getNvt() {
         Nvt nvt = new Nvt();
-        nvt.setOltPort("0");
-        nvt.setOltSlot("19");
         nvt.setOltDevice(getDevice());
         return nvt;
     }
