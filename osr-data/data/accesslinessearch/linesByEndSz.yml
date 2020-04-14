@@ -1,5 +1,5 @@
 name: linesByEndSz
-template: AccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   endSz: "49/30/179/76H1"
   slotNumber: ""

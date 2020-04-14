@@ -1,12 +1,12 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
-import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
+import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.data.models.Nvt;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -68,7 +68,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
         oltCommissioningPage.validateUrl();
 
-        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         checkDeviceMA5600(nvt);
         checkUplink(endSz);
@@ -95,7 +95,7 @@ public class OltAutoCommissioning extends BaseTest {
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
         oltCommissioningPage.validateUrl();
 
-        oltCommissioningPage.startOltCommissioning(nvt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         checkDeviceMA5800(nvt);
         checkUplink(endSz);

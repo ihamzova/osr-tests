@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -74,17 +73,17 @@ public class OltDetailsPage {
     }
 
     @Step("Input uplink parameters")
-    public OltDetailsPage inputUplinkParameters(Nvt nvt) {
+    public OltDetailsPage inputUplinkParameters(OltDevice olt) {
         $(OLT_SLOT_SELECT_LOCATOR).click();
-        $(byQaData(String.format(slotValueLocatorString, nvt.getOltSlot()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(byQaData(String.format(slotValueLocatorString, olt.getOltSlot()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(OLT_PORT_SELECT_LOCATOR).click();
-        $(byQaData(String.format(portValueLocatorString, nvt.getOltPort()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(BNG_ENDSZ_INPUT_LOCATOR).val(nvt.getOltDevice().getBngEndsz());
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkSlot());
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(nvt.getOltDevice().getBngDownlinkPort());
+        $(byQaData(String.format(portValueLocatorString, olt.getOltPort()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(BNG_ENDSZ_INPUT_LOCATOR).val(olt.getBngEndsz());
+        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(olt.getBngDownlinkSlot());
+        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(olt.getBngDownlinkPort());
         $(LSZ_SELECT_LOCATOR).click();
-        $(byQaData(String.format(lszValueLocatorString, nvt.getOltDevice().getLsz() ))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).val(nvt.getOltDevice().getOrderNumber());
+        $(byQaData(String.format(lszValueLocatorString, olt.getLsz()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(ORDER_NUMBER_INPUT_LOCATOR).val(olt.getOrderNumber());
         return this;
     }
 
@@ -141,9 +140,9 @@ public class OltDetailsPage {
     }
 
     @Step("Access lines provisioning")
-    public OltDetailsPage startAccessLinesProvisioning(Nvt nvt, Integer timeout) {
+    public OltDetailsPage startAccessLinesProvisioning(Integer timeout) {
         $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        for( int slot: AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
+        for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
             if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
                 $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).click();
                 $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();

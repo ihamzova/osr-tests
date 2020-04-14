@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
-import com.tsystems.tm.acc.data.osr.models.homeidbatch.HomeIdBatch;
+import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
 import com.tsystems.tm.acc.data.osr.models.homeidbatch.HomeIdBatchCase;
 import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.PoolHomeId;
 import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.SingleHomeId;
@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invo
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
 import com.tsystems.tm.acc.ta.api.osr.HomeIdGeneratorClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;

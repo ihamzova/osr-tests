@@ -1,5 +1,5 @@
 name: a4Port
-template: PortProvisioning
+template: com.tsystems.tm.acc.data.models.PortProvisioning
 values:
   endSz: "${scope, a4Provisioning.endSz}"
   slotNumber: "${scope, a4Provisioning.slotNumber}"

@@ -1,11 +1,11 @@
 name: nvtForOltAutoCommissioningMA5800
-template: Nvt
+template: com.tsystems.tm.acc.data.models.Nvt
 values:
   id: ""
   name: ""
-  address: "AddressBigCity"
+  address: "@AddressBigCity"
   splitterType: 32
   gebietstyp: ""
-  oltDevice: "FSZ_76ZB_MA5800"
+  oltDevice: "@FSZ_76ZB_MA5800"
   oltSlot: "8"
   oltPort: "3"

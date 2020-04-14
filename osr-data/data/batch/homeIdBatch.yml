@@ -1,4 +1,4 @@
 name: homeIdBatch
-template: HomeIdBatch
+template: com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch
 values:
   numberLineIds: 32

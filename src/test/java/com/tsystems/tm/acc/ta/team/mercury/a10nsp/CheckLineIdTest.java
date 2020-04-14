@@ -1,11 +1,11 @@
 package com.tsystems.tm.acc.ta.team.mercury.a10nsp;
 
-import com.tsystems.tm.acc.data.osr.models.checklineida10nsp.CheckLineIdA10nsp;
+import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
 import com.tsystems.tm.acc.data.osr.models.checklineida10nsp.CheckLineIdA10nspCase;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import io.qameta.allure.Epic;

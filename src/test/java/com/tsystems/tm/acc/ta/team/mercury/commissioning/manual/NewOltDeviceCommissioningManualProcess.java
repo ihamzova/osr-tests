@@ -1,11 +1,11 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
-import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
+import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.data.models.Nvt;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -53,7 +53,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-
+        
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
@@ -63,7 +63,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getNvt());
+        oltDetailsPage.inputUplinkParameters(getNvt().getOltDevice());
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -90,6 +90,8 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         device.getVpsz();
         device.setFsz("76H1");
         device.setLsz("4C1");
+        device.setOltPort("1");
+        device.setOltSlot("8");
         device.setBngEndsz("49/30/179/43G1");
         device.setBngDownlinkPort("ge-1/2/3");
         device.setBngDownlinkSlot("7");
@@ -102,8 +104,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
      */
     private Nvt getNvt() {
         Nvt nvt = new Nvt();
-        nvt.setOltPort("1");
-        nvt.setOltSlot("8");
         nvt.setOltDevice(getDevice());
         return nvt;
     }

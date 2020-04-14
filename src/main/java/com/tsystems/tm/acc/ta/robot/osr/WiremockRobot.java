@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;

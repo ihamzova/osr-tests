@@ -1,11 +1,11 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
-import com.tsystems.tm.acc.data.models.credentials.Credentials;
-import com.tsystems.tm.acc.data.models.nvt.Nvt;
-import com.tsystems.tm.acc.data.models.oltdevice.OltDevice;
+import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.data.models.Nvt;
+import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -63,7 +63,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getNvt());
+        oltDetailsPage.inputUplinkParameters(getNvt().getOltDevice());
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -88,6 +88,8 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         device.getVpsz();
         device.setFsz("76Z7");
         device.setLsz("4Z2");
+        device.setOltPort("0");
+        device.setOltSlot("19");
         device.setBngEndsz("49/911/84/7ZJE");
         device.setBngDownlinkPort("ge-2/1/4");
         device.setBngDownlinkSlot("2");
@@ -100,8 +102,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
      */
     private Nvt getNvt() {
         Nvt nvt = new Nvt();
-        nvt.setOltPort("0");
-        nvt.setOltSlot("19");
         nvt.setOltDevice(getDevice());
         return nvt;
     }
