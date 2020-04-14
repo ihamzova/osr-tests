@@ -1,8 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
+import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -120,11 +122,68 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
+    public void deletePortsOfNetworkElement(String neUuid){
+        List<NetworkElementPortDto> ports = a4ResourceInventory
+                .networkElementPorts()
+                .findNetworkElementPorts()
+                .networkElementUuidQuery(neUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        ports.stream().forEach(networkElementPortDto -> {
+            deleteNetworkElementPort(networkElementPortDto.getUuid());
+        });
+    }
+
     private List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
                 .terminationPointUuidQuery(uuidTp)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Delete list of network Elements by vpsz/fsz")
+    public void deleteNetworkElements(ArrayList<A4ResourceInventoryEntry> list){
+        list.forEach(a4ResourceInventoryEntry -> {
+            List<NetworkElementDto> actualNeList = a4ResourceInventory
+                    .networkElements()
+                    .listNetworkElements()
+                    .fszQuery(a4ResourceInventoryEntry.neFsz())
+                    .vpszQuery(a4ResourceInventoryEntry.neVpsz())
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+            actualNeList.stream().findFirst().ifPresent(networkElementDto -> {
+                deletePortsOfNetworkElement(networkElementDto.getUuid());
+                deleteNetworkElement(networkElementDto.getUuid());
+            });
+        });
+    }
+
+    @Step("Delete network group by name")
+    public void deleteGroupByName(String groupName){
+        List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
+                .networkElementGroups()
+                .listNetworkElementGroups()
+                .nameQuery(groupName)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> {
+            a4ResourceInventory
+                    .networkElementGroups()
+                    .deleteNetworkElementGroup()
+                    .uuidPath(networkElementGroupDto.getUuid())
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        });
+    }
+
+    @Step("validate network elements")
+    public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list){
+        //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
+        InstallationPage installationPage = new InstallationPage();
+        list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
+        list.stream().skip(1).forEach(a4ResourceInventoryEntry -> {
+            installationPage.resetSearch();
+            installationPage.checkNetworkElement(a4ResourceInventoryEntry);
+        });
     }
 }
