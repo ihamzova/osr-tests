@@ -1,8 +1,9 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.data.models.credentials.Credentials;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.data.generators.A4ResourceInventoryGenerator;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -29,6 +30,7 @@ public class A4ResourceInventoryImportTest extends BaseTest {
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private A4ResourceInventoryImportRobot a4ResourceInventoryImportRobot = new A4ResourceInventoryImportRobot();
     private OsrTestContext context = OsrTestContext.get();
+    private A4ResourceInventoryGenerator a4ResourceInventoryGenerator = new A4ResourceInventoryGenerator();
 
     @BeforeMethod
     public void prepareData() {

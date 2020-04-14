@@ -1,0 +1,6 @@
+name: DefaultA4InventoryCsv
+generator: com.tsystems.tm.acc.ta.data.generators.A4ResourceInventoryGenerator
+mapper: com.tsystems.tm.acc.ta.data.generators.A4ResourceInventoryMapper
+type: A4ResourceInventory
+parameters:
+  - dummy
