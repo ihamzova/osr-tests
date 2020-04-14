@@ -1,7 +1,10 @@
 package com.tsystems.tm.acc.ta.domain.provisioning;
 
 import com.tsystems.tm.acc.data.models.portprovisioning.PortProvisioning;
+import com.tsystems.tm.acc.data.osr.models.DataBundle;
+import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
+import com.tsystems.tm.acc.ta.data.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -46,8 +49,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
         a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
 
-//        DataBundle dataBundle = OsrTestContext.get().getData();
-//        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
+        DataBundle dataBundle = OsrTestContext.get().getData();
+        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
     }
 
     @BeforeMethod
@@ -56,11 +59,14 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         networkElement = setUpNetworkElement();
         networkElementPort = setUpNetworkElementPort();
 
-        port = setUpPreprovisioningPort(networkElement, networkElementPort);
-
         a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(networkElement);
         a4ResourceInventoryRobot.createNetworkElementPort(networkElementPort);
+
+        // Overwrite some parameters to match data from prepared a4 resource inventory entries
+        port.setEndSz(networkElement.getVpsz() + "/" + networkElement.getFsz());
+        port.setPortNumber(networkElementPort.getLogicalLabel().split("_")[1]);
+        port.setSlotNumber("99");
     }
 
     @AfterMethod
@@ -70,9 +76,9 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         a4ResourceInventoryRobot.deleteNetworkElementGroup(networkElementGroup.getUuid());
     }
 
-    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
+    @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
     @Owner("bela.kovac@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
+    @TmsLink("DIGIHUB-59383")
     @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
     public void newTpWithPreprovisioning() throws InterruptedException {
         // GIVEN / Arrange
@@ -95,7 +101,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     private NetworkElementGroupDto setUpNetworkElementGroup() {
         return new NetworkElementGroupDto()
                 .uuid(UUID.randomUUID().toString())
-                .description("NEG for domain test DIGIHUB-xxxxx")
+                .description("NEG for domain test DIGIHUB-59383")
                 .type("OLT")
                 .specificationVersion("1")
                 .operationalState("INSTALLING")
@@ -110,19 +116,16 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     }
 
     private NetworkElementDto setUpNetworkElement() {
-        Random random = new Random();
-        int randoms = random.ints(1, 9999).findFirst().getAsInt();
-
         return new NetworkElementDto()
                 .uuid(UUID.randomUUID().toString())
                 .networkElementGroupUuid(networkElementGroup.getUuid()) // NE needs NEG as parent
-                .description("NE for domain test DIGIHUB-xxxxx")
+                .description("NE for domain test DIGIHUB-59383")
                 .address("address")
                 .administrativeState("ACTIVATED")
                 .lifecycleState("PLANNING")
                 .operationalState("INSTALLING")
                 .category("OLT") // must be 'OLT', else preprovisioning will not be started
-                .fsz(Integer.toString(randoms)) // satisfy unique constraints
+                .fsz(UUID.randomUUID().toString().substring(0, 4)) // satisfy unique constraints
                 .vpsz("49/8492/0")
                 .klsId("123456")
                 .plannedRackId("rackid")
@@ -140,7 +143,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
 
         return new NetworkElementPortDto()
                 .uuid(UUID.randomUUID().toString())
-                .description("NEP for domain test DIGIHUB-xxxxx")
+                .description("NEP for domain test DIGIHUB-59383")
                 .networkElementUuid(networkElement.getUuid()) // NEP needs NE as parent
                 .logicalLabel("LogicalLabel_" + randoms) // Prefix 'LogicalLabel_' must be given, else preprovisioning will not be started. Also, satisfy unique constraints
                 .accessNetworkOperator("NetOp")
@@ -189,18 +192,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
                 .baseType("LogicalResource")
                 .type("TerminationPoint")
                 .version("1")
-                .description("TP for domain test DIGIHUB-xxxxx");
+                .description("TP for domain test DIGIHUB-59383");
         terminationPointLogicalResource.setCharacteristic(tpCharacteristics);
         terminationPointLogicalResource.setResourceRelationship(tpResourceRelationships);
 
         return terminationPointLogicalResource;
-    }
-
-    private PortProvisioning setUpPreprovisioningPort(NetworkElementDto networkElement, NetworkElementPortDto networkElementPort) {
-        PortProvisioning port = new PortProvisioning();
-        port.setEndSz(networkElement.getVpsz() + "/" + networkElement.getFsz());
-        port.setPortNumber(networkElementPort.getLogicalLabel().split("_")[1]);
-        port.setSlotNumber("99");
-        return port;
     }
 }
