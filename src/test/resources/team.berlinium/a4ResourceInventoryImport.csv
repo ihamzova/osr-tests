@@ -1,0 +1,2 @@
+NEG.name;NEG.CNO;NEG.description;NE.VPSZ;NE.FSZ;NE.planningDeviceName;NE.type;NE.VSP;NE.loc.KLS_ID;NE.loc.address;NE.loc.RackId;NE.loc.RackPosition;NE.description
+INT_TEST_NEG_1234;DT;imported from CSV;49/6151/0;A410;dmst.spine.1;SPINE_SWITCH;DT;123456;Address;RackId;RackPosition;imported from CSV
