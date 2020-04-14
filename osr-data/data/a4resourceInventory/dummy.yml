@@ -1,4 +1,0 @@
-name: dummy
-template: A4ResourceInventory
-values:
-  negName: DummyName

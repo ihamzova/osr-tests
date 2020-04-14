@@ -1,4 +1,0 @@
-name: A4ResourceInventory
-model:
-  negName:
-    type: String

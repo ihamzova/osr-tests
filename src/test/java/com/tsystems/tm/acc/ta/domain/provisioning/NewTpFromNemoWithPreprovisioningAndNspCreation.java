@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.domain.provisioning;
 
-import com.tsystems.tm.acc.data.models.portprovisioning.PortProvisioning;
+import com.tsystems.tm.acc.data.models.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.DataBundle;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
