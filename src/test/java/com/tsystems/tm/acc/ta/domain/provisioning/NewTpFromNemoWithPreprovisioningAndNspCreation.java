@@ -55,13 +55,15 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
 
     @BeforeMethod
     public void prepareData() {
+        // Generate data for different a4 resource inventory entries. Has to be refactored to make use of "official" data mgmt procedure
         networkElementGroup = setUpNetworkElementGroup();
         networkElement = setUpNetworkElement();
         networkElementPort = setUpNetworkElementPort();
 
-        a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(networkElement);
-        a4ResourceInventoryRobot.createNetworkElementPort(networkElementPort);
+        // Add prepared entries into DB. Needs to be done because to-be-tested termination point needs a NEP parent
+        a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup); // NE needs a NEG parent
+        a4ResourceInventoryRobot.createNetworkElement(networkElement); // NEP needs a NE parent
+        a4ResourceInventoryRobot.createNetworkElementPort(networkElementPort); // TP needs a NEP parent
 
         // Overwrite some parameters to match data from prepared a4 resource inventory entries
         port.setEndSz(networkElement.getVpsz() + "/" + networkElement.getFsz());
