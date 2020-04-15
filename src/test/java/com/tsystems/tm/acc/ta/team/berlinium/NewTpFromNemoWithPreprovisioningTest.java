@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
-    private static final int WAIT_TIME = 15_000;
-
-//    private A4PreProvisioningRobot a4PreProvisioningRobot;
     private A4ResourceInventoryRobot a4ResourceInventoryRobot;
     private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot;
 
@@ -35,14 +32,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private NetworkElementPortDto networkElementPort;
     private LogicalResourceUpdate terminationPointLogicalResource;
 
-//    private PortProvisioning port;
-
     @BeforeClass
     public void init() {
-//        DataBundle dataBundle = OsrTestContext.get().getData();
-//        port = dataBundle.getPortProvisioningDataProvider().get(PortProvisioningCase.a4Port);
-
-//        a4PreProvisioningRobot = new A4PreProvisioningRobot();
         a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
         a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
     }
@@ -69,21 +60,18 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("NEMO creates new Termination Point with Preprovisioning")
-    public void newTpWithPreprovisioning() throws InterruptedException {
+    public void newTpWithPreprovisioning() {
         // GIVEN / Arrange
         String uuidTp = UUID.randomUUID().toString();
         terminationPointLogicalResource = setUpTerminationPointWithNepParentAsLogicalResource(networkElementPort);
 
         // WHEN / Action
         a4ResourceInventoryServiceRobot.createTerminationPoint(uuidTp, terminationPointLogicalResource);
-        Thread.sleep(WAIT_TIME);
 
         // THEN
-//        a4PreProvisioningRobot.checkResults(port);
-//        a4ResourceInventoryRobot.checkNetworkServiceProfileConnectedToTerminationPointExists(uuidTp);
+        // No further assertions here except the ones in the robots themselves
 
         // AFTER / Clean-up
-//        a4ResourceInventoryRobot.deleteNetworkServiceProfileConnectedToTerminationPoint(uuidTp);
         a4ResourceInventoryRobot.deleteTerminationPoint(uuidTp);
     }
 

@@ -40,7 +40,7 @@ public class A4NemoUpdateTest extends ApiTest {
         a4NemoUpdaterRobot.triggerNemoUpdate(networkElementGroupDto.getUuid());
 
         // THEN / Assert
-        // No further assertions here besides return code of NEMO which is checked in the trigger robot above
+        // No further assertions here besides return code of NEMO update call which is checked in the trigger robot above
 
         // AFTER / Clean-up
         a4ResourceInventoryRobot.deleteNetworkElementGroup(networkElementGroupDto.getUuid());

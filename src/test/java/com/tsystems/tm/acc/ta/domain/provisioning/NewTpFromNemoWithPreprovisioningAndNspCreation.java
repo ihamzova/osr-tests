@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.domain.provisioning;
 
-import com.tsystems.tm.acc.data.models.portprovisioning.PortProvisioning;
+import com.tsystems.tm.acc.data.models.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.DataBundle;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.data.OsrTestContext;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -60,7 +60,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         networkElement = setUpNetworkElement();
         networkElementPort = setUpNetworkElementPort();
 
-        // Add prepared entries into DB. Needs to be done because to-be-tested termination point needs a NEP parent
+        // Add prepared entries into DB as prerequisites. Needs to be done because to-be-tested termination point needs a NEP parent
         a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup); // NE needs a NEG parent
         a4ResourceInventoryRobot.createNetworkElement(networkElement); // NEP needs a NE parent
         a4ResourceInventoryRobot.createNetworkElementPort(networkElementPort); // TP needs a NEP parent
