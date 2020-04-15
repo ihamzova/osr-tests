@@ -8,14 +8,15 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.EquipmentHolder;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.LineIdDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -83,11 +84,32 @@ public class OltCommissioningRobot {
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
-        long wgLinesCount = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
+        List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineDto.StatusEnum.WALLED_GARDEN)).count();
+                .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineDto.StatusEnum.WALLED_GARDEN)).collect(Collectors.toList());
+        long wgLinesCount = wgAccessLines.size();
 
         Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
+
+        List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getDefaultNeProfile().getAnpTag().getAnpTag())
+                .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
+
+        Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT);
+
+        Assert.assertTrue(anpTagsList.contains(128));
+
+        List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(uplinksList.size(), 1);
+
+        UplinkDTO uplink = uplinksList.get(0);
+
+        Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE);
+
+        Assert.assertEquals(uplink.getAncpSessions().size(), 1);
+
+        Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
 
         long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdInternalController().searchHomeIds()
                 .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))

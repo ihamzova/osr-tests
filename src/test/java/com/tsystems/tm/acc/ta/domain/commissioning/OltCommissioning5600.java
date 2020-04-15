@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import io.qameta.allure.Description;
+import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
@@ -48,6 +49,7 @@ public class OltCommissioning5600 extends BaseTest {
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
+    @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() {
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
 
@@ -56,8 +58,9 @@ public class OltCommissioning5600 extends BaseTest {
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
-    @TmsLink("DIGIHUB-37121")
+    @TmsLink("DIGIHUB-45656")
     @Description("Olt-Commissioning (MA5600T) manually case")
+    @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() {
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
 
