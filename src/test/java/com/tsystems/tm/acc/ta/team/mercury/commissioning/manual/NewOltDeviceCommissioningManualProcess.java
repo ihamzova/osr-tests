@@ -53,7 +53,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        
+
         oltSearchPage.searchNotDiscoveredByParameters(getDevice());
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
@@ -63,7 +63,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getNvt().getOltDevice());
+        oltDetailsPage.inputUplinkParameters(getDevice());
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -97,15 +97,6 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         device.setBngDownlinkSlot("7");
         device.setOrderNumber("0123456789");
         return device;
-    }
-
-    /**
-     * Generation of the Nvt test objects with the necessary data
-     */
-    private Nvt getNvt() {
-        Nvt nvt = new Nvt();
-        nvt.setOltDevice(getDevice());
-        return nvt;
     }
 
     /**

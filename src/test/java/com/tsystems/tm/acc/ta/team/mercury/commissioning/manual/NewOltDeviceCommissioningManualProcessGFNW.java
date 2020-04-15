@@ -63,7 +63,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getNvt().getOltDevice());
+        oltDetailsPage.inputUplinkParameters(getDevice());
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -97,14 +97,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         return device;
     }
 
-    /**
-     * Generation of the Nvt test objects with the necessary data
-     */
-    private Nvt getNvt() {
-        Nvt nvt = new Nvt();
-        nvt.setOltDevice(getDevice());
-        return nvt;
-    }
 
     /**
      * check device MA5600 data from olt-ressource-inventory
