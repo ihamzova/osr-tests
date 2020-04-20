@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -43,7 +44,7 @@ public class OltCommissioning5600 extends BaseTest {
         // Upload mock to the server may be? They are not being used at the moment
 
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")

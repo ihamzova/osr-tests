@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
 import com.tsystems.tm.acc.csv.CsvStream;
-import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 
 import java.io.File;
 import java.io.IOException;

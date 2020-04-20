@@ -1,20 +1,2 @@
 name: Dataset_1
-data:
-  - template: LineIdBatch
-    name: lineIdBatch
-  - template: HomeIdBatch
-    name: homeIdBatch
-  - template: PortProvisioning
-    name: portEmpty5600
-  - template: PortProvisioning
-    name: portEmpty5800
-  - template: PortProvisioning
-    name: portPartlyOccupied
-  - template: PortProvisioning
-    name: portWithInActiveLines
-  - template: PortProvisioning
-    name: portFullyOccupied
-#  - template: OltDevice
-#    name: FSZ_76HA
-  - template: Nvt
-    name: nvtForOltCommissioning
+data: []

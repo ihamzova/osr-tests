@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
@@ -46,8 +47,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
-        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
-        RHSSOAuthListener.startListening();
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         String endSz = getDevice().getVpsz() + getDevice().getFsz();
         clearResourceInventoryDataBase(endSz);

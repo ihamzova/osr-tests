@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.Pr
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage.ProfileTypes;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
+import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -43,8 +44,7 @@ public class AccessLinesSearchTest extends BaseTest {
         accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
         accessLineByLineId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByLineId);
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOAccessManagementSupportUi);
-        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
-        RHSSOAuthListener.startListening();
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         prepareData();
     }
 
