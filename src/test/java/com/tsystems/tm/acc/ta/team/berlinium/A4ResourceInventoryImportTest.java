@@ -7,7 +7,8 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
-import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -33,7 +34,7 @@ public class A4ResourceInventoryImportTest extends BaseTest {
     @BeforeMethod
     public void prepareData() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        RHSSOAuthListener.resetLoginData(loginData.getLogin(), loginData.getPassword());
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test(description = "DIGIHUB-0 Import Network Element (Group) CSV file into A4 Resource Inventory")

@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.csv.CsvStream;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 

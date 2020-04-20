@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
-import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;

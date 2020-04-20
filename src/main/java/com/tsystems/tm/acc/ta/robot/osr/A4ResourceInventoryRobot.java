@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
-import com.tsytems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
