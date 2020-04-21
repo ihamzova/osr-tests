@@ -78,7 +78,7 @@ public class OltSearchPage {
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-        $(byQaData(ENDSZ_SEARCH_TYPE_VALUE)).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(byQaData(ENDSZ_SEARCH_TYPE_VALUE)).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSz[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();
