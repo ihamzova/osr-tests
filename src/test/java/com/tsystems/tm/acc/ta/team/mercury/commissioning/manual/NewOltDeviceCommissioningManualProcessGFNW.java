@@ -61,6 +61,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
 
+        Thread.sleep(2000);
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(getDevice());
