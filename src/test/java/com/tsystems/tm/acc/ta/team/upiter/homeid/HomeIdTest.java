@@ -84,15 +84,15 @@ public class HomeIdTest extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
-    @Test
-    @TmsLink("DIGIHUB-34654")
-    @Description("Create Necessary Home Ids in PostProvisioning case")
-    public void createNecessaryHomeIdsPostProvisioning() throws IOException {
-        File template = new File(getClass().getResource("/team/upiter/homeid/portForHomeIdPool.json").getFile());
-        Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
-        PoolHomeId poolHomeId = homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
-                .numberHomeIdsQuery(homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-        assertEquals(poolHomeId.getHomeIds().size(), homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size());
-    }
+//    @Test
+//    @TmsLink("DIGIHUB-34654")
+//    @Description("Create Necessary Home Ids in PostProvisioning case")
+//    public void createNecessaryHomeIdsPostProvisioning() throws IOException {
+//        File template = new File(getClass().getResource("/team/upiter/homeid/portForHomeIdPool.json").getFile());
+//        Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
+//        PoolHomeId poolHomeId = homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
+//                .numberHomeIdsQuery(homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size())
+//                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+//        assertEquals(poolHomeId.getHomeIds().size(), homeIdBatch.getNumberLineIds() - port.getHomeIdPools().size());
+//    }
 }

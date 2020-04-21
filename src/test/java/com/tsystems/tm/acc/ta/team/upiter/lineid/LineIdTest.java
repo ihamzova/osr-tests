@@ -117,16 +117,16 @@ public class LineIdTest extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
-    @Test
-    @TmsLink("DIGIHUB-34654")
-    @Description("Create Necessary Line Ids in PostProvisioning case")
-    public void createNecessaryLineIdsPostProvisioning() throws IOException {
-        File template = new File(getClass().getResource("/team/upiter/lineid/portForLineIdPool.json").getFile());
-        Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
-        PoolLineId poolLineId = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-                .endSzQuery(lineIdBatch.getEndSz())
-                .numberLineIdsQuery(lineIdBatch.getNumberLineIds() - port.getLineIdPools().size())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-        assertEquals(poolLineId.getLineIds().size(), lineIdBatch.getNumberLineIds() - port.getLineIdPools().size());
-    }
+//    @Test
+//    @TmsLink("DIGIHUB-34654")
+//    @Description("Create Necessary Line Ids in PostProvisioning case")
+//    public void createNecessaryLineIdsPostProvisioning() throws IOException {
+//        File template = new File(getClass().getResource("/team/upiter/lineid/portForLineIdPool.json").getFile());
+//        Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
+//        PoolLineId poolLineId = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
+//                .endSzQuery(lineIdBatch.getEndSz())
+//                .numberLineIdsQuery(lineIdBatch.getNumberLineIds() - port.getLineIdPools().size())
+//                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+//        assertEquals(poolLineId.getLineIds().size(), lineIdBatch.getNumberLineIds() - port.getLineIdPools().size());
+//    }
 }
