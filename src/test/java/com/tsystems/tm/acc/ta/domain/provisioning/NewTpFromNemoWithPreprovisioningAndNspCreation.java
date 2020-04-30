@@ -168,7 +168,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
                 .value(OffsetDateTime.now().toString());
         tpCharacteristics.add(rc2);
         ResourceCharacteristic rc3 = new ResourceCharacteristic()
-                .name("type")
+                .name("subType")
                 .value("type");
         tpCharacteristics.add(rc3);
         ResourceCharacteristic rc4 = new ResourceCharacteristic()
