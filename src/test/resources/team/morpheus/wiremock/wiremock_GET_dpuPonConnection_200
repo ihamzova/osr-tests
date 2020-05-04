@@ -1,0 +1,32 @@
+{
+  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b15ad",
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/oltResourceInventory/v1/dpu/dpuPonConnection",
+    "queryParameters": {
+      "dpuPonPortEndsz": {
+        "matches": "49\\/8571\\/0\\/73GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/99GA"
+      },
+      "dpuPonPortNumber":{
+        "matches":".*"
+      }
+    }
+  },
+  "response":{
+    "status":200,
+    "headers":{
+      "Content-Type":"application/json",
+      "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
+    },
+    "jsonBody":[
+      {
+        "id": 1049,
+        "oltPonPortEndsz": "49/30/179/76H1",
+        "oltPonPortNumber": "101",
+        "oltPonSlotNumber": "4",
+        "dpuPonPortEndsz": "{{request.requestLine.query.dpuPonPortEndsz}}",
+        "dpuPonPortNumber": "{{request.requestLine.query.dpuPonPortNumber}}"
+      }
+    ]
+  }
+}
