@@ -1,6 +1,6 @@
 name: defaultNetworkElementPort
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort
 values:
-  uuid: "" # field will be filled with returned uuid of created NEP
-  port: "" # if blank a random value will be generated and field will be filled with that value
+  uuid: "" # if blank: field will be filled with returned uuid of created NEP
+  port: "" # if blank: random value will be generated and field will be filled with that value
   operationalState: "WORKING"

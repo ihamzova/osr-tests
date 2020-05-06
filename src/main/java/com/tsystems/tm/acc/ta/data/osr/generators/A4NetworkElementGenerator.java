@@ -11,9 +11,10 @@ import java.util.UUID;
 public class A4NetworkElementGenerator {
 
     public NetworkElementDto generateAsDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        neData.setUuid(UUID.randomUUID().toString());
+        if(neData.getUuid().isEmpty())
+            neData.setUuid(UUID.randomUUID().toString());
 
-        if(neData.getFsz().equals(""))
+        if(neData.getFsz().isEmpty())
             neData.setFsz(UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
 
         return new NetworkElementDto()

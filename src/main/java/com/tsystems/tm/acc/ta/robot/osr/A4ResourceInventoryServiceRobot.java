@@ -23,20 +23,10 @@ public class A4ResourceInventoryServiceRobot {
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
-    public void createTerminationPoint(String uuid, LogicalResourceUpdate terminationPointLogicalResource) {
-        a4ResourceInventoryService
-                .logicalResource()
-                .updateLogicalResourcePut()
-                .idPath(uuid)
-                .body(terminationPointLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-    }
-
-    @Step("Create Termination Point represented as Logical Resource")
-    public void createTerminationPointWithNepParent(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+    public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
         LogicalResourceUpdate terminationPointLogicalResource = a4TerminationPointGenerator
-                .generateWithNepParentAsLogicalResource(tpData, nepData);
+                .generateAsLogicalResource(tpData, nepData);
 
         a4ResourceInventoryService
                 .logicalResource()

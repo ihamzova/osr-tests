@@ -11,7 +11,8 @@ import java.util.UUID;
 public class A4NetworkElementPortGenerator {
 
     public NetworkElementPortDto generateAsDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        nepData.setUuid(UUID.randomUUID().toString());
+        if(nepData.getUuid().isEmpty())
+            nepData.setUuid(UUID.randomUUID().toString());
 
         if (nepData.getPort().equals(""))
             nepData.setPort(UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints

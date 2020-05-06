@@ -27,12 +27,12 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         // WHEN / Action
-        a4ResourceInventoryRobot.createNetworkElementGroupNew(negData);
+        a4ResourceInventoryRobot.createNetworkElementGroup(negData);
 
         // THEN / Assert
         a4ResourceInventoryServiceRobot.checkLogicalResourceIsNetworkElementGroup(negData);
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElementGroupNew(negData);
+        a4ResourceInventoryRobot.deleteNetworkElementGroup(negData);
     }
 }

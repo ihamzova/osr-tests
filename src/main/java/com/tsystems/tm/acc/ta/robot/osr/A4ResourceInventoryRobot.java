@@ -15,10 +15,8 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -28,9 +26,8 @@ public class A4ResourceInventoryRobot {
     private static final Integer HTTP_CODE_NO_CONTENT_204 = 204;
 
     private ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
-//    private OsrTestContext osrTestContext = OsrTestContext.get();
 
-    @Step("Create network element group")
+    @Step("Create network element group in A4 repository")
     public void createNetworkElementGroup(NetworkElementGroupDto networkElementGroup) {
         a4ResourceInventory
                 .networkElementGroups()
@@ -41,7 +38,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Create new network element group in A4 repository")
-    public void createNetworkElementGroupNew(A4NetworkElementGroup negData) {
+    public void createNetworkElementGroup(A4NetworkElementGroup negData) {
         A4NetworkElementGroupGenerator a4NetworkElementGroupGenerator = new A4NetworkElementGroupGenerator();
         NetworkElementGroupDto negDto = a4NetworkElementGroupGenerator.generateAsDto(negData);
 
@@ -53,7 +50,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element group")
+    @Step("Delete network element group from A4 repository")
     public void deleteNetworkElementGroup(String uuid) {
         a4ResourceInventory
                 .networkElementGroups()
@@ -62,8 +59,8 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Delete network element group")
-    public void deleteNetworkElementGroupNew(A4NetworkElementGroup negData) {
+    @Step("Delete network element group from A4 repository")
+    public void deleteNetworkElementGroup(A4NetworkElementGroup negData) {
         a4ResourceInventory
                 .networkElementGroups()
                 .deleteNetworkElementGroup()
@@ -71,18 +68,8 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element")
-    public void createNetworkElement(NetworkElementDto networkElement) {
-        a4ResourceInventory
-                .networkElements()
-                .createOrUpdateNetworkElement()
-                .body(networkElement)
-                .uuidPath(networkElement.getUuid())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("Create network element")
-    public void createNetworkElementNew(A4NetworkElement neData, A4NetworkElementGroup negData) {
+    @Step("Create network element in A4 repository")
+    public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
         A4NetworkElementGenerator a4NetworkElementGenerator = new A4NetworkElementGenerator();
         NetworkElementDto neDto = a4NetworkElementGenerator.generateAsDto(neData, negData);
 
@@ -94,7 +81,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element")
+    @Step("Delete network element from A4 repository")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
                 .networkElements()
@@ -103,18 +90,17 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element port")
-    public void createNetworkElementPort(NetworkElementPortDto networkElementPort) {
+    @Step("Delete network element from A4 repository")
+    public void deleteNetworkElement(A4NetworkElement neData) {
         a4ResourceInventory
-                .networkElementPorts()
-                .createOrUpdateNetworkElementPort()
-                .body(networkElementPort)
-                .uuidPath(networkElementPort.getUuid())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .networkElements()
+                .deleteNetworkElement()
+                .uuidPath(neData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element port")
-    public void createNetworkElementPortNew(A4NetworkElementPort nepData, A4NetworkElement neData) {
+    @Step("Create network element port in A4 repository")
+    public void createNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
         A4NetworkElementPortGenerator a4NetworkElementPortGenerator = new A4NetworkElementPortGenerator();
         NetworkElementPortDto nepDto = a4NetworkElementPortGenerator.generateAsDto(nepData, neData);
 
@@ -126,7 +112,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element port")
+    @Step("Delete network element port from A4 repository")
     public void deleteNetworkElementPort(String uuid) {
         a4ResourceInventory
                 .networkElementPorts()
@@ -135,7 +121,16 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create termination point")
+    @Step("Delete network element port from A4 repository")
+    public void deleteNetworkElementPort(A4NetworkElementPort nepData) {
+        a4ResourceInventory
+                .networkElementPorts()
+                .deleteNetworkElementPort()
+                .uuidPath(nepData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Create termination point in A4 repository")
     public void createTerminationPoint(TerminationPointDto terminationPoint) {
         List<AdditionalAttributeDto> additionalAttributes = new ArrayList<>();
         terminationPoint
@@ -151,7 +146,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete termination point")
+    @Step("Delete termination point from A4 repository")
     public void deleteTerminationPoint(String uuid) {
         a4ResourceInventory
                 .terminationPoints()
@@ -160,8 +155,8 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Delete termination point")
-    public void deleteTerminationPointNew(A4TerminationPoint tpData) {
+    @Step("Delete termination point from A4 repository")
+    public void deleteTerminationPoint(A4TerminationPoint tpData) {
         a4ResourceInventory
                 .terminationPoints()
                 .deleteTerminationPoint()
@@ -169,16 +164,18 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    public void setUpElementsForPreprovisioning(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
-        createNetworkElementGroupNew(negData);
-        createNetworkElementNew(neData, negData);
-        createNetworkElementPortNew(nepData, neData);
+    @Step("Create NEG, NE & NEP in A4 repository")
+    public void setUpPrerequisiteElements(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
+        createNetworkElementGroup(negData);
+        createNetworkElement(neData, negData);
+        createNetworkElementPort(nepData, neData);
     }
 
-    public void deleteElementsFromPreprovisioning(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
-        deleteNetworkElementPort(nepData.getUuid());
-        deleteNetworkElement(neData.getUuid());
-        deleteNetworkElementGroup(negData.getUuid());
+    @Step("Delete NEG, NE & NEP from A4 repository")
+    public void deletePrerequisiteElements(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
+        deleteNetworkElementPort(nepData);
+        deleteNetworkElement(neData);
+        deleteNetworkElementGroup(negData);
     }
 
     @Step("Check if one network service profile connected to termination point exists")
@@ -264,19 +261,5 @@ public class A4ResourceInventoryRobot {
             installationPage.resetSearch();
             installationPage.checkNetworkElement(a4ResourceInventoryEntry);
         });
-    }
-
-    NetworkElementGroupDto generateNetworkElementGroupData(A4NetworkElementGroup negData) {
-        return new NetworkElementGroupDto()
-                .uuid(UUID.randomUUID().toString())
-                .type("POD")
-                .specificationVersion("1")
-                .operationalState(negData.getOperationalState())
-                .name(negData.getName()) // unique constraint
-                .lifeCycleState("UNINSTALLING")
-                .lastUpdateTime(OffsetDateTime.now())
-                .description("NEG created during osr-test integration test")
-                .creationTime(OffsetDateTime.now())
-                .centralOfficeNetworkOperator("neg_centOffNetOp_for_integration_test");
     }
 }

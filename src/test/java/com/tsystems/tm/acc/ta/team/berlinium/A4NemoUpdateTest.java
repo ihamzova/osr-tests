@@ -6,12 +6,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
 import io.qameta.allure.*;
 import org.testng.annotations.Test;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
@@ -30,7 +26,7 @@ public class A4NemoUpdateTest extends ApiTest {
         A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
-        a4ResourceInventoryRobot.createNetworkElementGroupNew(negData);
+        a4ResourceInventoryRobot.createNetworkElementGroup(negData);
 
         // WHEN / Action
         a4NemoUpdaterRobot.triggerNemoUpdate(negData.getUuid());
@@ -39,6 +35,6 @@ public class A4NemoUpdateTest extends ApiTest {
         // No further assertions here besides return code of NEMO update call which is checked in the trigger robot above
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElementGroupNew(negData);
+        a4ResourceInventoryRobot.deleteNetworkElementGroup(negData);
     }
 }

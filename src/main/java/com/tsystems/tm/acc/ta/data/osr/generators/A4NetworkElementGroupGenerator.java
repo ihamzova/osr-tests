@@ -10,7 +10,8 @@ import java.util.UUID;
 public class A4NetworkElementGroupGenerator {
 
     public NetworkElementGroupDto generateAsDto(A4NetworkElementGroup negData) {
-        negData.setUuid(UUID.randomUUID().toString());
+        if(negData.getUuid().isEmpty())
+            negData.setUuid(UUID.randomUUID().toString());
 
         if(negData.getName().equals(""))
             negData.setName("NEG-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints

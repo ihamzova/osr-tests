@@ -37,16 +37,16 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         A4TerminationPoint tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
 
-        a4ResourceInventoryRobot.setUpElementsForPreprovisioning(negData, neData, nepData);
+        a4ResourceInventoryRobot.setUpPrerequisiteElements(negData, neData, nepData);
 
         // WHEN / Action
-        a4ResourceInventoryServiceRobot.createTerminationPointWithNepParent(tpData, nepData);
+        a4ResourceInventoryServiceRobot.createTerminationPoint(tpData, nepData);
 
         // THEN
         // No further assertions here except the ones in the robots themselves
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteTerminationPointNew(tpData);
-        a4ResourceInventoryRobot.deleteElementsFromPreprovisioning(negData, neData, nepData);
+        a4ResourceInventoryRobot.deleteTerminationPoint(tpData);
+        a4ResourceInventoryRobot.deletePrerequisiteElements(negData, neData, nepData);
     }
 }

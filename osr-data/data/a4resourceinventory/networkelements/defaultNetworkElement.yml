@@ -1,9 +1,9 @@
 name: defaultNetworkElement
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
 values:
-  uuid: "" # field will be filled with returned uuid of created NE
+  uuid: "" # if blank: field will be filled with returned uuid of created NE
   vpsz: "49/8492/0" # VPSZ together with FSZ must be unique
-  fsz: "" # if blank a random FSZ will be generated and field will be filled with that value
+  fsz: "" # if blank: random FSZ will be generated and field will be filled with that value
   klsId: "1234567"
   category: "OLT"
   operationalState: "WORKING"
