@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.*;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @Epic("OS&R domain")
@@ -15,14 +14,8 @@ import org.testng.annotations.Test;
 @TmsLink("DIGIHUB-57771")
 public class A4ResourceInventoryServiceTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot;
-    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot;
-
-    @BeforeClass
-    public void init() {
-        a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-        a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
-    }
+    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
 
     @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource")
     @Owner("bela.kovac@t-systems.com")
@@ -30,15 +23,16 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
     @Description("Create new network element in inventory and read it as logical resource")
     public void testCreateNeg_checkLogicalResource_deleteNeg() {
         // GIVEN / Arrange
-        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
+                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         // WHEN / Action
-        a4ResourceInventoryRobot.createRandomNetworkElementGroup(negData);
+        a4ResourceInventoryRobot.createNetworkElementGroupNew(negData);
 
         // THEN / Assert
-        a4ResourceInventoryServiceRobot.checkLogicalResourceIsNetworkElementGroup(negData.getUuid());
+        a4ResourceInventoryServiceRobot.checkLogicalResourceIsNetworkElementGroup(negData);
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElementGroup(negData.getUuid());
+        a4ResourceInventoryRobot.deleteNetworkElementGroupNew(negData);
     }
 }

@@ -1,7 +1,7 @@
 name: defaultNetworkElementGroup
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup
 values:
-  uuid: "(is returned when new NEG is created)"
-  name: "some unique NEG name" # Name must be unique
+  uuid: "" # field will be filled with returned uuid of created NEG
+  name: "" # if blank a random name will be generated and field will be filled with that value
   operationalState: "WORKING"
   lifecycleState: "OPERATING"

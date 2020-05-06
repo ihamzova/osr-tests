@@ -1,0 +1,4 @@
+name: defaultTerminationPoint
+template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
+values:
+  uuid: "" # field will be filled with returned uuid of created TP

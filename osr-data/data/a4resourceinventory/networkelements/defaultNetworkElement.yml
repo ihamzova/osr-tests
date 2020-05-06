@@ -1,9 +1,10 @@
 name: defaultNetworkElement
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
 values:
-  uuid: "(is returned when new NEG is created)"
+  uuid: "" # field will be filled with returned uuid of created NE
   vpsz: "49/8492/0" # VPSZ together with FSZ must be unique
-  fsz: "76A4"
-  category: "OLT" # Must be 'OLT' else preprovisioning will not be started
+  fsz: "" # if blank a random FSZ will be generated and field will be filled with that value
+  klsId: "1234567"
+  category: "OLT"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
