@@ -2,9 +2,9 @@ package com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning;
 
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.db.JDBCConnectionProperties;
-import com.tsystems.tm.acc.ta.db.JDBCConnectionPropertiesFactory;
-import com.tsystems.tm.acc.ta.db.PostgreSqlDatabase;
+import com.tsystems.tm.acc.ta.db.sql.JDBCConnectionProperties;
+import com.tsystems.tm.acc.ta.db.sql.SqlDatabase;
+import com.tsystems.tm.acc.ta.db.sql.strategies.jdbc.postgres.PostgreSqlJDBCConnectionPropertiesFactory;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
@@ -29,7 +29,7 @@ public class DpuCommissioning extends ApiTest {
 
     private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
 
-    private PostgreSqlDatabase db;
+    private SqlDatabase db;
 
     @BeforeClass
     public void init() {
@@ -38,13 +38,12 @@ public class DpuCommissioning extends ApiTest {
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(getClass().getResource("/team/morpheus/wiremock").getFile()));
 
-        JDBCConnectionProperties properties = JDBCConnectionPropertiesFactory.get("dpu-commissioning");
+        JDBCConnectionProperties properties = PostgreSqlJDBCConnectionPropertiesFactory.getConnectionPropertiesForOC("dpu-commissioning");
         properties.setPassword("dpu_com");
         properties.setUsername("dpu_com");
+        properties.setDatabase("dpu_com");
 
-        properties.setUri(rename.apply(properties.getUri()));
-
-        db = new PostgreSqlDatabase(properties);
+        db = new SqlDatabase(properties);
 
     }
 
