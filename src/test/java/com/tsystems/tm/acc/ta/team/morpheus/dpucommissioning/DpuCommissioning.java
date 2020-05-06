@@ -67,10 +67,11 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        String processId = response.getProcessId();
+        String processId = response.getId();
 
-        Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
-        Assert.assertEquals(response.getStatus(), "WAIT");
+        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
+        // Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
+        // Assert.assertEquals(response.getStatus(), "WAIT");
 
         String sqlGetProcessState =
                 "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
@@ -106,10 +107,11 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
-        String processId = response.getProcessId();
+        String processId = response.getId();
 
-        Assert.assertTrue(response.getComment().contains("Error while Call SEAL.createDpuConfiguration :[404 Not Found]"));
-        Assert.assertEquals(response.getStatus(), "ERROR");
+        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
+        // Assert.assertTrue(response.getComment().contains("Error while Call SEAL.createDpuConfiguration :[404 Not Found]"));
+        // Assert.assertEquals(response.getStatus(), "ERROR");
 
         Thread.sleep(10000);
 
@@ -138,7 +140,8 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
-        Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
-        Assert.assertEquals(response.getStatus(), "ERROR");
+        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
+        // Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
+        // Assert.assertEquals(response.getStatus(), "ERROR");
     }
 }
