@@ -1,0 +1,7 @@
+name: defaultNetworkElementGroup
+template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup
+values:
+  uuid: "(is returned when new NEG is created)"
+  name: "some unique NEG name" # Name must be unique
+  operationalState: "WORKING"
+  lifecycleState: "OPERATING"

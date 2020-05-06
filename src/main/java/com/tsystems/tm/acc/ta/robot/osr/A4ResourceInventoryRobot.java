@@ -2,14 +2,17 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -28,6 +31,26 @@ public class A4ResourceInventoryRobot {
                 .body(networkElementGroup)
                 .uuidPath(networkElementGroup.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create network element group with specific data")
+    public void createNetworkElementGroupNew(A4NetworkElementGroup negData) {
+        NetworkElementGroupDto negDto = generateNetworkElementGroupData(negData);
+
+        a4ResourceInventory
+                .networkElementGroups()
+                .createOrUpdateNetworkElementGroup()
+                .body(negDto)
+                .uuidPath(negDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        negData.setUuid(negDto.getUuid());
+    }
+
+    @Step("Create random network element group")
+    public void createRandomNetworkElementGroup(A4NetworkElementGroup negData) {
+        negData.setName("NEG-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+        createNetworkElementGroupNew(negData);
     }
 
     @Step("Delete network element group")
@@ -122,7 +145,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    public void deletePortsOfNetworkElement(String neUuid){
+    public void deletePortsOfNetworkElement(String neUuid) {
         List<NetworkElementPortDto> ports = a4ResourceInventory
                 .networkElementPorts()
                 .findNetworkElementPorts()
@@ -143,7 +166,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete list of network Elements by vpsz/fsz")
-    public void deleteNetworkElements(ArrayList<A4ResourceInventoryEntry> list){
+    public void deleteNetworkElements(ArrayList<A4ResourceInventoryEntry> list) {
         list.forEach(a4ResourceInventoryEntry -> {
             List<NetworkElementDto> actualNeList = a4ResourceInventory
                     .networkElements()
@@ -160,7 +183,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete network group by name")
-    public void deleteGroupByName(String groupName){
+    public void deleteGroupByName(String groupName) {
         List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
                 .networkElementGroups()
                 .listNetworkElementGroups()
@@ -177,7 +200,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("validate network elements")
-    public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list){
+    public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list) {
         //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
         InstallationPage installationPage = new InstallationPage();
         list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
@@ -185,5 +208,19 @@ public class A4ResourceInventoryRobot {
             installationPage.resetSearch();
             installationPage.checkNetworkElement(a4ResourceInventoryEntry);
         });
+    }
+
+    NetworkElementGroupDto generateNetworkElementGroupData(A4NetworkElementGroup negData) {
+        return new NetworkElementGroupDto()
+                .uuid(UUID.randomUUID().toString())
+                .type("POD")
+                .specificationVersion("1")
+                .operationalState(negData.getOperationalState())
+                .name(negData.getName()) // unique constraint
+                .lifeCycleState("UNINSTALLING")
+                .lastUpdateTime(OffsetDateTime.now())
+                .description("NEG created during osr-test integration test")
+                .creationTime(OffsetDateTime.now())
+                .centralOfficeNetworkOperator("neg_centOffNetOp_for_integration_test");
     }
 }
