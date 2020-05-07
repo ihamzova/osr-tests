@@ -1,0 +1,12 @@
+name: a4Port_domainTest
+template: com.tsystems.tm.acc.data.models.PortProvisioning
+values:
+  endSz: "(filled in test case)"
+  slotNumber: "99"
+  portNumber: "(filled in test case)"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  accessLinesCount: 1

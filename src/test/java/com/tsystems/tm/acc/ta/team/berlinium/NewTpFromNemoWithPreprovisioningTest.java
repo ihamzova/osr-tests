@@ -1,60 +1,26 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
+import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementPortDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRelationship;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot;
-    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot;
-
-    private NetworkElementGroupDto networkElementGroup;
-    private NetworkElementDto networkElement;
-    private NetworkElementPortDto networkElementPort;
-    private LogicalResourceUpdate terminationPointLogicalResource;
-
-    @BeforeClass
-    public void init() {
-        a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-        a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
-    }
-
-    @BeforeMethod
-    public void prepareData() {
-        networkElementGroup = setUpNetworkElementGroup();
-        networkElement = setUpNetworkElement();
-        networkElementPort = setUpNetworkElementPort();
-
-        a4ResourceInventoryRobot.createNetworkElementGroup(networkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(networkElement);
-        a4ResourceInventoryRobot.createNetworkElementPort(networkElementPort);
-    }
-
-    @AfterMethod
-    public void clearData() {
-        a4ResourceInventoryRobot.deleteNetworkElementPort(networkElementPort.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElement(networkElement.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElementGroup(networkElementGroup.getUuid());
-    }
+    private OsrTestContext osrTestContext = OsrTestContext.get();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
@@ -62,114 +28,25 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     @Description("NEMO creates new Termination Point with Preprovisioning")
     public void newTpWithPreprovisioning() {
         // GIVEN / Arrange
-        String uuidTp = UUID.randomUUID().toString();
-        terminationPointLogicalResource = setUpTerminationPointWithNepParentAsLogicalResource(networkElementPort);
+        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
+                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        A4NetworkElement neData = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.defaultNetworkElement);
+        A4NetworkElementPort nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+        A4TerminationPoint tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPoint);
+
+        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
 
         // WHEN / Action
-        a4ResourceInventoryServiceRobot.createTerminationPoint(uuidTp, terminationPointLogicalResource);
+        a4Nemo.createTerminationPoint(tpData, nepData);
 
         // THEN
         // No further assertions here except the ones in the robots themselves
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteTerminationPoint(uuidTp);
-    }
-
-    private NetworkElementGroupDto setUpNetworkElementGroup() {
-        return new NetworkElementGroupDto()
-                .uuid(UUID.randomUUID().toString())
-                .description("NEG for integration test")
-                .type("OLT")
-                .specificationVersion("1")
-                .operationalState("INSTALLING")
-                .name("NEG_" + UUID.randomUUID().toString().substring(0, 6)) // satisfy unique constraints
-                .lifeCycleState("WORKING")
-                .lastUpdateTime(OffsetDateTime.now())
-                .description("NEG for integration test")
-                .creationTime(OffsetDateTime.now())
-                .centralOfficeNetworkOperator("operator")
-                .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now());
-    }
-
-    private NetworkElementDto setUpNetworkElement() {
-        return new NetworkElementDto()
-                .uuid(UUID.randomUUID().toString())
-                .networkElementGroupUuid(networkElementGroup.getUuid())
-                .description("NE for integration test")
-                .address("address")
-                .administrativeState("ACTIVATED")
-                .lifecycleState("PLANNING")
-                .operationalState("INSTALLING")
-                .category("OLT") // must be 'OLT', else preprovisioning will not be started
-                .fsz("FSZ_" + UUID.randomUUID().toString().substring(0, 4)) // satisfy unique constraints
-                .vpsz("VPSZ")
-                .klsId("1234567")
-                .plannedRackId("rackid")
-                .plannedRackPosition("rackpos")
-                .planningDeviceName("planname")
-                .roles("role")
-                .type("SPINE_SWITCH")
-                .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now());
-    }
-
-    private NetworkElementPortDto setUpNetworkElementPort() {
-        return new NetworkElementPortDto()
-                .uuid(UUID.randomUUID().toString())
-                .description("NEP for integration test")
-                .networkElementUuid(networkElement.getUuid())
-                .logicalLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)) // Prefix 'LogicalLabel_' must be given, else preprovisioning will not be started. Also, satisfy unique constraints
-                .accessNetworkOperator("NetOp")
-                .administrativeState("ACTIVATED")
-                .operationalState("INSTALLING")
-                .role("role")
-                .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now());
-    }
-
-    // Set up a termination point as LogicalResource representation. It's bad and it's ugly, but it's how TMF639 is
-    private LogicalResourceUpdate setUpTerminationPointWithNepParentAsLogicalResource(NetworkElementPortDto nepParent) {
-        List<ResourceCharacteristic> tpCharacteristics = new ArrayList<>();
-        ResourceCharacteristic rc1 = new ResourceCharacteristic()
-                .name("creationTime")
-                .value(OffsetDateTime.now().toString());
-        tpCharacteristics.add(rc1);
-        ResourceCharacteristic rc2 = new ResourceCharacteristic()
-                .name("lastUpdateTime")
-                .value(OffsetDateTime.now().toString());
-        tpCharacteristics.add(rc2);
-        ResourceCharacteristic rc3 = new ResourceCharacteristic()
-                .name("type")
-                .value("type");
-        tpCharacteristics.add(rc3);
-        ResourceCharacteristic rc4 = new ResourceCharacteristic()
-                .name("state")
-                .value("state");
-        tpCharacteristics.add(rc4);
-        ResourceCharacteristic rc5 = new ResourceCharacteristic()
-                .name("lockedForNspUsage")
-                .value("true");
-        tpCharacteristics.add(rc5);
-
-        ResourceRef resourceRef = new ResourceRef() // Parent must be NEP, else preprovisioning will not be started
-                .id(nepParent.getUuid())
-                .type("NetworkElementPort");
-
-        ResourceRelationship resourceRelationship = new ResourceRelationship();
-        resourceRelationship.setResourceRef(resourceRef);
-
-        List<ResourceRelationship> tpResourceRelationships = new ArrayList<>();
-        tpResourceRelationships.add(resourceRelationship);
-
-        terminationPointLogicalResource = new LogicalResourceUpdate()
-                .baseType("LogicalResource")
-                .type("TerminationPoint")
-                .version("1")
-                .description("TP for integration test");
-        terminationPointLogicalResource.setCharacteristic(tpCharacteristics);
-        terminationPointLogicalResource.setResourceRelationship(tpResourceRelationships);
-
-        return terminationPointLogicalResource;
+        a4Inventory.deleteTerminationPoint(tpData.getUuid());
+        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
     }
 }
