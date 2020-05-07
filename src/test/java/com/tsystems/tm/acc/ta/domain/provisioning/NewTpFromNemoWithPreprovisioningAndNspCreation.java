@@ -43,12 +43,12 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         A4TerminationPoint tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
 
+        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
+
         PortProvisioning port = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4Port_domainTest);
         port.setEndSz(neData.getVpsz() + "/" + neData.getFsz());
         port.setPortNumber(nepData.getPort());
-
-        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
 
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpData, nepData);
