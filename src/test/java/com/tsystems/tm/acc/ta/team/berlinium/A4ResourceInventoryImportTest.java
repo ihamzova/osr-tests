@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
@@ -27,8 +26,8 @@ import java.util.UUID;
 //@TmsLink("DIGIHUB-0") // Jira id of a TestSet (if applicable)
 public class A4ResourceInventoryImportTest extends BaseTest {
 
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImportRobot a4ResourceInventoryImportRobot = new A4ResourceInventoryImportRobot();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryImportRobot a4InventoryImporter = new A4ResourceInventoryImportRobot();
     private OsrTestContext context = OsrTestContext.get();
 
     @BeforeMethod
@@ -83,17 +82,17 @@ public class A4ResourceInventoryImportTest extends BaseTest {
         list.add(entry2);
 
         File csvFile = Paths.get( "target/","a4Testcase1.csv").toFile();
-        a4ResourceInventoryImportRobot.generateCsv(list, csvFile);
+        a4InventoryImporter.generateCsv(list, csvFile);
 
         // When / Action
-        a4ResourceInventoryImportRobot.importCsvFileViaUi(csvFile);
+        a4InventoryImporter.importCsvFileViaUi(csvFile);
 
         // Then / Assert
-        a4ResourceInventoryRobot.checkNetworkElementsViaUi(list);
+        a4Inventory.checkNetworkElementsViaUi(list);
 
         // After / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElements(list);
-        a4ResourceInventoryRobot.deleteGroupByName(negName);
+        a4Inventory.deleteNetworkElements(list);
+        a4Inventory.deleteGroupByName(negName);
     }
 
 }

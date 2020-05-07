@@ -2,6 +2,12 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGenerator;
+import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGroupGenerator;
+import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementPortGenerator;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
@@ -20,7 +26,7 @@ public class A4ResourceInventoryRobot {
 
     private ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
 
-    @Step("Create network element group")
+    @Step("Create network element group in A4 repository")
     public void createNetworkElementGroup(NetworkElementGroupDto networkElementGroup) {
         a4ResourceInventory
                 .networkElementGroups()
@@ -30,7 +36,20 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element group")
+    @Step("Create new network element group in A4 repository")
+    public void createNetworkElementGroup(A4NetworkElementGroup negData) {
+        A4NetworkElementGroupGenerator a4NetworkElementGroupGenerator = new A4NetworkElementGroupGenerator();
+        NetworkElementGroupDto negDto = a4NetworkElementGroupGenerator.generateAsDto(negData);
+
+        a4ResourceInventory
+                .networkElementGroups()
+                .createOrUpdateNetworkElementGroup()
+                .body(negDto)
+                .uuidPath(negDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Delete network element group from A4 repository")
     public void deleteNetworkElementGroup(String uuid) {
         a4ResourceInventory
                 .networkElementGroups()
@@ -39,17 +58,20 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element")
-    public void createNetworkElement(NetworkElementDto networkElement) {
+    @Step("Create network element in A4 repository")
+    public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
+        A4NetworkElementGenerator a4NetworkElementGenerator = new A4NetworkElementGenerator();
+        NetworkElementDto neDto = a4NetworkElementGenerator.generateAsDto(neData, negData);
+
         a4ResourceInventory
                 .networkElements()
                 .createOrUpdateNetworkElement()
-                .body(networkElement)
-                .uuidPath(networkElement.getUuid())
+                .body(neDto)
+                .uuidPath(neDto.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element")
+    @Step("Delete network element from A4 repository")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
                 .networkElements()
@@ -58,17 +80,20 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element port")
-    public void createNetworkElementPort(NetworkElementPortDto networkElementPort) {
+    @Step("Create network element port in A4 repository")
+    public void createNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
+        A4NetworkElementPortGenerator a4NetworkElementPortGenerator = new A4NetworkElementPortGenerator();
+        NetworkElementPortDto nepDto = a4NetworkElementPortGenerator.generateAsDto(nepData, neData);
+
         a4ResourceInventory
                 .networkElementPorts()
                 .createOrUpdateNetworkElementPort()
-                .body(networkElementPort)
-                .uuidPath(networkElementPort.getUuid())
+                .body(nepDto)
+                .uuidPath(nepDto.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element port")
+    @Step("Delete network element port from A4 repository")
     public void deleteNetworkElementPort(String uuid) {
         a4ResourceInventory
                 .networkElementPorts()
@@ -77,7 +102,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create termination point")
+    @Step("Create termination point in A4 repository")
     public void createTerminationPoint(TerminationPointDto terminationPoint) {
         List<AdditionalAttributeDto> additionalAttributes = new ArrayList<>();
         terminationPoint
@@ -93,13 +118,27 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete termination point")
+    @Step("Delete termination point from A4 repository")
     public void deleteTerminationPoint(String uuid) {
         a4ResourceInventory
                 .terminationPoints()
                 .deleteTerminationPoint()
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Create NEG, NE & NEP in A4 repository")
+    public void setUpPrerequisiteElements(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
+        createNetworkElementGroup(negData);
+        createNetworkElement(neData, negData);
+        createNetworkElementPort(nepData, neData);
+    }
+
+    @Step("Delete NEG, NE & NEP from A4 repository")
+    public void deletePrerequisiteElements(String negUuid, String neUuid, String nepUuid) {
+        deleteNetworkElementPort(nepUuid);
+        deleteNetworkElement(neUuid);
+        deleteNetworkElementGroup(negUuid);
     }
 
     @Step("Check if one network service profile connected to termination point exists")
@@ -122,7 +161,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    public void deletePortsOfNetworkElement(String neUuid){
+    public void deletePortsOfNetworkElement(String neUuid) {
         List<NetworkElementPortDto> ports = a4ResourceInventory
                 .networkElementPorts()
                 .findNetworkElementPorts()
@@ -143,7 +182,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete list of network Elements by vpsz/fsz")
-    public void deleteNetworkElements(ArrayList<A4ResourceInventoryEntry> list){
+    public void deleteNetworkElements(ArrayList<A4ResourceInventoryEntry> list) {
         list.forEach(a4ResourceInventoryEntry -> {
             List<NetworkElementDto> actualNeList = a4ResourceInventory
                     .networkElements()
@@ -160,7 +199,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete network group by name")
-    public void deleteGroupByName(String groupName){
+    public void deleteGroupByName(String groupName) {
         List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
                 .networkElementGroups()
                 .listNetworkElementGroups()
@@ -177,7 +216,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("validate network elements")
-    public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list){
+    public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list) {
         //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
         InstallationPage installationPage = new InstallationPage();
         list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
