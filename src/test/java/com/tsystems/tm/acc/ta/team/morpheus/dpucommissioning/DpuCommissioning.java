@@ -31,7 +31,7 @@ public class DpuCommissioning extends ApiTest {
 
     private DpuCommissioningClient dpuCommissioningClient;
     private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
-    private static final String ENDSZ_WITHOUT_ERRORS = "49/8571/0/73GA";
+    private static final String ENDSZ_WITHOUT_ERRORS = "49/8571/0/71GA";
     private static final String ENDSZ_400_RI = "49/8571/0/72GA";
     private static final String ENDSZ_404_SEAL = "49/8571/0/74GA";
     private PostgreSqlDatabase db;

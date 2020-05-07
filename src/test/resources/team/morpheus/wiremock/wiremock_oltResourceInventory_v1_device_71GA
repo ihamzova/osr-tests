@@ -2,7 +2,7 @@
   "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b06ad",
   "request":{
     "method":"GET",
-    "url":"/api/oltResourceInventory/v1/device?endsz=49/8571/0/73GA"
+    "url":"/api/oltResourceInventory/v1/device?endsz=49/8571/0/71GA"
   },
   "response":{
     "status":200,
@@ -22,7 +22,7 @@
         "id":1003,
         "resourceId":"1003",
         "deviceName":"ETSI Service Shelf H8-MABC",
-        "endSz":"49/8571/0/73GA",
+        "endSz":"49/8571/0/71GA",
         "fachSz":null,
         "klsId":0,
         "ipAddress":"10.182.112.196",
