@@ -1,7 +1,7 @@
 {
   "id" : "a6df12e9-8cc4-4994-a7dd-436e5e5a04ad",
   "request" : {
-    "urlPattern":"/resource-order-resource-inventory/v1/dpu-configuration/49_8571_0_73GA/dpuConfigurations",
+    "urlPattern":"/resource-order-resource-inventory/v1/dpu-configuration/49_8571_0_71GA/dpuConfigurations",
     "method" : "POST"
   },
   "response" : {

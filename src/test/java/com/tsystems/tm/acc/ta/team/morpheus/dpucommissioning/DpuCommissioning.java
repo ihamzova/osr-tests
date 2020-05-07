@@ -8,6 +8,8 @@ import com.tsystems.tm.acc.ta.db.sql.strategies.jdbc.postgres.PostgreSqlJDBCConn
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
+import io.qameta.allure.Description;
+import io.qameta.allure.TmsLink;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -20,16 +22,19 @@ import java.util.function.Function;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.team.morpheus.common.Activities.CONFIGURE_DPU_SEAL;
+import static com.tsystems.tm.acc.ta.team.morpheus.common.Activities.GET_LLC;
+import static com.tsystems.tm.acc.ta.team.morpheus.common.Activities.UPDATE_INV;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_INTERNAL_SERVER_ERROR_500;
 
 public class DpuCommissioning extends ApiTest {
 
     private DpuCommissioningClient dpuCommissioningClient;
-
     private final Function<String, String> rename = (source) -> source.replace("dpu_commissioning", "dpu_com");
-
-    private SqlDatabase db;
+    private static final String ENDSZ_WITHOUT_ERRORS = "49/8571/0/71GA";
+    private static final String ENDSZ_400_RI = "49/8571/0/72GA";
+    private static final String ENDSZ_404_SEAL = "49/8571/0/74GA";
+    private PostgreSqlDatabase db;
 
     @BeforeClass
     public void init() {
@@ -52,12 +57,13 @@ public class DpuCommissioning extends ApiTest {
         db.close();
     }
 
-    @Test
+    @Test(description = "Positive case. DPU-commisioning without errors")
+    @TmsLink("DIGIHUB-62083")
+    @Description("Positive case. DPU-commisioning without errors")
     public void dpuCommissioningTest() throws SQLException, InterruptedException {
-        String endSZ = "49/8571/0/73GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
-        dpuCommissioningRequest.setEndSZ(endSZ);
+        dpuCommissioningRequest.setEndSZ(ENDSZ_WITHOUT_ERRORS);
 
         DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
@@ -69,17 +75,17 @@ public class DpuCommissioning extends ApiTest {
 
         String processId = response.getId();
 
-        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
-        // Assert.assertTrue(response.getComment().contains("SEAL-Interface is CALLED : PROCESS WAITS FOR CALLBACK"));
-        // Assert.assertEquals(response.getStatus(), "WAIT");
-
         String sqlGetProcessState =
-                "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
+                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
         ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
-            String processstate = rs.getString("processstate");
-            Assert.assertEquals(processstate, "WAIT");
+            String processstate = rs.getString("end_time_");
+            if(rs.getString("act_id_").equals(CONFIGURE_DPU_SEAL)){
+                Assert.assertNull(processstate);
+            }else{
+                Assert.assertNotNull(processstate);
+            }
         }
 
         Thread.sleep(10000);
@@ -87,17 +93,24 @@ public class DpuCommissioning extends ApiTest {
         rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
-            String processstate = rs.getString("processstate");
-            Assert.assertEquals(processstate, "CLOSED");
+            String processstate = rs.getString("end_time_");
+            Assert.assertNotNull(processstate);
+        }
+
+        String sqlGetIncidents =
+                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+        while (rsInc.next()) {
+        Assert.assertNull(rsInc, "Incident on task " + rsInc.getString("activity_id_"));
         }
     }
 
-    @Test
+    @Test(description = "Negative case. POST dpuConfigurations on SEAL returned 404")
+    @Description("Negative case. POST dpuConfigurations on SEAL returned 404")
     public void dpuCommissioningTestSealError() throws SQLException, InterruptedException {
-        String endSZ = "49/8571/0/74GA";
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
-        dpuCommissioningRequest.setEndSZ(endSZ);
+        dpuCommissioningRequest.setEndSZ(ENDSZ_404_SEAL);
 
         DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
@@ -105,32 +118,38 @@ public class DpuCommissioning extends ApiTest {
                 .xB3TraceIdHeader("2")
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         String processId = response.getId();
-
-        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
-        // Assert.assertTrue(response.getComment().contains("Error while Call SEAL.createDpuConfiguration :[404 Not Found]"));
-        // Assert.assertEquals(response.getStatus(), "ERROR");
 
         Thread.sleep(10000);
 
         String sqlGetProcessState =
-                "SELECT processstate FROM businessprocess where processid =" + "'" + processId + "'";
+                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
         ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
         while (rs.next()) {
-            String processstate = rs.getString("processstate");
-            Assert.assertEquals(processstate, "CLOSED");
+            String processstate = rs.getString("act_id_");
+            Assert.assertNotEquals(UPDATE_INV, processstate);
+        }
+        //Temporary workaround till valid error handling will be implemented: here we check, that
+        //incident was created and process was interrupted on step Activity_SEAL.POST.DpuConf
+
+        String sqlGetIncidents =
+                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+        while (rs.next()) {
+            String incident = rsInc.getString("activity_id_");
+            Assert.assertNotNull(incident);
         }
     }
 
-    @Test
-    public void setDpuCommissioningTestError() {
-        String endSZ = "49/8571/0/72GA";
+    @Test(description = "Negative case. GET oltResourceInventory returned 400")
+    @Description("Negative case. GET oltResourceInventory returned 400")
+    public void setDpuCommissioningTestError() throws SQLException {
 
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
-        dpuCommissioningRequest.setEndSZ(endSZ);
+        dpuCommissioningRequest.setEndSZ(ENDSZ_400_RI);
 
         DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
@@ -138,10 +157,27 @@ public class DpuCommissioning extends ApiTest {
                 .xB3TraceIdHeader("2")
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        assert false : "Please update swagger files according to this document: https://gard.telekom.de/gardwiki/display/DGHB/Best+practices+in+TA#BestpracticesinTA-Swagger";
-        // Assert.assertTrue(response.getComment().contains("Error while Call Inventory.findDeviceByCriteria :[400 Bad Request]"));
-        // Assert.assertEquals(response.getStatus(), "ERROR");
+        String processId = response.getId();
+
+        //Temporary workaround till valid error handling will be implemented: here we check, that
+        //incident was created and process was interrupted on step Activity_OLT-RI.GET.DeviceDPU
+        String sqlGetProcessState =
+                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
+
+        while (rs.next()) {
+            String processstate = rs.getString("act_id_");
+            Assert.assertNotEquals(GET_LLC, processstate);
+        }
+
+        String sqlGetIncidents =
+                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+        while (rsInc.next()) {
+            String incident = rsInc.getString("activity_id_");
+            Assert.assertNotNull(incident);
+        }
     }
 }
