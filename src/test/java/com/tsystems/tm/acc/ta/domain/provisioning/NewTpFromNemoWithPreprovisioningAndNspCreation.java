@@ -25,8 +25,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
 
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4PreProvisioningRobot a4PreProvisioningRobot = new A4PreProvisioningRobot();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
     @Owner("bela.kovac@t-systems.com")
@@ -48,19 +48,19 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         port.setEndSz(neData.getVpsz() + "/" + neData.getFsz());
         port.setPortNumber(nepData.getPort());
 
-        a4ResourceInventoryRobot.setUpPrerequisiteElements(negData, neData, nepData);
+        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
 
         // WHEN / Action
-        a4ResourceInventoryServiceRobot.createTerminationPoint(tpData, nepData);
+        a4Nemo.createTerminationPoint(tpData, nepData);
         Thread.sleep(WAIT_TIME);
 
         // THEN / Assert
         a4PreProvisioningRobot.checkResults(port);
-        a4ResourceInventoryRobot.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
+        a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkServiceProfileConnectedToTerminationPoint(tpData.getUuid());
-        a4ResourceInventoryRobot.deleteTerminationPoint(tpData);
-        a4ResourceInventoryRobot.deletePrerequisiteElements(negData, neData, nepData);
+        a4Inventory.deleteNetworkServiceProfileConnectedToTerminationPoint(tpData.getUuid());
+        a4Inventory.deleteTerminationPoint(tpData.getUuid());
+        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
     }
 }

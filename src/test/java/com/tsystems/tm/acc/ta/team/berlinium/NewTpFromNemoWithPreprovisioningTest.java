@@ -19,8 +19,8 @@ import org.testng.annotations.Test;
 
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
@@ -37,16 +37,16 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         A4TerminationPoint tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
 
-        a4ResourceInventoryRobot.setUpPrerequisiteElements(negData, neData, nepData);
+        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
 
         // WHEN / Action
-        a4ResourceInventoryServiceRobot.createTerminationPoint(tpData, nepData);
+        a4Nemo.createTerminationPoint(tpData, nepData);
 
         // THEN
         // No further assertions here except the ones in the robots themselves
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteTerminationPoint(tpData);
-        a4ResourceInventoryRobot.deletePrerequisiteElements(negData, neData, nepData);
+        a4Inventory.deleteTerminationPoint(tpData.getUuid());
+        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
     }
 }

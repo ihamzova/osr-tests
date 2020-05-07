@@ -14,8 +14,8 @@ import org.testng.annotations.Test;
 @TmsLink("DIGIHUB-xxxxx")
 public class A4NemoUpdateTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
 
     @Test(description = "DIGIHUB-xxxxx Trigger an update call to NEMO for a Network Element Group")
     @Owner("bela.kovac@t-systems.com")
@@ -26,15 +26,15 @@ public class A4NemoUpdateTest extends ApiTest {
         A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
-        a4ResourceInventoryRobot.createNetworkElementGroup(negData);
+        a4Inventory.createNetworkElementGroup(negData);
 
         // WHEN / Action
-        a4NemoUpdaterRobot.triggerNemoUpdate(negData.getUuid());
+        a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
 
         // THEN / Assert
         // No further assertions here besides return code of NEMO update call which is checked in the trigger robot above
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElementGroup(negData);
+        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
     }
 }

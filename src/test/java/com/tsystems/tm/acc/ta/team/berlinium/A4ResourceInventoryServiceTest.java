@@ -14,8 +14,8 @@ import org.testng.annotations.Test;
 @TmsLink("DIGIHUB-57771")
 public class A4ResourceInventoryServiceTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
+    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource")
     @Owner("bela.kovac@t-systems.com")
@@ -27,12 +27,12 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         // WHEN / Action
-        a4ResourceInventoryRobot.createNetworkElementGroup(negData);
+        a4Inventory.createNetworkElementGroup(negData);
 
         // THEN / Assert
-        a4ResourceInventoryServiceRobot.checkLogicalResourceIsNetworkElementGroup(negData);
+        a4Nemo.checkLogicalResourceIsNetworkElementGroup(negData);
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElementGroup(negData);
+        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
     }
 }
