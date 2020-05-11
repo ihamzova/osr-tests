@@ -7,10 +7,10 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import io.qameta.allure.*;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.UUID;
 
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
@@ -28,31 +28,39 @@ public class A4NemoUpdateTest extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
     }
 
-    @BeforeMethod
-    public void setUp() {
-        a4Inventory.createNetworkElementGroup(negData);
-    }
-
-    @AfterMethod
-    public void cleanUp() {
-        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
-    }
-
-    @Test(description = "DIGIHUB-xxxxx Trigger an update call to NEMO for a Network Element Group")
+    @Test(description = "DIGIHUB-xxxxx Trigger an update call (PUT) to NEMO for existing network element group")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
-    @Description("Trigger an update call to NEMO for a Network Element Group")
+    @Description("Trigger an update call to NEMO for existing network element group")
     public void testNemoUpdateWithNeg() {
         // GIVEN / Arrange
-        // all done in setUp() method
+        a4Inventory.createNetworkElementGroup(negData);
 
         // WHEN / Action
         a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
 
         // THEN / Assert
-        // No further assertions here besides return code of NEMO update call which is checked in the trigger robot above
+        a4NemoUpdater.validateLogicalResourcePutToNemoWiremock(negData.getUuid());
 
         // AFTER / Clean-up
-        // all done in cleanUp() method
+        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
+    }
+
+    @Test(description = "DIGIHUB-xxxxx Trigger an update call (DELETE) to NEMO for non-existing entity type element")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Trigger an update call to NEMO for non-existing entity type element")
+    public void testNemoUpdateForNonexistingEntity() {
+        // GIVEN / Arrange
+        String uuid = UUID.randomUUID().toString();
+
+        // WHEN / Action
+        a4NemoUpdater.triggerNemoUpdate(uuid);
+
+        // THEN / Assert
+        a4NemoUpdater.validateLogicalResourceDeleteToNemoWiremock(uuid);
+
+        // AFTER / Clean-up
+        // nothing to do
     }
 }
