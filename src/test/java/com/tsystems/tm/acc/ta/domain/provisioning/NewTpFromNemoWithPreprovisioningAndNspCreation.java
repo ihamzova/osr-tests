@@ -18,15 +18,49 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     private static final int WAIT_TIME = 15_000;
 
     private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4PreProvisioningRobot a4PreProvisioningRobot = new A4PreProvisioningRobot();
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+
+    private A4NetworkElementGroup negData;
+    private A4NetworkElement neData;
+    private A4NetworkElementPort nepData;
+    private A4TerminationPoint tpData;
+    private PortProvisioning port;
+
+    @BeforeClass
+    public void init() {
+        negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
+                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        neData = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.defaultNetworkElement);
+        nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPoint);
+        port = osrTestContext.getData().getPortProvisioningDataProvider()
+                .get(PortProvisioningCase.a4Port);
+    }
+
+    @BeforeMethod
+    public void setUp() {
+        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
+        a4PreProvisioning.clearData();
+    }
+
+    @AfterMethod
+    public void cleanUp() {
+        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
+    }
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
     @Owner("bela.kovac@t-systems.com")
@@ -34,33 +68,18 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
     public void newTpWithPreprovisioning() throws InterruptedException {
         // GIVEN / Arrange
-        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        A4NetworkElement neData = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
-        A4NetworkElementPort nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        A4TerminationPoint tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
-
-        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
-
-        PortProvisioning port = osrTestContext.getData().getPortProvisioningDataProvider()
-                .get(PortProvisioningCase.a4Port_domainTest);
-        port.setEndSz(neData.getVpsz() + "/" + neData.getFsz());
-        port.setPortNumber(nepData.getPort());
+        // all done in setUp() method
 
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpData, nepData);
         Thread.sleep(WAIT_TIME);
 
         // THEN / Assert
-        a4PreProvisioningRobot.checkResults(port);
+        a4PreProvisioning.checkResults(port);
         a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
 
         // AFTER / Clean-up
         a4Inventory.deleteNetworkServiceProfileConnectedToTerminationPoint(tpData.getUuid());
         a4Inventory.deleteTerminationPoint(tpData.getUuid());
-        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
     }
 }

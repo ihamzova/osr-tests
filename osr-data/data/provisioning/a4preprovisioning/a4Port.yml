@@ -1,9 +1,9 @@
 name: a4Port
 template: com.tsystems.tm.acc.data.models.PortProvisioning
 values:
-  endSz: "${scope, a4Provisioning.endSz}"
-  slotNumber: "${scope, a4Provisioning.slotNumber}"
-  portNumber: "${scope, a4Provisioning.portNumber}"
+  endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
+  slotNumber: "${scope, global.a4Provisioning.slotNumber}"
+  portNumber: "${scope, global.a4Provisioning.portNumber}"
   homeIdPool: 32
   lineIdPool: 1
   accessLinesWG: 1
