@@ -1,0 +1,10 @@
+name: JDBCDpuCommissioning
+template: com.tsystems.tm.acc.ta.db.sql.JDBCConnectionProperties
+values:
+  name: "dpu-commissioning"
+  host: "10.14.104.82"
+  port: 5432
+  database: "morpheus_01_dpu_commissioning"
+  username: "morpheus_01_dpu_commissioning"
+  password: "dpu_com"
+  databaseType: "POSTGRES"
