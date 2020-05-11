@@ -147,7 +147,7 @@ public class A4ResourceInventoryRobot {
         });
     }
 
-    private List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
+    List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()

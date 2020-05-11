@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -29,6 +30,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
 
     private A4NetworkElementGroup negData;
@@ -77,6 +79,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
         a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
+        a4NemoUpdater.validateNetworkServiceProfilePutToNemoWiremock(tpData.getUuid());
 
         // AFTER / Clean-up
         a4Inventory.deleteNetworkServiceProfileConnectedToTerminationPoint(tpData.getUuid());

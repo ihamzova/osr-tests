@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.Description;
@@ -21,6 +22,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -61,7 +63,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4Nemo.createTerminationPoint(tpData, nepData);
 
         // THEN
-        // No further assertions here except the ones in the robots themselves
+        a4PreProvisioning.validatePostToPreprovisioningWiremock();
 
         // AFTER / Clean-up
         a4Inventory.deleteTerminationPoint(tpData.getUuid());
