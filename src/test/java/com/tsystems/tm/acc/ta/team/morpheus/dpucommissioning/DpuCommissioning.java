@@ -34,7 +34,9 @@ public class DpuCommissioning extends ApiTest {
     private static final String ENDSZ_WITHOUT_ERRORS = "49/8571/0/71GA";
     private static final String ENDSZ_400_RI = "49/8571/0/72GA";
     private static final String ENDSZ_404_SEAL = "49/8571/0/74GA";
-    public static final String ENDSZ_400_PON = "49/8571/0/71GB";
+    private static final String ENDSZ_400_PON = "49/8571/0/71GB";
+    private static final String ENDSZ_400_ONUID = "49/8571/0/71GD";
+    private static final String ENDSZ_400_BACKHAULID = "49/8571/0/71GC";
     private SqlDatabase db;
 
     @BeforeClass
@@ -222,6 +224,85 @@ public class DpuCommissioning extends ApiTest {
         while (rsInc.next()) {
             String activity = rsInc.getString("activity_id_");
             Assert.assertEquals(GET_LLC, activity);
+        }
+    }
+
+    @Test(description = "Negative case. GET onuid returned 400")
+    @Description("Negative case. GET onuid returned 400")
+    public void setDpuCommissioningTestGetOnuidError() throws SQLException {
+
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(ENDSZ_400_ONUID);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        String processId = response.getId();
+
+        //Temporary workaround till valid error handling will be implemented: here we check, that
+        //incident was created and process was interrupted on step Activity_OLT-RI.GET.DeviceDPU
+        String sqlGetProcessState =
+                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
+
+        while (rs.next()) {
+            String processstate = rs.getString("act_id_");
+            Assert.assertNotEquals(GET_BACKHAUL, processstate);
+        }
+
+        //This part should be moved to separate method, because incidents created async after several time
+        //when process is ended
+        String sqlGetIncidents =
+                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+        //Assert.assertTrue(rsInc.next());
+        while (rsInc.next()) {
+            String activity = rsInc.getString("activity_id_");
+            Assert.assertEquals(GET_ONUID, activity);
+        }
+    }
+    @Test(description = "Negative case. GET backhaul returned 400")
+    @Description("Negative case. GET backhaul returned 400")
+    public void setDpuCommissioningTestGetBachhaulError() throws SQLException {
+
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(ENDSZ_400_BACKHAULID);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        String processId = response.getId();
+
+        //Temporary workaround till valid error handling will be implemented: here we check, that
+        //incident was created and process was interrupted on step Activity_OLT-RI.GET.DeviceDPU
+        String sqlGetProcessState =
+                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
+
+        while (rs.next()) {
+            String processstate = rs.getString("act_id_");
+            Assert.assertNotEquals(DEPROVISION_OLT, processstate);
+        }
+
+        //This part should be moved to separate method, because incidents created async after several time
+        //when process is ended
+        String sqlGetIncidents =
+                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+        //Assert.assertTrue(rsInc.next());
+        while (rsInc.next()) {
+            String activity = rsInc.getString("activity_id_");
+            Assert.assertEquals(GET_BACKHAUL, activity);
         }
     }
 }

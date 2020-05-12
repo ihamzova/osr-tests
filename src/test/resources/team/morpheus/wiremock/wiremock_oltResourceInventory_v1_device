@@ -5,7 +5,7 @@
     "urlPath": "/api/oltResourceInventory/v1/device",
     "queryParameters": {
       "endsz": {
-        "matches": "49\\/8571\\/0\\/71GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/71GB"
+        "matches": "49\\/8571\\/0\\/71GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/71GB|49\\/8571\\/0\\/71GC"
       }
     }
   },
