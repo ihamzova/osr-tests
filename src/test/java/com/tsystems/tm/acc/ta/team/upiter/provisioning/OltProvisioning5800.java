@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
@@ -21,6 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,19 +30,18 @@ import java.util.stream.Stream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
+import static io.restassured.RestAssured.given;
 
 public class OltProvisioning5800 extends ApiTest {
 
-    private static final Integer LATENCY = 2 * 75_000;
+    private static final Integer LATENCY = 2 * 80_000;
 
-    private OltResourceInventoryClient oltResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private PortProvisioning portEmpty;
 
     @BeforeClass
     public void init() {
-        oltResourceInventoryClient = new OltResourceInventoryClient();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
         portEmpty = OsrTestContext.get().getData()
@@ -52,7 +53,6 @@ public class OltProvisioning5800 extends ApiTest {
     public void prepareData() throws InterruptedException {
         clearDataBase();
         Thread.sleep(1000);
-        fillDataBase();
     }
 
     @AfterMethod
@@ -91,7 +91,7 @@ public class OltProvisioning5800 extends ApiTest {
                 cardBeforeProvisioning.getPorts().get(0).getPortNumber());
 
         Assert.assertNotNull(cardBeforeProvisioning);
-        Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
+        Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
@@ -116,11 +116,11 @@ public class OltProvisioning5800 extends ApiTest {
 
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
-        Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 1);
+        Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
         Assert.assertEquals(getAccessLines(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
-                .body(new DeviceDto().endSz(portEmpty.getSlotNumber())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .body(new DeviceDto().endSz(portEmpty.getEndSz())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY);
 
@@ -187,27 +187,27 @@ public class OltProvisioning5800 extends ApiTest {
     }
 
     private Device getDevice() {
-        return oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery("49/911/1100/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        URL deviceUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/olt")
+                .withParameter("endSZ", portEmpty.getEndSz()).build();
+        String response = given().when().get(deviceUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Device.class);
     }
 
     private Card getCard() {
-        return oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/911/1100/76H1")
-                .slotNumberQuery("1")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        URL cardUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/card")
+                .withParameter("endSz", portEmpty.getEndSz())
+                .withParameter("slotNumber", portEmpty.getSlotNumber()).build();
+        String response = given().when().get(cardUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Card.class);
     }
 
-    private void fillDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForPortProvisioning()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
+
 
     private void clearDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }

@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
@@ -21,6 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,13 +30,13 @@ import java.util.stream.Stream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
+import static io.restassured.RestAssured.given;
 
 public class OltProvisioning5600 extends ApiTest {
 
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 80_000;
     private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * 75_000;
 
-    private OltResourceInventoryClient oltResourceInventoryClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private PortProvisioning portEmpty;
@@ -56,7 +58,6 @@ public class OltProvisioning5600 extends ApiTest {
 
     @BeforeClass
     public void init() {
-        oltResourceInventoryClient = new OltResourceInventoryClient();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
         OsrTestContext context = OsrTestContext.get();
@@ -105,14 +106,14 @@ public class OltProvisioning5600 extends ApiTest {
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardDto().endSz("49/30/179/76H1").slotNumber("5")).collect(Collectors.toList()))
+                .body(Stream.of(new CardDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY_FOR_PORT_PROVISIONING);
 
         Card cardAfterProvisioning = getCard();
 
-        PortProvisioning port = getPortProvisioning("49/30/179/76H1", "5", cardAfterProvisioning.getPorts().get(0).getPortNumber());
+        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(), portEmpty.getSlotNumber(), cardAfterProvisioning.getPorts().get(0).getPortNumber());
 
         checkResults(port);
     }
@@ -129,13 +130,13 @@ public class OltProvisioning5600 extends ApiTest {
         Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 8);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
-                .body(new DeviceDto().endSz("49/30/179/76H1")).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .body(new DeviceDto().endSz(portEmpty.getEndSz())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Thread.sleep(LATENCY_FOR_DEVICE_PROVISIONING);
 
         Device deviceAfterProvisioning = getDevice();
 
-        PortProvisioning port = getPortProvisioning("49/30/179/76H1",
+        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
                 deviceAfterProvisioning.getEquipmentHolders().get(2).getSlotNumber(),
                 deviceAfterProvisioning.getEquipmentHolders().get(2).getCard().getPorts().get(0).getPortNumber());
 
@@ -220,15 +221,22 @@ public class OltProvisioning5600 extends ApiTest {
     }
 
     private Device getDevice() {
-        return oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery("49/30/179/76H1").executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        URL deviceUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/olt")
+                .withParameter("endSZ", portEmpty.getEndSz()).build();
+        String response = given().when().get(deviceUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Device.class);
     }
 
     private Card getCard() {
-        return oltResourceInventoryClient.getClient().cardController().findCard()
-                .endSzQuery("49/30/179/76H1")
-                .slotNumberQuery("5")
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        URL cardUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/card")
+                .withParameter("endSz", portEmpty.getEndSz())
+                .withParameter("slotNumber", portEmpty.getSlotNumber()).build();
+        String response = given().when().get(cardUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Card.class);
     }
 
     private void startPortProvisioning(PortProvisioning port) {
@@ -241,21 +249,11 @@ public class OltProvisioning5600 extends ApiTest {
     }
 
     private void fillDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().fillDatabaseForOltCommissioning()
-                .END_SZQuery("49/30/179/76H1")
-                .KLS_IDQuery("14653")
-                .slOTNUMBER1Query("3")
-                .slOTNUMBER2Query("4")
-                .slOTNUMBER3Query("5")
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
     }
 
     private void clearDataBase() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
