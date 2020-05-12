@@ -100,7 +100,7 @@ public class AccessLineSearchPage {
 
     @Step("Get a message about found access lines")
     public String getTableMessage() {
-        return $(By.className("am-al-count")).text();
+        return $(By.className("am-count")).text();
     }
 
     @Step("Get all table rows")
