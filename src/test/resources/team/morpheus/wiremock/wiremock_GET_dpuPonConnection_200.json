@@ -5,7 +5,7 @@
     "urlPath": "/api/oltResourceInventory/v1/dpu/dpuPonConnection",
     "queryParameters": {
       "dpuPonPortEndsz": {
-        "matches": "49\\/8571\\/0\\/71GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/99GA"
+        "matches": "49\\/8571\\/0\\/71GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/99GA|49\\/8571\\/0\\/99GC|49\\/8571\\/0\\/71GD"
       },
       "dpuPonPortNumber":{
         "matches":".*"

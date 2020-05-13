@@ -1,0 +1,34 @@
+{
+   "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b13ee",
+   "request":{
+      "url":"/resource-order-resource-inventory/v1/assignOnuIdTask",
+      "method":"POST",
+      "bodyPatterns":[
+         {
+            "matchesJsonPath" : "$[?(@.dpuEndSz=='49/8571/0/71GD')]"
+         }
+         
+      ]
+   },
+   "response":{
+      "status":400,
+      "headers":{
+         "Content-Type":"application/json",
+         "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
+      },
+      "jsonBody":
+         {
+  "type": "error",
+  "title": "error",
+  "status": 0,
+  "detail": "error",
+  "instance": "error",
+  "embedded": {
+    "code": "0000",
+    "reason": "error",
+    "message": "error",
+    "status": 0
+  }
+}
+   }
+}
