@@ -82,6 +82,11 @@
                     </dependency>
                     <dependency>
                         <groupId>com.tsystems.tm.acc.tests</groupId>
+                        <artifactId>acc-common-utils</artifactId>
+                        <version>${framework.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.tsystems.tm.acc.tests</groupId>
                         <artifactId>osr-models</artifactId>
                         <version>${osr.models.version}</version>
                     </dependency>

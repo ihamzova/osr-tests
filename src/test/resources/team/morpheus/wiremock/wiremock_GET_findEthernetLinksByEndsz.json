@@ -6,7 +6,7 @@
     "urlPath": "/api/oltResourceInventory/v1/olt/findEthernetLinksByEndsz",
     "queryParameters": {
       "oltEndSz": {
-        "matches": "49\\/40\\/179\\/76H1|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/99GA|49\\/8571\\/0\\/73GA"
+        "matches": "49\\/40\\/179\\/76H1|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/99GA|49\\/8571\\/0\\/73GA|49\\/50\\/179\\/76H1"
       }
     }
   },

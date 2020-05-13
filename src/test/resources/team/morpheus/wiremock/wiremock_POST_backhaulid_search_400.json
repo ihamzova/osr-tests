@@ -1,0 +1,33 @@
+{
+    "id": "ab54f6b0-e35c-11e8-9f32-f2801f1b12ee",
+    "request": {
+        "url": "/resource-order-resource-inventory/v3/backhaulId/search",
+        "method": "POST",
+        "bodyPatterns": [
+         {
+            "matchesJsonPath" : "$.[?(@.endSz=='49/50/179/76H1')]"
+         }
+         
+      ]
+    },
+    "response": {
+        "status": 400,
+        "headers": {
+            "Content-Type": "application/json",
+            "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}"
+        },
+        "jsonBody": {
+  "type": "error",
+  "title": "error",
+  "status": 0,
+  "detail": "error",
+  "instance": "error",
+  "embedded": {
+    "code": "0000",
+    "reason": "error",
+    "message": "error",
+    "status": 0
+  }
+}
+    }
+}
