@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class Dpu {
     private String endSz;
+    private Integer onuId;
 }

@@ -14,22 +14,20 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 public class DpuCommissioningNew extends BaseTest {
-    private DpuCommissioningClient dpuCommissioningClient;
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;
 
     @BeforeClass
-    public void init(){dpuCommissioningClient = new DpuCommissioningClient();
-        dpuCommissioningRobot = new DpuCommissioningRobot();}
+    public void init(){
+        dpuCommissioningRobot = new DpuCommissioningRobot();
+    }
     @Test
     public void makeItWorks(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPositive);
-        try {
-            dpuCommissioningRobot.setUpWiremock(olt,dpu);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
 
     }
 }
