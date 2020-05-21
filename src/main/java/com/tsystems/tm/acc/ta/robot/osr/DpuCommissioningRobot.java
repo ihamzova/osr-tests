@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.data.osr.generators.DpuCommissioningGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
+import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
 import io.qameta.allure.Step;
@@ -77,5 +78,18 @@ public class DpuCommissioningRobot {
             log.error("directory is empty");
             throw new RuntimeException();
         }
+    }
+
+
+    @Step
+    public void checkGetDeviceDPU(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.retrieveLastGetRequest(timeOfExecution, "/api/oltResourceInventory/v1/device?endsz=" + dpuEndsz);
+    }
+
+    @Step
+    public void checkGetDpuPonConn(Long timeOfExecution, String dpuEndsz, String dpuPonPortNumber){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.retrieveLastGetRequest(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=" + dpuPonPortNumber);
     }
 }

@@ -26,7 +26,7 @@ public class DpuCommissioningNew extends BaseTest {
     public void init(){
         dpuCommissioningRobot = new DpuCommissioningRobot();
     }
-    @AfterClass
+//    @AfterClass
     public void cleanup(){
         dpuCommissioningRobot.cleanup();
     }
@@ -38,8 +38,10 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPositive);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        Long timeOfExecution = System.currentTimeMillis();
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
+        dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, dpu.getEndSz());
+
     }
 
     @Test(description = "Negative case. GET oltResourceInventory returned 400")

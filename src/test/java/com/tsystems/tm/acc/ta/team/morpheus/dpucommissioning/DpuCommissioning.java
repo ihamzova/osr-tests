@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.db.sql.JDBCConnectionProperties;
 import com.tsystems.tm.acc.ta.db.sql.SqlDatabase;
 import com.tsystems.tm.acc.ta.db.sql.strategies.jdbc.postgres.PostgreSqlJDBCConnectionPropertiesFactory;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
@@ -73,38 +74,42 @@ public class DpuCommissioning extends ApiTest {
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        String processId = response.getId();
+        DpuCommissioningRobot dpuCommissioningRobot = new DpuCommissioningRobot();
+        dpuCommissioningRobot.checkGetDeviceDPU(0L, "49/8571/0/71GA");
 
-        String sqlGetProcessState =
-                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
-        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
 
-        while (rs.next()) {
-            String processstate = rs.getString("end_time_");
-            if(rs.getString("act_id_").equals(CONFIGURE_DPU_SEAL)){
-                Assert.assertNull(processstate);
-            }else{
-                Assert.assertNotNull(processstate);
-            }
-        }
-
-        Thread.sleep(10000);
-
-        rs = db.executeWithResultSet(sqlGetProcessState);
-
-        while (rs.next()) {
-            String processstate = rs.getString("end_time_");
-            Assert.assertNotNull(processstate);
-        }
-
-        //This part should be moved to separate method, because incidents created async after several time
-        //when process is ended
-        String sqlGetIncidents =
-                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
-        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
-        while (rsInc.next()) {
-        Assert.assertNull(rsInc, "Incident on task " + rsInc.getString("activity_id_"));
-        }
+//        String processId = response.getId();
+//
+//        String sqlGetProcessState =
+//                "SELECT act_id_, end_time_ FROM act_hi_actinst where proc_inst_id_ =" + "'" + processId + "'";
+//        ResultSet rs = db.executeWithResultSet(sqlGetProcessState);
+//
+//        while (rs.next()) {
+//            String processstate = rs.getString("end_time_");
+//            if(rs.getString("act_id_").equals(CONFIGURE_DPU_SEAL)){
+//                Assert.assertNull(processstate);
+//            }else{
+//                Assert.assertNotNull(processstate);
+//            }
+//        }
+//
+//        Thread.sleep(10000);
+//
+//        rs = db.executeWithResultSet(sqlGetProcessState);
+//
+//        while (rs.next()) {
+//            String processstate = rs.getString("end_time_");
+//            Assert.assertNotNull(processstate);
+//        }
+//
+//        //This part should be moved to separate method, because incidents created async after several time
+//        //when process is ended
+//        String sqlGetIncidents =
+//                "SELECT activity_id_ FROM act_hi_incident where proc_inst_id_ =" + "'" + processId + "'";
+//        ResultSet rsInc = db.executeWithResultSet(sqlGetIncidents);
+//        while (rsInc.next()) {
+//        Assert.assertNull(rsInc, "Incident on task " + rsInc.getString("activity_id_"));
+//        }
     }
 
     @Test(description = "Negative case. POST dpuConfigurations on SEAL returned 404")
@@ -304,5 +309,17 @@ public class DpuCommissioning extends ApiTest {
             String activity = rsInc.getString("activity_id_");
             Assert.assertEquals(GET_BACKHAUL, activity);
         }
+    }
+
+
+    @Test
+    public void WiremockTest(){
+//        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+//        List<RequestFind> requests = wiremockRecordedRequestRetriver.retrieveLastRequest(1);
+
+        Long timeOfExecution = System.currentTimeMillis();
+        DpuCommissioningRobot dpuCommissioningRobot = new DpuCommissioningRobot();
+        dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, "49/8571/0/71GA");
+
     }
 }
