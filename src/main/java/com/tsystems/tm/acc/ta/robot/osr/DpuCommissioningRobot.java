@@ -49,6 +49,7 @@ public class DpuCommissioningRobot {
         File getBackhaul = dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
         File postDeprovision = dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu);
         File getAncpSession = dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
+        File sealDpuMock = dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
 
@@ -69,7 +70,7 @@ public class DpuCommissioningRobot {
 
     @Step("cleanup")
     public void cleanup(){
-        WiremockHelper.mappingsReset();
+        //WiremockHelper.mappingsReset();
         try {
             FileUtils.cleanDirectory(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
         } catch (IOException e) {

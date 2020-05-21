@@ -241,6 +241,28 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
+
+    public File generateSelaDpuStub(OltDevice olt, Dpu dpu){
+        File jsonTemplate = new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockTemplates/wiremock_seal_dpu_configuration.json");
+
+        String content = null;
+        try {
+            content = FileUtils.readFileToString(jsonTemplate, "UTF-8");
+        } catch (IOException e) {
+            log.error("could not parse json template");
+            throw new RuntimeException();
+        }
+
+        File stub = new File (System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult/wiremock_seal_dpu_configuration.json");
+        try {
+            FileUtils.write(stub,content, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error("could not write into template");
+            throw new RuntimeException();
+        }
+        return stub;
+    }
+
     public StubMapping getData(OltDevice olt) {
         StubMapping mapping = new StubMapping();
         StubMappingRequest request = new StubMappingRequest();
