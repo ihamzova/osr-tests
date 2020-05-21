@@ -1,5 +1,5 @@
 {
-  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b15ad",
+  "id":"cd54f6b0-e35c-11e8-9f32-f2801f1b15ad",
   "request": {
     "method": "GET",
     "urlPath": "/api/oltResourceInventory/v1/dpu/dpuPonConnection",
@@ -13,7 +13,7 @@
     }
   },
   "response":{
-    "status":200,
+    ###STATUS###,
     "headers":{
       "Content-Type":"application/json",
       "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
@@ -21,7 +21,7 @@
     "jsonBody":[
       {
         "id": 1049,
-        "oltPonPortEndsz": "49/40/179/76H1",
+        "oltPonPortEndsz": "49/30/2000/76H1",
         "oltPonPortNumber": "101",
         "oltPonSlotNumber": "4",
         "dpuPonPortEndsz": "{{request.requestLine.query.dpuPonPortEndsz}}",

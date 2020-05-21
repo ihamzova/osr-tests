@@ -1,5 +1,5 @@
 {
-    "id": "ab54f6b0-e35c-11e8-9f32-f2801f1b01ee",
+    "id": "cd54f6b0-e35c-11e8-9f32-f2801f1b01ee",
     "request": {
         "url": "/resource-order-resource-inventory/v3/backhaulId/search",
         "method": "POST",
@@ -17,7 +17,7 @@
       ]
     },
     "response": {
-        "status": 200,
+        ###STATUS###,
         "headers": {
             "Content-Type": "application/json",
             "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}"
