@@ -41,6 +41,8 @@ public class DpuCommissioningNew extends BaseTest {
         Long timeOfExecution = System.currentTimeMillis();
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConn(timeOfExecution, dpu.getEndSz(), dpu.getPonPortNumber());
+
 
     }
 
