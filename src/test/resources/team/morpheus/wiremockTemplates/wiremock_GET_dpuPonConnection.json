@@ -21,9 +21,9 @@
     "jsonBody":[
       {
         "id": 1049,
-        "oltPonPortEndsz": "49/30/2000/76H1",
-        "oltPonPortNumber": "101",
-        "oltPonSlotNumber": "4",
+        "oltPonPortEndsz": "###OLT_ENDSZ###",
+        "oltPonPortNumber": "###OLTSLOT###",
+        "oltPonSlotNumber": "###OLTPORT###",
         "dpuPonPortEndsz": "{{request.requestLine.query.dpuPonPortEndsz}}",
         "dpuPonPortNumber": "{{request.requestLine.query.dpuPonPortNumber}}"
       }

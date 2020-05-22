@@ -64,6 +64,8 @@ public class DpuCommissioningGenerator {
 
         String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         content = content.replace("###OLT_ENDSZ###",endsz);
+        content = content.replace("###OLTSLOT###", olt.getOltSlot());
+        content = content.replace("###OLTPORT###", olt.getOltPort());
 
         String currentStep = DpuActivities.GET_ETHLINK;
         content = setResponseStatus(dpu, content, currentStep);

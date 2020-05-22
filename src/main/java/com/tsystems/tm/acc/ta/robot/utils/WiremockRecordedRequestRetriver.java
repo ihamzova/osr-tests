@@ -42,24 +42,36 @@ public class WiremockRecordedRequestRetriver {
         return retrieveLastGetRequest(timeOfExecution, TIMEOUT, url);
     }
 
-    public RequestFind retrieveLastRequest(Long timeOfExecution, String fieldValue, Long timeout, String method, String urlPattern) {
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = start.plusSeconds(timeout / 1000);
-
+    public RequestFind retrieveLastPostRequest(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
+        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
 
         do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod(method).withUrlPattern(urlPattern).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 10).getRequests();
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrlPattern(url).build();
+            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1).getRequests();
             if (!requests.isEmpty()) {
                 for (RequestFind request : requests) {
-                    if (request.getBody().contains(fieldValue) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
+                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
                         return request;
                 }
             }
             sleep(DELAY);
         }
         while (LocalDateTime.now().isBefore(end));
-        throw new RuntimeException("Nothing found");
+        throw new RuntimeException("DPU request not found");
+    }
+
+    private boolean isAllFieldValuesContained(String body, List<String> fieldValues) {
+        Boolean result = true;
+        for (String fieldValue : fieldValues) {
+            if (!body.contains(fieldValue)) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    public RequestFind retrieveLastPostRequest(Long timeOfExecution, List<String> fieldValues, String url) {
+        return retrieveLastPostRequest(timeOfExecution, fieldValues, TIMEOUT, url);
     }
 
 

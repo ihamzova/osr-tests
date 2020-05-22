@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
@@ -86,8 +88,27 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkGetDpuPonConn(Long timeOfExecution, String dpuEndsz, String dpuPonPortNumber){
+    public void checkGetDpuPonConn(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.retrieveLastGetRequest(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=" + dpuPonPortNumber);
+        wiremockRecordedRequestRetriver.retrieveLastGetRequest(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1");
     }
+
+    @Step
+    public void checkGetEthernetLink(Long timeOfExecution, String oltEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.retrieveLastGetRequest(timeOfExecution, "/api/oltResourceInventory/v1/olt/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz);
+    }
+
+    @Step
+    public void checkPostOnuId(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.retrieveLastPostRequest(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/assignOnuIdTask");
+    }
+
+    @Step
+    public void checkPostBackhaulid(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.retrieveLastPostRequest(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v3/backhaulId/search");
+    }
+
 }
