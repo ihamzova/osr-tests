@@ -58,7 +58,7 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
-    public File generateGetDpuPonConnStub(Dpu dpu){
+    public File generateGetDpuPonConnStub(OltDevice olt, Dpu dpu){
         File jsonTemplate = new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockTemplates/wiremock_GET_dpuPonConnection.json");
 
         String content = null;
@@ -69,6 +69,11 @@ public class DpuCommissioningGenerator {
             throw new RuntimeException();
         }
         content = content.replace("###ENDSZ###", dpu.getEndSz());
+
+        String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        content = content.replace("###OLT_ENDSZ###",endsz);
+        content = content.replace("###OLTSLOT###", olt.getOltSlot());
+        content = content.replace("###OLTPORT###", olt.getOltPort());
 
         if(GET_LLC.equals(dpu.getStepToFall()))
         {
@@ -100,6 +105,8 @@ public class DpuCommissioningGenerator {
         }
         String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         content = content.replace("###OLT_ENDSZ###",endsz);
+        content = content.replace("###OLTSLOT###", olt.getOltSlot());
+        content = content.replace("###OLTPORT###", olt.getOltPort());
 
         if(GET_ETHLINK.equals(dpu.getStepToFall()))
         {

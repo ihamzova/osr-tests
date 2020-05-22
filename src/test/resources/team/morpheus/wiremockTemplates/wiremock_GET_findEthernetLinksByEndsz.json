@@ -20,8 +20,8 @@
       {
         "id": 1049,
         "oltEndSz": "{{request.requestLine.query.oltEndSz}}",
-        "oltSlot": "4",
-        "oltPortNumber": "101",
+        "oltSlot": "###OLTSLOT###",
+        "oltPortNumber": "###OLTPORT###",
         "bngEndSz": "49/30/179/43G1",
         "bngSlot": "1",
         "bngPortNumber": "ge-1/2/3",

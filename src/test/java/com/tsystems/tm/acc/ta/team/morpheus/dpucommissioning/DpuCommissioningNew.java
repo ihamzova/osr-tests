@@ -17,6 +17,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DpuCommissioningNew extends BaseTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
@@ -26,7 +28,7 @@ public class DpuCommissioningNew extends BaseTest {
     public void init(){
         dpuCommissioningRobot = new DpuCommissioningRobot();
     }
-//    @AfterClass
+    @AfterClass
     public void cleanup(){
         dpuCommissioningRobot.cleanup();
     }
@@ -38,10 +40,24 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPositive);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> onuidCheckValues = new ArrayList<>();
+        onuidCheckValues.add(dpu.getEndSz());
+
+        List<String> backhaulidCheckValues = new ArrayList<>();
+        backhaulidCheckValues.add(oltEndsz);
+        backhaulidCheckValues.add(olt.getOltSlot());
+        backhaulidCheckValues.add(olt.getOltPort());
+
         Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConn(timeOfExecution, dpu.getEndSz(), dpu.getPonPortNumber());
+        dpuCommissioningRobot.checkGetDpuPonConn(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLink(timeOfExecution, oltEndsz);
+        dpuCommissioningRobot.checkPostOnuId(timeOfExecution,onuidCheckValues);
+        dpuCommissioningRobot.checkPostBackhaulid(timeOfExecution, backhaulidCheckValues);
 
 
     }
