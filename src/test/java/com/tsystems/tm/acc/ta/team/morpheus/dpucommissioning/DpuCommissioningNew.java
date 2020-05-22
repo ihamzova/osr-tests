@@ -3,20 +3,14 @@ package com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning;
 import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.dpu.DpuCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
-import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.apache.commons.io.FileUtils;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.io.IOException;
 
 public class DpuCommissioningNew extends BaseTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
@@ -42,8 +36,6 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetDpuPonConn(timeOfExecution, dpu.getEndSz(), dpu.getPonPortNumber());
-
-
     }
 
     @Test(description = "Negative case. GET oltResourceInventory returned 400")
