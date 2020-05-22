@@ -44,12 +44,13 @@ public class DpuCommissioningRobot {
     public void setUpWiremock(OltDevice oltDevice, Dpu dpu){
         dpuCommissioningGenerator = new DpuCommissioningGenerator();
         File getDpuDeviceMock = dpuCommissioningGenerator.generateGetDpuDeviceStub(dpu);
-        //TODO this mock return oltPonPortEndsz which (should) already set in DefaultOlt.yml
-        dpuCommissioningGenerator.generateGetDpuPonConnStub(dpu);
+
+        dpuCommissioningGenerator.generateGetDpuPonConnStub(oltDevice, dpu);
         dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
         dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
         dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();

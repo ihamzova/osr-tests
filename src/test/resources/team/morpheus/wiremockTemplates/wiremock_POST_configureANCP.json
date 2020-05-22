@@ -1,0 +1,48 @@
+{
+  "id": "cddf12e9-8cc4-4994-a7dd-436e5e5a01ad",
+  "request": {
+    "urlPath": "/api/ancpConfiguration/v2/ancp",
+    "method": "POST",
+    "queryParameters": {
+      "uplinkId": {
+        "matches": ".*"
+      },
+      "endSz": {
+        "matches": "###ENDSZ###"
+      },
+      "sessionType": {
+        "matches": "DPU"
+      }
+    }
+  },
+  "response": {
+    ###STATUS###,
+    "headers": {
+      "Content-Type": "application/json",
+      "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}",
+      "X-B3-SpanId": "{{request.headers.X-B3-SpanId}}"
+    }
+  },
+  "uuid": "aadf12e9-8cc4-4994-a7dd-436e5e5a01ad",
+  "postServeActions": {
+    "webhook": {
+      "url": "{{request.headers.X-Callback-Url}}",
+      "headers": {
+        "X-Callback-Correlation-Id": "{{request.headers.X-Callback-Correlation-Id}}",
+        "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}",
+        "X-B3-SpanId": "{{request.headers.X-B3-SpanId}}",
+        "Content-Type": "application/json"
+      },
+      "method": "POST",
+      "fixedDelayMilliseconds": 3000,
+      "jsonBody": {
+        "payload": {
+          "correlationId": "correlationId",
+          "modifiedIndex": 0,
+          "status": "RMK_ENDPOINT_START",
+          "message": "ancp conf started"
+        }
+      }
+    }
+  }
+}

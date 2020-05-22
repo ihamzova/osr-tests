@@ -9,8 +9,12 @@ import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DpuCommissioningNew extends BaseTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
@@ -114,6 +118,16 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.verifyDpu(dpu);
     }
 
+    @Test(description = "Negative case. POST ConfigureANCP returned 400")
+    @Description("Negative case. POST ConfigureANCP returned 400")
+    public void dpuCommissioningConfigureAncp400(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningConfigureAncp400);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.verifyDpu(dpu);
+    }
+
     @Test(description = "Negative case. GET ANCPSession returned 400")
     @Description("Negative case. GET ANCPSession returned 400 400")
     public void dpuCommissioningGetAncp400(){
@@ -123,4 +137,5 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.verifyDpu(dpu);
     }
+
 }

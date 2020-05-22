@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.morpheus.common;
-
+@Deprecated
+//TODO delete before merge into master
 public class Activities {
     public static final String START_EVENT = "Event_Start";
     public static final String GET_DPU = "Activity_OLT-RI.GET.DeviceDPU";
