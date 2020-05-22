@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.db.sql.JDBCConnectionProperties;
 import com.tsystems.tm.acc.ta.db.sql.SqlDatabase;
-import com.tsystems.tm.acc.ta.db.sql.strategies.jdbc.postgres.PostgreSqlJDBCConnectionPropertiesFactory;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
@@ -25,7 +24,7 @@ import java.util.function.Function;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.morpheus.common.Activities.*;
+import static com.tsystems.tm.acc.ta.data.osr.models.DpuActivities.*;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
 
 public class DpuCommissioning extends ApiTest {

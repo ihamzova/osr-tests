@@ -24,7 +24,6 @@ public class DpuCommissioningRobot {
     public static final Integer HTTP_CODE_CREATED_201 = 201;
     private DpuCommissioningClient dpuCommissioningClient;
     private DpuCommissioningGenerator dpuCommissioningGenerator;
-    private WiremockRobot rrrobot;
 
     @Step("Start dpuCommissioning")
     public void startProcess(String endsz) {
@@ -42,17 +41,17 @@ public class DpuCommissioningRobot {
     }
 
     @Step("setUp wiremock for TeamLevel Test")
-        public void setUpWiremock(OltDevice oltDevice, Dpu dpu){
+    public void setUpWiremock(OltDevice oltDevice, Dpu dpu){
         dpuCommissioningGenerator = new DpuCommissioningGenerator();
         File getDpuDeviceMock = dpuCommissioningGenerator.generateGetDpuDeviceStub(dpu);
         //TODO this mock return oltPonPortEndsz which (should) already set in DefaultOlt.yml
-        File dpuPonConn = dpuCommissioningGenerator.generateGetDpuPonConnStub(oltDevice, dpu);
-        File getEthLink = dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
-        File getOnu = dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
-        File getBackhaul = dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
-        File postDeprovision = dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu);
-        File getAncpSession = dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
-        File sealDpuMock = dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateGetDpuPonConnStub(dpu);
+        dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
+        dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
 
@@ -81,7 +80,6 @@ public class DpuCommissioningRobot {
             throw new RuntimeException();
         }
     }
-
 
     @Step
     public void checkGetDeviceDPU(Long timeOfExecution, String dpuEndsz){
