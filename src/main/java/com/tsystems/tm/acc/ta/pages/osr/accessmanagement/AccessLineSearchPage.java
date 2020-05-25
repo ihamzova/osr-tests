@@ -15,8 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
@@ -130,15 +129,11 @@ public class AccessLineSearchPage {
                 .collect(Collectors.toList());
     }
 
-    @Step("Get full text inside profile")
-    public String getProfileText(ProfileTypes profileType, ProfileNames profileName, int rowNumber) {
-        expandRow(rowNumber);
-        String text = $(P_SEARCH_TABLE).find(By.className("am-row-exp"))
-                .findAll(By.className("am-profile")).get(profileType.ordinal())
-                .findAll(By.className("am-profile__cell")).get(profileName.ordinal())
-                .text();
-        expandRow(rowNumber);
-        return text;
+    @Step("Click magnifying glass to Access Lines Management Page")
+    public AccessLinesManagementPage clickMagnifyingGlassForLine(int rowNumber) {
+        getTableRows().get(rowNumber).find(By.tagName("i")).click();
+        switchTo().window(new AccessLinesManagementPage().getPageTitle());
+        return new AccessLinesManagementPage();
     }
 
     @Step("Set page size of paginator")
@@ -161,11 +156,6 @@ public class AccessLineSearchPage {
     @Step("Set walled garden status")
     public AccessLineSearchPage setWalledGardenStatus() {
         $(WALLED_GARDEN_STATUS).click();
-        return this;
-    }
-
-    private AccessLineSearchPage expandRow(int rowNumber) {
-        getTableRows().get(rowNumber).find(By.tagName("i")).click();
         return this;
     }
 
