@@ -42,7 +42,7 @@ public class WiremockRecordedRequestRetriver {
         return retrieveLastGetRequest(timeOfExecution, TIMEOUT, url);
     }
 
-    public RequestFind retrieveLastPostRequest(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
+    public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
         LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
 
         do {
@@ -51,13 +51,13 @@ public class WiremockRecordedRequestRetriver {
             if (!requests.isEmpty()) {
                 for (RequestFind request : requests) {
                     if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return request;
+                        return true;
                 }
             }
             sleep(DELAY);
         }
         while (LocalDateTime.now().isBefore(end));
-        throw new RuntimeException("DPU request not found");
+        return false;
     }
 
     private boolean isAllFieldValuesContained(String body, List<String> fieldValues) {
@@ -70,8 +70,29 @@ public class WiremockRecordedRequestRetriver {
         return result;
     }
 
-    public RequestFind retrieveLastPostRequest(Long timeOfExecution, List<String> fieldValues, String url) {
-        return retrieveLastPostRequest(timeOfExecution, fieldValues, TIMEOUT, url);
+    public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
+        return isPostRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    }
+
+    public boolean isGetRequestCalled(Long timeOfExecution, Long timeout, String url) {
+        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
+        do {
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("GET").withUrl(url).build();
+            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1).getRequests();
+            if (!requests.isEmpty()) {
+                for (RequestFind request : requests) {
+                    if (Long.valueOf(request.getLoggedDate()) > timeOfExecution)
+                        return true;
+                }
+            }
+            sleep(DELAY);
+        }
+        while (LocalDateTime.now().isBefore(end));
+        return false;
+    }
+
+    public boolean isGetRequestCalled(Long timeOfExecution, String url) {
+        return isGetRequestCalled(timeOfExecution, TIMEOUT, url);
     }
 
 

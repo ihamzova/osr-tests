@@ -74,7 +74,7 @@ public class DpuCommissioning extends ApiTest {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         DpuCommissioningRobot dpuCommissioningRobot = new DpuCommissioningRobot();
-        dpuCommissioningRobot.checkGetDeviceDPU(0L, "49/8571/0/71GA");
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(0L, "49/8571/0/71GA");
 
 
 //        String processId = response.getId();
@@ -318,7 +318,7 @@ public class DpuCommissioning extends ApiTest {
 
         Long timeOfExecution = System.currentTimeMillis();
         DpuCommissioningRobot dpuCommissioningRobot = new DpuCommissioningRobot();
-        dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, "49/8571/0/71GA");
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, "49/8571/0/71GA");
 
     }
 }

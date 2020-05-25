@@ -49,11 +49,11 @@ public class DpuCommissioningNew extends BaseTest {
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDeviceDPU(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConn(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLink(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkPostOnuId(timeOfExecution,onuidCheckValues);
-        dpuCommissioningRobot.checkPostBackhaulid(timeOfExecution, backhaulidCheckValues);
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
+        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
+        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
 
 
     }
