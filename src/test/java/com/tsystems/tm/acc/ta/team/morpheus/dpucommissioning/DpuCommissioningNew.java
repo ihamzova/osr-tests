@@ -64,8 +64,12 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetDevice400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
+        Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnNotCalled(timeOfExecution, dpu.getEndSz());
     }
 
     @Test(description = "Negative case. GET DpuPonConn returned 400")
@@ -74,8 +78,16 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetPonConn400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+
+        Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLinkNotCalled(timeOfExecution, oltEndsz);
+
     }
 
     @Test(description = "Negative case. GET EthernetLink returned 400")
@@ -84,8 +96,18 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningFindEthLink400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> onuidCheckValues = new ArrayList<>();
+        onuidCheckValues.add(dpu.getEndSz());
+
+        Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
+        dpuCommissioningRobot.checkPostOnuIdNotCalled(timeOfExecution, onuidCheckValues);
     }
 
     @Test(description = "Negative case. GET OnuId returned 400")
@@ -94,8 +116,26 @@ public class DpuCommissioningNew extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetOnuId400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> onuidCheckValues = new ArrayList<>();
+        onuidCheckValues.add(dpu.getEndSz());
+
+        List<String> backhaulidCheckValues = new ArrayList<>();
+        backhaulidCheckValues.add(oltEndsz);
+        backhaulidCheckValues.add(olt.getOltSlot());
+        backhaulidCheckValues.add(olt.getOltPort());
+
+        Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
+        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
+        dpuCommissioningRobot.checkPostBackhaulidNotCalled(timeOfExecution, backhaulidCheckValues);
+
     }
 
     @Test(description = "Negative case. GET BackhaulId returned 400")
@@ -105,7 +145,6 @@ public class DpuCommissioningNew extends BaseTest {
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetBackhaul400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
     }
 
     @Test(description = "Negative case. POST DeprovisionOltPort returned 400")
@@ -115,7 +154,6 @@ public class DpuCommissioningNew extends BaseTest {
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPostDeprovisionOltPort400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
     }
 
     @Test(description = "Negative case. POST ConfigureANCP returned 400")
@@ -125,7 +163,6 @@ public class DpuCommissioningNew extends BaseTest {
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningConfigureAncp400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
     }
 
     @Test(description = "Negative case. GET ANCPSession returned 400")
@@ -135,7 +172,6 @@ public class DpuCommissioningNew extends BaseTest {
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetAncpSession400);
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.verifyDpu(dpu);
     }
 
 }

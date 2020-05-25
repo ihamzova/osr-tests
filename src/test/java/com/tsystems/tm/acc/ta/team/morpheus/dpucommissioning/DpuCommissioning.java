@@ -310,15 +310,4 @@ public class DpuCommissioning extends ApiTest {
         }
     }
 
-
-    @Test
-    public void WiremockTest(){
-//        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-//        List<RequestFind> requests = wiremockRecordedRequestRetriver.retrieveLastRequest(1);
-
-        Long timeOfExecution = System.currentTimeMillis();
-        DpuCommissioningRobot dpuCommissioningRobot = new DpuCommissioningRobot();
-        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, "49/8571/0/71GA");
-
-    }
 }

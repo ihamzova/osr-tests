@@ -67,11 +67,6 @@ public class DpuCommissioningRobot {
         }
     }
 
-    @Step("verfify DPU")
-    public void verifyDpu(Dpu dpu){
-//        switch (step)
-//            case:
-    }
 
     @Step("cleanup")
     public void cleanup(){
@@ -97,9 +92,21 @@ public class DpuCommissioningRobot {
     }
 
     @Step
+    public void checkGetDpuPonConnNotCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+    }
+
+    @Step
     public void checkGetEthernetLinkCalled(Long timeOfExecution, String oltEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/olt/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
+    }
+
+    @Step
+    public void checkGetEthernetLinkNotCalled(Long timeOfExecution, String oltEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/olt/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
     }
 
     @Step
@@ -109,15 +116,23 @@ public class DpuCommissioningRobot {
     }
 
     @Step
+    public void checkPostOnuIdNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/assignOnuIdTask"));
+    }
+
+    @Step
     public void checkPostBackhaulidCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v3/backhaulId/search"));
     }
 
     @Step
-    public void checkGetDpuPonConnNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkPostBackhaulidNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v3/backhaulId/search"));
     }
+
+
 
 }
