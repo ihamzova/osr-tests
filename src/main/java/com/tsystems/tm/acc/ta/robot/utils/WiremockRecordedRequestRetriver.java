@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.tests.wiremock.client.model.RequestFind;
 import com.tsystems.tm.acc.tests.wiremock.client.model.RequestPattern;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.codeborne.selenide.Selenide.sleep;
@@ -19,7 +20,7 @@ public class WiremockRecordedRequestRetriver {
         LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
 
         do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrlPattern(url).build();
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrl(url).build();
             List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
             if (!requests.isEmpty()) {
                 for (RequestFind request : requests) {
@@ -45,6 +46,10 @@ public class WiremockRecordedRequestRetriver {
 
     public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
         return isPostRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    }
+
+    public boolean isPostRequestCalled(Long timeOfExecution, String url) {
+        return isPostRequestCalled(timeOfExecution, new ArrayList<>(), TIMEOUT, url);
     }
 
     public boolean isGetRequestCalled(Long timeOfExecution, Long timeout, String url) {
