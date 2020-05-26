@@ -57,14 +57,6 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
-
-        //clean mock folder after upload
-//        try {
-//            FileUtils.cleanDirectory(getDpuDeviceMock.getParentFile());
-//        } catch (IOException e) {
-//            log.error("directory is empty");
-//            throw new RuntimeException();
-//        }
     }
 
 
@@ -145,12 +137,15 @@ public class DpuCommissioningRobot {
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
     }
 
-    //TODO AncpSessionCalled
-
     @Step
     public void checkPostConfigureAncpNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution,fieldValues, "/api/ancpConfiguration/v2/ancp"));
+    }
+    @Step
+    public void checkPostConfigureAncpCalled(Long timeOfExecution,  List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues,"/api/ancpConfiguration/v2/ancp" ));
     }
 
     @Step

@@ -47,6 +47,9 @@ public class DpuCommissioningProcess extends BaseTest {
         backhaulidCheckValues.add(olt.getOltSlot());
         backhaulidCheckValues.add(olt.getOltPort());
 
+        List<String> deprovisionPortCheckValues = new ArrayList<>();
+        deprovisionPortCheckValues.add(oltEndsz);
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -55,6 +58,9 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
+        //dpuCommissioningRobot.checkPostConfigureAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
 
     }
