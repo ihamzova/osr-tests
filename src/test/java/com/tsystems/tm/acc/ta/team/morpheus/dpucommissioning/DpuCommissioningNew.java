@@ -55,6 +55,8 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
 
+        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
+
 
     }
 
