@@ -134,6 +134,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
         Long timeOfExecution = System.currentTimeMillis();
 
+
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
@@ -143,6 +144,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
     }
 
+    @Test
     @Description("Negative case. GET BackhaulId 400")
     public void dpuCommissioningGetBackhaul400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
