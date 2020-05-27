@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -51,6 +52,15 @@ public class InstallationPage {
         $(SEARCH_BUTTON).waitUntil(enabled, 5000).click();
         $(INPUT_ZPTIDENT_LOCATOR).waitUntil(not(disabled), 5000);
         assertContains($(TEXT_NETWORK_ELEMENT).getText(),expectedEntry.neDescription());
+    }
+
+    @Step("check Ne via ui")
+    public void checkNetworkElement(A4ImportCsvLine expectedEntry){
+        $(INPUT_VPSZ_LOCATOR).val(expectedEntry.getNeVpsz());
+        $(INPUT_FSZ_LOCATOR).val(expectedEntry.getNeFsz());
+        $(SEARCH_BUTTON).waitUntil(enabled, 5000).click();
+        $(INPUT_ZPTIDENT_LOCATOR).waitUntil(not(disabled), 5000);
+        assertContains($(TEXT_NETWORK_ELEMENT).getText(),expectedEntry.getNeDescription());
     }
 
     @Step("reset search for next element")

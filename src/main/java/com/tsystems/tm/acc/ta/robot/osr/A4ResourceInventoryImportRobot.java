@@ -1,6 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.csv.CsvStream;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
@@ -48,6 +50,16 @@ public class A4ResourceInventoryImportRobot {
         try {
             new CsvStream(targetFile).withDelimeter(';')
                     .write(A4ResourceInventoryEntry.class, data);
+        } catch (IOException e) {
+            throw new RuntimeException("cant build csv",e);
+        }
+    }
+
+    public void generateCsvFile(A4ImportCsvData csvData, File targetFile){
+        List<A4ImportCsvLine> list = csvData.getCsvLines();
+        try {
+            new CsvStream(targetFile).withDelimeter(';')
+                    .write(A4ImportCsvLine.class, list);
         } catch (IOException e) {
             throw new RuntimeException("cant build csv",e);
         }

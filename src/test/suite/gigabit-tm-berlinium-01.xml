@@ -8,6 +8,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4NemoUpdateTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NewTpFromNemoWithPreprovisioningTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryImportTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryImportTestNew"/>
         </classes>
     </test>
 </suite>
