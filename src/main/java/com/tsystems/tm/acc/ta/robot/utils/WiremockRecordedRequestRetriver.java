@@ -20,7 +20,7 @@ public class WiremockRecordedRequestRetriver {
         LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
 
         do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrl(url).build();
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrlPattern(url).build();
             List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
             if (!requests.isEmpty()) {
                 for (RequestFind request : requests) {
@@ -72,5 +72,4 @@ public class WiremockRecordedRequestRetriver {
     public boolean isGetRequestCalled(Long timeOfExecution, String url) {
         return isGetRequestCalled(timeOfExecution, TIMEOUT, url);
     }
-
 }

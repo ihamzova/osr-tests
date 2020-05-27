@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -24,7 +25,7 @@ public class DpuCommissioningNew extends BaseTest {
     public void init(){
         dpuCommissioningRobot = new DpuCommissioningRobot();
     }
-    @AfterClass
+    @AfterMethod
     public void cleanup(){
         dpuCommissioningRobot.cleanup();
     }
@@ -46,6 +47,9 @@ public class DpuCommissioningNew extends BaseTest {
         backhaulidCheckValues.add(olt.getOltSlot());
         backhaulidCheckValues.add(olt.getOltPort());
 
+        List<String> deprovisionPortCheckValues = new ArrayList<>();
+        deprovisionPortCheckValues.add(oltEndsz);
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -54,9 +58,9 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
+        //dpuCommissioningRobot.checkPostConfigureAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
     }
 
@@ -140,22 +144,43 @@ public class DpuCommissioningNew extends BaseTest {
 
     }
 
-    @Test(description = "Negative case. GET BackhaulId returned 400")
     @Description("Negative case. GET BackhaulId 400")
     public void dpuCommissioningGetBackhaul400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetBackhaul400);
+
+        Long timeOfExecution = System.currentTimeMillis();
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> backhaulidCheckValues = new ArrayList<>();
+        backhaulidCheckValues.add(oltEndsz);
+        backhaulidCheckValues.add(olt.getOltSlot());
+        backhaulidCheckValues.add(olt.getOltPort());
+
+        List<String> deprovisionPonPortValues = new ArrayList<>();
+        deprovisionPonPortValues.add(oltEndsz);
+
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution,backhaulidCheckValues);
+        dpuCommissioningRobot.checkPostDeprovisioningPortNotCalled(timeOfExecution,deprovisionPonPortValues);
     }
 
     @Test(description = "Negative case. POST DeprovisionOltPort returned 400")
-    @Description("Negative case. POST DeprovisionOltPort returned 400 400")
+    @Description("Negative case. POST DeprovisionOltPort returned 400")
     public void dpuCommissioningPostDeprovision400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPostDeprovisionOltPort400);
+        Long timeOfExecution = System.currentTimeMillis();
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> deprovisionCheckValues = new ArrayList<>();
+        deprovisionCheckValues.add(oltEndsz);
+
+        List<String> configureAncpCheckValues = new ArrayList<>();
+        configureAncpCheckValues.add(dpu.getEndSz());
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
+        dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
     }
 
     @Test(description = "Negative case. POST ConfigureANCP returned 400")
@@ -168,12 +193,16 @@ public class DpuCommissioningNew extends BaseTest {
     }
 
     @Test(description = "Negative case. GET ANCPSession returned 400")
-    @Description("Negative case. GET ANCPSession returned 400 400")
+    @Description("Negative case. GET ANCPSession returned 400")
     public void dpuCommissioningGetAncp400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetAncpSession400);
+        Long timeOfExecution = System.currentTimeMillis();
+
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution,dpu.getEndSz());
+        //dpuCommissioningRobot.checkGetDpuAtOltConfNotCalled(timeOfExecution,ancpSessionCheckValues);
     }
 
 }
