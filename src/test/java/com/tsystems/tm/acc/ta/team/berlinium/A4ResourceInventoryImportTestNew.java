@@ -1,9 +1,8 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.models.Credentials;
-import com.tsystems.tm.acc.data.osr.models.a4importcsvfile.A4ImportCsvFileCase;
+import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
@@ -19,7 +18,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 @Epic("OS&R") // Domain name
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory") // Feature under test
@@ -30,18 +28,10 @@ public class A4ResourceInventoryImportTestNew extends BaseTest {
     private A4ResourceInventoryImportRobot a4InventoryImporter = new A4ResourceInventoryImportRobot();
     private OsrTestContext context = OsrTestContext.get();
 
-
-
     @BeforeMethod
     public void prepareData() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-
-
-
-
-
-
     }
 
     @Test(description = "DIGIHUB-0 Import Network Element (Group) CSV file into A4 Resource Inventory")
@@ -49,55 +39,9 @@ public class A4ResourceInventoryImportTestNew extends BaseTest {
 //    @TmsLink("DIGIHUB-12345") // Jira Id for this test in Xray
     @Description("Import Network Element (Group) CSV file into A4 Resource Inventory")
     public void testImportCsvFile() {
-
-
-        A4ImportCsvData csvData = context.getData().getA4ImportCsvFileDataProvider()
-                .get(A4ImportCsvFileCase.defaultCsvFile);
-
-
-
-
-
         // Given / Arrange
-//        Random random = new Random();
-//        String negName = UUID.randomUUID().toString().substring(0, 6);
-//        String neVpsz1 = String.format("%d/6151/%s", random.ints(1, 50).findFirst().getAsInt(), random.ints(0, 50).findFirst().getAsInt());
-//
-//        ArrayList<A4ResourceInventoryEntry> list = new ArrayList<A4ResourceInventoryEntry>();
-//        A4ResourceInventoryEntry entry1 = new A4ResourceInventoryEntry()
-//                .negCno("operator")
-//                .negName(negName)
-//                .negDescription("test csv upload via ui group")
-//                .neDescription("first NE added via ui")
-//                .neFsz("7KDC")
-//                .neLocAddress("Address")
-//                .neLocKlsId("123456")
-//                .neLocRackId("RackId")
-//                .neLocRackPosition("RackPosition")
-//                .nePlanningDeviceName("dmst.spine.1")
-//                .neVpsz(neVpsz1)
-//                .neVsp("DT");
-//
-//        list.add(entry1);
-//
-//        String neVpsz2 = String.format("%d/6151/%s", random.ints(1, 50).findFirst().getAsInt(), random.ints(0, 50).findFirst().getAsInt());
-//
-//        A4ResourceInventoryEntry entry2 = new A4ResourceInventoryEntry()
-//                .negCno("operator")
-//                .negName(negName)
-//                .negDescription("test csv upload via ui group")
-//                .neDescription("second NE added via ui")
-//                .neFsz("7KDC")
-//                .neLocAddress("Address")
-//                .neLocKlsId("123456")
-//                .neLocRackId("RackId")
-//                .neLocRackPosition("RackPosition")
-//                .nePlanningDeviceName("dmst.spine.1")
-//                .neVpsz(neVpsz2)
-//                .neVsp("DT");
-//
-//        list.add(entry2);
-
+        A4ImportCsvData csvData = context.getData().getA4ImportCsvDataDataProvider()
+                .get(A4ImportCsvDataCase.defaultCsvFile);
         File csvFile = Paths.get( "target/","a4Testcase1.csv").toFile();
         a4InventoryImporter.generateCsvFile(csvData, csvFile);
 
