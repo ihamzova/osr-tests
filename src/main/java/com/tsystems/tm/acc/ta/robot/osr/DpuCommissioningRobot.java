@@ -128,13 +128,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPostDeprovisioningPortCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
     }
 
     @Step
     public void checkPostDeprovisioningPortNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
     }
     @Step
     public void checkPostConfigAncpCalled(Long timeOfExecution, String dpuEndsz){

@@ -59,7 +59,7 @@ public class DpuCommissioningNew extends BaseTest {
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
         dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
-        //dpuCommissioningRobot.checkPostConfigureAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
     }
