@@ -62,7 +62,7 @@ public class DpuCommissioningRobot {
 
     @Step("cleanup")
     public void cleanup(){
-        //WiremockHelper.mappingsReset();
+        WiremockHelper.mappingsReset();
         try {
             FileUtils.cleanDirectory(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
         } catch (IOException e) {
