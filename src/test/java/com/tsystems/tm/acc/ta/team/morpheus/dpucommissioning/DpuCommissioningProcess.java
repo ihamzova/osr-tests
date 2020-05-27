@@ -58,7 +58,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
+        //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
@@ -180,7 +180,7 @@ public class DpuCommissioningProcess extends BaseTest {
         configureAncpCheckValues.add(dpu.getEndSz());
         dpuCommissioningRobot.setUpWiremock(olt,dpu);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
+        //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
         //refactoring in mock generation needed
         //dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
     }
