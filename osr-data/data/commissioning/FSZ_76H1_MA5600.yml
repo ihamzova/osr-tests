@@ -1,5 +1,5 @@
 name: FSZ_76H1_MA5600
-template: com.tsystems.tm.acc.data.models.OltDevice
+template: com.tsystems.tm.acc.data.models.stable.OltDevice
 values:
   vpsz: "49/30/2000"
   fsz: "76H1"

@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.domain.commissioning;
 
 
-import com.tsystems.tm.acc.data.models.Credentials;
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.Credentials;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;

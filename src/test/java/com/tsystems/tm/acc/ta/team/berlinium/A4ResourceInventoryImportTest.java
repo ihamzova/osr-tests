@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.tsystems.tm.acc.data.models.Credentials;
+import com.tsystems.tm.acc.data.models.stable.Credentials;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
