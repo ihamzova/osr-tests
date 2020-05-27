@@ -3,7 +3,7 @@
 <suite name="morpheus test suites" verbose="1" data-provider-thread-count="1">
 <test thread-count="1" name="Integration Tests for Morpheus services">
     <classes>
-        <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuCommissioningProcess"/>
+        <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuCommissioningOneCase"/>
     </classes>
 </test>
 </suite>
