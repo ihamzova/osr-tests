@@ -23,7 +23,6 @@ public class DpuCommissioningOneCase extends BaseTest {
     @BeforeClass
     public void init(){
         dpuCommissioningRobot = new DpuCommissioningRobot();
-        dpuCommissioningRobot.cleanup();
     }
     @AfterMethod
     public void cleanup(){
