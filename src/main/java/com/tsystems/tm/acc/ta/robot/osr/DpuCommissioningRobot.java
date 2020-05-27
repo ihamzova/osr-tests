@@ -57,6 +57,14 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
+
+        //clean mock folder after upload
+        try {
+            FileUtils.cleanDirectory(getDpuDeviceMock.getParentFile());
+        } catch (IOException e) {
+            log.error("directory is empty");
+            throw new RuntimeException();
+        }
     }
 
 
@@ -126,38 +134,17 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkPostDeprovisioningPortCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostConfigAncpCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/api/ancpConfiguration/v2/ancp?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU" ));
     }
 
     @Step
-    public void checkPostDeprovisioningPortNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostConfigAncpNotCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/api/ancpConfiguration/v2/ancp?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
-    @Step
-    public void checkPostConfigureAncpNotCalled(Long timeOfExecution, List<String> fieldValues){
-        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution,fieldValues, "/api/ancpConfiguration/v2/ancp"));
-    }
-    @Step
-    public void checkPostConfigureAncpCalled(Long timeOfExecution,  List<String> fieldValues){
-        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues,"/api/ancpConfiguration/v2/ancp" ));
-    }
 
-    @Step
-    public void checkGetAncpSessionCalled(Long timeOfExecution, String dpuEndsz){
-        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
-    }
-
-    @Step
-    public void checkGetAncpSessionNotCalled(Long timeOfExecution, String dpuEndsz){
-        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
-    }
 
 }
