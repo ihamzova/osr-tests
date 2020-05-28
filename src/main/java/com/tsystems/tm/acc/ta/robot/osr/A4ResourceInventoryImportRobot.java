@@ -7,15 +7,19 @@ import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 
+@Slf4j
 public class A4ResourceInventoryImportRobot {
 
     public Response importCsvFileViaRestInterface() {
@@ -60,6 +64,10 @@ public class A4ResourceInventoryImportRobot {
         try {
             new CsvStream(targetFile).withDelimeter(';')
                     .write(A4ImportCsvLine.class, list);
+
+            Stream<A4ImportCsvLine> data = new CsvStream(targetFile).withDelimeter(';').read(A4ImportCsvLine.class);
+            log.debug("Contents from CSV file: " + Arrays.toString(data.toArray()));
+
         } catch (IOException e) {
             throw new RuntimeException("cant build csv",e);
         }
