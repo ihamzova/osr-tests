@@ -1,16 +1,16 @@
 {
-  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b02ad",
+  "id":"cd54f6b0-e35c-11e8-9f32-f2801f1b02ad",
   "request": {
     "method": "GET",
     "urlPath": "/api/oltResourceInventory/v1/device",
     "queryParameters": {
       "endsz": {
-        "matches": "49\\/8571\\/0\\/71GA|49\\/8571\\/0\\/74GA|49\\/8571\\/0\\/71GB|49\\/8571\\/0\\/71GC|49\\/8571\\/0\\/71GD"
+        "matches": "###ENDSZ###"
       }
     }
   },
   "response":{
-    "status":200,
+    ###STATUS###,
     "headers":{
       "Content-Type":"application/json",
       "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"

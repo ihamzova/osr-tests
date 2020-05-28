@@ -1,6 +1,6 @@
-package com.tsystems.tm.acc.ta.team.morpheus.common;
+package com.tsystems.tm.acc.ta.data.osr.models;
 
-public class Activities {
+public class DpuActivities {
     public static final String START_EVENT = "Event_Start";
     public static final String GET_DPU = "Activity_OLT-RI.GET.DeviceDPU";
     public static final String GET_LLC = "Activity_OLT-RI.GET.DpuPonConn";
