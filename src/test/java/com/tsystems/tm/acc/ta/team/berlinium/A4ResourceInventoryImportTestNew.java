@@ -13,12 +13,14 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
 
+@Slf4j
 @Epic("OS&R") // Domain name
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory") // Feature under test
 //@TmsLink("DIGIHUB-0") // Jira id of a TestSet (if applicable)
@@ -43,6 +45,9 @@ public class A4ResourceInventoryImportTestNew extends BaseTest {
         A4ImportCsvData csvData = context.getData().getA4ImportCsvDataDataProvider()
                 .get(A4ImportCsvDataCase.defaultCsvFile);
         File csvFile = Paths.get( "target/","a4Testcase1.csv").toFile();
+
+        log.debug("CSV data: " + csvData.getCsvLines().toString());
+
         a4InventoryImporter.generateCsvFile(csvData, csvFile);
 
         // When / Action
