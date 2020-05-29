@@ -5,7 +5,6 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.codeborne.selenide.Condition.visible;
@@ -17,7 +16,6 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
 public class A4StartPage {
-
     public static final String APP = "a4-resource-inventory-ui";
     public static final String ENDPOINT = "a4-resource-inventory-ui/portal";
 
@@ -33,7 +31,7 @@ public class A4StartPage {
     }
 
     @Step("Login")
-    public static A4StartPage login(){
+    public static A4StartPage login() {
         URL url = new OCUrlBuilder(APP).build();
         //this part is needed for external users which have problem with the proxy setup...
         /*URL url = null;
@@ -48,9 +46,8 @@ public class A4StartPage {
     }
 
     @Step("Go to Installation")
-    public InstallationPage goToInstallation(){
+    public InstallationPage goToInstallation() {
         $(TO_INSTALLATION_BUTTON).click();
         return new InstallationPage();
     }
-
 }

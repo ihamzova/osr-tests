@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.domain.provisioning;
+package com.tsystems.tm.acc.ta.domain.a4functionality;
 
 import com.tsystems.tm.acc.data.models.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;

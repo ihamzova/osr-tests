@@ -13,7 +13,7 @@ public class A4ImportCsvDataGenerator {
 
         List<A4ResourceInventoryEntry> csvList = new ArrayList<>();
 
-        for(int i = 0; i < csvData.getCsvLines().size(); i++) {
+        for (int i = 0; i < csvData.getCsvLines().size(); i++) {
             A4ImportCsvLine csvLine = csvData.getCsvLines().get(i);
 
             A4ResourceInventoryEntry csvEntry = new A4ResourceInventoryEntry()

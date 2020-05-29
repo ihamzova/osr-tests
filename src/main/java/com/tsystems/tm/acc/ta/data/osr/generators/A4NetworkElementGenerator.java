@@ -3,7 +3,6 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -11,10 +10,10 @@ import java.util.UUID;
 public class A4NetworkElementGenerator {
 
     public NetworkElementDto generateAsDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        if(neData.getUuid().isEmpty())
+        if (neData.getUuid().isEmpty())
             neData.setUuid(UUID.randomUUID().toString());
 
-        if(neData.getFsz().isEmpty())
+        if (neData.getFsz().isEmpty())
             neData.setFsz(UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
 
         return new NetworkElementDto()
