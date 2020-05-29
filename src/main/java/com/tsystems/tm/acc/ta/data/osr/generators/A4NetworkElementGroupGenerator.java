@@ -28,8 +28,4 @@ public class A4NetworkElementGroupGenerator {
                 .creationTime(OffsetDateTime.now())
                 .centralOfficeNetworkOperator("neg_centOffNetOp_for_integration_test");
     }
-
-    public LogicalResourceUpdate generateAsLogicalResource(A4NetworkElementGroup negData) {
-        return new LogicalResourceUpdate();
-    }
 }

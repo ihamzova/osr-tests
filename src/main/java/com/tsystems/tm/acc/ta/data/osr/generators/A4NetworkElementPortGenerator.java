@@ -29,8 +29,4 @@ public class A4NetworkElementPortGenerator {
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }
-
-    public LogicalResourceUpdate generateAsLogicalResource(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        return new LogicalResourceUpdate();
-    }
 }

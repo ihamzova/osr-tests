@@ -15,10 +15,6 @@ import java.util.UUID;
 
 public class A4TerminationPointGenerator {
 
-    public TerminationPointDto generateAsDto(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        return new TerminationPointDto();
-    }
-
     public LogicalResourceUpdate generateAsLogicalResource(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         if(tpData.getUuid().isEmpty())
             tpData.setUuid(UUID.randomUUID().toString());

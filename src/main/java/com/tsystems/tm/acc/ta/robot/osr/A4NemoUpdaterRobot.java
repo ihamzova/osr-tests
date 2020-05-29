@@ -35,7 +35,7 @@ public class A4NemoUpdaterRobot {
     }
 
     @Step("Check if PUT request to NEMO wiremock with logical resource has happened")
-    public void validateLogicalResourcePutToNemoWiremock(String uuid) {
+    public void checkLogicalResourcePutToNemoWiremock(String uuid) {
         RequestPattern requestPattern = new WiremockRequestPatternBuilder()
                 .withMethod("PUT")
                 .withUrlPathPattern(".*/logicalResource/" + uuid)
@@ -45,15 +45,15 @@ public class A4NemoUpdaterRobot {
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile has happened")
-    public void validateNetworkServiceProfilePutToNemoWiremock(String uuidTp) {
+    public void checkNetworkServiceProfilePutToNemoWiremock(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = a4Inventory.getNetworkServiceProfilesViaTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), 1);
 
-        validateLogicalResourcePutToNemoWiremock(nspList.get(0).getUuid());
+        checkLogicalResourcePutToNemoWiremock(nspList.get(0).getUuid());
     }
 
     @Step("Check if DELETE request to NEMO wiremock with logical resource has happened")
-    public void validateLogicalResourceDeleteToNemoWiremock(String uuid) {
+    public void checkLogicalResourceDeleteToNemoWiremock(String uuid) {
         RequestPattern requestPattern = new WiremockRequestPatternBuilder()
                 .withMethod("DELETE")
                 .withUrlPathPattern(".*/logicalResource/" + uuid)

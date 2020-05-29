@@ -37,8 +37,4 @@ public class A4NetworkElementGenerator {
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }
-
-    public LogicalResourceUpdate generateAsLogicalResource(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        return new LogicalResourceUpdate();
-    }
 }

@@ -9,32 +9,17 @@ name: firstCsvLine
 template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
 values:
   negName: "${scope, global.a4CsvImport.negName}"
-  negCno: "operator"
-  negDescription: "test csv upload via ui group"
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
   neFsz: "7KDB"
-  nePlanningDeviceName: "dmst.spine.1"
-  neType: "(column still existent but not used anymore. Any value here will be ignored)"
-  neVsp: "DT"
-  neLocKlsId: "123456"
-  neLocAddress: "Address"
-  neLocRackId: "RackId"
-  neLocRackPosition: "RackPosition"
-  neDescription: "first NE added via ui"
+  neKlsId: "${scope, global.a4CsvImport.klsId}"
+  neDescription: "buh"
+
 ---
 name: secondCsvLine
 template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
 values:
   negName: "${scope, global.a4CsvImport.negName}"
-  negCno: "operator"
-  negDescription: "test csv upload via ui group"
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
   neFsz: "7KDC"
-  nePlanningDeviceName: "dmst.spine.1"
-  neType: "(column still existent but not used anymore. Any value here will be ignored)"
-  neVsp: "DT"
-  neLocKlsId: "123456"
-  neLocAddress: "Address"
-  neLocRackId: "RackId"
-  neLocRackPosition: "RackPosition"
-  neDescription: "second NE added via ui"
+  neKlsId: "${scope, global.a4CsvImport.klsId}"
+  neDescription: "buh"
