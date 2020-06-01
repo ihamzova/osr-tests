@@ -1,5 +1,8 @@
 package com.tsystems.tm.acc.ta.data.osr.models;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DpuActivities {
     public static final String START_EVENT = "Event_Start";
     public static final String GET_DPU = "Activity_OLT-RI.GET.DeviceDPU";
@@ -22,4 +25,7 @@ public class DpuActivities {
     public static final String GATEWAY_OLT_CONF2 = "Gateway_OLTConfigExists"; //? same on diagramm
     public static final String GATEWAY_CONF_ACTIVE = "Gateway_DpuConfigActive";
     public static final String GATEWAY_CONF_ACTIVE2 = "Gateway_DpuConfigActive2";//? same on diagramm
+
+    //List with async tasks
+    public static final List<String> ASYNC_STEPS = Arrays.asList(DEPROVISION_OLT,SET_ANCP);
 }

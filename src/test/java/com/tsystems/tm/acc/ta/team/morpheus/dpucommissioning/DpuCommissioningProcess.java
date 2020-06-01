@@ -20,6 +20,7 @@ import java.util.List;
 public class DpuCommissioningProcess extends BaseTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;
+    private boolean isAsyncScenario = false;
 
     @BeforeClass
     public void init(){
@@ -36,7 +37,7 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPositive(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPositive);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
 
         String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         List<String> onuidCheckValues = new ArrayList<>();
@@ -69,7 +70,7 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetDevice400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetDevice400);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
 
         Long timeOfExecution = System.currentTimeMillis();
 
@@ -83,7 +84,7 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetDpuPonConn400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetPonConn400);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
 
         String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
 
@@ -101,7 +102,7 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetEthLink400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningFindEthLink400);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
 
         String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         List<String> onuidCheckValues = new ArrayList<>();
@@ -121,7 +122,7 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetOnuId400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetOnuId400);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
 
         String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         List<String> onuidCheckValues = new ArrayList<>();
@@ -133,7 +134,6 @@ public class DpuCommissioningProcess extends BaseTest {
         backhaulidCheckValues.add(olt.getOltPort());
 
         Long timeOfExecution = System.currentTimeMillis();
-
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
@@ -160,7 +160,7 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> deprovisionPonPortValues = new ArrayList<>();
         deprovisionPonPortValues.add(oltEndsz);
 
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution,backhaulidCheckValues);
         dpuCommissioningRobot.checkPostDeprovisioningPortNotCalled(timeOfExecution,deprovisionPonPortValues);
@@ -178,11 +178,10 @@ public class DpuCommissioningProcess extends BaseTest {
 
         List<String> configureAncpCheckValues = new ArrayList<>();
         configureAncpCheckValues.add(dpu.getEndSz());
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
-        //refactoring in mock generation needed
-        //dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
+        dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
     }
 
     @Test(description = "Negative case. POST ConfigureANCP returned 400")
@@ -190,8 +189,12 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningConfigureAncp400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningConfigureAncp400);
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        Long timeOfExecution = System.currentTimeMillis();
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
     }
 
     @Test(description = "Negative case. GET ANCPSession returned 400")
@@ -201,7 +204,7 @@ public class DpuCommissioningProcess extends BaseTest {
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningGetAncpSession400);
         Long timeOfExecution = System.currentTimeMillis();
 
-        dpuCommissioningRobot.setUpWiremock(olt,dpu);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution,dpu.getEndSz());
         //dpuCommissioningRobot.checkGetDpuAtOltConfNotCalled(timeOfExecution,ancpSessionCheckValues);
