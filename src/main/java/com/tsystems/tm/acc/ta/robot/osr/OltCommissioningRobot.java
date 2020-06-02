@@ -91,6 +91,12 @@ public class OltCommissioningRobot {
 
         Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
 
+        boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
+                .flatMap(List::stream).map(Port::getLifeCycleState).allMatch(Port.LifeCycleStateEnum.OPERATING::equals);
+
+        Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
+
         List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getDefaultNeProfile().getAnpTag().getAnpTag())
                 .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
 
