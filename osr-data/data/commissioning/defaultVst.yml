@@ -1,5 +1,5 @@
 name: DefaultVst
-template: com.tsystems.tm.acc.data.models.Vst
+template: com.tsystems.tm.acc.data.models.stable.Vst
 values:
   name: "${scope, global.addressBigCity.asb}R"
   address: "@AddressBigCity"

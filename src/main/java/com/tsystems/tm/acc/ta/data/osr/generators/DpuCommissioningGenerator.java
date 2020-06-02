@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuActivities;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import lombok.extern.slf4j.Slf4j;

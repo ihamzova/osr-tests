@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
