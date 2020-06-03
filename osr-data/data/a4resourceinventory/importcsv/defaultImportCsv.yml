@@ -12,8 +12,7 @@ values:
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
   neFsz: "7KDB"
   neKlsId: "${scope, global.a4CsvImport.klsId}"
-  neDescription: "buh"
-
+  neDescription: "First imported NE"
 ---
 name: secondCsvLine
 template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
@@ -22,4 +21,4 @@ values:
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
   neFsz: "7KDC"
   neKlsId: "${scope, global.a4CsvImport.klsId}"
-  neDescription: "buh"
+  neDescription: "Second imported NE"

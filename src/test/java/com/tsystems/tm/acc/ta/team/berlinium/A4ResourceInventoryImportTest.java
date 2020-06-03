@@ -18,12 +18,11 @@ import org.testng.annotations.Test;
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
 public class A4ResourceInventoryImportTest extends BaseTest {
-
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ResourceInventoryImportRobot a4InventoryImporter = new A4ResourceInventoryImportRobot();
     private OsrTestContext context = OsrTestContext.get();
 
-    A4ImportCsvData csvData;
+    private A4ImportCsvData csvData;
 
     @BeforeClass
     public void init() {
