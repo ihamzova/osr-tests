@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -16,7 +17,6 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
 public class InstallationPage {
-
     public static final String APP = "a4-inventory-importer";
     public static final String ENDPOINT = "/";
 
@@ -38,25 +38,33 @@ public class InstallationPage {
     }
 
     @Step("upload csv via ui")
-    public void uploadCSV(File csvFile){
+    public void uploadCSV(File csvFile) {
         $(CSV_FILE_INPUT_FIELD_LOCATOR).uploadFile(csvFile);
         $(CSV_FILE_UPLOAD_SUBMIT_BUTTON_LOCATOR).click();
         //@TODO: The UI needs some nice error/success messages we can check
     }
 
     @Step("check Ne via ui")
-    public void checkNetworkElement(A4ResourceInventoryEntry expectedEntry){
+    public void checkNetworkElement(A4ResourceInventoryEntry expectedEntry) {
         $(INPUT_VPSZ_LOCATOR).val(expectedEntry.neVpsz());
         $(INPUT_FSZ_LOCATOR).val(expectedEntry.neFsz());
         $(SEARCH_BUTTON).waitUntil(enabled, 5000).click();
         $(INPUT_ZPTIDENT_LOCATOR).waitUntil(not(disabled), 5000);
-        assertContains($(TEXT_NETWORK_ELEMENT).getText(),expectedEntry.neDescription());
+        assertContains($(TEXT_NETWORK_ELEMENT).getText(), expectedEntry.neDescription());
+    }
+
+    @Step("check Ne via ui")
+    public void checkNetworkElement(A4ImportCsvLine expectedEntry) {
+        $(INPUT_VPSZ_LOCATOR).val(expectedEntry.getNeVpsz());
+        $(INPUT_FSZ_LOCATOR).val(expectedEntry.getNeFsz());
+        $(SEARCH_BUTTON).waitUntil(enabled, 5000).click();
+        $(INPUT_ZPTIDENT_LOCATOR).waitUntil(not(disabled), 5000);
+        assertContains($(TEXT_NETWORK_ELEMENT).getText(), expectedEntry.getNeDescription());
     }
 
     @Step("reset search for next element")
-    public void resetSearch(){
+    public void resetSearch() {
         $(RESET_SEARCH_BUTTON).click();
         $(INPUT_FSZ_LOCATOR).waitUntil(empty, 5000);
     }
-
 }

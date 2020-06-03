@@ -5,9 +5,7 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGroupGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementPortGenerator;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
@@ -172,8 +170,46 @@ public class A4ResourceInventoryRobot {
         });
     }
 
+    @Step("Delete list of network Elements by vpsz/fsz")
+    public void deleteNetworkElements(A4ImportCsvData csvData) {
+        List<A4ImportCsvLine> list = csvData.getCsvLines();
+
+        list.forEach(a4ResourceInventoryEntry -> {
+            List<NetworkElementDto> actualNeList = a4ResourceInventory
+                    .networkElements()
+                    .listNetworkElements()
+                    .fszQuery(a4ResourceInventoryEntry.getNeFsz())
+                    .vpszQuery(a4ResourceInventoryEntry.getNeVpsz())
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+            actualNeList.stream().findFirst().ifPresent(networkElementDto -> {
+                deletePortsOfNetworkElement(networkElementDto.getUuid());
+                deleteNetworkElement(networkElementDto.getUuid());
+            });
+        });
+    }
+
     @Step("Delete network group by name")
     public void deleteGroupByName(String groupName) {
+        List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
+                .networkElementGroups()
+                .listNetworkElementGroups()
+                .nameQuery(groupName)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> {
+            a4ResourceInventory
+                    .networkElementGroups()
+                    .deleteNetworkElementGroup()
+                    .uuidPath(networkElementGroupDto.getUuid())
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        });
+    }
+
+    @Step("Delete network group by name")
+    public void deleteGroupByName(A4ImportCsvData csvData) {
+        String groupName = csvData.getCsvLines().get(0).getNegName();
+
         List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
                 .networkElementGroups()
                 .listNetworkElementGroups()
@@ -197,6 +233,18 @@ public class A4ResourceInventoryRobot {
         list.stream().skip(1).forEach(a4ResourceInventoryEntry -> {
             installationPage.resetSearch();
             installationPage.checkNetworkElement(a4ResourceInventoryEntry);
+        });
+    }
+
+    @Step("validate network elements")
+    public void checkNetworkElementsViaUi(A4ImportCsvData csvData) {
+        List<A4ImportCsvLine> list = csvData.getCsvLines();
+        //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
+        InstallationPage installationPage = new InstallationPage();
+        list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
+        list.stream().skip(1).forEach(a4ImportCsvLine -> {
+            installationPage.resetSearch();
+            installationPage.checkNetworkElement(a4ImportCsvLine);
         });
     }
 }

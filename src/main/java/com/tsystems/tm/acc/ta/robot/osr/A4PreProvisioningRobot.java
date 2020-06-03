@@ -36,7 +36,7 @@ public class A4PreProvisioningRobot {
     }
 
     @Step("Check if POST request to a4-preprovisioning wiremock has happened")
-    public void validatePostToPreprovisioningWiremock() {
+    public void checkPostToPreprovisioningWiremock() {
         RequestPattern requestPattern = new WiremockRequestPatternBuilder()
                 .withMethod("POST")
                 .withUrlPathPattern(".*/v1/a4/accessLines")

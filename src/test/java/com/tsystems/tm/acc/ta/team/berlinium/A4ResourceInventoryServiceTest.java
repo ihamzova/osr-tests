@@ -19,6 +19,7 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
     private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     private A4NetworkElementGroup negData;
+
     @BeforeClass
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()

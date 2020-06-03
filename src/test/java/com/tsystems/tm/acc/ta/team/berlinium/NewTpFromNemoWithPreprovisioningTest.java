@@ -57,13 +57,13 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     @Description("NEMO creates new Termination Point with Preprovisioning")
     public void newTpWithPreprovisioning() {
         // GIVEN / Arrange
-        // all done in setUp() method
+        // nothing to do
 
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpData, nepData);
 
         // THEN
-        a4PreProvisioning.validatePostToPreprovisioningWiremock();
+        a4PreProvisioning.checkPostToPreprovisioningWiremock();
 
         // AFTER / Clean-up
         a4Inventory.deleteTerminationPoint(tpData.getUuid());
