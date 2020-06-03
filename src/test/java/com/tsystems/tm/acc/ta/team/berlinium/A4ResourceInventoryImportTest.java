@@ -1,7 +1,11 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.tsystems.tm.acc.data.models.Credentials;
+<<<<<<< src/test/java/com/tsystems/tm/acc/ta/team/berlinium/A4ResourceInventoryImportTest.java
+import com.tsystems.tm.acc.data.models.stable.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
+=======
+import com.tsystems.tm.acc.data.models.stable.Credentials;
+>>>>>>> src/test/java/com/tsystems/tm/acc/ta/team/berlinium/A4ResourceInventoryImportTest.java
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;

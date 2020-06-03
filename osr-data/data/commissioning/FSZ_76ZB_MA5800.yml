@@ -1,5 +1,5 @@
 name: FSZ_76ZB_MA5800
-template: com.tsystems.tm.acc.data.models.OltDevice
+template: com.tsystems.tm.acc.data.models.stable.OltDevice
 values:
   vpsz: "49/911/1100"
   fsz: "76ZB"

@@ -1,0 +1,7 @@
+name: DpuCommissioningOlt
+template: com.tsystems.tm.acc.data.models.stable.OltDevice
+values:
+  vpsz: "49/30/1234"
+  fsz: "76H1"
+  oltPort: "0"
+  oltSlot: "19"

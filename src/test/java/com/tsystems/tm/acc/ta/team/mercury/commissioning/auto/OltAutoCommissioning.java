@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
-import com.tsystems.tm.acc.data.models.Credentials;
-import com.tsystems.tm.acc.data.models.Nvt;
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.Credentials;
+import com.tsystems.tm.acc.data.models.stable.Nvt;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;

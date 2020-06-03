@@ -39,6 +39,14 @@ public class A4TerminationPointGenerator {
                 .name("lockedForNspUsage")
                 .value("true");
         tpCharacteristics.add(rc5);
+        ResourceCharacteristic rc6 = new ResourceCharacteristic()
+                .name("supportedDiagnosesName")
+                .value("(Diagnose1,Diagnose2)");
+        tpCharacteristics.add(rc6);
+        ResourceCharacteristic rc7 = new ResourceCharacteristic()
+                .name("supportedDiagnosesSpecificationVersion")
+                .value("(V1,V2)");
+        tpCharacteristics.add(rc7);
 
         ResourceRef resourceRef = new ResourceRef()
                 .id(nepData.getUuid())

@@ -1,5 +1,5 @@
 name: portEmpty5800
-template: com.tsystems.tm.acc.data.models.PortProvisioning
+template: com.tsystems.tm.acc.data.models.stable.PortProvisioning
 values:
   endSz: "49/911/1100/76H1"
   slotNumber: "1"

@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.data.models.PortProvisioning;
+import com.tsystems.tm.acc.data.models.stable.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
 import com.tsystems.tm.acc.ta.helpers.wiremock.WiremockRequestPatternBuilder;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
