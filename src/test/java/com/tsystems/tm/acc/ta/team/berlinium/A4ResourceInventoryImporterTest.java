@@ -1,11 +1,11 @@
-package com.tsystems.tm.acc.ta.domain.a4functionality;
+package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.models.stable.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
@@ -17,9 +17,9 @@ import org.testng.annotations.Test;
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
-public class A4ResourceInventoryImportTest extends BaseTest {
+public class A4ResourceInventoryImporterTest extends BaseTest {
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImportRobot a4InventoryImporter = new A4ResourceInventoryImportRobot();
+    private A4ResourceInventoryImporterRobot a4InventoryImporter = new A4ResourceInventoryImporterRobot();
     private OsrTestContext context = OsrTestContext.get();
 
     private A4ImportCsvData csvData;
