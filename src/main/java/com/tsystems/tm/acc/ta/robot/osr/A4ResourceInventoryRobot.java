@@ -229,10 +229,10 @@ public class A4ResourceInventoryRobot {
     public void checkNetworkElementsViaUi(ArrayList<A4ResourceInventoryEntry> list) {
         //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
         InstallationPage installationPage = new InstallationPage();
-        list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
+        list.stream().findFirst().ifPresent(installationPage::checkNetworkElementExists);
         list.stream().skip(1).forEach(a4ResourceInventoryEntry -> {
             installationPage.resetSearch();
-            installationPage.checkNetworkElement(a4ResourceInventoryEntry);
+            installationPage.checkNetworkElementExists(a4ResourceInventoryEntry);
         });
     }
 
@@ -241,10 +241,10 @@ public class A4ResourceInventoryRobot {
         List<A4ImportCsvLine> list = csvData.getCsvLines();
         //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
         InstallationPage installationPage = new InstallationPage();
-        list.stream().findFirst().ifPresent(installationPage::checkNetworkElement);
+        list.stream().findFirst().ifPresent(installationPage::checkNetworkElementExists);
         list.stream().skip(1).forEach(a4ImportCsvLine -> {
             installationPage.resetSearch();
-            installationPage.checkNetworkElement(a4ImportCsvLine);
+            installationPage.checkNetworkElementExists(a4ImportCsvLine);
         });
     }
 }

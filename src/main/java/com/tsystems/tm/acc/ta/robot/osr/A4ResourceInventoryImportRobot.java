@@ -4,7 +4,9 @@ import com.tsystems.tm.acc.csv.CsvStream;
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4ImportCsvDataGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +62,25 @@ public class A4ResourceInventoryImportRobot {
         } catch (IOException e) {
             throw new RuntimeException("cant build csv", e);
         }
+    }
+
+    public void openNetworkElement(A4NetworkElement neData) {
+        A4StartPage
+                .login()
+                .validate()
+                .goToInstallation()
+                .checkNetworkElementExists(neData);
+    }
+
+    public void enterZtpIdent(String value) {
+        InstallationPage installationPage = new InstallationPage();
+        installationPage.enterZtpIdent(value);
+    }
+
+    public void checkMonitoringPage(A4NetworkElement neData, String ztpIdent) {
+        InstallationPage installationPage = new InstallationPage();
+        installationPage
+                .openMonitoringPage()
+                .checkNeData( neData, ztpIdent);
     }
 }
