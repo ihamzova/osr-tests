@@ -23,7 +23,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 
 @Slf4j
-public class A4ResourceInventoryImportRobot {
+public class A4ResourceInventoryImporterRobot {
 
     public void importCsvFileViaRestInterface(File csvFile) {
         final String endPoint = "/uploadCsvFile/";
@@ -88,5 +88,10 @@ public class A4ResourceInventoryImportRobot {
         installationPage
                 .openMonitoringPage()
                 .checkNeData(neData, ztpIdent);
+    }
+
+    @Step("Send a ztpIdentUpdate Request via REST Service call.")
+    public void sendZtpIdentUpdateViaRestInterface(A4NetworkElement a4NetworkElement){
+
     }
 }

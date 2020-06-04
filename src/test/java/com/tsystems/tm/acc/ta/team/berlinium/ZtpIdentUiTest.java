@@ -7,7 +7,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImportRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class ZtpIdentUiTest  extends BaseTest {
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImportRobot a4InventoryImporter = new A4ResourceInventoryImportRobot();
+    private A4ResourceInventoryImporterRobot a4InventoryImporter = new A4ResourceInventoryImporterRobot();
     private OsrTestContext osrTestContext = OsrTestContext.get();
 
     private A4NetworkElementGroup negData;
