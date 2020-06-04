@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.berlinium;
+package com.tsystems.tm.acc.ta.domain.a4functionality;
 
 import com.tsystems.tm.acc.data.models.stable.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
