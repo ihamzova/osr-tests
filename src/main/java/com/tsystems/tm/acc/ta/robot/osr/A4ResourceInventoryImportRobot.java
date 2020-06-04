@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -40,6 +41,7 @@ public class A4ResourceInventoryImportRobot {
                 .assertThat().statusCode(HttpStatus.SC_OK);
     }
 
+    @Step("Open UI and upload CSV file, then submit")
     public void importCsvFileViaUi(A4ImportCsvData csvData) {
         File csvFile = Paths.get("target/", "a4Testcase" + UUID.randomUUID().toString().substring(1, 6)
                 + ".csv").toFile();
@@ -52,6 +54,7 @@ public class A4ResourceInventoryImportRobot {
                 uploadCSV(csvFile);
     }
 
+    @Step("Generate CSV and save as file")
     public void generateCsvFile(A4ImportCsvData csvData, File targetFile) {
         A4ImportCsvDataGenerator a4ImportCsvDataGenerator = new A4ImportCsvDataGenerator();
         List<A4ResourceInventoryEntry> data = a4ImportCsvDataGenerator.generateCsv(csvData);
@@ -64,6 +67,7 @@ public class A4ResourceInventoryImportRobot {
         }
     }
 
+    @Step("Open UI and search for existing network element")
     public void openNetworkElement(A4NetworkElement neData) {
         A4StartPage
                 .login()
@@ -72,15 +76,17 @@ public class A4ResourceInventoryImportRobot {
                 .checkNetworkElementExists(neData);
     }
 
+    @Step("Enter ZTP Ident")
     public void enterZtpIdent(String value) {
         InstallationPage installationPage = new InstallationPage();
         installationPage.enterZtpIdent(value);
     }
 
+    @Step("Open monitoring page and check network element values")
     public void checkMonitoringPage(A4NetworkElement neData, String ztpIdent) {
         InstallationPage installationPage = new InstallationPage();
         installationPage
                 .openMonitoringPage()
-                .checkNeData( neData, ztpIdent);
+                .checkNeData(neData, ztpIdent);
     }
 }
