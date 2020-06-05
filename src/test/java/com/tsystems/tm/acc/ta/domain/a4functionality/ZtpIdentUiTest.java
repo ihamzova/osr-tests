@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.berlinium;
+package com.tsystems.tm.acc.ta.domain.a4functionality;
 
 import com.tsystems.tm.acc.data.models.stable.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
@@ -7,8 +7,9 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ImportCsvRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4UiRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import org.testng.annotations.AfterMethod;
@@ -20,7 +21,8 @@ import java.util.UUID;
 
 public class ZtpIdentUiTest  extends BaseTest {
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImporterRobot a4InventoryImporter = new A4ResourceInventoryImporterRobot();
+    private A4ImportCsvRobot a4InventoryImporter = new A4ImportCsvRobot();
+    private A4UiRobot a4UiRobot = new A4UiRobot();
     private OsrTestContext osrTestContext = OsrTestContext.get();
 
     private A4NetworkElementGroup negData;
@@ -55,11 +57,11 @@ public class ZtpIdentUiTest  extends BaseTest {
         String ztpIdent = "ZTP Ident UI Test " + UUID.randomUUID().toString().substring(1, 4);
 
         // WHEN / Action
-        a4InventoryImporter.openNetworkElement(neData);
-        a4InventoryImporter.enterZtpIdent(ztpIdent);
+        a4UiRobot.openNetworkElement(neData);
+        a4UiRobot.enterZtpIdent(ztpIdent);
 
         // THEN
-        a4InventoryImporter.checkMonitoringPage(neData, ztpIdent);
+        a4UiRobot.checkMonitoringPage(neData, ztpIdent);
 
         // AFTER / Clean-up
         // nothing to do

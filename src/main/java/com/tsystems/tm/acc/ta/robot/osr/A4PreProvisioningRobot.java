@@ -11,8 +11,6 @@ import org.testng.Assert;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
-
 public class A4PreProvisioningRobot {
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
