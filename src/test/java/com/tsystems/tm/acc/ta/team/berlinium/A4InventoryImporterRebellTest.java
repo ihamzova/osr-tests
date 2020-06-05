@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ImportCsvRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.*;
@@ -27,7 +27,7 @@ public class A4InventoryImporterRebellTest extends ApiTest {
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private A4ResourceInventoryServiceRobot a4ResourceInventoryServiceRobot = new A4ResourceInventoryServiceRobot();
     private A4PreProvisioningRobot a4PreProvisioningRobot = new A4PreProvisioningRobot();
-    private A4ResourceInventoryImporterRobot a4ResourceInventoryImporterRobot = new A4ResourceInventoryImporterRobot();
+    private A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElement;
@@ -63,7 +63,7 @@ public class A4InventoryImporterRebellTest extends ApiTest {
         // nothing to do
 
         // WHEN / Action
-        a4ResourceInventoryImporterRobot.sendZtpIdentUpdateViaRestInterface(a4NetworkElement);
+        a4ImportCsvRobot.sendZtpIdentUpdateViaRestInterface(a4NetworkElement);
 
         // THEN
         //a4PreProvisioningRobot.checkPostToPreprovisioningWiremock();
