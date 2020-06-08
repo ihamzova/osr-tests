@@ -56,6 +56,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
@@ -162,6 +163,12 @@ public class DpuCommissioningRobot {
     public void checkGetAncpSessionNotCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkGetDpuAtOltConfigCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
     }
 
 }

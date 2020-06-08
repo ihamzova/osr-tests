@@ -59,8 +59,9 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
     }
