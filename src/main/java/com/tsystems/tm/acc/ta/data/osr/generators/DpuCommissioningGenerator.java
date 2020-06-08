@@ -174,11 +174,33 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
+    public File generatePutDpuAtOltConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "wiremock_PUT_dpuAtOltConfiguration.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.UPDATE_INV;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "wiremock_PUT_dpuAtOltConfiguration.json");
+        writeStubToFolder(content, stub);
+        return stub;
+    }
+
     public File generateSelaDpuStub(OltDevice olt, Dpu dpu){
         File jsonTemplate = new File(stubTemplateFolder + "wiremock_seal_dpu_configuration.json");
 
         String content = getTemplateContent(jsonTemplate);
         File stub = new File (generatedStubFolder + "wiremock_seal_dpu_configuration.json");
+        writeStubToFolder(content, stub);
+        return stub;
+    }
+
+    public File generateDpuConfigurationTaskStub(){
+        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_dpuConfigurationTask.json");
+
+        String content = getTemplateContent(jsonTemplate);
+        File stub = new File (generatedStubFolder + "wiremock_POST_dpuConfigurationTask.json");
         writeStubToFolder(content, stub);
         return stub;
     }
