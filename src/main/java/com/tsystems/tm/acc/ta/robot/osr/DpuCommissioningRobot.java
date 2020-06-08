@@ -53,7 +53,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
         dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu, isAsyncScenario);
+        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu,isAsyncScenario);
         dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);

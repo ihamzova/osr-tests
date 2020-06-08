@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.WebhookDefinitionModel;
 import com.tsystems.tm.acc.data.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuActivities;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuCommissioningCallbackErrors;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.invoker.JSON;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
@@ -114,7 +115,7 @@ public class DpuCommissioningGenerator {
         content = content.replace("###OLT_ENDSZ###",endsz);
 
         String currentStep = DpuActivities.DEPROVISION_OLT;
-        content = setResponseStatus(dpu, content, currentStep, isAsyncScenario);
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.DEPROVISIONING_OLT_ERROR, isAsyncScenario);
 
         File stub = new File (generatedStubFolder + "wiremock_POST_deprovisioning_port.json");
         writeStubToFolder(content, stub);
@@ -127,7 +128,7 @@ public class DpuCommissioningGenerator {
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
         String currentStep = DpuActivities.SET_ANCP;
-        content = setResponseStatus(dpu, content, currentStep, isAsyncScenario);
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.CONFIGURE_ANCP_ERROR, isAsyncScenario);
 
         File stub = new File (generatedStubFolder + "wiremock_POST_configureANCP.json");
         writeStubToFolder(content, stub);
@@ -192,24 +193,32 @@ public class DpuCommissioningGenerator {
     /**
      * overload method to handle callback error
      */
-    private String setResponseStatus(Dpu dpu, String content, String currentStep, boolean isAsyncScenario) {
+    private String setResponseStatus(Dpu dpu, String content, String currentStep, String errorMessage, boolean isAsyncScenario) {
         if(!currentStep.equals(dpu.getStepToFall())){
             content = content.replace("###STATUS###", "\"status\":200");
             content = content.replace("###CALLBACK_START###","");
             content = content.replace("###CALLBACK_END###","");
         }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":400");
-            content = replaceCallback(content);
+            content = replaceCallback(content, errorMessage,isAsyncScenario);
+        }else if(currentStep.equals(dpu.getStepToFall())&&isAsyncScenario){
+            content = content.replace("###STATUS###", "\"status\":200");
+            content = replaceCallback(content, errorMessage, isAsyncScenario);
         }
         return content;
     }
 
-    private String replaceCallback(String content){
-        content = content.replaceAll("(?s)###CALLBACK_START###(.*)###CALLBACK_END###","{}");
+    private String replaceCallback(String content, String errorMessage, boolean isAsyncScenario){
+        if(!isAsyncScenario) {
+            content = content.replaceAll("(?s)###CALLBACK_START###(.*)###CALLBACK_END###", "{}");
+        }else {
+            String  errorCallback = generatePostServeActionForStub(errorMessage);
+            content = content.replaceAll("(?s)###CALLBACK_START###(.*)###CALLBACK_END###", errorCallback);
+        }
         return content;
     }
 
-    public StubMapping generatePostServeActionForStub(){
+    private String generatePostServeActionForStub(String errorMessage){
         JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
 
@@ -220,27 +229,37 @@ public class DpuCommissioningGenerator {
         webhookHeaders.add(new HttpHeader("X-B3-SpanId", "{{request.headers.X-B3-SpanId}}"));
         webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
 
-
         WebhookDefinitionModel model = new WebhookDefinitionModel(RequestMethod.POST,
                 "{{request.headers.X-Callback-Url}}",
                 webhookHeaders,
-                new Body("{ \"response\": {}, \"success\": false }"),
+                new Body(errorMessage),
                 3000,
                 null);
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
+        return doGenerate(mapping);
 
-        doGenerate(mapping);
-
-        return mapping;
     }
-    private void doGenerate(StubMapping stub)
+    private String doGenerate(StubMapping stub)
     {
-
         WiremockMappingGenerator generator = new WiremockMappingGenerator();
         List<StubMapping> stubMappings = new ArrayList<>();
         stubMappings.add(stub);
-        File storeToFolder = new File (generatedStubFolder + "async.json");
+        File storeToFolder = new File (generatedStubFolder);
         generator.generate(stubMappings, Paths.get(storeToFolder.toURI()));
-    }
 
+        File[] files = storeToFolder.listFiles();
+        if (files != null) {
+            for(File file : files) {
+                if (file.getName().startsWith("stub_"))
+                {
+                    String callback = getTemplateContent(file);
+                    callback = callback.replace("\"postServeActions\": {", "");
+                    callback = callback.substring(0, callback.length() - 1);
+                    file.delete();
+                    return callback;
+                }
+            }
+        }
+        return null;
+    }
 }
