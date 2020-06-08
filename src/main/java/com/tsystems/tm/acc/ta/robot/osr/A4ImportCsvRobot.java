@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
-@Slf4j
 public class A4ImportCsvRobot {
 
     public void importCsvFileViaRestInterface(File csvFile) {

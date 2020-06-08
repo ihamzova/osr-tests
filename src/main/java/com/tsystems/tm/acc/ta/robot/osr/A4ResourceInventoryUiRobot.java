@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class A4UiRobot {
+public class A4ResourceInventoryUiRobot {
 
     @Step("Open UI and search for existing network element")
     public void openNetworkElement(A4NetworkElement neData) {
@@ -39,7 +39,7 @@ public class A4UiRobot {
     @Step("validate network elements")
     public void checkNetworkElementsViaUi(A4ImportCsvData csvData) {
         List<A4ImportCsvLine> list = csvData.getCsvLines();
-        //@TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
+        //TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open
         InstallationPage installationPage = new InstallationPage();
         list.stream().findFirst().ifPresent(installationPage::checkNetworkElementExists);
         list.stream().skip(1).forEach(a4ImportCsvLine -> {

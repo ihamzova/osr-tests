@@ -20,7 +20,7 @@ import org.testng.annotations.Test;
 
 @Epic("OS&R")
 @Feature("Tests API to Rebell triggerd by a ztpIdent Update for an A4 NetworkElement")
-@TmsLink("DIGIHUB-65537")
+@TmsLink("DIGIHUB-xxxxx")
 public class A4InventoryImporterRebellTest extends ApiTest {
 
     private OsrTestContext osrTestContext = OsrTestContext.get();
@@ -56,7 +56,7 @@ public class A4InventoryImporterRebellTest extends ApiTest {
 
     @Test(description = "DIGIHUB-57178: A4 Inventory Importer test interface to Rebell IRONMAN")
     @Owner("dl-berlinium@telekom.de; andre.riehl@telekom.de")
-    @TmsLink("DIGIHUB-57178")
+    @TmsLink("DIGIHUB-xxxxx")
     @Description("A4 Inventory Importer test interface to Rebell IRONMAN. Request Links for a given NetworkElement")
     public void newTpWithPreprovisioning() {
         // GIVEN / Arrange
@@ -66,6 +66,7 @@ public class A4InventoryImporterRebellTest extends ApiTest {
         a4ImportCsvRobot.sendZtpIdentUpdateViaRestInterface(a4NetworkElement);
 
         // THEN
+
         //a4PreProvisioningRobot.checkPostToPreprovisioningWiremock();
 
         // AFTER / Clean-up
