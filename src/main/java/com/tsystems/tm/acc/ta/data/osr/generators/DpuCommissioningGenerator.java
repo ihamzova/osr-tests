@@ -161,6 +161,19 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
+    public File generatePostDpuAtOltConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_dpuAtOltConfiguration.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CREATE_DPUOLT;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "wiremock_POST_dpuAtOltConfiguration.json");
+        writeStubToFolder(content, stub);
+        return stub;
+    }
+
     public File generateSelaDpuStub(OltDevice olt, Dpu dpu){
         File jsonTemplate = new File(stubTemplateFolder + "wiremock_seal_dpu_configuration.json");
 

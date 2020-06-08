@@ -51,6 +51,9 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> deprovisionPortCheckValues = new ArrayList<>();
         deprovisionPortCheckValues.add(oltEndsz);
 
+        List<String> dpuAtOltCheckValues = new ArrayList<>();
+        dpuAtOltCheckValues.add(dpu.getEndSz());
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -62,6 +65,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
 
     }

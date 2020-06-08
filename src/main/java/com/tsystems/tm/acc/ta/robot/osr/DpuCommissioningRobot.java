@@ -57,6 +57,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
+        dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
@@ -169,6 +170,24 @@ public class DpuCommissioningRobot {
     public void checkGetDpuAtOltConfigCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkGetDpuAtOltConfigNotCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration"));
+    }
+
+    @Step
+    public void checkPostDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration"));
     }
 
 }
