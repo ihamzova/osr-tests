@@ -7,7 +7,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ImportCsvRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4UiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryUiRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.*;
@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 public class A4ImportCsvTest extends BaseTest {
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ImportCsvRobot a4InventoryImporter = new A4ImportCsvRobot();
-    private A4UiRobot a4UiRobot = new A4UiRobot();
+    private A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private OsrTestContext context = OsrTestContext.get();
 
     private A4ImportCsvData csvData;
@@ -49,7 +49,7 @@ public class A4ImportCsvTest extends BaseTest {
         a4InventoryImporter.importCsvFileViaUi(csvData);
 
         // Then / Assert
-        a4UiRobot.checkNetworkElementsViaUi(csvData);
+        a4ResourceInventoryUiRobot.checkNetworkElementsViaUi(csvData);
 
         // After / Clean-up
         a4Inventory.deleteNetworkElements(csvData);

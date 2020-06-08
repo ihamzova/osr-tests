@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGroupGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementPortGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
@@ -22,7 +21,7 @@ public class A4ResourceInventoryRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer HTTP_CODE_NO_CONTENT_204 = 204;
 
-    private ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
+    private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
 
     @Step("Create new network element group in A4 inventory")
     public void createNetworkElementGroup(A4NetworkElementGroup negData) {
@@ -140,9 +139,7 @@ public class A4ResourceInventoryRobot {
                 .networkElementUuidQuery(neUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        ports.stream().forEach(networkElementPortDto -> {
-            deleteNetworkElementPort(networkElementPortDto.getUuid());
-        });
+        ports.forEach(networkElementPortDto -> deleteNetworkElementPort(networkElementPortDto.getUuid()));
     }
 
     List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesViaTerminationPoint(String uuidTp) {
@@ -197,13 +194,11 @@ public class A4ResourceInventoryRobot {
                 .nameQuery(groupName)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> {
-            a4ResourceInventory
-                    .networkElementGroups()
-                    .deleteNetworkElementGroup()
-                    .uuidPath(networkElementGroupDto.getUuid())
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        });
+        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> a4ResourceInventory
+                .networkElementGroups()
+                .deleteNetworkElementGroup()
+                .uuidPath(networkElementGroupDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
     }
 
     @Step("Delete network group by name")
@@ -216,13 +211,11 @@ public class A4ResourceInventoryRobot {
                 .nameQuery(groupName)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> {
-            a4ResourceInventory
-                    .networkElementGroups()
-                    .deleteNetworkElementGroup()
-                    .uuidPath(networkElementGroupDto.getUuid())
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        });
+        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> a4ResourceInventory
+                .networkElementGroups()
+                .deleteNetworkElementGroup()
+                .uuidPath(networkElementGroupDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
     }
 
 }
