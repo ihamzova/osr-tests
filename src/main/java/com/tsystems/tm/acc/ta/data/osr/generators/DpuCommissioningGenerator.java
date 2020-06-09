@@ -162,19 +162,6 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
-    public File generateGetDpuAtOltConfigActiveStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_dpuAtOltConfigurationACTIVE.json");
-        String content = getTemplateContent(jsonTemplate);
-        content = content.replace("###ENDSZ###",dpu.getEndSz());
-
-        String currentStep = DpuActivities.GET_DPUOLT;
-        content = setResponseStatus(dpu, content, currentStep);
-
-        File stub = new File (generatedStubFolder + "wiremock_GET_dpuAtOltConfigurationACTIVE.json");
-        writeStubToFolder(content, stub);
-        return stub;
-    }
-
     public File generatePostDpuAtOltConfigStub(Dpu dpu){
         File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_dpuAtOltConfiguration.json");
         String content = getTemplateContent(jsonTemplate);
@@ -247,6 +234,25 @@ public class DpuCommissioningGenerator {
             content = content.replace("###STATUS###", "\"status\":400");
         } else {
             content = content.replace("###STATUS###", "\"status\":200");
+        }
+        if(currentStep.equals(dpu.getChangeBody())) {
+            content = content.replace("###STATUS###", "\"status\":200");
+            content = content.replace("###BODY###", "{\n" +
+                    "      \"id\": 12345,\n" +
+                    "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
+                    "      \"backhaulId\": \"blackhole\",\n" +
+                    "      \"onuId\": 12345,\n" +
+                    "      \"configurationState\": \"ACTIVE\",\n" +
+                    "      \"serialNumber\": \"111\",\n" +
+                    "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
+                    "      \"oltPonSlot\": \"5\",\n" +
+                    "      \"oltPonPort\": \"5\",\n" +
+                    "      \"oltUplinkSlot\": \"5\",\n" +
+                    "      \"oltUplinkPort\": \"5\"\n" +
+                    "    }");
+        }else {
+            content = content.replace("###STATUS###", "\"status\":200");
+            content = content.replace("###BODY###", "");
         }
         return content;
     }

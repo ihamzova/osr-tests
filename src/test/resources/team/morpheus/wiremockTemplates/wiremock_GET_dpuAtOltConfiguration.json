@@ -15,6 +15,6 @@
       "Content-Type":"application/json",
       "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
     },
-    "jsonBody":[]
+    "jsonBody":[###BODY###]
   }
 }

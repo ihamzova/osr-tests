@@ -57,7 +57,6 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateGetDpuAtOltConfigActiveStub(dpu);
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateDpuConfigurationTaskStub();
         dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
