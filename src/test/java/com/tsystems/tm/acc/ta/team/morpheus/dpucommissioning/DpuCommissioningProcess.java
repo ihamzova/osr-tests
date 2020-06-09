@@ -255,4 +255,36 @@ public class DpuCommissioningProcess extends BaseTest {
         //dpuCommissioningRobot.checkGetDpuAtOltConfNotCalled(timeOfExecution,ancpSessionCheckValues);
     }
 
+    @Test(description = "Negative case. POST DeprovisionOltPort returned error in callback")
+    @Description("Negative case. POST DeprovisionOltPort returned error in callback")
+    public void dpuCommissioningPostDeprovisionCallbackError(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPostDeprovisionCallbackError);
+        Long timeOfExecution = System.currentTimeMillis();
+        isAsyncScenario = true;
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> deprovisionCheckValues = new ArrayList<>();
+        deprovisionCheckValues.add(oltEndsz);
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionCheckValues);
+        dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution,dpu.getEndSz());
+    }
+
+    @Test(description = "Negative case. POST ConfigureANCP returned error in callback")
+    @Description("Negative case. POST ConfigureANCP returned error in callback")
+    public void dpuCommissioningPostConfigureANCPCallbackError(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPostConfigureANCPCallbackError);
+        Long timeOfExecution = System.currentTimeMillis();
+        isAsyncScenario = true;
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
+    }
+
 }
