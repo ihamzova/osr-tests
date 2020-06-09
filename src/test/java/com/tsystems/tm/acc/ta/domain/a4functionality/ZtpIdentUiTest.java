@@ -41,23 +41,26 @@ public class ZtpIdentUiTest  extends BaseTest {
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup_NEG_A12784);
         a4NetworkElement = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
+                .get(A4NetworkElementCase.defaultNetworkElement_49_30_11_7KH0);
         a4NetworkElementPort = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort_logicalLabel_10G_001);
     }
 
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPort,a4NetworkElement);
     }
 
     @AfterMethod
     public void cleanUp() {
+        a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPort.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElement.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementGroup(a4NetworkElementGroup.getUuid());
+
     }
 
     @Test(description = "DIGIHUB-xxxxx Installation user enters ZTP Ident for Network Element in UI")
@@ -72,11 +75,11 @@ public class ZtpIdentUiTest  extends BaseTest {
         // THEN
 
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElement, ztpIdent);
-//        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPort.getUuid());
+        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPort.getUuid());
 
 
         // AFTER / Clean-up
-        //TODO: Links wieder löschen
-        // nothing to do
+        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPort.getUuid());
+
     }
 }

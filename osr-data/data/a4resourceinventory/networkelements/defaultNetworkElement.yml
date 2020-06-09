@@ -8,3 +8,4 @@ values:
   category: "OLT"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
+  type: "SPINE_SWITCH"
