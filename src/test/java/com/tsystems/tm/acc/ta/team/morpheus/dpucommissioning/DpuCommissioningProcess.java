@@ -71,6 +71,45 @@ public class DpuCommissioningProcess extends BaseTest {
 
     }
 
+    @Test(description = "Positive case. DPU-commisioning without errors")
+    @Description("Use case: DpuAtOltConfiguration exists")
+    public void dpuCommissioningDpuAtOltConfigurationExists(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningDpuAtOltConfigurationExists);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        List<String> onuidCheckValues = new ArrayList<>();
+        onuidCheckValues.add(dpu.getEndSz());
+
+        List<String> backhaulidCheckValues = new ArrayList<>();
+        backhaulidCheckValues.add(oltEndsz);
+        backhaulidCheckValues.add(olt.getOltSlot());
+        backhaulidCheckValues.add(olt.getOltPort());
+
+        List<String> deprovisionPortCheckValues = new ArrayList<>();
+        deprovisionPortCheckValues.add(oltEndsz);
+
+        List<String> dpuAtOltCheckValues = new ArrayList<>();
+        dpuAtOltCheckValues.add(dpu.getEndSz());
+
+        Long timeOfExecution = System.currentTimeMillis();
+
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
+        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution,onuidCheckValues);
+        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
+        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
+        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
+        dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
+
+    }
+
     @Test(description = "Negative case. GET oltResourceInventory returned 400")
     @Description("Negative case. GET oltResourceInventory returned 400")
     public void dpuCommissioningGetDevice400(){
