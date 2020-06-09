@@ -2,10 +2,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
+import com.tsystems.tm.acc.ta.data.osr.generators.RebellUewegGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
 import com.tsystems.tm.acc.ta.helpers.WiremockMappingsPublisher;
+import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
 import io.qameta.allure.Step;
 
 import java.io.File;
@@ -40,6 +43,15 @@ public class WiremockRobot {
         WiremockMappingGenerator generator = new WiremockMappingGenerator();
         SealAccessNodeConfigurationGeneratorMapper mapper = new SealAccessNodeConfigurationGeneratorMapper();
         generator.generate(devices.stream()
+                .map(mapper::getData)
+                .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
+    }
+
+    @Step("Create mock data for REBELL")
+    public void createMockForRebell(File storeToFolder, List<A4NetworkElement> neData) {
+        WiremockMappingGenerator generator = new WiremockMappingGenerator();
+        RebellUewegGeneratorMapper mapper = new RebellUewegGeneratorMapper();
+        generator.generate(neData.stream()
                 .map(mapper::getData)
                 .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
     }

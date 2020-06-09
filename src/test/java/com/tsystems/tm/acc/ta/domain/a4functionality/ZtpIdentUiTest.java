@@ -5,14 +5,12 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4FrontEndInventoryImporterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ImportCsvRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryUiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import org.testng.annotations.AfterMethod;
@@ -20,6 +18,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class ZtpIdentUiTest  extends BaseTest {
@@ -30,6 +32,7 @@ public class ZtpIdentUiTest  extends BaseTest {
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
+    private WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElement;
@@ -52,6 +55,10 @@ public class ZtpIdentUiTest  extends BaseTest {
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
+
+        List<A4NetworkElement> ne = Collections.singletonList(a4NetworkElement);
+        File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
+        wiremockRobot.createMockForRebell(stubsPath, ne);
     }
 
     @AfterMethod
@@ -70,8 +77,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryUiRobot.enterZtpIdent(ztpIdent);
 
         // THEN
-
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElement, ztpIdent);
+        // ...
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPort.getUuid());
 
 
