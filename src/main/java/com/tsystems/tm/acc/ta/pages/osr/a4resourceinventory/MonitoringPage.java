@@ -17,7 +17,7 @@ public class MonitoringPage {
     public static final String APP = "a4-inventory-importer";
     public static final String ENDPOINT = "/monitoring";
 
-    public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("//h2[contains(text(),'Überwachen von Installationsaufträgen')]");
+    public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("//h2[contains(text(),'NetworkElement Status-Monitoring')]");
     public static final By NETWORK_ELEMENT_TABLE = byId("ne");
     public static final By ZTP_FIELD = byXpath("//*[@id=\"ne\"]/div[2]/table/tbody/tr/td[5]");
     public static final By INSTALLATION_BUTTON = byId("btnInstallation");
