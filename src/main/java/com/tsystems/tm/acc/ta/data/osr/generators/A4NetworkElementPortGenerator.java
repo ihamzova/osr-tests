@@ -3,7 +3,6 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementPortDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -11,7 +10,7 @@ import java.util.UUID;
 public class A4NetworkElementPortGenerator {
 
     public NetworkElementPortDto generateAsDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        if(nepData.getUuid().isEmpty())
+        if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
         if (nepData.getPort().equals(""))
@@ -21,16 +20,12 @@ public class A4NetworkElementPortGenerator {
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
-                .logicalLabel("LogicalLabel_" + nepData.getPort())
+                .logicalLabel(nepData.getLogicalLabel())
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
                 .role("role")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
-    }
-
-    public LogicalResourceUpdate generateAsLogicalResource(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        return new LogicalResourceUpdate();
     }
 }

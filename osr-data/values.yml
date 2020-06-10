@@ -18,3 +18,7 @@ global:
     fsz: "${randomLong, 1000, 9999}"
     slotNumber: "99"
     portNumber: "${randomLong, 1000, 9999}"
+  a4CsvImport:
+    negName: "Imported NEG-${randomLong, 1000, 9999}"
+    vpsz: "49/8492/0"
+    klsId: "123456"

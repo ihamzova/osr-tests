@@ -42,10 +42,10 @@ public class A4ResourceInventoryServiceRobot {
 
         List<LogicalResource> logicalResourceList =
                 a4ResourceInventoryService
-                .logicalResource()
-                .retrieveLogicalResource()
-                .idPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .logicalResource()
+                        .retrieveLogicalResource()
+                        .idPath(uuid)
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");

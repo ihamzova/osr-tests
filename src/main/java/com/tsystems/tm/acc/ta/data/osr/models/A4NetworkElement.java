@@ -11,4 +11,5 @@ public class A4NetworkElement {
     private String category;
     private String operationalState;
     private String lifecycleState;
+    private String type;
 }

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="order test suite"  parallel="methods" thread-count="1" verbose="1" data-provider-thread-count="2">
+<suite name="order test suite" parallel="methods" thread-count="1" verbose="1" data-provider-thread-count="2">
 
     <test thread-count="1" name="Integration Tests for Berlinium services">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryServiceTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4NemoUpdateTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NewTpFromNemoWithPreprovisioningTest"/>
-            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryImportTest"/>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.ZtpIdentUiTest"/>
         </classes>
     </test>
 </suite>

@@ -1,0 +1,24 @@
+name: defaultCsvFile
+template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData
+values:
+  csvLines:
+    - "@firstCsvLine"
+    - "@secondCsvLine"
+---
+name: firstCsvLine
+template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
+values:
+  negName: "${scope, global.a4CsvImport.negName}"
+  neVpsz: "${scope, global.a4CsvImport.vpsz}"
+  neFsz: "7KDB"
+  neKlsId: "${scope, global.a4CsvImport.klsId}"
+  neDescription: "First imported NE"
+---
+name: secondCsvLine
+template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
+values:
+  negName: "${scope, global.a4CsvImport.negName}"
+  neVpsz: "${scope, global.a4CsvImport.vpsz}"
+  neFsz: "7KDC"
+  neKlsId: "${scope, global.a4CsvImport.klsId}"
+  neDescription: "Second imported NE"

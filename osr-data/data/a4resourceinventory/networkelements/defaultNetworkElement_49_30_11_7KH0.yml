@@ -1,0 +1,11 @@
+name: defaultNetworkElement_49_30_11_7KH0
+template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
+values:
+  uuid: "" # if blank: field will be filled with returned uuid of created NE
+  vpsz: "49/30/11" # VPSZ in combination with FSZ must be unique
+  fsz: "7KH0" # if blank: random FSZ will be generated and field will be filled with that value
+  klsId: "1234567"
+  category: "OLT"
+  operationalState: "WORKING"
+  lifecycleState: "OPERATING"
+  type: 'A4_OLT_v1'

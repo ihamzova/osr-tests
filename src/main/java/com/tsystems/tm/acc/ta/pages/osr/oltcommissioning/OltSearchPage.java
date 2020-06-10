@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class OltSearchPage {
     public static final String ENDPOINT = "/search";
 
     public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchType");
-    public static final String ENDSZ_SEARCH_TYPE_VALUE = "div-ENDSZ";
+    public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-ENDSZ");
     public static final By OLT_AKZ_INPUT_LOCATOR = byQaData("input-akz");
     public static final By OLT_ONKZ_INPUT_LOCATOR = byQaData("input-nkz");
     public static final By OLT_VKZ_INPUT_LOCATOR = byQaData("input-vkz");
@@ -78,7 +78,7 @@ public class OltSearchPage {
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-        $(byQaData(ENDSZ_SEARCH_TYPE_VALUE)).click();
+        $(ENDSZ_SEARCH_TYPE_VALUE).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSz[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();

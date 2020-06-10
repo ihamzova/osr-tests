@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.data.models.PortProvisioning;
+import com.tsystems.tm.acc.data.models.stable.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
 import com.tsystems.tm.acc.ta.helpers.wiremock.WiremockRequestPatternBuilder;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
@@ -10,8 +10,6 @@ import io.qameta.allure.Step;
 import org.testng.Assert;
 
 import java.util.List;
-
-import static org.hamcrest.Matchers.greaterThan;
 
 public class A4PreProvisioningRobot {
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -36,7 +34,7 @@ public class A4PreProvisioningRobot {
     }
 
     @Step("Check if POST request to a4-preprovisioning wiremock has happened")
-    public void validatePostToPreprovisioningWiremock() {
+    public void checkPostToPreprovisioningWiremock() {
         RequestPattern requestPattern = new WiremockRequestPatternBuilder()
                 .withMethod("POST")
                 .withUrlPathPattern(".*/v1/a4/accessLines")

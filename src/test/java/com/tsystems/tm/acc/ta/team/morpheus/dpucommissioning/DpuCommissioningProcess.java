@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning;
 
-import com.tsystems.tm.acc.data.models.OltDevice;
+import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.dpu.DpuCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;

@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
@@ -15,12 +14,8 @@ import java.util.UUID;
 
 public class A4TerminationPointGenerator {
 
-    public TerminationPointDto generateAsDto(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        return new TerminationPointDto();
-    }
-
     public LogicalResourceUpdate generateAsLogicalResource(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        if(tpData.getUuid().isEmpty())
+        if (tpData.getUuid().isEmpty())
             tpData.setUuid(UUID.randomUUID().toString());
 
         List<ResourceCharacteristic> tpCharacteristics = new ArrayList<>();

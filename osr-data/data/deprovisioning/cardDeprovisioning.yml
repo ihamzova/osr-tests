@@ -1,5 +1,5 @@
 name: cardDeprovisioning
-template: com.tsystems.tm.acc.data.models.PortProvisioning
+template: com.tsystems.tm.acc.data.models.stable.PortProvisioning
 values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
