@@ -54,6 +54,9 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> dpuAtOltCheckValues = new ArrayList<>();
         dpuAtOltCheckValues.add(dpu.getEndSz());
 
+        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
+        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -67,6 +70,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
+        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
 
     }
@@ -93,6 +97,9 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> dpuAtOltCheckValues = new ArrayList<>();
         dpuAtOltCheckValues.add(dpu.getEndSz());
 
+        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
+        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -105,6 +112,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigNotCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPostDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
         dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
 

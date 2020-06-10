@@ -58,7 +58,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateDpuConfigurationTaskStub();
+        dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu);
         dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
@@ -193,6 +193,18 @@ public class DpuCommissioningRobot {
     }
 
     @Step
+    public void checkPostSEALDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/olt/dpuConfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/olt/dpuConfigurationTask"));
+    }
+
+    @Step
     public void checkPutDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertTrue(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/12345"));
@@ -203,5 +215,4 @@ public class DpuCommissioningRobot {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/12345"));
     }
-
 }

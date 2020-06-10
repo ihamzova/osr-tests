@@ -197,11 +197,15 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
-    public File generateDpuConfigurationTaskStub(){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_dpuConfigurationTask.json");
-
+    public File generateDpuConfigurationTaskStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
         String content = getTemplateContent(jsonTemplate);
-        File stub = new File (generatedStubFolder + "wiremock_POST_dpuConfigurationTask.json");
+        content = content.replace("###ENDSZ###",dpu.getEndSz().replace("/","_"));
+
+        String currentStep = DpuActivities.CONFIGURE_DPU_SEAL;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
         writeStubToFolder(content, stub);
         return stub;
     }
@@ -230,6 +234,11 @@ public class DpuCommissioningGenerator {
      * when defined in testdata.yml "getStepToFall" this call should return a 400 error
      */
     private String setResponseStatus(Dpu dpu, String content, String currentStep) {
+        //TODO durty hack. Refactor. take status to yaml.
+        if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL))
+        {
+            content = content.replace("###STATUS###", "\"status\":202");
+        }
         if (currentStep.equals(dpu.getStepToFall())) {
             content = content.replace("###STATUS###", "\"status\":400");
         } else {
