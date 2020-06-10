@@ -22,4 +22,10 @@ public class DpuCommissioningCallbackErrors {
             "  \"response\": {},\n" +
             "  \"success\": false\n" +
             "}";
+
+    public static final String SEAL_DPU_AT_OLT = "{\n" +
+            "  \"status\": 5000,\n" +
+            "  \"statustype\": \"ERROR\",\n" +
+            "  \"message\": \"These arent the droids youre looking for\"\n" +
+            "}";
 }

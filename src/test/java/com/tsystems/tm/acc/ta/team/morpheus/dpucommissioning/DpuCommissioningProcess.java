@@ -295,4 +295,21 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkGetAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
     }
 
+    @Test(description = "Negative case. SEAL POST.DpuAtOltConf returned error in callback")
+    @Description("Negative case. SEAL POST.DpuAtOltConf returned error in callback")
+    public void dpuCommissioningPostSealDpuAtOltConfigCallbackError(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuCommissioningPostSealDpuAtOltConfigCallbackError);
+        Long timeOfExecution = System.currentTimeMillis();
+        isAsyncScenario = true;
+        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
+        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
+        List<String> dpuAtOltCheckValues = new ArrayList<>();
+        dpuAtOltCheckValues.add(dpu.getEndSz());
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
+        dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
+    }
 }

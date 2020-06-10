@@ -58,7 +58,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu);
+        dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();

@@ -197,13 +197,13 @@ public class DpuCommissioningGenerator {
         return stub;
     }
 
-    public File generateDpuConfigurationTaskStub(Dpu dpu){
+    public File generateDpuConfigurationTaskStub(Dpu dpu, boolean isAsyncScenario){
         File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz().replace("/","_"));
 
         String currentStep = DpuActivities.CONFIGURE_DPU_SEAL;
-        content = setResponseStatus(dpu, content, currentStep);
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
 
         File stub = new File (generatedStubFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
         writeStubToFolder(content, stub);
@@ -277,7 +277,12 @@ public class DpuCommissioningGenerator {
         }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":400");
             content = replaceCallback(content, errorMessage,isAsyncScenario);
-        }else if(currentStep.equals(dpu.getStepToFall())&&isAsyncScenario){
+        }else if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL)&&isAsyncScenario){
+            //TODO durty hack. Refactor. take status to yaml.
+            content = content.replace("###STATUS###", "\"status\":202");
+            content = replaceCallback(content, errorMessage, isAsyncScenario);
+        }
+        else if(currentStep.equals(dpu.getStepToFall())&&isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":200");
             content = replaceCallback(content, errorMessage, isAsyncScenario);
         }

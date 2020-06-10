@@ -18,7 +18,7 @@
     }
   },
   "uuid" : "a6df12e9-8cc4-4994-a7dd-436e5e5a01ad",
-  "postServeActions" : {
+  "postServeActions" : ###CALLBACK_START###{
     "webhook" : {
       "url" : "{{request.headers.X-Callback-Url}}",
       "headers" : {
@@ -36,5 +36,5 @@
       }
 
     }
-  }
+  }###CALLBACK_END###
 }
