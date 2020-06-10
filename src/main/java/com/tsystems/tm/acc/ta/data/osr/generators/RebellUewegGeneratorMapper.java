@@ -65,13 +65,13 @@ public class RebellUewegGeneratorMapper {
         StubMappingRequest request = new StubMappingRequest();
         request.setMethod("GET");
 //        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege");
-        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege?endsz=" + endSz);
+//        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege?endsz=" + endSz);
         request.setUrl("/resource-order-resource-inventory/v1/uewege");
 //        request.setQueryParameters(new QueryParameter("endsz", Collections.singletonList(endSz)));
         request.setUrlPath("/resource-order-resource-inventory/v1/uewege");
 
 //        stubFor().
-        request.setQueryParameters(new QueryParameter("endsz", matching(endSz)));
+        request.setQueryParameters(new QueryParameter("endsz", Arrays.asList("matches", endSz)));
 
 
         JSON json = new JSON();
