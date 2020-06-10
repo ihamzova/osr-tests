@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static com.codeborne.selenide.Selenide.sleep;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
@@ -24,6 +25,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class DpuCommissioningRobot {
 
     public static final Integer HTTP_CODE_CREATED_201 = 201;
+    private static final Long DELAY = 5_000L;
     private DpuCommissioningClient dpuCommissioningClient;
     private DpuCommissioningGenerator dpuCommissioningGenerator;
 
@@ -43,17 +45,21 @@ public class DpuCommissioningRobot {
     }
 
     @Step("setUp wiremock for TeamLevel Test")
-    public void setUpWiremock(OltDevice oltDevice, Dpu dpu){
+    public void setUpWiremock(OltDevice oltDevice, Dpu dpu, boolean isAsyncScenario){
         dpuCommissioningGenerator = new DpuCommissioningGenerator();
-        File getDpuDeviceMock = dpuCommissioningGenerator.generateGetDpuDeviceStub(dpu);
 
+        dpuCommissioningGenerator.generateGetDpuDeviceStub(dpu);
         dpuCommissioningGenerator.generateGetDpuPonConnStub(oltDevice, dpu);
         dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
         dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu,isAsyncScenario);
+        dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
         dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
+        dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
+        dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);
+        dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
@@ -62,6 +68,8 @@ public class DpuCommissioningRobot {
 
     @Step("cleanup")
     public void cleanup(){
+        //Microservice make 3 attempt to receive a positive response. Therefore mocks shouldn't be deleted at once
+        sleep(DELAY);
         WiremockHelper.mappingsReset();
         try {
             FileUtils.cleanDirectory(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
@@ -128,13 +136,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPostDeprovisioningPortCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
     }
 
     @Step
     public void checkPostDeprovisioningPortNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port"));
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
     }
     @Step
     public void checkPostConfigAncpCalled(Long timeOfExecution, String dpuEndsz){
@@ -160,4 +168,51 @@ public class DpuCommissioningRobot {
         Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
     }
 
+    @Step
+    public void checkGetDpuAtOltConfigCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkGetDpuAtOltConfigNotCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration"));
+    }
+
+    @Step
+    public void checkPostDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration"));
+    }
+
+    @Step
+    public void checkPostSEALDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/olt/dpuConfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/olt/dpuConfigurationTask"));
+    }
+
+    @Step
+    public void checkPutDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/12345"));
+    }
+
+    @Step
+    public void checkPutDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/12345"));
+    }
 }

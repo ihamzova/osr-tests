@@ -95,4 +95,32 @@ public class WiremockRecordedRequestRetriver {
         while (LocalDateTime.now().isBefore(end));
         return false;
     }
+
+
+    public boolean isPutRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
+        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
+
+        do {
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("PUT").withUrl(url).build();
+            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
+            if (!requests.isEmpty()) {
+                for (RequestFind request : requests) {
+                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
+                        return true;
+                }
+            }
+            sleep(DELAY);
+        }
+        while (LocalDateTime.now().isBefore(end));
+        return false;
+    }
+
+    public boolean isPutRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
+        return isPutRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    }
+
+    public boolean isPutRequestCalled(Long timeOfExecution, String url) {
+        return isPutRequestCalled(timeOfExecution, new ArrayList<>(), TIMEOUT, url);
+    }
+
 }
