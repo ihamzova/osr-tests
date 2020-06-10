@@ -4,4 +4,4 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NEP
   port: "${scope, global.a4Provisioning.portNumber}" # if blank: random value will be generated and field will be filled with that value
   operationalState: "WORKING"
-  logicalLabel: '10G_001'
+  logicalLabel: "10G_001"
