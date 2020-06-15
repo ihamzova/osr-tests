@@ -1,0 +1,40 @@
+{
+  "id" : "1b95e1d1-1a8a-4934-937a-76ebd8507477",
+  "request" : {
+    "urlPattern":"/configuration/v1/olt/dpuConfigurationTask",
+    "method" : "POST",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.dpuName=='###ENDSZ###')]"
+      }
+    ]
+  },
+  "response" : {
+    ###STATUS###,
+    "headers" : {
+      "Content-Type" : "application/json",
+      "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
+      "X-B3-SpanId" : "{{request.headers.X-B3-SpanId}}"
+    }
+  },
+  "uuid" : "1b95e1d1-1a8a-4934-937a-76ebd8507477",
+  "postServeActions" : ###CALLBACK_START###{
+    "webhook" : {
+      "url" : "{{request.headers.X-Callback-Url}}",
+      "headers" : {
+        "X-Callback-Correlation-Id" : "{{request.headers.X-Callback-Correlation-Id}}",
+        "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
+        "X-B3-SpanId" : "{{request.headers.X-B3-SpanId}}",
+        "Content-Type" : "application/json"
+      },
+      "method" : "POST",
+      "fixedDelayMilliseconds" : 3000,
+      "jsonBody" : {
+        "status": 2000,
+        "statustype": "SUCCESS",
+        "message": "successfully executed"
+      }
+
+    }
+  }###CALLBACK_END###
+}

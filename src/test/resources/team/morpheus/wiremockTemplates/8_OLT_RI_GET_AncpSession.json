@@ -1,0 +1,53 @@
+{
+  "id":"b7187579-8657-4203-b6c2-26fe92bce6fa",
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/oltResourceInventory/v1/ancp/endsz",
+    "queryParameters": {
+      "endsz": {
+        "matches": "###ENDSZ###"
+      }
+    }
+  },
+  "response":{
+    ###STATUS###,
+    "headers":{
+      "Content-Type":"application/json",
+      "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
+    },
+    "jsonBody":{
+  "id": 0,
+  "vlan": 0,
+  "partitionId": 0,
+  "sessionId": 0,
+  "sessionType": "OLT",
+  "rmkEndpointId": "string",
+  "sealConfigurationId": "string",
+  "ipSubnet": {
+    "id": 0,
+    "subnetMask": "string",
+    "ipAddressLoopback": "string",
+    "ipAddressBng": "string",
+    "ipAddressBroadcast": "string",
+    "rmkAccessId": "string",
+    "allocatedIPAddresses": [
+      {
+        "id": 0,
+        "ipAddress": "string"
+      }
+    ]
+  },
+  "sessionStatus": "ACTIVE",
+  "endsz": "string",
+  "allocatedIPAddress": {
+    "id": 0,
+    "ipAddress": "string"
+  },
+  "configurationStep": "CREATE_IP_RANGE_ASSIGNMENT",
+  "additionalInfo": "string",
+  "lastActivity": "2020-05-18T13:57:42.121Z",
+  "slotNumber": "string",
+  "portNumber": "string"
+}
+  }
+}

@@ -25,7 +25,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class DpuCommissioningRobot {
 
     public static final Integer HTTP_CODE_CREATED_201 = 201;
-    private static final Long DELAY = 5_000L;
+    private static final Long DELAY = 8_000L;
     private DpuCommissioningClient dpuCommissioningClient;
     private DpuCommissioningGenerator dpuCommissioningGenerator;
 
@@ -54,13 +54,13 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
         dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
         dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu,isAsyncScenario);
-        dpuCommissioningGenerator.generatePostAncpConfStub(oltDevice,dpu, isAsyncScenario);
-        dpuCommissioningGenerator.generateGetAncpStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generatePostAncpConfStub(dpu, isAsyncScenario);
+        dpuCommissioningGenerator.generateGetAncpStub(dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateSelaDpuStub(oltDevice,dpu);
+        dpuCommissioningGenerator.generateSealPostDpuConfStub();
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
