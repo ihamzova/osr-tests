@@ -5,12 +5,12 @@
     "method": "POST",
     "bodyPatterns": [
       {
-        "matchesJsonPath": "$[?(@.ancpDpuName=='49/8571/0/71AA')]"
+        "matchesJsonPath": "$[?(@.ancpDpuName=='###ENDSZ###')]"
       }
     ]
   },
   "response": {
-    "status": 202,
+    ###STATUS###,
     "headers": {
       "Content-Type": "application/json",
       "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}",
@@ -18,7 +18,7 @@
     }
   },
   "uuid": "93f0f841-1e2e-406d-8d4d-b799a2dcedb9",
-  "postServeActions": {
+  "postServeActions": ###CALLBACK_START###{
     "webhook": {
       "url": "{{request.headers.X-Callback-Url}}",
       "headers": {
@@ -35,5 +35,5 @@
         "message": "successfully executed"
       }
     }
-  }
+  }###CALLBACK_END###
 }

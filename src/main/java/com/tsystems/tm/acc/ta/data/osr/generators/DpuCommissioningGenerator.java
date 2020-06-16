@@ -190,12 +190,15 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
-    //TODO temporary for SEAL.POST.DpuConf. Should be replaced in Sprint 8.6
-    public void generateSealPostDpuConfStub(){
-        File jsonTemplate = new File(stubTemplateFolder + "n_SEAL_POST_DpuConf.json");
-
+    public void generateSealPostDpuConfStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "13_SEAL_POST_DpuConf.json");
         String content = getTemplateContent(jsonTemplate);
-        File stub = new File (generatedStubFolder + "n_SEAL_POST_DpuConf.json");
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CONFIGURE_DPUEMS_SEAL;
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
+
+        File stub = new File (generatedStubFolder + "13_SEAL_POST_DpuConf.json");
         writeStubToFolder(content, stub);
     }
 
@@ -224,7 +227,7 @@ public class DpuCommissioningGenerator {
      */
     private String setResponseStatus(Dpu dpu, String content, String currentStep) {
         //TODO durty hack. Refactor. take status to yaml.
-        if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL))
+        if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep))
         {
             content = content.replace("###STATUS###", "\"status\":202");
         }
@@ -266,7 +269,7 @@ public class DpuCommissioningGenerator {
         }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":400");
             content = replaceCallback(content, errorMessage,isAsyncScenario);
-        }else if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL)&&isAsyncScenario){
+        }else if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&isAsyncScenario){
             //TODO durty hack. Refactor. take status to yaml.
             content = content.replace("###STATUS###", "\"status\":202");
             content = replaceCallback(content, errorMessage, isAsyncScenario);
@@ -303,7 +306,7 @@ public class DpuCommissioningGenerator {
                 "{{request.headers.X-Callback-Url}}",
                 webhookHeaders,
                 new Body(errorMessage),
-                3000,
+                1000,
                 null);
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         return doGenerate(mapping);

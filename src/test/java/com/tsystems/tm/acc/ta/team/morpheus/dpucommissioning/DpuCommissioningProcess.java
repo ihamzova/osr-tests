@@ -71,7 +71,9 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
-
+        //TODO : OLT-RI.POST.DpuEmsConf called
+        dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuAtOltCheckValues);
+        //TODO : OLT-RI.PUT.DpuEmsConf called
     }
 
     @Test(description = "Positive case. DPU-commisioning without errors")
@@ -304,5 +306,22 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
+    }
+
+    @Test(description = "Negative case. SEAL POST.DpuEmsConf returned error in callback")
+    @Description("Negative case. SEAL POST.DpuEmsConf returned error in callback")
+    public void dpuCommissioningPostSealDpuEmsConfigCallbackError(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostSealDpuEmsConfigCallbackError);
+        Long timeOfExecution = System.currentTimeMillis();
+        isAsyncScenario = true;
+        List<String> dpuSealEmsCheckValues = new ArrayList<>();
+        dpuSealEmsCheckValues.add(dpu.getEndSz());
+
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealEmsCheckValues);
+        //TODO :
+        //dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuSealEmsCheckValues);
     }
 }

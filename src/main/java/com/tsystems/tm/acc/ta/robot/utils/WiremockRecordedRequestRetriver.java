@@ -13,7 +13,7 @@ import static com.codeborne.selenide.Selenide.sleep;
 
 public class WiremockRecordedRequestRetriver {
 
-    private static final Long TIMEOUT = 10_000L;
+    private static final Long TIMEOUT = 15_000L;
     private static final Long DELAY = 1_000L;
 
     public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {

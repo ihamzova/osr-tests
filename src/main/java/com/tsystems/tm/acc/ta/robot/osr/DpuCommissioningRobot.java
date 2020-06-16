@@ -60,7 +60,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateSealPostDpuConfStub();
+        dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
@@ -215,4 +215,24 @@ public class DpuCommissioningRobot {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/12345"));
     }
+
+    /*
+    //TODO
+    assertion method for Activity_OLT-RI.POST.DpuEmsConf
+     */
+    @Step
+    public void checkPostSEALDpuEmsConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/dpu/dpuConfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/configuration/v1/dpu/dpuConfigurationTask"));
+    }
+    /*
+    //TODO
+    assertion method for Activity_OLT-RI.PUT.DpuEmsConf
+     */
 }
