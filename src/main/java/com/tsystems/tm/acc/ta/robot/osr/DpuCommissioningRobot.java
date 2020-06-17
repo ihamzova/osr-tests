@@ -55,7 +55,8 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
         dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu,isAsyncScenario);
         dpuCommissioningGenerator.generatePostAncpConfStub(dpu, isAsyncScenario);
-        dpuCommissioningGenerator.generateGetAncpStub(dpu);
+        dpuCommissioningGenerator.generateGetDPUAncpStub(dpu);
+        dpuCommissioningGenerator.generateGetOLTAncpStub(oltDevice,dpu);
         dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
         dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);

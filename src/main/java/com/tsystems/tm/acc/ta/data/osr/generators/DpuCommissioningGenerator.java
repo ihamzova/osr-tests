@@ -129,8 +129,8 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
-    public void generateGetAncpStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_AncpSession.json");
+    public void generateGetDPUAncpStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_DPUAncpSession.json");
 
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
@@ -138,7 +138,21 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_ANCP;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "8_OLT_RI_GET_AncpSession.json");
+        File stub = new File (generatedStubFolder + "8_OLT_RI_GET_DPUAncpSession.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generateGetOLTAncpStub(OltDevice olt,Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_OLTAncpSession.json");
+
+        String content = getTemplateContent(jsonTemplate);
+        String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        content = content.replace("###OLT_ENDSZ###",endsz);
+
+        String currentStep = DpuActivities.GET_ANCP;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "8_OLT_RI_GET_OLTAncpSession.json");
         writeStubToFolder(content, stub);
     }
 

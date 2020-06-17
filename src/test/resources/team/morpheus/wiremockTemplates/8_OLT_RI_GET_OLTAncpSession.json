@@ -1,11 +1,11 @@
 {
-  "id":"b7187579-8657-4203-b6c2-26fe92bce6fa",
+  "id":"f000cc78-84d9-4e6d-bc4f-7ad11ecddcf6",
   "request": {
     "method": "GET",
     "urlPath": "/api/oltResourceInventory/v1/ancp/endsz",
     "queryParameters": {
       "endsz": {
-        "matches": "###ENDSZ###"
+        "matches": "###OLT_ENDSZ###"
       }
     }
   },
