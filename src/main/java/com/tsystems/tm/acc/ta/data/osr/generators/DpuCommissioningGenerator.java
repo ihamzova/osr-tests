@@ -133,12 +133,17 @@ public class DpuCommissioningGenerator {
         File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_AncpSession.json");
 
         String content = getTemplateContent(jsonTemplate);
-        content = content.replace("###ENDSZ###",dpu.getEndSz());
-
-        String currentStep = DpuActivities.GET_ANCP;
-        content = setResponseStatus(dpu, content, currentStep);
 
         File stub = new File (generatedStubFolder + "8_OLT_RI_GET_AncpSession.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generateGetAncpStubDUMMY(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "GET_ancp_dpu_DUMMY.json");
+
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+        File stub = new File (generatedStubFolder + "GET_ancp_dpu_DUMMY.json");
         writeStubToFolder(content, stub);
     }
 
@@ -148,7 +153,19 @@ public class DpuCommissioningGenerator {
         content = content.replace("###ENDSZ###",dpu.getEndSz());
 
         String currentStep = DpuActivities.GET_DPUOLT;
-        content = setResponseStatus(dpu, content, currentStep);
+        content = setResponseStatus(dpu, content, currentStep, "{\n" +
+                "      \"id\": 12345,\n" +
+                "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
+                "      \"backhaulId\": \"blackhole\",\n" +
+                "      \"onuId\": 12345,\n" +
+                "      \"configurationState\": \"ACTIVE\",\n" +
+                "      \"serialNumber\": \"111\",\n" +
+                "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
+                "      \"oltPonSlot\": \"5\",\n" +
+                "      \"oltPonPort\": \"5\",\n" +
+                "      \"oltUplinkSlot\": \"5\",\n" +
+                "      \"oltUplinkPort\": \"5\"\n" +
+                "    }");
 
         File stub = new File (generatedStubFolder + "9_OLT_RI_POST_DpuAtOltConf_GET.json");
         writeStubToFolder(content, stub);
@@ -167,14 +184,14 @@ public class DpuCommissioningGenerator {
     }
 
     public void generateDpuConfigurationTaskStub(Dpu dpu, boolean isAsyncScenario){
-        File jsonTemplate = new File(stubTemplateFolder + "10_SEAL_POST_DpuAtOltConf.json");
+        File jsonTemplate = new File(stubTemplateFolder + "10_SEAL_POST_DpuAtOltConf_OLT.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz().replace("/","_"));
 
         String currentStep = DpuActivities.CONFIGURE_DPU_SEAL;
         content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
 
-        File stub = new File (generatedStubFolder + "10_SEAL_POST_DpuAtOltConf.json");
+        File stub = new File (generatedStubFolder + "10_SEAL_POST_DpuAtOltConf_OLT.json");
         writeStubToFolder(content, stub);
     }
 
@@ -190,15 +207,50 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generateGetDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "12_OLT_RI_POST_DpuEmsConf_GET.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CREATE_DPUEMS_CONF;
+        content = setResponseStatus(dpu, content, currentStep, "{\n" +
+                "    \"id\": 12345,\n" +
+                "    \"ancpBngIpAddress\": \"string\",\n" +
+                "    \"ancpIpAddressSubnetMask\": \"string\",\n" +
+                "    \"ancpOwnIpAddress\": \"string\",\n" +
+                "    \"backhaulId\": \"string\",\n" +
+                "    \"configurationState\": \"ACTIVE\",\n" +
+                "    \"emsNbiName\": \"string\",\n" +
+                "    \"dpuEndsz\": \"49/0002/0/71AA\",\n" +
+                "    \"managementDomain\": \"string\",\n" +
+                "    \"serialNumber\": \"12345\"\n" +
+                "  }" );
+
+        File stub = new File (generatedStubFolder + "12_OLT_RI_POST_DpuEmsConf_GET.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generatePostDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "12_OLT_RI_POST_DpuEmsConf_POST.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CREATE_DPUOLT;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "12_OLT_RI_POST_DpuEmsConf_POST.json");
+        writeStubToFolder(content, stub);
+    }
+
     public void generateSealPostDpuConfStub(Dpu dpu, boolean isAsyncScenario){
-        File jsonTemplate = new File(stubTemplateFolder + "13_SEAL_POST_DpuConf.json");
+        File jsonTemplate = new File(stubTemplateFolder + "13_SEAL_POST_DpuAtOltConf_DPU.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
 
         String currentStep = DpuActivities.CONFIGURE_DPUEMS_SEAL;
         content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
 
-        File stub = new File (generatedStubFolder + "13_SEAL_POST_DpuConf.json");
+        File stub = new File (generatedStubFolder + "13_SEAL_POST_DpuAtOltConf_DPU.json");
         writeStubToFolder(content, stub);
     }
 
@@ -222,10 +274,31 @@ public class DpuCommissioningGenerator {
         }
     }
 
+
+    private String setResponseStatus(Dpu dpu, String content, String currentStep){
+        String body = "{\n" +
+                "      \"id\": 12345,\n" +
+                "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
+                "      \"backhaulId\": \"blackhole\",\n" +
+                "      \"onuId\": 12345,\n" +
+                "      \"configurationState\": \"ACTIVE\",\n" +
+                "      \"serialNumber\": \"111\",\n" +
+                "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
+                "      \"oltPonSlot\": \"5\",\n" +
+                "      \"oltPonPort\": \"5\",\n" +
+                "      \"oltUplinkSlot\": \"5\",\n" +
+                "      \"oltUplinkPort\": \"5\"\n" +
+                "    }";
+        return setResponseStatus(dpu, content,currentStep, body);
+    }
+
+
+
     /**
      * when defined in testdata.yml "getStepToFall" this call should return a 400 error
+     * when defined in testdata.yml "getChangeBody" should replace body with body
      */
-    private String setResponseStatus(Dpu dpu, String content, String currentStep) {
+    private String setResponseStatus(Dpu dpu, String content, String currentStep, String body){
         //TODO durty hack. Refactor. take status to yaml.
         if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep))
         {
@@ -238,19 +311,7 @@ public class DpuCommissioningGenerator {
         }
         if(currentStep.equals(dpu.getChangeBody())) {
             content = content.replace("###STATUS###", "\"status\":200");
-            content = content.replace("###BODY###", "{\n" +
-                    "      \"id\": 12345,\n" +
-                    "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
-                    "      \"backhaulId\": \"blackhole\",\n" +
-                    "      \"onuId\": 12345,\n" +
-                    "      \"configurationState\": \"ACTIVE\",\n" +
-                    "      \"serialNumber\": \"111\",\n" +
-                    "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
-                    "      \"oltPonSlot\": \"5\",\n" +
-                    "      \"oltPonPort\": \"5\",\n" +
-                    "      \"oltUplinkSlot\": \"5\",\n" +
-                    "      \"oltUplinkPort\": \"5\"\n" +
-                    "    }");
+            content = content.replace("###BODY###", body);
         }else {
             content = content.replace("###STATUS###", "\"status\":200");
             content = content.replace("###BODY###", "");

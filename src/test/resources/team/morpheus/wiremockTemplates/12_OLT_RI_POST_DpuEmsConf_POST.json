@@ -1,0 +1,33 @@
+{
+  "id" : "ab54f6b0-e35c-11e8-9f32-f2801f1b34ad",
+  "request" : {
+    "method": "POST",
+    "urlPath": "/api/oltResourceInventory/v1/dpu/dpuEmsConfiguration",
+    "bodyPatterns" : [
+      {
+        "matchesJsonPath" : "$.[?(@.dpuEndsz=='###ENDSZ###')]"
+      }
+    ]
+  },
+  "response" : {
+    ###STATUS###,
+    "headers" : {
+      "Content-Type" : "application/json",
+      "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
+      "X-B3-SpanId" : "{{request.headers.X-B3-SpanId}}"
+    },
+    "jsonBody":
+    {
+      "id": 12345,
+      "ancpBngIpAddress": "{{jsonPath request.body '$.ancpBngIpAddress'}}",
+      "ancpIpAddressSubnetMask": "{{jsonPath request.body '$.ancpIpAddressSubnetMask'}}",
+      "ancpOwnIpAddress": "{{jsonPath request.body '$.ancpOwnIpAddress'}}",
+      "backhaulId": "{{jsonPath request.body '$.backhaulId'}}",
+      "configurationState": "{{jsonPath request.body '$.configurationState'}}",
+      "emsNbiName": "{{jsonPath request.body '$.emsNbiName'}}",
+      "dpuEndsz": "{{jsonPath request.body '$.dpuEndsz'}}",
+      "managementDomain": "{{jsonPath request.body '$.managementDomain'}}",
+      "serialNumber": "{{jsonPath request.body '$.serialNumber'}}"
+    }
+  }
+}

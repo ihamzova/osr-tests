@@ -56,6 +56,9 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> dpuSealAtOltCheckValues = new ArrayList<>();
         dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
 
+        List<String> dpuEmsValues = new ArrayList<>();
+        dpuAtOltCheckValues.add(dpu.getEndSz());
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
@@ -71,7 +74,8 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
-        //TODO : OLT-RI.POST.DpuEmsConf called
+        dpuCommissioningRobot.checkGetDpuEmsConfigCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPostDpuEmsConfigCalled(timeOfExecution, dpuEmsValues);
         dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuAtOltCheckValues);
         //TODO : OLT-RI.PUT.DpuEmsConf called
     }

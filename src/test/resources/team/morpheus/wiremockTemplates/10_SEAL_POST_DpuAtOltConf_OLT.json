@@ -1,7 +1,7 @@
 {
   "id" : "1b95e1d1-1a8a-4934-937a-76ebd8507477",
   "request" : {
-    "urlPattern":"/configuration/v1/olt/dpuConfigurationTask",
+    "urlPattern":"/resource-order-resource-inventory/v1/olt/dpuConfigurationTask",
     "method" : "POST",
     "bodyPatterns": [
       {

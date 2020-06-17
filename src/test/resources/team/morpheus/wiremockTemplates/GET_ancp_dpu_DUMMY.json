@@ -1,11 +1,11 @@
 {
-  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b25ad",
+  "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b33ad",
   "request": {
     "method": "GET",
     "urlPath": "/api/oltResourceInventory/v1/ancp/endsz",
     "queryParameters": {
       "endsz": {
-        "matches": "49\\/30\\/1234\\/76H1"
+        "matches": "###ENDSZ###"
       }
     }
   },
@@ -16,15 +16,14 @@
       "X-B3-TraceId":"{{request.headers.X-B3-TraceId}}"
     },
     "jsonBody":{
-      "id": 88880,
+      "id": 99990,
       "vlan": 7,
-      "partitionId": 77,
       "sessionId": 98765,
       "sessionType": "DPU",
       "rmkEndpointId": "string_additionalInfo_todo",
       "sealConfigurationId": "string_sealConfigurationId_todo",
       "ipSubnet": {
-        "id": 88881,
+        "id": 99991,
         "subnetMask": "string_subnetMask_todo",
         "ipAddressLoopback": "string_ipAddressLoopback_todo",
         "ipAddressBng": "string_ipAddressBng_todo",
@@ -32,7 +31,7 @@
         "rmkAccessId": "string_rmkAccessId_todo",
         "allocatedIPAddresses": [
           {
-            "id": 88882,
+            "id": 99992,
             "ipAddress": "string_ipAddress_todo"
           }
         ]
@@ -40,7 +39,7 @@
       "sessionStatus": "ACTIVE",
       "endsz": "string_endsz_todo",
       "allocatedIPAddress": {
-        "id": 88883,
+        "id": 99993,
         "ipAddress": "string_ipAddress_todo"
       },
       "configurationStep": "CREATE_IP_RANGE_ASSIGNMENT",
