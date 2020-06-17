@@ -158,15 +158,27 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkGetAncpSessionCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAncpSessionCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetAncpSessionNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAncpSessionNotCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkGetOltAncpSessionCalled(Long timeOfExecution, String oltEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + oltEndsz));
+    }
+
+    @Step
+    public void checkGetOltAncpSessionNotCalled(Long timeOfExecution, String oltEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/api/oltResourceInventory/v1/ancp/endsz?endsz=" + oltEndsz));
     }
 
     @Step

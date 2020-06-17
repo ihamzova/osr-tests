@@ -66,7 +66,8 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
         dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
@@ -111,7 +112,8 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
         dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigNotCalled(timeOfExecution, dpuSealAtOltCheckValues);
         dpuCommissioningRobot.checkPostDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
@@ -242,7 +244,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
     }
 
     @Test(description = "Negative case. GET ANCPSession returned 400")
@@ -250,12 +252,13 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetAncp400(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetAncpSession400);
+        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution,dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAtOltConfigNotCalled(timeOfExecution,dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution,dpu.getEndSz());
+        dpuCommissioningRobot.checkGetOltAncpSessionNotCalled(timeOfExecution,oltEndsz);
     }
 
     @Test(description = "Negative case. POST DeprovisionOltPort returned error in callback")
@@ -287,7 +290,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(timeOfExecution,dpu.getEndSz());
     }
 
     @Test(description = "Negative case. SEAL POST.DpuAtOltConf returned error in callback")
