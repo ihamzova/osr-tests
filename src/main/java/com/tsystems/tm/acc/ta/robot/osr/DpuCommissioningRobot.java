@@ -64,6 +64,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateGetDpuEmsConfigStub(dpu);
         dpuCommissioningGenerator.generatePostDpuEmsConfigStub(dpu);
         dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
+        dpuCommissioningGenerator.generatePutDpuEmsConfigStub(dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
@@ -253,6 +254,18 @@ public class DpuCommissioningRobot {
     public void checkPostSEALDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask"));
+    }
+
+    @Step
+    public void checkPutDpuEmsConfigCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuEmsConfiguration/12345"));
+    }
+
+    @Step
+    public void checkPutDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuEmsConfiguration/12345"));
     }
 
 }

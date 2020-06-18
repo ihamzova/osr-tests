@@ -254,6 +254,18 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generatePutDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "14_OLT_RI_PUT_DpuEmsConf.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.SET_DPUEMS_CONF;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "14_OLT_RI_PUT_DpuEmsConf.json");
+        writeStubToFolder(content, stub);
+    }
+
     private String getTemplateContent(File jsonTemplate) {
         String content;
         try {
