@@ -27,11 +27,31 @@ public class A4FrontEndInventoryImporterRobot {
 
         assertEquals(networkElementLinkDtoList.size(),1);
 
-        assertEquals(networkElementLinkDtoList.get(0).getUeWegId(),"I1234567890, R1234567890" );
+        assertEquals(networkElementLinkDtoList.get(0).getUeWegId(),"Oma123, Opa123" );
 
 //        networkElementLinkDtoList.forEach(networkElementLinkDto -> {
 //            networkElementLinkDto.getUeWegId().matches("I1234567891, R1234567891");
 //        });
+    }
+
+    public void cleanUpNetworkElementLinks(String uuidNetworkElementPort){
+
+        List<NetworkElementLinkDto> networkElementLinkDtoList =
+                a4ResourceInventoryClient
+                        .getClient()
+                        .networkElementLinks()
+                        .listNetworkElementLinks()
+                        .networkElementPortUuidQuery(uuidNetworkElementPort)
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        networkElementLinkDtoList.forEach(networkElementLinkDto -> {
+            a4ResourceInventoryClient
+                    .getClient()
+                    .networkElementLinks()
+                    .deleteNetworkElementLink()
+                    .uuidPath(networkElementLinkDto.getUuid())
+                    .execute(response -> response);
+        });
     }
 
 }

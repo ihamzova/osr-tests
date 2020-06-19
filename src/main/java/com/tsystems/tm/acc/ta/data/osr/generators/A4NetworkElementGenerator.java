@@ -32,7 +32,7 @@ public class A4NetworkElementGenerator {
                 .plannedRackPosition("rackpos")
                 .planningDeviceName("planname")
                 .roles("role")
-                .type("SPINE_SWITCH")
+                .type(neData.getType())
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }

@@ -20,7 +20,7 @@ public class A4NetworkElementPortGenerator {
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
-                .logicalLabel("LogicalLabel_" + nepData.getPort())
+                .logicalLabel(nepData.getLogicalLabel())
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())

@@ -7,4 +7,5 @@ public class Dpu {
     private String endSz;
     private Integer onuId;
     private String stepToFall;
+    private String changeBody;
 }
