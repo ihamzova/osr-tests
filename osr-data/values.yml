@@ -14,11 +14,11 @@ global:
     asb: "1"
     klsId: "12377912"
   a4Provisioning:
-    vpsz: "49/8492/0"
-    fsz: "${randomLong, 1000, 9999}"
+    vpsz: "49/${randomLong, 1000, 9999}/0"
+    fsz: "7KH0"
     slotNumber: "99"
     portNumber: "${randomLong, 1000, 9999}"
   a4CsvImport:
-    negName: "Imported NEG-${randomLong, 1000, 9999}"
+    negName: "Imported NEG-${randomLong, 100000, 999999}"
     vpsz: "49/8492/0"
     klsId: "123456"
