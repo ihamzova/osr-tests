@@ -1,37 +1,37 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.github.tomakehurst.wiremock.http.Body;
-import com.github.tomakehurst.wiremock.http.HttpHeader;
-import com.github.tomakehurst.wiremock.http.QueryParameter;
-import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.EndSz;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.Endpoint;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
-import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
-import org.apache.http.HttpStatus;
+import io.qameta.allure.Step;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RebellUewegGeneratorMapper {
+    final String REBELL_URL = "/resource-order-resource-inventory/v1/uewege?endsz={endSz}";
 
-    public StubMapping getData(A4NetworkElement neData) {
-
-        String endSz = neData.getVpsz() + "/" + neData.getFsz();
+    @Step("Generate REBELL wiremock data")
+    public StubMapping getData(UewegData uewegData) {
+        String endSz = uewegData.getEndSz();
         endSz = endSz.replace("/", "_");
+
+        List<Ueweg> uewegList = new ArrayList<>();
 
         Ueweg ueweg = new Ueweg()
                 .id(1)
                 .lsz("LSZ")
-                .lszErg("LBZ " + UUID.randomUUID().toString().substring(0, 4))
+                .lszErg(uewegData.getLbz())
                 .ordNr("Order Number")
                 .pluralId("Plural ID")
                 .status("ignored")
-                .uewegId(UUID.randomUUID().toString().substring(0, 6) + ", " + UUID.randomUUID().toString().substring(0, 6))
+                .uewegId(uewegData.getUewegId())
                 .validFrom("ignored")
                 .validUntil("ignored")
                 .version("ignored")
@@ -40,7 +40,7 @@ public class RebellUewegGeneratorMapper {
                         .deviceHostName("ignored")
                         .portName("ignored")
                         .portPosition("ignored")
-                        .vendorPortName("physicalLabelA")
+                        .vendorPortName(uewegData.getVendorPortNameA())
                         .endSz("ignored")
                         .endSzParts(new EndSz()
                                 .akz("ignored")
@@ -51,56 +51,27 @@ public class RebellUewegGeneratorMapper {
                         .deviceHostName("ignored")
                         .portName("ignored")
                         .portPosition("ignored")
-                        .vendorPortName("physicalLabelB")
+                        .vendorPortName(uewegData.getVendorPortNameB())
                         .endSz("ignored")
                         .endSzParts(new EndSz()
                                 .akz("ignored")
                                 .fsz("ignored")
                                 .nkz("ignored")
                                 .vkz("ignored")));
+        uewegList.add(ueweg);
 
-        StubMappingRequest request = new StubMappingRequest();
-        request.setMethod("GET");
-//        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege");
-//        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege?endsz=" + endSz);
-        request.setUrl("/resource-order-resource-inventory/v1/uewege");
-//        request.setQueryParameters(new QueryParameter("endsz", Collections.singletonList(endSz)));
-//        request.setUrlPath("/resource-order-resource-inventory/v1/uewege");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
 
-//        stubFor().
-        request.setQueryParameters(new QueryParameter("endsz", Arrays.asList("matches", endSz)));
-
-
-        JSON json = new JSON();
-        json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
-
-        Map<String, String> respHeaders = new HashMap<>();
-        respHeaders.put("Content-Type", "application/json");
-
-        StubMappingResponse response = new StubMappingResponse();
-        response.setStatus(HttpStatus.SC_OK);
-        response.setHeaders(respHeaders);
-//        response.setJsonBody(json.serialize(ueweg));
-        response.setBody(json.serialize(ueweg));
-
-        List<HttpHeader> webhookHeaders = new ArrayList<>(2);
-        webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
-        webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
-
-        WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,
-                "{{request.headers.X-Callback-Url}}",
-                webhookHeaders,
-                new Body(json.serialize(ueweg)),
-                0,
-                null);
-
-        StubMapping mapping = new StubMapping();
-        mapping.setRequest(request);
-        mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
-        mapping.setResponse(response);
-        mapping.setPriority(1);
-
-        return mapping;
+        return new StubMapping()
+                .priority(1)
+                .request(new StubMappingRequest()
+                        .method("GET")
+                        .url(REBELL_URL.replace("{endSz}", endSz)))
+                .response(new StubMappingResponse()
+                        .status(200)
+                        .headers(headers)
+                        .jsonBody(uewegList));
     }
 
 }

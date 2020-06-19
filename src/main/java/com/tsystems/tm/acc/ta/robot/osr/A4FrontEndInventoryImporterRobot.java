@@ -15,7 +15,7 @@ public class A4FrontEndInventoryImporterRobot {
 
     A4ResourceInventoryClient a4ResourceInventoryClient = new A4ResourceInventoryClient();
 
-    public void checkNetworkElementLinksExist(String uuidNetworkElementPort){
+    public void checkNetworkElementLinksExist(String uuidNetworkElementPort, String uewegId){
 
         List<NetworkElementLinkDto> networkElementLinkDtoList =
         a4ResourceInventoryClient
@@ -27,8 +27,7 @@ public class A4FrontEndInventoryImporterRobot {
 
         assertEquals(networkElementLinkDtoList.size(),1);
 
-        assertEquals(networkElementLinkDtoList.get(0).getUeWegId(),"Oma123, Opa123" );
-
+        assertEquals(networkElementLinkDtoList.get(0).getUeWegId(), uewegId);
 //        networkElementLinkDtoList.forEach(networkElementLinkDto -> {
 //            networkElementLinkDto.getUeWegId().matches("I1234567891, R1234567891");
 //        });

@@ -34,6 +34,7 @@ public class A4NetworkElementGenerator {
                 .roles("role")
                 .type(neData.getType())
                 .creationTime(OffsetDateTime.now())
+                .plannedMatNumber("42999900")
                 .lastUpdateTime(OffsetDateTime.now());
     }
 }

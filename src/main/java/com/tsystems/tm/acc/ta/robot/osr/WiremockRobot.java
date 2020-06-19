@@ -1,14 +1,19 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.data.models.stable.OltDevice;
+import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.RebellUewegGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
 import com.tsystems.tm.acc.ta.helpers.WiremockMappingsPublisher;
-import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
+import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.tests.wiremock.client.api.WireMockApi;
+import com.tsystems.tm.acc.tests.wiremock.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.wiremock.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import io.qameta.allure.Step;
 
 import java.io.File;
@@ -17,7 +22,15 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+
 public class WiremockRobot {
+    private WireMockApi wiremockApi = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(() -> {
+        return RequestSpecBuilders.getDefault(GsonObjectMapper.gson(), (new OCUrlBuilder("wiremock-acc"))
+                .withEndpoint("/__admin").buildUri());
+    })).wireMock();
+
     @Step("Upload mock data to wiremock")
     public void initializeWiremock(File pathToWiremockData) {
         WiremockMappingsPublisher publisher = new WiremockMappingsPublisher();
@@ -47,12 +60,18 @@ public class WiremockRobot {
                 .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
     }
 
-    @Step("Create mock data for REBELL")
-    public void createMockForRebell(File storeToFolder, List<A4NetworkElement> neData) {
-        WiremockMappingGenerator generator = new WiremockMappingGenerator();
+    @Step("Set up REBELL wiremock")
+    public void setUpRebellWiremock(UewegData uewegData) {
         RebellUewegGeneratorMapper mapper = new RebellUewegGeneratorMapper();
-        generator.generate(neData.stream()
-                .map(mapper::getData)
-                .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
+        StubMapping result = wiremockApi
+                .mappingsPost()
+                .body(mapper.getData(uewegData))
+                .executeAs(validatedWith(shouldBeCode(201)));
+        uewegData.setRebellWiremockUuid(result.getId());
+    }
+
+    @Step("Tear down wiremock")
+    public void tearDownWiremock(String wiremockEntryUuid) {
+        wiremockApi.mappingsStubMappingIdDelete().stubMappingIdPath(wiremockEntryUuid).execute(validatedWith(shouldBeCode(200)));
     }
 }
