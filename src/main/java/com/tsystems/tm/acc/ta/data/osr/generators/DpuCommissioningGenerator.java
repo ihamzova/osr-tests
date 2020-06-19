@@ -29,8 +29,8 @@ public class DpuCommissioningGenerator {
     private String generatedStubFolder = System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult/";
     private String stubTemplateFolder = System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockTemplates/";
 
-    public File generateGetDpuDeviceStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_oltResourceInventory_v1_device.json");
+    public void generateGetDpuDeviceStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "1_OLT_RI_GET_DeviceDPU.json");
 
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###", dpu.getEndSz());
@@ -38,13 +38,12 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_DPU;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_GET_oltResourceInventory_v1_device.json");
+        File stub = new File (generatedStubFolder + "1_OLT_RI_GET_DeviceDPU.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetDpuPonConnStub(OltDevice olt, Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_dpuPonConnection.json");
+    public void generateGetDpuPonConnStub(OltDevice olt, Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "2_OLT_RI_GET_DpuPonConn.json");
 
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###", dpu.getEndSz());
@@ -56,13 +55,12 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_LLC;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult/wiremock_GET_dpuPonConnection.json");
+        File stub = new File (generatedStubFolder + "2_OLT_RI_GET_DpuPonConn.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetEthLinkStub(OltDevice olt,Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_findEthernetLinksByEndsz.json");
+    public void generateGetEthLinkStub(OltDevice olt,Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "3_OLT_RI_GET_EthernetLink.json");
 
         String content = getTemplateContent(jsonTemplate);
 
@@ -74,13 +72,12 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_ETHLINK;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_GET_findEthernetLinksByEndsz.json");
+        File stub = new File (generatedStubFolder + "3_OLT_RI_GET_EthernetLink.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetOnuIdStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_assignOnuIdTask.json");
+    public void generateGetOnuIdStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "4_AL_RI_POST_OnuId.json");
 
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
@@ -88,13 +85,12 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_ONUID;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_assignOnuIdTask.json");
+        File stub = new File (generatedStubFolder + "4_AL_RI_POST_OnuId.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetBackhaulIdStub(OltDevice olt, Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_backhaulid_search.json");
+    public void generateGetBackhaulIdStub(OltDevice olt, Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "5_AL_RI_POST_Backhaul_id.json");
 
         String content = getTemplateContent(jsonTemplate);
         String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
@@ -103,13 +99,12 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.GET_BACKHAUL;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_backhaulid_search.json");
+        File stub = new File (generatedStubFolder + "5_AL_RI_POST_Backhaul_id.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generatePostDeprovisionOltStub(OltDevice olt, Dpu dpu, boolean isAsyncScenario){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_deprovisioning_port.json");
+    public void generatePostDeprovisionOltStub(OltDevice olt, Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "6_Wg_FTTH_AP_POST_DeprovisionOltPort.json");
 
         String content = getTemplateContent(jsonTemplate);
         String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
@@ -118,97 +113,168 @@ public class DpuCommissioningGenerator {
         String currentStep = DpuActivities.DEPROVISION_OLT;
         content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.DEPROVISIONING_OLT_ERROR, isAsyncScenario);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_deprovisioning_port.json");
+        File stub = new File (generatedStubFolder + "6_Wg_FTTH_AP_POST_DeprovisionOltPort.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generatePostAncpConfStub(OltDevice olt, Dpu dpu, boolean isAsyncScenario){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_configureANCP.json");
+    public void generatePostAncpConfStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "7_Ancp_Conf_POST_AncpConf.json");
 
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
         String currentStep = DpuActivities.SET_ANCP;
         content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.CONFIGURE_ANCP_ERROR, isAsyncScenario);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_configureANCP.json");
+        File stub = new File (generatedStubFolder + "7_Ancp_Conf_POST_AncpConf.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetAncpStub(OltDevice olt, Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_ancpsession.json");
+    public void generateGetDPUAncpStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_DPUAncpSession.json");
 
         String content = getTemplateContent(jsonTemplate);
+
         content = content.replace("###ENDSZ###",dpu.getEndSz());
 
         String currentStep = DpuActivities.GET_ANCP;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_GET_ancpsession.json");
+        File stub = new File (generatedStubFolder + "8_OLT_RI_GET_DPUAncpSession.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generateGetDpuAtOltConfigStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_GET_dpuAtOltConfiguration.json");
+    public void generateGetOLTAncpStub(OltDevice olt,Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "8_OLT_RI_GET_OLTAncpSession.json");
+
+        String content = getTemplateContent(jsonTemplate);
+        String endsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        content = content.replace("###OLT_ENDSZ###",endsz);
+
+        String currentStep = DpuActivities.GET_ANCP;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "8_OLT_RI_GET_OLTAncpSession.json");
+        writeStubToFolder(content, stub);
+    }
+
+
+    public void generateGetDpuAtOltConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "9_OLT_RI_POST_DpuAtOltConf_GET.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
 
         String currentStep = DpuActivities.GET_DPUOLT;
-        content = setResponseStatus(dpu, content, currentStep);
+        content = setResponseStatus(dpu, content, currentStep, "{\n" +
+                "      \"id\": 12345,\n" +
+                "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
+                "      \"backhaulId\": \"blackhole\",\n" +
+                "      \"onuId\": 12345,\n" +
+                "      \"configurationState\": \"ACTIVE\",\n" +
+                "      \"serialNumber\": \"111\",\n" +
+                "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
+                "      \"oltPonSlot\": \"5\",\n" +
+                "      \"oltPonPort\": \"5\",\n" +
+                "      \"oltUplinkSlot\": \"5\",\n" +
+                "      \"oltUplinkPort\": \"5\"\n" +
+                "    }");
 
-        File stub = new File (generatedStubFolder + "wiremock_GET_dpuAtOltConfiguration.json");
+        File stub = new File (generatedStubFolder + "9_OLT_RI_POST_DpuAtOltConf_GET.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generatePostDpuAtOltConfigStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_dpuAtOltConfiguration.json");
+    public void generatePostDpuAtOltConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "9_OLT_RI_POST_DpuAtOltConf_POST.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz());
 
         String currentStep = DpuActivities.CREATE_DPUOLT;
         content = setResponseStatus(dpu, content, currentStep);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_dpuAtOltConfiguration.json");
+        File stub = new File (generatedStubFolder + "9_OLT_RI_POST_DpuAtOltConf_POST.json");
         writeStubToFolder(content, stub);
-        return stub;
     }
 
-    public File generatePutDpuAtOltConfigStub(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_PUT_dpuAtOltConfiguration.json");
-        String content = getTemplateContent(jsonTemplate);
-        content = content.replace("###ENDSZ###",dpu.getEndSz());
-
-        String currentStep = DpuActivities.UPDATE_INV;
-        content = setResponseStatus(dpu, content, currentStep);
-
-        File stub = new File (generatedStubFolder + "wiremock_PUT_dpuAtOltConfiguration.json");
-        writeStubToFolder(content, stub);
-        return stub;
-    }
-
-    public File generateSelaDpuStub(OltDevice olt, Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_seal_dpu_configuration.json");
-
-        String content = getTemplateContent(jsonTemplate);
-        File stub = new File (generatedStubFolder + "wiremock_seal_dpu_configuration.json");
-        writeStubToFolder(content, stub);
-        return stub;
-    }
-
-    public File generateDpuConfigurationTaskStub(Dpu dpu, boolean isAsyncScenario){
-        File jsonTemplate = new File(stubTemplateFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
+    public void generateDpuConfigurationTaskStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "10_SEAL_POST_DpuAtOltConf_OLT.json");
         String content = getTemplateContent(jsonTemplate);
         content = content.replace("###ENDSZ###",dpu.getEndSz().replace("/","_"));
 
         String currentStep = DpuActivities.CONFIGURE_DPU_SEAL;
         content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
 
-        File stub = new File (generatedStubFolder + "wiremock_POST_Seal_dpuAtOltConfiguration.json");
+        File stub = new File (generatedStubFolder + "10_SEAL_POST_DpuAtOltConf_OLT.json");
         writeStubToFolder(content, stub);
-        return stub;
+    }
+
+    public void generatePutDpuAtOltConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "11_OLT_RI_PUT_DpuAtOltConf.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.UPDATE_INV;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "11_OLT_RI_PUT_DpuAtOltConf.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generateGetDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "12_OLT_RI_POST_DpuEmsConf_GET.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CREATE_DPUEMS_CONF;
+        content = setResponseStatus(dpu, content, currentStep, "{\n" +
+                "    \"id\": 12345,\n" +
+                "    \"ancpBngIpAddress\": \"string\",\n" +
+                "    \"ancpIpAddressSubnetMask\": \"string\",\n" +
+                "    \"ancpOwnIpAddress\": \"string\",\n" +
+                "    \"backhaulId\": \"string\",\n" +
+                "    \"configurationState\": \"ACTIVE\",\n" +
+                "    \"emsNbiName\": \"string\",\n" +
+                "    \"dpuEndsz\": \"49/0002/0/71AA\",\n" +
+                "    \"managementDomain\": \"string\",\n" +
+                "    \"serialNumber\": \"12345\"\n" +
+                "  }" );
+
+        File stub = new File (generatedStubFolder + "12_OLT_RI_POST_DpuEmsConf_GET.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generatePostDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "12_OLT_RI_POST_DpuEmsConf_POST.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CREATE_DPUOLT;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "12_OLT_RI_POST_DpuEmsConf_POST.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generateSealPostDpuConfStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "13_SEAL_POST_DpuAtOltConf_DPU.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.CONFIGURE_DPUEMS_SEAL;
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.SEAL_DPU_AT_OLT, isAsyncScenario);
+
+        File stub = new File (generatedStubFolder + "13_SEAL_POST_DpuAtOltConf_DPU.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generatePutDpuEmsConfigStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "14_OLT_RI_PUT_DpuEmsConf.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.SET_DPUEMS_CONF;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "14_OLT_RI_PUT_DpuEmsConf.json");
+        writeStubToFolder(content, stub);
     }
 
     private String getTemplateContent(File jsonTemplate) {
@@ -231,12 +297,33 @@ public class DpuCommissioningGenerator {
         }
     }
 
+
+    private String setResponseStatus(Dpu dpu, String content, String currentStep){
+        String body = "{\n" +
+                "      \"id\": 12345,\n" +
+                "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
+                "      \"backhaulId\": \"blackhole\",\n" +
+                "      \"onuId\": 12345,\n" +
+                "      \"configurationState\": \"ACTIVE\",\n" +
+                "      \"serialNumber\": \"111\",\n" +
+                "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
+                "      \"oltPonSlot\": \"5\",\n" +
+                "      \"oltPonPort\": \"5\",\n" +
+                "      \"oltUplinkSlot\": \"5\",\n" +
+                "      \"oltUplinkPort\": \"5\"\n" +
+                "    }";
+        return setResponseStatus(dpu, content,currentStep, body);
+    }
+
+
+
     /**
      * when defined in testdata.yml "getStepToFall" this call should return a 400 error
+     * when defined in testdata.yml "getChangeBody" should replace body with body
      */
-    private String setResponseStatus(Dpu dpu, String content, String currentStep) {
+    private String setResponseStatus(Dpu dpu, String content, String currentStep, String body){
         //TODO durty hack. Refactor. take status to yaml.
-        if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL))
+        if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep))
         {
             content = content.replace("###STATUS###", "\"status\":202");
         }
@@ -247,19 +334,7 @@ public class DpuCommissioningGenerator {
         }
         if(currentStep.equals(dpu.getChangeBody())) {
             content = content.replace("###STATUS###", "\"status\":200");
-            content = content.replace("###BODY###", "{\n" +
-                    "      \"id\": 12345,\n" +
-                    "      \"dpuEndsz\": \"49/0001/0/71AA\",\n" +
-                    "      \"backhaulId\": \"blackhole\",\n" +
-                    "      \"onuId\": 12345,\n" +
-                    "      \"configurationState\": \"ACTIVE\",\n" +
-                    "      \"serialNumber\": \"111\",\n" +
-                    "      \"oltEndsz\": \"49/40/179/76H1\",\n" +
-                    "      \"oltPonSlot\": \"5\",\n" +
-                    "      \"oltPonPort\": \"5\",\n" +
-                    "      \"oltUplinkSlot\": \"5\",\n" +
-                    "      \"oltUplinkPort\": \"5\"\n" +
-                    "    }");
+            content = content.replace("###BODY###", body);
         }else {
             content = content.replace("###STATUS###", "\"status\":200");
             content = content.replace("###BODY###", "");
@@ -278,7 +353,7 @@ public class DpuCommissioningGenerator {
         }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":400");
             content = replaceCallback(content, errorMessage,isAsyncScenario);
-        }else if (currentStep.equals(DpuActivities.CONFIGURE_DPU_SEAL)&&isAsyncScenario){
+        }else if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&isAsyncScenario){
             //TODO durty hack. Refactor. take status to yaml.
             content = content.replace("###STATUS###", "\"status\":202");
             content = replaceCallback(content, errorMessage, isAsyncScenario);
@@ -315,7 +390,7 @@ public class DpuCommissioningGenerator {
                 "{{request.headers.X-Callback-Url}}",
                 webhookHeaders,
                 new Body(errorMessage),
-                3000,
+                1000,
                 null);
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         return doGenerate(mapping);

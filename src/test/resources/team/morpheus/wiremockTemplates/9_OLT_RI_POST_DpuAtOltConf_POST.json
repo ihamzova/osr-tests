@@ -1,0 +1,34 @@
+{
+  "id" : "239e8b04-b1af-4b98-82ca-d5363642afec",
+  "request" : {
+    "method": "POST",
+    "urlPath": "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration",
+    "bodyPatterns" : [
+      {
+        "matchesJsonPath" : "$.[?(@.dpuEndsz=='###ENDSZ###')]"
+      }
+    ]
+  },
+  "response" : {
+    ###STATUS###,
+    "headers" : {
+      "Content-Type" : "application/json",
+      "X-B3-TraceId" : "{{request.headers.X-B3-TraceId}}",
+      "X-B3-SpanId" : "{{request.headers.X-B3-SpanId}}"
+    },
+    "jsonBody":
+    {
+      "id": 12345,
+      "dpuEndsz": "{{jsonPath request.body '$.dpuEndsz'}}",
+      "backhaulId": "{{jsonPath request.body '$.backhaulId'}}",
+      "onuId": 12345,
+      "configurationState": "{{jsonPath request.body '$.configurationState'}}",
+      "serialNumber": "{{jsonPath request.body '$.serialNumber'}}",
+      "oltEndsz": "{{jsonPath request.body '$.oltEndsz'}}",
+      "oltPonSlot": "{{jsonPath request.body '$.oltPonSlot'}}",
+      "oltPonPort": "{{jsonPath request.body '$.oltPonPort'}}",
+      "oltUplinkSlot": "{{jsonPath request.body '$.oltUplinkSlot'}}",
+      "oltUplinkPort": "{{jsonPath request.body '$.oltUplinkPort'}}"
+    }
+  }
+}

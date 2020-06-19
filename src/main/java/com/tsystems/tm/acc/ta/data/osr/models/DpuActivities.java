@@ -15,17 +15,12 @@ public class DpuActivities {
     public static final String GET_ANCP = "Activity_OLT-RI.GET.AncpSession";
     public static final String GET_DPUOLT = "Activity_OLT-RI.GET.DpuAtOltConf";
     public static final String CREATE_DPUOLT = "Activity_OLT-RI.POST.DpuAtOltConf";
-    public static final String CONFIGURE_DPU_SEAL = "Activity_SEAL.POST.DpuConf";
+    public static final String CONFIGURE_DPU_SEAL = "Activity_SEAL.POST.DpuAtOltConf";
     public static final String UPDATE_INV = "Activity_OLT-RI.PUT.DpuAtOltConf";
-    public static final String CONFIGURE_DPU = "Activity_WG-FTTB-AP.POST.tbd";
-    public static final String UPDATE_INV_2 = "Activity_OLTRI.PUT.DpuAtOltConf"; //? same on diagramm
-
-    //Don't sure, that gateway's needed. Check it.
-    public static final String GATEWAY_OLT_CONF1 = "Gateway_OLTConfigExists";
-    public static final String GATEWAY_OLT_CONF2 = "Gateway_OLTConfigExists"; //? same on diagramm
-    public static final String GATEWAY_CONF_ACTIVE = "Gateway_DpuConfigActive";
-    public static final String GATEWAY_CONF_ACTIVE2 = "Gateway_DpuConfigActive2";//? same on diagramm
+    public static final String CREATE_DPUEMS_CONF = "Activity_OLT-RI.POST.DpuEmsConf";
+    public static final String CONFIGURE_DPUEMS_SEAL = "Activity_SEAL.POST.DpuConf";
+    public static final String SET_DPUEMS_CONF = "Activity_OLT-RI.PUT.DpuEmsConf";
 
     //List with async tasks
-    public static final List<String> ASYNC_STEPS = Arrays.asList(DEPROVISION_OLT,SET_ANCP);
+    public static final List<String> STEPS_WITH_202_CODE = Arrays.asList(CONFIGURE_DPU_SEAL,CONFIGURE_DPUEMS_SEAL);
 }

@@ -1,6 +1,0 @@
-name: DpuCommissioningGetDevice400
-template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
-values:
-  endSz: "49/8571/0/71GB"
-  onuId: 12345678
-  stepToFall: "Activity_OLT-RI.GET.DeviceDPU"
