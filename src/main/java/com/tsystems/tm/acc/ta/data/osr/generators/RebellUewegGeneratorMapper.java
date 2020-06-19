@@ -15,9 +15,6 @@ import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
 import org.apache.http.HttpStatus;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
-
 import java.util.*;
 
 public class RebellUewegGeneratorMapper {
@@ -68,7 +65,7 @@ public class RebellUewegGeneratorMapper {
 //        request.setUrlPattern("/resource-order-resource-inventory/v1/uewege?endsz=" + endSz);
         request.setUrl("/resource-order-resource-inventory/v1/uewege");
 //        request.setQueryParameters(new QueryParameter("endsz", Collections.singletonList(endSz)));
-        request.setUrlPath("/resource-order-resource-inventory/v1/uewege");
+//        request.setUrlPath("/resource-order-resource-inventory/v1/uewege");
 
 //        stubFor().
         request.setQueryParameters(new QueryParameter("endsz", Arrays.asList("matches", endSz)));
@@ -83,7 +80,7 @@ public class RebellUewegGeneratorMapper {
         StubMappingResponse response = new StubMappingResponse();
         response.setStatus(HttpStatus.SC_OK);
         response.setHeaders(respHeaders);
-        response.setJsonBody(json.serialize(ueweg));
+//        response.setJsonBody(json.serialize(ueweg));
         response.setBody(json.serialize(ueweg));
 
         List<HttpHeader> webhookHeaders = new ArrayList<>(2);

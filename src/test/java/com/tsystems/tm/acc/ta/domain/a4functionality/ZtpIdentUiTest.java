@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
@@ -28,7 +27,6 @@ public class ZtpIdentUiTest  extends BaseTest {
 
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private final A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
@@ -55,6 +53,7 @@ public class ZtpIdentUiTest  extends BaseTest {
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPort,a4NetworkElement);
 
         List<A4NetworkElement> ne = Collections.singletonList(a4NetworkElement);
         File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
