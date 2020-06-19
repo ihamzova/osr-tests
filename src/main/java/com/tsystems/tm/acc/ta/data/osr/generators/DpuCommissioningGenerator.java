@@ -134,6 +134,11 @@ public class DpuCommissioningGenerator {
 
         String content = getTemplateContent(jsonTemplate);
 
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.GET_ANCP;
+        content = setResponseStatus(dpu, content, currentStep);
+
         File stub = new File (generatedStubFolder + "8_OLT_RI_GET_DPUAncpSession.json");
         writeStubToFolder(content, stub);
     }
@@ -152,14 +157,6 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
-    public void generateGetAncpStubDUMMY(Dpu dpu){
-        File jsonTemplate = new File(stubTemplateFolder + "GET_ancp_dpu_DUMMY.json");
-
-        String content = getTemplateContent(jsonTemplate);
-        content = content.replace("###ENDSZ###",dpu.getEndSz());
-        File stub = new File (generatedStubFolder + "GET_ancp_dpu_DUMMY.json");
-        writeStubToFolder(content, stub);
-    }
 
     public void generateGetDpuAtOltConfigStub(Dpu dpu){
         File jsonTemplate = new File(stubTemplateFolder + "9_OLT_RI_POST_DpuAtOltConf_GET.json");

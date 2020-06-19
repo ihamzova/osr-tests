@@ -57,10 +57,6 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuAtOltCheckValuesPost.add(olt.getOltSlot());
         dpuAtOltCheckValuesPost.add(olt.getOltPort());
         dpuAtOltCheckValuesPost.add("\"configurationState\":\"INACTIVE\"");
-        dpuAtOltCheckValuesPost.add("backhaulId");
-        dpuAtOltCheckValuesPost.add("serialNumber");
-        dpuAtOltCheckValuesPost.add("oltUplinkSlot");
-        dpuAtOltCheckValuesPost.add("oltUplinkPort");
 
         List<String> dpuSealAtOltCheckValues = new ArrayList<>();
         dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
@@ -171,14 +167,23 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> deprovisionPortCheckValues = new ArrayList<>();
         deprovisionPortCheckValues.add(oltEndsz);
 
-        List<String> dpuAtOltCheckValues = new ArrayList<>();
-        dpuAtOltCheckValues.add(dpu.getEndSz());
+        List<String> dpuAtOltCheckValuesPost = new ArrayList<>();
+        dpuAtOltCheckValuesPost.add(dpu.getEndSz());
 
         List<String> dpuSealAtOltCheckValues = new ArrayList<>();
         dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/","_"));
 
-        List<String> dpuEmsValues = new ArrayList<>();
-        dpuEmsValues.add(dpu.getEndSz());
+        List<String> dpuAtOltCheckValuesPut = new ArrayList<>();
+        dpuAtOltCheckValuesPut.add(dpu.getEndSz());
+
+        List<String> dpuEmsCheckValuesPost = new ArrayList<>();
+        dpuEmsCheckValuesPost.add(dpu.getEndSz());
+
+        List<String> dpuEmsCheckValuesPut = new ArrayList<>();
+        dpuEmsCheckValuesPut.add(dpu.getEndSz());
+
+        List<String> dpuSealAtOltCheckValuesDpu = new ArrayList<>();
+        dpuSealAtOltCheckValuesDpu.add(dpu.getEndSz().replace("/","_"));
 
         Long timeOfExecution = System.currentTimeMillis();
 
@@ -190,15 +195,16 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
         dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution,deprovisionPortCheckValues);
         dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
+        dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPost);
         dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValues);
+        dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPut);
         dpuCommissioningRobot.checkGetDpuEmsConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuEmsConfigNotCalled(timeOfExecution, dpuEmsValues);
-        dpuCommissioningRobot.checkPostSEALDpuEmsConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuEmsValues);
+        dpuCommissioningRobot.checkPostDpuEmsConfigNotCalled(timeOfExecution, dpuEmsCheckValuesPost);
+        dpuCommissioningRobot.checkPostSEALDpuEmsConfigNotCalled(timeOfExecution, dpuSealAtOltCheckValuesDpu);
+        dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuEmsCheckValuesPut);
 
     }
 
