@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -23,6 +24,7 @@ import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 public class AccessLineSearchPage {
     private static final String APP = "access-management-support-ui";
     private static final String ENDPOINT = "/search";
+    private static final long TIMEOUT = 30000;
 
     private static final By PORT_ADDRESS_TAB = byQaData("sc-port-address-tab-a");
     private static final By ENDSZ_INPUT = byQaData("pac-end-sz-input");
@@ -30,13 +32,18 @@ public class AccessLineSearchPage {
     private static final By PORT_NUMBER_INPUT = byQaData("pac-port-number-input");
     private static final By P_SEARCH_TABLE = byQaData("sc-search-table-ptable");
     private static final By PAGINATOR_DROPDOWN = By.tagName("p-dropdown");
-    private static final By ASSIGNED_STATUS = byQaData("ucc-assigned-rdq-seal-filter-label");
     private static final By WALLED_GARDEN_STATUS = byQaData("ucc-walled-garden-filter-label");
+    private static final By INACTIVE_STATUS = byQaData("ucc-inactive-filter-label");
     private static final By HOMEID_TAB = byQaData("sc-home-id-tab-a");
     private static final By HOMEID_INPUT = byQaData("hic-home-id-input");
     private static final By SEARCH_BUTTON = byQaData("search-button");
     private static final By LINEID_TAB = byQaData("sc-line-id-tab-a");
     private static final By LINEID_INPUT = byQaData("hic-line-id-input");
+    private static final By KLSID_TAB = byQaData("sc-kls-id-tab-a");
+    private static final By KLSID_INPUT = byQaData("hic-kls-id-input");
+    private static final By ONTSN_TAB = byQaData("sc-ont-sn-tab-a");
+    private static final By ONTSN_INPUT = byQaData("hic-ont-sn-input");
+    private static final By SORT_BY_STATUS = byQaData("sc-status-sort-header-td");
 
 
     @Step("Open Access-line-Search page")
@@ -54,7 +61,6 @@ public class AccessLineSearchPage {
 
     @Step("Search Access lines by port address's parameters")
     public AccessLineSearchPage searchAccessLinesByPortAddress(AccessLine accessLine) {
-        $(PORT_ADDRESS_TAB).click();
         $(ENDSZ_INPUT).click();
         $(ENDSZ_INPUT).val(accessLine.getEndSz());
         if (!accessLine.getSlotNumber().isEmpty()) {
@@ -65,6 +71,11 @@ public class AccessLineSearchPage {
             $(PORT_NUMBER_INPUT).click();
             $(PORT_NUMBER_INPUT).val(accessLine.getPortNumber());
         }
+        return this;
+    }
+
+    @Step ("Click search button")
+    public AccessLineSearchPage clickSearchButton() {
         $(SEARCH_BUTTON).click();
         $(SEARCH_BUTTON).find(By.tagName("i")).shouldNot(Condition.cssClass("spinner"));
         return this;
@@ -75,8 +86,6 @@ public class AccessLineSearchPage {
         $(HOMEID_TAB).click();
         $(HOMEID_INPUT).click();
         $(HOMEID_INPUT).val(accessLine.getHomeId());
-        $(SEARCH_BUTTON).click();
-        $(SEARCH_BUTTON).find(By.tagName("i")).shouldNot(Condition.cssClass("spinner"));
         return this;
     }
 
@@ -85,8 +94,6 @@ public class AccessLineSearchPage {
         $(LINEID_TAB).click();
         $(LINEID_INPUT).click();
         $(LINEID_INPUT).val(accessLine.getLineId());
-        $(SEARCH_BUTTON).click();
-        $(SEARCH_BUTTON).find(By.tagName("i")).shouldNot(Condition.cssClass("spinner"));
         return this;
     }
 
@@ -132,7 +139,7 @@ public class AccessLineSearchPage {
     @Step("Click magnifying glass to Access Lines Management Page")
     public AccessLinesManagementPage clickMagnifyingGlassForLine(int rowNumber) {
         getTableRows().get(rowNumber).find(By.tagName("i")).click();
-        switchTo().window(new AccessLinesManagementPage().getPageTitle());
+        switchTo().window(1);
         return new AccessLinesManagementPage();
     }
 
@@ -147,28 +154,52 @@ public class AccessLineSearchPage {
         return this;
     }
 
-    @Step("Set assigned(alle) status")
-    public AccessLineSearchPage setAssignedStatus() {
-        $(ASSIGNED_STATUS).click();
-        return this;
-    }
-
     @Step("Set walled garden status")
     public AccessLineSearchPage setWalledGardenStatus() {
         $(WALLED_GARDEN_STATUS).click();
         return this;
     }
 
+    @Step("Set INACTIVE status")
+    public AccessLineSearchPage setInactiveStatus() {
+        $(INACTIVE_STATUS).click();
+        return this;
+    }
+
+    @Step ("Search Access lines by KLS ID")
+    public AccessLineSearchPage searchAccessLinesByKlsId (String klsId) {
+        $(KLSID_TAB).click();
+        $(KLSID_INPUT).click();
+        $(KLSID_INPUT).val(klsId);
+        return this;
+    }
+
+    @Step ("Search Access lines by ONT S/N")
+    public AccessLineSearchPage searchAccessLinesByOntSn (String klsId) {
+        $(ONTSN_TAB).click();
+        $(ONTSN_INPUT).click();
+        $(ONTSN_INPUT).val(klsId);
+        return this;
+    }
+
+    @Step ("Sort lines by status")
+    public AccessLineSearchPage sortAccessLinesByStatus() {
+        String status = getTableLines().get(0).getStatus().toString();
+        $(SORT_BY_STATUS).click();
+        ElementsCollection tds = $$(By.tagName("td"));
+        tds.get(7).waitUntil(Condition.not(text(status)),TIMEOUT);
+        return this;
+    }
+
+    @Step ("Check presence of sortable icon in status column")
+    public boolean sortIconIsPresentInStatusColumn() {
+        return $(SORT_BY_STATUS).$("i").isDisplayed();
+    }
+
+
+
+
     private List<SelenideElement> getTableRows() {
         return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
     }
-
-    public enum ProfileTypes {
-        NE_PROFILE, NETWORK_LINE_PROFILE
-    }
-
-    public enum ProfileNames {
-        DEFAULT_PROFILE, SUBSCRIBER_PROFILE
-    }
-
 }

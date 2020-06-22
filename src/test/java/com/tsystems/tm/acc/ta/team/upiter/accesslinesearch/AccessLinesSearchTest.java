@@ -29,6 +29,9 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE
 
 public class AccessLinesSearchTest extends BaseTest {
 
+    private static final String KLSID = "14653";
+    private static final String ONT_SN = "1111111111181516";
+
     private AccessLineResourceInventoryClient alResourceInventory;
     private AccessLine accessLinesByEndSz;
     private AccessLine accessLineByHomeId;
@@ -57,7 +60,8 @@ public class AccessLinesSearchTest extends BaseTest {
     public void searchAccessLinesByEndSzTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz);
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
+                .clickSearchButton();
 
         checkTableHeaders(accessLineSearchPage.getTableHeaders());
         checkTableMessagePattern(accessLineSearchPage.getTableMessage());
@@ -77,7 +81,7 @@ public class AccessLinesSearchTest extends BaseTest {
     public void sortingBySlotAndPortNumbersTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz);
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
 
         accessLineSearchPage.setPageSize(100);
         checkSortOfTable(accessLineSearchPage.getTableLines());
@@ -89,7 +93,7 @@ public class AccessLinesSearchTest extends BaseTest {
     public void searchAccessLinesByHomeIdTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByHomeID(accessLineByHomeId);
+        accessLineSearchPage.searchAccessLinesByHomeID(accessLineByHomeId).clickSearchButton();
 
         checkBasicInformation(accessLineSearchPage);
 
@@ -105,7 +109,7 @@ public class AccessLinesSearchTest extends BaseTest {
     public void searchAccessLinesByLineIdTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByLineID(accessLineByLineId);
+        accessLineSearchPage.searchAccessLinesByLineID(accessLineByLineId).clickSearchButton();
 
         checkBasicInformation(accessLineSearchPage);
 
@@ -116,7 +120,63 @@ public class AccessLinesSearchTest extends BaseTest {
 
     }
 
-    private void checkBasicInformation(AccessLineSearchPage accessLineSearchPage) {
+    @Test
+    @TmsLink("DIGIHUB-66818")
+    @Description("Search by KLS ID")
+    public void searchAccessLinesByKlsIdTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByKlsId(KLSID).clickSearchButton();
+
+        checkBasicInformation(accessLineSearchPage);
+
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+
+        checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
+                "INACTIVE", "ACTIVE");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-66819")
+    @Description("Search by ONT S/N")
+    public void searchAccessLinesByOntSnTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByOntSn(ONT_SN).clickSearchButton();
+
+        checkBasicInformation(accessLineSearchPage);
+
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+
+        checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
+                "INACTIVE", "ACTIVE");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-39505")
+    @Description("Search access line by EndSZ and multiple statuses in Support UI")
+    public void searchAccessLinesByEndSzFilteringTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
+                            .setWalledGardenStatus()
+                            .setInactiveStatus();
+
+        checkBasicInformation(accessLineSearchPage);
+
+        Assert.assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
+
+        accessLineSearchPage.sortAccessLinesByStatus();
+
+        Assert.assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(),AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
+
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+
+        checkAccessLinesManagementStates(accessLinesManagementPage, "ACTIVE", "NULL",
+                "NULL", "NULL");
+    }
+
+        private void checkBasicInformation(AccessLineSearchPage accessLineSearchPage) {
         checkTableHeaders(accessLineSearchPage.getTableHeaders());
         checkTableMessagePattern(accessLineSearchPage.getTableMessage());
         checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());

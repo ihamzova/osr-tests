@@ -15,11 +15,11 @@ import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 @Slf4j
 public class AccessLinesManagementPage {
 
-    private static final String TITLE = "Access Lines Management";
-    private static final long TIMEOUT_MS = 10000;
+    private static final String TITLE = "Access Lines durchsuchen";
+    private static final long TIMEOUT_MS = 30000;
 
     private static final By NE_DEFAULT_PROFILE_STATE_INPUT = byQaData("ne-def-state-input");
-    private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//h3[contains(text(),'Subscriber Profile')]");
+    private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//span[contains(text(),'Subscriber Profile')]");
     private static final By NL_DEFAULT_PROFILE_STATE_INPUT = byQaData("nl-def-state-input");
     private static final By NE_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("ne-sub-state-input");
     private static final By NL_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("nl-sub-state-input");
