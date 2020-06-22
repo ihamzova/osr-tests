@@ -3,8 +3,8 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.jayway.jsonpath.JsonPath;
 import com.tsystems.tm.acc.WebhookDefinitionModel;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
 import io.qameta.allure.Step;
+import org.apache.http.client.methods.HttpHead;
 
 import java.util.*;
 
@@ -20,10 +21,17 @@ public class PslEquipmentGeneratorMapper {
     final String PSL_URL = "/resource-order-resource-inventory/v1/psl/read-equipment/";
 
     @Step("Generate PSL wiremock data")
-    public StubMapping getData(EquipmentData equipmentData) {
+    public StubMapping getData(EquipmentData equipmentData, A4NetworkElement networkElement) {
+
+        String endsz = networkElement.getVpsz() + "/" + networkElement.getFsz();
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
+
+        List<HttpHeader> requestHeaders = new ArrayList<>();
+        requestHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{\n" +
+                "        \"contains\" : \"xml\"\n" +
+                "      }"));
 
         List<HttpHeader> webhookHeaders = new ArrayList<>();
         webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
@@ -46,7 +54,7 @@ public class PslEquipmentGeneratorMapper {
         equipment.setHeqnr("0056");
         equipment.setSubmt(equipmentData.getSubmt());
         equipment.setEqart("G");
-        equipment.setEndsz(equipmentData.getEndSz());
+        equipment.setEndsz(endsz);
         equipment.setSerge("21023533106TG4900198");
         equipment.setAnzEbenen("1");
         equipment.setAdrId("17056514");
@@ -69,7 +77,10 @@ public class PslEquipmentGeneratorMapper {
                 .priority(1)
                 .request(new StubMappingRequest()
                         .method("POST")
-                        .url(PSL_URL))
+                        .url(PSL_URL)
+                        .headers(
+                                Collections.singletonMap("X-Callback-Correlation-Id",
+                                        Collections.singletonMap("contains", networkElement.getUuid()))))
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))

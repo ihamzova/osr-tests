@@ -29,7 +29,7 @@ public class ZtpIdentUiTest  extends BaseTest {
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
-    private WiremockRobot wiremockRobot = new WiremockRobot();
+    private final WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElementA;
@@ -77,12 +77,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
         wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElement);
-        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElement);
-        wiremockRobot.setUpRebellWiremock(uewegData);
-        wiremockRobot.setUpPslWiremock(equipmentDataA);
-        wiremockRobot.setUpPslWiremock(equipmentDataB);
+        wiremockRobot.setUpPslWiremock(equipmentDataA, a4NetworkElementA);
+        wiremockRobot.setUpPslWiremock(equipmentDataB, a4NetworkElementB);
     }
 
     @AfterMethod
@@ -93,6 +89,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementGroup(a4NetworkElementGroup.getUuid());
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
+        wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
+        wiremockRobot.tearDownWiremock(equipmentDataB.getPslWiremockUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx Installation user enters ZTP Ident for Network Element in UI")
@@ -107,10 +105,10 @@ public class ZtpIdentUiTest  extends BaseTest {
 
         // THEN
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
+        a4FrontEndInventoryImporterRobot.checkUpdateNetworkElementPsl(a4NetworkElementA.getUuid(), equipmentDataA);
+        Thread.sleep(WAIT_TIME);
         a4FrontEndInventoryImporterRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
-        a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElement, ztpIdent);
 
-        a4FrontEndInventoryImporterRobot.checkUpdateNetworkElementPsl(a4NetworkElement.getUuid(), equipmentDataA);
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortA.getUuid(), uewegData.getUewegId());
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
 

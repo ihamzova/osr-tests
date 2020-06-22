@@ -6,8 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementLinkDto;
 import io.qameta.allure.Step;
-import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.Equipment;
-import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.ReadEquipmentResponseHolder;
 
 import java.util.List;
 
@@ -43,7 +41,6 @@ public class A4FrontEndInventoryImporterRobot {
     }
 
 
-    public void checkNetworkElementLinksExist(String uuidNetworkElementPort, String uewegId){
     @Step("Check created NEL")
     public void checkNetworkElementLinkExists(UewegData uewegData,
                                               String uuidNetworkElementPortA,

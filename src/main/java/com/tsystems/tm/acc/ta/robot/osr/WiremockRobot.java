@@ -74,11 +74,11 @@ public class WiremockRobot {
     }
 
     @Step("Set up PSL wiremock")
-    public void setUpPslWiremock(EquipmentData equipmentData) {
+    public void setUpPslWiremock(EquipmentData equipmentData, A4NetworkElement networkElement) {
         PslEquipmentGeneratorMapper mapper = new PslEquipmentGeneratorMapper();
         StubMapping result = wiremockApi
                 .mappingsPost()
-                .body(mapper.getData(equipmentData))
+                .body(mapper.getData(equipmentData, networkElement))
                 .executeAs(validatedWith(shouldBeCode(201)));
         equipmentData.setPslWiremockUuid(result.getId());
     }
