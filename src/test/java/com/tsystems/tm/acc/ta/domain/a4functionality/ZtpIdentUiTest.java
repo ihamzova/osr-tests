@@ -5,11 +5,9 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.equipmentdata.EquipmentDataCase;
 import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4FrontEndInventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -38,6 +36,8 @@ public class ZtpIdentUiTest  extends BaseTest {
     private A4NetworkElementPort a4NetworkElementPortA;
     private A4NetworkElementPort a4NetworkElementPortB;
     private UewegData uewegData;
+    private EquipmentData equipmentDataA;
+    private EquipmentData equipmentDataB;
 
     @BeforeClass
     public void init() {
@@ -53,6 +53,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort_logicalLabel_10G_002);
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
+        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999900);
+        equipmentDataB = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999901);
     }
 
     @BeforeMethod
@@ -62,7 +64,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElement);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElement);
         wiremockRobot.setUpRebellWiremock(uewegData);
-        wiremockRobot.setUpPslWiremock();
+        wiremockRobot.setUpPslWiremock(equipmentDataA);
+        wiremockRobot.setUpPslWiremock(equipmentDataB);
     }
 
     @AfterMethod
@@ -86,6 +89,8 @@ public class ZtpIdentUiTest  extends BaseTest {
 
         // THEN
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElement, ztpIdent);
+
+        a4FrontEndInventoryImporterRobot.checkUpdateNetworkElementPsl(a4NetworkElement.getUuid(), equipmentDataA);
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortA.getUuid(), uewegData.getUewegId());
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
 

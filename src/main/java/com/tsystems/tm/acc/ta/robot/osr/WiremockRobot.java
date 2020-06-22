@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.data.osr.generators.PslEquipmentGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.RebellUewegGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
@@ -72,12 +73,13 @@ public class WiremockRobot {
     }
 
     @Step("Set up PSL wiremock")
-    public void setUpPslWiremock() {
+    public void setUpPslWiremock(EquipmentData equipmentData) {
         PslEquipmentGeneratorMapper mapper = new PslEquipmentGeneratorMapper();
         StubMapping result = wiremockApi
                 .mappingsPost()
-                .body(mapper.getData())
+                .body(mapper.getData(equipmentData))
                 .executeAs(validatedWith(shouldBeCode(201)));
+        equipmentData.setPslWiremockUuid(result.getId());
     }
 
     @Step("Tear down wiremock")

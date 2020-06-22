@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.jayway.jsonpath.JsonPath;
 import com.tsystems.tm.acc.WebhookDefinitionModel;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
@@ -19,7 +20,7 @@ public class PslEquipmentGeneratorMapper {
     final String PSL_URL = "/resource-order-resource-inventory/v1/psl/read-equipment/";
 
     @Step("Generate PSL wiremock data")
-    public StubMapping getData() {
+    public StubMapping getData(EquipmentData equipmentData) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -43,9 +44,9 @@ public class PslEquipmentGeneratorMapper {
         equipment.setTplnr("000031-000000-001-004-002-021");
         equipment.setHequi("212879995");
         equipment.setHeqnr("0056");
-        equipment.setSubmt("42999900");
+        equipment.setSubmt(equipmentData.getSubmt());
         equipment.setEqart("G");
-        equipment.setEndsz("33_6151_11_7KH0");
+        equipment.setEndsz(equipmentData.getEndSz());
         equipment.setSerge("21023533106TG4900198");
         equipment.setAnzEbenen("1");
         equipment.setAdrId("17056514");

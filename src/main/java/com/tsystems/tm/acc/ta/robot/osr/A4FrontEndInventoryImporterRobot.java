@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementLinkDto;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.Equipment;
@@ -18,10 +19,9 @@ public class A4FrontEndInventoryImporterRobot {
 
     A4ResourceInventoryClient a4ResourceInventoryClient = new A4ResourceInventoryClient();
 
-    public void checkUpdateNetworkElementPsl(String networkElementUuid, ReadEquipmentResponseHolder pslCallback) {
+    public void checkUpdateNetworkElementPsl(String networkElementUuid, EquipmentData equipmentData) {
 
-        //TODO: implement dynamic wiremock and its answers here:
-        Equipment equipment = pslCallback.getResponse().getResponseData().getEquipment().get(0);
+        //TODO: implement dynamic wiremock and its answers here
 
         NetworkElementDto networkElementDto =
                 a4ResourceInventoryClient
@@ -32,7 +32,7 @@ public class A4FrontEndInventoryImporterRobot {
                         .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         assertEquals(networkElementDto.getUuid(), networkElementUuid);
-        assertEquals(networkElementDto.getPlannedMatNumber(), "42999900");
+        assertEquals(networkElementDto.getPlannedMatNumber(), equipmentData.getSubmt());
         assertEquals(networkElementDto.getKlsId(), "17056514");
         assertEquals(networkElementDto.getPlannedRackId(), "000031-000000-001-004-002-021");
         assertEquals(networkElementDto.getPlannedRackPosition(), "1 / 2 / 3 / 4");

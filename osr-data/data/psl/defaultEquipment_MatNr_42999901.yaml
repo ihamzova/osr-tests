@@ -1,0 +1,6 @@
+name: defaultEquipment_MatNr_42999901
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentData
+values:
+  endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
+  submt: "42999901"
+  pslWiremockUuid: "" # if blank: field will be filled with returned uuid of created wiremock entry
