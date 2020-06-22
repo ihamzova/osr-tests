@@ -61,4 +61,19 @@ public class A4NemoUpdaterRobot {
         List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1).getRequests();
         Assert.assertEquals(requests.size(), 1);
     }
+
+    @Step("Check if request to NEMO wiremock with logical resource has happened")
+    /**
+     * Checks whether an HTTP-request has reached the Nemo-Wiremock
+     * @param uuid uuid of the LogicalResource to be checked
+     * @param method name of the HTTP-method to be used
+     */
+    public void checkLogicalResourceRequestToNemoWiremock(String uuid, String method){
+        RequestPattern requestPattern = new WiremockRequestPatternBuilder()
+                .withMethod(method)
+                .withUrlPathPattern(".*/logicalResource/" + uuid)
+                .build();
+        List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1).getRequests();
+        Assert.assertEquals(requests.size(), 1);
+    }
 }

@@ -40,6 +40,7 @@ public class A4NemoUpdateTest extends ApiTest {
         a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
 
         // THEN / Assert
+        //a4NemoUpdater.checkLogicalResourcePutToNemoWiremock(negData.getUuid());
         a4NemoUpdater.checkLogicalResourcePutToNemoWiremock(negData.getUuid());
 
         // AFTER / Clean-up
