@@ -201,6 +201,32 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
     }
 
+    @Step("GET network element uuid by VPSZ/FSZ")
+    public NetworkElementDto getNetworkElementByVpszFsz(String vpsz, String fsz){
+        List<NetworkElementDto> networkElementDtoList = a4ResourceInventory
+                .networkElements()
+                .listNetworkElements()
+                .vpszQuery(vpsz)
+                .fszQuery(fsz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        assert networkElementDtoList.size() == 1 : "NE list should have size 1";
+        //list has only size 1, return uuid of element
+        //if list has not size 1 an error occured
+                return networkElementDtoList.get(0);
+    }
+
+    @Step("GET network element port uuid list by networkElementUuid")
+    public List<NetworkElementPortDto> getNetworkElementPorts(String networkElementUuid){
+        List<NetworkElementPortDto> networkElementPortDtoList = a4ResourceInventory
+                .networkElementPorts()
+                .findNetworkElementPorts()
+                .networkElementUuidQuery(networkElementUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        return networkElementPortDtoList;
+    }
+
     @Step("Delete network group by name")
     public void deleteGroupByName(A4ImportCsvData csvData) {
         String groupName = csvData.getCsvLines().get(0).getNegName();
