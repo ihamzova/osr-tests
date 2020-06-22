@@ -221,10 +221,9 @@ public class A4ResourceInventoryRobot {
     }
 
     /*
-    Before a Network Element Port (NEP) can be deleted from A4 Resource Inventory all belonging/connected "child"
+    Before a Network Element Port (NEP) can be deleted from A4 Resource Inventory, all belonging/connected "child"
     entities have to be deleted first. Candidates are Network Element Links (NEL), Termination Points (TP), and their
-    "childs" Network Service Profiles (NSP). So, in order to be able to delete a NEP, we also have to delete all
-    children first. This robot takes care of that.
+    "children" Network Service Profiles (NSP). This robot takes care of all that.
      */
     @Step("Wipe NEP (existing or not) and any connected TPs, NELs and NSPs")
     public void wipeA4NetworkElementPortsIncludingChildren(A4NetworkElementPort nepData, A4NetworkElement neData) {

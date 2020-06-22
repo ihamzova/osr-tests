@@ -64,6 +64,11 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementA, a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
 
+        /*
+        This test case requires NEPs with certain Logical Labels, which have to be unique per NEP. Therefore we cannot
+        execute this test multiple times in parallel. Therefore We have to ensure that no NEP with given these Logical
+        Lables exists in a4 inventory.
+        */
         a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
 
