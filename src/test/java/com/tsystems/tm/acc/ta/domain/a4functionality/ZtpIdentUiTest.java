@@ -62,6 +62,7 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElement);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElement);
         wiremockRobot.setUpRebellWiremock(uewegData);
+        wiremockRobot.setUpPslWiremock();
     }
 
     @AfterMethod
