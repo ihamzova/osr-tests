@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.ResponseOptions;
 import org.testng.Assert;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class A4ResourceInventoryRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer HTTP_CODE_NO_CONTENT_204 = 204;
+    private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
 
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
 
@@ -216,6 +218,79 @@ public class A4ResourceInventoryRobot {
                 .deleteNetworkElementGroup()
                 .uuidPath(networkElementGroupDto.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
+    }
+
+    /*
+    Before a Network Element Port (NEP) can be deleted from A4 Resource Inventory all belonging/connected "child"
+    entities have to be deleted first. Candidates are Network Element Links (NEL), Termination Points (TP), and their
+    "childs" Network Service Profiles (NSP). So, in order to be able to delete a NEP, we also have to delete all
+    children first. This robot takes care of that.
+     */
+    @Step("Wipe NEP (existing or not) and any connected TPs, NELs and NSPs")
+    public void wipeA4NetworkElementPortsIncludingChildren(A4NetworkElementPort nepData, A4NetworkElement neData) {
+        // Find NEP with LogicalLabel
+        List<NetworkElementPortDto> nepList = a4ResourceInventory
+                .networkElementPorts()
+                .findNetworkElementPorts()
+                .logicalLabelQuery(nepData.getLogicalLabel())
+                .networkElementUuidQuery(neData.getUuid())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        nepList.forEach((nep) -> {
+
+            // Find and delete any NELs
+            List<NetworkElementLinkDto> nelList = a4ResourceInventory
+                    .networkElementLinks()
+                    .listNetworkElementLinks()
+                    .networkElementPortUuidQuery(nep.getUuid())
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+            nelList.forEach((nel) ->
+                    a4ResourceInventory
+                            .networkElementLinks()
+                            .deleteNetworkElementLink()
+                            .uuidPath(nel.getUuid())
+                            .execute(ResponseOptions::thenReturn) // do not care about 204 or 404
+            );
+
+            // Find any TPs
+            List<TerminationPointDto> tpList = a4ResourceInventory
+                    .terminationPoints()
+                    .findTerminationPoints()
+                    .parentUuidQuery(nep.getUuid())
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+            tpList.forEach((tp) -> {
+                // Find and delete any NSPs
+                List<NetworkServiceProfileFtthAccessDto> nspList = a4ResourceInventory
+                        .networkServiceProfilesFtthAccess()
+                        .findNetworkServiceProfilesFtthAccess()
+                        .terminationPointUuidQuery(tp.getUuid())
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+                nspList.forEach((nsp) ->
+                        a4ResourceInventory
+                                .networkServiceProfilesFtthAccess()
+                                .deleteNetworkServiceProfileFtthAccess()
+                                .uuidPath(nsp.getUuid())
+                                .execute(ResponseOptions::thenReturn)
+                );
+
+                // Delete any found TPs
+                a4ResourceInventory
+                        .terminationPoints()
+                        .deleteTerminationPoint()
+                        .uuidPath(tp.getUuid())
+                        .execute(ResponseOptions::thenReturn);
+            });
+
+            // Delete NEP (existing or not)
+            a4ResourceInventory
+                    .networkElementPorts()
+                    .deleteNetworkElementPort()
+                    .uuidPath(nep.getUuid())
+                    .execute(ResponseOptions::thenReturn);
+        });
     }
 
 }
