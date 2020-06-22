@@ -13,8 +13,8 @@ public class A4NetworkElementPortGenerator {
         if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
-        if (nepData.getPort().equals(""))
-            nepData.setPort(UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+        if (nepData.getLogicalLabel().isEmpty())
+            nepData.setLogicalLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())

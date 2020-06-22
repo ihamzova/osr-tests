@@ -5,5 +5,4 @@ values:
   lbz: "LBZ ${randomLong, 100000, 999999}"
   vendorPortNameA: "10G/0"
   vendorPortNameB: "10G/1"
-  endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
   rebellWiremockUuid: "" # if blank: field will be filled with returned uuid of created wiremock entry
