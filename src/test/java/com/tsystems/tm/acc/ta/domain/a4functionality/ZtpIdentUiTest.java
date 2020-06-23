@@ -11,7 +11,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4FrontEndInventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
@@ -30,7 +29,6 @@ public class ZtpIdentUiTest  extends BaseTest {
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
     private WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
@@ -42,7 +40,8 @@ public class ZtpIdentUiTest  extends BaseTest {
 
     @BeforeClass
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
@@ -64,13 +63,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementA, a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
 
-//        /*
-//        This test case requires NEPs with certain Logical Labels, which have to be unique per NEP. Therefore we cannot
-//        execute this test multiple times in parallel. Therefore We have to ensure that no NEP with given these Logical
-//        Lables exists in a4 inventory.
-//        */
-//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
-//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
+        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
+        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
 
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
@@ -95,15 +89,15 @@ public class ZtpIdentUiTest  extends BaseTest {
         // WHEN / Action
         a4ResourceInventoryUiRobot.openNetworkElement(a4NetworkElementA);
         a4ResourceInventoryUiRobot.enterZtpIdent(ztpIdent);
-//        Thread.sleep(WAIT_TIME);
 
         // THEN
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
-        a4FrontEndInventoryImporterRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
-//        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
+        Thread.sleep(WAIT_TIME);
+        // TODO Add step for check nemo update
+//        a4ResourceInventoryRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(),
+//                a4NetworkElementPortB.getUuid());
 
         // AFTER / Clean-up
-        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
-//        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortB.getUuid());
+//        a4ResourceInventoryRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
     }
 }

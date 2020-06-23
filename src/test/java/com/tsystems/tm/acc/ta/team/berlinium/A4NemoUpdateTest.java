@@ -40,8 +40,7 @@ public class A4NemoUpdateTest extends ApiTest {
         a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
 
         // THEN / Assert
-        //a4NemoUpdater.checkLogicalResourcePutToNemoWiremock(negData.getUuid());
-        a4NemoUpdater.checkLogicalResourcePutToNemoWiremock(negData.getUuid());
+        a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(negData.getUuid());
 
         // AFTER / Clean-up
         a4Inventory.deleteNetworkElementGroup(negData.getUuid());
@@ -59,7 +58,7 @@ public class A4NemoUpdateTest extends ApiTest {
         a4NemoUpdater.triggerNemoUpdate(uuid);
 
         // THEN / Assert
-        a4NemoUpdater.checkLogicalResourceDeleteToNemoWiremock(uuid);
+        a4NemoUpdater.checkLogicalResourceDeleteRequestToNemoWiremock(uuid);
 
         // AFTER / Clean-up
         // nothing to do
