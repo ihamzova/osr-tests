@@ -2,10 +2,12 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
+import com.tsystems.tm.acc.ta.data.osr.generators.PslEquipmentGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.RebellUewegGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
@@ -68,6 +70,16 @@ public class WiremockRobot {
                 .body(mapper.getData(uewegData, neA, neB))
                 .executeAs(validatedWith(shouldBeCode(201)));
         uewegData.setRebellWiremockUuid(result.getId());
+    }
+
+    @Step("Set up PSL wiremock")
+    public void setUpPslWiremock(EquipmentData equipmentData, A4NetworkElement networkElement) {
+        PslEquipmentGeneratorMapper mapper = new PslEquipmentGeneratorMapper();
+        StubMapping result = wiremockApi
+                .mappingsPost()
+                .body(mapper.getData(equipmentData, networkElement))
+                .executeAs(validatedWith(shouldBeCode(201)));
+        equipmentData.setPslWiremockUuid(result.getId());
     }
 
     @Step("Tear down wiremock")

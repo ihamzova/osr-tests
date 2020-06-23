@@ -89,6 +89,25 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
+    @Step("Delete network element link from A4 inventory")
+    public void deleteNetworkElementLinks(String portUuid) {
+
+        List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
+                .networkElementLinks()
+                .listNetworkElementLinks()
+                .networkElementPortUuidQuery(portUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        for (NetworkElementLinkDto nel: networkElementLinkDtoList) {
+            a4ResourceInventory
+                    .networkElementLinks()
+                    .deleteNetworkElementLink()
+                    .uuidPath(nel.getUuid())
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        }
+
+    }
+
     @Step("Delete termination point from A4 inventory")
     public void deleteTerminationPoint(String uuid) {
         a4ResourceInventory

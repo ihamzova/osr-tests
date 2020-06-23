@@ -1,0 +1,6 @@
+name: equipment_MatNr_42999900
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentData
+values:
+  submt: "42999900"
+  pslWiremockUuid: "" # if blank: field will be filled with returned uuid of created wiremock entry
+  klsId: "17056514"

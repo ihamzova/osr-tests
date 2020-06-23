@@ -8,4 +8,4 @@ values:
   category: "OLT"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "SPINE_SWITCH"
+  type: "A4_SPINE-Switch_v1"
