@@ -58,7 +58,6 @@ public class ZtpIdentUiTest  extends BaseTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort_logicalLabel_10G_002);
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.equipment_MatNr_42999901);
-        equipmentDataB = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.equipment_MatNr_42999900);
     }
 
     @BeforeMethod
@@ -74,7 +73,6 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
         wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
         wiremockRobot.setUpPslWiremock(equipmentDataA, a4NetworkElementA);
-        wiremockRobot.setUpPslWiremock(equipmentDataB, a4NetworkElementB);
     }
 
     @AfterMethod
@@ -86,7 +84,6 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.deleteNetworkElementGroup(a4NetworkElementGroup.getUuid());
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
         wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
-        wiremockRobot.tearDownWiremock(equipmentDataB.getPslWiremockUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx Installation user enters ZTP Ident for Network Element in UI")

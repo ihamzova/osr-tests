@@ -9,3 +9,4 @@ values:
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
   type: "A4_OLT_v1"
+  plannedMatNr: "42999900"

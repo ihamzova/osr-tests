@@ -9,3 +9,4 @@ values:
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
   type: "A4_SPINE-Switch_v1"
+  plannedMatNr: "" # if blank will be overwritten by PSL

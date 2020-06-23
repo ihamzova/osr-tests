@@ -12,4 +12,5 @@ public class A4NetworkElement {
     private String operationalState;
     private String lifecycleState;
     private String type;
+    private String plannedMatNr;
 }
