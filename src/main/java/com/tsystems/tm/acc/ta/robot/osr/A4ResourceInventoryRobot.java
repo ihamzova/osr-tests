@@ -90,7 +90,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete network element link from A4 inventory")
-    public void deleteNetworkElementLink(String portUuid) {
+    public void deleteNetworkElementLinks(String portUuid) {
 
         List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
                 .networkElementLinks()

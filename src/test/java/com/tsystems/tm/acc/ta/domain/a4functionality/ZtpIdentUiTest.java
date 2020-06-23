@@ -29,6 +29,7 @@ public class ZtpIdentUiTest  extends BaseTest {
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final WiremockRobot wiremockRobot = new WiremockRobot();
+    private final A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElementA;
