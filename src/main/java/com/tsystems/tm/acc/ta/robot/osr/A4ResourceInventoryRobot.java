@@ -90,22 +90,20 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete network element link from A4 inventory")
-    public void deleteNetworkElementLinks(String portUuid) {
-
+    public void deleteNetworkElementLinksByNePortUuid(String portUuid) {
         List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
                 .networkElementLinks()
                 .listNetworkElementLinks()
                 .networkElementPortUuidQuery(portUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        for (NetworkElementLinkDto nel: networkElementLinkDtoList) {
-            a4ResourceInventory
-                    .networkElementLinks()
-                    .deleteNetworkElementLink()
-                    .uuidPath(nel.getUuid())
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        }
-
+        networkElementLinkDtoList.forEach((nel) ->
+                a4ResourceInventory
+                        .networkElementLinks()
+                        .deleteNetworkElementLink()
+                        .uuidPath(nel.getUuid())
+                        .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)))
+        );
     }
 
     @Step("Delete termination point from A4 inventory")
@@ -166,14 +164,26 @@ public class A4ResourceInventoryRobot {
                 .networkElementUuidQuery(neUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        ports.forEach(networkElementPortDto -> deleteNetworkElementPort(networkElementPortDto.getUuid()));
+        ports.forEach(networkElementPortDto ->
+                deleteNetworkElementPort(networkElementPortDto.getUuid())
+        );
     }
 
-    List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByTerminationPoint(String uuidTp) {
+    @Step("Get a list of Network Service Profiles based on Termination Point UUID")
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
                 .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get a list of Network Element Links based on Network Element Port UUID")
+    public List<NetworkElementLinkDto> getNetworkElementLinksByNePortUuid(String uuidNep) {
+        return a4ResourceInventory
+                .networkElementLinks()
+                .listNetworkElementLinks()
+                .networkElementPortUuidQuery(uuidNep)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -251,13 +261,9 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkElementLinkDtoList.size(), 1);
 
-//        assertEquals(networkElementLinkDtoList.get(0).getDescription(), uewegData.getVersionId());
-        assertEquals(networkElementLinkDtoList.get(0).getLbz(), uewegData.getLbz());
-//        assertEquals(networkElementLinkDtoList.get(0).getLsz(), uewegData.getLsz());
         assertEquals(networkElementLinkDtoList.get(0).getUeWegId(), uewegData.getUewegId());
-//        assertEquals(networkElementLinkDtoList.get(0).getPluralId(), uewegData.getPluralId());
         assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortAUuid(), uuidNetworkElementPortA);
-        assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortAUuid(), uuidNetworkElementPortB);
+        assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortBUuid(), uuidNetworkElementPortB);
     }
 
     @Step("Delete created NELs")
@@ -268,11 +274,21 @@ public class A4ResourceInventoryRobot {
                 .networkElementPortUuidQuery(uuidNetworkElementPort)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        networkElementLinkDtoList.forEach(networkElementLinkDto -> a4ResourceInventory
-                .networkElementLinks()
-                .deleteNetworkElementLink()
-                .uuidPath(networkElementLinkDto.getUuid())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
+        networkElementLinkDtoList.forEach((nel) ->
+                deleteNetworkElementLink(nel.getUuid())
+        );
+    }
+
+    public void checkNetworkElementUpdateWithPslData(String networkElementUuid, EquipmentData equipmentData) {
+        NetworkElementDto networkElementDto = a4ResourceInventory
+                .networkElements()
+                .findNetworkElement()
+                .uuidPath(networkElementUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        assertEquals(networkElementDto.getUuid(), networkElementUuid);
+        assertEquals(networkElementDto.getPlannedMatNumber(), equipmentData.getSubmt());
+        assertEquals(networkElementDto.getKlsId(), equipmentData.getKlsId());
     }
 
     /*
@@ -293,15 +309,7 @@ public class A4ResourceInventoryRobot {
         nepList.forEach((nep) -> {
 
             // Find and delete any NELs
-            List<NetworkElementLinkDto> nelList = a4ResourceInventory
-                    .networkElementLinks()
-                    .listNetworkElementLinks()
-                    .networkElementPortUuidQuery(nep.getUuid())
-                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-            nelList.forEach((nel) ->
-                    deleteNetworkElementLink(nel.getUuid())
-            );
+            deleteNetworkElementLinksByNePortUuid(nep.getUuid());
 
             // Find any TPs
             List<TerminationPointDto> tpList = a4ResourceInventory

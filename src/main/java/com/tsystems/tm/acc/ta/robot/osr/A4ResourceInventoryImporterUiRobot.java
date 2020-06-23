@@ -8,10 +8,14 @@ import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
-public class A4ResourceInventoryUiRobot {
+public class A4ResourceInventoryImporterUiRobot {
+    private A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
 
     @Step("Open UI and search for existing network element")
     public void openNetworkElement(A4NetworkElement neData) {
@@ -34,6 +38,19 @@ public class A4ResourceInventoryUiRobot {
         installationPage
                 .openMonitoringPage()
                 .checkNeData(neData, ztpIdent);
+    }
+
+    @Step("Open UI and upload CSV file, then submit")
+    public void importCsvFileViaUi(A4ImportCsvData csvData) {
+        File csvFile = Paths.get("target/", "a4Testcase" + UUID.randomUUID().toString().substring(1, 6)
+                + ".csv").toFile();
+        a4ImportCsvRobot.generateCsvFile(csvData, csvFile);
+
+        A4StartPage.
+                login().
+                validate().
+                goToInstallation().
+                uploadCSV(csvFile);
     }
 
     @Step("validate network elements")
