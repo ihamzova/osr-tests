@@ -38,7 +38,6 @@ public class ZtpIdentUiTest  extends BaseTest {
     private A4NetworkElementPort a4NetworkElementPortB;
     private UewegData uewegData;
     private EquipmentData equipmentDataA;
-    private EquipmentData equipmentDataB;
 
     @BeforeClass
     public void init() {
