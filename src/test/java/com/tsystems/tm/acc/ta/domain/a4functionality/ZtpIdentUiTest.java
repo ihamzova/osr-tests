@@ -26,7 +26,8 @@ public class ZtpIdentUiTest  extends BaseTest {
     private static final int WAIT_TIME = 5_000;
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
+    private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot
+            = new A4ResourceInventoryImporterUiRobot();
     private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final WiremockRobot wiremockRobot = new WiremockRobot();
@@ -57,7 +58,8 @@ public class ZtpIdentUiTest  extends BaseTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
 
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
-        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.equipment_MatNr_42999901);
+        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
+                .get(EquipmentDataCase.equipment_MatNr_42999901);
     }
 
     @BeforeMethod
@@ -101,7 +103,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryImporterUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
         Thread.sleep(WAIT_TIME);
         a4ResourceInventoryRobot.checkNetworkElementUpdateWithPslData(a4NetworkElementA.getUuid(), equipmentDataA);
-//        a4NemoUpdaterRobot.checkLogicalResourcePutRequestToNemoWiremock(a4NetworkElementA.getUuid());
+        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElementA.getUuid(), "PUT",
+                2);
         a4ResourceInventoryRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(),
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());

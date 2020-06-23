@@ -40,12 +40,12 @@ public class A4NemoUpdaterRobot {
 
     @Step("Check if PUT request to NEMO wiremock with logical resource has happened")
     public void checkLogicalResourcePutRequestToNemoWiremock(String uuid) {
-        checkLogicalResourceRequestToNemoWiremock(uuid, "PUT");
+        checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 1);
     }
 
     @Step("Check if DELETE request to NEMO wiremock with logical resource has happened")
     public void checkLogicalResourceDeleteRequestToNemoWiremock(String uuid) {
-        checkLogicalResourceRequestToNemoWiremock(uuid, "DELETE");
+        checkLogicalResourceRequestToNemoWiremock(uuid, "DELETE", 1);
     }
 
     @Step("Check if request to NEMO wiremock with logical resource has happened")
@@ -54,14 +54,14 @@ public class A4NemoUpdaterRobot {
      * @param uuid uuid of the LogicalResource to be checked
      * @param method name of the HTTP-method to be used
      */
-    public void checkLogicalResourceRequestToNemoWiremock(String uuid, String method) {
+    public void checkLogicalResourceRequestToNemoWiremock(String uuid, String method, int count) {
         RequestPattern requestPattern = new WiremockRequestPatternBuilder()
                 .withMethod(method)
                 .withUrlPathPattern(".*/logicalResource/" + uuid)
                 .build();
         List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1)
                 .getRequests();
-        Assert.assertEquals(requests.size(), 1);
+        Assert.assertEquals(requests.size(), count);
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile has happened")
