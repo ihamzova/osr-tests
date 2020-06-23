@@ -79,10 +79,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
         a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfilePutToNemoWiremock(tpData.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfilePutRequestToNemoWiremock(tpData.getUuid());
 
         // AFTER / Clean-up
-        a4Inventory.deleteNetworkServiceProfileConnectedToTerminationPoint(tpData.getUuid());
+        a4Inventory.deleteNetworkServiceProfilesConnectedToTerminationPoint(tpData.getUuid());
         a4Inventory.deleteTerminationPoint(tpData.getUuid());
     }
 }

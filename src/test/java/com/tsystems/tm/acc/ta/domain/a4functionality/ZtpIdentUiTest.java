@@ -28,7 +28,6 @@ public class ZtpIdentUiTest  extends BaseTest {
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4FrontEndInventoryImporterRobot a4FrontEndInventoryImporterRobot = new A4FrontEndInventoryImporterRobot();
     private final WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
@@ -42,7 +41,8 @@ public class ZtpIdentUiTest  extends BaseTest {
 
     @BeforeClass
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
@@ -66,13 +66,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementA, a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
 
-//        /*
-//        This test case requires NEPs with certain Logical Labels, which have to be unique per NEP. Therefore we cannot
-//        execute this test multiple times in parallel. Therefore We have to ensure that no NEP with given these Logical
-//        Lables exists in a4 inventory.
-//        */
-//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
-//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
+        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
+        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
 
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
@@ -83,8 +78,6 @@ public class ZtpIdentUiTest  extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        //a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortA.getUuid());
-        //a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementA.getUuid());
@@ -103,10 +96,13 @@ public class ZtpIdentUiTest  extends BaseTest {
         // WHEN / Action
         a4ResourceInventoryUiRobot.openNetworkElement(a4NetworkElementA);
         a4ResourceInventoryUiRobot.enterZtpIdent(ztpIdent);
-        Thread.sleep(WAIT_TIME);
 
         // THEN
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
+        Thread.sleep(WAIT_TIME);
+        // TODO Add step for check nemo update
+//        a4ResourceInventoryRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(),
+//                a4NetworkElementPortB.getUuid());
         a4FrontEndInventoryImporterRobot.checkUpdateNetworkElementPsl(a4NetworkElementA.getUuid(), equipmentDataA);
         a4FrontEndInventoryImporterRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
 
