@@ -28,11 +28,6 @@ public class PslEquipmentGeneratorMapper {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        List<HttpHeader> requestHeaders = new ArrayList<>();
-        requestHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{\n" +
-                "        \"contains\" : \"xml\"\n" +
-                "      }"));
-
         List<HttpHeader> webhookHeaders = new ArrayList<>();
         webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
         webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
@@ -57,7 +52,7 @@ public class PslEquipmentGeneratorMapper {
         equipment.setEndsz(endsz);
         equipment.setSerge("21023533106TG4900198");
         equipment.setAnzEbenen("1");
-        equipment.setAdrId("17056514");
+        equipment.setAdrId(equipmentData.getKlsId());
         equipment.setAsb("1");
         equipment.setGeba("1");
         equipment.setRaum("2");
