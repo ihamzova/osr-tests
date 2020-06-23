@@ -206,7 +206,7 @@ public class A4ResourceInventoryRobot {
         });
     }
 
-    @Step("GET network element uuid by VPSZ/FSZ")
+    @Step("GET network element by VPSZ/FSZ")
     public NetworkElementDto getNetworkElementByVpszFsz(String vpsz, String fsz) {
         List<NetworkElementDto> networkElementDtoList = a4ResourceInventory
                 .networkElements()
@@ -222,12 +222,21 @@ public class A4ResourceInventoryRobot {
         return networkElementDtoList.get(0);
     }
 
-    @Step("GET network element port uuid list by networkElementUuid")
+    @Step("GET network element port list by networkElementUuid")
     public List<NetworkElementPortDto> getNetworkElementPorts(String networkElementUuid) {
         return a4ResourceInventory
                 .networkElementPorts()
                 .findNetworkElementPorts()
                 .networkElementUuidQuery(networkElementUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("GET network element group list by networkElementGroupName")
+    public List<NetworkElementGroupDto> getNetworkElementGroups(String networkElementGroupName) {
+        return a4ResourceInventory
+                .networkElementGroups()
+                .listNetworkElementGroups()
+                .nameQuery(networkElementGroupName)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 

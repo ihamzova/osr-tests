@@ -38,8 +38,8 @@ public class A4ImportCsvTest extends BaseTest {
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
 
 //        // Ensure clean state before start
-//        a4Inventory.deleteNetworkElements(csvData);
-//        a4Inventory.deleteGroupByName(csvData);
+        a4ResourceInventoryRobot.deleteNetworkElements(csvData);
+        a4ResourceInventoryRobot.deleteGroupByName(csvData);
     }
 
     @Test(description = "DIGIHUB-xxxxx Import Network Element (Group) CSV file into A4 Resource Inventory")
