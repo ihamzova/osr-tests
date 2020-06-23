@@ -27,10 +27,9 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 public class WiremockRobot {
-    private WireMockApi wiremockApi = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(() -> {
-        return RequestSpecBuilders.getDefault(GsonObjectMapper.gson(), (new OCUrlBuilder("wiremock-acc"))
-                .withEndpoint("/__admin").buildUri());
-    })).wireMock();
+    private WireMockApi wiremockApi = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(() ->
+            RequestSpecBuilders.getDefault(GsonObjectMapper.gson(), (new OCUrlBuilder("wiremock-acc"))
+            .withEndpoint("/__admin").buildUri()))).wireMock();
 
     @Step("Upload mock data to wiremock")
     public void initializeWiremock(File pathToWiremockData) {
