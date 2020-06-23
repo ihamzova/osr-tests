@@ -23,6 +23,8 @@ public class PslEquipmentGeneratorMapper {
     @Step("Generate PSL wiremock data")
     public StubMapping getData(EquipmentData equipmentData, A4NetworkElement networkElement) {
 
+        networkElement.setPlannedMatNr(equipmentData.getSubmt());
+
         String endsz = networkElement.getVpsz() + "/" + networkElement.getFsz();
 
         Map<String, String> headers = new HashMap<>();
