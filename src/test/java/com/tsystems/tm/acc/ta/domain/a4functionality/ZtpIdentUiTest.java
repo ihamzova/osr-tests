@@ -83,8 +83,8 @@ public class ZtpIdentUiTest  extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortA.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortB.getUuid());
+        //a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortA.getUuid());
+        //a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementA.getUuid());
@@ -103,19 +103,14 @@ public class ZtpIdentUiTest  extends BaseTest {
         // WHEN / Action
         a4ResourceInventoryUiRobot.openNetworkElement(a4NetworkElementA);
         a4ResourceInventoryUiRobot.enterZtpIdent(ztpIdent);
-//        Thread.sleep(WAIT_TIME);
+        Thread.sleep(WAIT_TIME);
 
         // THEN
         a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
         a4FrontEndInventoryImporterRobot.checkUpdateNetworkElementPsl(a4NetworkElementA.getUuid(), equipmentDataA);
-        Thread.sleep(WAIT_TIME);
         a4FrontEndInventoryImporterRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
 
-//        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortA.getUuid(), uewegData.getUewegId());
-//        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
-
         // AFTER / Clean-up
-        //a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
-//        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortB.getUuid());
+        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
     }
 }

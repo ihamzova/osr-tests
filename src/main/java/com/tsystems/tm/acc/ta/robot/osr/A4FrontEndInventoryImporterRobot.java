@@ -25,8 +25,6 @@ public class A4FrontEndInventoryImporterRobot {
 
     public void checkUpdateNetworkElementPsl(String networkElementUuid, EquipmentData equipmentData) {
 
-        //TODO: implement dynamic wiremock and its answers here
-
         NetworkElementDto networkElementDto =
                 a4ResourceInventoryClient
                         .getClient()
