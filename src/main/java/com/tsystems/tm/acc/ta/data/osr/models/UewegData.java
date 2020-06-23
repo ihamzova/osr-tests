@@ -8,6 +8,5 @@ public class UewegData {
     String lbz;
     String vendorPortNameA;
     String vendorPortNameB;
-    String endSz;
     String rebellWiremockUuid;
 }

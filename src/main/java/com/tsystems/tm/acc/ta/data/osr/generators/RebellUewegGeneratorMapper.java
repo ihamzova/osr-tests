@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.EndSz;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.Endpoint;
@@ -18,16 +19,21 @@ public class RebellUewegGeneratorMapper {
     final String REBELL_URL = "/resource-order-resource-inventory/v1/uewege?endsz={endSz}";
 
     @Step("Generate REBELL wiremock data")
-    public StubMapping getData(UewegData uewegData) {
-        String endSz = uewegData.getEndSz();
-        endSz = endSz.replace("/", "_");
+    public StubMapping getData(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
+        String endSzA = neA.getVpsz() + "/" + neA.getFsz();
+        endSzA = endSzA.replace("/", "_");
+
+        String endSzB = neB.getVpsz() + "/" + neB.getFsz();
+        endSzB = endSzB.replace("/", "_");
+
+        String endSzQueryParam = endSzA;
 
         List<Ueweg> uewegList = new ArrayList<>();
 
         Ueweg ueweg = new Ueweg()
                 .id(1)
                 .lsz("LSZ")
-                .lszErg(uewegData.getLbz())
+                .lszErg("LszErg")
                 .ordNr("Order Number")
                 .pluralId("Plural ID")
                 .status("ignored")
@@ -41,7 +47,7 @@ public class RebellUewegGeneratorMapper {
                         .portName("ignored")
                         .portPosition("ignored")
                         .vendorPortName(uewegData.getVendorPortNameA())
-                        .endSz("ignored")
+                        .endSz(endSzA)
                         .endSzParts(new EndSz()
                                 .akz("ignored")
                                 .fsz("ignored")
@@ -52,7 +58,7 @@ public class RebellUewegGeneratorMapper {
                         .portName("ignored")
                         .portPosition("ignored")
                         .vendorPortName(uewegData.getVendorPortNameB())
-                        .endSz("ignored")
+                        .endSz(endSzB)
                         .endSzParts(new EndSz()
                                 .akz("ignored")
                                 .fsz("ignored")
@@ -67,7 +73,7 @@ public class RebellUewegGeneratorMapper {
                 .priority(1)
                 .request(new StubMappingRequest()
                         .method("GET")
-                        .url(REBELL_URL.replace("{endSz}", endSz)))
+                        .url(REBELL_URL.replace("{endSz}", endSzQueryParam)))
                 .response(new StubMappingResponse()
                         .status(200)
                         .headers(headers)

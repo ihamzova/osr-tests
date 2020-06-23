@@ -34,7 +34,8 @@ public class ZtpIdentUiTest  extends BaseTest {
     private WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
-    private A4NetworkElement a4NetworkElement;
+    private A4NetworkElement a4NetworkElementA;
+    private A4NetworkElement a4NetworkElementB;
     private A4NetworkElementPort a4NetworkElementPortA;
     private A4NetworkElementPort a4NetworkElementPortB;
     private UewegData uewegData;
@@ -46,8 +47,10 @@ public class ZtpIdentUiTest  extends BaseTest {
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        a4NetworkElement = osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElementA = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
+        a4NetworkElementB = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementB);
         a4NetworkElementPortA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort_logicalLabel_10G_001);
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -58,17 +61,28 @@ public class ZtpIdentUiTest  extends BaseTest {
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElement);
-        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElement);
-        wiremockRobot.setUpRebellWiremock(uewegData);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementA, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
+
+//        /*
+//        This test case requires NEPs with certain Logical Labels, which have to be unique per NEP. Therefore we cannot
+//        execute this test multiple times in parallel. Therefore We have to ensure that no NEP with given these Logical
+//        Lables exists in a4 inventory.
+//        */
+//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
+//        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
+
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
+        wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
     }
 
     @AfterMethod
     public void cleanUp() {
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElement.getUuid());
+        a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementA.getUuid());
+        a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementGroup(a4NetworkElementGroup.getUuid());
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
     }
@@ -79,17 +93,17 @@ public class ZtpIdentUiTest  extends BaseTest {
         String ztpIdent = "ZTP Ident UI Test " + UUID.randomUUID().toString().substring(1, 4);
 
         // WHEN / Action
-        a4ResourceInventoryUiRobot.openNetworkElement(a4NetworkElement);
+        a4ResourceInventoryUiRobot.openNetworkElement(a4NetworkElementA);
         a4ResourceInventoryUiRobot.enterZtpIdent(ztpIdent);
 //        Thread.sleep(WAIT_TIME);
 
         // THEN
-        a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElement, ztpIdent);
-//        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortA.getUuid(), uewegData.getUewegId());
+        a4ResourceInventoryUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
+        a4FrontEndInventoryImporterRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
 
         // AFTER / Clean-up
-//        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
+        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
 //        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortB.getUuid());
     }
 }
