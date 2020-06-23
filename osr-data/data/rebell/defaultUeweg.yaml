@@ -3,6 +3,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.UewegData
 values:
   uewegId: "${randomLong, 100000, 999999}, ${randomLong, 100000, 999999}"
   lbz: "LBZ ${randomLong, 100000, 999999}"
-  vendorPortNameA: "10G/0"
+  vendorPortNameA: "10GE-1"
   vendorPortNameB: "10G/1"
   rebellWiremockUuid: "" # if blank: field will be filled with returned uuid of created wiremock entry

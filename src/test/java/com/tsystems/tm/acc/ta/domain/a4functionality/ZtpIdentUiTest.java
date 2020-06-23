@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 public class ZtpIdentUiTest  extends BaseTest {
-    private static final int WAIT_TIME = 15_000;
+    private static final int WAIT_TIME = 5_000;
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryUiRobot a4ResourceInventoryUiRobot = new A4ResourceInventoryUiRobot();
@@ -56,8 +56,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort_logicalLabel_10G_002);
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
-        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999900);
-        equipmentDataB = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999901);
+        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999901);
+        equipmentDataB = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.defaultEquipment_MatNr_42999900);
     }
 
     @BeforeMethod
@@ -83,6 +83,8 @@ public class ZtpIdentUiTest  extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
+        a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortA.getUuid());
+        a4ResourceInventoryRobot.deleteNetworkElementLink(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementA.getUuid());
@@ -113,7 +115,7 @@ public class ZtpIdentUiTest  extends BaseTest {
 //        a4FrontEndInventoryImporterRobot.checkNetworkElementLinksExist(a4NetworkElementPortB.getUuid(), uewegData.getUewegId());
 
         // AFTER / Clean-up
-        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
+        //a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
 //        a4FrontEndInventoryImporterRobot.cleanUpNetworkElementLinks(a4NetworkElementPortB.getUuid());
     }
 }
