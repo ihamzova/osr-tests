@@ -80,7 +80,6 @@ public class ZtpIdentUiTest  extends BaseTest {
     public void cleanUp() {
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
         wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
-        wiremockRobot.tearDownWiremock(equipmentDataB.getPslWiremockUuid());
 
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
