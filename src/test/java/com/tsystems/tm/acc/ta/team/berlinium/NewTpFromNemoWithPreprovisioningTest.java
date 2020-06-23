@@ -63,7 +63,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4Nemo.createTerminationPoint(tpData, nepData);
 
         // THEN
-//        a4PreProvisioning.checkPostToPreprovisioningWiremock();
+        a4PreProvisioning.checkPostToPreprovisioningWiremock();
 
         // AFTER / Clean-up
         a4Inventory.deleteTerminationPoint(tpData.getUuid());
