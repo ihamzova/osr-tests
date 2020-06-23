@@ -38,7 +38,6 @@ public class ZtpIdentUiTest  extends BaseTest {
     private A4NetworkElementPort a4NetworkElementPortB;
     private UewegData uewegData;
     private EquipmentData equipmentDataA;
-    private EquipmentData equipmentDataB;
 
     @BeforeClass
     public void init() {
@@ -58,10 +57,7 @@ public class ZtpIdentUiTest  extends BaseTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
 
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
-        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_42999901);
-        equipmentDataB = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_42999900);
+        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider().get(EquipmentDataCase.equipment_MatNr_42999901);
     }
 
     @BeforeMethod
@@ -78,14 +74,12 @@ public class ZtpIdentUiTest  extends BaseTest {
 
         wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
         wiremockRobot.setUpPslWiremock(equipmentDataA, a4NetworkElementA);
-        wiremockRobot.setUpPslWiremock(equipmentDataB, a4NetworkElementB);
     }
 
     @AfterMethod
     public void cleanUp() {
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
         wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
-        wiremockRobot.tearDownWiremock(equipmentDataB.getPslWiremockUuid());
 
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
         a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
