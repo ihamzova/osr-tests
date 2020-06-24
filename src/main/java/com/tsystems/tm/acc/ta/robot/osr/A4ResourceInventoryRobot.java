@@ -9,8 +9,10 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invok
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
+import org.testng.internal.collections.Pair;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -288,41 +290,43 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs, TPs, NELs and NSPs")
     public void deleteA4EntriesIncludingChildren(A4ImportCsvData csvData) {
-        List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
+        List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
+        List<Pair<String, String>> vpszAndFszList = getDistinctListOfVpszAndFszFromCsvData(csvData);
 
         /*
         Delete all NEs (and any connected children) first. Don't include deletion of NEGs in this loop to make sure no
         NE is connected to the NEGs anymore.
         Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
-        csvLines.forEach((csvLine) ->
-                deleteA4NetworkElementsIncludingChildren(csvLine.getNeVpsz(), csvLine.getNeFsz())
+        vpszAndFszList.forEach((vpszAndFsz) ->
+                deleteA4NetworkElementsIncludingChildren(vpszAndFsz.first(), vpszAndFsz.second())
         );
 
         // Now delete all NEGs in extra loop
-        csvLines.forEach((csvLine) ->
-                deleteNetworkElementGroups(csvLine.getNegName())
+        negNameList.forEach(
+                this::deleteNetworkElementGroups
         );
     }
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs")
     // Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
     public void deleteA4EntriesIncludingNeps(A4ImportCsvData csvData) {
-        List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
+        List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
+        List<Pair<String, String>> vpszAndFszList = getDistinctListOfVpszAndFszFromCsvData(csvData);
 
         /*
         Delete all NEs (and any connected NEPs) first. Don't include deletion of NEGs in this loop to make sure no
         NE is connected to the NEGs anymore.
         Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
-        csvLines.forEach((csvLine) -> {
-            List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(csvLine.getNeVpsz(), csvLine.getNeFsz());
+        vpszAndFszList.forEach((vpszAndFsz) -> {
+            List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpszAndFsz.first(), vpszAndFsz.second());
 
             neList.forEach((ne) -> {
                 List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
 
                 nepList.forEach((nep) ->
-                    deleteNetworkElementPort(nep.getUuid())
+                        deleteNetworkElementPort(nep.getUuid())
                 );
 
                 deleteNetworkElement(ne.getUuid());
@@ -331,9 +335,29 @@ public class A4ResourceInventoryRobot {
         });
 
         // Now delete all NEGs in extra loop
-        csvLines.forEach((csvLine) ->
-                deleteNetworkElementGroups(csvLine.getNegName())
+        negNameList.forEach(
+                this::deleteNetworkElementGroups
         );
+    }
+
+    // NEGs (by name) can appear in CSV multiple times. We only need to run through cleanup once per NEG
+    private List<String> getDistinctListOfNegNamesFromCsvData(A4ImportCsvData csvData) {
+        return csvData.getCsvLines()
+                .stream()
+                .map(A4ImportCsvLine::getNegName)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    // NEs (by VPSZ & FSZ) can appear in CSV multiple times. We only need to run through cleanup once per NE
+    private List<Pair<String, String>> getDistinctListOfVpszAndFszFromCsvData(A4ImportCsvData csvData) {
+        return csvData.getCsvLines()
+                .stream()
+                .map(
+                        ne -> Pair.create(ne.getNeVpsz(), ne.getNeFsz())
+                )
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 }
