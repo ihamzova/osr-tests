@@ -37,6 +37,7 @@ public class OltAutoCommissioning extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
+    private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
     private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
@@ -88,6 +89,7 @@ public class OltAutoCommissioning extends BaseTest {
         deleteDeviceInResourceInventory(endSz);
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        Thread.sleep(WAIT_TIME_FOR_RENDERING); // EndSz search can not be selected for the user GFNW if the page is not yet finished.
         oltSearchPage.validateUrl();
         oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
 

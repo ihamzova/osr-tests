@@ -76,6 +76,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
 
+        Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
         oltDetailsPage.deleteUplinkConfiguration();
 
