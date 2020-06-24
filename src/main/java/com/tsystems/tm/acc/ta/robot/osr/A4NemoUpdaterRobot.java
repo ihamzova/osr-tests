@@ -105,6 +105,15 @@ public class A4NemoUpdaterRobot {
                 uuidList.add(networkElementPortDto.getUuid())
         );
 
+        //get UUIDs of the group
+        //assumption is that NEG name is unique so that first element can be taken
+        uuidList.add(
+                a4Inventory
+                        .getNetworkElementGroups(csvData
+                                .getCsvLines().stream()
+                                .findFirst().get().getNegName()).get(0).getUuid()
+        );
+
         //check if requests reached Wiremock
         //if so delivery by AMQ-consumer was sucsesful
         uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
