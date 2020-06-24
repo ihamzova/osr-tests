@@ -7,7 +7,9 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.*;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 @Epic("OS&R domain")
@@ -24,6 +26,19 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+
+        // Ensure that no old test data is in the way
+        a4Inventory.deleteNetworkElementGroups(negData);
+    }
+
+    @BeforeMethod
+    public void setup() {
+        // nothing to do
+    }
+
+    @AfterMethod
+    public void cleanup() {
+        a4Inventory.deleteNetworkElementGroups(negData);
     }
 
     @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource")
@@ -32,7 +47,7 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
     @Description("Create new network element in inventory and read it as logical resource")
     public void testCreateNeg_checkLogicalResource_deleteNeg() {
         // GIVEN / Arrange
-        // all done in setUp() method
+        // nothing to do
 
         // WHEN / Action
         a4Inventory.createNetworkElementGroup(negData);
@@ -41,6 +56,6 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
         a4Nemo.checkLogicalResourceIsNetworkElementGroup(negData);
 
         // AFTER / Clean-up
-        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
+        // nothing to do
     }
 }

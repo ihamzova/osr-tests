@@ -22,7 +22,7 @@ public class A4ResourceInventoryServiceRobot {
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
-    @Step("Create termination point represented as logical resource")
+    @Step("Create Termination Point represented as Logical Resource")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
         LogicalResourceUpdate terminationPointLogicalResource = a4TerminationPointGenerator
@@ -36,7 +36,7 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Check network element group as logical resource representation")
+    @Step("Check Network Element Group as Logical Resource representation")
     public void checkLogicalResourceIsNetworkElementGroup(A4NetworkElementGroup negData) {
         String uuid = negData.getUuid();
 

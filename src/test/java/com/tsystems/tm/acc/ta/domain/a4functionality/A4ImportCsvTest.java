@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.*;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -31,15 +32,21 @@ public class A4ImportCsvTest extends BaseTest {
     public void init() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+
+        csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
+
+        // Ensure that no old test data is in the way
+        a4ResourceInventoryRobot.deleteA4CsvEntriesIncludingChildren(csvData);
     }
 
     @BeforeMethod
     public void setup() {
-        csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
+        // nothing to do
+    }
 
-//        // Ensure clean state before start
-//        a4Inventory.deleteNetworkElements(csvData);
-//        a4Inventory.deleteGroupByName(csvData);
+    @AfterMethod
+    public void cleanup() {
+        a4ResourceInventoryRobot.deleteA4EntriesIncludingNeps(csvData);
     }
 
     @Test(description = "DIGIHUB-xxxxx Import Network Element (Group) CSV file into A4 Resource Inventory")
@@ -58,7 +65,6 @@ public class A4ImportCsvTest extends BaseTest {
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
 
         // After / Clean-up
-        a4ResourceInventoryRobot.deleteNetworkElements(csvData);
-        a4ResourceInventoryRobot.deleteGroupByName(csvData);
+        // nothing to do
     }
 }

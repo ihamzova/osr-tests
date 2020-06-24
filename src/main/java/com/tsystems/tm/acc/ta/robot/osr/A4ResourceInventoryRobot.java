@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
-import io.restassured.response.ResponseOptions;
 import org.testng.Assert;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class A4ResourceInventoryRobot {
 
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
 
-    @Step("Create new network element group in A4 inventory")
+    @Step("Create new Network Element Group in A4 resource inventory")
     public void createNetworkElementGroup(A4NetworkElementGroup negData) {
         A4NetworkElementGroupGenerator a4NetworkElementGroupGenerator = new A4NetworkElementGroupGenerator();
         NetworkElementGroupDto negDto = a4NetworkElementGroupGenerator.generateAsDto(negData);
@@ -36,7 +35,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element group from A4 inventory")
+    @Step("Delete existing Network Element Group from A4 resource inventory")
     public void deleteNetworkElementGroup(String uuid) {
         a4ResourceInventory
                 .networkElementGroups()
@@ -45,7 +44,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element in A4 inventory")
+    @Step("Create new Network Element in A4 resource inventory")
     public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
         A4NetworkElementGenerator a4NetworkElementGenerator = new A4NetworkElementGenerator();
         NetworkElementDto neDto = a4NetworkElementGenerator.generateAsDto(neData, negData);
@@ -58,7 +57,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element from A4 inventory")
+    @Step("Delete existing Network Element from A4 resource inventory")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
                 .networkElements()
@@ -67,7 +66,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create network element port in A4 inventory")
+    @Step("Create new Network Element Port in A4 resource inventory")
     public void createNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
         A4NetworkElementPortGenerator a4NetworkElementPortGenerator = new A4NetworkElementPortGenerator();
         NetworkElementPortDto nepDto = a4NetworkElementPortGenerator.generateAsDto(nepData, neData);
@@ -80,7 +79,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network element port from A4 inventory")
+    @Step("Delete existing Network Element Port from A4 resource inventory")
     public void deleteNetworkElementPort(String uuid) {
         a4ResourceInventory
                 .networkElementPorts()
@@ -89,33 +88,7 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Delete network element link from A4 inventory")
-    public void deleteNetworkElementLinksByNePortUuid(String portUuid) {
-        List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
-                .networkElementLinks()
-                .listNetworkElementLinks()
-                .networkElementPortUuidQuery(portUuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        networkElementLinkDtoList.forEach((nel) ->
-                a4ResourceInventory
-                        .networkElementLinks()
-                        .deleteNetworkElementLink()
-                        .uuidPath(nel.getUuid())
-                        .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)))
-        );
-    }
-
-    @Step("Delete termination point from A4 inventory")
-    public void deleteTerminationPoint(String uuid) {
-        a4ResourceInventory
-                .terminationPoints()
-                .deleteTerminationPoint()
-                .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-    }
-
-    @Step("Delete network element link from A4 inventory")
+    @Step("Delete existing Network ElementLink from A4 resource inventory")
     public void deleteNetworkElementLink(String uuid) {
         a4ResourceInventory
                 .networkElementLinks()
@@ -124,52 +97,49 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create NEG, NE & NEP in A4 inventory")
-    public void setUpPrerequisiteElements(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepData) {
-        createNetworkElementGroup(negData);
-        createNetworkElement(neData, negData);
-        createNetworkElementPort(nepData, neData);
+    @Step("Delete all Network Element Links connected to given Network Element Port")
+    public void deleteNetworkElementLinksConnectedToNePort(String portUuid) {
+        List<NetworkElementLinkDto> networkElementLinkDtoList = getNetworkElementLinksByNePort(portUuid);
+
+        networkElementLinkDtoList.forEach((nel) ->
+                deleteNetworkElementLink(nel.getUuid())
+        );
     }
 
-    @Step("Delete NEG, NE & NEP from A4 inventory")
-    public void deletePrerequisiteElements(String negUuid, String neUuid, String nepUuid) {
-        deleteNetworkElementPort(nepUuid);
-        deleteNetworkElement(neUuid);
-        deleteNetworkElementGroup(negUuid);
+    @Step("Delete existing Termination Point from A4 resource inventory")
+    public void deleteTerminationPoint(String uuid) {
+        a4ResourceInventory
+                .terminationPoints()
+                .deleteTerminationPoint()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Check if one network service profile connected to termination point exists")
+    @Step("Check if one Network Service Profile connected to Termination Point exists")
     public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), 1);
     }
 
-    @Step("Delete network service profiles connected to termination point")
-    public void deleteNetworkServiceProfilesConnectedToTerminationPoint(String uuidTp) {
-        // First: Find all NSPs connected to given TP (expected: only 1 NSP connected)
-        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
-
-        // Second: Delete found NSPs
+    @Step("Delete existing Network Service Profile from A4 resource inventory")
+    public void deleteNetworkServiceProfile(String uuid) {
         a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .deleteNetworkServiceProfileFtthAccess()
-                .uuidPath(nspList.get(0).getUuid())
+                .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    public void deletePortsOfNetworkElement(String neUuid) {
-        List<NetworkElementPortDto> ports = a4ResourceInventory
-                .networkElementPorts()
-                .findNetworkElementPorts()
-                .networkElementUuidQuery(neUuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    @Step("Delete all Network Service Profiles connected to given Termination Point")
+    public void deleteNetworkServiceProfilesConnectedToTerminationPoint(String uuidTp) {
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
 
-        ports.forEach(networkElementPortDto ->
-                deleteNetworkElementPort(networkElementPortDto.getUuid())
+        nspList.forEach((nsp) ->
+                deleteNetworkServiceProfile(nsp.getUuid())
         );
     }
 
-    @Step("Get a list of Network Service Profiles based on Termination Point UUID")
+    @Step("Get a list of Network Service Profiles by Termination Point UUID")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
@@ -178,8 +148,8 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get a list of Network Element Links based on Network Element Port UUID")
-    public List<NetworkElementLinkDto> getNetworkElementLinksByNePortUuid(String uuidNep) {
+    @Step("Get a list of Network Element Links by Network Element Port UUID")
+    public List<NetworkElementLinkDto> getNetworkElementLinksByNePort(String uuidNep) {
         return a4ResourceInventory
                 .networkElementLinks()
                 .listNetworkElementLinks()
@@ -187,33 +157,20 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete list of network Elements by vpsz/fsz")
-    public void deleteNetworkElements(A4ImportCsvData csvData) {
-        List<A4ImportCsvLine> list = csvData.getCsvLines();
-
-        list.forEach(a4ResourceInventoryEntry -> {
-            List<NetworkElementDto> actualNeList = a4ResourceInventory
-                    .networkElements()
-                    .listNetworkElements()
-                    .fszQuery(a4ResourceInventoryEntry.getNeFsz())
-                    .vpszQuery(a4ResourceInventoryEntry.getNeVpsz())
-                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-            actualNeList.stream().findFirst().ifPresent(networkElementDto -> {
-                deletePortsOfNetworkElement(networkElementDto.getUuid());
-                deleteNetworkElement(networkElementDto.getUuid());
-            });
-        });
-    }
-
-    @Step("GET network element uuid by VPSZ/FSZ")
-    public NetworkElementDto getNetworkElementByVpszFsz(String vpsz, String fsz) {
-        List<NetworkElementDto> networkElementDtoList = a4ResourceInventory
+    @Step("Get a list of Network Elements by by VPSZ/FSZ")
+    // As VPSZ & FSZ are together a unique constraint, the list will have either 0 or 1 entries
+    public List<NetworkElementDto> getNetworkElementsByVpszFsz(String vpsz, String fsz) {
+        return a4ResourceInventory
                 .networkElements()
                 .listNetworkElements()
                 .vpszQuery(vpsz)
                 .fszQuery(fsz)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get an existing Network Elements by VPSZ/FSZ")
+    public NetworkElementDto getExistingNetworkElementByVpszFsz(String vpsz, String fsz) {
+        List<NetworkElementDto> networkElementDtoList = getNetworkElementsByVpszFsz(vpsz, fsz);
 
         // List has only size 1, return uuid of element
         // If list has not size 1 an error occurred
@@ -222,8 +179,8 @@ public class A4ResourceInventoryRobot {
         return networkElementDtoList.get(0);
     }
 
-    @Step("GET network element port uuid list by networkElementUuid")
-    public List<NetworkElementPortDto> getNetworkElementPorts(String networkElementUuid) {
+    @Step("Get a list of Network Element Ports by Network Element")
+    public List<NetworkElementPortDto> getNetworkElementPortsByNetworkElement(String networkElementUuid) {
         return a4ResourceInventory
                 .networkElementPorts()
                 .findNetworkElementPorts()
@@ -231,33 +188,21 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete network group by name")
-    public void deleteGroupByName(A4ImportCsvData csvData) {
-        String groupName = csvData.getCsvLines().get(0).getNegName();
-
-        List<NetworkElementGroupDto> actualNegList = a4ResourceInventory
-                .networkElementGroups()
-                .listNetworkElementGroups()
-                .nameQuery(groupName)
+    @Step("Get a list of Termination Points by Network Element Port")
+    public List<TerminationPointDto> getTerminationPointsByNePort(String tpUuid) {
+        return a4ResourceInventory
+                .terminationPoints()
+                .findTerminationPoints()
+                .parentUuidQuery(tpUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        actualNegList.stream().findFirst().ifPresent(networkElementGroupDto -> a4ResourceInventory
-                .networkElementGroups()
-                .deleteNetworkElementGroup()
-                .uuidPath(networkElementGroupDto.getUuid())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204))));
     }
 
-    @Step("Check created NEL")
-    public void checkNetworkElementLinkExists(UewegData uewegData,
-                                              String uuidNetworkElementPortA,
-                                              String uuidNetworkElementPortB) {
+    @Step("Check that NEL was created and is connected to Network Element Ports")
+    public void checkNetworkElementLinkConnectedToNePortsExists(UewegData uewegData,
+                                                                String uuidNetworkElementPortA,
+                                                                String uuidNetworkElementPortB) {
 
-        List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
-                .networkElementLinks()
-                .listNetworkElementLinks()
-                .networkElementPortUuidQuery(uuidNetworkElementPortA)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<NetworkElementLinkDto> networkElementLinkDtoList = getNetworkElementLinksByNePort(uuidNetworkElementPortA);
 
         assertEquals(networkElementLinkDtoList.size(), 1);
 
@@ -266,73 +211,127 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortBUuid(), uuidNetworkElementPortB);
     }
 
-    @Step("Delete created NELs")
-    public void cleanUpNetworkElementLinks(String uuidNetworkElementPort) {
-        List<NetworkElementLinkDto> networkElementLinkDtoList = a4ResourceInventory
-                .networkElementLinks()
-                .listNetworkElementLinks()
-                .networkElementPortUuidQuery(uuidNetworkElementPort)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        networkElementLinkDtoList.forEach((nel) ->
-                deleteNetworkElementLink(nel.getUuid())
-        );
-    }
-
-    public void checkNetworkElementUpdateWithPslData(String networkElementUuid, EquipmentData equipmentData) {
-        NetworkElementDto networkElementDto = a4ResourceInventory
+    @Step("Get existing Network Element by UUID")
+    public NetworkElementDto getExistingNetworkElement(String uuid) {
+        return a4ResourceInventory
                 .networkElements()
                 .findNetworkElement()
-                .uuidPath(networkElementUuid)
+                .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Check that existing Network Element has been enriched with data from PSL")
+    public void checkNetworkElementIsUpdatedWithPslData(String networkElementUuid, EquipmentData equipmentData) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(networkElementUuid);
 
         assertEquals(networkElementDto.getUuid(), networkElementUuid);
         assertEquals(networkElementDto.getPlannedMatNumber(), equipmentData.getSubmt());
         assertEquals(networkElementDto.getKlsId(), equipmentData.getKlsId());
     }
 
+    @Step("Delete all Network Element Groups with a given name")
     /*
-    Before a Network Element Port (NEP) can be deleted from A4 Resource Inventory, all belonging/connected "child"
-    entities have to be deleted first. Candidates are Network Element Links (NEL), Termination Points (TP), and their
-    "children" Network Service Profiles (NSP). This robot takes care of all that.
+    Unfortunately this cannot be combined with deleteA4NetworkElementsIncludingChildren method, because not possible to
+    get all NEs connected to a NEG. This means that there's still some danger that some old test data collides with the
+    newly-to-be-created test data. To be solved with DIGIHUB-68288
      */
-    @Step("Wipe NEP (existing or not) and any connected TPs, NELs and NSPs")
-    public void wipeA4NetworkElementPortsIncludingChildren(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        // Find NEP with LogicalLabel
-        List<NetworkElementPortDto> nepList = a4ResourceInventory
-                .networkElementPorts()
-                .findNetworkElementPorts()
-                .logicalLabelQuery(nepData.getLogicalLabel())
-                .networkElementUuidQuery(neData.getUuid())
+    public void deleteNetworkElementGroups(A4NetworkElementGroup negData) {
+        deleteNetworkElementGroups(negData.getName());
+    }
+
+    @Step("Get a list of Network Element Groups by name")
+    // As name is unique constraint, the list will have either 0 or 1 entries
+    public List<NetworkElementGroupDto> getNetworkElementGroupsByName(String name) {
+        return a4ResourceInventory
+                .networkElementGroups()
+                .listNetworkElementGroups()
+                .nameQuery(name)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
-        nepList.forEach((nep) -> {
+    @Step("Delete all Network Element Groups with a given name")
+    public void deleteNetworkElementGroups(String negName) {
+        List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
 
-            // Find and delete any NELs
-            deleteNetworkElementLinksByNePortUuid(nep.getUuid());
+        negList.forEach((neg) ->
+                deleteNetworkElementGroup(neg.getUuid())
+        );
+    }
 
-            // Find any TPs
-            List<TerminationPointDto> tpList = a4ResourceInventory
-                    .terminationPoints()
-                    .findTerminationPoints()
-                    .parentUuidQuery(nep.getUuid())
-                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
+    public void deleteA4NetworkElementsIncludingChildren(A4NetworkElement neData) {
+        deleteA4NetworkElementsIncludingChildren(neData.getVpsz(), neData.getFsz());
+    }
 
-            tpList.forEach((tp) -> {
-                // Find and delete any NSPs
-                deleteNetworkServiceProfilesConnectedToTerminationPoint(tp.getUuid());
+    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
+    public void deleteA4NetworkElementsIncludingChildren(String vpsz, String fsz) {
+        List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
 
-                // Delete any found TPs
-                deleteTerminationPoint(tp.getUuid());
+        neList.forEach((ne) -> {
+            List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+
+            nepList.forEach((nep) -> {
+                deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
+                List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
+
+                tpList.forEach((tp) -> {
+                    deleteNetworkServiceProfilesConnectedToTerminationPoint(tp.getUuid());
+                    deleteTerminationPoint(tp.getUuid());
+                });
+
+                deleteNetworkElementPort(nep.getUuid());
             });
 
-            // Delete NEP (existing or not)
-            a4ResourceInventory
-                    .networkElementPorts()
-                    .deleteNetworkElementPort()
-                    .uuidPath(nep.getUuid())
-                    .execute(ResponseOptions::thenReturn); // do not care about 204 or 404
+            deleteNetworkElement(ne.getUuid());
         });
+    }
+
+    @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs, TPs, NELs and NSPs")
+    public void deleteA4CsvEntriesIncludingChildren(A4ImportCsvData csvData) {
+        List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
+
+        /*
+        Delete all NEs (and any connected children) first. Don't include deletion of NEGs in this loop to make sure no
+        NE is connected to the NEGs anymore.
+         */
+        csvLines.forEach((csvLine) ->
+                deleteA4NetworkElementsIncludingChildren(csvLine.getNeVpsz(), csvLine.getNeFsz())
+        );
+
+        // Now delete all NEGs in extra loop
+        csvLines.forEach((csvLine) ->
+                deleteNetworkElementGroups(csvLine.getNegName())
+        );
+    }
+
+    @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs")
+    public void deleteA4EntriesIncludingNeps(A4ImportCsvData csvData) {
+        List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
+
+        /*
+        Delete all NEs (and any connected NEPs) first. Don't include deletion of NEGs in this loop to make sure no
+        NE is connected to the NEGs anymore.
+        Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
+         */
+        csvLines.forEach((csvLine) -> {
+            List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(csvLine.getNeVpsz(), csvLine.getNeFsz());
+
+            neList.forEach((ne) -> {
+                List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+
+                nepList.forEach((nep) ->
+                    deleteNetworkElementPort(nep.getUuid())
+                );
+
+                deleteNetworkElement(ne.getUuid());
+            });
+
+        });
+
+        // Now delete all NEGs in extra loop
+        csvLines.forEach((csvLine) ->
+                deleteNetworkElementGroups(csvLine.getNegName())
+        );
     }
 
 }

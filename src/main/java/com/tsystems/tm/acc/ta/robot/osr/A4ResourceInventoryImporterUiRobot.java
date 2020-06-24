@@ -17,7 +17,7 @@ import java.util.UUID;
 public class A4ResourceInventoryImporterUiRobot {
     private A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
 
-    @Step("Open UI and search for existing network element")
+    @Step("Open UI, log in, and search for existing Network Element")
     public void openNetworkElement(A4NetworkElement neData) {
         A4StartPage
                 .login()
@@ -32,7 +32,7 @@ public class A4ResourceInventoryImporterUiRobot {
         installationPage.enterZtpIdent(value);
     }
 
-    @Step("Open monitoring page and check network element values")
+    @Step("Open monitoring page and check Network Element values")
     public void checkMonitoringPage(A4NetworkElement neData, String ztpIdent) {
         InstallationPage installationPage = new InstallationPage();
         installationPage
@@ -40,7 +40,7 @@ public class A4ResourceInventoryImporterUiRobot {
                 .checkNeData(neData, ztpIdent);
     }
 
-    @Step("Open UI and upload CSV file, then submit")
+    @Step("Open UI, log in, and upload CSV file, then submit")
     public void importCsvFileViaUi(A4ImportCsvData csvData) {
         File csvFile = Paths.get("target/", "a4Testcase" + UUID.randomUUID().toString().substring(1, 6)
                 + ".csv").toFile();
@@ -53,7 +53,7 @@ public class A4ResourceInventoryImporterUiRobot {
                 uploadCSV(csvFile);
     }
 
-    @Step("validate network elements")
+    @Step("validate Network Elements")
     public void checkNetworkElementsViaUi(A4ImportCsvData csvData) {
         List<A4ImportCsvLine> list = csvData.getCsvLines();
         //TODO: maybe this method needs to be more flexible - here we expect the correct page to be already open

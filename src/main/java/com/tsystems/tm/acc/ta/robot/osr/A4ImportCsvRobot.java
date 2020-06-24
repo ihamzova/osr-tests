@@ -18,6 +18,7 @@ import static io.restassured.RestAssured.given;
 
 public class A4ImportCsvRobot {
 
+    @Step("Import CSV file via REST interface")
     public void importCsvFileViaRestInterface(File csvFile) {
         final String endPoint = "/uploadCsvFile/";
         final String app = "a4-inventory-importer";
@@ -34,7 +35,7 @@ public class A4ImportCsvRobot {
                 .assertThat().statusCode(HttpStatus.SC_OK);
     }
 
-    @Step("Generate CSV and save as file")
+    @Step("Create CSV file")
     public void generateCsvFile(A4ImportCsvData csvData, File targetFile) {
         A4ImportCsvDataGenerator a4ImportCsvDataGenerator = new A4ImportCsvDataGenerator();
         List<A4ResourceInventoryEntry> data = a4ImportCsvDataGenerator.generateCsv(csvData);
