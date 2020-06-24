@@ -198,9 +198,9 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that NEL was created and is connected to Network Element Ports")
-    public void checkNetworkElementLinkConnectedToNePortsExists(UewegData uewegData,
-                                                                String uuidNetworkElementPortA,
-                                                                String uuidNetworkElementPortB) {
+    public void checkNetworkElementLinkConnectedToNePortExists(UewegData uewegData,
+                                                               String uuidNetworkElementPortA,
+                                                               String uuidNetworkElementPortB) {
 
         List<NetworkElementLinkDto> networkElementLinkDtoList = getNetworkElementLinksByNePort(uuidNetworkElementPortA);
 
@@ -287,12 +287,13 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs, TPs, NELs and NSPs")
-    public void deleteA4CsvEntriesIncludingChildren(A4ImportCsvData csvData) {
+    public void deleteA4EntriesIncludingChildren(A4ImportCsvData csvData) {
         List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
 
         /*
         Delete all NEs (and any connected children) first. Don't include deletion of NEGs in this loop to make sure no
         NE is connected to the NEGs anymore.
+        Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
         csvLines.forEach((csvLine) ->
                 deleteA4NetworkElementsIncludingChildren(csvLine.getNeVpsz(), csvLine.getNeFsz())
@@ -305,13 +306,14 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs")
+    // Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
     public void deleteA4EntriesIncludingNeps(A4ImportCsvData csvData) {
         List<A4ImportCsvLine> csvLines = csvData.getCsvLines();
 
         /*
         Delete all NEs (and any connected NEPs) first. Don't include deletion of NEGs in this loop to make sure no
         NE is connected to the NEGs anymore.
-        Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
+        Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
         csvLines.forEach((csvLine) -> {
             List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(csvLine.getNeVpsz(), csvLine.getNeFsz());

@@ -101,7 +101,7 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElementA.getUuid(), equipmentDataA);
         a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElementA.getUuid(), "PUT",
                 2);
-        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortsExists(uewegData, a4NetworkElementPortA.getUuid(),
+        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(),
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
 

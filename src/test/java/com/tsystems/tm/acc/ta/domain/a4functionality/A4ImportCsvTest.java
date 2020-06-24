@@ -36,7 +36,7 @@ public class A4ImportCsvTest extends BaseTest {
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
 
         // Ensure that no old test data is in the way
-        a4ResourceInventoryRobot.deleteA4CsvEntriesIncludingChildren(csvData);
+        a4ResourceInventoryRobot.deleteA4EntriesIncludingChildren(csvData);
     }
 
     @BeforeMethod
