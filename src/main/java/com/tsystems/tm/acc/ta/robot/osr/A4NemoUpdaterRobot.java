@@ -109,13 +109,13 @@ public class A4NemoUpdaterRobot {
         //assumption is that NEG name is unique so that first element can be taken
         uuidList.add(
                 a4Inventory
-                        .getNetworkElementGroups(csvData
+                        .getNetworkElementGroupsByName(csvData
                                 .getCsvLines().stream()
                                 .findFirst().get().getNegName()).get(0).getUuid()
         );
 
         //check if requests reached Wiremock
-        //if so delivery by AMQ-consumer was sucsesful
+        //if so delivery by AMQ-consumer was successful
         uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
     }
 }
