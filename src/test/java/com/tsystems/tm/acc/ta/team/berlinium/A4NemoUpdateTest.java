@@ -7,7 +7,9 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import io.qameta.allure.*;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
@@ -26,6 +28,19 @@ public class A4NemoUpdateTest extends ApiTest {
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+
+        // Ensure that no old test data is in the way
+        a4Inventory.deleteNetworkElementGroups(negData);
+    }
+
+    @BeforeMethod
+    public void setup() {
+        a4Inventory.createNetworkElementGroup(negData);
+    }
+
+    @AfterMethod
+    public void cleanup() {
+        a4Inventory.deleteNetworkElementGroups(negData);
     }
 
     @Test(description = "DIGIHUB-xxxxx Trigger an update call (PUT) to NEMO for existing network element group")
@@ -34,7 +49,7 @@ public class A4NemoUpdateTest extends ApiTest {
     @Description("Trigger an update call to NEMO for existing network element group")
     public void testNemoUpdateWithNeg() {
         // GIVEN / Arrange
-        a4Inventory.createNetworkElementGroup(negData);
+        // nothing to do
 
         // WHEN / Action
         a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
@@ -43,7 +58,7 @@ public class A4NemoUpdateTest extends ApiTest {
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(negData.getUuid());
 
         // AFTER / Clean-up
-        a4Inventory.deleteNetworkElementGroup(negData.getUuid());
+        // nothing to do
     }
 
     @Test(description = "DIGIHUB-xxxxx Trigger an update call (DELETE) to NEMO for non-existing entity type element")

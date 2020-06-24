@@ -56,10 +56,14 @@ public class ZtpIdentUiTest  extends BaseTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
-
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_42999901);
+
+        // Ensure that no old test data is in the way
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
+        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
     @BeforeMethod
@@ -67,13 +71,8 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementA, a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
-
-        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortA, a4NetworkElementA);
-        a4ResourceInventoryRobot.wipeA4NetworkElementPortsIncludingChildren(a4NetworkElementPortB, a4NetworkElementB);
-
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
-
         wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
         wiremockRobot.setUpPslWiremock(equipmentDataA, a4NetworkElementA);
     }
@@ -82,12 +81,9 @@ public class ZtpIdentUiTest  extends BaseTest {
     public void cleanUp() {
         wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
         wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
-
-        a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortA.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElementPort(a4NetworkElementPortB.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementA.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElement(a4NetworkElementB.getUuid());
-        a4ResourceInventoryRobot.deleteNetworkElementGroup(a4NetworkElementGroup.getUuid());
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
+        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
     @Test(description = "DIGIHUB-xxxxx Installation user enters ZTP Ident for Network Element in UI")
@@ -102,14 +98,14 @@ public class ZtpIdentUiTest  extends BaseTest {
         // THEN
         a4ResourceInventoryImporterUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
         Thread.sleep(WAIT_TIME);
-        a4ResourceInventoryRobot.checkNetworkElementUpdateWithPslData(a4NetworkElementA.getUuid(), equipmentDataA);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElementA.getUuid(), equipmentDataA);
         a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElementA.getUuid(), "PUT",
                 2);
-        a4ResourceInventoryRobot.checkNetworkElementLinkExists(uewegData, a4NetworkElementPortA.getUuid(),
+        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortsExists(uewegData, a4NetworkElementPortA.getUuid(),
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
 
         // AFTER / Clean-up
-        a4ResourceInventoryRobot.cleanUpNetworkElementLinks(a4NetworkElementPortA.getUuid());
+        // nothing to do
     }
 }

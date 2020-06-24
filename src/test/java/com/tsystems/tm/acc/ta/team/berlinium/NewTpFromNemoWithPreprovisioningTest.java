@@ -39,16 +39,23 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
+
+        // Ensure that no old test data is in the way
+        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
+        a4Inventory.deleteNetworkElementGroups(negData);
     }
 
     @BeforeMethod
-    public void setUp() {
-        a4Inventory.setUpPrerequisiteElements(negData, neData, nepData);
+    public void setup() {
+        a4Inventory.createNetworkElementGroup(negData);
+        a4Inventory.createNetworkElement(neData, negData);
+        a4Inventory.createNetworkElementPort(nepData, neData);
     }
 
     @AfterMethod
-    public void cleanUp() {
-        a4Inventory.deletePrerequisiteElements(negData.getUuid(), neData.getUuid(), nepData.getUuid());
+    public void cleanup() {
+        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
+        a4Inventory.deleteNetworkElementGroups(negData);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning")
@@ -66,6 +73,6 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
 
         // AFTER / Clean-up
-        a4Inventory.deleteTerminationPoint(tpData.getUuid());
+        // nothing to do
     }
 }

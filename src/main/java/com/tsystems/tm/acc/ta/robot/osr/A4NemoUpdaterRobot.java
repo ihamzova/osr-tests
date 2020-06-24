@@ -76,7 +76,7 @@ public class A4NemoUpdaterRobot {
     @Step("Check if PUT request to NEMO wiremock with network element link has happened")
     public void checkNetworkElementLinkPutRequestToNemoWiremock(String uuidNep) {
         List<NetworkElementLinkDto> nelList = a4Inventory
-                .getNetworkElementLinksByNePortUuid(uuidNep);
+                .getNetworkElementLinksByNePort(uuidNep);
         Assert.assertEquals(nelList.size(), 1);
 
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
@@ -90,15 +90,14 @@ public class A4NemoUpdaterRobot {
         List<String> uuidList = new ArrayList<>();
 
         csvData.getCsvLines().forEach((csvLine) ->
-                uuidList.add(a4Inventory.getNetworkElementByVpszFsz(csvLine.getNeVpsz(),
-                        csvLine.getNeFsz()).getUuid())
+                uuidList.add(a4Inventory.getExistingNetworkElementByVpszFsz(csvLine.getNeVpsz(), csvLine.getNeFsz()).getUuid())
         );
 
         //get the ports of each NE
         List<NetworkElementPortDto> networkElementPortDtoList = new ArrayList<>();
 
         uuidList.forEach((neUuid) ->
-                networkElementPortDtoList.addAll(a4Inventory.getNetworkElementPorts(neUuid))
+                networkElementPortDtoList.addAll(a4Inventory.getNetworkElementPortsByNetworkElement(neUuid))
         );
 
         //add uuids of each port to uuidList
@@ -110,13 +109,13 @@ public class A4NemoUpdaterRobot {
         //assumption is that NEG name is unique so that first element can be taken
         uuidList.add(
                 a4Inventory
-                        .getNetworkElementGroups(csvData
+                        .getNetworkElementGroupsByName(csvData
                                 .getCsvLines().stream()
                                 .findFirst().get().getNegName()).get(0).getUuid()
         );
 
         //check if requests reached Wiremock
-        //if so delivery by AMQ-consumer was sucsesful
+        //if so delivery by AMQ-consumer was successful
         uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
     }
 }
