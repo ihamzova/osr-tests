@@ -97,7 +97,7 @@ public class OltCommissioningRobot {
 
         Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
 
-        List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getDefaultNeProfile().getAnpTag().getAnpTag())
+        List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
                 .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
 
         Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT);
