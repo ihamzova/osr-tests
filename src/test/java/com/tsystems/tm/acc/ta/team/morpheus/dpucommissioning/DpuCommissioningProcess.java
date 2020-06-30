@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -19,12 +20,15 @@ import java.util.List;
 public class DpuCommissioningProcess extends BaseTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;
+    private ETCDRobot etcdRobot;
     private boolean isAsyncScenario = false;
 
     @BeforeClass
     public void init(){
         dpuCommissioningRobot = new DpuCommissioningRobot();
+        etcdRobot = new ETCDRobot();
     }
+
     @AfterMethod
     public void cleanup(){
         dpuCommissioningRobot.cleanup();
@@ -414,4 +418,35 @@ public class DpuCommissioningProcess extends BaseTest {
         //TODO :
         //dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuSealEmsCheckValues);
     }
+
+    @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
+    @Description("Positive case. DPU-commisioning without errors")
+    public void dpuCommissioningPositiveDomain(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
+        dpuCommissioningRobot.setUpWiremock(olt,dpu,isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read DPU device data]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read OltPonPort Data]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read OltUpLinkPortData]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Get Unique OnuId for DPU]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read BackhaulId]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read BackhaulId]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure ANCP on BNG][call]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure ANCP on BNG][callback]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Read ANCP Info]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure DPU at OLT][call]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure DPU at OLT][callback]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure DPU Ems][call]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Configure DPU Ems][callback]");
+        etcdRobot.checkEtcdValue(dpuCommissioningRobot.getBusinessKey(), "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]");
+
+
+    }
+
 }

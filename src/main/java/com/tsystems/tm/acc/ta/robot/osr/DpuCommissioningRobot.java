@@ -28,6 +28,7 @@ public class DpuCommissioningRobot {
     private static final Long DELAY = 8_000L;
     private DpuCommissioningClient dpuCommissioningClient;
     private DpuCommissioningGenerator dpuCommissioningGenerator;
+    public String businessKey;
 
     @Step("Start dpuCommissioning")
     public void startProcess(String endsz) {
@@ -42,6 +43,13 @@ public class DpuCommissioningRobot {
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        businessKey = response.getBusinessKey();
+    }
+
+    @Step("get businessKey")
+    public String getBusinessKey(){
+        return businessKey;
     }
 
     @Step("setUp wiremock for TeamLevel Test")
