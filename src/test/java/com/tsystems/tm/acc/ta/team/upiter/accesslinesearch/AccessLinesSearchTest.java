@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.tsystems.tm.acc.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_OK_200;
 
 public class AccessLinesSearchTest extends BaseTest {
