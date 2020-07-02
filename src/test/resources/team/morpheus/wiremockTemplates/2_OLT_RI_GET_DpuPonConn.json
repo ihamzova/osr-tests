@@ -2,7 +2,7 @@
   "id":"e80fa25a-3c8e-4d0a-8e4f-a47c7a4830d6",
   "request": {
     "method": "GET",
-    "urlPath": "/api/oltResourceInventory/v1/dpu/dpuPonConnection",
+    "urlPath": "/resource-order-resource-inventory/v1/dpu/dpuPonConnection",
     "queryParameters": {
       "dpuPonPortEndsz": {
         "matches": "###ENDSZ###"

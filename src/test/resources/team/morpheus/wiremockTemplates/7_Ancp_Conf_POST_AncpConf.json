@@ -1,7 +1,7 @@
 {
   "id": "edfe7cbc-de1c-4b62-a554-469e8fa784eb",
   "request": {
-    "urlPath": "/api/ancpConfiguration/v2/ancp",
+    "urlPath": "/resource-order-resource-inventory/v2/ancp/configuration",
     "method": "POST",
     "queryParameters": {
       "uplinkId": {

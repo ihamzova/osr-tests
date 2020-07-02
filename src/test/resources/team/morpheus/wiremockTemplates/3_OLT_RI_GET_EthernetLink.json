@@ -3,7 +3,7 @@
   "priority": 2,
   "request": {
     "method": "GET",
-    "urlPath": "/api/oltResourceInventory/v1/olt/findEthernetLinksByEndsz",
+    "urlPath": "/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz",
     "queryParameters": {
       "oltEndSz": {
         "matches": "###OLT_ENDSZ###"
