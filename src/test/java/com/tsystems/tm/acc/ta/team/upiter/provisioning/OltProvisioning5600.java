@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,8 +35,9 @@ import static io.restassured.RestAssured.given;
 
 public class OltProvisioning5600 extends ApiTest {
 
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 80_000;
-    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * 75_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 100_000;
+    private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * LATENCY_FOR_PORT_PROVISIONING;
+    private static final Integer LATENCY_STEP = 20_000;
 
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -43,9 +45,11 @@ public class OltProvisioning5600 extends ApiTest {
     private PortProvisioning portProvisioningPartly;
     private PortProvisioning portProvisioningFully;
     private PortProvisioning portWithInActiveLines;
+    private int overallLatency;
 
     @BeforeMethod
     public void prepareData() throws InterruptedException {
+        overallLatency = 0;
         clearDataBase();
         Thread.sleep(1000);
         fillDataBase();
@@ -71,28 +75,28 @@ public class OltProvisioning5600 extends ApiTest {
     @TmsLink("DIGIHUB-29664")
     @Description("Port provisioning case when port completely free")
     public void portProvisioningEmpty() throws InterruptedException {
-        testPortProvisioning(portEmpty, LATENCY_FOR_PORT_PROVISIONING, false);
+        testPortProvisioning(portEmpty, false);
     }
 
     @Test
     @TmsLink("DIGIHUB-32288")
     @Description("Port provisioning case when port partly occupied")
     public void portProvisioningPartly() throws InterruptedException {
-        testPortProvisioning(portProvisioningPartly, LATENCY_FOR_PORT_PROVISIONING / 2, false);
+        testPortProvisioning(portProvisioningPartly, false);
     }
 
     @Test
     @TmsLink("DIGIHUB-40631")
     @Description("Port provisioning case when port completely occupied")
     public void portProvisioningFully() throws InterruptedException {
-        testPortProvisioning(portProvisioningFully, 1_000, false);
+        testPortProvisioning(portProvisioningFully, false);
     }
 
     @Test
     @TmsLink("DIGIHUB-32026")
     @Description("Port provisioning case when port has InActive Lines")
     public void portProvisioningWithInactiveLines() throws InterruptedException {
-        testPortProvisioning(portWithInActiveLines, LATENCY_FOR_PORT_PROVISIONING / 2, true);
+        testPortProvisioning(portWithInActiveLines,  true);
     }
 
     @Test
@@ -109,13 +113,22 @@ public class OltProvisioning5600 extends ApiTest {
                 .body(Stream.of(new CardDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        Thread.sleep(LATENCY_FOR_PORT_PROVISIONING);
+        Card cardAfterProvisioning;
 
-        Card cardAfterProvisioning = getCard();
+        while (true) {
+            try{
+                Thread.sleep(LATENCY_STEP);
+                overallLatency += LATENCY_STEP;
+                cardAfterProvisioning = getCard();
 
-        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(), portEmpty.getSlotNumber(), cardAfterProvisioning.getPorts().get(0).getPortNumber());
+                PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(), portEmpty.getSlotNumber(), cardAfterProvisioning.getPorts().get(0).getPortNumber());
+                checkResults(port);
+                return;
+            } catch (AssertionError assertionError) {
+                if(overallLatency > LATENCY_FOR_PORT_PROVISIONING) throw assertionError;
+            }
+        }
 
-        checkResults(port);
     }
 
     @Test
@@ -139,7 +152,6 @@ public class OltProvisioning5600 extends ApiTest {
         PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
                 deviceAfterProvisioning.getEquipmentHolders().get(2).getSlotNumber(),
                 deviceAfterProvisioning.getEquipmentHolders().get(2).getCard().getPorts().get(0).getPortNumber());
-
         checkResults(port);
     }
 
@@ -156,7 +168,7 @@ public class OltProvisioning5600 extends ApiTest {
         return port;
     }
 
-    private void testPortProvisioning(PortProvisioning port, int waitTime, boolean isInactiveLines) throws InterruptedException {
+    private void testPortProvisioning(PortProvisioning port, boolean isInactiveLines) throws InterruptedException {
         List<AccessLineDto> accessLinesBeforeProvisioning = getAccessLines(port);
 
         long linesCount = isInactiveLines
@@ -169,21 +181,29 @@ public class OltProvisioning5600 extends ApiTest {
 
         startPortProvisioning(port);
 
-        Thread.sleep(waitTime);
-
-        checkResults(port);
+        while (true) {
+            try{
+                Thread.sleep(LATENCY_STEP);
+                overallLatency += LATENCY_STEP;
+                checkResults(port);
+                return;
+            } catch (AssertionError assertionError) {
+                if(overallLatency > LATENCY_FOR_PORT_PROVISIONING) throw assertionError;
+            }
+        }
     }
 
     private void checkResults(PortProvisioning port) {
         List<AccessLineDto> accessLinesAfterProvisioning = getAccessLines(port);
 
         long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-                .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(Objects::nonNull).filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
 
         long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-                .filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(Objects::nonNull).filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile
+                        .getState().getValue().equals(STATUS_ACTIVE)).count();
 
-        long countAccessLinesWG = accessLinesAfterProvisioning.stream()
+        long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
                 .filter(AccessLine -> AccessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
         Assert.assertEquals(getLineIdPools(port).size(), port.getLineIdPool().intValue());
