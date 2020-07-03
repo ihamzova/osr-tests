@@ -2,7 +2,7 @@
   "id":"f000cc78-84d9-4e6d-bc4f-7ad11ecddcf6",
   "request": {
     "method": "GET",
-    "urlPath": "/api/oltResourceInventory/v1/ancp/endsz",
+    "urlPath": "/resource-order-resource-inventory/v1/ancp/session/endsz",
     "queryParameters": {
       "endsz": {
         "matches": "###OLT_ENDSZ###"

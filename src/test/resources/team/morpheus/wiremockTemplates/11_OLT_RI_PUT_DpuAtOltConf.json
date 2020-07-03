@@ -2,7 +2,7 @@
   "id" : "81bc03ed-9bee-433a-80cf-5328487d1414",
   "request" : {
     "method": "PUT",
-    "urlPattern": "/api/oltResourceInventory/v1/dpu/dpuAtOltConfiguration/.*",
+    "urlPattern": "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration/.*",
     "bodyPatterns" : [
       {
         "matchesJsonPath" : "$.[?(@.dpuEndsz=='###ENDSZ###')]"
