@@ -28,4 +28,20 @@ public class DpuCommissioningCallbackErrors {
             "  \"statustype\": \"ERROR\",\n" +
             "  \"message\": \"These arent the droids youre looking for\"\n" +
             "}";
+//TODO check if response is needed in error case. If yes - set endsz accordingly
+    public static final String PROVISIONING_DEVICE = "{\n" +
+            "  \"error\": {\n" +
+            "    \"message\": \"These arent the droids youre looking for\",\n" +
+            "    \"status\": 500,\n" +
+            "    \"code\": \"500\"\n" +
+            "  },\n" +
+            "  \"response\": {\n" +
+            "    \"eventId\": \"string\",\n" +
+            "    \"endSz\": \"string\",\n" +
+            "    \"port\": \"string\",\n" +
+            "    \"operation\": \"string\",\n" +
+            "    \"operationState\": \"COMPLETED\"\n" +
+            "  },\n" +
+            "  \"success\": false\n" +
+            "}";
 }

@@ -277,6 +277,18 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generatePostProvisioningDeviceStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "15_Wg_FTTB_AP_POST_ProvisioningDevice.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.PROVISIONING_DEVICE;
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.PROVISIONING_DEVICE, isAsyncScenario);
+
+        File stub = new File (generatedStubFolder + "15_Wg_FTTB_AP_POST_ProvisioningDevice.json");
+        writeStubToFolder(content, stub);
+    }
+
     private String getTemplateContent(File jsonTemplate) {
         String content;
         try {

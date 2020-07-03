@@ -280,4 +280,16 @@ public class DpuCommissioningRobot {
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/api/oltResourceInventory/v1/dpu/dpuEmsConfiguration/12345"));
     }
 
+    @Step
+    public void checkPostDeviceProvisioningCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endsz=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostDeviceProvisioningNotCalled(Long timeOfExecution, String dpuEndsz){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endsz=" + dpuEndsz));
+    }
+
 }
