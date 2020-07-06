@@ -20,6 +20,27 @@
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>gigabit-tm-upiter-01</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
+        <profile>
+            <id>gigabit-tm-osr-autotest-01</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>automation</id>
