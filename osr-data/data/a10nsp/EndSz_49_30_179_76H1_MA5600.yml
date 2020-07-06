@@ -1,5 +1,5 @@
 name: EndSz_49_30_179_76H1_MA5600
-template: com.tsystems.tm.acc.data.models.stable.OltDevice
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/30/179"
   fsz: "76H1"

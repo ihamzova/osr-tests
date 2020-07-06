@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
-import com.tsystems.tm.acc.data.models.stable.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.data.osr.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;

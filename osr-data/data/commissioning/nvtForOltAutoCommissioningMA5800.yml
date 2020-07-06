@@ -1,5 +1,5 @@
 name: nvtForOltAutoCommissioningMA5800
-template: com.tsystems.tm.acc.data.models.stable.Nvt
+template: com.tsystems.tm.acc.ta.data.osr.models.Nvt
 values:
   id: ""
   name: ""

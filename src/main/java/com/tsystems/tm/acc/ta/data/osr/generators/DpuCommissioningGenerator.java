@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.tsystems.tm.acc.data.models.stable.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;

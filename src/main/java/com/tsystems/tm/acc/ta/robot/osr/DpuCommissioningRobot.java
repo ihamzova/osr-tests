@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.data.models.stable.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.data.osr.generators.DpuCommissioningGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;

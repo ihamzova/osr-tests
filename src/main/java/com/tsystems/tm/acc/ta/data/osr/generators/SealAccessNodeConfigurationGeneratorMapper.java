@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.WebhookDefinitionModel;
-import com.tsystems.tm.acc.data.models.stable.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.seal.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;

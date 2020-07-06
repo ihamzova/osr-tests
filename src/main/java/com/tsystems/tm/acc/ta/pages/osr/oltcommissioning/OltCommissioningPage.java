@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.tsystems.tm.acc.data.models.stable.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;

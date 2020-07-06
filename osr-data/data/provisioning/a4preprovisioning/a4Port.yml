@@ -1,5 +1,5 @@
 name: a4Port
-template: com.tsystems.tm.acc.data.models.stable.PortProvisioning
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
   slotNumber: "${scope, global.a4Provisioning.slotNumber}"

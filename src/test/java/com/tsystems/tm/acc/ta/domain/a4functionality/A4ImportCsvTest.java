@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.domain.a4functionality;
 
-import com.tsystems.tm.acc.data.models.stable.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
