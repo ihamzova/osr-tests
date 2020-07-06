@@ -1,20 +1,18 @@
 package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
-import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
 import com.tsystems.tm.acc.data.osr.models.homeidbatch.HomeIdBatchCase;
+import com.tsystems.tm.acc.ta.api.osr.HomeIdGeneratorClient;
+import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.PoolHomeId;
 import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.SingleHomeId;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
-import com.tsystems.tm.acc.ta.api.osr.HomeIdGeneratorClient;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -22,12 +20,14 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
-
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.HOME_ID_GENERATOR_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class HomeIdTest extends ApiTest {
+@ServiceLog(HOME_ID_GENERATOR_MS)
+public class HomeIdTest extends BaseTest {
 
     private HomeIdGeneratorClient homeIdGeneratorClient;
     private HomeIdBatch homeIdBatch;

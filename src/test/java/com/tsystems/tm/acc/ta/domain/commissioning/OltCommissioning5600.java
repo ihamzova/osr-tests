@@ -6,10 +6,10 @@ import com.tsystems.tm.acc.data.models.stable.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -23,6 +23,12 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();

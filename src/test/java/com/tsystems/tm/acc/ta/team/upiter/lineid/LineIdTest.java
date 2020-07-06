@@ -1,20 +1,18 @@
 package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
-import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
 import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatchCase;
+import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
+import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.PoolLineId;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.SingleLineId;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port;
-import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -22,12 +20,14 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
-
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
+import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.LINE_ID_GENERATOR_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class LineIdTest extends ApiTest {
+@ServiceLog(LINE_ID_GENERATOR_MS)
+public class LineIdTest extends BaseTest {
 
     private LineIdGeneratorClient lineidGeneratorClient;
     private LineIdBatch lineIdBatch;

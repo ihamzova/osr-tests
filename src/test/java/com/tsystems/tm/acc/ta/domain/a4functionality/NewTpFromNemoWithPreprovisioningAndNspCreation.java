@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -24,6 +25,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.ACCESS_LINE_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.WG_A4_PROVISIONING_MS;
+
+
+@ServiceLog(WG_A4_PROVISIONING_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
     private static final int WAIT_TIME = 15_000;
 

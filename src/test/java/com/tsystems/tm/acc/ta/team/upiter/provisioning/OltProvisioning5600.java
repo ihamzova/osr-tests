@@ -5,8 +5,9 @@ import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
@@ -31,9 +32,15 @@ import java.util.stream.Stream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 import static io.restassured.RestAssured.given;
 
-public class OltProvisioning5600 extends ApiTest {
+@ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog(GATEWAY_ROUTE_MS)
+public class OltProvisioning5600 extends BaseTest {
 
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 100_000;
     private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * LATENCY_FOR_PORT_PROVISIONING;

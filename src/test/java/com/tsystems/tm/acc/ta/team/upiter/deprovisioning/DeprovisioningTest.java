@@ -3,9 +3,10 @@ package com.tsystems.tm.acc.ta.team.upiter.deprovisioning;
 import com.tsystems.tm.acc.data.models.stable.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.PortDto;
@@ -21,8 +22,12 @@ import java.util.Collections;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
-public class DeprovisioningTest extends ApiTest {
+@ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+public class DeprovisioningTest extends BaseTest {
     private static final Integer LATENCY_FOR_PORT_DEPROVISIONING = 2 * 5_000;
     private static final Integer LATENCY_FOR_CARD_DEPROVISIONING = 4 * LATENCY_FOR_PORT_DEPROVISIONING;
     private static final Integer LATENCY_FOR_DEVICE_DEPROVISIONING = 5 * LATENCY_FOR_PORT_DEPROVISIONING;

@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -26,7 +27,11 @@ import java.util.regex.Pattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
+@ServiceLog(ACCESS_MANAGEMENT_SUPPORT_UI_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(ACCESS_LINE_BFF_PROXY_MS)
 public class AccessLinesSearchTest extends BaseTest {
 
     private static final String KLSID = "14653";
