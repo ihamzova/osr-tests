@@ -1,0 +1,50 @@
+{
+  "id": "b2c76bc3-05f6-4756-9222-a392cf6ef3f0",
+  "request": {
+    "method": "POST",
+    "urlPath": "/resource-order-resource-inventory/v1/fttbProvisioning/device",
+    "queryParameters": {
+      "endSZ": {
+        "matches": "###ENDSZ###"
+      }
+    }
+  },
+  "response": {
+    ###STATUS###,
+    "headers": {
+      "Content-Type": "application/json",
+      "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}",
+      "X-B3-SpanId": "{{request.headers.X-B3-SpanId}}"
+    },
+    "jsonBody": {
+      "source": "12345",
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "businessKey": "{{request.requestLine.query.businessKey}}",
+      "index": 0
+    }
+  },
+  "uuid": "ab54f6b0-e35c-11e8-9f32-f2801f1b37ad",
+  "postServeActions": ###CALLBACK_START###{
+    "webhook": {
+      "url": "{{request.headers.X-Callback-Url}}",
+      "headers": {
+        "X-Callback-Correlation-Id": "{{request.headers.X-Callback-Correlation-Id}}",
+        "X-B3-TraceId": "{{request.headers.X-B3-TraceId}}",
+        "X-B3-SpanId": "{{request.headers.X-B3-SpanId}}",
+        "Content-Type": "application/json"
+      },
+      "method": "POST",
+      "fixedDelayMilliseconds": 3000,
+      "jsonBody": {
+        "response": {
+          "eventId": "123",
+          "endSz": "###ENDSZ###",
+          "port": "1",
+          "operation": "string",
+          "operationState": "COMPLETED"
+        },
+        "success": true
+      }
+    }
+  }###CALLBACK_END###
+}

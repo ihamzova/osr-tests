@@ -277,6 +277,18 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generatePostProvisioningDeviceStub(Dpu dpu, boolean isAsyncScenario){
+        File jsonTemplate = new File(stubTemplateFolder + "15_Wg_FTTB_AP_POST_ProvisioningDevice.json");
+        String content = getTemplateContent(jsonTemplate);
+        content = content.replace("###ENDSZ###",dpu.getEndSz());
+
+        String currentStep = DpuActivities.PROVISIONING_DEVICE;
+        content = setResponseStatus(dpu, content, currentStep, DpuCommissioningCallbackErrors.PROVISIONING_DEVICE, isAsyncScenario);
+
+        File stub = new File (generatedStubFolder + "15_Wg_FTTB_AP_POST_ProvisioningDevice.json");
+        writeStubToFolder(content, stub);
+    }
+
     private String getTemplateContent(File jsonTemplate) {
         String content;
         try {
@@ -346,17 +358,24 @@ public class DpuCommissioningGenerator {
      * overload method to handle callback error
      */
     private String setResponseStatus(Dpu dpu, String content, String currentStep, String errorMessage, boolean isAsyncScenario) {
-        if(!currentStep.equals(dpu.getStepToFall())){
+        if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&!isAsyncScenario){
+            //TODO durty hack. Refactor. take status to yaml.
+            content = content.replace("###STATUS###", "\"status\":202");
+            content = content.replace("###CALLBACK_START###","");
+            content = content.replace("###CALLBACK_END###","");
+        }
+        else if (currentStep.equals(dpu.getStepToFall())&&DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&isAsyncScenario){
+            //TODO durty hack. Refactor. take status to yaml.
+            content = content.replace("###STATUS###", "\"status\":202");
+            content = replaceCallback(content, errorMessage, isAsyncScenario);
+        }
+        else if(!currentStep.equals(dpu.getStepToFall())){
             content = content.replace("###STATUS###", "\"status\":200");
             content = content.replace("###CALLBACK_START###","");
             content = content.replace("###CALLBACK_END###","");
         }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":400");
             content = replaceCallback(content, errorMessage,isAsyncScenario);
-        }else if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&isAsyncScenario){
-            //TODO durty hack. Refactor. take status to yaml.
-            content = content.replace("###STATUS###", "\"status\":202");
-            content = replaceCallback(content, errorMessage, isAsyncScenario);
         }
         else if(currentStep.equals(dpu.getStepToFall())&&isAsyncScenario){
             content = content.replace("###STATUS###", "\"status\":200");
@@ -390,7 +409,7 @@ public class DpuCommissioningGenerator {
                 "{{request.headers.X-Callback-Url}}",
                 webhookHeaders,
                 new Body(errorMessage),
-                1000,
+                3000,
                 null);
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         return doGenerate(mapping);

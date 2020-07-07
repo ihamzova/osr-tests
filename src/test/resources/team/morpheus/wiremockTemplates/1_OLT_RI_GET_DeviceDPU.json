@@ -2,7 +2,7 @@
   "id":"09ef79b6-a2ef-45d9-adc5-b380c3bf2a1b",
   "request": {
     "method": "GET",
-    "urlPath": "/api/oltResourceInventory/v1/device",
+    "urlPath": "/resource-order-resource-inventory/v1/device",
     "queryParameters": {
       "endsz": {
         "matches": "###ENDSZ###"

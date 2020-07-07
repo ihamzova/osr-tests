@@ -2,7 +2,7 @@
   "id":"ab54f6b0-e35c-11e8-9f32-f2801f1b32ad",
   "request": {
     "method": "GET",
-    "urlPath": "/api/oltResourceInventory/v1/dpu/dpuEmsConfiguration",
+    "urlPath": "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration",
     "queryParameters": {
       "dpuEndsz": {
         "matches": "###ENDSZ###"
