@@ -38,7 +38,7 @@
       "jsonBody": {
         "response": {
           "eventId": "123",
-          "endSz": "49/8571/0/71GA",
+          "endSz": "###ENDSZ###",
           "port": "1",
           "operation": "string",
           "operationState": "COMPLETED"

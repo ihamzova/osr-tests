@@ -106,6 +106,7 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostDpuEmsConfigCalled(timeOfExecution, dpuEmsCheckValuesPost);
         dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealAtOltCheckValuesDpu);
         dpuCommissioningRobot.checkPutDpuEmsConfigCalled(timeOfExecution, dpuEmsCheckValuesPut);
+        dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
 
     }
 
@@ -417,8 +418,23 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealEmsCheckValues);
+        dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuSealEmsCheckValues);
+    }
+
+    @Test(description = "Negative case. POST.startDeviceProvisioning returned error in callback")
+    @Description("Negative case. POST.startDeviceProvisioning returned error in callback")
+    public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostWgFTTBDeviceProvisioningCallbackError);
+        Long timeOfExecution = System.currentTimeMillis();
+        isAsyncScenario = true;
+
+        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        Thread.sleep(3000);
+        dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
         //TODO :
-        //dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuSealEmsCheckValues);
+        //dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution, dpuSealEmsCheckValues);
     }
 
     @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")

@@ -73,6 +73,7 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generatePostDpuEmsConfigStub(dpu);
         dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuEmsConfigStub(dpu);
+        dpuCommissioningGenerator.generatePostProvisioningDeviceStub(dpu,isAsyncScenario);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
@@ -291,13 +292,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPostDeviceProvisioningCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endsz=" + dpuEndsz));
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
     }
 
     @Step
     public void checkPostDeviceProvisioningNotCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endsz=" + dpuEndsz));
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
     }
 
 }
