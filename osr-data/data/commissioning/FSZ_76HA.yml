@@ -1,5 +1,5 @@
 name: FSZ_76HA
-template: com.tsystems.tm.acc.data.models.stable.OltDevice
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/8571/0"
   fsz: "76HA"

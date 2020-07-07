@@ -1,5 +1,5 @@
 name: nvtForOltCommissioning
-template: com.tsystems.tm.acc.data.models.stable.Nvt
+template: com.tsystems.tm.acc.ta.data.osr.models.Nvt
 values:
   id: ""
   name: ""

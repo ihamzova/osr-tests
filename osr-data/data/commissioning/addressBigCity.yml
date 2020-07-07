@@ -1,5 +1,5 @@
 name: AddressBigCity
-template: com.tsystems.tm.acc.data.models.stable.Address
+template: com.tsystems.tm.acc.ta.data.osr.models.Address
 values:
   city: "${scope, global.addressBigCity.city}"
   district: "${scope, global.addressBigCity.district}"
