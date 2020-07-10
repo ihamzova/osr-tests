@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -50,12 +51,13 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        String endSz = getDevice().getVpsz() + getDevice().getFsz();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
+        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-        oltSearchPage.searchNotDiscoveredByParameters(getDevice());
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
         oltDiscoveryPage.makeOltDiscovery();
@@ -63,9 +65,9 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDiscoveryPage.openOltSearchPage();
 
         Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getDevice());
+        oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -83,23 +85,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
     }
-
-    // private
-    private OltDevice getDevice() {
-        OltDevice device = new OltDevice();
-        device.setVpsz("49/8571/0/");
-        device.getVpsz();
-        device.setFsz("76Z7");
-        device.setLsz("4Z2");
-        device.setOltPort("0");
-        device.setOltSlot("19");
-        device.setBngEndsz("49/911/84/7ZJE");
-        device.setBngDownlinkPort("ge-2/1/4");
-        device.setBngDownlinkSlot("2");
-        device.setOrderNumber("0123456789");
-        return device;
-    }
-
 
     /**
      * check device MA5600 data from olt-ressource-inventory
