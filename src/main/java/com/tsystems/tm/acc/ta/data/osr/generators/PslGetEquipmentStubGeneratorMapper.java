@@ -65,7 +65,7 @@ public class PslGetEquipmentStubGeneratorMapper {
         Equipment equipmentCard = new Equipment();
         equipmentCard.setEqunr("16123000");
         equipmentCard.setHequi("4985711232");
-        equipmentCard.setHeqnr("0000");
+        equipmentCard.setHeqnr("0001");
         equipmentCard.setSubmt("40261742");
         equipmentCard.setEqart("P");
         equipmentCard.setEndsz(olt.getVpsz() + '/' + olt.getFsz());
