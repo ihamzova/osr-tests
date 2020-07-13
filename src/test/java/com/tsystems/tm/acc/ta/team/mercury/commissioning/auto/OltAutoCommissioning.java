@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -122,6 +123,7 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     /**
@@ -143,6 +145,7 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     /**

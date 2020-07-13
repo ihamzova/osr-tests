@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -66,21 +67,36 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState();
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
-        oltDetailsPage.configureAncpSession();
+        oltDetailsPage.configureAncpSessionStart();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString());
+
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState();
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
 
         Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState();
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);

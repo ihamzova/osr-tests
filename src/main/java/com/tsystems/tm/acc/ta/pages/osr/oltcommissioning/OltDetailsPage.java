@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -58,11 +59,21 @@ public class OltDetailsPage {
     private static final By BEZEICHNUNG_LOCATOR = byQaData("span-olt-emsnbiname");
     private static final By KLSID_LOCATOR = byQaData("span-olt-klsid");
 
+    private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
+    public static final By SLOT_VIEW_LOCATOR = byXpath("/html/body/app-root/div/div/div/app-detail/app-device-detail/div/div[7]/app-eqh-detail/div[1]/div/div[2]/div/div/a/div");
+    public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
 
     @Step("Validate Url")
     public void validateUrl() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
+    }
+
+    @Step("Check port life cycle state")
+    public OltDetailsPage checkPortLifeCycleState() {
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(SLOT_VIEW_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        return this;
     }
 
     @Step("Configure uplink")
@@ -118,6 +129,19 @@ public class OltDetailsPage {
         return this;
     }
 
+    @Step("Start configure ANCP session")
+    public OltDetailsPage configureAncpSessionStart() {
+        $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
+        return this;
+    }
+
+    @Step("Wait until end of config ANCP session")
+    public OltDetailsPage configureAncpSessionEnd() {
+        $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).waitUntil(visible, MAX_ANCP_COFIGURATION_TIME).isDisplayed();
+        return this;
+    }
+
     @Step("Deconfigure ANCP session")
     public OltDetailsPage deconfigureAncpSession() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
@@ -164,5 +188,15 @@ public class OltDetailsPage {
     @Step("Get KLS-ID")
     public String getKlsID() {
         return $(KLSID_LOCATOR).getText();
+    }
+
+    @Step("Get device life cycle state")
+    public String getDeviceLifeCycleState() {
+        return $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).getText();
+    }
+
+    @Step("Get PORT life cycle state")
+    public String getPortLifeCycleState(String slot, String port) {
+        return $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText();
     }
 }

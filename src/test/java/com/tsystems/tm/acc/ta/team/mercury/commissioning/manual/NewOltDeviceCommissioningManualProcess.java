@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -63,12 +64,16 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltDiscoveryPage.openOltSearchPage();
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
-        oltDetailsPage.configureAncpSession();
+        oltDetailsPage.configureAncpSessionStart();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString());
+        oltDetailsPage.configureAncpSessionEnd();
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
 
@@ -76,7 +81,10 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         checkUplink(endSz);
 
         oltDetailsPage.deconfigureAncpSession();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
