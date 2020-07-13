@@ -1,0 +1,13 @@
+name: EndSz_49_911_1100_76H1_MA5800
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/911/1100/"
+  fsz: "76H1"
+  bngEndsz: "49/30/179/43G1"
+  bngDownlinkPort: "ge-1/2/3"
+  bngDownlinkSlot: "7"
+  lsz: "4C1"
+  orderNumber: "0123456789"
+  vst: "@DefaultVst"
+  oltPort: "1"
+  oltSlot: "8"

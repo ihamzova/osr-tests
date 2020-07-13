@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -10,7 +12,6 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
@@ -49,25 +50,30 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        String endSz = getDevice().getVpsz() + getDevice().getFsz();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76H1_MA5800);
+        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-        oltSearchPage.searchNotDiscoveredByParameters(getDevice());
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
         oltDiscoveryPage.makeOltDiscovery();
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
 
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getDevice());
+        oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
-        oltDetailsPage.configureAncpSession();
+        oltDetailsPage.configureAncpSessionStart();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString());
+        oltDetailsPage.configureAncpSessionEnd();
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
 
@@ -75,28 +81,13 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         checkUplink(endSz);
 
         oltDetailsPage.deconfigureAncpSession();
+        Thread.sleep(3000);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
-    }
-
-    /**
-     * Generation of the OLT test device with the necessary data
-     */
-    private OltDevice getDevice() {
-        OltDevice device = new OltDevice();
-        device.setVpsz("49/911/1100/");
-        device.getVpsz();
-        device.setFsz("76H1");
-        device.setLsz("4C1");
-        device.setOltPort("1");
-        device.setOltSlot("8");
-        device.setBngEndsz("49/30/179/43G1");
-        device.setBngDownlinkPort("ge-1/2/3");
-        device.setBngDownlinkSlot("7");
-        device.setOrderNumber("0123456789");
-        return device;
     }
 
     /**

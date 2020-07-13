@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -56,8 +58,7 @@ public class OltAutoCommissioning extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5600);
-        OltDevice oltDevice = nvt.getOltDevice();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
@@ -71,7 +72,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5600(nvt);
+        checkDeviceMA5600(oltDevice);
         checkUplink(endSz);
     }
 
@@ -82,8 +83,7 @@ public class OltAutoCommissioning extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5800);
-        OltDevice oltDevice = nvt.getOltDevice();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
@@ -98,7 +98,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5800(nvt);
+        checkDeviceMA5800(oltDevice);
         checkUplink(endSz);
     }
 
@@ -106,8 +106,7 @@ public class OltAutoCommissioning extends BaseTest {
     /**
      * check device MA5600 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5600(Nvt nvt) {
-        OltDevice oltDevice = nvt.getOltDevice();
+    private void checkDeviceMA5600(OltDevice oltDevice ) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -123,14 +122,14 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     /**
      * check device MA5800 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5800(Nvt nvt) {
-        OltDevice oltDevice = nvt.getOltDevice();
+    private void checkDeviceMA5800(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -145,7 +144,8 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     /**
