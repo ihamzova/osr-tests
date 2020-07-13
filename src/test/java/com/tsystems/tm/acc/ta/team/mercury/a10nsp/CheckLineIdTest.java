@@ -36,7 +36,10 @@ import static org.testng.Assert.assertTrue;
 public class CheckLineIdTest extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer HTTP_CODE_OK_400 = 400;
+    private static final Integer HTTP_CODE_ACCEPTED_202 = 202;
+    private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
+
+    private static final int WAIT_TIME_FOR_ASYNC_RESPONSE = 2_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private A10nspInventoryClient a10nspInventoryClient;
@@ -110,7 +113,7 @@ public class CheckLineIdTest extends BaseTest {
                 .rahmenvertragsnummerQuery(checkLineIdA10nspWrongLineId.getRahmenVertragsNr())
                 .xRequestIDHeader(checkLineIdA10nspWrongLineId.getBngEndSz())
                 .body(checkLineIdA10nspWrongLineId.getLineId())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_400)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
 
         assertNotNull(checkLineIdResult);
     }
@@ -128,10 +131,11 @@ public class CheckLineIdTest extends BaseTest {
 
     /**
      * init the a10nsp-inventory database
+     *  asynchronous request to trigger the inventory refresh
      */
     private void refreshA10nspInventory() {
         a10nspInventoryClient.getClient().inventoryController().refreshInventory()
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     /**
@@ -164,9 +168,9 @@ public class CheckLineIdTest extends BaseTest {
 
         oltDetailsPage.configureAncpSession();
 
-        refreshA10nspInventory();
+        refreshA10nspInventory();        // trigger the a10nsp-inventory refresh
         try {
-            Thread.sleep(1000);
+            Thread.sleep(WAIT_TIME_FOR_ASYNC_RESPONSE);   // Delay after calling the asynchronous request
         } catch (Exception e) {
             log.error("Interrupted");
         }
