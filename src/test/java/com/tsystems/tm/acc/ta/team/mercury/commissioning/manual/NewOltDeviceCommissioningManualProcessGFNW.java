@@ -55,16 +55,16 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
         String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
-        clearResourceInventoryDataBase(endSz);
+//        clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
-        oltSearchPage.pressManualCommissionigButton();
-        OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
-        oltDiscoveryPage.makeOltDiscovery();
-        oltDiscoveryPage.saveDiscoveryResults();
-        oltDiscoveryPage.openOltSearchPage();
+//        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
+//        oltSearchPage.pressManualCommissionigButton();
+//        OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
+//        oltDiscoveryPage.makeOltDiscovery();
+//        oltDiscoveryPage.saveDiscoveryResults();
+//        oltDiscoveryPage.openOltSearchPage();
 
         Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
@@ -78,9 +78,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
-        Thread.sleep(3000);
-        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString());
-
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
@@ -96,8 +93,12 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Thread.sleep(1000);
+        oltSearchPage.openSearchPage();
+        Thread.sleep(WAIT_TIME_FOR_RENDERING);
+        oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         oltDetailsPage.checkPortLifeCycleState();
-        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
