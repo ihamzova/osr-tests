@@ -52,6 +52,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
+
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
         String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
