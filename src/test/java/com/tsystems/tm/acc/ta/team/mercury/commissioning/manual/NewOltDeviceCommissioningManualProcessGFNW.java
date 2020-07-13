@@ -55,21 +55,21 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
         String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
-//        clearResourceInventoryDataBase(endSz);
+        clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-//        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
-//        oltSearchPage.pressManualCommissionigButton();
-//        OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
-//        oltDiscoveryPage.makeOltDiscovery();
-//        oltDiscoveryPage.saveDiscoveryResults();
-//        oltDiscoveryPage.openOltSearchPage();
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
+        oltSearchPage.pressManualCommissionigButton();
+        OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
+        oltDiscoveryPage.makeOltDiscovery();
+        oltDiscoveryPage.saveDiscoveryResults();
+        oltDiscoveryPage.openOltSearchPage();
 
         Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-        oltDetailsPage.checkPortLifeCycleState();
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
@@ -81,24 +81,26 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
-        oltDetailsPage.checkPortLifeCycleState();
-        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        for(int port = 0; port <= 1; ++port) {
+            if (oltDevice.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
 
-        Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+        //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
-        Thread.sleep(3000);
-        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-        Thread.sleep(1000);
-        oltSearchPage.openSearchPage();
-        Thread.sleep(WAIT_TIME_FOR_RENDERING);
-        oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
-        oltDetailsPage.checkPortLifeCycleState();
-        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+
+        // check uplink port life cycle state
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);

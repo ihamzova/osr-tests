@@ -70,9 +70,15 @@ public class OltDetailsPage {
     }
 
     @Step("Check port life cycle state")
-    public OltDetailsPage checkPortLifeCycleState() {
-        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(SLOT_VIEW_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    public OltDetailsPage checkPortLifeCycleState(String slot) {
+        if (slot.equals("19")) {
+            $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+            if( !($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
+                $(SLOT_VIEW_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+            }
+        } else if (slot.equals("8")) {
+
+        }
         return this;
     }
 
@@ -147,8 +153,10 @@ public class OltDetailsPage {
     public OltDetailsPage deconfigureAncpSession() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).click();
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), 5000);
         return this;
     }
+
 
     @Step("Update ANCP Session State")
     public OltDetailsPage updateAncpSessionStatus() {
