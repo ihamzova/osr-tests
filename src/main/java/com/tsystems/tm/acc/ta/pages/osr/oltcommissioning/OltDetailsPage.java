@@ -1,14 +1,14 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.appears;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -133,6 +133,7 @@ public class OltDetailsPage {
     public OltDetailsPage configureAncpSessionStart() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), 5000);
         return this;
     }
 
