@@ -60,8 +60,9 @@ public class OltDetailsPage {
     private static final By KLSID_LOCATOR = byQaData("span-olt-klsid");
 
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
-    public static final By SLOT_VIEW_LOCATOR = byXpath("/html/body/app-root/div/div/div/app-detail/app-device-detail/div/div[7]/app-eqh-detail/div[1]/div/div[2]/div/div/a/div");
+    public String slotPortViewLocator = "a-card-portview-slot-%s";
     public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -71,13 +72,9 @@ public class OltDetailsPage {
 
     @Step("Check port life cycle state")
     public OltDetailsPage checkPortLifeCycleState(String slot) {
-        if (slot.equals("19")) {
-            $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-            if( !($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
-                $(SLOT_VIEW_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-            }
-        } else if (slot.equals("8")) {
-
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
+            $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         }
         return this;
     }
