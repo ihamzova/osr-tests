@@ -76,7 +76,7 @@ public class OltAutoCommissioning extends BaseTest {
         checkUplink(endSz);
     }
 
-    @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
+    @Test(description = "DIGIHUB-52133 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
     public void OltAutoCommissioningGFNWTest() throws Exception {
 
         OsrTestContext context = OsrTestContext.get();

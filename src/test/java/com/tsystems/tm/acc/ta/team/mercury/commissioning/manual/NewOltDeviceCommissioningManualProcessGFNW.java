@@ -82,13 +82,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDetailsPage.checkAncpSessionStatus();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
-        for(int port = 0; port <= 1; ++port) {
-            if (oltDevice.getOltPort().equals((Integer.toString(port)))) {
-                Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
-            } else {
-                Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-            }
-        }
+        checkPortState(oltDevice, oltDetailsPage);
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
@@ -104,6 +98,24 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
+    }
+
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
+
+        for (int port = 0; port <= 1; ++port) {
+            log.info("checkPortState() Port={}, Slot={}",port,device.getOltSlot());
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
     }
 
     /**
