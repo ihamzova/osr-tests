@@ -65,29 +65,53 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
-        Thread.sleep(3000);
-        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString());
-        oltDetailsPage.configureAncpSessionEnd();
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        checkPortState(oltDevice, oltDetailsPage);
 
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
 
+        //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
-        Thread.sleep(3000);
-        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.RETIRING.toString());
         oltDetailsPage.deleteUplinkConfiguration();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
+        // check uplink port life cycle state
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
+    }
+
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
+
+        for (int port = 0; port <= 3; ++port) {
+            log.info("checkPortState() Port={}, Slot={}",port,device.getOltSlot());
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
     }
 
     /**
