@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
@@ -24,9 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
 @ServiceLog(ACCESS_MANAGEMENT_SUPPORT_UI_MS)
@@ -37,6 +35,7 @@ public class AccessLinesSearchTest extends BaseTest {
     private static final String KLSID = "14653";
     private static final String ONT_SN = "1111111111181516";
 
+    private AccessLineRiRobot accessLineRiRobot;
     private AccessLineResourceInventoryClient alResourceInventory;
     private AccessLine accessLinesByEndSz;
     private AccessLine accessLineByHomeId;
@@ -44,6 +43,7 @@ public class AccessLinesSearchTest extends BaseTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
+        accessLineRiRobot = new AccessLineRiRobot();
         alResourceInventory = new AccessLineResourceInventoryClient();
         OsrTestContext context = OsrTestContext.get();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
@@ -56,7 +56,7 @@ public class AccessLinesSearchTest extends BaseTest {
 
     @AfterClass
     public void clearData() {
-        clearDataBase();
+        accessLineRiRobot.clearDatabase();
     }
 
     @Test
@@ -226,19 +226,7 @@ public class AccessLinesSearchTest extends BaseTest {
     }
 
     private void prepareData() throws InterruptedException {
-        clearDataBase();
-        Thread.sleep(3000);
-        fillDataBase();
+        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.fillDatabase();
     }
-
-    private void clearDataBase() {
-        alResourceInventory.getClient().fillDatabase().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    private void fillDataBase() {
-        alResourceInventory.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
 }
