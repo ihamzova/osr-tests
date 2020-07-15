@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
@@ -46,6 +47,7 @@ public class OltProvisioning5600 extends BaseTest {
     private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * LATENCY_FOR_PORT_PROVISIONING;
     private static final Integer LATENCY_STEP = 20_000;
 
+    private AccessLineRiRobot accessLineRiRobot;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private PortProvisioning portEmpty;
@@ -56,19 +58,18 @@ public class OltProvisioning5600 extends BaseTest {
 
     @BeforeMethod
     public void prepareData() throws InterruptedException {
-        overallLatency = 0;
-        clearDataBase();
-        Thread.sleep(1000);
-        fillDataBase();
+        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.fillDatabase();
     }
 
     @AfterMethod
     public void clearData() {
-        clearDataBase();
+        accessLineRiRobot.clearDatabase();
     }
 
     @BeforeClass
     public void init() {
+        accessLineRiRobot = new AccessLineRiRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
         OsrTestContext context = OsrTestContext.get();

@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 public class DeprovisioningTest extends BaseTest {
-    private static final Integer LATENCY_FOR_PORT_DEPROVISIONING = 2 * 5_000;
+    private static final Integer LATENCY_FOR_PORT_DEPROVISIONING = 2 * 15_000;
     private static final Integer LATENCY_FOR_CARD_DEPROVISIONING = 4 * LATENCY_FOR_PORT_DEPROVISIONING;
     private static final Integer LATENCY_FOR_DEVICE_DEPROVISIONING = 5 * LATENCY_FOR_PORT_DEPROVISIONING;
 
