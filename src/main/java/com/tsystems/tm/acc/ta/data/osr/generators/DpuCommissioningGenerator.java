@@ -289,6 +289,29 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generatePatchLifecycleStateDeviceStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "16_OLT_RI_PATCH_LifecycleState_device.json");
+        String content = getTemplateContent(jsonTemplate);
+
+        String currentStep = DpuActivities.LIFECYCLESTATE_DEVICE;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "16_OLT_RI_PATCH_LifecycleState_device.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generatePatchLifecycleStatePortStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "17_OLT_RI_PATCH_LifecycleState_port.json");
+        String content = getTemplateContent(jsonTemplate);
+
+        String currentStep = DpuActivities.LIFECYCLESTATE_PORT;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "17_OLT_RI_PATCH_LifecycleState_port.json");
+        writeStubToFolder(content, stub);
+    }
+
+
     private String getTemplateContent(File jsonTemplate) {
         String content;
         try {

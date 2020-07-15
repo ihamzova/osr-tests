@@ -74,6 +74,8 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuEmsConfigStub(dpu);
         dpuCommissioningGenerator.generatePostProvisioningDeviceStub(dpu,isAsyncScenario);
+        dpuCommissioningGenerator.generatePatchLifecycleStateDeviceStub(dpu);
+        dpuCommissioningGenerator.generatePatchLifecycleStatePortStub(dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
