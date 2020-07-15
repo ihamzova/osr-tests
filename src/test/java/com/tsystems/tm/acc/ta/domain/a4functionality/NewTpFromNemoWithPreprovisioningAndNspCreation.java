@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElemen
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
@@ -17,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -25,13 +25,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.ACCESS_LINE_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.WG_A4_PROVISIONING_MS;
+import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
 
 @ServiceLog(WG_A4_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-public class NewTpFromNemoWithPreprovisioningAndNspCreation extends ApiTest {
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(EA_EXT_ROUTE_MS)
+public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
 
     private OsrTestContext osrTestContext = OsrTestContext.get();

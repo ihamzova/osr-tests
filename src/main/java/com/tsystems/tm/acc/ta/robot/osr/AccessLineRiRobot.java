@@ -16,6 +16,7 @@ public class AccessLineRiRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String STATUS_ACTIVE = "ACTIVE";
     private static final String STATUS_WALLED_GARDEN = "WALLED_GARDEN";
+    private static final String SLOT = "3";
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
 
@@ -94,35 +95,15 @@ public class AccessLineRiRobot {
                             .lineIdQuery(line.getLineId())
                             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
                 });
-
-        getAccessLines(port).forEach(line -> {
-            if (line.getId() % 7 == 0) {
-                line.getReference()
-                        .id(1016L)
-                        .slotNumber("4")
-                        .portNumber("7");
-            }
-            // each id %3 line to port with id = 1003, slot = 3, port = 2
-            else if (line.getId() % 3 == 0) {
-                line.getReference()
-                        .id(1003L)
-                        .slotNumber("3")
-                        .portNumber("2");
-            }
-            // each id %4 line to port with id = 1004, slot = 3, port = 3
-            else if (line.getId() % 4 == 0) {
-                line.getReference()
-                        .id(1004L)
-                        .slotNumber("3")
-                        .portNumber("3");
-            }
-            // each id %7 line to port with id = 1016 (because backhaul id exists only on 1016 with different slot, slot = 4, port = 7
-
-            accessLineResourceInventory.accessLineInternalController()
-                    .update()
-                    .body(line)
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        });
+        for (int i = 0; i < 8; i++) {
+            getAllocatedOnuIds(port, String.valueOf(i)).stream()
+                    .filter(onuId -> onuId.getId() > 1008).forEach(onu -> {
+                accessLineResourceInventory.allocatedOnuIdController()
+                        .deleteAllocatedOnuId()
+                        .idQuery(onu.getId())
+                        .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            });
+        }
     }
 
     @Step("Check absence of assigned lines, subscriber profiles")
@@ -163,4 +144,12 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
+        return accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
+                .body(new SearchAllocatedOnuIdDto()
+                        .oltEndSz(port.getEndSz())
+                        .portNumber(portNumber)
+                        .slotNumber(SLOT))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 }

@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
@@ -43,12 +44,14 @@ public class OltProvisioning5800 extends BaseTest {
 
     private static final Integer LATENCY = 2 * 80_000;
 
+    private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private PortProvisioning portEmpty;
 
     @BeforeClass
     public void init() {
+        accessLineRiRobot = new AccessLineRiRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
         portEmpty = OsrTestContext.get().getData()
@@ -58,13 +61,12 @@ public class OltProvisioning5800 extends BaseTest {
 
     @BeforeMethod
     public void prepareData() throws InterruptedException {
-        clearDataBase();
-        Thread.sleep(1000);
+        accessLineRiRobot.clearDatabase();
     }
 
     @AfterMethod
     public void clearData() {
-        clearDataBase();
+        accessLineRiRobot.clearDatabase();
     }
 
     @Test
@@ -210,12 +212,5 @@ public class OltProvisioning5800 extends BaseTest {
         String response = given().when().get(cardUrl.toString().replace("%2F", "/"))
                 .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
         return OltResourceInventoryClient.json().deserialize(response, Card.class);
-    }
-
-
-
-    private void clearDataBase() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
