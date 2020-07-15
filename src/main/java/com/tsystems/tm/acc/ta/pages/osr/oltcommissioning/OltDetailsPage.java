@@ -19,6 +19,7 @@ public class OltDetailsPage {
 
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     public static final Integer MAX_ANCP_COFIGURATION_TIME = 2 * 60_000;
+    public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
 
@@ -136,7 +137,7 @@ public class OltDetailsPage {
     public OltDetailsPage configureAncpSessionStart() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
-        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), 5000);
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         return this;
     }
 
@@ -150,7 +151,7 @@ public class OltDetailsPage {
     public OltDetailsPage deconfigureAncpSession() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).click();
-        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), 5000);
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         return this;
     }
 

@@ -102,11 +102,28 @@ public class OltAutoCommissioning extends BaseTest {
         checkUplink(endSz);
     }
 
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortStateMA5600(OltDevice device, OltDetailsPage detailsPage) {
+
+        for (int port = 0; port <= 1; ++port) {
+            log.info("checkPortState() Port={}, Slot={}", port, device.getOltSlot());
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
+    }
 
     /**
      * check device MA5600 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5600(OltDevice oltDevice ) {
+    private void checkDeviceMA5600(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -124,6 +141,31 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        checkPortStateMA5600(oltDevice, oltDetailsPage);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortStateMA5800(OltDevice device, OltDetailsPage detailsPage) {
+
+        for (int port = 0; port <= 3; ++port) {
+            log.info("checkPortState() Port={}, Slot={}", port, device.getOltSlot());
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
     }
 
     /**
@@ -146,28 +188,40 @@ public class OltAutoCommissioning extends BaseTest {
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.checkPortLifeCycleState(oltDevice.getOltSlot());
+        checkPortStateMA5800(oltDevice, oltDetailsPage);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * check uplink and ancp-session data from olt-resource-inventory
-     */
-    private void checkUplink(String endSz) {
-        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
-                .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        Assert.assertEquals(uplinkDTOList.size(), 1L);
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+
+
+        /**
+         * check uplink and ancp-session data from olt-resource-inventory
+         */
+        private void checkUplink (String endSz){
+            List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+                    .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+            Assert.assertEquals(uplinkDTOList.size(), 1L);
+            Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
+            Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+        }
+
+        /**
+         * clears a device in olt-resource-inventory database.
+         * only one device will be deleted.
+         *
+         * @param endSz
+         */
+        private void deleteDeviceInResourceInventory (String endSz){
+            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        }
     }
 
-    /**
-     * clears a device in olt-resource-inventory database.
-     * only one device will be deleted.
-     *
-     * @param endSz
-     */
-    private void deleteDeviceInResourceInventory(String endSz) {
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-}
+
