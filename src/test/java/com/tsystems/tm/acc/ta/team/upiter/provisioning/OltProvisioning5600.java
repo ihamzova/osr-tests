@@ -58,7 +58,9 @@ public class OltProvisioning5600 extends BaseTest {
 
     @BeforeMethod
     public void prepareData() throws InterruptedException {
+        overallLatency = 0;
         accessLineRiRobot.clearDatabase();
+        Thread.sleep(1000);
         accessLineRiRobot.fillDatabase();
     }
 
@@ -274,15 +276,5 @@ public class OltProvisioning5600 extends BaseTest {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-    }
-
-    private void fillDataBase() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    private void clearDataBase() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
