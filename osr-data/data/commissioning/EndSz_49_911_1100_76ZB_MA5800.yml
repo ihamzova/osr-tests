@@ -1,4 +1,4 @@
-name: FSZ_76ZB_MA5800
+name: EndSz_49_911_1100_76ZB_MA5800
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/911/1100"

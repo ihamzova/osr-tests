@@ -1,17 +1,16 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.osr.models.nvt.NvtCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
@@ -56,8 +55,7 @@ public class OltAutoCommissioning extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5600);
-        OltDevice oltDevice = nvt.getOltDevice();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
@@ -71,19 +69,18 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5600(nvt);
+        checkDeviceMA5600(oltDevice);
         checkUplink(endSz);
     }
 
-    @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
+    @Test(description = "DIGIHUB-52133 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
     public void OltAutoCommissioningGFNWTest() throws Exception {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        Nvt nvt = context.getData().getNvtDataProvider().get(NvtCase.nvtForOltAutoCommissioningMA5800);
-        OltDevice oltDevice = nvt.getOltDevice();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
@@ -98,16 +95,32 @@ public class OltAutoCommissioning extends BaseTest {
 
         oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        checkDeviceMA5800(nvt);
+        checkDeviceMA5800(oltDevice);
         checkUplink(endSz);
     }
 
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortState(OltDevice device, OltDetailsPage detailsPage, int anzOfPorts) {
+
+        for (int port = 0; port < anzOfPorts; ++port) {
+            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, device.getOltSlot(), detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
+    }
 
     /**
      * check device MA5600 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5600(Nvt nvt) {
-        OltDevice oltDevice = nvt.getOltDevice();
+    private void checkDeviceMA5600(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -123,14 +136,17 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.openPortView(oltDevice.getOltSlot());
+        checkPortState(oltDevice, oltDetailsPage, 2);
     }
+
 
     /**
      * check device MA5800 data from olt-resource-inventory and UI
      */
-    private void checkDeviceMA5800(Nvt nvt) {
-        OltDevice oltDevice = nvt.getOltDevice();
+    private void checkDeviceMA5800(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
@@ -145,8 +161,12 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), nvt.getOltDevice().getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.openPortView(oltDevice.getOltSlot());
+        checkPortState(oltDevice, oltDetailsPage, 4);
     }
+
 
     /**
      * check uplink and ancp-session data from olt-resource-inventory
@@ -171,3 +191,5 @@ public class OltAutoCommissioning extends BaseTest {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
+
+
