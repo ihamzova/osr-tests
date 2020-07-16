@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -72,7 +71,7 @@ public class OltDetailsPage {
     }
 
     @Step("Check port life cycle state")
-    public OltDetailsPage checkPortLifeCycleState(String slot) {
+    public OltDetailsPage openPortView(String slot) {
         $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
             $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
@@ -141,11 +140,6 @@ public class OltDetailsPage {
         return this;
     }
 
-    @Step("Wait until end of config ANCP session")
-    public OltDetailsPage configureAncpSessionEnd() {
-        $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).waitUntil(visible, MAX_ANCP_COFIGURATION_TIME).isDisplayed();
-        return this;
-    }
 
     @Step("Deconfigure ANCP session")
     public OltDetailsPage deconfigureAncpSession() {
