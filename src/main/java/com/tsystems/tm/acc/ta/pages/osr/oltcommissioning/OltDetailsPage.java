@@ -1,14 +1,14 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.appears;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -18,6 +18,7 @@ public class OltDetailsPage {
 
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     public static final Integer MAX_ANCP_COFIGURATION_TIME = 2 * 60_000;
+    public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
 
@@ -58,11 +59,24 @@ public class OltDetailsPage {
     private static final By BEZEICHNUNG_LOCATOR = byQaData("span-olt-emsnbiname");
     private static final By KLSID_LOCATOR = byQaData("span-olt-klsid");
 
+    private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
+    public String slotPortViewLocator = "a-card-portview-slot-%s";
+    public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
+
 
     @Step("Validate Url")
     public void validateUrl() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
+    }
+
+    @Step("Check port life cycle state")
+    public OltDetailsPage openPortView(String slot) {
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
+            $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        }
+        return this;
     }
 
     @Step("Configure uplink")
@@ -118,12 +132,23 @@ public class OltDetailsPage {
         return this;
     }
 
+    @Step("Start configure ANCP session")
+    public OltDetailsPage configureAncpSessionStart() {
+        $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+        return this;
+    }
+
+
     @Step("Deconfigure ANCP session")
     public OltDetailsPage deconfigureAncpSession() {
         $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).click();
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         return this;
     }
+
 
     @Step("Update ANCP Session State")
     public OltDetailsPage updateAncpSessionStatus() {
@@ -164,5 +189,15 @@ public class OltDetailsPage {
     @Step("Get KLS-ID")
     public String getKlsID() {
         return $(KLSID_LOCATOR).getText();
+    }
+
+    @Step("Get device life cycle state")
+    public String getDeviceLifeCycleState() {
+        return $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).getText();
+    }
+
+    @Step("Get PORT life cycle state")
+    public String getPortLifeCycleState(String slot, String port) {
+        return $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText();
     }
 }

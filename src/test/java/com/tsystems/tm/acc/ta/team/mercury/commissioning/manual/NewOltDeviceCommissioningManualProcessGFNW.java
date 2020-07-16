@@ -1,7 +1,8 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.Nvt;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -10,7 +11,6 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.RHSSOAuthListener;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
@@ -50,12 +50,14 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
-        String endSz = getDevice().getVpsz() + getDevice().getFsz();
+
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
+        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-        oltSearchPage.searchNotDiscoveredByParameters(getDevice());
+        oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
         oltDiscoveryPage.makeOltDiscovery();
@@ -63,43 +65,56 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDiscoveryPage.openOltSearchPage();
 
         Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(getDevice());
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.openPortView(oltDevice.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(getDevice());
+        oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
-        oltDetailsPage.configureAncpSession();
+        oltDetailsPage.configureAncpSessionStart();
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.openPortView(oltDevice.getOltSlot());
+        checkPortState(oltDevice, oltDetailsPage);
 
         checkDeviceMA5600(endSz);
         checkUplink(endSz);
 
-        Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+        //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
         oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
+        // check uplink port life cycle state
+        oltDetailsPage.openPortView(oltDevice.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
     }
 
-    // private
-    private OltDevice getDevice() {
-        OltDevice device = new OltDevice();
-        device.setVpsz("49/8571/0/");
-        device.getVpsz();
-        device.setFsz("76Z7");
-        device.setLsz("4Z2");
-        device.setOltPort("0");
-        device.setOltSlot("19");
-        device.setBngEndsz("49/911/84/7ZJE");
-        device.setBngDownlinkPort("ge-2/1/4");
-        device.setBngDownlinkSlot("2");
-        device.setOrderNumber("0123456789");
-        return device;
-    }
+    /**
+     * check all port states from ethernet card
+     *
+     * @param device
+     * @param detailsPage
+     */
+    public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
+        for (int port = 0; port <= 1; ++port) {
+            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, device.getOltSlot(), detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
+            if (device.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
+    }
 
     /**
      * check device MA5600 data from olt-ressource-inventory
@@ -139,7 +154,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
     private void checkUplinkDeleted(String endSz) {
         List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
         Assert.assertTrue(uplinkDTOList.isEmpty());
     }
 
