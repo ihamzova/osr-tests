@@ -109,7 +109,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
     public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
         for (int port = 0; port <= 1; ++port) {
-            log.info("checkPortState() Port={}, Slot={}",port,device.getOltSlot());
+            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}",port,device.getOltSlot(),detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
             if (device.getOltPort().equals((Integer.toString(port)))) {
                 Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
             } else {
