@@ -123,4 +123,28 @@ public class WiremockRecordedRequestRetriver {
         return isPutRequestCalled(timeOfExecution, new ArrayList<>(), TIMEOUT, url);
     }
 
+
+    public boolean isPatchRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
+        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
+
+        do {
+            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("PATCH").withUrlPattern(url).build();
+            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
+            if (!requests.isEmpty()) {
+                for (RequestFind request : requests) {
+                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
+                        return true;
+                }
+            }
+            sleep(DELAY);
+        }
+        while (LocalDateTime.now().isBefore(end));
+        return false;
+    }
+
+    public boolean isPatchRequestCalled(Long timeOfExecution, List<String> fieldValues, String url){
+        return isPatchRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    }
+
+
 }
