@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
@@ -11,6 +10,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -22,7 +22,6 @@ public class A4ResourceInventoryServiceV4Robot {
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client().getClient();
 
-    //private ObjectMapper objectMapper = new ObjectMapper();
 
     @Step("Read all Network Elements as list from v4 API")
     public List<NetworkElement> getAllNetworkElementsV4() {
@@ -65,7 +64,7 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
     @Step("Read all Network Element Groups as list from v4 API")
-    public List<NetworkElementGroup> getAllNetworkElementGorupsV4() {
+    public List<NetworkElementGroup> getAllNetworkElementGroupsV4() {
         return a4ResourceInventoryService.networkElementGroup()
                 .listNetworkElementGroup()
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -97,7 +96,7 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
     public void checkNumberOfNetworkElementGroups(List<A4NetworkElementGroup> negDataList){
-        List<NetworkElementGroup> negList = getAllNetworkElementGorupsV4();
+        List<NetworkElementGroup> negList = getAllNetworkElementGroupsV4();
         assertEquals(negList.size(), negDataList.size());
     }
 
@@ -109,27 +108,14 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(neg.getOperationalState().toString(), negData.getOperationalState());
     }
 
-    public void checkErrorNotFound(A4NetworkElementGroup negData) {
-        String uuid = negData.getUuid() + "1";
+    public void checkNotFoundErrorForNonExistendNeg() {
+        String uuid = String.valueOf(UUID.randomUUID());
 
         Response r = a4ResourceInventoryService
                 .networkElementGroup()
                 .retrieveNetworkElementGroup()
                 .idPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
-
-//        Error e = new Error();
-//        try {
-//            e = objectMapper.readValue(r.getBody().print(), Error.class);
-//        } catch (IOException ioException) {
-//            fail("No Error Object is thrown!");
-//        }
-//
-//        assertEquals(e.getCode(), "00000002");
-//        assertEquals(e.getStatus(), "404 NOT_FOUND");
-//        assertEquals(e.getReason(), "Element not found in database");
-
-        assertTrue(r.getBody().print().contains("Element not found in database"));
 
     }
 }

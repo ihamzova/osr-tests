@@ -74,7 +74,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         // THEN
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByName(negData);
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByUuid(negData);
-        a4ResourceInventoryServiceV4Robot.checkErrorNotFound(negData);
+        a4ResourceInventoryServiceV4Robot.checkNotFoundErrorForNonExistendNeg();
     }
 
 }
