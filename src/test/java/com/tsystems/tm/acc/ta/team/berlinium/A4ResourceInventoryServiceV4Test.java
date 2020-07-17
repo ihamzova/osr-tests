@@ -62,4 +62,19 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementExists(neData);
     }
 
+    @Test(description = "DIGIHUB-67987 Read network element group from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-67987")
+    @Description("Read network element group from resource inventory service v4 api")
+    public void test_readNetworkElementGroupFromA4Api() {
+        // GIVEN
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByName(negData);
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByUuid(negData);
+        a4ResourceInventoryServiceV4Robot.checkNotFoundErrorForNonExistendNeg();
+    }
+
 }
