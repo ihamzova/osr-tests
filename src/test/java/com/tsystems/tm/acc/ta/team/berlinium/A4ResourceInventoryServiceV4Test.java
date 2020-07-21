@@ -60,8 +60,8 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     public void cleanup() {
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neData);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(negData);
-        a4ResourceInventoryRobot.deleteNetworkElementPort(nepData.getUuid());
-        a4ResourceInventoryRobot.deleteTerminationPoint(tpData.getUuid());
+        //a4ResourceInventoryRobot.deleteNetworkElementPort(nepData.getUuid());
+        //a4ResourceInventoryRobot.deleteTerminationPoint(tpData.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx Read network element from resource inventory service v4 api")
