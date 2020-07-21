@@ -2,6 +2,8 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
@@ -68,4 +70,23 @@ public class A4TerminationPointGenerator {
 
         return terminationPointLogicalResource;
     }
+
+    public TerminationPointDto generateAsDto(A4TerminationPoint tpData, A4NetworkElementPort nepData){
+        if (tpData.getUuid().isEmpty())
+            tpData.setUuid(UUID.randomUUID().toString());
+
+
+        return new TerminationPointDto()
+                .uuid(tpData.getUuid())
+                .parentUuid(nepData.getUuid())
+                .description("TP for integration test")
+                .lockedForNspUsage(true)
+                .state("state")
+                .supportedDiagnosesName("supportedDiagnoseName")
+                .supportedDiagnosesSpecificationVersion("supportedDiagnoseVerison")
+                .type("type")
+                .creationTime(OffsetDateTime.now())
+                .lastUpdateTime(OffsetDateTime.now());
+    }
+
 }

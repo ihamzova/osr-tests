@@ -3,9 +3,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElement;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementGroup;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.TerminationPoint;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
@@ -117,5 +121,43 @@ public class A4ResourceInventoryServiceV4Robot {
                 .idPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
+    }
+
+    @Step("Read all TerminationPoints as list from v4 API")
+    public List<TerminationPoint> getAllTerminationPointsV4() {
+        return a4ResourceInventoryService.terminationPoint()
+                .listTerminationPoint()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Read all TerminationPoints as list from v4 API")
+    public List<TerminationPoint> getTerminationPointsV4ByPort(String nepUuid) {
+        return a4ResourceInventoryService.terminationPoint()
+                .listTerminationPoint()
+                .relatedNetworkElementPortUuidQuery(nepUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void checkIfTerminationPointExists(A4TerminationPoint tpData) {
+        List<TerminationPoint> tpList = getAllTerminationPointsV4();
+
+        TerminationPoint tp = tpList.stream()
+                .filter(i -> tpData.getUuid().equals(i.getId()))
+                .findAny()
+                .orElse(null);
+
+        assertNotNull(tp);
+    }
+
+    public void checkIfTerminationPointExistsByPort(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+        List<TerminationPoint> tpList = getTerminationPointsV4ByPort(nepData.getUuid());
+
+        TerminationPoint tp = tpList.stream()
+                .filter(i -> tpData.getUuid().equals(i.getId()))
+                .findAny()
+                .orElse(null);
+
+        assertNotNull(tp);
+        assertEquals(tp.getRelatedNetworkElementPortUuid(), nepData.getUuid());
     }
 }

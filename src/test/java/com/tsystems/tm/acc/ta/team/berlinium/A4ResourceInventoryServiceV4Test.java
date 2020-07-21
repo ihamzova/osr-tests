@@ -2,9 +2,13 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
+import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot;
@@ -23,6 +27,8 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
+    private A4NetworkElementPort nepData;
+    private A4TerminationPoint tpData;
 
 
     @BeforeClass
@@ -31,22 +37,31 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
+        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPoint);
+        nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
 
         // Ensure that no old test data is in the way
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neData);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(negData);
+
     }
 
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(negData);
         a4ResourceInventoryRobot.createNetworkElement(neData, negData);
+        a4ResourceInventoryRobot.createNetworkElementPort(nepData, neData);
+        a4ResourceInventoryRobot.createTerminationPoint(tpData, nepData);
     }
 
     @AfterMethod
     public void cleanup() {
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neData);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(negData);
+        a4ResourceInventoryRobot.deleteNetworkElementPort(nepData.getUuid());
+        a4ResourceInventoryRobot.deleteTerminationPoint(tpData.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx Read network element from resource inventory service v4 api")
@@ -75,6 +90,20 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByName(negData);
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByUuid(negData);
         a4ResourceInventoryServiceV4Robot.checkNotFoundErrorForNonExistendNeg();
+    }
+
+    @Test(description = "DIGIHUB-xxx Read termination point from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read terminationPoint from resource inventory service v4 api")
+    public void test_readTerminationPointFromA4Api() {
+        // GIVEN
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExists(tpData);
+        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpData, nepData);
     }
 
 }

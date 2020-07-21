@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGroupGenerator;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementPortGenerator;
+import com.tsystems.tm.acc.ta.data.osr.generators.A4TerminationPointGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
@@ -360,4 +361,16 @@ public class A4ResourceInventoryRobot {
                 .collect(Collectors.toList());
     }
 
+    @Step("Create new TerminationPoint in A4 resource inventory")
+    public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+        A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
+        TerminationPointDto tpDto = a4TerminationPointGenerator.generateAsDto(tpData, nepData);
+
+        a4ResourceInventory
+                .terminationPoints()
+                .createOrUpdateTerminationPoint()
+                .body(tpDto)
+                .uuidPath(tpData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 }
