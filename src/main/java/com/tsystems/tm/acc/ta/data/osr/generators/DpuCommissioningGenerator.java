@@ -28,6 +28,10 @@ public class DpuCommissioningGenerator {
 
     private String generatedStubFolder = System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult/";
     private String stubTemplateFolder = System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockTemplates/";
+    private static final String STATUS_200 = "\"status\":200";
+    private static final String STATUS_202 = "\"status\":202";
+    private static final String STATUS_400 = "\"status\":400";
+    private static final String DEFAULT_LIFECYCLE = "\"NOT_OPERATING\"";
 
     public void generateGetDpuDeviceStub(Dpu dpu){
         File jsonTemplate = new File(stubTemplateFolder + "1_OLT_RI_GET_DeviceDPU.json");
@@ -37,6 +41,8 @@ public class DpuCommissioningGenerator {
 
         String currentStep = DpuActivities.GET_DPU;
         content = setResponseStatus(dpu, content, currentStep);
+
+        content = setLifecycleState(dpu,content);
 
         File stub = new File (generatedStubFolder + "1_OLT_RI_GET_DeviceDPU.json");
         writeStubToFolder(content, stub);
@@ -289,6 +295,29 @@ public class DpuCommissioningGenerator {
         writeStubToFolder(content, stub);
     }
 
+    public void generatePatchLifecycleStateDeviceStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "16_OLT_RI_PATCH_LifecycleState_device.json");
+        String content = getTemplateContent(jsonTemplate);
+
+        String currentStep = DpuActivities.LIFECYCLESTATE_DEVICE;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "16_OLT_RI_PATCH_LifecycleState_device.json");
+        writeStubToFolder(content, stub);
+    }
+
+    public void generatePatchLifecycleStatePortStub(Dpu dpu){
+        File jsonTemplate = new File(stubTemplateFolder + "17_OLT_RI_PATCH_LifecycleState_port.json");
+        String content = getTemplateContent(jsonTemplate);
+
+        String currentStep = DpuActivities.LIFECYCLESTATE_PORT;
+        content = setResponseStatus(dpu, content, currentStep);
+
+        File stub = new File (generatedStubFolder + "17_OLT_RI_PATCH_LifecycleState_port.json");
+        writeStubToFolder(content, stub);
+    }
+
+
     private String getTemplateContent(File jsonTemplate) {
         String content;
         try {
@@ -327,61 +356,51 @@ public class DpuCommissioningGenerator {
         return setResponseStatus(dpu, content,currentStep, body);
     }
 
-
-
     /**
      * when defined in testdata.yml "getStepToFall" this call should return a 400 error
      * when defined in testdata.yml "getChangeBody" should replace body with body
      */
     private String setResponseStatus(Dpu dpu, String content, String currentStep, String body){
-        //TODO durty hack. Refactor. take status to yaml.
-        if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep))
-        {
-            content = content.replace("###STATUS###", "\"status\":202");
+        if (currentStep.equals(dpu.getStepToFall())){
+            return content.replace("###STATUS###", STATUS_400);
+        }else{
+            if(DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)){
+                return content.replace("###STATUS###", STATUS_202);
+            }else {
+                if (currentStep.equals(dpu.getChangeBody())){
+                    content = content.replace("###STATUS###", STATUS_200);
+                    return content.replace("###BODY###", body);
+                }else {
+                    content = content.replace("###STATUS###", STATUS_200);
+                    return content.replace("###BODY###", "");
+                }
+            }
         }
-        if (currentStep.equals(dpu.getStepToFall())) {
-            content = content.replace("###STATUS###", "\"status\":400");
-        } else {
-            content = content.replace("###STATUS###", "\"status\":200");
-        }
-        if(currentStep.equals(dpu.getChangeBody())) {
-            content = content.replace("###STATUS###", "\"status\":200");
-            content = content.replace("###BODY###", body);
-        }else {
-            content = content.replace("###STATUS###", "\"status\":200");
-            content = content.replace("###BODY###", "");
-        }
-        return content;
     }
 
     /**
      * overload method to handle callback error
      */
     private String setResponseStatus(Dpu dpu, String content, String currentStep, String errorMessage, boolean isAsyncScenario) {
-        if (DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&!isAsyncScenario){
-            //TODO durty hack. Refactor. take status to yaml.
-            content = content.replace("###STATUS###", "\"status\":202");
-            content = content.replace("###CALLBACK_START###","");
-            content = content.replace("###CALLBACK_END###","");
+        if(DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)){
+            content = content.replace("###STATUS###", STATUS_202);
+            if(currentStep.equals(dpu.getStepToFall())){
+                return replaceCallback(content, errorMessage, isAsyncScenario);
+            }else{
+                content = content.replace("###CALLBACK_START###","");
+                content = content.replace("###CALLBACK_END###","");
+                return content;
+            }
+        }else{
+            content = content.replace("###STATUS###", STATUS_200);
+            if(currentStep.equals(dpu.getStepToFall())){
+                return replaceCallback(content, errorMessage, isAsyncScenario);
+            }else{
+                content = content.replace("###CALLBACK_START###","");
+                content = content.replace("###CALLBACK_END###","");
+                return content;
+            }
         }
-        else if (currentStep.equals(dpu.getStepToFall())&&DpuActivities.STEPS_WITH_202_CODE.contains(currentStep)&&isAsyncScenario){
-            //TODO durty hack. Refactor. take status to yaml.
-            content = content.replace("###STATUS###", "\"status\":202");
-            content = replaceCallback(content, errorMessage, isAsyncScenario);
-        }
-        else if(!currentStep.equals(dpu.getStepToFall())){
-            content = content.replace("###STATUS###", "\"status\":200");
-            content = content.replace("###CALLBACK_START###","");
-            content = content.replace("###CALLBACK_END###","");
-        }else if(currentStep.equals(dpu.getStepToFall())&&!isAsyncScenario){
-            content = content.replace("###STATUS###", "\"status\":400");
-            content = replaceCallback(content, errorMessage,isAsyncScenario);
-        }
-        else if(currentStep.equals(dpu.getStepToFall())&&isAsyncScenario){
-            content = content.replace("###STATUS###", "\"status\":200");
-            content = replaceCallback(content, errorMessage, isAsyncScenario);
-        }
-        return content;
     }
 
     private String replaceCallback(String content, String errorMessage, boolean isAsyncScenario){
@@ -409,7 +428,7 @@ public class DpuCommissioningGenerator {
                 "{{request.headers.X-Callback-Url}}",
                 webhookHeaders,
                 new Body(errorMessage),
-                3000,
+                1000,
                 null);
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         return doGenerate(mapping);
@@ -437,5 +456,21 @@ public class DpuCommissioningGenerator {
             }
         }
         return null;
+    }
+
+    private String setLifecycleState (Dpu dpu, String content){
+        if(dpu.getLifeCycleDpu()==null)
+        {
+            content = content.replace("###DPU_LIFECYCLE###", DEFAULT_LIFECYCLE);
+        }else{
+            content = content.replace("###DPU_LIFECYCLE###", "\"" + dpu.getLifeCycleDpu()+"\"");
+        }
+        if(dpu.getLifeCycleUplink()==null)
+        {
+            content = content.replace("###UPLINK_LIFECYCLE###", DEFAULT_LIFECYCLE);
+        }else{
+            content = content.replace("###UPLINK_LIFECYCLE###", "\""+dpu.getLifeCycleUplink()+"\"");
+        }
+        return content;
     }
 }

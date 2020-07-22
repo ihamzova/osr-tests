@@ -29,18 +29,18 @@
         "deviceName":"ETSI Service Shelf H8-MABC",
         "endSz":"{{request.requestLine.query.endsz}}",
         "fachSz":null,
-        "klsId":0,
+        "klsId":16063944,
         "ipAddress":"10.182.112.196",
         "firmwareVersion":null,
         "resourceState":"NON_WORKING",
         "communicationState":"CS_AVAILABLE",
         "serialNumber":"12345",
         "importState":"PLANNED",
-        "type":"OLT",
+        "type":"DPU",
         "importDate":"2020-03-10T16:40:26.154Z",
         "equipmentHolders":[
           {
-            "id":0,
+            "id":1011,
             "slotNumber":"4",
             "card":{
               "shortName":"GPPD",
@@ -66,7 +66,7 @@
                   "id":1049,
                   "resourceId":"1049",
                   "portType":"PON",
-                  "portNumber":"101",
+                  "portNumber":"1",
                   "opticalModule":{
                     "shortName":"GPPD",
                     "materialNumber":"40261742",
@@ -82,85 +82,6 @@
                     "manufacturer":null,
                     "compositePartyId":0
                   },
-                  "homeIdPools":[
-                    {
-                      "id":1,
-                      "homeId":"000Y7EB",
-                      "homeIdStatus":"FREE"
-                    }
-                  ],
-                  "lineIdPools":[
-                    {
-                      "id":33,
-                      "lineId":"DEU.DTAG.PDJ0000000",
-                      "status":"used"
-                    }
-                  ],
-                  "accessLines":[
-                    {
-                      "id":33,
-                      "resourceId":"33",
-                      "technology":"GFAST",
-                      "status":"INACTIVE",
-                      "lineId":"DEU.DTAG.LEJ0000000",
-                      "homeId":"000Y7EB",
-                      "version":3,
-                      "defaultNeProfile":{
-                        "profileName":"RFS_AL_GPON",
-                        "ontSerialNumber":"DEF0000001002003",
-                        "state":"INACTIVE",
-                        "version":1,
-                        "id":36,
-                        "ancpPartitionId":1,
-                        "ontId":3,
-                        "ontState":"OFFLINE",
-                        "anpTag":163,
-                        "subscriberNeProfile":{
-                          "profileName":"RFS_AL_GPON",
-                          "ontSerialNumber":"DEF0000001002003",
-                          "state":"INACTIVE",
-                          "version":1,
-                          "id":36
-                        }
-                      },
-                      "defaultNetworkLineProfile":{
-                        "authMethod":1,
-                        "klsId":123,
-                        "minDownBandwidth":62000,
-                        "minUpBandwidth":31000,
-                        "guaranteedDownBandwidth":62000,
-                        "guaranteedUpBandwidth":31000,
-                        "maxDownBandwidth":1000000,
-                        "maxUpBandwidth":500000,
-                        "state":"INACTIVE",
-                        "federationPartner":null,
-                        "version":3,
-                        "id":3,
-                        "accessNetworkType":"Ethernet",
-                        "accessType":"FTTH",
-                        "subscriberNetworkLineProfile":{
-                          "authMethod":1,
-                          "klsId":123,
-                          "minDownBandwidth":62000,
-                          "minUpBandwidth":31000,
-                          "guaranteedDownBandwidth":62000,
-                          "guaranteedUpBandwidth":31000,
-                          "maxDownBandwidth":1000000,
-                          "maxUpBandwidth":500000,
-                          "state":"INACTIVE",
-                          "federationPartner":null,
-                          "version":3,
-                          "id":3,
-                          "providerId":"123",
-                          "downBandwidth":62000,
-                          "upBandwidth":31000,
-                          "substitutionDomain":null,
-                          "l2ccid":null
-                        }
-                      },
-                      "compositePartyId":0
-                    }
-                  ],
                   "compositePartyId":0
                 }
               ],
@@ -168,33 +89,38 @@
             }
           }
         ],
-        "ftthAnptagRange":{
-          "id":0,
-          "startFrom":0,
-          "endWith":0,
-          "allocatedFtthTags":[
-            {
-              "id":0,
-              "ftthAnptag":0
-            }
-          ]
-        },
-        "fttbAnptagRange":{
-          "id":0,
-          "endWith":0,
-          "startFrom":0,
-          "allocatedFttbTags":[
-            {
-              "id":0,
-              "fttbAnptag":0
-            }
-          ]
-        },
-        "description":null,
+        "description":"string",
         "asb":0,
-        "technicalLocation":null,
-        "equipmentNumber":"123",
-        "manufacturer":null,
+        "technicalLocation":"string",
+        "equipmentNumber":"string",
+        "manufacturer":"string",
+        "distributionPointId":"123456789",
+        "lifeCycleState":###DPU_LIFECYCLE###,
+        "ports":[
+          {
+            "id":1049,
+            "resourceId":"1049",
+            "lifeCycleState":###UPLINK_LIFECYCLE###,
+            "portType":"PON",
+            "portNumber":"1",
+            "opticalModule":{
+              "shortName":"GPPD",
+              "materialNumber":"40261742",
+              "emsNbiName":"H805GPBD",
+              "tkz1":"03021BQW",
+              "tkz2":"string",
+              "descriptionUrl":"https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742",
+              "lastDiscovery":"2020-07-10T08:34:38.467Z",
+              "id":0,
+              "resourceId":"1049",
+              "name":"8-port GPON OLT Interface Board V2",
+              "description":"string",
+              "manufacturer":"string",
+              "compositePartyId":0
+            },
+            "compositePartyId":0
+          }
+        ],
         "compositePartyId":0
       }
     ]
