@@ -95,12 +95,12 @@
         "equipmentNumber":"string",
         "manufacturer":"string",
         "distributionPointId":"123456789",
-        "lifeCycleState":"NOT_OPERATING",
+        "lifeCycleState":###DPU_LIFECYCLE###,
         "ports":[
           {
             "id":1049,
             "resourceId":"1049",
-            "lifeCycleState":"NOT_OPERATING",
+            "lifeCycleState":###UPLINK_LIFECYCLE###,
             "portType":"PON",
             "portNumber":"1",
             "opticalModule":{

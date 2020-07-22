@@ -306,24 +306,36 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPatchDeviceCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
         Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
     }
 
     @Step
     public void checkPatchDeviceNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
     }
 
     @Step
     public void checkPatchPortCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
         Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
     }
 
     @Step
     public void checkPatchPortNotCalled(Long timeOfExecution, List<String> fieldValues){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
     }
 

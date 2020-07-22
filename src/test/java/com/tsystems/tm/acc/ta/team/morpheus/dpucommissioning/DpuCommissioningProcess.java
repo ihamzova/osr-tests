@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.dpu.DpuCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
-import com.tsystems.tm.acc.ta.db.etcd.Node;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
@@ -86,10 +85,18 @@ public class DpuCommissioningProcess extends BaseTest {
         List<String> dpuSealAtOltCheckValuesDpu = new ArrayList<>();
         dpuSealAtOltCheckValuesDpu.add(dpu.getEndSz().replace("/", "_"));
 
+        List<String> checkFirstPatchValues = new ArrayList<>();
+        checkFirstPatchValues.add("INSTALLING");
+
+        List<String> checkSecondPatchValues = new ArrayList<>();
+        checkSecondPatchValues.add("OPERATING");
+
         Long timeOfExecution = System.currentTimeMillis();
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
         dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkFirstPatchValues);
         dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
         dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
         dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution, onuidCheckValues);
@@ -107,6 +114,8 @@ public class DpuCommissioningProcess extends BaseTest {
         dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealAtOltCheckValuesDpu);
         dpuCommissioningRobot.checkPutDpuEmsConfigCalled(timeOfExecution, dpuEmsCheckValuesPut);
         dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
 
     }
 
@@ -429,12 +438,74 @@ public class DpuCommissioningProcess extends BaseTest {
         Long timeOfExecution = System.currentTimeMillis();
         isAsyncScenario = true;
 
+        List<String> checkSecondPatchValues = new ArrayList<>();
+        checkSecondPatchValues.add("OPERATING");
+
         dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        Thread.sleep(3000);
+        Thread.sleep(4000);
         dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
-        //TODO :
-        //dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution, dpuSealEmsCheckValues);
+        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution, checkSecondPatchValues);
+    }
+
+    @Test(description = "Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
+    @Description("Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
+    public void dpuCommissioningDpuLifeCycleInstalling(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceInstalling);
+        Long timeOfExecution = System.currentTimeMillis();
+        List<String> checkFirstPatchValues = new ArrayList<>();
+        checkFirstPatchValues.add("INSTALLING");
+
+        List<String> checkSecondPatchValues = new ArrayList<>();
+        checkSecondPatchValues.add("OPERATING");
+
+        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
+    }
+
+    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
+    @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
+    public void dpuCommissioningUplinkLifeCycleInstalling(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateUplinkInstalling);
+        Long timeOfExecution = System.currentTimeMillis();
+        List<String> checkFirstPatchValues = new ArrayList<>();
+        checkFirstPatchValues.add("INSTALLING");
+
+        List<String> checkSecondPatchValues = new ArrayList<>();
+        checkSecondPatchValues.add("OPERATING");
+
+        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchPortNotCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
+    }
+
+    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
+    @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
+    public void dpuCommissioningDeviceAndUplinkLifeCycleInstalling(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceUplinkInstalling);
+        Long timeOfExecution = System.currentTimeMillis();
+        List<String> checkFirstPatchValues = new ArrayList<>();
+        checkFirstPatchValues.add("INSTALLING");
+
+        List<String> checkSecondPatchValues = new ArrayList<>();
+        checkSecondPatchValues.add("OPERATING");
+
+        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
+        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchPortNotCalled(timeOfExecution,checkFirstPatchValues);
+        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
+        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
     }
 
     @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
@@ -446,11 +517,13 @@ public class DpuCommissioningProcess extends BaseTest {
 
         dpuCommissioningRobot.startProcess(dpu.getEndSz());
 
-        Thread.sleep(20000);
+        Thread.sleep(30000);
 
         etcdRobot.checkEtcdValues(dpuCommissioningRobot.getBusinessKey(),
                 Arrays.asList(
                         "EXECUTED Successfuly [Read DPU device data]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
                         "EXECUTED Successfuly [Read OltPonPort Data]",
                         "EXECUTED Successfuly [Read OltUpLinkPortData]",
                         "EXECUTED Successfuly [Get Unique OnuId for DPU]",
@@ -468,9 +541,10 @@ public class DpuCommissioningProcess extends BaseTest {
                         "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
                         "EXECUTED Successfuly [Configure DPU Ems][call]",
                         "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]"));
-
-
+                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
+                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
+                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
     }
-
 }

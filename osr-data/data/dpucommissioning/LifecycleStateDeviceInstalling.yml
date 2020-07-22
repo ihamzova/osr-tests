@@ -1,0 +1,7 @@
+name: LifecycleStateDeviceInstalling
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/8571/0/71GN"
+  onuId: 12345678
+  stepToFall: null
+  lifeCycleDpu: "INSTALLING"
