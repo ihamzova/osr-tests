@@ -134,7 +134,7 @@ public class A4ResourceInventoryServiceV4Robot {
     public List<TerminationPoint> getTerminationPointsV4ByPort(String nepUuid) {
         return a4ResourceInventoryService.terminationPoint()
                 .listTerminationPoint()
-                .relatedNetworkElementPortUuidQuery(nepUuid)
+                .parentUuidQuery(nepUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -158,6 +158,6 @@ public class A4ResourceInventoryServiceV4Robot {
                 .orElse(null);
 
         assertNotNull(tp);
-        assertEquals(tp.getRelatedNetworkElementPortUuid(), nepData.getUuid());
+        assertEquals(tp.getParentUuid(), nepData.getUuid());
     }
 }
