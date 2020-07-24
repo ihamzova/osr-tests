@@ -44,10 +44,12 @@ public class OltCommissioning5600 extends BaseTest {
     public void prepareData() {
         oltCommissioningRobot.restoreOsrDbState();
 
+        /*
         File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
         List<OltDevice> devices = Collections.singletonList(context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA));
         wiremockRobot.createMocksForPSL(stubsPath, devices);
         wiremockRobot.createMocksForSEAL(stubsPath, devices);
+         */
         // Upload mock to the server may be? They are not being used at the moment
 
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
