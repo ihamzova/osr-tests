@@ -1,0 +1,13 @@
+name: EndSz_49_8571_0_76HD_MA5600
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/8571/0"
+  fsz: "76HD"
+  bngEndsz: "49/30/179/43G1"
+  bngDownlinkPort: "ge-2/2/3"
+  bngDownlinkSlot: "2"
+  lsz: "4C1"
+  orderNumber: "10"
+  vst: "@DefaultVst"
+  oltPort: "0"
+  oltSlot: "19"

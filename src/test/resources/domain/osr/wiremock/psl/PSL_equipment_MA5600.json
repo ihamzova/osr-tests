@@ -1,0 +1,95 @@
+{
+  "error": null,
+    "response": {
+      "messageContext": {
+        "correlationId": "string",
+        "priority": 0,
+        "requestId": "string",
+        "sender": "string",
+        "target": "string",
+        "timeLeft": "string"
+      },
+      "responseData": {
+        "equipment": [
+          {
+            "equnr": "212880011",
+            "tplnr": "000031-000000-001-004-002-021",
+            "hequi": "212879995",
+            "heqnr": "0056",
+            "submt": "40247069",
+            "eqart": "G",
+            "endsz": "###ENDSZ###",
+            "serge": "21023533106TG4900198",
+            "anzEbenen": "1",
+            "adrId": "17056514",
+            "asb": "1"
+          },
+          {
+            "equnr": "212880063",
+            "hequi": "212880011",
+            "heqnr": "0004",
+            "submt": "40294954",
+            "eqart": "P",
+            "endsz": "###ENDSZ###",
+            "serge": "021BQWW0G6002494",
+            "anzEbenen": "2"
+          },
+          {
+            "equnr": "212880063",
+            "hequi": "212880011",
+            "heqnr": "0007",
+            "submt": "40294954",
+            "eqart": "P",
+            "endsz": "###ENDSZ###",
+            "serge": "021BQWW0G6002494",
+            "anzEbenen": "2"
+          },
+          {
+            "equnr": "212880056",
+            "hequi": "212880011",
+            "heqnr": "0009",
+            "submt": "40247071",
+            "eqart": "P",
+            "endsz": "###ENDSZ###",
+            "serge": "020KAX6TG5602889",
+            "anzEbenen": "2"
+          },
+          {
+            "equnr": "212880062",
+            "hequi": "212880011",
+            "heqnr": "0019",
+            "submt": "40247074",
+            "eqart": "P",
+            "endsz": "###ENDSZ###",
+            "serge": "020KKPCNG5010973",
+            "anzEbenen": "2"
+          },
+          {
+            "equnr": "212880059",
+            "hequi": "212880011",
+            "heqnr": "0020",
+            "submt": "40247074",
+            "eqart": "P",
+            "endsz": "###ENDSZ###",
+            "serge": "020NDECNG5030513",
+            "anzEbenen": "2"
+          }
+        ],
+        "header": {
+          "anfoKen": "15758997480418591403",
+          "partner": "BS_DIGIOSS"
+        },
+        "status": {
+          "id": "ZDIB",
+          "logMsgNo": "string",
+          "logNo": "0000000000",
+          "message": "Die Anforderung wurde ausgeführt.",
+          "messageV1": "",
+          "number": "000",
+          "system": "Linux",
+          "type": "S"
+        }
+      }
+    },
+  "success": true
+}

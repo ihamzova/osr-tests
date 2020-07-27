@@ -1,11 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.data.osr.generators.*;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
-import com.tsystems.tm.acc.ta.data.osr.generators.PslEquipmentGeneratorMapper;
-import com.tsystems.tm.acc.ta.data.osr.generators.PslGetEquipmentStubGeneratorMapper;
-import com.tsystems.tm.acc.ta.data.osr.generators.RebellUewegGeneratorMapper;
-import com.tsystems.tm.acc.ta.data.osr.generators.SealAccessNodeConfigurationGeneratorMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
@@ -80,6 +77,26 @@ public class WiremockRobot {
                 .body(mapper.getData(equipmentData, networkElement))
                 .executeAs(validatedWith(shouldBeCode(201)));
         equipmentData.setPslWiremockUuid(result.getId());
+    }
+
+    @Step("Set up PSL wiremock for OLT Discovery")
+    public void setUpPslWiremock(OltDevice oltDevice) {
+        PslEquipmentGeneratorMapper mapper = new PslEquipmentGeneratorMapper();
+        StubMapping result = wiremockApi
+                .mappingsPost()
+                .body(mapper.getDataFromFile(oltDevice))
+                .executeAs(validatedWith(shouldBeCode(201)));
+        oltDevice.setPslWiremockUuid(result.getId());
+    }
+
+    @Step("Set up SEAL wiremock for OLT Discovery")
+    public void setUpSealWiremock(OltDevice oltDevice) {
+        SealEquipmentGeneratorMapper mapper = new SealEquipmentGeneratorMapper();
+        StubMapping result = wiremockApi
+                .mappingsPost()
+                .body(mapper.getDataFromFile(oltDevice))
+                .executeAs(validatedWith(shouldBeCode(201)));
+        oltDevice.setSealWiremockUuid(result.getId());
     }
 
     @Step("Tear down wiremock")
