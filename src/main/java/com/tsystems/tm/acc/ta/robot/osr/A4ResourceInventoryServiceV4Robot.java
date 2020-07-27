@@ -1,14 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElement;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementGroup;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NspFtthAccess;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.TerminationPoint;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -50,6 +47,48 @@ public class A4ResourceInventoryServiceV4Robot {
                 .idPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+
+    @Step("List all Network Service Profile Ftth Access from v4 API")
+    public List<NspFtthAccess> getAllNetworkServiceProfilesFtthAccessV4() {
+        return a4ResourceInventoryService
+                .nspFtthAccess()
+                .listNspFtthAccess()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+
+    @Step("Read one Network Service Profile Ftth Access from v4 API")
+    public NspFtthAccess getNetworkServiceProfileFtthAccessV4ByUuid(String uuid) {
+        return a4ResourceInventoryService
+                .nspFtthAccess()
+                .retrieveNspFtthAccess()
+                .idPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+
+    @Step("Read Network Service Profile Ftth Access via OntSerialNumber from v4 API")
+    public List<NspFtthAccess> getNetworkServiceProfileFtthAccessV4ByOntSerialNumber(String ontSerialNumber) {
+        return a4ResourceInventoryService
+                .nspFtthAccess()
+                .listNspFtthAccess()
+                .ontSerialNumberQuery(ontSerialNumber)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Read Network Service Profile Ftth Access via Line Id from v4 API")
+    public List<NspFtthAccess> getNetworkServiceProfileFtthAccessV4ByLineId(String lineId) {
+        return a4ResourceInventoryService
+                .nspFtthAccess()
+                .listNspFtthAccess()
+                .lineIdQuery(lineId)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
 
     public void checkIfNetworkElementExists(A4NetworkElement neData) {
         String endsz = neData.getVpsz() + "/" + neData.getFsz();
@@ -159,5 +198,18 @@ public class A4ResourceInventoryServiceV4Robot {
 
         assertNotNull(tp);
         assertEquals(tp.getResourceRelationship().get(0).getResource().getId(), nepData.getUuid());
+    }
+
+
+
+    public void checkIfNetworkServiceProfileFtthAccessExists(A4NetworkServiceProfileFtthAccess nspData) {
+        List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
+
+        NspFtthAccess nsp = nspList.stream()
+                .filter(i -> nspData.getUuid().equals(i.getId()))
+                .findAny()
+                .orElse(null);
+
+        assertNotNull(nsp);
     }
 }
