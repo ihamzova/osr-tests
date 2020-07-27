@@ -158,6 +158,6 @@ public class A4ResourceInventoryServiceV4Robot {
                 .orElse(null);
 
         assertNotNull(tp);
-        assertEquals(tp.getParentUuid(), nepData.getUuid());
+        assertEquals(tp.getResourceRelationship().get(0).getResource().getId(), nepData.getUuid());
     }
 }
