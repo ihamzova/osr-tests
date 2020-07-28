@@ -8,6 +8,7 @@ import io.qameta.allure.Step;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -213,7 +214,18 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(List<A4NetworkServiceProfileFtthAccess> nspDataList, String ontSerialNumber) {
         List<NspFtthAccess> nspList = getNetworkServiceProfilesFtthAccessV4ByOntSerialNumber(ontSerialNumber);
 
-        assertTrue(nspDataList.containsAll(nspList) && nspList.containsAll(nspDataList));
+
+        List<A4NetworkServiceProfileFtthAccess> filteredList = nspDataList.stream()
+                .filter(elementFromNspDataList -> nspList.stream()
+                        .anyMatch(elementFromNspList ->
+                                elementFromNspDataList.getOntSerialNumber().equals(ontSerialNumber) &&
+                                        elementFromNspList.getOntSerialNumber().equals(elementFromNspDataList.getOntSerialNumber())))
+                .collect(Collectors.toList());
+
+        assertEquals(nspList.size(), filteredList.size());
+
+
+      //  assertTrue(nspDataList.containsAll(nspList));
 
     }
 
@@ -221,7 +233,21 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkIfNetworkServiceProfilesFtthAccessExistsByLineId(List<A4NetworkServiceProfileFtthAccess> nspDataList, String lineId) {
         List<NspFtthAccess> nspList = getNetworkServiceProfilesFtthAccessV4ByLineId(lineId);
 
-        assertTrue(nspDataList.containsAll(nspList) && nspList.containsAll(nspDataList));
+
+//       assertTrue(nspDataList.containsAll(nspList) );
+
+
+
+        List<A4NetworkServiceProfileFtthAccess> filteredList = nspDataList.stream()
+                .filter(elementFromNspDataList -> nspList.stream()
+                        .anyMatch(elementFromNspList ->
+                                elementFromNspDataList.getLineId().equals(lineId) &&
+                                        elementFromNspList.getLineId().equals(elementFromNspDataList.getLineId())))
+                .collect(Collectors.toList());
+
+
+        assertEquals(nspList.size(), filteredList.size());
+
 
     }
 

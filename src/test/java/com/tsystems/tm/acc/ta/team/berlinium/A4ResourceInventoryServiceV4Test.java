@@ -19,6 +19,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class A4ResourceInventoryServiceV4Test extends ApiTest {
@@ -76,7 +77,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryRobot.createTerminationPoint(tpData2, nepDataB);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData, tpData);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData2, tpData2);
-
+        nspDataList = new ArrayList<>();
         nspDataList.add(nspData);
         nspDataList.add(nspData2);
     }

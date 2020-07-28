@@ -14,18 +14,22 @@ public class A4NetworkServiceProfileFtthAccessGenerator {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
+        if(nspData.getLineId().isEmpty())
+            nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+        if(nspData.getOntSerialNumber().isEmpty())
+            nspData.setOntSerialNumber("ONTSERIALNUMBER-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
         return new NetworkServiceProfileFtthAccessDto()
                 .uuid(nspData.getUuid())
                 .href("HREF?")
-                .ontSerialNumber("456")
-                .lineId("123")
+                .ontSerialNumber(nspData.getOntSerialNumber())
+                .lineId(nspData.getLineId())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
                 .productionScheme("ein Production Scheme")
                 .administrativeMode("ACTIVATED")
                 .operationalState("WORKING")
-                .lifecycleState("PLANNING")
+                .lifecycleState(nspData.getLifecycleState())
                 .terminationPointFtthAccessUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NSP created during osr-test integration test")

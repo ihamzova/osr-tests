@@ -7,4 +7,5 @@ public class A4NetworkServiceProfileFtthAccess {
     private String uuid;
     private String ontSerialNumber;
     private String lineId;
+    private String lifecycleState;
 }
