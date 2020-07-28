@@ -105,6 +105,7 @@ public class PslEquipmentGeneratorMapper {
     public StubMapping getDataFromFile(OltDevice oltDevice) {
 
         String pslUrl = "/v1/psl/read-equipment/";
+        String endsz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -113,24 +114,21 @@ public class PslEquipmentGeneratorMapper {
         webhookHeaders.add(new HttpHeader("X-Callback-Correlation-Id", "{{request.headers.X-Callback-Correlation-Id}}"));
         webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
 
-        String endsz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        Map<String, String> bodyPattern = new HashMap<>();
+        bodyPattern.put("expression", "$..endsz");
+        bodyPattern.put("contains", endsz);
+
         String stubTemplateFolder = System.getProperty("user.dir") + "/src/test/resources/domain/osr/wiremock/psl/";
         File jsonBody = new File(stubTemplateFolder + "PSL_equipment_MA5600.json");
         String content = getTemplateContent(jsonBody);
         content = content.replace("###ENDSZ###",endsz);
-
-        Map<String, String> bodyPattern = new HashMap<>();
-        bodyPattern.put("expression", "$..endsz");
-        bodyPattern.put("contains", endsz);
 
         return new StubMapping()
                 .priority(1)
                 .request(new StubMappingRequest()
                         .method("POST")
                         .url(pslUrl)
-                        //.bodyPatterns(bodyPatterns)
-                        .addBodyPatternsItem(Collections.singletonMap("matchesJsonPath", bodyPattern))
-                         )
+                        .addBodyPatternsItem(Collections.singletonMap("matchesJsonPath", bodyPattern)))
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))

@@ -14,7 +14,9 @@ import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -25,6 +27,7 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
+@Slf4j
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
@@ -35,9 +38,43 @@ public class OltCommissioning5600 extends BaseTest {
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private WiremockRobot wiremockRobot = new WiremockRobot();
 
+    @BeforeClass
+    public void init() {
+
+        OsrTestContext context = OsrTestContext.get();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+
+        wiremockRobot.setUpSealWiremock(oltDevice);
+        log.info("+++ init SEAL 76HC uuid={}", oltDevice.getSealWiremockUuid() );
+
+        wiremockRobot.setUpPslWiremock(oltDevice);
+        log.info("+++ init PSL 76HC uuid={}", oltDevice.getPslWiremockUuid() );
+
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
+
+        wiremockRobot.setUpSealWiremock(oltDevice);
+        log.info("+++ init SEAL 76HD uuid={}", oltDevice.getSealWiremockUuid() );
+
+        wiremockRobot.setUpPslWiremock(oltDevice);
+        log.info("+++ init PSL 76HD uuid={}", oltDevice.getPslWiremockUuid() );
+    }
+
     @AfterClass
     public void teardown() {
         oltCommissioningRobot.restoreOsrDbState();
+
+        OsrTestContext context = OsrTestContext.get();
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getSealWiremockUuid() );
+        wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
+        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getPslWiremockUuid() );
+        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
+
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
+        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getSealWiremockUuid() );
+        wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
+        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getPslWiremockUuid() );
+        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
     }
 
     @BeforeMethod
@@ -61,7 +98,7 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
 
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice);
         oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
@@ -72,7 +109,7 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
+        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
 
         oltCommissioningRobot.startManualOltCommissioning(oltDevice);
         oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
