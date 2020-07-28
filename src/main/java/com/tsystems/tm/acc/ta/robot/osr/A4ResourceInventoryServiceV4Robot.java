@@ -1,17 +1,13 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.TerminationPointDto;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElement;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementGroup;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementLink;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.TerminationPoint;
 import io.qameta.allure.Step;
-import io.restassured.response.Response;
 
 import java.util.List;
 import java.util.UUID;
@@ -115,7 +111,7 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkNotFoundErrorForNonExistendNeg() {
         String uuid = String.valueOf(UUID.randomUUID());
 
-        Response r = a4ResourceInventoryService
+        a4ResourceInventoryService
                 .networkElementGroup()
                 .retrieveNetworkElementGroup()
                 .idPath(uuid)
@@ -160,4 +156,59 @@ public class A4ResourceInventoryServiceV4Robot {
         assertNotNull(tp);
         assertEquals(tp.getResourceRelationship().get(0).getResource().getId(), nepData.getUuid());
     }
+
+    @Step("Read all NetworkElementLink as list from v4 API")
+    public List<NetworkElementLink> getAllNetworkElementLinktsV4() {
+        return a4ResourceInventoryService.networkElementLink()
+                .listNetworkElementLink()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Read all NetworkElementLink as list from v4 API")
+    public List<NetworkElementLink> getNetworkElementLinksV4ByLbz(String lbz) {
+        return a4ResourceInventoryService.networkElementLink()
+                .listNetworkElementLink()
+                .lbzQuery(lbz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Read all NetworkElementLink as list from v4 API")
+    public List<NetworkElementLink> getNetworkElementLinksV4ByLsz(String lsz) {
+        return a4ResourceInventoryService.networkElementLink()
+                .listNetworkElementLink()
+                .lszQuery(lsz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Read all NetworkElementLink as list from v4 API")
+    public List<NetworkElementLink> getNetworkElementLinksV4ByUeWegId(String ueWegId) {
+        return a4ResourceInventoryService.networkElementLink()
+                .listNetworkElementLink()
+                .ueWegIdQuery(ueWegId)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void checkIfNetworkElementLinkExists(A4NetworkElementLink nelData) {
+        List<NetworkElementLink> nelList = getAllNetworkElementLinktsV4();
+
+        NetworkElementLink nel = nelList.stream()
+                .filter(i -> nelData.getUuid().equals(i.getId()))
+                .findAny()
+                .orElse(null);
+
+        assertNotNull(nel);
+    }
+
+    public void checkIfNetworkElementLinkExistsByLbz(A4NetworkElementLink nelData) {
+        List<NetworkElementLink> nelList = getNetworkElementLinksV4ByLbz(nelData.getLbz());
+
+        NetworkElementLink nel = nelList.stream()
+                .filter(i -> nelData.getLbz().equals(i.getLbz()))
+                .findAny()
+                .orElse(null);
+
+        assertNotNull(nel);
+        assertEquals(nel.getLbz(), nelData.getLbz());
+    }
+
 }
