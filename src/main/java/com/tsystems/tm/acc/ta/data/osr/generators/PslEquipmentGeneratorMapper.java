@@ -119,11 +119,18 @@ public class PslEquipmentGeneratorMapper {
         String content = getTemplateContent(jsonBody);
         content = content.replace("###ENDSZ###",endsz);
 
+        Map<String, String> bodyPattern = new HashMap<>();
+        bodyPattern.put("expression", "$..endsz");
+        bodyPattern.put("contains", endsz);
+
         return new StubMapping()
                 .priority(1)
                 .request(new StubMappingRequest()
                         .method("POST")
-                        .url(pslUrl))
+                        .url(pslUrl)
+                        //.bodyPatterns(bodyPatterns)
+                        .addBodyPatternsItem(Collections.singletonMap("matchesJsonPath", bodyPattern))
+                         )
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
