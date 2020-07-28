@@ -57,6 +57,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryRobot.createNetworkElementGroup(negData);
         a4ResourceInventoryRobot.createNetworkElement(neData, negData);
         a4ResourceInventoryRobot.createNetworkElementPort(nepDataA, neData);
+        a4ResourceInventoryRobot.createNetworkElementPort(nepDataB, neData);
         a4ResourceInventoryRobot.createTerminationPoint(tpData, nepDataA);
         a4ResourceInventoryRobot.createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
