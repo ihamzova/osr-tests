@@ -212,4 +212,14 @@ public class A4ResourceInventoryServiceV4Robot {
 
         assertNotNull(nsp);
     }
+
+
+    public void checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(List<A4NetworkServiceProfileFtthAccess> nspDataList) {
+        List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
+
+        assertTrue(nspDataList.containsAll(nspList) && nspList.containsAll(nspDataList));
+
+    }
+
+
 }

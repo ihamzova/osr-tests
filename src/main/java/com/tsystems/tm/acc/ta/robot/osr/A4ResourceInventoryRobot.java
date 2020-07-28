@@ -160,16 +160,6 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-/*
-    @Step("Get a list of Network Service Profiles by ontSerialNumber")
-    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByOntSerialNumber(String ontSerialNumber) {
-        return a4ResourceInventory
-                .networkServiceProfilesFtthAccess()
-                .findNetworkServiceProfilesFtthAccess()
-                .ontSerialNumberQuery(ontSerialNumber)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-*/
 
     @Step("Get a list of Network Service Profiles by LineId")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByLineId(String lineId) {
@@ -405,7 +395,7 @@ public class A4ResourceInventoryRobot {
 
 
 
-    @Step("Create new Network Element Group in A4 resource inventory")
+    @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
     public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
         A4NetworkServiceProfileFtthAccessGenerator a4NetworkServiceProfileFtthAccessGenerator = new A4NetworkServiceProfileFtthAccessGenerator();
         NetworkServiceProfileFtthAccessDto nspDto = a4NetworkServiceProfileFtthAccessGenerator.generateAsDto(nspData, tpData);
@@ -417,4 +407,6 @@ public class A4ResourceInventoryRobot {
                 .uuidPath(nspData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+
 }
