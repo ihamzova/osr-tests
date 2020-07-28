@@ -29,10 +29,13 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
-    private A4NetworkElementPort nepDataA, nepDataB;
-    private A4TerminationPoint tpData, tpData2;
+    private A4NetworkElementPort nepDataA;
+    private A4NetworkElementPort nepDataB;
+    private A4TerminationPoint tpData;
+    private A4TerminationPoint tpData2;
     private A4NetworkElementLink nelData;
-    private A4NetworkServiceProfileFtthAccess nspData, nspData2;
+    private A4NetworkServiceProfileFtthAccess nspData;
+    private A4NetworkServiceProfileFtthAccess nspData2;
     private List<A4NetworkServiceProfileFtthAccess> nspDataList ;
 
     @BeforeClass
@@ -44,7 +47,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
         tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+                .get(A4TerminationPointCase.TerminationPointB);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
