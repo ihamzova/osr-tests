@@ -3,11 +3,8 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElement;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementGroup;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.TerminationPoint;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.*;
 import io.qameta.allure.Step;
-import io.restassured.response.Response;
 
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +67,7 @@ public class A4ResourceInventoryServiceV4Robot {
 
 
     @Step("Read Network Service Profile Ftth Access via OntSerialNumber from v4 API")
-    public List<NspFtthAccess> getNetworkServiceProfileFtthAccessV4ByOntSerialNumber(String ontSerialNumber) {
+    public List<NspFtthAccess> getNetworkServiceProfilesFtthAccessV4ByOntSerialNumber(String ontSerialNumber) {
         return a4ResourceInventoryService
                 .nspFtthAccess()
                 .listNspFtthAccess()
@@ -80,7 +77,7 @@ public class A4ResourceInventoryServiceV4Robot {
 
 
     @Step("Read Network Service Profile Ftth Access via Line Id from v4 API")
-    public List<NspFtthAccess> getNetworkServiceProfileFtthAccessV4ByLineId(String lineId) {
+    public List<NspFtthAccess> getNetworkServiceProfilesFtthAccessV4ByLineId(String lineId) {
         return a4ResourceInventoryService
                 .nspFtthAccess()
                 .listNspFtthAccess()
@@ -153,11 +150,11 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkNotFoundErrorForNonExistendNeg() {
         String uuid = String.valueOf(UUID.randomUUID());
 
-        Response r = a4ResourceInventoryService
-                .networkElementGroup()
-                .retrieveNetworkElementGroup()
-                .idPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+        a4ResourceInventoryService
+            .networkElementGroup()
+            .retrieveNetworkElementGroup()
+            .idPath(uuid)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
     }
 
@@ -213,8 +210,16 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
 
-    public void checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(List<A4NetworkServiceProfileFtthAccess> nspDataList) {
-        List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
+    public void checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(List<A4NetworkServiceProfileFtthAccess> nspDataList, String ontSerialNumber) {
+        List<NspFtthAccess> nspList = getNetworkServiceProfilesFtthAccessV4ByOntSerialNumber(ontSerialNumber);
+
+        assertTrue(nspDataList.containsAll(nspList) && nspList.containsAll(nspDataList));
+
+    }
+
+
+    public void checkIfNetworkServiceProfilesFtthAccessExistsByLineId(List<A4NetworkServiceProfileFtthAccess> nspDataList, String lineId) {
+        List<NspFtthAccess> nspList = getNetworkServiceProfilesFtthAccessV4ByLineId(lineId);
 
         assertTrue(nspDataList.containsAll(nspList) && nspList.containsAll(nspDataList));
 
@@ -223,7 +228,7 @@ public class A4ResourceInventoryServiceV4Robot {
 
 
     @Step("Read all NetworkElementLink as list from v4 API")
-    public List<NetworkElementLink> getAllNetworkElementLinktsV4() {
+    public List<NetworkElementLink> getAllNetworkElementLinksV4() {
         return a4ResourceInventoryService.networkElementLink()
                 .listNetworkElementLink()
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -254,7 +259,7 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
     public void checkIfNetworkElementLinkExists(A4NetworkElementLink nelData) {
-        List<NetworkElementLink> nelList = getAllNetworkElementLinktsV4();
+        List<NetworkElementLink> nelList = getAllNetworkElementLinksV4();
 
         NetworkElementLink nel = nelList.stream()
                 .filter(i -> nelData.getUuid().equals(i.getId()))

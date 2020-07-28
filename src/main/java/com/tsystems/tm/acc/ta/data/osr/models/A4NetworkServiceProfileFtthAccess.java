@@ -5,4 +5,6 @@ import lombok.Data;
 @Data
 public class A4NetworkServiceProfileFtthAccess {
     private String uuid;
+    private String ontSerialNumber;
+    private String lineId;
 }
