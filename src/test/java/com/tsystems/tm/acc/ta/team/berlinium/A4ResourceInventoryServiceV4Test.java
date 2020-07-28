@@ -10,7 +10,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot;
@@ -32,9 +31,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
-    private A4TerminationPoint tpData, tpData2;
-    private A4NetworkServiceProfileFtthAccess nspData, nspData2;
-    private List<A4NetworkServiceProfileFtthAccess> nspDataList;
+    private A4TerminationPoint tpData;
 
 
     @BeforeClass
@@ -45,10 +42,12 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
                 .get(A4NetworkElementCase.defaultNetworkElement);
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
-        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.TerminationPointB);
-        nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+        nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+        nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
         nspData = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
@@ -71,6 +70,10 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData, tpData);
 
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData2, tpData2);
+        a4ResourceInventoryRobot.createNetworkElementPort(nepDataA, neData);
+        a4ResourceInventoryRobot.createNetworkElementPort(nepDataB, neData);
+        a4ResourceInventoryRobot.createTerminationPoint(tpData, nepDataA);
+        a4ResourceInventoryRobot.createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
 
     @AfterMethod
@@ -94,33 +97,64 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementExists(neData);
     }
 
-    @Test(description = "DIGIHUB-67987 Read network element group from resource inventory service v4 api")
+    @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api")
     @Owner("thea.john@telekom.de")
-    @TmsLink("DIGIHUB-67987")
+    @TmsLink("DIGIHUB-xxx")
     @Description("Read network element group from resource inventory service v4 api")
     public void test_readNetworkElementGroupFromA4Api() {
-        // GIVEN
-
-        // WHEN
-
-        // THEN
-        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByName(negData);
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByUuid(negData);
+    }
+
+    @Test(description = "DIGIHUB-xxx Read network element group by name from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read network element group from resource inventory service v4 api")
+    public void test_readNetworkElementGroupFromA4ApiByName() {
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementGroupExistsByName(negData);
+    }
+
+    @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api - Not Found")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read network element group from resource inventory service v4 api")
+    public void test_readNetworkElementGroupFromA4ApiNotFound() {
         a4ResourceInventoryServiceV4Robot.checkNotFoundErrorForNonExistendNeg();
     }
+
+
 
     @Test(description = "DIGIHUB-xxx Read termination point from resource inventory service v4 api")
     @Owner("thea.john@telekom.de")
     @TmsLink("DIGIHUB-xxx")
     @Description("Read terminationPoint from resource inventory service v4 api")
     public void test_readTerminationPointFromA4Api() {
-        // GIVEN
-
-        // WHEN
-
-        // THEN
         a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExists(tpData);
-        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpData, nepData);
+    }
+
+    @Test(description = "DIGIHUB-xxx Find termination point by Port from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read terminationPoint from resource inventory service v4 api")
+    public void test_readTerminationPointFromA4ApiByPort() {
+        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpData, nepDataA);
+    }
+
+
+
+    @Test(description = "DIGIHUB-xxx Read networkElementLink from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read networkElementLink from resource inventory service v4 api")
+    public void test_readNetworkElementLinkFromA4Api() {
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementLinkExists(nelData);
+    }
+
+    @Test(description = "DIGIHUB-xxx Read networkElementLink by lbz from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read networkElementLink from resource inventory service v4 api")
+    public void test_readNetworkElementLinkFromA4ApiByLbz() {
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementLinkExistsByLbz(nelData);
     }
 
     @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
