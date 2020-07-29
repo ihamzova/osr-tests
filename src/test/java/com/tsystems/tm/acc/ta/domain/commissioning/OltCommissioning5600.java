@@ -25,6 +25,7 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog("olt-discovery")
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
