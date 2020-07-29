@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
@@ -18,6 +19,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class A4ResourceInventoryServiceV4Test extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
@@ -28,8 +32,11 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     private A4NetworkElementPort nepDataA;
     private A4NetworkElementPort nepDataB;
     private A4TerminationPoint tpData;
+    private A4TerminationPoint tpData2;
     private A4NetworkElementLink nelData;
-
+    private A4NetworkServiceProfileFtthAccess nspData;
+    private A4NetworkServiceProfileFtthAccess nspData2;
+    private List<A4NetworkServiceProfileFtthAccess> nspDataList ;
 
     @BeforeClass
     public void init() {
@@ -39,12 +46,21 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
                 .get(A4NetworkElementCase.defaultNetworkElement);
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPoint);
+        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.TerminationPointB);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+
+        nspData = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
+                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+        nspData2 = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
+                .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessB);
+
+
 
         // Ensure that no old test data is in the way
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neData);
@@ -60,6 +76,13 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryRobot.createNetworkElementPort(nepDataB, neData);
         a4ResourceInventoryRobot.createTerminationPoint(tpData, nepDataA);
         a4ResourceInventoryRobot.createNetworkElementLink(nelData, nepDataA, nepDataB);
+
+        a4ResourceInventoryRobot.createTerminationPoint(tpData2, nepDataB);
+        a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData, tpData);
+        a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspData2, tpData2);
+        nspDataList = new ArrayList<>();
+        nspDataList.add(nspData);
+        nspDataList.add(nspData2);
     }
 
     @AfterMethod
@@ -143,4 +166,45 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementLinkExistsByLbz(nelData);
     }
 
+    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_readNetworkServiceProfileFtthAccessFromA4Api() {
+        // GIVEN
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileFtthAccessExists(nspData);
+    }
+
+    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_readNetworkServiceProfileFtthAccessFromA4ApiByLineId() {
+        // GIVEN
+        String lineId = nspData.getLineId();
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfilesFtthAccessExistsByLineId(nspDataList, lineId);
+    }
+
+
+    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access by ontSerialNumber from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_readNetworkServiceProfileFtthAccessFromA4ApiByOnSerialNumber() {
+        // GIVEN
+        String ontSerialNumber = nspData.getOntSerialNumber();
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(nspDataList, ontSerialNumber);
+    }
 }

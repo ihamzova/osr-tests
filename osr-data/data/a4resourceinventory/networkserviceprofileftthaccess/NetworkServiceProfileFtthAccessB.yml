@@ -1,0 +1,7 @@
+name: NetworkServiceProfileFtthAccessB
+template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess
+values:
+  uuid: "" # if blank: field will be filled with returned uuid of created NSP
+  ontSerialNumber: "" # if blank: field will be filled with returned ontSerialNumber of created NSP
+  lineId: "" # if blank: field will be filled with returned lineId of created NSP
+  lifecycleState: "INSTALLING"
