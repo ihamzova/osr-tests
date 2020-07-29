@@ -14,16 +14,9 @@ import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
 
 import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
