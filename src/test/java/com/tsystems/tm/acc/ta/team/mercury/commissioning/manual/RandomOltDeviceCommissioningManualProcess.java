@@ -47,24 +47,13 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
         oltResourceInventoryClient = new OltResourceInventoryClient();
 
         OsrTestContext context = OsrTestContext.get();
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
-
-        File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
-        List<OltDevice> devices = Collections.singletonList(context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA));
-        wiremockRobot.createMocksForPSL(stubsPath, devices);
-        wiremockRobot.createMocksForSEAL(stubsPath, devices);
-        // Upload mock to the server may be? They are not being used at the moment
-
-
-
-        Random rnd = new Random();
-        char c = (char) ('B' + rnd.nextInt(25));
-        oltDevice.setFsz("76H" + c);
-        oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
-        //oltDevice.setFsz("76HC");
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
 
         wiremockRobot.setUpSealWiremock(oltDevice);
-        log.info("+++ init uuid={}", oltDevice.getSealWiremockUuid() );
+        log.info("+++ init SEAL uuid={}", oltDevice.getSealWiremockUuid() );
+
+        wiremockRobot.setUpPslWiremock(oltDevice);
+        log.info("+++ init PSL uuid={}", oltDevice.getPslWiremockUuid() );
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
@@ -74,6 +63,9 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
     public void cleanUp() {
         log.info("+++ cleanUp uuid={}", oltDevice.getSealWiremockUuid() );
         wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
+
+        log.info("+++ cleanUp uuid={}", oltDevice.getPslWiremockUuid() );
+        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);
@@ -93,7 +85,6 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
 
-        /*
         oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
         oltSearchPage.pressManualCommissionigButton();
         OltDiscoveryPage oltDiscoveryPage = new OltDiscoveryPage();
@@ -132,7 +123,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
-        */
+
     }
 
     /**
