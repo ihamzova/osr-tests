@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Domain test suites" verbose="1" data-provider-thread-count="1">
-    <test thread-count="2" name="Olt-Commissioning cases (for MA5600T device)">
+    <test thread-count="1" name="Olt-Commissioning cases (for MA5600T device)">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioning5600"/>
         </classes>
