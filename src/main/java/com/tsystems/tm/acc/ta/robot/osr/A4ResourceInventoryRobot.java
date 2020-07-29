@@ -139,12 +139,34 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+
+
+
+    @Step("Get Network Service Profiles by UUID")
+    public  NetworkServiceProfileFtthAccessDto getNetworkServiceProfileByUuid(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get a list of Network Service Profiles by Termination Point UUID")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
                 .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Get a list of Network Service Profiles by LineId")
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByLineId(String lineId) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfilesFtthAccess()
+                .lineIdQuery(lineId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -384,4 +406,21 @@ public class A4ResourceInventoryRobot {
                 .uuidPath(nelData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+
+
+    @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
+    public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
+        A4NetworkServiceProfileFtthAccessGenerator a4NetworkServiceProfileFtthAccessGenerator = new A4NetworkServiceProfileFtthAccessGenerator();
+        NetworkServiceProfileFtthAccessDto nspDto = a4NetworkServiceProfileFtthAccessGenerator.generateAsDto(nspData, tpData);
+
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
 }
