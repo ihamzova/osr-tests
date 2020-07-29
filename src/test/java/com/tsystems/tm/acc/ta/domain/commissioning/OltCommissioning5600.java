@@ -27,7 +27,6 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
-@Slf4j
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
@@ -37,60 +36,39 @@ public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private WiremockRobot wiremockRobot = new WiremockRobot();
+    private OltDevice oltDeviceManual;
+    private OltDevice oltDeviceAutomatic;
 
     @BeforeClass
     public void init() {
+        oltCommissioningRobot.restoreOsrDbState();
 
         OsrTestContext context = OsrTestContext.get();
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        oltDeviceManual = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        wiremockRobot.setUpSealWiremock(oltDeviceManual);
+        wiremockRobot.setUpPslWiremock(oltDeviceManual);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
 
-        wiremockRobot.setUpSealWiremock(oltDevice);
-        log.info("+++ init SEAL 76HC uuid={}", oltDevice.getSealWiremockUuid() );
+        oltDeviceAutomatic = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
+        wiremockRobot.setUpSealWiremock(oltDeviceAutomatic);
+        wiremockRobot.setUpPslWiremock(oltDeviceAutomatic);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
 
-        wiremockRobot.setUpPslWiremock(oltDevice);
-        log.info("+++ init PSL 76HC uuid={}", oltDevice.getPslWiremockUuid() );
-
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
-
-        wiremockRobot.setUpSealWiremock(oltDevice);
-        log.info("+++ init SEAL 76HD uuid={}", oltDevice.getSealWiremockUuid() );
-
-        wiremockRobot.setUpPslWiremock(oltDevice);
-        log.info("+++ init PSL 76HD uuid={}", oltDevice.getPslWiremockUuid() );
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
     @AfterClass
     public void teardown() {
         oltCommissioningRobot.restoreOsrDbState();
 
-        OsrTestContext context = OsrTestContext.get();
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
-        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getSealWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
-        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getPslWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
+        wiremockRobot.tearDownWiremock(oltDeviceManual.getSealWiremockUuid());
+        wiremockRobot.tearDownWiremock(oltDeviceManual.getPslWiremockUuid());
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
 
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
-        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getSealWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
-        log.info("+++ cleanUp 76HC uuid={}", oltDevice.getPslWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
-    }
-
-    @BeforeMethod
-    public void prepareData() {
-        oltCommissioningRobot.restoreOsrDbState();
-
-        /*
-        File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
-        List<OltDevice> devices = Collections.singletonList(context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA));
-        wiremockRobot.createMocksForPSL(stubsPath, devices);
-        wiremockRobot.createMocksForSEAL(stubsPath, devices);
-         */
-        // Upload mock to the server may be? They are not being used at the moment
-
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getSealWiremockUuid());
+        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getPslWiremockUuid());
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
@@ -98,10 +76,8 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
-
-        oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceManual);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
@@ -109,9 +85,7 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
-
-        oltCommissioningRobot.startManualOltCommissioning(oltDevice);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
+        oltCommissioningRobot.startManualOltCommissioning(oltDeviceAutomatic);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
     }
 }

@@ -141,9 +141,14 @@ public class OltCommissioningRobot {
 
     @Step("Restore OSR Database state")
     public void restoreOsrDbState() {
-        oltResourceInventoryClient.getClient().automaticallyFillDatabaseController().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Clear one device in olt-resource-invemtory database")
+    public void clearResourceInventoryDataBase(OltDevice oltDevice) {
+        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }
