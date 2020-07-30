@@ -47,9 +47,6 @@ public class OltCommissioning5600 extends BaseTest {
         wiremockRobot.setUpSealWiremock(oltDeviceAutomatic);
         wiremockRobot.setUpPslWiremock(oltDeviceAutomatic);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
-
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
     @AfterClass
@@ -70,6 +67,8 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceManual);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
     }
@@ -79,6 +78,8 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startManualOltCommissioning(oltDeviceAutomatic);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
     }
