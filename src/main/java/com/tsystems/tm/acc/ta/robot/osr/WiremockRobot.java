@@ -41,24 +41,6 @@ public class WiremockRobot {
         WiremockHelper.requestsReset();
     }
 
-    @Step("Create mock data for PSL")
-    public void createMocksForPSL(File storeToFolder, List<OltDevice> devices) {
-        WiremockMappingGenerator generator = new WiremockMappingGenerator();
-        PslGetEquipmentStubGeneratorMapper mapper = new PslGetEquipmentStubGeneratorMapper();
-        generator.generate(devices.stream()
-                .map(mapper::getData)
-                .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
-    }
-
-    @Step("Create mock data for PSL")
-    public void createMocksForSEAL(File storeToFolder, List<OltDevice> devices) {
-        WiremockMappingGenerator generator = new WiremockMappingGenerator();
-        SealAccessNodeConfigurationGeneratorMapper mapper = new SealAccessNodeConfigurationGeneratorMapper();
-        generator.generate(devices.stream()
-                .map(mapper::getData)
-                .collect(Collectors.toList()), Paths.get(storeToFolder.toURI()));
-    }
-
     @Step("Set up REBELL wiremock")
     public void setUpRebellWiremock(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
         RebellUewegGeneratorMapper mapper = new RebellUewegGeneratorMapper();
