@@ -48,6 +48,11 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        Random rnd = new Random();
+        char c = (char) ('B' + rnd.nextInt(25));
+        oltDevice.setFsz("76H" + c);
+        oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
+        //oltDevice.setFsz("76HC");
 
         wiremockRobot.setUpSealWiremock(oltDevice);
         log.info("+++ init SEAL uuid={}", oltDevice.getSealWiremockUuid() );
@@ -148,10 +153,11 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
      * check device MA5800 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5800(String endSz) {
-
-        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.OLT);
+        Assert.assertEquals(deviceList.get(0).getEndSz(), endSz);
     }
 
     /**

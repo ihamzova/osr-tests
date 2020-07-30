@@ -77,10 +77,14 @@ public class OltCommissioningRobot {
         String oltEndSz = olt.getVpsz() + "/" + olt.getFsz();
         long portsCount;
 
-        Device deviceAfterCommissioning = oltResourceInventoryClient.getClient().deviceInternalController()
-                .getOltByEndSZ().endSZQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.OLT);
+        Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz);
+        Device deviceAfterCommissioning = deviceList.get(0);
 
-        Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+                Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
