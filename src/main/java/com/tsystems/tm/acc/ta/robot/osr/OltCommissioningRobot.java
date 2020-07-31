@@ -1,15 +1,14 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.LineIdDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -32,6 +31,7 @@ public class OltCommissioningRobot {
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
+    private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient();
 
     @Step("Starts automatic olt commissioning process")
     public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -84,7 +84,7 @@ public class OltCommissioningRobot {
         Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz);
         Device deviceAfterCommissioning = deviceList.get(0);
 
-                Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+        Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
@@ -147,6 +147,8 @@ public class OltCommissioningRobot {
     public void restoreOsrDbState() {
         accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        oltDiscoveryClient.reset();
+
     }
 
     @Step("Clear one device in olt-resource-invemtory database")
