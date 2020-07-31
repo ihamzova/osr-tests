@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -29,6 +30,10 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
+@ServiceLog("olt-resource-inventory")
+@ServiceLog("ea-ext-route")
+@ServiceLog("olt-discovery")
+@ServiceLog("ancp-configuration")
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
 @TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
@@ -123,8 +128,11 @@ public class OltAutoCommissioning extends BaseTest {
     private void checkDeviceMA5600(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
-        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Device device = deviceList.get(0);
+        Assert.assertEquals(device.getEndSz(), endSz);
 
         Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5600);
         Assert.assertEquals(device.getTkz1(), "02351082");
@@ -149,8 +157,11 @@ public class OltAutoCommissioning extends BaseTest {
     private void checkDeviceMA5800(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
 
-        Device device = oltResourceInventoryClient.getClient().deviceInternalController().getOltByEndSZ().
-                endSZQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Device device = deviceList.get(0);
+        Assert.assertEquals(device.getEndSz(), endSz);
 
         Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5800);
         Assert.assertEquals(device.getTkz1(), "2352QCR");
