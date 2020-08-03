@@ -148,10 +148,9 @@ public class OltCommissioningRobot {
         accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         oltDiscoveryClient.reset();
-
     }
 
-    @Step("Clear one device in olt-resource-invemtory database")
+    @Step("Clear {oltDevice} device in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(OltDevice oltDevice) {
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
