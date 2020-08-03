@@ -32,6 +32,11 @@ public class OltDevice {
     private String sealWiremockUuid;
     private String pslWiremockUuid;
 
+    @Override
+    public String toString() {
+        return getEndsz();
+    }
+
     public String getEndsz() {
         return String.format("%s/%s", getVpsz(), getFsz());
     }
