@@ -31,4 +31,11 @@ public class OltDevice {
     private String oltPort;
     private String sealWiremockUuid;
     private String pslWiremockUuid;
+
+    public String getEndsz() {
+        return String.format("%s/%s", getVpsz(), getFsz());
+    }
 }
+
+
+
