@@ -37,6 +37,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     private A4NetworkServiceProfileFtthAccess nspDataA;
     private A4NetworkServiceProfileFtthAccess nspDataB;
     private List<A4NetworkServiceProfileFtthAccess> nspDataList ;
+    private List<A4NetworkElementPort> nepDataList ;
 
     @BeforeClass
     public void init() {
@@ -82,6 +83,10 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         nspDataList = new ArrayList<>();
         nspDataList.add(nspDataA);
         nspDataList.add(nspDataB);
+
+        nepDataList= new ArrayList<>();
+        nepDataList.add(nepDataA);
+        nepDataList.add(nepDataB);
     }
 
     @AfterMethod
@@ -104,6 +109,22 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         // THEN
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementExists(neData);
     }
+
+
+
+    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_readNetworkElementPortFromA4Api() {
+        // GIVEN
+
+        // WHEN
+
+        // THEN
+        //a4ResourceInventoryServiceV4Robot.(nspDataA);
+    }
+
 
     @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api")
     @Owner("thea.john@telekom.de")
@@ -206,4 +227,29 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         // THEN
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfilesFtthAccessExistsByOntSerialNumber(nspDataList, ontSerialNumber);
     }
+
+
+
+    @Test(description = "DIGIHUB-xxx Read Network Element Port by Endsu from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_getNetworkElementPortsByNetworkElementEndsz() {
+        // GIVEN
+        String endsz = this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz());
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementPortsByEndszAreInList(nepDataList, endsz);
+    }
+
+
+
+
+
+    private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
+        return Vpsz.concat("/").concat(Fsz);
+    }
+
 }

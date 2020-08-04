@@ -13,19 +13,24 @@ public class A4NetworkElementPortGenerator {
         if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
-        if (nepData.getLogicalLabel().isEmpty())
-            nepData.setLogicalLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+        if (nepData.getFunctionalPortLabel().isEmpty())
+            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
-                .logicalLabel(nepData.getLogicalLabel())
+                .logicalLabel(nepData.getFunctionalPortLabel())
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
                 .role("role")
+                //                .getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
+    }
+
+    private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
+        return Vpsz.concat("/").concat(Fsz);
     }
 }

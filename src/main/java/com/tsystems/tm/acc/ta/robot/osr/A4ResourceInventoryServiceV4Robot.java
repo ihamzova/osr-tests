@@ -36,6 +36,7 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+
     @Step("Read one NetworkElement from v4 API")
     public NetworkElement getNetworkElementV4(String uuid) {
         return a4ResourceInventoryService
@@ -284,6 +285,8 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+
+
     public void checkIfNetworkElementLinkExists(A4NetworkElementLink nelData) {
         List<NetworkElementLink> nelList = getAllNetworkElementLinksV4();
 
@@ -307,4 +310,69 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(nel.getLbz(), nelData.getLbz());
     }
 
+
+
+    @Step("Read all Network Element Ports as list from v4 API")
+    public List<NetworkElementPort> getAllNetworkElementPortsV4() {
+        return a4ResourceInventoryService.networkElementPort()
+                .listNetworkElementPort()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+
+    @Step("Read  Network Element Ports as list by NE Uuid from v4 API")
+    public List<NetworkElementPort> getNetworkElementPortsByNetworkElementUuidV4(String uuid) {
+        return a4ResourceInventoryService.networkElementPort()
+                .listNetworkElementPort()
+                .networkElementUuidQuery(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Read  Network Element Ports as list by NE Endsz from v4 API")
+    public List<NetworkElementPort> getNetworkElementPortsByEndszV4(String endsz) {
+        return a4ResourceInventoryService.networkElementPort()
+                .listNetworkElementPort()
+                .networkElementEndszQuery(endsz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Read  Network Element Ports as list by NE Endsz and Port Type from v4 API")
+    public List<NetworkElementPort> getNetworkElementPortsByEndszAndTypeV4(String endsz, String type) {
+        return a4ResourceInventoryService.networkElementPort()
+                .listNetworkElementPort()
+                .networkElementEndszQuery(endsz)
+                .portTypeQuery(type)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Read  Network Element Ports as list by NE Endsz and functionalPortLabel from v4 API")
+    public List<NetworkElementPort> getNetworkElementPortsByEndszAndFunctionalPortLabelV4(String endsz, String functionalPortLabel) {
+        return a4ResourceInventoryService.networkElementPort()
+                .listNetworkElementPort()
+                .networkElementEndszQuery(endsz)
+                .functionalPortLabelQuery(functionalPortLabel)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+
+    public void checkIfNetworkElementPortsByEndszAreInList(List<A4NetworkElementPort> nepDataList, String endsz) {
+        List<NetworkElementPort> nepList = getNetworkElementPortsByEndszV4(endsz);
+
+
+        List<A4NetworkElementPort> filteredList = nepDataList.stream()
+                .filter(elementFromNepDataList -> nepList.stream()
+                        .anyMatch(elementFromNepList ->
+                                elementFromNepDataList.getNetworkElementEndsz().equals(endsz) &&
+                                        elementFromNepList.getNetworkElementEndsz().equals(elementFromNepDataList.getNetworkElementEndsz())))
+                .collect(Collectors.toList());
+
+        assertEquals(nepList.size(), filteredList.size());
+        //  assertTrue(nspDataList.containsAll(nspList));
+
+    }
 }
