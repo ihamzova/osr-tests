@@ -6,12 +6,12 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>744.1</version>
+    <version>744.2</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>9.1</version>
+        <version>0.1.63.3</version>
     </parent>
 
     <properties>
@@ -92,6 +92,19 @@
                             <outputFolder>${project.build.directory}/osr-data</outputFolder>
                             <outputSourceFolder>${project.build.directory}/generated-test-sources</outputSourceFolder>
                             <valuesFile>${basedir}/osr-data/values.yml</valuesFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generateUpiterData</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>com.tsystems.tm.acc.data.upiter.models</packageName>
+                            <sourceFolder>${basedir}/upiter-data</sourceFolder>
+                            <outputFolder>${project.build.directory}/upiter-data</outputFolder>
+                            <outputSourceFolder>${project.build.directory}/generated-test-sources</outputSourceFolder>
+                            <valuesFile>${basedir}/upiter-data/values.yml</valuesFile>
                         </configuration>
                     </execution>
                 </executions>

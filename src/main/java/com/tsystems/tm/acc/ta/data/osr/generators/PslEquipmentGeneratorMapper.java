@@ -1,9 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -15,11 +13,12 @@ import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpHead;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
 
 @Slf4j
 public class PslEquipmentGeneratorMapper {
@@ -86,13 +85,11 @@ public class PslEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
-                        RequestMethod.POST,
-                        "{{request.headers.X-Callback-Url}}",
-                        webhookHeaders,
-                        new Body(json.serialize(entity)),
-                        5000,
-                        null))
+                .postServeActions(Collections.singletonMap("webhook", webhook()
+                        .withMethod(RequestMethod.POST)
+                        .withUrl("{{request.headers.X-Callback-Url}}")
+                        .withHeaders(webhookHeaders)
+                        .withBody(json.serialize(entity)))
                 );
     }
 
@@ -132,13 +129,11 @@ public class PslEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
-                        RequestMethod.POST,
-                        "{{request.headers.X-Callback-Url}}",
-                        webhookHeaders,
-                        new Body( content),
-                        5000,
-                        null))
+                .postServeActions(Collections.singletonMap("webhook", webhook()
+                        .withMethod(RequestMethod.POST)
+                        .withUrl("{{request.headers.X-Callback-Url}}")
+                        .withHeaders(webhookHeaders)
+                        .withBody(content))
                 );
     }
 

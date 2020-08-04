@@ -41,6 +41,3 @@ public class OltDevice {
         return String.format("%s/%s", getVpsz(), getFsz());
     }
 }
-
-
-
