@@ -11,6 +11,11 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.accesslinesearch.AccessLinesSearchTest"/>
         </classes>
     </test>
+    <test thread-count="1" name="Ont commissioning Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.AccessLineReservationByPortAndHomeId"/>
+        </classes>
+    </test>
     <test thread-count="1" name="HomeId, LineId and Provisioning(for 5600 and 5800 devices) Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>

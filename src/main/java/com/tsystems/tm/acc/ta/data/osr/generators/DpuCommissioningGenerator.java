@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
 
 import com.tsystems.tm.acc.ta.data.osr.models.DpuActivities;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
@@ -13,6 +12,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.DpuCommissioningCallbackErrors;
 import com.tsystems.tm.acc.ta.generators.WiremockMappingGenerator;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.invoker.JSON;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
+import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
+import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeActionDefinition;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
@@ -22,6 +23,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
 
 @Slf4j
 public class DpuCommissioningGenerator {
@@ -424,12 +427,12 @@ public class DpuCommissioningGenerator {
         webhookHeaders.add(new HttpHeader("X-B3-SpanId", "{{request.headers.X-B3-SpanId}}"));
         webhookHeaders.add(new HttpHeader("Content-Type", "application/json"));
 
-        WebhookDefinitionModel model = new WebhookDefinitionModel(RequestMethod.POST,
-                "{{request.headers.X-Callback-Url}}",
-                webhookHeaders,
-                new Body(errorMessage),
-                1000,
-                null);
+        WebhookPostServeActionDefinition model = webhook()
+                .withMethod(RequestMethod.POST)
+                .withUrl("{{request.headers.X-Callback-Url}}")
+                .withHeaders(webhookHeaders)
+                .withBody(errorMessage);
+
         mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         return doGenerate(mapping);
 

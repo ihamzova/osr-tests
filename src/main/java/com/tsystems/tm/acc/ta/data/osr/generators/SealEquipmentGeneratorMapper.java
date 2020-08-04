@@ -1,11 +1,8 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
-import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
@@ -15,6 +12,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
 
 @Slf4j
 public class SealEquipmentGeneratorMapper {
@@ -51,13 +50,11 @@ public class SealEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
-                        RequestMethod.POST,
-                        "{{request.headers.X-Callback-Url}}",
-                        webhookHeaders,
-                        new Body( content),
-                        5000,
-                        null))
+                .postServeActions(Collections.singletonMap("webhook", webhook()
+                        .withMethod(RequestMethod.POST)
+                        .withUrl("{{request.headers.X-Callback-Url}}")
+                        .withHeaders(webhookHeaders)
+                        .withBody(content))
                 );
     }
 
