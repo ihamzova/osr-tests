@@ -1,8 +1,10 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
+import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.WebhookDefinitionModel;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
@@ -13,13 +15,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
-
 @Slf4j
 public class SealEquipmentGeneratorMapper {
 
     /**
      * Mapper for OLT Discovery wiremock stub
+     *
      * @param oltDevice
      * @return
      */
@@ -40,7 +41,7 @@ public class SealEquipmentGeneratorMapper {
         String stubTemplateFolder = System.getProperty("user.dir") + "/src/test/resources/domain/osr/wiremock/seal/";
         File jsonBody = new File(stubTemplateFolder + "Inventory_MA5600.json");
         String content = getTemplateContent(jsonBody);
-        content = content.replace("###ENDSZ###",endsz);
+        content = content.replace("###ENDSZ###", endsz);
 
         return new StubMapping()
                 .priority(1)
@@ -50,11 +51,13 @@ public class SealEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", webhook()
-                        .withMethod(RequestMethod.POST)
-                        .withUrl("{{request.headers.X-Callback-Url}}")
-                        .withHeaders(webhookHeaders)
-                        .withBody(content))
+                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
+                        RequestMethod.POST,
+                        "{{request.headers.X-Callback-Url}}",
+                        webhookHeaders,
+                        new Body(content),
+                        5000,
+                        null))
                 );
     }
 

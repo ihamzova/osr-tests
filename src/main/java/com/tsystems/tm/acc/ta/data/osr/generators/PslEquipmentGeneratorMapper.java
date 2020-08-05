@@ -1,10 +1,12 @@
 package com.tsystems.tm.acc.ta.data.osr.generators;
 
+import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.WebhookDefinitionModel;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
@@ -85,17 +87,20 @@ public class PslEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", webhook()
-                        .withMethod(RequestMethod.POST)
-                        .withUrl("{{request.headers.X-Callback-Url}}")
-                        .withHeaders(webhookHeaders)
-                        .withBody(json.serialize(entity)))
+                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
+                        RequestMethod.POST,
+                        "{{request.headers.X-Callback-Url}}",
+                        webhookHeaders,
+                        new Body(json.serialize(entity)),
+                        5000,
+                        null))
                 );
     }
 
     /**
      * Mapper for OLT Discovery wiremock stub
      * used by team mercury and domain OLT-Commisioning tests
+     *
      * @param oltDevice
      * @return
      */
@@ -118,7 +123,7 @@ public class PslEquipmentGeneratorMapper {
         String stubTemplateFolder = System.getProperty("user.dir") + "/src/test/resources/domain/osr/wiremock/psl/";
         File jsonBody = new File(stubTemplateFolder + "PSL_equipment_MA5600.json");
         String content = getTemplateContent(jsonBody);
-        content = content.replace("###ENDSZ###",endsz);
+        content = content.replace("###ENDSZ###", endsz);
 
         return new StubMapping()
                 .priority(1)
@@ -129,11 +134,13 @@ public class PslEquipmentGeneratorMapper {
                 .response(new StubMappingResponse()
                         .status(202)
                         .headers(headers))
-                .postServeActions(Collections.singletonMap("webhook", webhook()
-                        .withMethod(RequestMethod.POST)
-                        .withUrl("{{request.headers.X-Callback-Url}}")
-                        .withHeaders(webhookHeaders)
-                        .withBody(content))
+                .postServeActions(Collections.singletonMap("webhook", new WebhookDefinitionModel(
+                        RequestMethod.POST,
+                        "{{request.headers.X-Callback-Url}}",
+                        webhookHeaders,
+                        new Body( content),
+                        5000,
+                        null))
                 );
     }
 
