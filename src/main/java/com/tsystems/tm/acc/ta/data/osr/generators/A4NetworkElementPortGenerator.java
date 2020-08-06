@@ -14,7 +14,17 @@ public class A4NetworkElementPortGenerator {
             nepData.setUuid(UUID.randomUUID().toString());
 
         if (nepData.getFunctionalPortLabel().isEmpty())
-            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4));
+
+        if (nepData.getNetworkElementEndsz().isEmpty())
+            nepData.setNetworkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ));
+
+        if (nepData.getNetworkElementUuid().isEmpty())
+            nepData.setNetworkElementUuid(neData.getUuid());
+
+
+        if (nepData.getType().isEmpty())
+            nepData.setType("role");
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
@@ -24,8 +34,8 @@ public class A4NetworkElementPortGenerator {
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
-                .role("role")
-                //.networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
+                .role(nepData.getType())
+                .networkElementEndsz(nepData.getNetworkElementEndsz())
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }

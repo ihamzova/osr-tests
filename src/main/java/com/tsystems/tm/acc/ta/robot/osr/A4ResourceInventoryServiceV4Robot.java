@@ -360,6 +360,46 @@ public class A4ResourceInventoryServiceV4Robot {
 
 
 
+    public void checkIfNetworkElementPortsByEndszAndFunctionPortLabelAreInList(List<A4NetworkElementPort> nepDataList, String endsz, String functionalPortLabel) {
+        List<NetworkElementPort> nepList = getNetworkElementPortsByEndszAndFunctionalPortLabelV4(endsz, functionalPortLabel);
+
+
+        List<A4NetworkElementPort> filteredList = nepDataList.stream()
+                .filter(elementFromNepDataList -> nepList.stream()
+                        .anyMatch(elementFromNepList ->
+                            (elementFromNepDataList.getNetworkElementEndsz().equals(endsz) &&
+                                        elementFromNepList.getNetworkElementEndsz().equals(elementFromNepDataList.getNetworkElementEndsz())) &&
+                                    (elementFromNepDataList.getFunctionalPortLabel().equals(functionalPortLabel) &&
+                                    elementFromNepList.getFunctionalPortLabel().equals(elementFromNepDataList.getFunctionalPortLabel())))
+                        )
+                .collect(Collectors.toList());
+
+        assertEquals(nepList.size(), filteredList.size());
+        //  assertTrue(nspDataList.containsAll(nspList));
+
+    }
+
+
+
+    public void checkIfNetworkElementPortsByEndszAndTypeAreInList(List<A4NetworkElementPort> nepDataList, String endsz, String type) {
+        List<NetworkElementPort> nepList = getNetworkElementPortsByEndszAndTypeV4(endsz, type);
+
+
+        List<A4NetworkElementPort> filteredList = nepDataList.stream()
+                .filter(elementFromNepDataList -> nepList.stream()
+                        .anyMatch(elementFromNepList ->
+                                (elementFromNepDataList.getNetworkElementEndsz().equals(endsz) &&
+                                        elementFromNepList.getNetworkElementEndsz().equals(elementFromNepDataList.getNetworkElementEndsz())) &&
+                                        (elementFromNepDataList.getType().equals(type) &&
+                                                elementFromNepList.getPortType().equals(elementFromNepDataList.getType())))
+                )
+                .collect(Collectors.toList());
+
+        assertEquals(nepList.size(), filteredList.size());
+        //  assertTrue(nspDataList.containsAll(nspList));
+
+    }
+
     public void checkIfNetworkElementPortsByEndszAreInList(List<A4NetworkElementPort> nepDataList, String endsz) {
         List<NetworkElementPort> nepList = getNetworkElementPortsByEndszV4(endsz);
 
@@ -369,6 +409,23 @@ public class A4ResourceInventoryServiceV4Robot {
                         .anyMatch(elementFromNepList ->
                                 elementFromNepDataList.getNetworkElementEndsz().equals(endsz) &&
                                         elementFromNepList.getNetworkElementEndsz().equals(elementFromNepDataList.getNetworkElementEndsz())))
+                .collect(Collectors.toList());
+
+        assertEquals(nepList.size(), filteredList.size());
+        //  assertTrue(nspDataList.containsAll(nspList));
+
+    }
+
+
+    public void checkIfNetworkElementPortsByNetworkUuidAreInList(List<A4NetworkElementPort> nepDataList, String networkUuid) {
+        List<NetworkElementPort> nepList = getNetworkElementPortsByNetworkElementUuidV4(networkUuid);
+
+
+        List<A4NetworkElementPort> filteredList = nepDataList.stream()
+                .filter(elementFromNepDataList -> nepList.stream()
+                        .anyMatch(elementFromNepList ->
+                                elementFromNepDataList.getNetworkElementUuid().equals(networkUuid) &&
+                                        elementFromNepList.getNetworkElementUuid().equals(elementFromNepDataList.getNetworkElementUuid())))
                 .collect(Collectors.toList());
 
         assertEquals(nepList.size(), filteredList.size());
