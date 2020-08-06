@@ -229,7 +229,6 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     }
 
 
-
     @Test(description = "DIGIHUB-xxx Read Network Element Port by Endsu from resource inventory service v4 api")
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxx")

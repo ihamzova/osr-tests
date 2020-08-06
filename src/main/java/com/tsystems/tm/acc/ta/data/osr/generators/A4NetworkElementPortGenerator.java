@@ -25,7 +25,7 @@ public class A4NetworkElementPortGenerator {
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
                 .role("role")
-                .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
+                //.networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }
