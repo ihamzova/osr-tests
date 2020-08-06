@@ -13,19 +13,34 @@ public class A4NetworkElementPortGenerator {
         if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
-        if (nepData.getLogicalLabel().isEmpty())
-            nepData.setLogicalLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+        if (nepData.getFunctionalPortLabel().isEmpty())
+            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4));
+
+        if (nepData.getNetworkElementEndsz().isEmpty())
+            nepData.setNetworkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ));
+
+        if (nepData.getNetworkElementUuid().isEmpty())
+            nepData.setNetworkElementUuid(neData.getUuid());
+
+
+        if (nepData.getType().isEmpty())
+            nepData.setType("role");
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
-                .logicalLabel(nepData.getLogicalLabel())
+                .logicalLabel(nepData.getFunctionalPortLabel())
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
-                .role("role")
+                .role(nepData.getType())
+                .networkElementEndsz(nepData.getNetworkElementEndsz())
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
+    }
+
+    private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
+        return Vpsz.concat("/").concat(Fsz);
     }
 }
