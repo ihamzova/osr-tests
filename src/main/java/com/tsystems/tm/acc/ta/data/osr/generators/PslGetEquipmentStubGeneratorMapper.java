@@ -3,16 +3,18 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
+import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeActionDefinition;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
 
 public class PslGetEquipmentStubGeneratorMapper {
     private static volatile AtomicInteger equipmentCount = new AtomicInteger(0);
@@ -100,13 +102,12 @@ public class PslGetEquipmentStubGeneratorMapper {
         JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
 
-        WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,
-                "{{request.headers.X-Callback-Url}}",
-                webhookHeaders,
-                new Body(json.serialize(entity)),
-                5000,
-                null);
-        mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
+        WebhookPostServeActionDefinition model = webhook()
+                .withMethod(RequestMethod.POST)
+                .withUrl("{{request.headers.X-Callback-Url}}")
+                .withHeaders(webhookHeaders)
+                .withBody(json.serialize(entity));
+        mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         mapping.setResponse(response);
         mapping.setPriority(2);
         return mapping;

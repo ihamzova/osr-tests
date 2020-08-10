@@ -1,10 +1,10 @@
 package com.tsystems.tm.acc.ta.domain.commissioning;
 
 
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
@@ -15,13 +15,8 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
 
 import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 
@@ -30,28 +25,41 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog("olt-discovery")
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private WiremockRobot wiremockRobot = new WiremockRobot();
+    private OltDevice oltDeviceManual;
+    private OltDevice oltDeviceAutomatic;
+
+    @BeforeClass
+    public void init() {
+        oltCommissioningRobot.restoreOsrDbState();
+
+        OsrTestContext context = OsrTestContext.get();
+        oltDeviceManual = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        wiremockRobot.setUpSealWiremock(oltDeviceManual);
+        wiremockRobot.setUpPslWiremock(oltDeviceManual);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
+
+        oltDeviceAutomatic = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
+        wiremockRobot.setUpSealWiremock(oltDeviceAutomatic);
+        wiremockRobot.setUpPslWiremock(oltDeviceAutomatic);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
+    }
 
     @AfterClass
     public void teardown() {
         oltCommissioningRobot.restoreOsrDbState();
-    }
 
-    @BeforeMethod
-    public void prepareData() {
-        oltCommissioningRobot.restoreOsrDbState();
+        wiremockRobot.tearDownWiremock(oltDeviceManual.getSealWiremockUuid());
+        wiremockRobot.tearDownWiremock(oltDeviceManual.getPslWiremockUuid());
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
 
-        File stubsPath = Paths.get(System.getProperty("user.dir"), "target/order/stubs").toFile();
-        List<OltDevice> devices = Collections.singletonList(context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA));
-        wiremockRobot.createMocksForPSL(stubsPath, devices);
-        wiremockRobot.createMocksForSEAL(stubsPath, devices);
-        // Upload mock to the server may be? They are not being used at the moment
-
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getSealWiremockUuid());
+        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getPslWiremockUuid());
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
@@ -59,10 +67,10 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
-
-        oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceManual);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
@@ -70,9 +78,9 @@ public class OltCommissioning5600 extends BaseTest {
     @Description("Olt-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() {
-        OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.FSZ_76HA);
-
-        oltCommissioningRobot.startManualOltCommissioning(oltDevice);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDevice);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        oltCommissioningRobot.startManualOltCommissioning(oltDeviceAutomatic);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
     }
 }

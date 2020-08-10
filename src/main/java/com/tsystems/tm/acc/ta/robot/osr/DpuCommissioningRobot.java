@@ -74,6 +74,8 @@ public class DpuCommissioningRobot {
         dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
         dpuCommissioningGenerator.generatePutDpuEmsConfigStub(dpu);
         dpuCommissioningGenerator.generatePostProvisioningDeviceStub(dpu,isAsyncScenario);
+        dpuCommissioningGenerator.generatePatchLifecycleStateDeviceStub(dpu);
+        dpuCommissioningGenerator.generatePatchLifecycleStatePortStub(dpu);
         WiremockRobot wiremockRobot = new WiremockRobot();
         wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
     }
@@ -299,6 +301,42 @@ public class DpuCommissioningRobot {
     public void checkPostDeviceProvisioningNotCalled(Long timeOfExecution, String dpuEndsz){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPatchDeviceCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
+    }
+
+    @Step
+    public void checkPatchDeviceNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
+    }
+
+    @Step
+    public void checkPatchPortCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
+        Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
+    }
+
+    @Step
+    public void checkPatchPortNotCalled(Long timeOfExecution, List<String> fieldValues){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        if(fieldValues.size()==0){
+            fieldValues.add("OPERATING");
+        }
+        Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
     }
 
 }

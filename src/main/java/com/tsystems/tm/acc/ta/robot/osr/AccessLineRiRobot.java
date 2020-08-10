@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.invoker.ApiClient;
@@ -151,5 +152,26 @@ public class AccessLineRiRobot {
                         .portNumber(portNumber)
                         .slotNumber(SLOT))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get homeID from pool by port")
+    public String getHomeIdByPort(AccessLine accessLine) {
+        List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdInternalController().searchHomeIds().body(new SearchHomeIdDto()
+                .endSz(accessLine.getOltDevice().getEndsz())
+                .slotNumber(accessLine.getSlotNumber())
+                .portNumber(accessLine.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(homeIdPool.size(), 31, "Home ids in a pool count");
+        return homeIdPool.get(0).getHomeId();
+    }
+
+    @Step("Get access line state by LineId")
+    public AccessLineDto.StatusEnum getLineIdStateByLineId(String lineId) {
+        List<AccessLineDto> line = accessLineResourceInventory.accessLineInternalController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto()
+                        .lineId(lineId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        return line.get(0).getStatus();
     }
 }

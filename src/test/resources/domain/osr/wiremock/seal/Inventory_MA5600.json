@@ -1,0 +1,344 @@
+{
+  "error": null,
+  "payload": {
+    "managedElement": {
+      "name": "###ENDSZ###",
+      "ipAddress": "192.168.20.140",
+      "productName": "MA5600T",
+      "manufacturer": "HUAWEI",
+      "softwareVersion": "MA5600V800R016C00",
+      "resourceState": "WORKING",
+      "communicationState": "CS_AVAILABLE"
+    },
+    "modules": [
+      {
+        "slot": "0",
+        "installedEquipmentObjectType": "H801CITD",
+        "installedSerialNumber": "020LKL10B4000251",
+        "manufacturer": "HUAWEI",
+        "installedVersion": "175(2015-7-30)",
+        "resourceState": "INSTALLING_INSTALLED",
+        "resourceFulfillmentState": "IN_SERVICE",
+        "shelf": "0"
+      },
+      {
+        "slot": "4",
+        "installedEquipmentObjectType": "H807GPBH",
+        "installedSerialNumber": "022MLNCNF2000512",
+        "manufacturer": "HUAWEI",
+        "installedVersion": "507(2015-8-27)",
+        "resourceState": "INSTALLING_INSTALLED",
+        "resourceFulfillmentState": "IN_SERVICE",
+        "shelf": "0"
+      },
+      {
+        "slot": "9",
+        "installedEquipmentObjectType": "H801SCUN",
+        "installedSerialNumber": "020KAX4MD3003272",
+        "manufacturer": "HUAWEI",
+        "installedVersion": "MA5600V800R016C00",
+        "resourceState": "INSTALLING_INSTALLED",
+        "resourceFulfillmentState": "IN_SERVICE",
+        "shelf": "0"
+      },
+      {
+        "slot": "19",
+        "installedEquipmentObjectType": "H801X2CS",
+        "installedSerialNumber": "020KKPW0B7000098",
+        "manufacturer": "HUAWEI",
+        "installedVersion": "154(2015-7-1)",
+        "resourceState": "INSTALLING_INSTALLED",
+        "resourceFulfillmentState": "IN_SERVICE",
+        "shelf": "0"
+      },
+      {
+        "slot": "20",
+        "installedEquipmentObjectType": "H801X2CS",
+        "installedSerialNumber": "020KKPW0BA000080",
+        "manufacturer": "HUAWEI",
+        "installedVersion": "154(2015-7-1)",
+        "resourceState": "INSTALLING_INSTALLED",
+        "resourceFulfillmentState": "IN_SERVICE",
+        "shelf": "0"
+      }
+    ],
+    "ports": [
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "9",
+        "port": "0"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "9",
+        "port": "1"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "9",
+        "port": "2"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "9",
+        "port": "3"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30",
+        "shelf": "0",
+        "slot": "19",
+        "port": "0"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "19",
+        "port": "1"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "20",
+        "port": "0"
+      },
+      {
+        "portType": "ETHERNET",
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "20",
+        "port": "1"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "0"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:50 54 42 33 38 4A 30 2D 36 35 33 38 45 2D 53 43 2F 50 43 2D 4B 45 20 20 20 20 20 20 20 20 FF FF",
+        "shelf": "0",
+        "slot": "4",
+        "port": "1"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "2"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:50 54 42 33 38 4A 30 2D 36 35 33 38 45 2D 53 43 2F 50 43 2D 4B 45 20 20 20 20 20 20 20 20 FF FF",
+        "shelf": "0",
+        "slot": "4",
+        "port": "3"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "4"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "5"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "6"
+      },
+      {
+        "portType": "PON",
+        "installedPartNumberSFP": "OpticUserEeprom",
+        "installedMatNumberSFP": "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+        "shelf": "0",
+        "slot": "4",
+        "port": "7"
+      },
+      {
+        "portType": null,
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "0",
+        "port": "0"
+      },
+      {
+        "portType": null,
+        "installedPartNumberSFP": null,
+        "installedMatNumberSFP": null,
+        "shelf": "0",
+        "slot": "0",
+        "port": "1"
+      }
+    ],
+    "connections": [
+      {
+        "vlanId": 16,
+        "ancpPartitionId": 1,
+        "shelf": "0",
+        "slot": "19",
+        "port": "0"
+      },
+      {
+        "vlanId": 640,
+        "ancpPartitionId": 1,
+        "shelf": "0",
+        "slot": "4",
+        "port": "0"
+      },
+      {
+        "vlanId": 736,
+        "ancpPartitionId": 1,
+        "shelf": "0",
+        "slot": "4",
+        "port": "3"
+      }
+    ],
+    "onts": [
+      {
+        "vlanId": 640,
+        "serialNumber": null,
+        "installedSerialNumber": "",
+        "lineId": "3333",
+        "manufacturer": "HWTC",
+        "installedEquipmentObjectType": "ONT",
+        "softwareVersion": "",
+        "lineProfile": "test_line_ont_name",
+        "serviceProfile": "test_profile_ont_name",
+        "ontId": 0,
+        "shelf": "0",
+        "slot": "4",
+        "port": "0"
+      },
+      {
+        "vlanId": null,
+        "serialNumber": null,
+        "installedSerialNumber": "485754437F59A619",
+        "lineId": "",
+        "manufacturer": "HWTC",
+        "installedEquipmentObjectType": "HG8010u",
+        "softwareVersion": "V3R013C00S909T",
+        "lineProfile": "test_line_ont_name",
+        "serviceProfile": "srv-profile_default_0",
+        "ontId": 1,
+        "shelf": "0",
+        "slot": "4",
+        "port": "0"
+      },
+      {
+        "vlanId": 736,
+        "serialNumber": null,
+        "installedSerialNumber": "",
+        "lineId": "Hello",
+        "manufacturer": "HWTC",
+        "installedEquipmentObjectType": "HG8010u",
+        "softwareVersion": "V3R013C00S909T",
+        "lineProfile": "test_line_ont_name",
+        "serviceProfile": "test_profile_ont_name",
+        "ontId": 0,
+        "shelf": "0",
+        "slot": "4",
+        "port": "3"
+      }
+    ],
+    "ancpConfigurations": [
+      {
+        "ancpInterfaceAccessNodeIp": "10.10.10.122",
+        "vlanId": 16,
+        "ancpInterfaceId": 1,
+        "ancpPartitionId": 1,
+        "ancpInterfaceControllerNodeIp": "10.10.10.123",
+        "uplinkSlot": "19",
+        "uplinkPort": "0",
+        "shelf": "0"
+      },
+      {
+        "ancpInterfaceAccessNodeIp": null,
+        "vlanId": 384,
+        "ancpInterfaceId": null,
+        "ancpPartitionId": null,
+        "ancpInterfaceControllerNodeIp": null,
+        "uplinkSlot": "19",
+        "uplinkPort": "0",
+        "shelf": "0"
+      },
+      {
+        "ancpInterfaceAccessNodeIp": null,
+        "vlanId": 640,
+        "ancpInterfaceId": null,
+        "ancpPartitionId": null,
+        "ancpInterfaceControllerNodeIp": null,
+        "uplinkSlot": "19",
+        "uplinkPort": "0",
+        "shelf": "0"
+      },
+      {
+        "ancpInterfaceAccessNodeIp": null,
+        "vlanId": 736,
+        "ancpInterfaceId": null,
+        "ancpPartitionId": null,
+        "ancpInterfaceControllerNodeIp": null,
+        "uplinkSlot": "19",
+        "uplinkPort": "0",
+        "shelf": "0"
+      },
+      {
+        "ancpInterfaceAccessNodeIp": null,
+        "vlanId": 640,
+        "ancpInterfaceId": null,
+        "ancpPartitionId": 1,
+        "ancpInterfaceControllerNodeIp": null,
+        "uplinkSlot": "4",
+        "uplinkPort": "0",
+        "shelf": "0"
+      },
+      {
+        "ancpInterfaceAccessNodeIp": null,
+        "vlanId": 736,
+        "ancpInterfaceId": null,
+        "ancpPartitionId": 1,
+        "ancpInterfaceControllerNodeIp": null,
+        "uplinkSlot": "4",
+        "uplinkPort": "3",
+        "shelf": "0"
+      }
+    ]
+  }
+}

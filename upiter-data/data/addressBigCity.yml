@@ -1,0 +1,12 @@
+name: AddressBigCity
+template: com.tsystems.tm.acc.ta.data.osr.models.Address
+values:
+  city: "${scope, global.addressBigCity.city}"
+  district: "${scope, global.addressBigCity.district}"
+  streetFull: "${scope, global.addressBigCity.streetFull}"
+  streetShort: "${scope, global.addressBigCity.streetShort}"
+  hausNummer: "${scope, global.addressBigCity.hausNummer}"
+  zipCode: "${scope, global.addressBigCity.zipCode}"
+  klsId: "${scope, global.addressBigCity.klsId}"
+  asb: "${scope, global.addressBigCity.asb}"
+  onkz: "${scope, global.addressBigCity.onkz}"

@@ -1,9 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGenerator;
-import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementGroupGenerator;
-import com.tsystems.tm.acc.ta.data.osr.generators.A4NetworkElementPortGenerator;
+import com.tsystems.tm.acc.ta.data.osr.generators.*;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
@@ -103,7 +101,7 @@ public class A4ResourceInventoryRobot {
     public void deleteNetworkElementLinksConnectedToNePort(String portUuid) {
         List<NetworkElementLinkDto> networkElementLinkDtoList = getNetworkElementLinksByNePort(portUuid);
 
-        networkElementLinkDtoList.forEach((nel) ->
+        networkElementLinkDtoList.forEach(nel ->
                 deleteNetworkElementLink(nel.getUuid())
         );
     }
@@ -136,9 +134,21 @@ public class A4ResourceInventoryRobot {
     public void deleteNetworkServiceProfilesConnectedToTerminationPoint(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
 
-        nspList.forEach((nsp) ->
+        nspList.forEach(nsp ->
                 deleteNetworkServiceProfile(nsp.getUuid())
         );
+    }
+
+
+
+
+    @Step("Get Network Service Profiles by UUID")
+    public  NetworkServiceProfileFtthAccessDto getNetworkServiceProfileByUuid(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Get a list of Network Service Profiles by Termination Point UUID")
@@ -147,6 +157,16 @@ public class A4ResourceInventoryRobot {
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
                 .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+    @Step("Get a list of Network Service Profiles by LineId")
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByLineId(String lineId) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfilesFtthAccess()
+                .lineIdQuery(lineId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -255,7 +275,7 @@ public class A4ResourceInventoryRobot {
     public void deleteNetworkElementGroups(String negName) {
         List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
 
-        negList.forEach((neg) ->
+        negList.forEach(neg ->
                 deleteNetworkElementGroup(neg.getUuid())
         );
     }
@@ -269,14 +289,14 @@ public class A4ResourceInventoryRobot {
     public void deleteA4NetworkElementsIncludingChildren(String vpsz, String fsz) {
         List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
 
-        neList.forEach((ne) -> {
+        neList.forEach(ne -> {
             List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
 
-            nepList.forEach((nep) -> {
+            nepList.forEach(nep -> {
                 deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
                 List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
 
-                tpList.forEach((tp) -> {
+                tpList.forEach(tp -> {
                     deleteNetworkServiceProfilesConnectedToTerminationPoint(tp.getUuid());
                     deleteTerminationPoint(tp.getUuid());
                 });
@@ -298,7 +318,7 @@ public class A4ResourceInventoryRobot {
         NE is connected to the NEGs anymore.
         Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
-        vpszAndFszList.forEach((vpszAndFsz) ->
+        vpszAndFszList.forEach(vpszAndFsz ->
                 deleteA4NetworkElementsIncludingChildren(vpszAndFsz.first(), vpszAndFsz.second())
         );
 
@@ -319,13 +339,13 @@ public class A4ResourceInventoryRobot {
         NE is connected to the NEGs anymore.
         Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
          */
-        vpszAndFszList.forEach((vpszAndFsz) -> {
+        vpszAndFszList.forEach(vpszAndFsz -> {
             List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpszAndFsz.first(), vpszAndFsz.second());
 
-            neList.forEach((ne) -> {
+            neList.forEach(ne -> {
                 List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
 
-                nepList.forEach((nep) ->
+                nepList.forEach(nep ->
                         deleteNetworkElementPort(nep.getUuid())
                 );
 
@@ -359,5 +379,48 @@ public class A4ResourceInventoryRobot {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    @Step("Create new TerminationPoint in A4 resource inventory")
+    public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+        A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
+        TerminationPointDto tpDto = a4TerminationPointGenerator.generateAsDto(tpData, nepData);
+
+        a4ResourceInventory
+                .terminationPoints()
+                .createOrUpdateTerminationPoint()
+                .body(tpDto)
+                .uuidPath(tpData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new NetworkElementLink in A4 resource inventory")
+    public void createNetworkElementLink
+            (A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
+        A4NetworkElementLinkGenerator a4NetworkElementLinkGenerator = new A4NetworkElementLinkGenerator();
+        NetworkElementLinkDto nelDto = a4NetworkElementLinkGenerator.generateAsDto(nelData, nepDataA, nepDataB);
+
+        a4ResourceInventory
+                .networkElementLinks()
+                .createOrUpdateNetworkElementLink()
+                .body(nelDto)
+                .uuidPath(nelData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+
+
+    @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
+    public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
+        A4NetworkServiceProfileFtthAccessGenerator a4NetworkServiceProfileFtthAccessGenerator = new A4NetworkServiceProfileFtthAccessGenerator();
+        NetworkServiceProfileFtthAccessDto nspDto = a4NetworkServiceProfileFtthAccessGenerator.generateAsDto(nspData, tpData);
+
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
 
 }

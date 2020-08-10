@@ -3,16 +3,18 @@ package com.tsystems.tm.acc.ta.data.osr.generators;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.WebhookDefinitionModel;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.seal.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.seal.client.model.*;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMapping;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingRequest;
 import com.tsystems.tm.acc.tests.wiremock.client.model.StubMappingResponse;
+import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeActionDefinition;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction.webhook;
 
 public class SealAccessNodeConfigurationGeneratorMapper {
     private static final String OPTIC_VENDOR_PART_NUMBER = "OpticVendorSpecific:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n" +
@@ -125,13 +127,12 @@ public class SealAccessNodeConfigurationGeneratorMapper {
         JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().setPrettyPrinting().serializeNulls().create());
 
-        WebhookDefinitionModel webhook = new WebhookDefinitionModel(RequestMethod.POST,
-                "{{request.headers.X-Callback-Url}}",
-                webhookHeaders,
-                new Body(json.serialize(entity)),
-                0,
-                null);
-        mapping.setPostServeActions(Collections.singletonMap("webhook", webhook));
+        WebhookPostServeActionDefinition model = webhook()
+                .withMethod(RequestMethod.POST)
+                .withUrl("{{request.headers.X-Callback-Url}}")
+                .withHeaders(webhookHeaders)
+                .withBody(json.serialize(entity));
+        mapping.setPostServeActions(Collections.singletonMap("webhook", model));
         mapping.setResponse(response);
         mapping.setPriority(1);
         return mapping;

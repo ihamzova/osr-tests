@@ -1,0 +1,21 @@
+---
+name: EndSz_49_30_179_76H1
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "76H1"
+  bngEndsz: "49/911/30/7ZJA"
+  bngDownlinkPort: "ge-1/2/3"
+  bngDownlinkSlot: "0"
+  lsz: "4C1"
+  orderNumber: "1234567890"
+  vst: "@DefaultVst"
+  oltPort: "0"
+  oltSlot: "19"
+---
+name: OntRegistrationAccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  slotNumber: "3"
+  portNumber: "0"
