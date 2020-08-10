@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>772.1</version>
+    <version>772.2</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.38</osr.models.version>
+        <osr.models.version>0.0.40</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
