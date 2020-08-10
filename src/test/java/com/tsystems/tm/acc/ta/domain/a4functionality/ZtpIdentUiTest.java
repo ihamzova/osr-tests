@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.domain.a4functionality;
 
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
@@ -8,13 +7,15 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.equipmentdata.EquipmentDataCase;
 import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -22,15 +23,13 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
-public class ZtpIdentUiTest  extends BaseTest {
+public class ZtpIdentUiTest extends BaseTest {
     private static final int WAIT_TIME = 5_000;
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot
-            = new A4ResourceInventoryImporterUiRobot();
+    private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
     private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final WiremockRobot wiremockRobot = new WiremockRobot();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElementA;
@@ -39,6 +38,8 @@ public class ZtpIdentUiTest  extends BaseTest {
     private A4NetworkElementPort a4NetworkElementPortB;
     private UewegData uewegData;
     private EquipmentData equipmentDataA;
+
+    private WireMockMappingsContext mappingsContext;
 
     @BeforeClass
     public void init() {
@@ -73,14 +74,19 @@ public class ZtpIdentUiTest  extends BaseTest {
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementB, a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElementA);
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElementB);
-        wiremockRobot.setUpRebellWiremock(uewegData, a4NetworkElementA, a4NetworkElementB);
-        wiremockRobot.setUpPslWiremock(equipmentDataA, a4NetworkElementA);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ZtpIdentUiTest"))
+                .addRebellMock(uewegData, a4NetworkElementA, a4NetworkElementB)
+                .addPslMock(equipmentDataA, a4NetworkElementA)
+                .build();
+
+        mappingsContext.publish();
     }
 
     @AfterMethod
     public void cleanUp() {
-        wiremockRobot.tearDownWiremock(uewegData.getRebellWiremockUuid());
-        wiremockRobot.tearDownWiremock(equipmentDataA.getPslWiremockUuid());
+        mappingsContext.close();
+
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);

@@ -29,8 +29,6 @@ public class OltDevice {
     private String ipAdresse;
     private String oltSlot;
     private String oltPort;
-    private String sealWiremockUuid;
-    private String pslWiremockUuid;
 
     @Override
     public String toString() {

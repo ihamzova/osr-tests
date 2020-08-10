@@ -1,150 +1,123 @@
 package com.tsystems.tm.acc.ta.robot.utils;
 
-import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
-import com.tsystems.tm.acc.ta.helpers.wiremock.WiremockRequestPatternBuilder;
-import com.tsystems.tm.acc.tests.wiremock.client.model.RequestFind;
-import com.tsystems.tm.acc.tests.wiremock.client.model.RequestPattern;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.github.tomakehurst.wiremock.matching.UrlPathPattern;
+import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
-import static com.codeborne.selenide.Selenide.sleep;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class WiremockRecordedRequestRetriver {
+    private static final Long TIMEOUT = 30_000L;
 
-    private static final Long TIMEOUT = 15_000L;
-    private static final Long DELAY = 2_000L;
-
-    public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
-        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
-
-        do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrl(url).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
-            if (!requests.isEmpty()) {
-                for (RequestFind request : requests) {
-                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return true;
-                }
-            }
-            sleep(DELAY);
-        }
-        while (LocalDateTime.now().isBefore(end));
-        return false;
+    public void isPostRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        isPostRequestCalled(consumers, TIMEOUT, url);
     }
 
-    private boolean isAllFieldValuesContained(String body, List<String> fieldValues) {
-        Boolean result = true;
-        for (String fieldValue : fieldValues) {
-            if (!body.contains(fieldValue)) {
-                result = false;
-            }
-        }
-        return result;
+    public void isPostRequestCalled(UrlPattern url) {
+        isPostRequestCalled(Collections.emptyList(), TIMEOUT, url);
     }
 
-    public boolean isPostRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
-        return isPostRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    public void isGetRequestCalled(UrlPattern url) {
+        isGetRequestCalled(TIMEOUT, url);
     }
 
-    public boolean isPostRequestCalled(Long timeOfExecution, String url) {
-        return isPostRequestCalled(timeOfExecution, new ArrayList<>(), TIMEOUT, url);
+    public void isPutRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        isPutRequestCalled(consumers, TIMEOUT, url);
     }
 
-    public boolean isGetRequestCalled(Long timeOfExecution, Long timeout, String url) {
-        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
-        do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("GET").withUrl(url).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
-            if (!requests.isEmpty()) {
-                for (RequestFind request : requests) {
-                    if (Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return true;
-                }
-            }
-            sleep(DELAY);
-        }
-        while (LocalDateTime.now().isBefore(end));
-        return false;
+    public void isPutRequestCalled(UrlPattern url) {
+        isPutRequestCalled(Collections.emptyList(), TIMEOUT, url);
     }
 
-    public boolean isGetRequestCalled(Long timeOfExecution, String url) {
-        return isGetRequestCalled(timeOfExecution, TIMEOUT, url);
+    public void isPatchRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        isPatchRequestCalled(consumers, TIMEOUT, url);
     }
 
-    //
-    public boolean isPostPatternRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
-        return isPostPatternRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    public void isGetRequestCalled(Long timeout, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = getRequestedFor(url);
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(1),
+                requestPatternBuilder,
+                timeout);
     }
 
-    public boolean isPostPatternRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
-        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
-
-        do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("POST").withUrlPattern(url).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
-            if (!requests.isEmpty()) {
-                for (RequestFind request : requests) {
-                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return true;
-                }
-            }
-            sleep(DELAY);
-        }
-        while (LocalDateTime.now().isBefore(end));
-        return false;
+    public void isPostRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, Long timeout, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = postRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(1),
+                requestPatternBuilder,
+                timeout);
     }
 
-
-    public boolean isPutRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
-        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
-
-        do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("PUT").withUrl(url).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
-            if (!requests.isEmpty()) {
-                for (RequestFind request : requests) {
-                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return true;
-                }
-            }
-            sleep(DELAY);
-        }
-        while (LocalDateTime.now().isBefore(end));
-        return false;
+    public void isPutRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, Long timeout, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = putRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(1),
+                requestPatternBuilder,
+                timeout);
     }
 
-    public boolean isPutRequestCalled(Long timeOfExecution, List<String> fieldValues, String url) {
-        return isPutRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    public void isPatchRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, Long timeout, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = patchRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(1),
+                requestPatternBuilder,
+                timeout);
     }
 
-    public boolean isPutRequestCalled(Long timeOfExecution, String url) {
-        return isPutRequestCalled(timeOfExecution, new ArrayList<>(), TIMEOUT, url);
+    public void isPatchRequestNotCalled(UrlPattern url) {
+        isPatchRequestNotCalled(Collections.emptyList(), url);
     }
 
-
-    public boolean isPatchRequestCalled(Long timeOfExecution, List<String> fieldValues, Long timeout, String url) {
-        LocalDateTime end = LocalDateTime.now().plusSeconds(timeout / 1000);
-
-        do {
-            RequestPattern requestPattern = new WiremockRequestPatternBuilder().withMethod("PATCH").withUrlPattern(url).build();
-            List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 0).getRequests();
-            if (!requests.isEmpty()) {
-                for (RequestFind request : requests) {
-                    if (isAllFieldValuesContained(request.getBody(), fieldValues) && Long.valueOf(request.getLoggedDate()) > timeOfExecution)
-                        return true;
-                }
-            }
-            sleep(DELAY);
-        }
-        while (LocalDateTime.now().isBefore(end));
-        return false;
+    public void isPostRequestNotCalled(UrlPattern url) {
+        isPostRequestNotCalled(Collections.emptyList(), url);
     }
 
-    public boolean isPatchRequestCalled(Long timeOfExecution, List<String> fieldValues, String url){
-        return isPatchRequestCalled(timeOfExecution, fieldValues, TIMEOUT, url);
+    public void isPutRequestNotCalled(UrlPathPattern url) {
+        isPutRequestNotCalled(Collections.emptyList(), url);
     }
 
+    public void isPatchRequestNotCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = patchRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(0),
+                requestPatternBuilder,
+                TIMEOUT);
+    }
 
+    public void isPostRequestNotCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = postRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(0),
+                requestPatternBuilder,
+                TIMEOUT);
+    }
+
+    public void isPutRequestNotCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPathPattern url) {
+        RequestPatternBuilder requestPatternBuilder = putRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(0),
+                requestPatternBuilder,
+                TIMEOUT);
+    }
+
+    public void isGetRequestNotCalled(UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = getRequestedFor(url);
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(0),
+                requestPatternBuilder,
+                TIMEOUT);
+    }
 }

@@ -1,15 +1,13 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
-import com.tsystems.tm.acc.ta.helpers.wiremock.WiremockRequestPatternBuilder;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
-import com.tsystems.tm.acc.tests.wiremock.client.model.RequestFind;
-import com.tsystems.tm.acc.tests.wiremock.client.model.RequestPattern;
 import io.qameta.allure.Step;
-import org.testng.Assert;
 
-import java.util.List;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 
 public class A4PreProvisioningRobot {
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -35,11 +33,10 @@ public class A4PreProvisioningRobot {
 
     @Step("Check if POST request to a4-preprovisioning wiremock has happened")
     public void checkPostToPreprovisioningWiremock() {
-        RequestPattern requestPattern = new WiremockRequestPatternBuilder()
-                .withMethod("POST")
-                .withUrlPathPattern(".*/v1/a4/accessLines")
-                .build();
-        List<RequestFind> requests = WiremockHelper.requestsFindByCustomPatternAmount(requestPattern, 1).getRequests();
-        Assert.assertTrue(requests.size() >= 1);
+        WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.POST,
+                                urlMatching(".*/v1/a4/accessLines")));
     }
 }
