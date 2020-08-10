@@ -3,5 +3,3 @@ template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
 values:
   endSz: "49/0001/0/71AA"
   onuId: 12345678
-  stepToFall: null
-  changeBody: "Activity_OLT-RI.GET.DpuAtOltConf"

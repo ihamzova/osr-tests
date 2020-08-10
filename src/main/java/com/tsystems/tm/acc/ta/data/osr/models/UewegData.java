@@ -7,5 +7,4 @@ public class UewegData {
     String uewegId;
     String vendorPortNameA;
     String vendorPortNameB;
-    String rebellWiremockUuid;
 }

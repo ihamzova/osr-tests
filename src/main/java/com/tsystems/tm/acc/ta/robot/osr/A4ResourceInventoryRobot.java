@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.osr.generators.*;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
@@ -24,8 +24,8 @@ public class A4ResourceInventoryRobot {
 
     @Step("Create new Network Element Group in A4 resource inventory")
     public void createNetworkElementGroup(A4NetworkElementGroup negData) {
-        A4NetworkElementGroupGenerator a4NetworkElementGroupGenerator = new A4NetworkElementGroupGenerator();
-        NetworkElementGroupDto negDto = a4NetworkElementGroupGenerator.generateAsDto(negData);
+        NetworkElementGroupDto negDto = new A4ResourceInventoryMapper()
+                .getNetworkElementGroupDto(negData);
 
         a4ResourceInventory
                 .networkElementGroups()
@@ -46,8 +46,8 @@ public class A4ResourceInventoryRobot {
 
     @Step("Create new Network Element in A4 resource inventory")
     public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        A4NetworkElementGenerator a4NetworkElementGenerator = new A4NetworkElementGenerator();
-        NetworkElementDto neDto = a4NetworkElementGenerator.generateAsDto(neData, negData);
+        NetworkElementDto neDto = new A4ResourceInventoryMapper()
+                .getNetworkElementDto(neData, negData);
 
         a4ResourceInventory
                 .networkElements()
@@ -68,8 +68,8 @@ public class A4ResourceInventoryRobot {
 
     @Step("Create new Network Element Port in A4 resource inventory")
     public void createNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        A4NetworkElementPortGenerator a4NetworkElementPortGenerator = new A4NetworkElementPortGenerator();
-        NetworkElementPortDto nepDto = a4NetworkElementPortGenerator.generateAsDto(nepData, neData);
+        NetworkElementPortDto nepDto = new A4ResourceInventoryMapper()
+                .getNetworkElementPortDto(nepData, neData);
 
         a4ResourceInventory
                 .networkElementPorts()
@@ -140,10 +140,8 @@ public class A4ResourceInventoryRobot {
     }
 
 
-
-
     @Step("Get Network Service Profiles by UUID")
-    public  NetworkServiceProfileFtthAccessDto getNetworkServiceProfileByUuid(String uuid) {
+    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileByUuid(String uuid) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfileFtthAccess()
@@ -382,8 +380,8 @@ public class A4ResourceInventoryRobot {
 
     @Step("Create new TerminationPoint in A4 resource inventory")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
-        TerminationPointDto tpDto = a4TerminationPointGenerator.generateAsDto(tpData, nepData);
+        TerminationPointDto tpDto = new A4ResourceInventoryMapper()
+                .getTerminationPointDto(tpData, nepData);
 
         a4ResourceInventory
                 .terminationPoints()
@@ -394,10 +392,9 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Create new NetworkElementLink in A4 resource inventory")
-    public void createNetworkElementLink
-            (A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
-        A4NetworkElementLinkGenerator a4NetworkElementLinkGenerator = new A4NetworkElementLinkGenerator();
-        NetworkElementLinkDto nelDto = a4NetworkElementLinkGenerator.generateAsDto(nelData, nepDataA, nepDataB);
+    public void createNetworkElementLink(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
+        NetworkElementLinkDto nelDto = new A4ResourceInventoryMapper()
+                .getNetworkElementLinkDto(nelData, nepDataA, nepDataB);
 
         a4ResourceInventory
                 .networkElementLinks()
@@ -408,11 +405,10 @@ public class A4ResourceInventoryRobot {
     }
 
 
-
     @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
     public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
-        A4NetworkServiceProfileFtthAccessGenerator a4NetworkServiceProfileFtthAccessGenerator = new A4NetworkServiceProfileFtthAccessGenerator();
-        NetworkServiceProfileFtthAccessDto nspDto = a4NetworkServiceProfileFtthAccessGenerator.generateAsDto(nspData, tpData);
+        NetworkServiceProfileFtthAccessDto nspDto = new A4ResourceInventoryMapper()
+                .getNetworkServiceProfileFtthAccessDto(nspData, tpData);
 
         a4ResourceInventory
                 .networkServiceProfilesFtthAccess()

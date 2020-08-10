@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.1.63.3</version>
+        <version>0.1.63.12</version>
     </parent>
 
     <properties>
@@ -68,10 +68,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tsystems.tm.acc</groupId>
-            <artifactId>wiremock-acc</artifactId>
         </dependency>
     </dependencies>
 

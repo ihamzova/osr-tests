@@ -1,38 +1,47 @@
 package com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning;
 
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.tsystems.tm.acc.data.osr.models.dpu.DpuCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
 public class DpuCommissioningProcess extends BaseTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;
     private ETCDRobot etcdRobot;
-    private boolean isAsyncScenario = false;
 
     @BeforeClass
     public void init() {
         dpuCommissioningRobot = new DpuCommissioningRobot();
         etcdRobot = new ETCDRobot();
+        WireMockFactory.get().resetToDefaultMappings();
     }
 
-    @AfterMethod
-    public void cleanup() {
-        dpuCommissioningRobot.cleanup();
+    @BeforeMethod
+    public void reset() {
+        WireMockFactory.get().resetRequests();
     }
 
     @Test(description = "Positive case. DPU-commisioning without errors")
@@ -41,82 +50,84 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPositive() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> onuidCheckValues = new ArrayList<>();
-        onuidCheckValues.add(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositive")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish();
 
-        List<String> backhaulidCheckValues = new ArrayList<>();
-        backhaulidCheckValues.add(oltEndsz);
-        backhaulidCheckValues.add(olt.getOltSlot());
-        backhaulidCheckValues.add(olt.getOltPort());
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> deprovisionPortCheckValues = new ArrayList<>();
-        deprovisionPortCheckValues.add(oltEndsz);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
-        List<String> dpuAtOltCheckValuesPost = new ArrayList<>();
-        dpuAtOltCheckValuesPost.add(dpu.getEndSz());
-        dpuAtOltCheckValuesPost.add(dpu.getOnuId().toString());
-        dpuAtOltCheckValuesPost.add(oltEndsz);
-        dpuAtOltCheckValuesPost.add(olt.getOltSlot());
-        dpuAtOltCheckValuesPost.add(olt.getOltPort());
-        dpuAtOltCheckValuesPost.add("\"configurationState\":\"INACTIVE\"");
+            List<Consumer<RequestPatternBuilder>> deprovisionPortCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
 
-        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
-        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/", "_"));
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPost = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains(dpu.getOnuId().toString()),
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
 
-        List<String> dpuAtOltCheckValuesPut = new ArrayList<>();
-        dpuAtOltCheckValuesPut.add(dpu.getEndSz());
-        dpuAtOltCheckValuesPut.add(dpu.getOnuId().toString());
-        dpuAtOltCheckValuesPut.add(oltEndsz);
-        dpuAtOltCheckValuesPut.add(olt.getOltSlot());
-        dpuAtOltCheckValuesPut.add(olt.getOltPort());
-        dpuAtOltCheckValuesPut.add("\"configurationState\":\"ACTIVE\"");
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
-        List<String> dpuEmsCheckValuesPost = new ArrayList<>();
-        dpuEmsCheckValuesPost.add(dpu.getEndSz());
-        dpuEmsCheckValuesPost.add("\"configurationState\":\"INACTIVE\"");
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains(dpu.getOnuId().toString()),
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("\"configurationState\":\"ACTIVE\""));
 
-        List<String> dpuEmsCheckValuesPut = new ArrayList<>();
-        dpuEmsCheckValuesPut.add(dpu.getEndSz());
-        dpuEmsCheckValuesPut.add("\"configurationState\":\"ACTIVE\"");
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPost = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
 
-        List<String> dpuSealAtOltCheckValuesDpu = new ArrayList<>();
-        dpuSealAtOltCheckValuesDpu.add(dpu.getEndSz().replace("/", "_"));
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"ACTIVE\""));
 
-        List<String> checkFirstPatchValues = new ArrayList<>();
-        checkFirstPatchValues.add("INSTALLING");
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
-        List<String> checkSecondPatchValues = new ArrayList<>();
-        checkSecondPatchValues.add("OPERATING");
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("INSTALLING"));
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution, onuidCheckValues);
-        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution, deprovisionPortCheckValues);
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPost);
-        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPut);
-        dpuCommissioningRobot.checkGetDpuEmsConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuEmsConfigCalled(timeOfExecution, dpuEmsCheckValuesPost);
-        dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealAtOltCheckValuesDpu);
-        dpuCommissioningRobot.checkPutDpuEmsConfigCalled(timeOfExecution, dpuEmsCheckValuesPut);
-        dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
-
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(dpuAtOltCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(dpuSealAtOltCheckValues);
+            dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuAtOltCheckValuesPut);
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuEmsConfigCalled(dpuEmsCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
+            dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
     }
 
     @Test(description = "Positive case. DPU-commisioning without errors")
@@ -124,43 +135,45 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningDpuAtOltConfigurationExists() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuAtOltConfigurationExists);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> onuidCheckValues = new ArrayList<>();
-        onuidCheckValues.add(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDpuAtOltConfigurationExists")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccessWithDpuAtOltConfigurationExists(olt, dpu)
+                    .build()
+                    .publish();
 
-        List<String> backhaulidCheckValues = new ArrayList<>();
-        backhaulidCheckValues.add(oltEndsz);
-        backhaulidCheckValues.add(olt.getOltSlot());
-        backhaulidCheckValues.add(olt.getOltPort());
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> deprovisionPortCheckValues = new ArrayList<>();
-        deprovisionPortCheckValues.add(oltEndsz);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
-        List<String> dpuAtOltCheckValues = new ArrayList<>();
-        dpuAtOltCheckValues.add(dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> deprovisionPortCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
 
-        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
-        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/", "_"));
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution, onuidCheckValues);
-        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution, deprovisionPortCheckValues);
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigNotCalled(timeOfExecution, dpuSealAtOltCheckValues);
-        dpuCommissioningRobot.checkPostDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
-
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostSEALDpuAtOltConfigNotCalled(dpuSealAtOltCheckValues);
+            dpuCommissioningRobot.checkPostDpuAtOltConfigNotCalled(dpuAtOltCheckValues);
+            dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(dpuAtOltCheckValues);
+        }
     }
 
     @Test(description = "Positive case. DPU-commisioning without errors")
@@ -169,59 +182,61 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningDpuEmsConfigurationExists() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuEmsConfigurationExists);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> onuidCheckValues = new ArrayList<>();
-        onuidCheckValues.add(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDpuEmsConfigurationExists")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccessWithDpuEmsConfigurationExists(olt, dpu)
+                    .build()
+                    .publish();
 
-        List<String> backhaulidCheckValues = new ArrayList<>();
-        backhaulidCheckValues.add(oltEndsz);
-        backhaulidCheckValues.add(olt.getOltSlot());
-        backhaulidCheckValues.add(olt.getOltPort());
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> deprovisionPortCheckValues = new ArrayList<>();
-        deprovisionPortCheckValues.add(oltEndsz);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
-        List<String> dpuAtOltCheckValuesPost = new ArrayList<>();
-        dpuAtOltCheckValuesPost.add(dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> deprovisionPortCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
 
-        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
-        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/", "_"));
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPost = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> dpuAtOltCheckValuesPut = new ArrayList<>();
-        dpuAtOltCheckValuesPut.add(dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
-        List<String> dpuEmsCheckValuesPost = new ArrayList<>();
-        dpuEmsCheckValuesPost.add(dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPut = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> dpuEmsCheckValuesPut = new ArrayList<>();
-        dpuEmsCheckValuesPut.add(dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPost = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        List<String> dpuSealAtOltCheckValuesDpu = new ArrayList<>();
-        dpuSealAtOltCheckValuesDpu.add(dpu.getEndSz().replace("/", "_"));
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution, onuidCheckValues);
-        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution, deprovisionPortCheckValues);
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetOltAncpSessionCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPost);
-        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(timeOfExecution, dpuAtOltCheckValuesPut);
-        dpuCommissioningRobot.checkGetDpuEmsConfigCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDpuEmsConfigNotCalled(timeOfExecution, dpuEmsCheckValuesPost);
-        dpuCommissioningRobot.checkPostSEALDpuEmsConfigNotCalled(timeOfExecution, dpuSealAtOltCheckValuesDpu);
-        dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuEmsCheckValuesPut);
-
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(dpuAtOltCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(dpuSealAtOltCheckValues);
+            dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuAtOltCheckValuesPut);
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuEmsConfigNotCalled(dpuEmsCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuEmsConfigNotCalled(dpuSealAtOltCheckValuesDpu);
+            dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(dpuEmsCheckValuesPut);
+        }
     }
 
     @Test(description = "Negative case. GET oltResourceInventory returned 400")
@@ -229,13 +244,23 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetDevice400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetDevice400);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        Long timeOfExecution = System.currentTimeMillis();
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetDevice400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetDevice400(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDeviceDPUCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConnNotCalled(timeOfExecution, dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+        }
     }
 
     @Test(description = "Negative case. GET DpuPonConn returned 400")
@@ -243,16 +268,23 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetDpuPonConn400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetPonConn400);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetDpuPonConn400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForDpuPonConn400(olt, dpu)
+                    .build()
+                    .publish();
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuPonConnCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLinkNotCalled(timeOfExecution, oltEndsz);
-
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+        }
     }
 
     @Test(description = "Negative case. GET EthernetLink returned 400")
@@ -260,17 +292,26 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetEthLink400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.FindEthLink400);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> onuidCheckValues = new ArrayList<>();
-        onuidCheckValues.add(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetEthLink400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetEthLink400(olt, dpu)
+                    .build()
+                    .publish();
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetEthernetLinkCalled(timeOfExecution, oltEndsz);
-        dpuCommissioningRobot.checkPostOnuIdNotCalled(timeOfExecution, onuidCheckValues);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostOnuIdNotCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+        }
     }
 
     @Test(description = "Negative case. GET OnuId returned 400")
@@ -278,23 +319,26 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetOnuId400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetOnuId400);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> onuidCheckValues = new ArrayList<>();
-        onuidCheckValues.add(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetOnuId400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetOnuId400(olt, dpu)
+                    .build()
+                    .publish();
 
-        List<String> backhaulidCheckValues = new ArrayList<>();
-        backhaulidCheckValues.add(oltEndsz);
-        backhaulidCheckValues.add(olt.getOltSlot());
-        backhaulidCheckValues.add(olt.getOltPort());
+            UUID traceId = dpuCommissioningRobot.startProcess(dpu.getEndSz());
 
-        Long timeOfExecution = System.currentTimeMillis();
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Arrays.asList(
+                    bodyContains(dpu.getEndSz()));
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostOnuIdCalled(timeOfExecution, onuidCheckValues);
-        dpuCommissioningRobot.checkPostBackhaulidNotCalled(timeOfExecution, backhaulidCheckValues);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
+            dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidNotCalled(backhaulidCheckValues);
+        }
     }
 
     @Test
@@ -303,20 +347,24 @@ public class DpuCommissioningProcess extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetBackhaul400);
 
-        Long timeOfExecution = System.currentTimeMillis();
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> backhaulidCheckValues = new ArrayList<>();
-        backhaulidCheckValues.add(oltEndsz);
-        backhaulidCheckValues.add(olt.getOltSlot());
-        backhaulidCheckValues.add(olt.getOltPort());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetBackhaul400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetBackhaul400(olt, dpu)
+                    .build()
+                    .publish();
 
-        List<String> deprovisionPonPortValues = new ArrayList<>();
-        deprovisionPonPortValues.add(oltEndsz);
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()));
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostBackhaulidCalled(timeOfExecution, backhaulidCheckValues);
-        dpuCommissioningRobot.checkPostDeprovisioningPortNotCalled(timeOfExecution, deprovisionPonPortValues);
+            List<Consumer<RequestPatternBuilder>> deprovisionPonPortValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+            dpuCommissioningRobot.checkPostDeprovisioningPortNotCalled(deprovisionPonPortValues);
+        }
     }
 
     @Test(description = "Negative case. POST DeprovisionOltPort returned 400")
@@ -324,17 +372,20 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostDeprovision400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostDeprovisionOltPort400);
-        Long timeOfExecution = System.currentTimeMillis();
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> deprovisionCheckValues = new ArrayList<>();
-        deprovisionCheckValues.add(oltEndsz);
 
-        List<String> configureAncpCheckValues = new ArrayList<>();
-        configureAncpCheckValues.add(dpu.getEndSz());
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution, deprovisionCheckValues);
-        dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostDeprovision400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostDeprovision400(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> deprovisionCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz());
+        }
     }
 
     @Test(description = "Negative case. POST ConfigureANCP returned 400")
@@ -342,12 +393,17 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningConfigureAncp400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.ConfigureAncp400);
-        Long timeOfExecution = System.currentTimeMillis();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(timeOfExecution, dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningConfigureAncp400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForConfigureAncp400(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz());
+        }
     }
 
     @Test(description = "Negative case. GET ANCPSession returned 400")
@@ -355,13 +411,17 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningGetAncp400() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetAncpSession400);
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        Long timeOfExecution = System.currentTimeMillis();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetOltAncpSessionNotCalled(timeOfExecution, oltEndsz);
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningGetAncp400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetAncp400(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetOltAncpSessionNotCalled(olt.getEndsz());
+        }
     }
 
     @Test(description = "Negative case. POST DeprovisionOltPort returned error in callback")
@@ -369,17 +429,20 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostDeprovisionCallbackError() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostDeprovisionCallbackError);
-        Long timeOfExecution = System.currentTimeMillis();
-        isAsyncScenario = true;
 
-        String oltEndsz = new StringBuilder().append(olt.getVpsz()).append("/").append(olt.getFsz()).toString();
-        List<String> deprovisionCheckValues = new ArrayList<>();
-        deprovisionCheckValues.add(oltEndsz);
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostDeprovisionCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostDeprovisionCallbackError(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostDeprovisioningPortCalled(timeOfExecution, deprovisionCheckValues);
-        dpuCommissioningRobot.checkPostConfigAncpNotCalled(timeOfExecution, dpu.getEndSz());
+            List<Consumer<RequestPatternBuilder>> deprovisionCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz());
+        }
     }
 
     @Test(description = "Negative case. POST ConfigureANCP returned error in callback")
@@ -387,13 +450,17 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostConfigureANCPCallbackError() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostConfigureANCPCallbackError);
-        Long timeOfExecution = System.currentTimeMillis();
-        isAsyncScenario = true;
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostConfigAncpCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(timeOfExecution, dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostConfigureANCPCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostConfigureANCPCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz());
+        }
     }
 
     @Test(description = "Negative case. SEAL POST.DpuAtOltConf returned error in callback")
@@ -401,17 +468,22 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostSealDpuAtOltConfigCallbackError() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostSealDpuAtOltConfigCallbackError);
-        Long timeOfExecution = System.currentTimeMillis();
-        isAsyncScenario = true;
-        List<String> dpuSealAtOltCheckValues = new ArrayList<>();
-        dpuSealAtOltCheckValues.add(dpu.getEndSz().replace("/", "_"));
-        List<String> dpuAtOltCheckValues = new ArrayList<>();
-        dpuAtOltCheckValues.add(dpu.getEndSz());
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(timeOfExecution, dpuSealAtOltCheckValues);
-        dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(timeOfExecution, dpuAtOltCheckValues);
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostSealDpuAtOltConfigCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostSealDpuAtOltConfigCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(dpuSealAtOltCheckValues);
+            dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(dpuAtOltCheckValues);
+        }
     }
 
     @Test(description = "Negative case. SEAL POST.DpuEmsConf returned error in callback")
@@ -419,15 +491,20 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostSealDpuEmsConfigCallbackError() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostSealDpuEmsConfigCallbackError);
-        Long timeOfExecution = System.currentTimeMillis();
-        isAsyncScenario = true;
-        List<String> dpuSealEmsCheckValues = new ArrayList<>();
-        dpuSealEmsCheckValues.add(dpu.getEndSz());
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(timeOfExecution, dpuSealEmsCheckValues);
-        dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(timeOfExecution, dpuSealEmsCheckValues);
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostSealDpuEmsConfigCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostSealDpuEmsConfigCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuSealEmsCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealEmsCheckValues);
+            dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(dpuSealEmsCheckValues);
+        }
     }
 
     @Test(description = "Negative case. POST.startDeviceProvisioning returned error in callback")
@@ -435,77 +512,99 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostWgFTTBDeviceProvisioningCallbackError);
-        Long timeOfExecution = System.currentTimeMillis();
-        isAsyncScenario = true;
 
-        List<String> checkSecondPatchValues = new ArrayList<>();
-        checkSecondPatchValues.add("OPERATING");
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostDeviceProvisioningCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostDeviceProvisioningCallbackError(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        Thread.sleep(4000);
-        dpuCommissioningRobot.checkPostDeviceProvisioningCalled(timeOfExecution, dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution, checkSecondPatchValues);
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            Thread.sleep(4000);
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+        }
     }
 
     @Test(description = "Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
     @Description("Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
-    public void dpuCommissioningDpuLifeCycleInstalling(){
+    public void dpuCommissioningDpuLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceInstalling);
-        Long timeOfExecution = System.currentTimeMillis();
-        List<String> checkFirstPatchValues = new ArrayList<>();
-        checkFirstPatchValues.add("INSTALLING");
 
-        List<String> checkSecondPatchValues = new ArrayList<>();
-        checkSecondPatchValues.add("OPERATING");
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDpuLifeCycleInstalling")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("INSTALLING"));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
     }
 
     @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
     @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
-    public void dpuCommissioningUplinkLifeCycleInstalling(){
+    public void dpuCommissioningUplinkLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateUplinkInstalling);
-        Long timeOfExecution = System.currentTimeMillis();
-        List<String> checkFirstPatchValues = new ArrayList<>();
-        checkFirstPatchValues.add("INSTALLING");
 
-        List<String> checkSecondPatchValues = new ArrayList<>();
-        checkSecondPatchValues.add("OPERATING");
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningUplinkLifeCycleInstalling")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchPortNotCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("INSTALLING"));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
     }
 
     @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
     @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
-    public void dpuCommissioningDeviceAndUplinkLifeCycleInstalling(){
+    public void dpuCommissioningDeviceAndUplinkLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceUplinkInstalling);
-        Long timeOfExecution = System.currentTimeMillis();
-        List<String> checkFirstPatchValues = new ArrayList<>();
-        checkFirstPatchValues.add("INSTALLING");
 
-        List<String> checkSecondPatchValues = new ArrayList<>();
-        checkSecondPatchValues.add("OPERATING");
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDeviceAndUplinkLifeCycleInstalling")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish();
 
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
-        dpuCommissioningRobot.checkPatchDeviceNotCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchPortNotCalled(timeOfExecution,checkFirstPatchValues);
-        dpuCommissioningRobot.checkPatchDeviceCalled(timeOfExecution,checkSecondPatchValues);
-        dpuCommissioningRobot.checkPatchPortCalled(timeOfExecution,checkSecondPatchValues);
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("INSTALLING"));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
     }
 
     @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
@@ -513,38 +612,52 @@ public class DpuCommissioningProcess extends BaseTest {
     public void dpuCommissioningPositiveDomain() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
-        dpuCommissioningRobot.setUpWiremock(olt, dpu, isAsyncScenario);
 
-        dpuCommissioningRobot.startProcess(dpu.getEndSz());
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish();
 
-        Thread.sleep(30000);
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
 
-        etcdRobot.checkEtcdValues(dpuCommissioningRobot.getBusinessKey(),
-                Arrays.asList(
-                        "EXECUTED Successfuly [Read DPU device data]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                        "EXECUTED Successfuly [Read OltPonPort Data]",
-                        "EXECUTED Successfuly [Read OltUpLinkPortData]",
-                        "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][call]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
-                        "EXECUTED Successfuly [Read ANCP Info]",
-                        "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][call]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][callback]",
-                        "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU Ems][call]",
-                        "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+            Thread.sleep(30000);
+
+            etcdRobot.checkEtcdValues(dpuCommissioningRobot.getBusinessKey(),
+                    Arrays.asList(
+                            "EXECUTED Successfuly [Read DPU device data]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
+                            "EXECUTED Successfuly [Read OltPonPort Data]",
+                            "EXECUTED Successfuly [Read OltUpLinkPortData]",
+                            "EXECUTED Successfuly [Get Unique OnuId for DPU]",
+                            "EXECUTED Successfuly [Read BackhaulId]",
+                            "EXECUTED Successfuly [Read BackhaulId]",
+                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
+                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
+                            "EXECUTED Successfuly [Configure ANCP on BNG][call]",
+                            "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
+                            "EXECUTED Successfuly [Read ANCP Info]",
+                            "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
+                            "EXECUTED Successfuly [Configure DPU at OLT][call]",
+                            "EXECUTED Successfuly [Configure DPU at OLT][callback]",
+                            "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
+                            "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
+                            "EXECUTED Successfuly [Configure DPU Ems][call]",
+                            "EXECUTED Successfuly [Configure DPU Ems][callback]",
+                            "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
+                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
+                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+        }
+    }
+
+    private Consumer<RequestPatternBuilder> bodyContains(String str) {
+        return requestPatternBuilder -> requestPatternBuilder.withRequestBody(containing(str));
+    }
+
+    private Consumer<RequestPatternBuilder> traceIdIs(UUID uuid) {
+        return requestPatternBuilder -> requestPatternBuilder.withHeader("X-B3-TraceId", equalTo(uuid.toString()));
     }
 }
