@@ -302,4 +302,16 @@ public class DpuCommissioningRobot {
         wiremockRecordedRequestRetriver.isPatchRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/port/.*"));
     }
 
+    @Step
+    public void checkPostDeviceDeprovisioningCalled(String dpuEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostDeviceDeprovisioningNotCalled(String dpuEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+    }
+
 }

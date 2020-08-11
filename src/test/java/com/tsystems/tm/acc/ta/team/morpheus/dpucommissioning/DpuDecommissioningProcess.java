@@ -59,11 +59,41 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
                     bodyContains("RETIRING"));
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
+    }
+
+    @Test(description = "Positive case. Uplink.LifecycleState = RETIRING, DPU.Linfecyclestate = RETIRING")
+    @Description("Positive case. Uplink.LifecycleState = RETIRING, DPU.Linfecyclestate = RETIRING")
+    public void dpuDecommissioningDeviceAndUplinkLifeCycleRetiring() {
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceUplinkRetiring);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDeviceAndUplinkLifeCycleInstalling")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningSuccess(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("RETIRING"));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
+            //dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 

@@ -8,9 +8,11 @@ import com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.external.v1.cli
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.keycloak.common.util.StringSerialization.serialize;
 
 public class WgFttbAccessProvisioningStub extends AbstractStubMapping {
     public static final String DEVICE_PROVISIONING_URL = "/resource-order-resource-inventory/v1/fttbProvisioning/device";
+    public static final String DEVICE_DEPROVISIONING_URL = "/resource-order-resource-inventory/v1/fttbDeprovisioning/device";
 
     public MappingBuilder postDeviceProvisioning202(Dpu dpu) {
         return post(urlPathEqualTo(DEVICE_PROVISIONING_URL))
@@ -33,6 +35,22 @@ public class WgFttbAccessProvisioningStub extends AbstractStubMapping {
                 .withName("postDeviceProvisioning400")
                 .willReturn(aDefaultResponseWithBody("", 400))
                 .withQueryParam("endSZ", matching(dpu.getEndSz()));
+    }
+
+    public MappingBuilder postDeviceDeprovisioning202CallbackError(Dpu dpu) {
+        return post(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
+                .withName("postDeviceDerovisioning202CallbackError")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withQueryParam("endSZ", matching(dpu.getEndSz()))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgFttbAccessProvisioningMapper().getAsyncResponseNotification(dpu.getEndSz(), false))));
+    }
+
+    public MappingBuilder postDeviceDeprovisioning202(Dpu dpu) {
+        return post(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
+                .withName("postDeviceDeprovisioning202")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withQueryParam("endSZ", matching(dpu.getEndSz()))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgFttbAccessProvisioningMapper().getAsyncResponseNotification(dpu.getEndSz(), true))));
     }
 
     private String serialize(Object obj) {
