@@ -97,6 +97,26 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
+    @Test(description = "Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
+    @Description("Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
+    public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostWgFTTBDeviceDeprovisioningCallbackError);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostDeviceDeprovisioningCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostDeviceProvisioningCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            Thread.sleep(4000);
+
+            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+        }
+    }
+
     private Consumer<RequestPatternBuilder> bodyContains(String str) {
         return requestPatternBuilder -> requestPatternBuilder.withRequestBody(containing(str));
     }
