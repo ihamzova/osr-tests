@@ -49,7 +49,7 @@ public class A4ResourceInventoryMapper {
                 .specificationVersion("1")
                 .operationalState(negData.getOperationalState())
                 .name(negData.getName())
-                .lifeCycleState(negData.getLifecycleState())
+                .lifecycleState(negData.getLifecycleState())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NEG created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
@@ -80,11 +80,29 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementPortDto getNetworkElementPortDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
+
+        String portNumber = UUID.randomUUID().toString().substring(0, 4);
+
         if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
+        if (nepData.getPortNumber().isEmpty())
+            nepData.setPortNumber(portNumber);
+
         if (nepData.getFunctionalPortLabel().isEmpty())
-            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+            nepData.setFunctionalPortLabel("LogicalLabel_" + portNumber);
+
+        if (nepData.getNetworkElementEndsz().isEmpty())
+            nepData.setNetworkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ));
+
+
+
+        if (nepData.getNetworkElementUuid().isEmpty())
+            nepData.setNetworkElementUuid(neData.getUuid());
+
+
+        if (nepData.getType().isEmpty())
+            nepData.setType("role");
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
@@ -94,10 +112,13 @@ public class A4ResourceInventoryMapper {
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
-                .role("role")
+                .type(nepData.getType())
+                .networkElementEndsz(nepData.getNetworkElementEndsz())
                 .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now());
+                .lastUpdateTime(OffsetDateTime.now())
+                .portNumber(nepData.getPortNumber());
     }
+
 
     public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         if (tpData.getUuid().isEmpty())
@@ -140,5 +161,10 @@ public class A4ResourceInventoryMapper {
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NSP created during osr-test integration test")
                 .creationTime(OffsetDateTime.now());
+    }
+
+
+    private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
+        return Vpsz.concat("/").concat(Fsz);
     }
 }
