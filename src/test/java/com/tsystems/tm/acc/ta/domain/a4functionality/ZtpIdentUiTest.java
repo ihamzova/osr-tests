@@ -59,7 +59,7 @@ public class ZtpIdentUiTest extends BaseTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_42999901);
+                .get(EquipmentDataCase.equipment_MatNr_42999900);
 
         // Ensure that no old test data is in the way
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
