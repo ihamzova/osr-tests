@@ -267,7 +267,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
     @Test(description = "DIGIHUB-xxx Read Network Element Port by Endsz and type port label from resource inventory service v4 api")
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxx")
-    @Description("Read Network Element Port by Endsz and type port label from resource inventory service v4 api")
+    @Description("Read Network Element Port by Endsz and type from resource inventory service v4 api")
     public void test_getNetworkElementPortsByNetworkElementEndszAndType() {
         // GIVEN
         String endsz = this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz());
@@ -281,6 +281,27 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
 
         // THEN
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementPortsByEndszAndTypeAreInList(nepDataList2, endsz, type);
+    }
+
+    @Test(description = "DIGIHUB-xxx Read Network Element Port by Endsz and type and port number from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Element Port by Endsz and type port label from resource inventory service v4 api")
+    public void test_getNetworkElementPortsByNetworkElementEndszAndTypeAndPortnumber() {
+        // GIVEN
+        String endsz = this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz());
+        String type = nepDataA.getType();
+        String portNumber  = nepDataA.getPortNumber();
+
+        List<A4NetworkElementPort> nepDataList2 = nepDataList.stream()
+                .filter(element  -> element.getType().equals(type))
+                .filter(element -> element.getPortNumber().equals(portNumber))
+                .collect(Collectors.toList());
+
+        // WHEN
+
+        // THEN
+        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementPortsByEndszAndTypeAndPortnumberAreInList(nepDataList2, endsz, type, portNumber);
     }
 
     @Test(description = "DIGIHUB-xxx Read Network Element Port by NetworkElement Uuid from resource inventory service v4 api")
