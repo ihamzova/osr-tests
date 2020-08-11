@@ -39,6 +39,10 @@ public class WiremockRecordedRequestRetriver {
         isPatchRequestCalled(consumers, TIMEOUT, url);
     }
 
+    public void isDeleteRequestCalled(UrlPattern url) {
+        isDeleteRequestCalled(Collections.emptyList(), TIMEOUT, url);
+    }
+
     public void isGetRequestCalled(Long timeout, UrlPattern url) {
         RequestPatternBuilder requestPatternBuilder = getRequestedFor(url);
         WireMockFactory.get().retrieve(
@@ -74,6 +78,15 @@ public class WiremockRecordedRequestRetriver {
                 timeout);
     }
 
+    public void isDeleteRequestCalled(List<Consumer<RequestPatternBuilder>> consumers, Long timeout, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = deleteRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(1),
+                requestPatternBuilder,
+                timeout);
+    }
+
     public void isPatchRequestNotCalled(UrlPattern url) {
         isPatchRequestNotCalled(Collections.emptyList(), url);
     }
@@ -84,6 +97,10 @@ public class WiremockRecordedRequestRetriver {
 
     public void isPutRequestNotCalled(UrlPathPattern url) {
         isPutRequestNotCalled(Collections.emptyList(), url);
+    }
+
+    public void isDeleteRequestNotCalled(UrlPattern url) {
+        isDeleteRequestNotCalled(Collections.emptyList(), url);
     }
 
     public void isPatchRequestNotCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
@@ -115,6 +132,15 @@ public class WiremockRecordedRequestRetriver {
 
     public void isGetRequestNotCalled(UrlPattern url) {
         RequestPatternBuilder requestPatternBuilder = getRequestedFor(url);
+        WireMockFactory.get().retrieve(
+                WireMock.exactly(0),
+                requestPatternBuilder,
+                TIMEOUT);
+    }
+
+    public void isDeleteRequestNotCalled(List<Consumer<RequestPatternBuilder>> consumers, UrlPattern url) {
+        RequestPatternBuilder requestPatternBuilder = postRequestedFor(url);
+        consumers.forEach(c -> c.accept(requestPatternBuilder));
         WireMockFactory.get().retrieve(
                 WireMock.exactly(0),
                 requestPatternBuilder,

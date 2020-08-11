@@ -13,6 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class SealStub extends AbstractStubMapping {
     public static final String OLT_DPU_CONFIGURATION_TASK_URL = "/resource-order-resource-inventory/v1/olt/dpuConfigurationTask";
     public static final String DPU_DPU_CONFIGURATION_TASK_URL = "/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask";
+    public static final String DPU_DPU_DECONFIGURATION_TASK_URL = "/resource-order-resource-inventory/v1/dpu/dpuDeconfigurationTask";
     public static final String CONFIGURATION_ACCESS_NODES_URL = "/configuration/v1/accessNodes";
     public static final String CONFIGURATION_ACCESS_NODES_3SCALE_URL = "/resource-order-resource-inventory/v1/inventory-retrieval";
     public static final String CONFIGURATION_ACCESS_NODES_UNIVERSAL_URL = String.format("(%s|%s)/{name}/?", CONFIGURATION_ACCESS_NODES_URL, CONFIGURATION_ACCESS_NODES_3SCALE_URL);
@@ -47,6 +48,22 @@ public class SealStub extends AbstractStubMapping {
                 .willReturn(aDefaultResponseWithBody("", 202))
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.ancpDpuName=='%s')]", dpu.getEndSz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationMcpRequest(false))));
+    }
+
+    public MappingBuilder postDpuDpuDeconfiguration202(Dpu dpu) {
+        return post(urlPathEqualTo(DPU_DPU_DECONFIGURATION_TASK_URL))
+                .withName("postDpuDpuDeconfiguration202")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s')]", dpu.getEndSz().replace("/", "_"))))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuDeconfigurationMcpRequest(true))));
+    }
+
+    public MappingBuilder postDpuDpuDeconfiguration202CallbackError(Dpu dpu) {
+        return post(urlPathEqualTo(DPU_DPU_DECONFIGURATION_TASK_URL))
+                .withName("postDpuDpuDeconfiguration202CallbackError")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s')]", dpu.getEndSz().replace("/", "_"))))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuDeconfigurationMcpRequest(false))));
     }
 
     public MappingBuilder getAccessNodesConfiguration202(OltDevice oltDevice) {
