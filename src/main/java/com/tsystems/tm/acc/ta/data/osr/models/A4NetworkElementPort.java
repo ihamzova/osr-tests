@@ -10,5 +10,5 @@ public class A4NetworkElementPort {
     private String networkElementEndsz;
     private String networkElementUuid;
     private String type;
-
+    private String portNumber;
 }

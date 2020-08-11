@@ -7,3 +7,4 @@ values:
   networkElementEndsz: "" # if blank: field will be filled
   networkElementUuid: "" # if blank: field will be filled
   type: "10G_ETHERNET_PORT"
+  portNumber: "1"
