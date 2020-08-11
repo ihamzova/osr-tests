@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuDecommissioningRequest;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +44,24 @@ public class DpuCommissioningRobot {
         businessKey = response.getBusinessKey();
         return traceId;
     }
+
+    @Step("Start dpuDecommissioning")
+    public void startDecomissioningProcess(String endsz) {
+        dpuCommissioningClient = new DpuCommissioningClient();
+        StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
+        dpuDecommissioningRequest.setEndSZ(endsz);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+                .body(dpuDecommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        businessKey = response.getBusinessKey();
+    }
+
 
     @Step("get businessKey")
     public String getBusinessKey() {

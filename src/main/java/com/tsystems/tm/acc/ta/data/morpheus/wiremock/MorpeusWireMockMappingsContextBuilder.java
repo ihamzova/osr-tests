@@ -260,6 +260,14 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addDpuDecommissioningSuccess(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+       // addPostDeprovisioningDeviceStub(dpu, true);
+        return this;
+    }
+
     // 1_OLT_RI_GET_DeviceDPU.json
     public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceStub(Dpu dpu, boolean success) {
         if (success) {
@@ -439,4 +447,13 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         context.add(new OltResourceInventoryStub().patchDpuPort200(dpu));
         return this;
     }
+
+//    public MorpeusWireMockMappingsContextBuilder addPostDeprovisioningDeviceStub(Dpu dpu, boolean callbackSuccess) {
+//        if (callbackSuccess) {
+//            context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202(dpu));
+//        } else {
+//            context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202CallbackError(dpu));
+//        }
+//        return this;
+//    }
 }
