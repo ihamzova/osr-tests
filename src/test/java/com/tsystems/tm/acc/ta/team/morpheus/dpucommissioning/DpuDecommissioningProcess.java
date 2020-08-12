@@ -19,6 +19,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -62,11 +63,17 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }

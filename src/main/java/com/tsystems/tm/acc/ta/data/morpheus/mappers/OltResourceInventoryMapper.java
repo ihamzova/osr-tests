@@ -290,14 +290,14 @@ public class OltResourceInventoryMapper {
         } else {
             return new DpuEmsConfigurationDto()
                     .id(12345L)
-                    .ancpBngIpAddress("string")
-                    .ancpIpAddressSubnetMask("string")
-                    .ancpOwnIpAddress("string")
-                    .backhaulId("string")
+                    .ancpBngIpAddress("10.40.120.1")
+                    .ancpIpAddressSubnetMask("24")
+                    .ancpOwnIpAddress("10.40.120.1")
+                    .backhaulId("backhaulId01")
                     .configurationState("ACTIVE")
-                    .emsNbiName("string")
-                    .dpuEndsz("49/0002/0/71AA")
-                    .managementDomain("string")
+                    .emsNbiName("H805GPBD")
+                    .dpuEndsz("{{request.requestLine.query.dpuEndsz}}")
+                    .managementDomain("49_30_179_43G1")
                     .serialNumber("12345");
         }
     }

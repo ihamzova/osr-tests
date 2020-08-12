@@ -265,6 +265,8 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
         addPostDeprovisioningDeviceStub(dpu, true);
+        addGetDpuEmsConfigStub(dpu, true);
+        addPutDpuEmsConfigStub(dpu);
         return this;
     }
 
