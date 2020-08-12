@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.common;
+package com.tsystems.tm.acc.ta.data.upiter;
 
 public interface UpiterConstants {
     String LINE_ID_GENERATOR_MS = "line-id-generator";
@@ -12,4 +12,6 @@ public interface UpiterConstants {
     String GATEWAY_ROUTE_MS = "gateway-route";
     String ACCESS_LINE_BFF_PROXY_MS = "access-line-bff-proxy";
     String WG_A4_PROVISIONING_MS = "wg-a4-provisioning";
+    String ONT_OLT_ORCHESTRATOR_MS = "ont-olt-orchestrator";
+    String WIREMOCK_MS_NAME = "wiremock-acc";
 }

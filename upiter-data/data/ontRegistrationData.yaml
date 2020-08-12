@@ -19,3 +19,8 @@ values:
   oltDevice: "@EndSz_49_30_179_76H1"
   slotNumber: "3"
   portNumber: "0"
+---
+name: OntSerialNumber
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1234123412341234"

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog(ACCESS_MANAGEMENT_SUPPORT_UI_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)

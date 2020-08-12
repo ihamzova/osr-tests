@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static io.restassured.RestAssured.given;
 
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
@@ -183,7 +183,8 @@ public class OltProvisioning5600 extends BaseTest {
 
         long linesCount = isInactiveLines
                 ? accessLinesBeforeProvisioning.stream()
-                .filter(AccessLine -> AccessLine.getStatus().getValue().equals(STATUS_INACTIVE))
+                .filter(AccessLine -> AccessLine.getStatus().getValue()
+                        .equals(STATUS_INACTIVE))
                 .count()
                 : accessLinesBeforeProvisioning.size();
 
@@ -207,14 +208,20 @@ public class OltProvisioning5600 extends BaseTest {
         List<AccessLineDto> accessLinesAfterProvisioning = getAccessLines(port);
 
         long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-                .filter(Objects::nonNull).filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(Objects::nonNull).filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue()
+                        .equals(STATUS_ACTIVE))
+                .count();
 
         long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
                 .filter(Objects::nonNull).filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile
-                        .getState().getValue().equals(STATUS_ACTIVE)).count();
+                        .getState().getValue()
+                        .equals(STATUS_ACTIVE))
+                .count();
 
         long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
-                .filter(AccessLine -> AccessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
+                .filter(AccessLine -> AccessLine.getStatus().getValue()
+                        .equals(STATUS_WALLED_GARDEN))
+                .count();
 
         Assert.assertEquals(getLineIdPools(port).size(), port.getLineIdPool().intValue());
         Assert.assertEquals(getHomeIdPools(port).size(), port.getHomeIdPool().intValue());

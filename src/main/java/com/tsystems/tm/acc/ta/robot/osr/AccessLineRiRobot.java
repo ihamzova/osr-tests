@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
@@ -172,6 +172,20 @@ public class AccessLineRiRobot {
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertNotNull(line.get(0), "Access line is not found");
         return line.get(0).getStatus();
+    }
+
+    @Step("Get subscriber NE profile by LineId")
+    public SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
+        List<AccessLineDto> line = accessLineResourceInventory.accessLineInternalController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto()
+                        .lineId(lineId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertNotNull(line.get(0).getDefaultNeProfile(), "Default NE profile is null");
+        SubscriberNeProfileDto subscriberNeProfile = line.get(0).getDefaultNeProfile().getSubscriberNeProfile();
+        Assert.assertNotNull(subscriberNeProfile, "Subscriber NE profile is null");
+        return subscriberNeProfile;
     }
 }
