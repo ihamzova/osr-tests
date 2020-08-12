@@ -1,0 +1,16 @@
+---
+name: PostprovisioningStartEvent
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is started"
+  slotNumber: "3"
+  portNumber: "0"
+---
+name: PostprovisioningEndEvent
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is successfully completed"
+  slotNumber: "3"
+  portNumber: "0"

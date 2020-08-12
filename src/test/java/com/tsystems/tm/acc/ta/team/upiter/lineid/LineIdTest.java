@@ -20,9 +20,9 @@ import java.nio.file.Path;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.LINE_ID_GENERATOR_MS;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.LINE_ID_GENERATOR_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
