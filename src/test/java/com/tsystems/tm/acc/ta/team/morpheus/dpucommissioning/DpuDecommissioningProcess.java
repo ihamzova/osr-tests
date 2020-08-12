@@ -115,14 +115,14 @@ public class DpuDecommissioningProcess extends BaseTest {
                     .build()
                     .publish();
 
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             Thread.sleep(4000);
 
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
-            //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisioningPortCheckValuesDpu);
-            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
-
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
         }
     }
 
