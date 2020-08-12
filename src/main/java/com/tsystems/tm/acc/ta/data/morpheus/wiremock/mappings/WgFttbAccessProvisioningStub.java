@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.external.v1.cli
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.keycloak.common.util.StringSerialization.serialize;
 
 public class WgFttbAccessProvisioningStub extends AbstractStubMapping {
     public static final String DEVICE_PROVISIONING_URL = "/resource-order-resource-inventory/v1/fttbProvisioning/device";

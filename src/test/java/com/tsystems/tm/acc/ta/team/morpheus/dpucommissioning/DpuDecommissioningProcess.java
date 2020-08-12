@@ -19,11 +19,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
 
 public class DpuDecommissioningProcess extends BaseTest {
@@ -62,12 +65,15 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
-            //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
         }
     }
 
@@ -114,6 +120,31 @@ public class DpuDecommissioningProcess extends BaseTest {
             Thread.sleep(4000);
 
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            //dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisioningPortCheckValuesDpu);
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+
+        }
+    }
+
+    @Test(description = "Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    @Description("Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    public void dpuDecommissioningPostSealDpuEmsConfigCallbackError(){
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostSealDpuEmsDeconfigCallbackError);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPostSealDpuEmsConfigCallbackError")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostSealDpuEmsDeconfigCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
         }
     }
 
