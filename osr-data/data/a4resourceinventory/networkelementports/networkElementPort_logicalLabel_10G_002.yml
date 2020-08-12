@@ -4,7 +4,4 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NEP
   operationalState: "WORKING"
   functionalPortLabel: "10G_002"
-  networkElementEndsz: "" # if blank: field will be filled
-  networkElementUuid: "" # if blank: field will be filled
   type: "10G_ETHERNET_PORT"
-  portNumber: "2"

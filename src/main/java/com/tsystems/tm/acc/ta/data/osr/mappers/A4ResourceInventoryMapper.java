@@ -6,7 +6,10 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot.getPortNumberByFunctionalPortLabel;
+
 public class A4ResourceInventoryMapper {
+
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
             neData.setUuid(UUID.randomUUID().toString());
@@ -59,8 +62,10 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
+
         if (nelData.getLbz().isEmpty())
             nelData.setLbz("NEL-lbz-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+
         if (nelData.getUeWegId().isEmpty())
             nelData.setUeWegId("NEL-ueWegId-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
@@ -80,26 +85,11 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementPortDto getNetworkElementPortDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
-
-        String portNumber = UUID.randomUUID().toString().substring(0, 4);
-
         if (nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
-        if (nepData.getPortNumber().isEmpty())
-            nepData.setPortNumber(portNumber);
-
         if (nepData.getFunctionalPortLabel().isEmpty())
-            nepData.setFunctionalPortLabel("LogicalLabel_" + portNumber);
-
-        if (nepData.getNetworkElementEndsz().isEmpty())
-            nepData.setNetworkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ));
-
-
-
-        if (nepData.getNetworkElementUuid().isEmpty())
-            nepData.setNetworkElementUuid(neData.getUuid());
-
+            nepData.setFunctionalPortLabel("LogicalLabel_" + UUID.randomUUID().toString().substring(0, 4));
 
         if (nepData.getType().isEmpty())
             nepData.setType("role");
@@ -108,17 +98,16 @@ public class A4ResourceInventoryMapper {
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
+                .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
                 .logicalLabel(nepData.getFunctionalPortLabel())
+                .portNumber(getPortNumberByFunctionalPortLabel(nepData.getFunctionalPortLabel()))
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
                 .type(nepData.getType())
-                .networkElementEndsz(nepData.getNetworkElementEndsz())
                 .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now())
-                .portNumber(nepData.getPortNumber());
+                .lastUpdateTime(OffsetDateTime.now());
     }
-
 
     public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         if (tpData.getUuid().isEmpty())
@@ -143,6 +132,7 @@ public class A4ResourceInventoryMapper {
 
         if(nspData.getLineId().isEmpty())
             nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+
         if(nspData.getOntSerialNumber().isEmpty())
             nspData.setOntSerialNumber("ONTSERIALNUMBER-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
@@ -163,8 +153,8 @@ public class A4ResourceInventoryMapper {
                 .creationTime(OffsetDateTime.now());
     }
 
-
     private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
         return Vpsz.concat("/").concat(Fsz);
     }
+
 }
