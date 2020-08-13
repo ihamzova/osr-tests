@@ -162,11 +162,23 @@ public class AccessLineRiRobot {
                 .portNumber(accessLine.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(homeIdPool.size(), 31, "Home ids in a pool count");
+        Assert.assertEquals(homeIdPool.get(0).getStatus(), HomeIdDto.StatusEnum.FREE);
         return homeIdPool.get(0).getHomeId();
     }
 
+    @Step("Get homeID state")
+    public HomeIdDto.StatusEnum getHomeIdStateByHomeId(String homeId) {
+        List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdInternalController()
+                .searchHomeIds()
+                .body(new SearchHomeIdDto()
+                        .homeId(homeId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertNotNull(homeIdPool.get(0), "HomeId is not found");
+        return homeIdPool.get(0).getStatus();
+    }
+
     @Step("Get access line state by LineId")
-    public AccessLineDto.StatusEnum getLineIdStateByLineId(String lineId) {
+    public AccessLineDto.StatusEnum getAccessLineStateByLineId(String lineId) {
         List<AccessLineDto> line = accessLineResourceInventory.accessLineInternalController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
@@ -174,6 +186,16 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertNotNull(line.get(0), "Access line is not found");
         return line.get(0).getStatus();
+    }
+
+    @Step("Get lineId state by LineId")
+    public LineIdDto.StatusEnum getLineIdStateByLineId(String lineId) {
+        List<LineIdDto> lineIdPool = accessLineResourceInventory.lineIdController()
+                .searchLineIds()
+                .body(new SearchLineIdDto().lineId(lineId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertNotNull(lineIdPool.get(0), "lineId is not found in pool");
+        return lineIdPool.get(0).getStatus();
     }
 
     @Step("Get subscriber NE profile by LineId")
