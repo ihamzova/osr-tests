@@ -327,7 +327,12 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    //TODO add params
+    public void checkDeleteDpuEmsConfigurationCalled(){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
+    }
+
+    @Step
     public void checkDeleteDpuEmsConfigurationNotCalled(){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));

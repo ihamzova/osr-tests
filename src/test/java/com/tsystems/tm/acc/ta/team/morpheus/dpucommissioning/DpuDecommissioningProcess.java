@@ -79,8 +79,8 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
-            //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkDeleteDpuEmsConfigurationCalled();
         }
     }
 
@@ -151,6 +151,34 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning without errors, DpuEmsConfiguration exists")
+    @Description("Use case: DpuEmsConfiguration exists")
+    public void dpuDecommissioningDpuEmsConfigDoesntExist() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositive")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningDpuEmsConfigDoesntExist(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
         }
     }

@@ -218,6 +218,14 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.dpuEndsz=='%s')]", dpu.getEndSz())));
     }
 
+    public MappingBuilder deleteDpuEmsConf201() {
+        return delete(urlMatching(DPU_EMS_CONFIGURATION_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        201
+                ))
+                .withName("deleteDpuEmsConf201");
+    }
+
     private String serialize(Object obj) {
         JSON json = new JSON();
         json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_LOCAL_DATE_TIME);

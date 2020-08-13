@@ -267,8 +267,8 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPostDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
-        addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
+        addDeleteDpuEmsConfigStub();
         return this;
     }
 
@@ -279,6 +279,15 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPostDeprovisioningDeviceStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,false);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addDpuDecommissioningDpuEmsConfigDoesntExist(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addPostDeprovisioningDeviceStub(dpu, true);
+        addGetDpuEmsConfigStub(dpu, false);
         return this;
     }
 
@@ -479,6 +488,11 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         } else {
             context.add(new SealStub().postDpuDpuDeconfiguration202CallbackError(dpu));
         }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addDeleteDpuEmsConfigStub(){
+        context.add(new OltResourceInventoryStub().deleteDpuEmsConf201());
         return this;
     }
 }
