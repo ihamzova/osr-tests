@@ -267,6 +267,18 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPostDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
+        addPutDpuEmsConfigStub(dpu);
+        addSealPostDpuDeconfStub(dpu,true);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addAllForPostSealDpuEmsDeconfigCallbackError(OltDevice olt, Dpu dpu){
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addPostDeprovisioningDeviceStub(dpu, true);
+        addPutDpuEmsConfigStub(dpu);
+        addSealPostDpuDeconfStub(dpu,false);
         return this;
     }
 
@@ -450,11 +462,22 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    //4_Aid_DeprovisionFTTBaccessprovisioningDPU
     public MorpeusWireMockMappingsContextBuilder addPostDeprovisioningDeviceStub(Dpu dpu, boolean callbackSuccess) {
         if (callbackSuccess) {
             context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202(dpu));
         } else {
             context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202CallbackError(dpu));
+        }
+        return this;
+    }
+
+    // 6_Aid_deconfigureDpuEmsConfinEMS
+    public MorpeusWireMockMappingsContextBuilder addSealPostDpuDeconfStub(Dpu dpu, boolean callbackSuccess) {
+        if (callbackSuccess) {
+            context.add(new SealStub().postDpuDpuDeconfiguration202(dpu));
+        } else {
+            context.add(new SealStub().postDpuDpuDeconfiguration202CallbackError(dpu));
         }
         return this;
     }

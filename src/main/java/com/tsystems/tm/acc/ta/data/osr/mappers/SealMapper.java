@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.seal.client.model.*;
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.model.CallbackV1DpuConfigurationMcpRequest;
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.model.CallbackV1DpuConfigurationOltRequest;
+import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.model.CallbackV1DpuDeconfigurationMcpRequest;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -48,6 +49,20 @@ public class SealMapper {
                     .message("successfully executed");
         } else {
             return new CallbackV1DpuConfigurationMcpRequest()
+                    .status(BigDecimal.valueOf(5000))
+                    .statustype("ERROR")
+                    .message("These arent the droids youre looking for");
+        }
+    }
+
+    public CallbackV1DpuDeconfigurationMcpRequest getCallbackV1DpuDeconfigurationMcpRequest(boolean success) {
+        if (success) {
+            return new CallbackV1DpuDeconfigurationMcpRequest()
+                    .status(BigDecimal.valueOf(2000))
+                    .statustype("SUCCESS")
+                    .message("successfully executed");
+        } else {
+            return new CallbackV1DpuDeconfigurationMcpRequest()
                     .status(BigDecimal.valueOf(5000))
                     .statustype("ERROR")
                     .message("These arent the droids youre looking for");
