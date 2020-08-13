@@ -220,7 +220,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
 
     private String serialize(Object obj) {
         JSON json = new JSON();
-        json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
         return json.serialize(obj);
     }
