@@ -14,6 +14,7 @@
     <test thread-count="1" name="Ont commissioning Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.AccessLineReservationByPortAndHomeId"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.DGFaccessLineReservation"/>
         </classes>
     </test>
     <test thread-count="1" name="HomeId, LineId and Provisioning(for 5600 and 5800 devices) Backend Tests">
