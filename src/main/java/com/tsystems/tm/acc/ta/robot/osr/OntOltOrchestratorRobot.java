@@ -136,7 +136,8 @@ public class OntOltOrchestratorRobot {
     }
 
     @Step("Reserving new access line by homeId")
-    public void reserveAccessLineTask(HomeIdDto homeIdDto) {
+    public String reserveAccessLineTask(HomeIdDto homeIdDto) {
+        CORRELATION_ID = UUID.randomUUID().toString();
         ontOltOrchestratorClient
                 .getClient()
                 .ontOltOrchestratorV2()
@@ -152,5 +153,10 @@ public class OntOltOrchestratorRobot {
                         .toString())
                 .body(homeIdDto)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+
+        ReserveLineByHomeIdResultV2 result = new JSON()
+                .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), ReserveLineByHomeIdResultV2.class);
+
+        return result.getResponse().getLineId();
     }
 }
