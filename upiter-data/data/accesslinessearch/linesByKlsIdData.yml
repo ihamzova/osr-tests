@@ -1,0 +1,4 @@
+name: linesByKlsId
+template: com.tsystems.tm.acc.ta.data.osr.models.Address
+values:
+  klsId: "14653"

@@ -12,13 +12,9 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
 
 public class AccessLineRiRobot {
-    private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final String STATUS_ACTIVE = "ACTIVE";
-    private static final String STATUS_WALLED_GARDEN = "WALLED_GARDEN";
-    private static final String SLOT = "3";
-
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
 
     @Step("Clear database with test data")
@@ -150,7 +146,7 @@ public class AccessLineRiRobot {
                 .body(new SearchAllocatedOnuIdDto()
                         .oltEndSz(port.getEndSz())
                         .portNumber(portNumber)
-                        .slotNumber(SLOT))
+                        .slotNumber(port.getSlotNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 

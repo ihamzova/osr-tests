@@ -1,11 +1,12 @@
 package com.tsystems.tm.acc.ta.team.upiter.deprovisioning;
 
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
@@ -37,13 +38,13 @@ public class DeprovisioningTest extends BaseTest {
     private PortProvisioning portDepr;
     private PortProvisioning cardDepr;
     private PortProvisioning deviceDepr;
+    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
 
-        OsrTestContext context = OsrTestContext.get();
         portDepr = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioning);
         cardDepr = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.cardDeprovisioning);
         deviceDepr = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceDepovisioning);
