@@ -1,13 +1,14 @@
 package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
@@ -48,13 +49,14 @@ public class OltProvisioning5800 extends BaseTest {
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private PortProvisioning portEmpty;
+    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
         accessLineRiRobot = new AccessLineRiRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
-        portEmpty = OsrTestContext.get().getData()
+        portEmpty = context.getData()
                 .getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.portEmpty5800);
     }
