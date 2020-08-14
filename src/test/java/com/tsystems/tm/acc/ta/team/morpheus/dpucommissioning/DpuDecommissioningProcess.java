@@ -12,9 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.olt.discovery.external.v1_2_0.client.model.Device;
 import io.qameta.allure.Description;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -22,11 +20,9 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
 
 public class DpuDecommissioningProcess extends BaseTest {
@@ -81,6 +77,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkDeleteDpuEmsConfigurationCalled();
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
         }
     }
 
@@ -105,8 +104,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            //dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
-            //dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
         }
     }
 
@@ -180,6 +178,34 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning without errors, DpuOltConfiguration exists")
+    @Description("Use case: DpuOltConfiguration exists")
+    public void dpuDecommissioningDpuOltConfigDoesntExist() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositive")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningDpuOltConfigDoesntExist(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOLTCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostSEALDpuOltDEConfigNotCalled(dpuSealAtOLTCheckValuesDpu);
+            //dpuCommissioningRobot.checkReleaseONUIDNotCalled();
         }
     }
 
