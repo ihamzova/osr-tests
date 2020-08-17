@@ -17,7 +17,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 @Slf4j
 public class A4StartPage {
     public static final String APP = "a4-resource-inventory-ui";
-    public static final String ENDPOINT = "a4-resource-inventory-ui/portal";
+    public static final String ENDPOINT = "a4-resource-inventory-ui";
 
     public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("//h2[contains(text(),'A4 Resource Inventory Portal')]");
     public static final By TO_INSTALLATION_BUTTON = By.id("btnInstallation");
