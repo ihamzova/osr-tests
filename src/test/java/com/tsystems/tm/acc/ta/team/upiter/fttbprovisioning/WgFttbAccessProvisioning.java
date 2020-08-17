@@ -39,10 +39,10 @@ public class WgFttbAccessProvisioning extends BaseTest {
         accessLineRiRobot.fillDatabaseForDpuPreprovisioning();
     }
 
-//    @AfterMethod
-//    public void clearData() {
-//        accessLineRiRobot.clearDatabase();
-//    }
+    @AfterMethod
+    public void clearData() {
+        accessLineRiRobot.clearDatabase();
+    }
 
     @BeforeClass
     public void init() {

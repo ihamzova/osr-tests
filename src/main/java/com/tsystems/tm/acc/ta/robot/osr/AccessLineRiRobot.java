@@ -8,10 +8,10 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.cli
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -103,6 +103,9 @@ public class AccessLineRiRobot {
         long countAccessLinesWG = accessLines.stream()
                 .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
+        List<Integer> expectedOnuIdsList = IntStream.rangeClosed(1, numberOfAccessLinesForProvisioning)
+                .mapToObj(Integer::valueOf).collect(Collectors.toList());
+
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
                 map(OnuAccessId::getOnuAccessId).collect(Collectors.toList());
         Collections.sort(onuAccessIds);
@@ -113,7 +116,7 @@ public class AccessLineRiRobot {
                 "Default NetworkLine Profile count is incorrect");
         Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
                 "WG AccessLines count is incorrect");
-        Assert.assertEquals(onuAccessIds, calculateExpectedOnuAccessIds(numberOfAccessLinesForProvisioning),
+        Assert.assertEquals(onuAccessIds, expectedOnuIdsList,
                 "OnuAccessIds are incorrect");
     }
 
