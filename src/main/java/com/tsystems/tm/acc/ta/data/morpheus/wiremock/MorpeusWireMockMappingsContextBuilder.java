@@ -269,6 +269,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
         addDeleteDpuEmsConfigStub();
+        addPostReleaseOnuIdTask(olt, true);
         return this;
     }
 
@@ -494,6 +495,15 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
 
     public MorpeusWireMockMappingsContextBuilder addDeleteDpuEmsConfigStub(){
         context.add(new OltResourceInventoryStub().deleteDpuEmsConf201());
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPostReleaseOnuIdTask(OltDevice olt, boolean success){
+        if (success) {
+            context.add(new AccessLineManagementStub().postReleaseOnuIdTask200(olt));
+        } else {
+            context.add(new AccessLineManagementStub().postReleaseOnuIdTask400(olt));
+        }
         return this;
     }
 }

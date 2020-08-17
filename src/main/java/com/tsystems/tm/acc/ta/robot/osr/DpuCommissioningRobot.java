@@ -338,4 +338,16 @@ public class DpuCommissioningRobot {
         wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
     }
 
+    @Step
+    public void checkPostReleaseOnuIdTaskCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/releaseOnuIdTask"));
+    }
+
+    @Step
+    public void checkPostReleaseOnuIdTaskNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/releaseOnuIdTask"));
+    }
+
 }
