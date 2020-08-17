@@ -44,7 +44,7 @@ public class DGFaccessLineReservation extends BaseTest {
     public void init() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
-        accessLineRiRobot.fillDatabase();
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 
     @AfterClass

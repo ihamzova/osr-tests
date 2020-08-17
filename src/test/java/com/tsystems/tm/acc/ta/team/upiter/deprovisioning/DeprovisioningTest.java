@@ -53,7 +53,7 @@ public class DeprovisioningTest extends BaseTest {
     @BeforeMethod
     public void prepareData() {
         accessLineRiRobot.clearDatabase();
-        accessLineRiRobot.fillDatabase();
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 
     @AfterMethod
