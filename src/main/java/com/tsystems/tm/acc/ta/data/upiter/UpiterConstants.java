@@ -14,4 +14,5 @@ public interface UpiterConstants {
     String WG_A4_PROVISIONING_MS = "wg-a4-provisioning";
     String ONT_OLT_ORCHESTRATOR_MS = "ont-olt-orchestrator";
     String WIREMOCK_MS_NAME = "wiremock-acc";
+    String WG_FTTB_ACCESS_PROVISIONING_MS = "wg-fttb-access-provisioning";
 }

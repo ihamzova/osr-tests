@@ -232,6 +232,6 @@ public class AccessLinesSearchTest extends BaseTest {
 
     private void prepareData() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
-        accessLineRiRobot.fillDatabase();
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 }

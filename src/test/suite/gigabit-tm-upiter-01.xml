@@ -23,6 +23,12 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5800"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
+        </classes>
+    </test>
+    <test thread-count="1" name="FTTB Provisioning Backend Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
         </classes>
     </test>
 </suite>

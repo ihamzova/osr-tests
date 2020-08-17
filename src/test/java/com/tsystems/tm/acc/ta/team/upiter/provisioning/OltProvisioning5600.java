@@ -63,7 +63,7 @@ public class OltProvisioning5600 extends BaseTest {
         overallLatency = 0;
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
-        accessLineRiRobot.fillDatabase();
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 
     @AfterMethod
