@@ -269,6 +269,10 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
         addDeleteDpuEmsConfigStub();
+        addGetDpuAtOltConfigStub(dpu, true);
+        addPutDpuAtOltConfigStub(dpu);
+        addSealPostDpuOltDeconfStub(dpu, true);
+        addDeleteDpuOltConfigStub();
         addPostReleaseOnuIdTask(olt, true);
         return this;
     }
@@ -284,12 +288,37 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addAllForPostSealDpuOltDeconfigCallbackError(OltDevice olt, Dpu dpu){
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addPostDeprovisioningDeviceStub(dpu, true);
+        addGetDpuEmsConfigStub(dpu, true);
+        addPutDpuEmsConfigStub(dpu);
+        addSealPostDpuDeconfStub(dpu,true);
+        addDeleteDpuEmsConfigStub();
+        addGetDpuAtOltConfigStub(dpu, true);
+        addPutDpuAtOltConfigStub(dpu);
+        addSealPostDpuOltDeconfStub(dpu, false);
+        return this;
+    }
+
     public MorpeusWireMockMappingsContextBuilder addDpuDecommissioningDpuEmsConfigDoesntExist(OltDevice olt, Dpu dpu) {
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
         addPostDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, false);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addDpuDecommissioningDpuOltConfigDoesntExist(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addPostDeprovisioningDeviceStub(dpu, true);
+        addGetDpuEmsConfigStub(dpu, false);
+        addGetDpuAtOltConfigStub(dpu,false);
         return this;
     }
 
@@ -493,6 +522,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    //8_Aid_DeleteDpuEmsConfiguration
     public MorpeusWireMockMappingsContextBuilder addDeleteDpuEmsConfigStub(){
         context.add(new OltResourceInventoryStub().deleteDpuEmsConf201());
         return this;
@@ -504,6 +534,22 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         } else {
             context.add(new AccessLineManagementStub().postReleaseOnuIdTask400(olt));
         }
+        return this;
+    }
+
+    // 9_Aid_deconfigureDpuOltConfing
+    public MorpeusWireMockMappingsContextBuilder addSealPostDpuOltDeconfStub(Dpu dpu, boolean callbackSuccess) {
+        if (callbackSuccess) {
+            context.add(new SealStub().postDpuOltDeconfiguration202(dpu));
+        } else {
+            context.add(new SealStub().postDpuOltDeconfiguration202CallbackError(dpu));
+        }
+        return this;
+    }
+
+    //12_Aid_deleteDpuAtOltConfiguration
+    public MorpeusWireMockMappingsContextBuilder addDeleteDpuOltConfigStub(){
+        context.add(new OltResourceInventoryStub().deleteDpuOltConf201());
         return this;
     }
 }

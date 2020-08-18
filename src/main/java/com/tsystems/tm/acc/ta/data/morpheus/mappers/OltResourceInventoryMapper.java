@@ -244,7 +244,7 @@ public class OltResourceInventoryMapper {
                 .portNumber("string");
     }
 
-    public DpuAtOltConfigurationDto getDpuAtOltConfigurationDto(boolean valuesInRequest) {
+    public DpuAtOltConfigurationDto getDpuAtOltConfigurationDto(boolean valuesInRequest, String dpuEndsz) {
         if (valuesInRequest) {
             return new DpuAtOltConfigurationDto()
                     .id(12345L)
@@ -261,7 +261,7 @@ public class OltResourceInventoryMapper {
         } else {
             return new DpuAtOltConfigurationDto()
                     .id(12345L)
-                    .dpuEndsz("49/0001/0/71AA")
+                    .dpuEndsz(dpuEndsz)
                     .backhaulId("blackhole")
                     .onuId(12345)
                     .configurationState("ACTIVE")

@@ -135,7 +135,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .willReturn(aDefaultResponseWithBody(
                         serialize(
                                 Collections.singletonList(
-                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false)
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false, dpu.getEndSz())
                                 )
                         ),
                         200
@@ -158,7 +158,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
         return post(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .withName("postDpuAtOltConf200")
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true)),
+                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true, dpu.getEndSz())),
                         200
                 ))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.dpuEndsz=='%s')]", dpu.getEndSz())));
@@ -167,7 +167,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
     public MappingBuilder putDpuAtOltConf200(Dpu dpu) {
         return put(urlMatching(DPU_AT_OLT_CONF_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true)),
+                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true, dpu.getEndSz())),
                         200
                 ))
                 .withName("putDpuAtOltConf200")
@@ -224,6 +224,14 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                         201
                 ))
                 .withName("deleteDpuEmsConf201");
+    }
+
+    public MappingBuilder deleteDpuOltConf201() {
+        return delete(urlMatching(DPU_AT_OLT_CONF_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        201
+                ))
+                .withName("deleteDpuOltConf201");
     }
 
     private String serialize(Object obj) {
