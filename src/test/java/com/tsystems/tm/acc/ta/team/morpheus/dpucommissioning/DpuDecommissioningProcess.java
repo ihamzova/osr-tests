@@ -80,6 +80,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
         }
     }
 
@@ -150,6 +151,28 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
+        }
+    }
+
+    @Test(description = "Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    @Description("Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    public void dpuDecommissioningPostSealDpuOltConfigCallbackError(){
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostSealDpuAtOltDeconfigCallbackError);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPostSealDpuOltConfigCallbackError")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostSealDpuOltDeconfigCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            //dpuCommissioningRobot.checkReleaseONUIDNotCalled();
         }
     }
 

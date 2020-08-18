@@ -1,0 +1,5 @@
+name: PostSealDpuAtOltDeconfigCallbackError
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/8571/0/71GQ"
+  onuId: 12345678
