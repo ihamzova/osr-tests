@@ -92,7 +92,7 @@ public class A4ResourceInventoryMapper {
             nepData.setFunctionalPortLabel("GPON_" + UUID.randomUUID().toString().substring(0, 4));
 
         if (nepData.getType().isEmpty())
-            nepData.setType("role");
+            nepData.setType("GPON");
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
