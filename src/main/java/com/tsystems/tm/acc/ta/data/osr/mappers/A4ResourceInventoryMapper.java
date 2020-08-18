@@ -89,7 +89,7 @@ public class A4ResourceInventoryMapper {
             nepData.setUuid(UUID.randomUUID().toString());
 
         if (nepData.getFunctionalPortLabel().isEmpty())
-            nepData.setFunctionalPortLabel(UUID.randomUUID().toString().substring(0, 4));
+            nepData.setFunctionalPortLabel("GPON_" + UUID.randomUUID().toString().substring(0, 4));
 
         if (nepData.getType().isEmpty())
             nepData.setType("role");
