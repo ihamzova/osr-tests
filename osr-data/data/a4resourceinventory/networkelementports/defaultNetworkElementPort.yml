@@ -4,4 +4,4 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NEP
   operationalState: "WORKING"
   functionalPortLabel: "GPON_${scope, global.a4Provisioning.portNumber}"
-  type: "" # if blank: field will be filled
+  type: "GPON" # if blank: field will be filled
