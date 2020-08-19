@@ -68,6 +68,12 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
@@ -80,6 +86,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
         }
     }
@@ -170,9 +177,15 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
-            //dpuCommissioningRobot.checkReleaseONUIDNotCalled();
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskNotCalled(releaseOnuIdTaskValues);
         }
     }
 
@@ -183,7 +196,7 @@ public class DpuDecommissioningProcess extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
 
-        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositive")){
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningDpuEmsConfigDoesntExist")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningDpuEmsConfigDoesntExist(olt, dpu)
                     .build()
@@ -211,7 +224,7 @@ public class DpuDecommissioningProcess extends BaseTest {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
 
-        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositive")){
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningDpuOltConfigDoesntExist")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningDpuOltConfigDoesntExist(olt, dpu)
                     .build()
@@ -224,11 +237,42 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtOLTCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigNotCalled(dpuSealAtOLTCheckValuesDpu);
-            //dpuCommissioningRobot.checkReleaseONUIDNotCalled();
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskNotCalled(releaseOnuIdTaskValues);
+        }
+    }
+
+    @Test(description = "Negative case. Post ReleaseOnuIdTask returned 400")
+    @Description("Negative case. Post ReleaseOnuIdTask returned 400")
+    public void dpuDecommissioningReleaseOnuIdTask400() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningReleaseOnuIdTask400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
+            dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
         }
     }
 

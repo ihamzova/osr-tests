@@ -34,14 +34,14 @@ public class AccessLineManagementStub extends AbstractStubMapping {
     }
 
     public MappingBuilder postReleaseOnuIdTask200(OltDevice olt) {
-        return post(urlEqualTo(ASSIGN_ONU_ID_TASK_URL))
+        return post(urlEqualTo(RELEASE_ONU_ID_TASK_URL))
                 .willReturn(aDefaultResponseWithBody(null,200))
                 .withName("postReleaseOnuIdTask200")
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.oltEndSz=='%s')]", olt.getEndsz())));
     }
 
     public MappingBuilder postReleaseOnuIdTask400(OltDevice olt) {
-        return post(urlEqualTo(ASSIGN_ONU_ID_TASK_URL))
+        return post(urlEqualTo(RELEASE_ONU_ID_TASK_URL))
                 .willReturn(aDefaultResponseWithBody(null,400))
                 .withName("postReleaseOnuIdTask400")
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.oltEndSz=='%s')]", olt.getEndsz())));
