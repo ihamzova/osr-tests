@@ -52,7 +52,8 @@ public class A4ResourceInventoryMapper {
                 .specificationVersion("1")
                 .operationalState(negData.getOperationalState())
                 .name(negData.getName())
-                .lifecycleState(negData.getLifecycleState())
+//                .lifecycleState(negData.getLifecycleState())
+                .lifeCycleState(negData.getLifecycleState())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NEG created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
@@ -104,7 +105,8 @@ public class A4ResourceInventoryMapper {
                 .accessNetworkOperator("NetOp")
                 .administrativeState("ACTIVATED")
                 .operationalState(nepData.getOperationalState())
-                .type(nepData.getType())
+//                .type(nepData.getType())
+                .role(nepData.getType())
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }
