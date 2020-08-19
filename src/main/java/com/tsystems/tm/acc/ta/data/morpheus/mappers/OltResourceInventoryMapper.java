@@ -244,7 +244,7 @@ public class OltResourceInventoryMapper {
                 .portNumber("string");
     }
 
-    public DpuAtOltConfigurationDto getDpuAtOltConfigurationDto(boolean valuesInRequest) {
+    public DpuAtOltConfigurationDto getDpuAtOltConfigurationDto(boolean valuesInRequest, OltDevice olt, Dpu dpu) {
         if (valuesInRequest) {
             return new DpuAtOltConfigurationDto()
                     .id(12345L)
@@ -261,16 +261,16 @@ public class OltResourceInventoryMapper {
         } else {
             return new DpuAtOltConfigurationDto()
                     .id(12345L)
-                    .dpuEndsz("49/0001/0/71AA")
-                    .backhaulId("blackhole")
+                    .dpuEndsz(dpu.getEndSz())
+                    .backhaulId("backhaulId01")
                     .onuId(12345)
                     .configurationState("ACTIVE")
-                    .serialNumber("111")
-                    .oltEndsz("49/40/179/76H1")
-                    .oltPonSlot("5")
-                    .oltPonPort("5")
-                    .oltUplinkSlot("5")
-                    .oltUplinkPort("5");
+                    .serialNumber("48AB541118CC5191")
+                    .oltEndsz(olt.getEndsz())
+                    .oltPonSlot(olt.getOltSlot())
+                    .oltPonPort(olt.getOltPort())
+                    .oltUplinkSlot(olt.getUplinkSlot())
+                    .oltUplinkPort(olt.getUplinkPort());
         }
     }
 
@@ -290,15 +290,15 @@ public class OltResourceInventoryMapper {
         } else {
             return new DpuEmsConfigurationDto()
                     .id(12345L)
-                    .ancpBngIpAddress("string")
-                    .ancpIpAddressSubnetMask("string")
-                    .ancpOwnIpAddress("string")
-                    .backhaulId("string")
+                    .ancpBngIpAddress("10.40.120.1")
+                    .ancpIpAddressSubnetMask("24")
+                    .ancpOwnIpAddress("10.40.120.1")
+                    .backhaulId("backhaulId01")
                     .configurationState("ACTIVE")
-                    .emsNbiName("string")
-                    .dpuEndsz("49/0002/0/71AA")
-                    .managementDomain("string")
-                    .serialNumber("12345");
+                    .emsNbiName("H805GPBD")
+                    .dpuEndsz("{{request.requestLine.query.dpuEndsz}}")
+                    .managementDomain("49_30_179_43G1")
+                    .serialNumber("48AB541118CC5191");
         }
     }
 }

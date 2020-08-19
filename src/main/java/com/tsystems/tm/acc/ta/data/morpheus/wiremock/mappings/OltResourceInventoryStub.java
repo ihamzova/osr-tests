@@ -130,12 +130,12 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("endsz", equalTo(olt.getEndsz()));
     }
 
-    public MappingBuilder getDpuAtOltConfExist200(Dpu dpu) {
+    public MappingBuilder getDpuAtOltConfExist200(Dpu dpu, OltDevice olt) {
         return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .willReturn(aDefaultResponseWithBody(
                         serialize(
                                 Collections.singletonList(
-                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false)
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false, olt, dpu)
                                 )
                         ),
                         200
@@ -154,20 +154,20 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("dpuEndsz", equalTo(dpu.getEndSz()));
     }
 
-    public MappingBuilder postDpuAtOltConf200(Dpu dpu) {
+    public MappingBuilder postDpuAtOltConf200(Dpu dpu, OltDevice olt) {
         return post(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .withName("postDpuAtOltConf200")
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true)),
+                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true,  olt, dpu)),
                         200
                 ))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.dpuEndsz=='%s')]", dpu.getEndSz())));
     }
 
-    public MappingBuilder putDpuAtOltConf200(Dpu dpu) {
+    public MappingBuilder putDpuAtOltConf200(Dpu dpu, OltDevice olt) {
         return put(urlMatching(DPU_AT_OLT_CONF_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true)),
+                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true, olt, dpu)),
                         200
                 ))
                 .withName("putDpuAtOltConf200")
@@ -218,9 +218,25 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.dpuEndsz=='%s')]", dpu.getEndSz())));
     }
 
+    public MappingBuilder deleteDpuEmsConf201() {
+        return delete(urlMatching(DPU_EMS_CONFIGURATION_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        201
+                ))
+                .withName("deleteDpuEmsConf201");
+    }
+
+    public MappingBuilder deleteDpuOltConf201() {
+        return delete(urlMatching(DPU_AT_OLT_CONF_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        201
+                ))
+                .withName("deleteDpuOltConf201");
+    }
+
     private String serialize(Object obj) {
         JSON json = new JSON();
-        json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
         return json.serialize(obj);
     }

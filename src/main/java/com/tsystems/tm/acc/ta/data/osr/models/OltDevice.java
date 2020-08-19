@@ -29,6 +29,8 @@ public class OltDevice {
     private String ipAdresse;
     private String oltSlot;
     private String oltPort;
+    private String uplinkSlot;
+    private String uplinkPort;
 
     @Override
     public String toString() {
