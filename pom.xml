@@ -6,17 +6,17 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>771.5</version>
+    <version>781.1</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.1.63.3</version>
+        <version>0.1.63.12</version>
     </parent>
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.38</osr.models.version>
+        <osr.models.version>0.0.44</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
@@ -68,10 +68,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tsystems.tm.acc</groupId>
-            <artifactId>wiremock-acc</artifactId>
         </dependency>
     </dependencies>
 

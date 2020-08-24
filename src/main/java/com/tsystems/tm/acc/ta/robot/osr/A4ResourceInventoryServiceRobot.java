@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
-import com.tsystems.tm.acc.ta.data.osr.generators.A4TerminationPointGenerator;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
@@ -24,9 +24,8 @@ public class A4ResourceInventoryServiceRobot {
 
     @Step("Create Termination Point represented as Logical Resource")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        A4TerminationPointGenerator a4TerminationPointGenerator = new A4TerminationPointGenerator();
-        LogicalResourceUpdate terminationPointLogicalResource = a4TerminationPointGenerator
-                .generateAsLogicalResource(tpData, nepData);
+        LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(tpData, nepData);
 
         a4ResourceInventoryService
                 .logicalResource()

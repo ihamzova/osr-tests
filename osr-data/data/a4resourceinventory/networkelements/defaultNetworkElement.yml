@@ -8,5 +8,5 @@ values:
   category: "OLT"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "A4_SPINE-Switch_v1"
+  type: "A4_OLT_v1"
   plannedMatNr: "123456" # if psl called will be overwritten

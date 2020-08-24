@@ -1,8 +1,0 @@
-name: linesByHomeId
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  endSz: ""
-  slotNumber: ""
-  portNumber: ""
-  homeId: "0037WT1"
-  lineId: ""

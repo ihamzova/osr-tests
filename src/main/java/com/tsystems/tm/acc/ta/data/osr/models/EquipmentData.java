@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class EquipmentData {
-    String pslWiremockUuid;
     String submt;
     String klsId;
 }

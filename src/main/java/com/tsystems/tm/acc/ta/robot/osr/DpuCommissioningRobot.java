@@ -1,23 +1,19 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
-import com.tsystems.tm.acc.ta.data.osr.generators.DpuCommissioningGenerator;
-import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
-import com.tsystems.tm.acc.ta.helpers.WiremockHelper;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuDecommissioningRequest;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.testng.Assert;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
-import static com.codeborne.selenide.Selenide.sleep;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
@@ -27,17 +23,36 @@ public class DpuCommissioningRobot {
     public static final Integer HTTP_CODE_CREATED_201 = 201;
     private static final Long DELAY = 8_000L;
     private DpuCommissioningClient dpuCommissioningClient;
-    private DpuCommissioningGenerator dpuCommissioningGenerator;
     public String businessKey;
 
     @Step("Start dpuCommissioning")
-    public void startProcess(String endsz) {
+    public UUID startProcess(String endsz) {
         dpuCommissioningClient = new DpuCommissioningClient();
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
+        UUID traceId = UUID.randomUUID();
+
         DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
+                .xB3TraceIdHeader(traceId.toString())
+                .xBusinessContextHeader(UUID.randomUUID().toString())
+                .xB3SpanIdHeader(UUID.randomUUID().toString())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        businessKey = response.getBusinessKey();
+        return traceId;
+    }
+
+    @Step("Start dpuDecommissioning")
+    public void startDecomissioningProcess(String endsz) {
+        dpuCommissioningClient = new DpuCommissioningClient();
+        StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
+        dpuDecommissioningRequest.setEndSZ(endsz);
+
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+                .body(dpuDecommissioningRequest)
                 .xB3ParentSpanIdHeader("1")
                 .xB3TraceIdHeader("2")
                 .xBusinessContextHeader("3")
@@ -47,296 +62,316 @@ public class DpuCommissioningRobot {
         businessKey = response.getBusinessKey();
     }
 
+
     @Step("get businessKey")
-    public String getBusinessKey(){
+    public String getBusinessKey() {
         return businessKey;
     }
 
-    @Step("setUp wiremock for TeamLevel Test")
-    public void setUpWiremock(OltDevice oltDevice, Dpu dpu, boolean isAsyncScenario){
-        dpuCommissioningGenerator = new DpuCommissioningGenerator();
-
-        dpuCommissioningGenerator.generateGetDpuDeviceStub(dpu);
-        dpuCommissioningGenerator.generateGetDpuPonConnStub(oltDevice, dpu);
-        dpuCommissioningGenerator.generateGetEthLinkStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generateGetOnuIdStub(dpu);
-        dpuCommissioningGenerator.generateGetBackhaulIdStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generatePostDeprovisionOltStub(oltDevice,dpu,isAsyncScenario);
-        dpuCommissioningGenerator.generatePostAncpConfStub(dpu, isAsyncScenario);
-        dpuCommissioningGenerator.generateGetDPUAncpStub(dpu);
-        dpuCommissioningGenerator.generateGetOLTAncpStub(oltDevice,dpu);
-        dpuCommissioningGenerator.generateGetDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generatePostDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateDpuConfigurationTaskStub(dpu, isAsyncScenario);
-        dpuCommissioningGenerator.generatePutDpuAtOltConfigStub(dpu);
-        dpuCommissioningGenerator.generateGetDpuEmsConfigStub(dpu);
-        dpuCommissioningGenerator.generatePostDpuEmsConfigStub(dpu);
-        dpuCommissioningGenerator.generateSealPostDpuConfStub(dpu, isAsyncScenario);
-        dpuCommissioningGenerator.generatePutDpuEmsConfigStub(dpu);
-        dpuCommissioningGenerator.generatePostProvisioningDeviceStub(dpu,isAsyncScenario);
-        dpuCommissioningGenerator.generatePatchLifecycleStateDeviceStub(dpu);
-        dpuCommissioningGenerator.generatePatchLifecycleStatePortStub(dpu);
-        WiremockRobot wiremockRobot = new WiremockRobot();
-        wiremockRobot.initializeWiremock(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
-    }
-
-
-    @Step("cleanup")
-    public void cleanup(){
-        //Microservice make 3 attempt to receive a positive response. Therefore mocks shouldn't be deleted at once
-        sleep(DELAY);
-        WiremockHelper.mappingsReset();
-        try {
-            FileUtils.cleanDirectory(new File(System.getProperty("user.dir") + "/src/test/resources/team/morpheus/wiremockResult"));
-        } catch (IOException e) {
-            log.error("directory is empty");
-            throw new RuntimeException();
-        }
+    @Step
+    public void checkGetDeviceDPUCalled(String dpuEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/device?endsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetDeviceDPUCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuPonConnCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/device?endsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
     }
 
     @Step
-    public void checkGetDpuPonConnCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuPonConnNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
     }
 
     @Step
-    public void checkGetDpuPonConnNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetEthernetLinkCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
     }
 
     @Step
-    public void checkGetEthernetLinkCalled(Long timeOfExecution, String oltEndsz){
+    public void checkGetEthernetLinkNotCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
     }
 
     @Step
-    public void checkGetEthernetLinkNotCalled(Long timeOfExecution, String oltEndsz){
+    public void checkPostOnuIdCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/assignOnuIdTask"));
     }
 
     @Step
-    public void checkPostOnuIdCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostOnuIdNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/assignOnuIdTask"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/assignOnuIdTask"));
     }
 
     @Step
-    public void checkPostOnuIdNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostBackhaulidCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/assignOnuIdTask"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v3/backhaulId/search"));
     }
 
     @Step
-    public void checkPostBackhaulidCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostBackhaulidNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v3/backhaulId/search"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v3/backhaulId/search"));
     }
 
     @Step
-    public void checkPostBackhaulidNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDeprovisioningPortCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v3/backhaulId/search"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
     }
 
     @Step
-    public void checkPostDeprovisioningPortCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDeprovisioningPortNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
     }
 
     @Step
-    public void checkPostDeprovisioningPortNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostConfigAncpCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostPatternRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/deprovisioning/port(.*)"));
-    }
-    @Step
-    public void checkPostConfigAncpCalled(Long timeOfExecution, String dpuEndsz){
-        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v2/ancp/configuration?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU" ));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
-    public void checkPostConfigAncpNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkPostConfigAncpNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v2/ancp/configuration?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
-    public void checkGetDpuAncpSessionCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAncpSessionCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetDpuAncpSessionNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAncpSessionNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetOltAncpSessionCalled(Long timeOfExecution, String oltEndsz){
+    public void checkGetOltAncpSessionCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
     }
 
     @Step
-    public void checkGetOltAncpSessionNotCalled(Long timeOfExecution, String oltEndsz){
+    public void checkGetOltAncpSessionNotCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
     }
 
     @Step
-    public void checkGetDpuAtOltConfigCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAtOltConfigCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetDpuAtOltConfigNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuAtOltConfigNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkPostDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDpuAtOltConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration"));
     }
 
     @Step
-    public void checkPostDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDpuAtOltConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration"));
     }
 
     @Step
-    public void checkPostSEALDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostSEALDpuAtOltConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/olt/dpuConfigurationTask"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/olt/dpuConfigurationTask"));
     }
 
     @Step
-    public void checkPostSEALDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostSEALDpuAtOltConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/olt/dpuConfigurationTask"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/olt/dpuConfigurationTask"));
     }
 
     @Step
-    public void checkPutDpuAtOltConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPutDpuAtOltConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration/12345"));
+        wiremockRecordedRequestRetriver.isPutRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration/12345"));
     }
 
     @Step
-    public void checkPutDpuAtOltConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPutDpuAtOltConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration/12345"));
+        wiremockRecordedRequestRetriver.isPutRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration/12345"));
     }
 
     @Step
-    public void checkGetDpuEmsConfigCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuEmsConfigCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration?dpuEndsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration?dpuEndsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkGetDpuEmsConfigNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkGetDpuEmsConfigNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isGetRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration?dpuEndsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration?dpuEndsz=" + dpuEndsz));
     }
 
     @Step
-    public void checkPostDpuEmsConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDpuEmsConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration"));
     }
 
     @Step
-    public void checkPostDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostDpuEmsConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration"));
     }
 
     @Step
-    public void checkPostSEALDpuEmsConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostSEALDpuEmsConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask"));
     }
 
     @Step
-    public void checkPostSEALDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPostSEALDpuEmsConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuConfigurationTask"));
     }
 
     @Step
-    public void checkPutDpuEmsConfigCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPutDpuEmsConfigCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration/12345"));
+        wiremockRecordedRequestRetriver.isPutRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration/12345"));
     }
 
     @Step
-    public void checkPutDpuEmsConfigNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPutDpuEmsConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPutRequestCalled(timeOfExecution, fieldValues, "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration/12345"));
+        wiremockRecordedRequestRetriver.isPutRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration/12345"));
     }
 
     @Step
-    public void checkPostDeviceProvisioningCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkPostDeviceProvisioningCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
     }
 
     @Step
-    public void checkPostDeviceProvisioningNotCalled(Long timeOfExecution, String dpuEndsz){
+    public void checkPostDeviceProvisioningNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPostRequestCalled(timeOfExecution, "/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbProvisioning/device?endSZ=" + dpuEndsz));
     }
 
     @Step
-    public void checkPatchDeviceCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPatchDeviceCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        if(fieldValues.size()==0){
-            fieldValues.add("OPERATING");
-        }
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
+        wiremockRecordedRequestRetriver.isPatchRequestCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/device/.*"));
     }
 
     @Step
-    public void checkPatchDeviceNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPatchDeviceNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        if(fieldValues.size()==0){
-            fieldValues.add("OPERATING");
-        }
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/device/.*"));
+        wiremockRecordedRequestRetriver.isPatchRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/device/.*"));
     }
 
     @Step
-    public void checkPatchPortCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPatchPortCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        if(fieldValues.size()==0){
-            fieldValues.add("OPERATING");
-        }
-        Assert.assertTrue(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
+        wiremockRecordedRequestRetriver.isPatchRequestCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/port/.*"));
     }
 
     @Step
-    public void checkPatchPortNotCalled(Long timeOfExecution, List<String> fieldValues){
+    public void checkPatchPortNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        if(fieldValues.size()==0){
-            fieldValues.add("OPERATING");
-        }
-        Assert.assertFalse(wiremockRecordedRequestRetriver.isPatchRequestCalled(timeOfExecution, fieldValues,"/resource-order-resource-inventory/v1/port/.*"));
+        wiremockRecordedRequestRetriver.isPatchRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/port/.*"));
+    }
+
+    @Step
+    public void checkPostDeviceDeprovisioningCalled(String dpuEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostDeviceDeprovisioningNotCalled(String dpuEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+    }
+
+    @Step
+    public void checkPostSEALDpuEmsDEConfigCalled(List<Consumer<RequestPatternBuilder>> consumers){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/dpu/dpuDeconfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuEmsDEConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/dpu/dpuDeconfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuOltDEConfigCalled(List<Consumer<RequestPatternBuilder>> consumers){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/olt/dpuDeconfigurationTask"));
+    }
+
+    @Step
+    public void checkPostSEALDpuOltDEConfigNotCalled(List<Consumer<RequestPatternBuilder>> consumers){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlMatching("/resource-order-resource-inventory/v1/olt/dpuDeconfigurationTask"));
+    }
+
+    @Step
+    public void checkDeleteDpuEmsConfigurationCalled(){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
+    }
+
+    @Step
+    public void checkDeleteDpuEmsConfigurationNotCalled(){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
+    }
+
+    @Step
+    public void checkPostReleaseOnuIdTaskCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/releaseOnuIdTask"));
+    }
+
+    @Step
+    public void checkPostReleaseOnuIdTaskNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/releaseOnuIdTask"));
+    }
+
+    @Step
+    public void checkDeleteDpuOltConfigurationCalled(){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
+    }
+
+    @Step
+    public void checkDeleteDpuOltConfigurationNotCalled(){
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration.*"));
     }
 
 }

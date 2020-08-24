@@ -1,15 +1,19 @@
 package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.data.osr.models.accessline.AccessLineCase;
-import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
+import com.tsystems.tm.acc.data.upiter.models.address.AddressCase;
+import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.data.osr.models.Address;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
@@ -25,31 +29,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog(ACCESS_MANAGEMENT_SUPPORT_UI_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(ACCESS_LINE_BFF_PROXY_MS)
 public class AccessLinesSearchTest extends BaseTest {
 
-    private static final String KLSID = "14653";
-    private static final String ONT_SN = "1111111111181516";
-
     private AccessLineRiRobot accessLineRiRobot;
     private AccessLineResourceInventoryClient alResourceInventory;
+    private UpiterTestContext context = UpiterTestContext.get();
     private AccessLine accessLinesByEndSz;
     private AccessLine accessLineByHomeId;
     private AccessLine accessLineByLineId;
+    private Address addressWithKlsId;
+    private Ont ontSerialNumber;
 
     @BeforeClass
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         alResourceInventory = new AccessLineResourceInventoryClient();
-        OsrTestContext context = OsrTestContext.get();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
         accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
         accessLineByLineId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByLineId);
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOAccessManagementSupportUi);
+        addressWithKlsId = context.getData().getAddressDataProvider().get(AddressCase.linesByKlsId);
+        ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.linesByOnt);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         prepareData();
     }
@@ -131,7 +136,7 @@ public class AccessLinesSearchTest extends BaseTest {
     public void searchAccessLinesByKlsIdTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByKlsId(KLSID).clickSearchButton();
+        accessLineSearchPage.searchAccessLinesByKlsId(addressWithKlsId.getKlsId()).clickSearchButton();
 
         checkBasicInformation(accessLineSearchPage);
 
@@ -147,7 +152,7 @@ public class AccessLinesSearchTest extends BaseTest {
     public void searchAccessLinesByOntSnTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByOntSn(ONT_SN).clickSearchButton();
+        accessLineSearchPage.searchAccessLinesByOntSn(ontSerialNumber.getSerialNumber()).clickSearchButton();
 
         checkBasicInformation(accessLineSearchPage);
 
@@ -227,6 +232,6 @@ public class AccessLinesSearchTest extends BaseTest {
 
     private void prepareData() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
-        accessLineRiRobot.fillDatabase();
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 }

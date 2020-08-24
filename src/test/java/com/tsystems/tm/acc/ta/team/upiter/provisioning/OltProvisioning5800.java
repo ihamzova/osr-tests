@@ -1,13 +1,14 @@
 package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
@@ -31,8 +32,8 @@ import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.*;
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static io.restassured.RestAssured.given;
 
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
@@ -48,13 +49,14 @@ public class OltProvisioning5800 extends BaseTest {
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private PortProvisioning portEmpty;
+    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
         accessLineRiRobot = new AccessLineRiRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
-        portEmpty = OsrTestContext.get().getData()
+        portEmpty = context.getData()
                 .getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.portEmpty5800);
     }
@@ -140,13 +142,19 @@ public class OltProvisioning5800 extends BaseTest {
         List<AccessLineDto> accessLinesAfterProvisioning = getAccessLines(port);
 
         long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-                .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(DefaultNeProfile -> DefaultNeProfile.getState().getValue()
+                        .equals(STATUS_ACTIVE))
+                .count();
 
         long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-                .filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(DefaultNetworkLineProfile -> DefaultNetworkLineProfile.getState().getValue()
+                        .equals(STATUS_ACTIVE))
+                .count();
 
         long countAccessLinesWG = accessLinesAfterProvisioning.stream()
-                .filter(AccessLine -> AccessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
+                .filter(AccessLine -> AccessLine.getStatus().getValue()
+                        .equals(STATUS_WALLED_GARDEN))
+                .count();
 
         Assert.assertEquals(getLineIdPools(port).size(), portEmpty.getLineIdPool().intValue());
         Assert.assertEquals(getHomeIdPools(port).size(), portEmpty.getHomeIdPool().intValue());

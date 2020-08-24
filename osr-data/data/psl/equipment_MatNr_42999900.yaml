@@ -1,0 +1,5 @@
+name: equipment_MatNr_42999900
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentData
+values:
+  submt: "42999900"
+  klsId: "17056514"

@@ -1,8 +1,0 @@
-name: linesByLineId
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  endSz: ""
-  slotNumber: ""
-  portNumber: ""
-  homeId: ""
-  lineId: "DEU.DTAG.SQA3140925"

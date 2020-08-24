@@ -22,8 +22,7 @@ import org.testng.annotations.Test;
 public class A4ImportCsvTest extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot
-            = new A4ResourceInventoryImporterUiRobot();
+    private A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
     private A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
 
     private A4ImportCsvData csvData;

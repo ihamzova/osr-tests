@@ -20,7 +20,6 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
 public class InstallationPage {
-    public static final String APP = "a4-inventory-importer";
     public static final String ENDPOINT = "/";
     public static final String NETWORK_ELEMENT_FOUND = "plannedRack";
     public static final String ZTP_SAVED_SUCCESSFULLY = "Speichern erfolgreich";

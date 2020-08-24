@@ -6,14 +6,16 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
@@ -22,13 +24,9 @@ import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -44,8 +42,9 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private OltResourceInventoryClient oltResourceInventoryClient;
-    private WiremockRobot wiremockRobot = new WiremockRobot();
     private OltDevice oltDevice;
+
+    private WireMockMappingsContext mappingsContext;
 
     @BeforeMethod
     public void init() {
@@ -59,11 +58,12 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
         oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
         //oltDevice.setFsz("76HC");
 
-        wiremockRobot.setUpSealWiremock(oltDevice);
-        log.info("+++ init SEAL uuid={}", oltDevice.getSealWiremockUuid() );
+        mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
+                .addSealMock(oltDevice)
+                .addPslMock(oltDevice)
+                .build();
 
-        wiremockRobot.setUpPslWiremock(oltDevice);
-        log.info("+++ init PSL uuid={}", oltDevice.getPslWiremockUuid() );
+        mappingsContext.publish();
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
@@ -71,11 +71,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        log.info("+++ cleanUp uuid={}", oltDevice.getSealWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getSealWiremockUuid());
-
-        log.info("+++ cleanUp uuid={}", oltDevice.getPslWiremockUuid() );
-        wiremockRobot.tearDownWiremock(oltDevice.getPslWiremockUuid());
+        mappingsContext.deleteAll();
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);
@@ -145,7 +141,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
     public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
         for (int port = 0; port <= 1; ++port) {
-            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}",port,device.getOltSlot(),detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
+            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, device.getOltSlot(), detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
             if (device.getOltPort().equals((Integer.toString(port)))) {
                 Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
             } else {

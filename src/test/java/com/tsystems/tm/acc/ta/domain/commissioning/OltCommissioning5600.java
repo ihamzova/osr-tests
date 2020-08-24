@@ -5,12 +5,14 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
-import com.tsystems.tm.acc.ta.robot.osr.WiremockRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -18,7 +20,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -29,9 +31,10 @@ import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.*;
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
-    private WiremockRobot wiremockRobot = new WiremockRobot();
     private OltDevice oltDeviceManual;
     private OltDevice oltDeviceAutomatic;
+
+    private WireMockMappingsContext mappingsContext;
 
     @BeforeClass
     public void init() {
@@ -39,27 +42,30 @@ public class OltCommissioning5600 extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         oltDeviceManual = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
-        wiremockRobot.setUpSealWiremock(oltDeviceManual);
-        wiremockRobot.setUpPslWiremock(oltDeviceManual);
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
-
         oltDeviceAutomatic = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
-        wiremockRobot.setUpSealWiremock(oltDeviceAutomatic);
-        wiremockRobot.setUpPslWiremock(oltDeviceAutomatic);
+
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioning5600"))
+                .addSealMock(oltDeviceManual)
+                .addSealMock(oltDeviceAutomatic)
+                .addPslMock(oltDeviceManual)
+                .addPslMock(oltDeviceAutomatic)
+                .build();
+
+        mappingsContext.publish();
     }
 
     @AfterClass
     public void teardown() {
+        mappingsContext.close();
+
         oltCommissioningRobot.restoreOsrDbState();
-
-        wiremockRobot.tearDownWiremock(oltDeviceManual.getSealWiremockUuid());
-        wiremockRobot.tearDownWiremock(oltDeviceManual.getPslWiremockUuid());
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
-
-        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getSealWiremockUuid());
-        wiremockRobot.tearDownWiremock(oltDeviceAutomatic.getPslWiremockUuid());
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")

@@ -1,0 +1,7 @@
+name: LifecycleStateDeviceUplinkRetiring
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/0004/0/71AA"
+  onuId: 12345678
+  lifeCycleDpu: "RETIRING"
+  lifeCycleUplink: "RETIRING"

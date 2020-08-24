@@ -1,10 +1,11 @@
 package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
-import com.tsystems.tm.acc.data.osr.models.lineidbatch.LineIdBatchCase;
+import com.tsystems.tm.acc.data.upiter.models.lineidbatch.LineIdBatchCase;
 import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.PoolLineId;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.model.SingleLineId;
@@ -13,16 +14,11 @@ import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
-import static com.tsystems.tm.acc.ta.team.upiter.common.CommonTestData.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.team.upiter.common.UpiterConstants.LINE_ID_GENERATOR_MS;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.LINE_ID_GENERATOR_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -31,18 +27,12 @@ public class LineIdTest extends BaseTest {
 
     private LineIdGeneratorClient lineidGeneratorClient;
     private LineIdBatch lineIdBatch;
-
-    private String readFile(Path path, Charset encoding) throws IOException {
-        byte[] encoded = Files.readAllBytes(path);
-        return new String(encoded, encoding);
-    }
+    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
         lineidGeneratorClient = new LineIdGeneratorClient();
-        lineIdBatch = OsrTestContext.get().getData()
-                .getLineIdBatchDataProvider()
-                .get(LineIdBatchCase.lineIdBatch);
+        lineIdBatch = context.getData().getLineIdBatchDataProvider().get(LineIdBatchCase.lineIdBatch);
     }
 
     @Test
@@ -63,6 +53,7 @@ public class LineIdTest extends BaseTest {
                 .endSzQuery(lineIdBatch.getEndSz())
                 .numberLineIdsQuery(lineIdBatch.getNumberLineIds())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+        assertNotNull(response);
         assertEquals(response.getLineIds().size(), lineIdBatch.getNumberLineIds().intValue());
     }
 
@@ -116,17 +107,4 @@ public class LineIdTest extends BaseTest {
                 .numberLineIdsQuery(5)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
-
-//    @Test
-//    @TmsLink("DIGIHUB-34654")
-//    @Description("Create Necessary Line Ids in PostProvisioning case")
-//    public void createNecessaryLineIdsPostProvisioning() throws IOException {
-//        File template = new File(getClass().getResource("/team/upiter/lineid/portForLineIdPool.json").getFile());
-//        Port port = new JSON().deserialize(readFile(template.toPath(), Charset.defaultCharset()), Port.class);
-//        PoolLineId poolLineId = lineidGeneratorClient.getClient().lineIdGeneratorInternal().generateLineIdsBatch()
-//                .endSzQuery(lineIdBatch.getEndSz())
-//                .numberLineIdsQuery(lineIdBatch.getNumberLineIds() - port.getLineIdPools().size())
-//                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-//        assertEquals(poolLineId.getLineIds().size(), lineIdBatch.getNumberLineIds() - port.getLineIdPools().size());
-//    }
 }
