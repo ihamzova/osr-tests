@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
@@ -63,14 +64,22 @@ public class OltCommissioningRobot {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.openPortView(olt.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(olt);
         oltDetailsPage.saveUplinkConfiguration();
 
-        oltDetailsPage = oltDetailsPage.configureAncpSession();
+        oltDetailsPage = oltDetailsPage.configureAncpSessionStart();
         oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.openPortView(olt.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
+
 
     @Step("Checks olt data in olt-ri after commissioning process")
     public void checkOltCommissioningResult(OltDevice olt) {
@@ -87,6 +96,23 @@ public class OltCommissioningRobot {
         Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
+
+        // add check device and port state
+        Assert.assertEquals(/*DevicePortLifeCycleStateUI.OPERATING.toString()*/ "OPERATING", deviceAfterCommissioning.getLifeCycleState().toString());
+        //convert to stream
+        Optional<Port> uplinkPort = deviceAfterCommissioning.getEquipmentHolders().stream()
+                //use filter for search in streams
+                .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(olt.getOltSlot()))
+                //convert Stream<EquipmentHolder> into Stream<List<Card>>
+                .map(EquipmentHolder::getCard)
+                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
+                //convert Stream<List<Card>> into Stream<Port>
+                .flatMap(card -> card.getPorts().stream())
+                //method findFirst () returns the first element in the right order from Stream, wrapped Optional
+                .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
+
+        Assert.assertTrue(uplinkPort.isPresent());
+        Assert.assertEquals(/*DevicePortLifeCycleStateUI.OPERATING.toString()*/ "OPERATING",  uplinkPort.get().getLifeCycleState().toString());
 
         List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
