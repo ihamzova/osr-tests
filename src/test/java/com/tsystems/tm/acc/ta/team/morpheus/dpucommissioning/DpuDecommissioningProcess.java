@@ -88,6 +88,8 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -113,6 +115,8 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -161,8 +165,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
-    @Description("Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    @Test(description = "Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
+    @Description("Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
     public void dpuDecommissioningPostSealDpuOltConfigCallbackError(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
