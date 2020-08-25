@@ -37,6 +37,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
+    private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
     private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
@@ -136,6 +137,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         Assert.assertEquals(device.getTkz1(), "02351082");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+        Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_GFNW);
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
