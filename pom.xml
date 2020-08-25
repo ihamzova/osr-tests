@@ -39,6 +39,24 @@
                 <log.access.strategy>OC</log.access.strategy>
             </properties>
         </profile>
+        <profile>
+            <id>gigabit-tm-mercury-01</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
+        <profile>
+            <id>gigabit-tm-mercury-02</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
     </profiles>
 
     <repositories>
