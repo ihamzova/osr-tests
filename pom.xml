@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>782.1</version>
+    <version>783.1</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -32,6 +32,24 @@
         </profile>
         <profile>
             <id>gigabit-tm-osr-autotest-01</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
+        <profile>
+            <id>gigabit-tm-mercury-01</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <log.access.strategy>OC</log.access.strategy>
+            </properties>
+        </profile>
+        <profile>
+            <id>gigabit-tm-mercury-02</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
