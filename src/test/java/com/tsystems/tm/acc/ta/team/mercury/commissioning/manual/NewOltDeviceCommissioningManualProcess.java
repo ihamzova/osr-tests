@@ -37,6 +37,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
+    private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -133,6 +134,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         Assert.assertEquals(device.getTkz1(), "2352QCR");
         Assert.assertEquals(device.getTkz2(), "02353310");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
+        Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG);
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
