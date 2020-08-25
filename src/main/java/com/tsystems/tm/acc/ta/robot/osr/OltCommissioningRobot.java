@@ -44,6 +44,12 @@ public class OltCommissioningRobot {
 
         oltCommissioningPage.validateUrl();
         oltCommissioningPage.startOltCommissioning(olt, TIMEOUT_FOR_OLT_COMMISSIONING);
+
+        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        oltDetailsPage.openPortView(olt.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     @Step("Starts manual olt commissioning process")

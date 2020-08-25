@@ -70,7 +70,7 @@ public class OltDetailsPage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Check port life cycle state")
+    @Step("Open port view")
     public OltDetailsPage openPortView(String slot) {
         $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
