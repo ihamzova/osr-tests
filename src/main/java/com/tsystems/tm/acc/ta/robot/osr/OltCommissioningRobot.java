@@ -45,7 +45,7 @@ public class OltCommissioningRobot {
         oltCommissioningPage.validateUrl();
         oltCommissioningPage.startOltCommissioning(olt, TIMEOUT_FOR_OLT_COMMISSIONING);
 
-        OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
