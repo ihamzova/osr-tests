@@ -75,8 +75,8 @@ public class OltCommissioning5600 extends BaseTest {
     public void automaticallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceManual);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
@@ -86,7 +86,7 @@ public class OltCommissioning5600 extends BaseTest {
     public void manuallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        oltCommissioningRobot.startManualOltCommissioning(oltDeviceAutomatic);
-        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
+        oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
+        oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
     }
 }
