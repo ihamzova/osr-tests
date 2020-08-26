@@ -20,7 +20,7 @@ public class OltDetailsPage {
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     public static final Integer MAX_ANCP_COFIGURATION_TIME = 2 * 60_000;
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
-    private static final Integer PORTS_PER_GPON_CARD = 16;
+    private static final Integer PORTS_PER_GPON_CARD = 8;
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
 
