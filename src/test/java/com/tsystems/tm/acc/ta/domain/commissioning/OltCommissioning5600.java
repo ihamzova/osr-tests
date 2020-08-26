@@ -62,7 +62,7 @@ public class OltCommissioning5600 extends BaseTest {
         mappingsContext.close();
 
         oltCommissioningRobot.restoreOsrDbState();
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
+       // oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
