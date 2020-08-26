@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
+import com.tsystems.tm.acc.ta.util.Assert;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -19,6 +20,7 @@ public class OltDetailsPage {
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     public static final Integer MAX_ANCP_COFIGURATION_TIME = 2 * 60_000;
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
+    private static final Integer PORTS_PER_GPON_CARD = 16;
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
 
@@ -171,6 +173,23 @@ public class OltDetailsPage {
             if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
                 $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).click();
                 $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
+            }
+        }
+        return this;
+    }
+
+    @Step("Check GPON Ports LifeCycleState on UI")
+    public OltDetailsPage checkGponPortLifeCycleState(String portLifeCycleState) {
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
+            if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
+                if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
+                    $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+                }
+                for (int port = 0; port < PORTS_PER_GPON_CARD; ++port ) {
+                    log.info("checkGponPortLifeCycleState slot = {}, port = {}, cycle = {}", slot, port, $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText());
+                    Assert.assertContains($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText(), portLifeCycleState);
+                }
             }
         }
         return this;
