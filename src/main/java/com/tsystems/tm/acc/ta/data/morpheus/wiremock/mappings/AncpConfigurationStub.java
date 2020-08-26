@@ -42,6 +42,20 @@ public class AncpConfigurationStub extends AbstractStubMapping {
                 .withQueryParam("endSz", equalTo(dpu.getEndSz()));
     }
 
+    public MappingBuilder deleteAncpConfiguration200() {
+        return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
+                .withName("deleteAncpConfiguration200")
+                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(true))));
+    }
+
+    public MappingBuilder deleteAncpConfiguration200CallbackError() {
+        return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
+                .withName("deleteAncpConfiguration200CallbackError")
+                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(false))));
+    }
+
     private String serialize(Object obj) {
         JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());

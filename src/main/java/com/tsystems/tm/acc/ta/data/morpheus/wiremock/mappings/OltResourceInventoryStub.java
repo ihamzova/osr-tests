@@ -103,27 +103,36 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("oltEndSz", equalTo(oltDevice.getVpsz() + "/" + oltDevice.getFsz()));
     }
 
-    public MappingBuilder getDpuAncpSession200(Dpu dpu) {
+    public MappingBuilder getDpuAncpSession200(OltDevice oltDevice, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU)),
+                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU, dpu, oltDevice)),
                         200
                 ))
                 .withName("getDpuAncpSession200")
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
-    public MappingBuilder getDpuAncpSession400(Dpu dpu) {
+    public MappingBuilder getDpuAncpSession200EmptyBody(Dpu dpu) {
+        return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
+                .willReturn(aDefaultResponseWithBody(null,
+                        200
+                ))
+                .withName("getDpuAncpSession200EmptyBody")
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder getDpuAncpSession400(OltDevice oltDevice, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .withName("getDpuAncpSession400")
-                .willReturn(aDefaultResponseWithBody(serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU)), 400))
+                .willReturn(aDefaultResponseWithBody(serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU, dpu, oltDevice)), 400))
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
     public MappingBuilder getOltAncpSession200(OltDevice olt, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.OLT)),
+                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.OLT, dpu, olt)),
                         200
                 ))
                 .withName("getOltAncpSession200")

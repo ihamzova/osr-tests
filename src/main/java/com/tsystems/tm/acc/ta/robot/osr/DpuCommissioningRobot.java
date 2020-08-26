@@ -374,4 +374,16 @@ public class DpuCommissioningRobot {
         wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration.*"));
     }
 
+    @Step
+    public void checkDeleteAncpConfigCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/98765"));
+    }
+
+    @Step
+    public void checkDeleteAncpConfigNotCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/98765"));
+    }
+
 }
