@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -24,8 +25,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class OltCommissioningRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
-    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 25 * 60_000;
+    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
+    private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
     private static final Integer ACCESS_LINE_PER_PORT = 16;
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
     private static final Integer HOME_ID_POOL_PER_PORT = 32;
@@ -50,6 +51,8 @@ public class OltCommissioningRobot {
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+
+        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
     @Step("Starts manual olt commissioning process")
@@ -70,6 +73,7 @@ public class OltCommissioningRobot {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.validateUrl();
+        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
@@ -82,11 +86,14 @@ public class OltCommissioningRobot {
         oltDetailsPage.updateAncpSessionStatus();
         oltDetailsPage.checkAncpSessionStatus();
 
-        oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
-
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+
+        oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+
+        WebDriverRunner.getWebDriver().navigate().refresh();
+        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
 
@@ -106,8 +113,8 @@ public class OltCommissioningRobot {
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
-        // add check device and port state
-        Assert.assertEquals(/*DevicePortLifeCycleStateUI.OPERATING.toString()*/ "OPERATING", deviceAfterCommissioning.getLifeCycleState().toString());
+        // check device and uplink port state
+        Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterCommissioning.getLifeCycleState());
         //convert to stream
         Optional<Port> uplinkPort = deviceAfterCommissioning.getEquipmentHolders().stream()
                 //use filter for search in streams
@@ -121,7 +128,7 @@ public class OltCommissioningRobot {
                 .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
 
         Assert.assertTrue(uplinkPort.isPresent());
-        Assert.assertEquals(/*DevicePortLifeCycleStateUI.OPERATING.toString()*/ "OPERATING",  uplinkPort.get().getLifeCycleState().toString());
+        Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
 
         List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
