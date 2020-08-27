@@ -128,7 +128,7 @@ public class OltCommissioningRobot {
                 .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
 
         Assert.assertTrue(uplinkPort.isPresent());
-        Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
+        Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
 
         List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
