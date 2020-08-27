@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -91,7 +92,8 @@ public class OltCommissioningRobot {
 
         oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
 
-        //oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
+        WebDriverRunner.getWebDriver().navigate().refresh();
+        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
 
@@ -112,7 +114,7 @@ public class OltCommissioningRobot {
         portsCount = portsCountOptional.orElse(0);
 
         // check device and uplink port state
-        Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, deviceAfterCommissioning.getLifeCycleState().toString());
+        Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterCommissioning.getLifeCycleState());
         //convert to stream
         Optional<Port> uplinkPort = deviceAfterCommissioning.getEquipmentHolders().stream()
                 //use filter for search in streams
@@ -126,7 +128,7 @@ public class OltCommissioningRobot {
                 .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
 
         Assert.assertTrue(uplinkPort.isPresent());
-        Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState().toString());
+        Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
 
         List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))

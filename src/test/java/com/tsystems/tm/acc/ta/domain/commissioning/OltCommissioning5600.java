@@ -45,7 +45,7 @@ public class OltCommissioning5600 extends BaseTest {
         oltDeviceAutomatic = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HD_MA5600);
 
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
-        //oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioning5600"))
                 .addSealMock(oltDeviceManual)
