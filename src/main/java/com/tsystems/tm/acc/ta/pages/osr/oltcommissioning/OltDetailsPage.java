@@ -187,7 +187,6 @@ public class OltDetailsPage {
                     $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
                 }
                 for (int port = 0; port < PORTS_PER_GPON_CARD; ++port ) {
-                    log.info("checkGponPortLifeCycleState slot = {}, port = {}, cycle = {}", slot, port, $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText());
                     Assert.assertContains($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText(), portLifeCycleState);
                 }
             }

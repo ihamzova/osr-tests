@@ -51,7 +51,6 @@ public class OltCommissioningRobot {
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
-
         oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
@@ -73,10 +72,10 @@ public class OltCommissioningRobot {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.validateUrl();
-        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         oltDetailsPage.openPortView(olt.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.inputUplinkParameters(olt);
@@ -92,7 +91,7 @@ public class OltCommissioningRobot {
 
         oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
 
-        WebDriverRunner.getWebDriver().navigate().refresh();
+        WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
         oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
@@ -113,20 +112,15 @@ public class OltCommissioningRobot {
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         portsCount = portsCountOptional.orElse(0);
 
-        // check device and uplink port state
+        // check device lifecycle state
         Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterCommissioning.getLifeCycleState());
-        //convert to stream
+        // check uplink port lifecycle state
         Optional<Port> uplinkPort = deviceAfterCommissioning.getEquipmentHolders().stream()
-                //use filter for search in streams
                 .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(olt.getOltSlot()))
-                //convert Stream<EquipmentHolder> into Stream<List<Card>>
                 .map(EquipmentHolder::getCard)
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
-                //convert Stream<List<Card>> into Stream<Port>
                 .flatMap(card -> card.getPorts().stream())
-                //method findFirst () returns the first element in the right order from Stream, wrapped Optional
                 .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
-
         Assert.assertTrue(uplinkPort.isPresent());
         Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
 
