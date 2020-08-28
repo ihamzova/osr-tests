@@ -140,7 +140,7 @@ public class AccessLinesSearchTest extends BaseTest {
 
         checkBasicInformation(accessLineSearchPage);
 
-        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(1);
 
         checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
                 "INACTIVE", "ACTIVE");
