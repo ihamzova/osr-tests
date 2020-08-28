@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.v4_4_11_0.client.model.BackhaulIdDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.v4_4_11_0.client.model.ReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.v4_4_11_0.client.model.ResourceAssociationDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.client.model.BackhaulIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.client.model.ReferenceDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.client.model.ResourceAssociationDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.BackHaulViewDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.Page;
 

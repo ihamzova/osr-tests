@@ -8,8 +8,10 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.cli
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -94,8 +96,11 @@ public class AccessLineRiRobot {
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "AccessLines count");
 
-        long countFttbNEProfilesActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && fttbNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+        long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
+                .filter(fttbNeProfile -> fttbNeProfile != null && fttbNeProfile.getStateOlt().getValue().equals(STATUS_ACTIVE)).count();
+
+        long countFttbNeMosaicActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
+                .filter(fttbNeProfile -> fttbNeProfile != null && fttbNeProfile.getStateMosaic().getValue().equals(STATUS_ACTIVE)).count();
 
         long countDefaultNetworkLineProfilesActive = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
                 .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && defaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
@@ -110,8 +115,10 @@ public class AccessLineRiRobot {
                 map(OnuAccessId::getOnuAccessId).collect(Collectors.toList());
         Collections.sort(onuAccessIds);
 
-        Assert.assertEquals(countFttbNEProfilesActive, port.getFttbNEProfilesActive().intValue(),
-                "FTTB NE Profiles count is incorrect");
+        Assert.assertEquals(countFttbNeOltStateActive, port.getFttbNEProfilesActive().intValue(),
+                "FTTB NE Profiles(Olt State) count is incorrect");
+        Assert.assertEquals(countFttbNeMosaicActive, port.getFttbNEProfilesActive().intValue(),
+                "FTTB NE Profiles(Mosaic State) count is incorrect");
         Assert.assertEquals(countDefaultNetworkLineProfilesActive, port.getDefaultNetworkLineProfilesActive().intValue(),
                 "Default NetworkLine Profile count is incorrect");
         Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
@@ -186,7 +193,13 @@ public class AccessLineRiRobot {
                         .oltEndSz(port.getEndSz())
                         .portNumber(portNumber)
                         .slotNumber(port.getSlotNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().map(onuId -> accessLineResourceInventory.allocatedOnuIdController().findFirstAllocatedOnuId()
+                .body(new SearchAllocatedOnuIdDto()
+                .onuId(onuId))
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Step("Get homeID from pool by port")
