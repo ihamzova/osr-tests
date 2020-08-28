@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.ta.data.morpheus.mappers.AccessLineResouceInventoryMa
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.v4_4_11_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.external.client.invoker.JSON;
 
 import java.util.Collections;
 
