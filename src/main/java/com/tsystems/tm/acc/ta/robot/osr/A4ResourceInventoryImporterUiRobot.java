@@ -6,13 +6,18 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
+import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+
+import static com.codeborne.selenide.Selenide.open;
 
 @Slf4j
 public class A4ResourceInventoryImporterUiRobot {
@@ -25,12 +30,6 @@ public class A4ResourceInventoryImporterUiRobot {
                 .validate()
                 .goToInstallation()
                 .checkNetworkElementExists(neData);
-    }
-
-    @Step("Open UI, log in, and goTo Ne-mobile-search-page")
-    public void openNetworkElementMobileSearchPage(){
-        A4MobileNeSearchPage
-                .login();
     }
 
     @Step("Enter ZTP Ident")
