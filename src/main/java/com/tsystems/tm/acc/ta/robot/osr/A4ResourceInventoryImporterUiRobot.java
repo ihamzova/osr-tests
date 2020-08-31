@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
 import io.qameta.allure.Step;
@@ -24,6 +25,12 @@ public class A4ResourceInventoryImporterUiRobot {
                 .validate()
                 .goToInstallation()
                 .checkNetworkElementExists(neData);
+    }
+
+    @Step("Open UI, log in, and goTo Ne-mobile-search-page")
+    public void openNetworkElementMobileSearchPage(){
+        A4MobileNeSearchPage
+                .login();
     }
 
     @Step("Enter ZTP Ident")
