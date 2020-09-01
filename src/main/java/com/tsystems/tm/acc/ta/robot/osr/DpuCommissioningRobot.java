@@ -380,6 +380,18 @@ public class DpuCommissioningRobot {
     }
 
     @Step
+    public void checkDeleteAncpConfigCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/99990"));
+    }
+
+    @Step
+    public void checkDeleteAncpConfigNotCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/99990"));
+    }
+
+    @Step
     public void checkPostPreprovisionFTTHTaskCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/provisioning/port"));

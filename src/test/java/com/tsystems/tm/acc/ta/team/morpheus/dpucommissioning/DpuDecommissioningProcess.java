@@ -91,7 +91,8 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
-            //TODO add checkDeleteANCPSessionCalled()
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
             dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
@@ -284,6 +285,45 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    @Description("Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    public void dpuDecommissioningPositiveAncpSessionDoesntExist() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositiveAncpSessionDoesntExist")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningAncpSessionDoesntExist(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning, delete AncpSession error callback")
+    @Description("Positive case. DPU-decommisioning, delete AncpSession error callback")
+    public void dpuDecommissioningDeleteAncpErrorCallback() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningDeleteAncpErrorCallback")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningDeleteAncpErrorCallback(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getEndSz());
         }
     }
 
