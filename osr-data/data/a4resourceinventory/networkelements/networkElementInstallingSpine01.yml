@@ -1,0 +1,13 @@
+name: networkElementInstallingSpine01
+template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
+values:
+  uuid: "" # if blank: field will be filled with returned uuid of created NE
+  vpsz: "49/1198/0"
+  fsz: "7KDB"
+  klsId: "1234567"
+  category: "SPINE_SWITCH"
+  operationalState: "NOT_WORKING"
+  lifecycleState: "INSTALLING"
+  type: "A4_SPINE-Switch_v1"
+  plannedMatNr: "42999901"
+  planningDeviceName: "dmst.spine.2"

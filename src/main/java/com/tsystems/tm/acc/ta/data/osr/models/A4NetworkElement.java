@@ -13,4 +13,5 @@ public class A4NetworkElement {
     private String lifecycleState;
     private String type;
     private String plannedMatNr;
+    private String planningDeviceName;
 }
