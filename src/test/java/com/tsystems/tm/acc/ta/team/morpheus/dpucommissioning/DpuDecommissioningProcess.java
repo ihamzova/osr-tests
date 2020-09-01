@@ -301,8 +301,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. DPU-decommisioning, AncpSession doesn't exist")
-    @Description("Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    @Test(description = "Positive case. DPU-decommisioning, delete AncpSession error callback")
+    @Description("Positive case. DPU-decommisioning, delete AncpSession error callback")
     public void dpuDecommissioningDeleteAncpErrorCallback() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
