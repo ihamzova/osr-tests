@@ -1,0 +1,5 @@
+name: PostPreprovisioningFTTHCallbackError
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/8571/0/71GW"
+  onuId: 12345678

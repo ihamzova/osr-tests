@@ -154,6 +154,44 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("dpuEndsz", equalTo(dpu.getEndSz()));
     }
 
+    public MappingBuilder getDpuAtOltConfOLTExist200(Dpu dpu, OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(
+                                Collections.singletonList(
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false, olt, dpu)
+                                )
+                        ),
+                        200
+                ))
+                .withName("getDpuAtOltConfExist200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
+    }
+
+    public MappingBuilder getDpuAtOltConfOLTNew200(OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.emptyList()),
+                        200
+                ))
+                .withName("getDpuAtOltConfNew200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
+    }
+
+    public MappingBuilder getDpuAtOltConfExistAnother200(Dpu dpu, OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(
+                                Collections.singletonList(
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationAnotherDpuDto(olt, dpu)
+                                )
+                        ),
+                        200
+                ))
+                .withName("getDpuAtOltConfExist200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
+    }
+
     public MappingBuilder postDpuAtOltConf200(Dpu dpu, OltDevice olt) {
         return post(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .withName("postDpuAtOltConf200")

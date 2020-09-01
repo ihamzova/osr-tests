@@ -274,6 +274,21 @@ public class OltResourceInventoryMapper {
         }
     }
 
+    public DpuAtOltConfigurationDto getDpuAtOltConfigurationAnotherDpuDto(OltDevice olt, Dpu dpu) {
+            return new DpuAtOltConfigurationDto()
+                    .id(12345L)
+                    .dpuEndsz(dpu.getEndSz())
+                    .backhaulId("backhaulId01")
+                    .onuId(12345)
+                    .configurationState("ACTIVE")
+                    .serialNumber("48AB541118CC5191")
+                    .oltEndsz(olt.getEndsz())
+                    .oltPonSlot("202")
+                    .oltPonPort("9")
+                    .oltUplinkSlot(olt.getUplinkSlot())
+                    .oltUplinkPort(olt.getUplinkPort());
+    }
+
     public DpuEmsConfigurationDto getDpuEmsConfigurationDto(boolean valuesInRequest) {
         if (valuesInRequest) {
             return new DpuEmsConfigurationDto()
