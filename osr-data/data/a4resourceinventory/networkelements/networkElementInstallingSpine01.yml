@@ -10,4 +10,4 @@ values:
   lifecycleState: "INSTALLING"
   type: "A4_SPINE-Switch_v1"
   plannedMatNr: "42999901"
-  planningDeviceName: "	dmst.spine.2"
+  planningDeviceName: "dmst.spine.2"

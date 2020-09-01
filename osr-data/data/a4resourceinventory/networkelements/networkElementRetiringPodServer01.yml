@@ -10,4 +10,4 @@ values:
   lifecycleState: "RETIRING"
   type: "A4_POD_SERVER_v1"
   plannedMatNr: "42999903"
-  planningDeviceName: "	dmst.server.1"
+  planningDeviceName: "dmst.server.1"

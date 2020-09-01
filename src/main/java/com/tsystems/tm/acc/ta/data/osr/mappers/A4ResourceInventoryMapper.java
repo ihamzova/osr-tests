@@ -31,7 +31,7 @@ public class A4ResourceInventoryMapper {
                 .klsId(neData.getKlsId())
                 .plannedRackId("rackid")
                 .plannedRackPosition("rackpos")
-                .planningDeviceName("planname")
+                .planningDeviceName(neData.getPlanningDeviceName())
                 .roles("role")
                 .type(neData.getType())
                 .creationTime(OffsetDateTime.now())

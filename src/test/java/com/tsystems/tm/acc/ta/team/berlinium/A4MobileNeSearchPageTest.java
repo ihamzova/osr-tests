@@ -110,56 +110,20 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-        //Thread.sleep(3000);
 
-        List<List<String>> listOfLists = new ArrayList<>();
-        List<String> innerList= new ArrayList<>();
+        Thread.sleep(3000);
 
-//        log.info("ElementsCollection.size = "+ elementsCollection.size());
+        List<String> conn = new ArrayList<>();
 
-//        elementsCollection.stream().forEach((SelenideElement k) -> log.info("+++"+k.getText()));
+        elementsCollection.forEach(k -> conn.add(k.getText()));
 
-//        for(int i = 0; i<30; i++){
-//            log.info("+++"+elementsCollection.get(i).getText());
-//        }
-
-        log.info("ElementsCollection.size = "+ elementsCollection.size());
-        List<String> referenceHolder= new ArrayList<>();
-        elementsCollection.forEach((SelenideElement k) -> {
-            log.info("###" + k.getText());
-            if (k.getText().length() == 0) {
-                listOfLists.add(innerList);
-                innerList.clear();
-            }
-            innerList.add(k.getText());
+        a4NetworkElements.forEach((k,networkElement) -> {
+            assertTrue(conn.contains(networkElement.getFsz()),networkElement.getFsz());
+            assertTrue(conn.contains(networkElement.getCategory()),networkElement.getCategory());
+            assertTrue(conn.contains(networkElement.getLifecycleState()),networkElement.getLifecycleState());
+            assertTrue(conn.contains(networkElement.getVpsz()),networkElement.getVpsz());
+            assertTrue(conn.contains(networkElement.getPlanningDeviceName()),networkElement.getPlanningDeviceName());
         });
 
-        log.info("---"+listOfLists.toString());
-
-
-        Map<String, A4NetworkElement> a4NetworkElementsResult = new HashMap<>();
-
-        listOfLists.forEach(row -> {
-            A4NetworkElement networkElement = new A4NetworkElement();
-            networkElement.setVpsz(row.get(1));
-            networkElement.setFsz(row.get(2));
-            networkElement.setCategory(row.get(3));
-            networkElement.setPlanningDeviceName(row.get(4));
-            networkElement.setLifecycleState(row.get(5));
-            a4NetworkElementsResult.put("a4NetworkElement"+row.get(5)+row.get(3)+"01", networkElement);
-        });
-
-        log.info(a4NetworkElementsResult.toString());
-
-        assertTrue(listOfLists.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz()));
-
-        //listOfLists.forEach(row -> assertEquals(row, a4NetworkElements));
-
-        //Thread.sleep(3000);
-
-
-//        a4MobileUiRobot.enterFsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getFsz());
-//        a4MobileUiRobot.clickSearchButton();
-//        Thread.sleep(10000);
     }
 }

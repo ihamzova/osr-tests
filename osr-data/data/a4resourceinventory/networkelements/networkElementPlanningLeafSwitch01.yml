@@ -10,4 +10,4 @@ values:
   lifecycleState: "PLANNING"
   type: "A4_LEAF-Switch_v1"
   plannedMatNr: "42999902"
-  planningDeviceName: "	dmst.leaf.3"
+  planningDeviceName: "dmst.leaf.3"
