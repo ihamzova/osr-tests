@@ -27,7 +27,11 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElement a4NetworkElement;
-    private A4NetworkElement a4NetworkElementInstalling;
+    private A4NetworkElement a4NetworkElementInstallingOlt01;
+    private A4NetworkElement a4NetworkElementInstallingSpine01;
+    private A4NetworkElement a4NetworkElementOperatingBor01;
+    private A4NetworkElement a4NetworkElementPlanningLeafSwitch01;
+    private A4NetworkElement a4NetworkElementPodServer01;
 
     @BeforeClass()
     public void init() {
@@ -36,10 +40,26 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+
+
         a4NetworkElement = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
-        a4NetworkElementInstalling = osrTestContext.getData().getA4NetworkElementDataProvider()
+
+        a4NetworkElementInstallingOlt01 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingOlt01);
+
+        a4NetworkElementInstallingSpine01 = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementInstallingSpine01);
+
+        a4NetworkElementOperatingBor01 = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementOperatingBor01);
+
+        a4NetworkElementPlanningLeafSwitch01 = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
+
+        a4NetworkElementPodServer01 = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementRetiringPodServer01);
+
 
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElement);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
@@ -49,13 +69,20 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
         a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstalling, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingOlt01, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingSpine01, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementOperatingBor01, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPlanningLeafSwitch01, a4NetworkElementGroup);
+        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPodServer01, a4NetworkElementGroup);
     }
 
     @AfterMethod
     public void cleanUp() {
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElement);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstalling);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingOlt01);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingSpine01);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementOperatingBor01);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPlanningLeafSwitch01);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPodServer01);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
@@ -65,10 +92,12 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpsz() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElement.getVpsz());
+        //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
+        a4MobileUiRobot.enterVpsz(a4NetworkElementInstallingOlt01.getVpsz());
         a4MobileUiRobot.clickSearchButton();
-        a4MobileUiRobot.enterFsz(a4NetworkElement.getFsz());
+        Thread.sleep(10000);
+        a4MobileUiRobot.enterFsz(a4NetworkElementInstallingOlt01.getFsz());
         a4MobileUiRobot.clickSearchButton();
-        Thread.sleep(5000);
+        Thread.sleep(10000);
     }
 }

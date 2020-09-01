@@ -1,13 +1,13 @@
-name: networkElementInstallingOlt01
+name: networkElementPlanningLeafSwitch01
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
 values:
   uuid: "" # if blank: field will be filled with returned uuid of created NE
   vpsz: "49/1198/0"
-  fsz: "7KDA"
+  fsz: "7KDC"
   klsId: "1234567"
-  category: "OLT"
+  category: "LEAF_SWITCH"
   operationalState: "NOT_WORKING"
-  lifecycleState: "INSTALLING"
-  type: "A4_OLT_v1"
-  plannedMatNr: "42999900"
-  planningDeviceName: "dmst.olt.1"
+  lifecycleState: "PLANNING"
+  type: "A4_LEAF-Switch_v1"
+  plannedMatNr: "42999902"
+  planningDeviceName: "	dmst.leaf.3"
