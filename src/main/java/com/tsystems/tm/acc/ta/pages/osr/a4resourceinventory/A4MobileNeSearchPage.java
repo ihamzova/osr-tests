@@ -30,7 +30,10 @@ public class A4MobileNeSearchPage {
     public static final By VPSZ_INPUT_FIELD_LOCATOR = By.id("vpsz");
 
     @Getter
-    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-networkelement-search/form/div[2]/div[1]/div/div[3]/button");
+    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
+
+    @Getter
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-networkelement-search/div[2]/app-networkelement-search-result/div/table");
 
     @Getter
     public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");

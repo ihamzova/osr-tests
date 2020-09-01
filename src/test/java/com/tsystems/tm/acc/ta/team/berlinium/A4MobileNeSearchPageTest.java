@@ -1,5 +1,8 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
@@ -7,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -14,24 +18,29 @@ import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.*;
+
+import static com.codeborne.selenide.Selenide.$;
+import static org.testng.Assert.*;
+
+@Slf4j
 public class A4MobileNeSearchPageTest extends BaseTest {
 
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
+    A4MobileNeSearchPage a4MobileNeSearchPage = new A4MobileNeSearchPage();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
-    private A4NetworkElement a4NetworkElement;
-    private A4NetworkElement a4NetworkElementInstallingOlt01;
-    private A4NetworkElement a4NetworkElementInstallingSpine01;
-    private A4NetworkElement a4NetworkElementOperatingBor01;
-    private A4NetworkElement a4NetworkElementPlanningLeafSwitch01;
-    private A4NetworkElement a4NetworkElementPodServer01;
+
+    private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
     @BeforeClass()
     public void init() {
@@ -41,48 +50,49 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
+        a4NetworkElements.put("a4NetworkElementInstallingOlt01", osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementInstallingOlt01));
 
-        a4NetworkElement = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
+        a4NetworkElements.put("a4NetworkElementInstallingSpine01", osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
-        a4NetworkElementInstallingOlt01 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementInstallingOlt01);
+        a4NetworkElements.put("a4NetworkElementOperatingBor01",osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementOperatingBor01));
 
-        a4NetworkElementInstallingSpine01 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementInstallingSpine01);
+        a4NetworkElements.put("a4NetworkElementPlanningLeafSwitch01",osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01));
 
-        a4NetworkElementOperatingBor01 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementOperatingBor01);
+        a4NetworkElements.put("a4NetworkElementPodServer01",osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
-        a4NetworkElementPlanningLeafSwitch01 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
-
-        a4NetworkElementPodServer01 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementRetiringPodServer01);
-
-
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElement);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElement, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingOlt01, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingSpine01, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementOperatingBor01, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPlanningLeafSwitch01, a4NetworkElementGroup);
-        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPodServer01, a4NetworkElementGroup);
+
+        a4NetworkElements.forEach((k,v)->
+               a4ResourceInventoryRobot.createNetworkElement(v, a4NetworkElementGroup));
+
+//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElements., a4NetworkElementGroup);
+//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingSpine01, a4NetworkElementGroup);
+//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementOperatingBor01, a4NetworkElementGroup);
+//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPlanningLeafSwitch01, a4NetworkElementGroup);
+//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPodServer01, a4NetworkElementGroup);
     }
 
     @AfterMethod
     public void cleanUp() {
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingOlt01);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingSpine01);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementOperatingBor01);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPlanningLeafSwitch01);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPodServer01);
+
+        a4NetworkElements.forEach((k,v)->
+                a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
+
+//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingOlt01);
+//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingSpine01);
+//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementOperatingBor01);
+//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPlanningLeafSwitch01);
+//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPodServer01);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
@@ -93,11 +103,63 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     public void testNeSearchByVpsz() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
-        a4MobileUiRobot.enterVpsz(a4NetworkElementInstallingOlt01.getVpsz());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz());
         a4MobileUiRobot.clickSearchButton();
-        Thread.sleep(10000);
-        a4MobileUiRobot.enterFsz(a4NetworkElementInstallingOlt01.getFsz());
-        a4MobileUiRobot.clickSearchButton();
-        Thread.sleep(10000);
+
+        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+        //Thread.sleep(3000);
+
+        List<List<String>> listOfLists = new ArrayList<>();
+        List<String> innerList= new ArrayList<>();
+
+//        log.info("ElementsCollection.size = "+ elementsCollection.size());
+
+//        elementsCollection.stream().forEach((SelenideElement k) -> log.info("+++"+k.getText()));
+
+//        for(int i = 0; i<30; i++){
+//            log.info("+++"+elementsCollection.get(i).getText());
+//        }
+
+        log.info("ElementsCollection.size = "+ elementsCollection.size());
+        List<String> referenceHolder= new ArrayList<>();
+        elementsCollection.forEach((SelenideElement k) -> {
+            log.info("###" + k.getText());
+            if (k.getText().length() == 0) {
+                listOfLists.add(innerList);
+                innerList.clear();
+            }
+            innerList.add(k.getText());
+        });
+
+        log.info("---"+listOfLists.toString());
+
+
+        Map<String, A4NetworkElement> a4NetworkElementsResult = new HashMap<>();
+
+        listOfLists.forEach(row -> {
+            A4NetworkElement networkElement = new A4NetworkElement();
+            networkElement.setVpsz(row.get(1));
+            networkElement.setFsz(row.get(2));
+            networkElement.setCategory(row.get(3));
+            networkElement.setPlanningDeviceName(row.get(4));
+            networkElement.setLifecycleState(row.get(5));
+            a4NetworkElementsResult.put("a4NetworkElement"+row.get(5)+row.get(3)+"01", networkElement);
+        });
+
+        log.info(a4NetworkElementsResult.toString());
+
+        assertTrue(listOfLists.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz()));
+
+        //listOfLists.forEach(row -> assertEquals(row, a4NetworkElements));
+
+        //Thread.sleep(3000);
+
+
+//        a4MobileUiRobot.enterFsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getFsz());
+//        a4MobileUiRobot.clickSearchButton();
+//        Thread.sleep(10000);
     }
 }
