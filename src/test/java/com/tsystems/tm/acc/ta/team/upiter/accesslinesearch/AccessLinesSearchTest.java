@@ -186,7 +186,7 @@ public class AccessLinesSearchTest extends BaseTest {
                 "NULL", "NULL");
     }
 
-        private void checkBasicInformation(AccessLineSearchPage accessLineSearchPage) {
+    private void checkBasicInformation(AccessLineSearchPage accessLineSearchPage) {
         checkTableHeaders(accessLineSearchPage.getTableHeaders());
         checkTableMessagePattern(accessLineSearchPage.getTableMessage());
         checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
