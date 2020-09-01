@@ -26,7 +26,7 @@ public class AccessLineSearchPage {
     private static final String ENDPOINT = "/search";
     private static final long TIMEOUT = 30000;
 
-    private static final By PORT_ADDRESS_TAB = byQaData("sc-port-address-tab-a");
+    private static final By DEVICE_TAB = byQaData("sc-port-address-tab-a");
     private static final By ENDSZ_INPUT = byQaData("pac-end-sz-input");
     private static final By SLOT_NUMBER_INPUT = byQaData("pac-slot-number-input");
     private static final By PORT_NUMBER_INPUT = byQaData("pac-port-number-input");
@@ -59,7 +59,7 @@ public class AccessLineSearchPage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Search Access lines by port address's parameters")
+    @Step("Search Access lines by device parameters")
     public AccessLineSearchPage searchAccessLinesByPortAddress(AccessLine accessLine) {
         $(ENDSZ_INPUT).click();
         $(ENDSZ_INPUT).val(accessLine.getEndSz());

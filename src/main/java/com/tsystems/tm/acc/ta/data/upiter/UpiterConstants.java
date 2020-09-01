@@ -15,4 +15,7 @@ public interface UpiterConstants {
     String ONT_OLT_ORCHESTRATOR_MS = "ont-olt-orchestrator";
     String WIREMOCK_MS_NAME = "wiremock-acc";
     String WG_FTTB_ACCESS_PROVISIONING_MS = "wg-fttb-access-provisioning";
+    String ACCESS_PROCESS_MANAGEMENT_UI = "access-process-management-ui";
+    String ACCESS_PROCESS_MANAGEMENT_BFF = "access-process-management-bff";
+    String ACCESS_PROCESS_MANAGEMENT = "access-process-management";
 }

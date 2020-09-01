@@ -8,6 +8,11 @@
     </test>
     <test thread-count="1" name="Access Lines search UI Tests">
         <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.processmanagement.ProcessesSearchTest"/>
+        </classes>
+    </test>
+    <test thread-count="1" name="Process search UI Tests">
+        <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.accesslinesearch.AccessLinesSearchTest"/>
         </classes>
     </test>
