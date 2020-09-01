@@ -27,4 +27,9 @@ public class A4MobileUiRobot {
         $(a4MobileNeSearchPage.getSEARCH_BUTTON_LOCATOR()).click();
     }
 
+    @Step("Enter fsz")
+    public void enterFsz(String value) {
+        $(a4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value);
+    }
+
 }

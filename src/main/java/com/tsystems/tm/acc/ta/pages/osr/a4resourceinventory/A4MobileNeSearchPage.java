@@ -32,6 +32,9 @@ public class A4MobileNeSearchPage {
     @Getter
     public static final By SEARCH_BUTTON_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-networkelement-search/form/div[2]/div[1]/div/div[3]/button");
 
+    @Getter
+    public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");
+
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {
         $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
