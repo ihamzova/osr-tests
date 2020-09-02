@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -18,6 +19,10 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
 
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+
+@ServiceLog(A4_RESOURCE_INVENTORY)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();

@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.data.osr.models.a4importcsvdata.A4ImportCsvDataCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -16,9 +17,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
+@ServiceLog(A4_INVENTORY_IMPORTER)
+@ServiceLog(A4_RESOURCE_INVENTORY)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
+@ServiceLog(A4_NEMO_UPDATER)
 public class A4ImportCsvTest extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();

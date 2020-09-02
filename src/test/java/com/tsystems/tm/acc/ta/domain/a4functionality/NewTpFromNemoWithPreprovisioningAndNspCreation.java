@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 
@@ -32,6 +33,9 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
+@ServiceLog(A4_NEMO_UPDATER)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
 

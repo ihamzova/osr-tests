@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -30,6 +31,11 @@ import java.util.*;
 import static com.codeborne.selenide.Selenide.$;
 import static org.testng.Assert.*;
 
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+
+@ServiceLog(A4_RESOURCE_INVENTORY)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
 @Slf4j
 public class A4MobileNeSearchPageTest extends BaseTest {
 

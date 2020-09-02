@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -22,7 +23,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 
+@ServiceLog(A4_RESOURCE_INVENTORY)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI)
+@ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
 public class ZtpIdentUiTest extends BaseTest {
     private static final int WAIT_TIME = 5_000;
 
