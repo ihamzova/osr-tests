@@ -32,6 +32,9 @@ public class A4MobileUiRobot {
         $(a4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value);
     }
 
+    @Step("Enter Category")
+    public void enterCategory(String category) {$(a4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);}
+
     @Step("Check planning")
     public void checkPlanning() { $(a4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();}
 

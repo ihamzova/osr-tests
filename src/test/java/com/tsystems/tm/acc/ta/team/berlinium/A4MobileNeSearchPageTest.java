@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
@@ -20,12 +19,10 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 import static org.testng.Assert.*;
@@ -42,33 +39,83 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
     private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
+    final int WAITING_INTERVAL = 0;
+
+    final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
+    final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";
+    final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor01";
+    final String A4_NE_PLANNING_LEAFSWITCH_01 = "a4NetworkElementPlanningLeafSwitch01";
+    final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
+
+    //helper methods
+    public void waitForTableToFullyLoad(int numberOfElements){
+
+        //add 1 to number of elements because of table header
+        numberOfElements++;
+
+        $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
+
+    }
+
+    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) {
+        //check if rows of tables are there, before proceeding
+        waitForTableToFullyLoad(a4NeFilteredList.size());
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        List<String> concat = new ArrayList<>();
+
+        elementsCollection.forEach(k -> concat.add(k.getText()));
+
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+            assertTrue(concat.contains(a4NetworkElement.getVpsz()),a4NetworkElement.getVpsz());
+            assertTrue(concat.contains(a4NetworkElement.getFsz()),a4NetworkElement.getFsz());
+            assertTrue(concat.contains(a4NetworkElement.getCategory()),a4NetworkElement.getCategory());
+            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()),a4NetworkElement.getPlanningDeviceName());
+            assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
+        });
+
+        log.info("+++" + concat.toString());
+
+        a4NeFilteredList.forEach((k,v) -> log.info("+++" + v.getCategory()));
+
+        //check if table has only as many rows as expected by test data set
+        //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
+        assertEquals(concat.size()/6, a4NeFilteredList.size());
+    }
+
+    @BeforeMethod()
+        public void doLogin() {
+            Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+            SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        }
+
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
-        a4NetworkElements.put("a4NetworkElementInstallingOlt01", osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_INSTALLING_OLT_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingOlt01));
 
-        a4NetworkElements.put("a4NetworkElementInstallingSpine01", osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_INSTALLING_SPINE_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
-        a4NetworkElements.put("a4NetworkElementOperatingBor01",osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_OPERATING_BOR_01,osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
 
-        a4NetworkElements.put("a4NetworkElementPlanningLeafSwitch01",osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01,osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01));
 
-        a4NetworkElements.put("a4NetworkElementPodServer01",osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01,osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
         cleanUp();
     }
 
-    @BeforeMethod
+    @BeforeClass
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
@@ -76,7 +123,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
     }
 
-    @AfterMethod
+    @AfterClass
     public void cleanUp() {
 
         a4NetworkElements.forEach((k,v)->
@@ -92,28 +139,10 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     public void testNeSearchByVpsz() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         a4MobileUiRobot.clickSearchButton();
 
-        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
-
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        Thread.sleep(3000);
-
-        List<String> conn = new ArrayList<>();
-
-        elementsCollection.forEach(k -> conn.add(k.getText()));
-
-        a4NetworkElements.forEach((k,networkElement) -> {
-            assertTrue(conn.contains(networkElement.getFsz()),networkElement.getFsz());
-            assertTrue(conn.contains(networkElement.getCategory()),networkElement.getCategory());
-            assertTrue(conn.contains(networkElement.getLifecycleState()),networkElement.getLifecycleState());
-            assertTrue(conn.contains(networkElement.getVpsz()),networkElement.getVpsz());
-            assertTrue(conn.contains(networkElement.getPlanningDeviceName()),networkElement.getPlanningDeviceName());
-        });
-
+        checkTableAccordingToSearchCriteria(a4NetworkElements);
     }
 
     @Test
@@ -121,26 +150,25 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpszAndFsz() throws InterruptedException {
-        String olt = "a4NetworkElementInstallingOlt01";
+
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(olt).getVpsz());
-        a4MobileUiRobot.enterFsz(a4NetworkElements.get(olt).getFsz());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
+        a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getFsz());
         a4MobileUiRobot.clickSearchButton();
 
-        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+        Map<String, A4NetworkElement> a4NeFilteredList = a4NetworkElements
+                .entrySet()
+                .stream()
+                .filter(map -> ((
+                        map.getValue().getVpsz()
+                                .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz()))
+                        && map.getValue().getFsz()
+                                .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getFsz())
+                        )
+                )
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        Thread.sleep(3000);
-
-        List<String> conn = new ArrayList<>();
-
-        elementsCollection.forEach(k -> conn.add(k.getText()));
-
-        assertTrue(conn.contains(a4NetworkElements.get(olt).getVpsz()));
-        assertTrue(conn.contains(a4NetworkElements.get(olt).getFsz()));
-        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingSpine01").getFsz()));
+        checkTableAccordingToSearchCriteria(a4NeFilteredList);
     }
 
     @Test
@@ -148,26 +176,20 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpszAndLifecyleState() throws InterruptedException {
-        String leafSwitch= "a4NetworkElementPlanningLeafSwitch01";
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(leafSwitch).getVpsz());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
         a4MobileUiRobot.clickSearchButton();
 
-        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+        Map<String, A4NetworkElement> a4NeFilteredList = a4NetworkElements
+                .entrySet()
+                .stream()
+                .filter(map -> (map.getValue().getLifecycleState()
+                        .equals(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getLifecycleState()))
+                )
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        Thread.sleep(3000);
-
-        List<String> conn = new ArrayList<>();
-
-        elementsCollection.forEach(k -> conn.add(k.getText()));
-
-        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getVpsz()));
-        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getLifecycleState()));
-        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getLifecycleState()));
+        checkTableAccordingToSearchCriteria(a4NeFilteredList);
     }
 
     @Test
@@ -175,29 +197,23 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpszAnd2LifecyleStates() throws InterruptedException {
-        String leafSwitch= "a4NetworkElementPlanningLeafSwitch01";
-        String bor = "a4NetworkElementOperatingBor01";
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(leafSwitch).getVpsz());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
         a4MobileUiRobot.checkOperating();
         a4MobileUiRobot.clickSearchButton();
 
-        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+        Map<String, A4NetworkElement> a4NeFilteredList = a4NetworkElements
+                .entrySet()
+                .stream()
+                .filter(map -> (map.getValue().getLifecycleState()
+                        .equals(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getLifecycleState()))
+                        || (map.getValue().getLifecycleState()
+                        .equals(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getLifecycleState()))
+                )
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        Thread.sleep(3000);
-
-        List<String> conn = new ArrayList<>();
-
-        elementsCollection.forEach(k -> conn.add(k.getText()));
-
-        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getVpsz()));
-        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getLifecycleState()));
-        assertTrue(conn.contains(a4NetworkElements.get(bor).getLifecycleState()));
-        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getLifecycleState()));
+        checkTableAccordingToSearchCriteria(a4NeFilteredList);
     }
 
     @Test
@@ -206,28 +222,21 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
     public void testNeSearchByVpszAndCategory() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz());
+
+        //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
+        //check for OLT
+        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory());
         a4MobileUiRobot.clickSearchButton();
 
-        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+        Map<String, A4NetworkElement> a4NeFilteredList = a4NetworkElements
+                .entrySet()
+                .stream()
+                .filter(map -> map.getValue().getCategory()
+                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        Thread.sleep(3000);
-
-        List<String> conn = new ArrayList<>();
-
-        elementsCollection.forEach(k -> conn.add(k.getText()));
-
-        a4NetworkElements.forEach((k,networkElement) -> {
-            assertTrue(conn.contains(networkElement.getFsz()),networkElement.getFsz());
-            assertTrue(conn.contains(networkElement.getCategory()),networkElement.getCategory());
-            assertTrue(conn.contains(networkElement.getLifecycleState()),networkElement.getLifecycleState());
-            assertTrue(conn.contains(networkElement.getVpsz()),networkElement.getVpsz());
-            assertTrue(conn.contains(networkElement.getPlanningDeviceName()),networkElement.getPlanningDeviceName());
-        });
+        checkTableAccordingToSearchCriteria(a4NeFilteredList);
 
     }
 
