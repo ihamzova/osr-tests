@@ -136,7 +136,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpsz() throws InterruptedException {
+    public void testNeSearchByVpsz() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
@@ -149,7 +149,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAndFsz() throws InterruptedException {
+    public void testNeSearchByVpszAndFsz() {
 
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
@@ -175,7 +175,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAndLifecyleState() throws InterruptedException {
+    public void testNeSearchByVpszAndLifecyleState(){
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
@@ -196,7 +196,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAnd2LifecyleStates() throws InterruptedException {
+    public void testNeSearchByVpszAnd2LifecyleStates() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
@@ -220,7 +220,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
-    public void testNeSearchByVpszAndCategory() throws InterruptedException {
+    public void testNeSearchByVpszAndCategory() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
@@ -238,6 +238,32 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
 
+    }
+
+    @Test
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
+    public void testNeInstallation() {
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+
+        //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
+        a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
+        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
+        a4MobileUiRobot.checkPlanning();
+        a4MobileUiRobot.checkOperating();
+        a4MobileUiRobot.clickSearchButton();
+
+        a4MobileUiRobot.checkRadioButton("1");
+        a4MobileUiRobot.clickInbetriebnahmeButton();
+
+        a4MobileUiRobot.clickFinishButton();
+        assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
+        assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
+        assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
+        assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
+        assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
     }
 
 }

@@ -48,6 +48,13 @@ public class A4MobileNeSearchPage {
     @Getter
     public static final By OPERATING_CHECKBOX_LOCATOR = By.id("OPERATING");
 
+    @Getter
+    public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
+
+    @Getter
+    public static final By INBETRIEBNAHME_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
+
+
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {
         $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
