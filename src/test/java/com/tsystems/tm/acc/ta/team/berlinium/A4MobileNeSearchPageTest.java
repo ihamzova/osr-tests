@@ -74,12 +74,6 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
         a4NetworkElements.forEach((k,v)->
                a4ResourceInventoryRobot.createNetworkElement(v, a4NetworkElementGroup));
-
-//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElements., a4NetworkElementGroup);
-//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementInstallingSpine01, a4NetworkElementGroup);
-//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementOperatingBor01, a4NetworkElementGroup);
-//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPlanningLeafSwitch01, a4NetworkElementGroup);
-//        a4ResourceInventoryRobot.createNetworkElement(a4NetworkElementPodServer01, a4NetworkElementGroup);
     }
 
     @AfterMethod
@@ -88,11 +82,6 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4NetworkElements.forEach((k,v)->
                 a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
 
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingOlt01);
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementInstallingSpine01);
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementOperatingBor01);
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPlanningLeafSwitch01);
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementPodServer01);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
@@ -126,4 +115,40 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         });
 
     }
+
+    @Test
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile NE-search-page of installation process")
+    public void testNeSearchByVpszAndFsz() throws InterruptedException {
+        String olt = "a4NetworkElementInstallingOlt01";
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(olt).getVpsz());
+        a4MobileUiRobot.enterFsz(a4NetworkElements.get(olt).getFsz());
+        a4MobileUiRobot.clickSearchButton();
+
+        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        Thread.sleep(3000);
+
+        List<String> conn = new ArrayList<>();
+
+        elementsCollection.forEach(k -> conn.add(k.getText()));
+
+        assertTrue(conn.contains(a4NetworkElements.get(olt).getVpsz()));
+        assertTrue(conn.contains(a4NetworkElements.get(olt).getFsz()));
+        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingSpine01").getFsz()));
+    }
+
+    @Test
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile NE-search-page of installation process")
+    public void testNeSearchByVpszAndLifecyleState() throws InterruptedException {
+
+    }
+
 }
