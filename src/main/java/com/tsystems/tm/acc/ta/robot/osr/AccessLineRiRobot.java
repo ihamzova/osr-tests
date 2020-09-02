@@ -33,7 +33,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Fill database with test data as a part of DPU Preprovisioning process emulation")
-    public void fillDatabaseForDpuPreprovisioning(){
+    public void fillDatabaseForDpuPreprovisioning() {
         accessLineResourceInventory.fillDatabase().fillDatabaseForDpuPreprovisioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -188,18 +188,24 @@ public class AccessLineRiRobot {
     }
 
     private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
-        return accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
+        List<Integer> onuIds = accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
                 .body(new SearchAllocatedOnuIdDto()
                         .oltEndSz(port.getEndSz())
                         .portNumber(portNumber)
                         .slotNumber(port.getSlotNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().map(onuId -> accessLineResourceInventory.allocatedOnuIdController().findFirstAllocatedOnuId()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        List<AllocatedOnuIdDto> onuIdDtos = onuIds.stream().map(onuId -> accessLineResourceInventory.allocatedOnuIdController().findFirstAllocatedOnuId()
                 .body(new SearchAllocatedOnuIdDto()
-                .onuId(onuId))
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                        .onuId(onuId)
+                        .oltEndSz(port.getEndSz())
+                        .portNumber(portNumber)
+                        .slotNumber(port.getSlotNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+        return onuIdDtos;
+
     }
 
     @Step("Get homeID from pool by port")

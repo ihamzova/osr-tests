@@ -88,14 +88,13 @@ public class AccessLineReservationByPortAndHomeId extends BaseTest {
         businessInformationList.add(postprovisioningEnd);
 
         List<BusinessInformation> businessInformationLogCollector = wgAccessProvisioningRobot.getBusinessInformation();
-        Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList),"Business information is not found");
+        Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList), "Business information is not found");
     }
 
-    @Test
+    @Test(dependsOnMethods = "accessLineReservationByPortAndHomeId")
     @TmsLink("DIGIHUB-47257")
     @Description("Register ONT resource")
     public void ontRegistration() {
-        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumber);
         //Register ONT
         ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
@@ -107,11 +106,10 @@ public class AccessLineReservationByPortAndHomeId extends BaseTest {
         Assert.assertEquals(subscriberNEProfile.getOntState(), SubscriberNeProfileDto.OntStateEnum.UNKNOWN);
     }
 
-    @Test
+    @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration"})
     @TmsLink("DIGIHUB-33938")
     @Description("ONT Connectivity test")
     public void ontTest() {
-        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
         //test Ont
         ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
 
