@@ -65,15 +65,15 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4NetworkElements.put("a4NetworkElementPodServer01",osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        cleanUp();
     }
 
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
-        a4NetworkElements.forEach((k,v)->
-               a4ResourceInventoryRobot.createNetworkElement(v, a4NetworkElementGroup));
+        a4NetworkElements.forEach((k, networkElement)->
+               a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
     }
 
     @AfterMethod
@@ -154,7 +154,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Test
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test Mobile NE-search-page of installation process")
+    @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
     public void testNeSearchByVpszAndCategory() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
