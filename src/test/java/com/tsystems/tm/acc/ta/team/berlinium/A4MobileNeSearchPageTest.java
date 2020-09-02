@@ -151,4 +151,35 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
     }
 
+    @Test
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile NE-search-page of installation process")
+    public void testNeSearchByVpszAndCategory() throws InterruptedException {
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        //assumption is that all elements have the same VPSZ, so we chose first elements' VPSZ
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getVpsz());
+        a4MobileUiRobot.clickSearchButton();
+
+        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        Thread.sleep(3000);
+
+        List<String> conn = new ArrayList<>();
+
+        elementsCollection.forEach(k -> conn.add(k.getText()));
+
+        a4NetworkElements.forEach((k,networkElement) -> {
+            assertTrue(conn.contains(networkElement.getFsz()),networkElement.getFsz());
+            assertTrue(conn.contains(networkElement.getCategory()),networkElement.getCategory());
+            assertTrue(conn.contains(networkElement.getLifecycleState()),networkElement.getLifecycleState());
+            assertTrue(conn.contains(networkElement.getVpsz()),networkElement.getVpsz());
+            assertTrue(conn.contains(networkElement.getPlanningDeviceName()),networkElement.getPlanningDeviceName());
+        });
+
+    }
+
 }
