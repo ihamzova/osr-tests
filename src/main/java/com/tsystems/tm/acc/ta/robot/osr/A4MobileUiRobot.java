@@ -32,4 +32,10 @@ public class A4MobileUiRobot {
         $(a4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value);
     }
 
+    @Step("Check planning")
+    public void checkPlanning() { $(a4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();}
+
+    @Step("Check operating")
+    public void checkOperating() { $(a4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();}
+
 }

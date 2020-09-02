@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.LocateReplyOrReplyMessage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -40,6 +41,12 @@ public class A4MobileNeSearchPage {
 
     @Getter
     public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");
+
+    @Getter
+    public static final By PLANNING_CHECKBOX_LOCATOR = By.id("PLANNING");
+
+    @Getter
+    public static final By OPERATING_CHECKBOX_LOCATOR = By.id("OPERATING");
 
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {

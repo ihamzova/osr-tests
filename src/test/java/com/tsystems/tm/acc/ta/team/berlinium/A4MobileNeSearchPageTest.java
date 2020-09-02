@@ -148,7 +148,56 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpszAndLifecyleState() throws InterruptedException {
+        String leafSwitch= "a4NetworkElementPlanningLeafSwitch01";
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(leafSwitch).getVpsz());
+        a4MobileUiRobot.checkPlanning();
+        a4MobileUiRobot.clickSearchButton();
 
+        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        Thread.sleep(3000);
+
+        List<String> conn = new ArrayList<>();
+
+        elementsCollection.forEach(k -> conn.add(k.getText()));
+
+        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getVpsz()));
+        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getLifecycleState()));
+        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getLifecycleState()));
+    }
+
+    @Test
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile NE-search-page of installation process")
+    public void testNeSearchByVpszAnd2LifecyleStates() throws InterruptedException {
+        String leafSwitch= "a4NetworkElementPlanningLeafSwitch01";
+        String bor = "a4NetworkElementOperatingBor01";
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(leafSwitch).getVpsz());
+        a4MobileUiRobot.checkPlanning();
+        a4MobileUiRobot.checkOperating();
+        a4MobileUiRobot.clickSearchButton();
+
+        $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR()).shouldBe(Condition.visible);
+
+        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        Thread.sleep(3000);
+
+        List<String> conn = new ArrayList<>();
+
+        elementsCollection.forEach(k -> conn.add(k.getText()));
+
+        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getVpsz()));
+        assertTrue(conn.contains(a4NetworkElements.get(leafSwitch).getLifecycleState()));
+        assertTrue(conn.contains(a4NetworkElements.get(bor).getLifecycleState()));
+        assertFalse(conn.contains(a4NetworkElements.get("a4NetworkElementInstallingOlt01").getLifecycleState()));
     }
 
     @Test
