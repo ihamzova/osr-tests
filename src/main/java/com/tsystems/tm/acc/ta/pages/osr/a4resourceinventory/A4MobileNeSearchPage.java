@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.LocateReplyOrReplyMessage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -30,13 +31,29 @@ public class A4MobileNeSearchPage {
     public static final By VPSZ_INPUT_FIELD_LOCATOR = By.id("vpsz");
 
     @Getter
+    public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
+
+    @Getter
     public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
 
     @Getter
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-networkelement-search/div[2]/app-networkelement-search-result/div/table");
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
 
     @Getter
     public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");
+
+    @Getter
+    public static final By PLANNING_CHECKBOX_LOCATOR = By.id("PLANNING");
+
+    @Getter
+    public static final By OPERATING_CHECKBOX_LOCATOR = By.id("OPERATING");
+
+    @Getter
+    public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
+
+    @Getter
+    public static final By INBETRIEBNAHME_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
+
 
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {
