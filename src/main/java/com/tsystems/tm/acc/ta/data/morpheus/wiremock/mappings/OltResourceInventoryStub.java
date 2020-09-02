@@ -103,27 +103,36 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("oltEndSz", equalTo(oltDevice.getVpsz() + "/" + oltDevice.getFsz()));
     }
 
-    public MappingBuilder getDpuAncpSession200(Dpu dpu) {
+    public MappingBuilder getDpuAncpSession200(OltDevice oltDevice, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU)),
+                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU, dpu, oltDevice)),
                         200
                 ))
                 .withName("getDpuAncpSession200")
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
-    public MappingBuilder getDpuAncpSession400(Dpu dpu) {
+    public MappingBuilder getDpuAncpSession200EmptyBody(Dpu dpu) {
+        return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
+                .willReturn(aDefaultResponseWithBody(null,
+                        200
+                ))
+                .withName("getDpuAncpSession200EmptyBody")
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder getDpuAncpSession400(OltDevice oltDevice, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .withName("getDpuAncpSession400")
-                .willReturn(aDefaultResponseWithBody(serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU)), 400))
+                .willReturn(aDefaultResponseWithBody(serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.DPU, dpu, oltDevice)), 400))
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
     public MappingBuilder getOltAncpSession200(OltDevice olt, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.OLT)),
+                        serialize(new OltResourceInventoryMapper().getAncpSessionDto(AncpSessionDto.SessionTypeEnum.OLT, dpu, olt)),
                         200
                 ))
                 .withName("getOltAncpSession200")
@@ -152,6 +161,44 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 ))
                 .withName("getDpuAtOltConfNew200")
                 .withQueryParam("dpuEndsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder getDpuAtOltConfOLTExist200(Dpu dpu, OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(
+                                Collections.singletonList(
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(false, olt, dpu)
+                                )
+                        ),
+                        200
+                ))
+                .withName("getDpuAtOltConfExist200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
+    }
+
+    public MappingBuilder getDpuAtOltConfOLTNew200(OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.emptyList()),
+                        200
+                ))
+                .withName("getDpuAtOltConfNew200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
+    }
+
+    public MappingBuilder getDpuAtOltConfExistAnother200(Dpu dpu, OltDevice olt) {
+        return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(
+                                Collections.singletonList(
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationAnotherDpuDto(olt, dpu)
+                                )
+                        ),
+                        200
+                ))
+                .withName("getDpuAtOltConfExist200")
+                .withQueryParam("oltEndsz", equalTo(olt.getEndsz()));
     }
 
     public MappingBuilder postDpuAtOltConf200(Dpu dpu, OltDevice olt) {

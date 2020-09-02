@@ -175,6 +175,11 @@ public class DpuCommissioningRobot {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?dpuEndsz=" + dpuEndsz));
     }
+    @Step
+    public void checkGetDpuAtOltConfigForOltCalled(String oltEndsz) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration?oltEndsz=" + oltEndsz));
+    }
 
     @Step
     public void checkGetDpuAtOltConfigNotCalled(String dpuEndsz) {
@@ -372,6 +377,30 @@ public class DpuCommissioningRobot {
     public void checkDeleteDpuOltConfigurationNotCalled(){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
         wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration.*"));
+    }
+
+    @Step
+    public void checkDeleteAncpConfigCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/99990"));
+    }
+
+    @Step
+    public void checkDeleteAncpConfigNotCalled() {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/ancp/configuration/99990"));
+    }
+
+    @Step
+    public void checkPostPreprovisionFTTHTaskCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/provisioning/port"));
+    }
+
+    @Step
+    public void checkPostPreprovisionFTTHTaskNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
+        WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/provisioning/port"));
     }
 
 }

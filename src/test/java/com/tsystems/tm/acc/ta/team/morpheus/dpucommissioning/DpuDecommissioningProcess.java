@@ -74,6 +74,9 @@ public class DpuDecommissioningProcess extends BaseTest {
                     bodyContains(olt.getOltPort()),
                     bodyContains("onuId"));
 
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
@@ -88,6 +91,13 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -113,6 +123,8 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -161,8 +173,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
-    @Description("Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    @Test(description = "Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
+    @Description("Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
     public void dpuDecommissioningPostSealDpuOltConfigCallbackError(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -273,6 +285,118 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    @Description("Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    public void dpuDecommissioningPositiveAncpSessionDoesntExist() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositiveAncpSessionDoesntExist")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningAncpSessionDoesntExist(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
+        }
+    }
+
+    @Test(description = "Positive case. DPU-decommisioning, delete AncpSession error callback")
+    @Description("Positive case. DPU-decommisioning, delete AncpSession error callback")
+    public void dpuDecommissioningDeleteAncpErrorCallback() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningDeleteAncpErrorCallback")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningDeleteAncpErrorCallback(olt, dpu)
+                    .build()
+                    .publish();
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getEndSz());
+        }
+    }
+
+    @Test(description = "Negative case. Post Preprovision FTTH on PonPort returned error in callback")
+    @Description("Negative case. Post Preprovision FTTH on PonPort returned error in callback")
+    public void dpuDecommissioningPostPreprovisionFTTHCallbackError() {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHCallbackError);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addAllForPostPreprovisionFTTHCallbackError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostPreprovisionFTTHCallbackError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHcheckValues);
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+        }
+    }
+
+    @Test(description = "Positive case. Another dpu is connected to OLT. PostPreprovisionFTTH expected")
+    @Description("Positive case. Another dpu is connected to OLT. PostPreprovisionFTTH expected")
+    public void dpuDecommissioningPostPreprovisionFTTHAnotherDPUKnown(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHanotherDPUAtPonPortExist);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addAllForPostPreprovisionFTTHAnotherDPUKnown")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostPreprovisionFTTHAnotherDPUKnown(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHcheckValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+        }
+    }
+
+    @Test(description = "Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
+    @Description("Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
+    public void dpuDecommissioningPostPreprovisionFTTHDPUisAlreadyKnown(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHDPUAtPonPortAlreadyExist);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addAllForPostPreprovisionFTTHDPUisAlreadyKnown")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForPostPreprovisionFTTHDPUisAlreadyKnown(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
         }
     }
 

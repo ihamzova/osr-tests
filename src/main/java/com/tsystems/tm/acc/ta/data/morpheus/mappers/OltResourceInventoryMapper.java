@@ -210,38 +210,38 @@ public class OltResourceInventoryMapper {
                 .compositePartyId(10001L);
     }
 
-    public AncpSessionDto getAncpSessionDto(AncpSessionDto.SessionTypeEnum sessionType) {
-        return new AncpSessionDto()
-                .id(0L)
-                .vlan(0)
-                .sessionId(0)
+    public AncpSessionDto getAncpSessionDto(AncpSessionDto.SessionTypeEnum sessionType, Dpu dpu, OltDevice olt) {
+                return new AncpSessionDto()
+                .id(99990L)
+                .vlan(7)
+                .sessionId(98765)
                 .sessionType(sessionType)
-                .rmkEndpointId("string")
-                .sealConfigurationId("string")
+                .rmkEndpointId("rmk12345")
+                .sealConfigurationId("seal12345")
                 .partitionId(123)
                 .ipSubnet(new IpSubnetDto()
                         .id(0L)
-                        .subnetMask("string")
-                        .ipAddressLoopback("string")
-                        .ipAddressBng("string")
-                        .ipAddressBroadcast("string")
-                        .rmkAccessId("string")
+                        .subnetMask("24")
+                        .ipAddressLoopback("10.40.120.4")
+                        .ipAddressBng("10.40.120.3")
+                        .ipAddressBroadcast("10.40.120.5")
+                        .rmkAccessId("rmk6789")
                         .allocatedIPAddresses(Collections.singletonList(new AllocatedIPAddressesDto()
-                                .id(0L)
-                                .ipAddress("string"))
+                                .id(99992L)
+                                .ipAddress("10.40.120.2"))
                         )
                 )
                 .sessionStatus(AncpSessionDto.SessionStatusEnum.ACTIVE)
-                .endsz("string")
+                .endsz(sessionType == AncpSessionDto.SessionTypeEnum.DPU ? dpu.getEndSz():olt.getEndsz())
                 .allocatedIPAddress(new AllocatedIPAddressesDto()
-                        .id(0L)
-                        .ipAddress("string")
+                        .id(99993L)
+                        .ipAddress("10.40.120.1")
                 )
                 .configurationStep(AncpSessionDto.ConfigurationStepEnum.CREATE_IP_RANGE_ASSIGNMENT)
                 .additionalInfo("string")
                 .lastActivity(OffsetDateTime.now())
-                .slotNumber("string")
-                .portNumber("string");
+                .slotNumber("1")
+                .portNumber("2");
     }
 
     public DpuAtOltConfigurationDto getDpuAtOltConfigurationDto(boolean valuesInRequest, OltDevice olt, Dpu dpu) {
@@ -272,6 +272,21 @@ public class OltResourceInventoryMapper {
                     .oltUplinkSlot(olt.getUplinkSlot())
                     .oltUplinkPort(olt.getUplinkPort());
         }
+    }
+
+    public DpuAtOltConfigurationDto getDpuAtOltConfigurationAnotherDpuDto(OltDevice olt, Dpu dpu) {
+            return new DpuAtOltConfigurationDto()
+                    .id(12345L)
+                    .dpuEndsz(dpu.getEndSz())
+                    .backhaulId("backhaulId01")
+                    .onuId(12345)
+                    .configurationState("ACTIVE")
+                    .serialNumber("48AB541118CC5191")
+                    .oltEndsz(olt.getEndsz())
+                    .oltPonSlot("202")
+                    .oltPonPort("9")
+                    .oltUplinkSlot(olt.getUplinkSlot())
+                    .oltUplinkPort(olt.getUplinkPort());
     }
 
     public DpuEmsConfigurationDto getDpuEmsConfigurationDto(boolean valuesInRequest) {

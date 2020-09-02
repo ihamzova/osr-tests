@@ -13,6 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class WgAccessProvisioningStub extends AbstractStubMapping {
     public static final String PORT_DEPROVISIONING_URL = "/resource-order-resource-inventory/v1/deprovisioning/port";
+    public static final String PORT_PREPROVISIONING_URL = "/resource-order-resource-inventory/v1/provisioning/port";
 
     public MappingBuilder postPortDeprovisioning201(OltDevice olt, Dpu dpu) {
         return post(urlPathEqualTo(PORT_DEPROVISIONING_URL))
@@ -41,6 +42,32 @@ public class WgAccessProvisioningStub extends AbstractStubMapping {
                 .withQueryParam("deprovisioningForDpu", matching("true|false"))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgAccessProvisioningMapper().getDeprovisioningResponseHolder(false))));
+    }
+
+    public MappingBuilder postPortProvisioning400(OltDevice olt, Dpu dpu) {
+        return post(urlPathEqualTo(PORT_DEPROVISIONING_URL))
+                .withName("postPortProvisioning400")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 400))
+                .withQueryParam("businessKey", matching(".*"))
+                .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())));
+    }
+
+    public MappingBuilder postPortProvisioning201CallbackError(OltDevice olt, Dpu dpu) {
+        return post(urlPathEqualTo(PORT_PREPROVISIONING_URL))
+                .withName("postPortProvisioning201")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withQueryParam("businessKey", matching(".*"))
+                .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgAccessProvisioningMapper().getDeprovisioningResponseHolder(false))));
+    }
+
+    public MappingBuilder postPortProvisioning201(OltDevice olt, Dpu dpu) {
+        return post(urlPathEqualTo(PORT_PREPROVISIONING_URL))
+                .withName("postPortProvisioning201")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withQueryParam("businessKey", matching(".*"))
+                .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgAccessProvisioningMapper().getDeprovisioningResponseHolder(true))));
     }
 
     private String serialize(Object obj) {
