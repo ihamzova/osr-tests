@@ -2,12 +2,17 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -15,11 +20,15 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+
 // Lutz: for Service Logging: Can we change definitions from UpiterConstants to OsrConstants?
 //                      see: UpiterConstants
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
+    private DpuCommissioningRobot dpuCommissioningBackendRobot = new DpuCommissioningRobot();
+    private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
 
     @BeforeClass
@@ -40,7 +49,43 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addSEALMocksForDomain(dpuDevice)
+                    .build()
+                    .publish();
+
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
+
+        etcdRobot.checkEtcdValues(dpuCommissioningBackendRobot.getBusinessKey(),
+                Arrays.asList(
+                        "EXECUTED Successfuly [Read DPU device data]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
+                        "EXECUTED Successfuly [Read OltPonPort Data]",
+                        "EXECUTED Successfuly [Read OltUpLinkPortData]",
+                        "EXECUTED Successfuly [Get Unique OnuId for DPU]",
+                        "EXECUTED Successfuly [Read BackhaulId]",
+                        "EXECUTED Successfuly [Read BackhaulId]",
+                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
+                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
+                        "EXECUTED Successfuly [Configure ANCP on BNG][call]",
+                        "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
+                        "EXECUTED Successfuly [Read ANCP Info]",
+                        "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
+                        "EXECUTED Successfuly [Configure DPU at OLT][call]",
+                        "EXECUTED Successfuly [Configure DPU at OLT][callback]",
+                        "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
+                        "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
+                        "EXECUTED Successfuly [Configure DPU Ems][call]",
+                        "EXECUTED Successfuly [Configure DPU Ems][callback]",
+                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
+                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
+                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
+                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+    }
     }
 }

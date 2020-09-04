@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.data.osr.wiremock.mappings;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.mappers.SealMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.invoker.JSON;
@@ -41,6 +42,22 @@ public class SealStub extends AbstractStubMapping {
                 .willReturn(aDefaultResponseWithBody("", 202))
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.ancpDpuName=='%s')]", dpu.getEndSz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationMcpRequest(true))));
+    }
+
+    public MappingBuilder postDomainDpuDpuConfiguration202(DpuDevice dpu) {
+        return post(urlPathEqualTo(DPU_DPU_CONFIGURATION_TASK_URL))
+                .withName("postDomainDpuDpuConfiguration202")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.ancpDpuName=='%s%s')]", dpu.getVpsz(),dpu.getFsz())))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationMcpRequest(true))));
+    }
+
+    public MappingBuilder postDomainOltDpuConfiguration202(DpuDevice dpu) {
+        return post(urlPathEqualTo(OLT_DPU_CONFIGURATION_TASK_URL))
+                .withName("postOltDpuConfiguration202")
+                .willReturn(aDefaultResponseWithBody("", 202))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s%s')]", dpu.getVpsz().replace("/", "_"),dpu.getFsz())))
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationOltRequest(true))));
     }
 
     public MappingBuilder postDpuDpuConfiguration202CallbackError(Dpu dpu) {
