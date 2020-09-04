@@ -1,0 +1,18 @@
+name: EndSz_49_30_179_71G0_SDX2221
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/30/179/"
+  fsz: "71G0"
+  oltEndsz: "49/911/1100/76H1"
+  oltGponSlot: "1"
+  oltGponPort: "0"
+  bezeichnung: "SDX2221-16-TP"
+  typ: "SDX2221-16-TP"
+  hersteller: "ADTRAN"
+  klsId: "12223344"
+  seriennummer: "SN123123123"
+  firmwareVersion: "SDX5600V800R016C00"
+  ipAdresse: "10.182.125.196"
+  ponConnectionWe: "1"
+  ponConnectionGe: "0"
+  dpuDistributionPointId: "1"

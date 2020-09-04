@@ -1,8 +1,10 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
+import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Step;
@@ -33,6 +35,7 @@ public class OltSearchPage {
     public static final By SEARCH_BUTTON_LOCATOR = byQaData("button-search");
     public static final By AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-auto-commissioning");
     public static final By MANUAL_OLT_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-manual-commissioning");
+    public static final By MANUAL_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-manual-dpu-commissioning");
 
     private static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
 
@@ -56,6 +59,13 @@ public class OltSearchPage {
         return this;
     }
 
+    @Step("Search not existing Device by EndSz")
+    public OltSearchPage searchNotDiscoveredByEndSz(String endSz) {
+        inputDeviceParameters(endSz);
+        $(SEARCH_BUTTON_LOCATOR).click();
+        return this;
+    }
+
     @Step("Search existing OLT by parameters")
     public OltDetailsPage searchDiscoveredOltByParameters(OltDevice oltDevice) {
         inputOltParameters(oltDevice);
@@ -75,6 +85,12 @@ public class OltSearchPage {
         return new OltDiscoveryPage();
     }
 
+    @Step("Start DPU creatione")
+    public DpuCreatePage pressCreateDpuButton() {
+        $(MANUAL_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
+        return new DpuCreatePage();
+    }
+
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
         $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
@@ -87,5 +103,19 @@ public class OltSearchPage {
         $(OLT_VKZ_INPUT_LOCATOR).val(endSz[2]);
         $(OLT_FSZ_INPUT_LOCATOR).click();
         $(OLT_FSZ_INPUT_LOCATOR).val(oltDevice.getFsz());
+    }
+
+    private void inputDeviceParameters(String endSz) {
+        String[] endSzn = endSz.split("/");
+        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
+        $(ENDSZ_SEARCH_TYPE_VALUE).click();
+        $(OLT_AKZ_INPUT_LOCATOR).click();
+        $(OLT_AKZ_INPUT_LOCATOR).val(endSzn[0]);
+        $(OLT_ONKZ_INPUT_LOCATOR).click();
+        $(OLT_ONKZ_INPUT_LOCATOR).val(endSzn[1]);
+        $(OLT_VKZ_INPUT_LOCATOR).click();
+        $(OLT_VKZ_INPUT_LOCATOR).val(endSzn[2]);
+        $(OLT_FSZ_INPUT_LOCATOR).click();
+        $(OLT_FSZ_INPUT_LOCATOR).val(endSzn[3]);
     }
 }
