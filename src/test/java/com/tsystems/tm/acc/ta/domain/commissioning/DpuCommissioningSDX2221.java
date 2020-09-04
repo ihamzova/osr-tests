@@ -46,7 +46,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
     @Owner("@t-systems.com")
     public void dpuCommissioning() {
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
 
@@ -56,36 +56,36 @@ public class DpuCommissioningSDX2221 extends BaseTest {
                     .build()
                     .publish();
 
-        dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
-        dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
+            dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
+            dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
 
-        etcdRobot.checkEtcdValues(dpuCommissioningBackendRobot.getBusinessKey(),
-                Arrays.asList(
-                        "EXECUTED Successfuly [Read DPU device data]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                        "EXECUTED Successfuly [Read OltPonPort Data]",
-                        "EXECUTED Successfuly [Read OltUpLinkPortData]",
-                        "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][call]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
-                        "EXECUTED Successfuly [Read ANCP Info]",
-                        "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][call]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][callback]",
-                        "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU Ems][call]",
-                        "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
-    }
+            etcdRobot.checkEtcdValues(dpuCommissioningBackendRobot.getBusinessKey(),
+                    Arrays.asList(
+                            "EXECUTED Successfuly [Read DPU device data]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
+                            "EXECUTED Successfuly [Read OltPonPort Data]",
+                            "EXECUTED Successfuly [Read OltUpLinkPortData]",
+                            "EXECUTED Successfuly [Get Unique OnuId for DPU]",
+                            "EXECUTED Successfuly [Read BackhaulId]",
+                            "EXECUTED Successfuly [Read BackhaulId]",
+                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
+                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
+                            "EXECUTED Successfuly [Configure ANCP on BNG][call]",
+                            "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
+                            "EXECUTED Successfuly [Read ANCP Info]",
+                            "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
+                            "EXECUTED Successfuly [Configure DPU at OLT][call]",
+                            "EXECUTED Successfuly [Configure DPU at OLT][callback]",
+                            "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
+                            "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
+                            "EXECUTED Successfuly [Configure DPU Ems][call]",
+                            "EXECUTED Successfuly [Configure DPU Ems][callback]",
+                            "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
+                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
+                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
+                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+        }
     }
 }

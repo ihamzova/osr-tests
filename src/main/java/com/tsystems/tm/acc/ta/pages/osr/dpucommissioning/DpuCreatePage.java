@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -23,6 +24,8 @@ public class DpuCreatePage {
     public static final By DPU_OLT_ENDSZ_INPUT_LOCATOR = byQaData("input-oltPonPortEndsz");
     public static final By DPU_OLT_SLOT_INPUT_LOCATOR = byQaData("input-oltPonSlotNumber");
     public static final By DPU_OLT_PORT_INPUT_LOCATOR = byQaData("input-oltPonPortNumber");
+    public static final By DPU_DEVICE_CREATE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-device-editor/app-dpu-editor/form/div[2]/div/div[2]/button");//workaround as qa-data is not ready
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -31,7 +34,7 @@ public class DpuCreatePage {
     }
 
     @Step("Input params and start DPU creation")
-    public  DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
+    public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
         $(DPU_KLS_ID_INPUT_LOCATOR).click();
         $(DPU_KLS_ID_INPUT_LOCATOR).val(dpuDevice.getKlsId());
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
@@ -50,7 +53,7 @@ public class DpuCreatePage {
         $(DPU_OLT_SLOT_INPUT_LOCATOR).val(dpuDevice.getOltGponSlot());
         $(DPU_OLT_PORT_INPUT_LOCATOR).click();
         $(DPU_OLT_PORT_INPUT_LOCATOR).val(dpuDevice.getOltGponPort());
-
+        $(DPU_DEVICE_CREATE_BUTTON_LOCATOR).click();
         return this;
     }
 }
