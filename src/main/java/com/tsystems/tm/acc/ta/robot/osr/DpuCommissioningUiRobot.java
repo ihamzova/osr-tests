@@ -2,15 +2,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import io.qameta.allure.Step;
-import org.testng.Assert;
+
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 public class DpuCommissioningUiRobot {
 
@@ -20,21 +18,29 @@ public class DpuCommissioningUiRobot {
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
     @Step("Start automatic dpu creation and commissioning process")
-    public void startDpuCommissioning(DpuDevice dpu) {
+    public void startDpuCommissioning(DpuDevice dpuDevice) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpu.getEndsz());
+        oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
 
         oltSearchPage.pressCreateDpuButton();
 
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
-        dpuCreatePage.startDpuCreation(dpu);
+        dpuCreatePage.startDpuCreation(dpuDevice);
 
     }
 
     @Step("Checks data in ri after commissioning process")
-    public void checkDpuCommissioningResult(DpuDevice olt) {
+    public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 
+    }
+
+    @Step("Clear devices (DPU and OLT) in olt-resource-inventory database")
+    public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        //oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
+        //        .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }

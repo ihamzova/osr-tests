@@ -33,7 +33,8 @@ public class DpuCommissioningSDX2221 extends BaseTest {
 
     @BeforeClass
     public void init() {
-
+        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+        dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
     }
 
     @AfterClass
@@ -48,7 +49,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     public void dpuCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
 
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
