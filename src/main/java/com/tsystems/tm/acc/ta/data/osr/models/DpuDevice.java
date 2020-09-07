@@ -15,12 +15,12 @@ public class DpuDevice {
     private String oltEndsz;
     private String oltGponSlot;
     private String oltGponPort;
+    private String bngEndsz;
     private String bezeichnung;
     private String typ;
     private String hersteller;
     private String klsId;
     private String seriennummer;
-    private String firmwareVersion;
     private String ipAdresse;
     private String ponConnectionWe;
     private String ponConnectionGe;
@@ -32,6 +32,6 @@ public class DpuDevice {
     }
 
     public String getEndsz() {
-        return String.format("%s%s", getVpsz(), getFsz());
+        return String.format("%s/%s", getVpsz(), getFsz());
     }
 }

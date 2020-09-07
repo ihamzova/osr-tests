@@ -35,6 +35,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     public void init() {
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
+        dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
     }
 
     @AfterClass

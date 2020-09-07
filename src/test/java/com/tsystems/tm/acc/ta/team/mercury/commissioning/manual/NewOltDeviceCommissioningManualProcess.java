@@ -147,7 +147,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
      * check uplink and ancp-session data from olt-ressource-inventory
      */
     private void checkUplink(String endSz) {
-        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(uplinkDTOList.size(), 1L);
@@ -159,7 +159,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
      * check uplink is not exist in olt-resource-inventory
      */
     private void checkUplinkDeleted(String endSz) {
-        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz()
+        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertTrue(uplinkDTOList.isEmpty());
