@@ -46,7 +46,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @TmsLink("DIGIHUB-75965")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
     @Owner("@t-systems.com")
-    public void dpuCommissioning() {
+    public void dpuCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
@@ -86,6 +86,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+
         }
     }
 }
