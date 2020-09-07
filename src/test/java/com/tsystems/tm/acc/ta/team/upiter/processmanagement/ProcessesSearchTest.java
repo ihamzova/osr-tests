@@ -70,7 +70,7 @@ public class ProcessesSearchTest extends BaseTest {
         processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
         processSearchPage.checkPaginationSizes(processSearchPage.getPaginatorSizes());
         processSearchPage.clickFirstRowExpansion();
-        Process foundProcess = new Process();
+        Process foundProcess = processSearchPage.collectDataFromRowExpansion();
         processSearchPage.checkRowExpansionData(foundProcess, process);
     }
 
