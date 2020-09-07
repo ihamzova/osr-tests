@@ -1,15 +1,11 @@
 package com.tsystems.tm.acc.ta.domain.a4functionality;
 
-import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
@@ -36,6 +32,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
 @ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(ACCESS_LINE_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
 

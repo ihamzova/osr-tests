@@ -18,4 +18,5 @@ public interface UpiterConstants {
     String ACCESS_PROCESS_MANAGEMENT_UI = "access-process-management-ui";
     String ACCESS_PROCESS_MANAGEMENT_BFF = "access-process-management-bff";
     String ACCESS_PROCESS_MANAGEMENT = "access-process-management";
+    String ACCESS_LINE_MANAGEMENT = "access-line-management";
 }
