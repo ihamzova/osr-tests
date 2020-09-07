@@ -88,7 +88,8 @@ public class OntOltOrchestratorRobot {
 
         CommissioningResult result = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), CommissioningResult.class);
-        Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), result.getError().getMessage());
+        Assert.assertNotNull(result.getResponse().getLineId(),"Cannot get lineId from callback");
+        Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
     }
 
     @Step("Send request to test ONT state")

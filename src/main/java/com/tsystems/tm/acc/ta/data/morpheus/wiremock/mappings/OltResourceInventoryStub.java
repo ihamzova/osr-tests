@@ -191,7 +191,8 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
         return get(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .willReturn(aDefaultResponseWithBody(
                         serialize(
-                                Collections.singletonList(
+                                Arrays.asList(
+                                        new OltResourceInventoryMapper().getDpuAtOltConfigurationAnotherDpuDto(olt, dpu),
                                         new OltResourceInventoryMapper().getDpuAtOltConfigurationAnotherDpuDto(olt, dpu)
                                 )
                         ),

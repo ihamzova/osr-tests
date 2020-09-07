@@ -27,6 +27,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog(LINE_ID_GENERATOR_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT)
 @ServiceLog("olt-discovery")
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();

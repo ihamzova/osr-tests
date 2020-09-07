@@ -1,0 +1,5 @@
+name: GetANCPSessionNull
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/8572/0/71GL"
+  onuId: 12345678

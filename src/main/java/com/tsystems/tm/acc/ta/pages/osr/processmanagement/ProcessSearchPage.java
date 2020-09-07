@@ -146,11 +146,13 @@ public class ProcessSearchPage {
         return this;
     }
 
+    @Step("Get table headers")
     public List<String> getTableHeaders() {
         return $(P_SEARCH_TABLE).findAll(By.tagName("th")).stream().map(SelenideElement::text)
                 .collect(Collectors.toList());
     }
 
+    @Step("Get table message")
     public String getTableMessage() {
         return $(TABLE_MESSAGE).text();
     }
@@ -165,6 +167,7 @@ public class ProcessSearchPage {
                 .collect(Collectors.toList());
     }
 
+    @Step("Collect data about all processes in the table")
     public List<Process> getTableLines(){
         return getTableRows().stream()
                 .map(element -> {
@@ -180,6 +183,7 @@ public class ProcessSearchPage {
                 .collect(Collectors.toList());
     }
 
+    @Step("Get all table rows")
     public List<SelenideElement> getTableRows(){
         return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
     }
@@ -209,14 +213,6 @@ public class ProcessSearchPage {
         $(OK_IN_CONFIRMATION_DIALOG).shouldBe(enabled);
     }
 
-    @Step("Check row expansion data")
-    public void checkRowExpansionData(Process actualProcess, Process expectedProcess){
-        collectDataFromRowExpansion(actualProcess);
-        assertTrue(actualProcess.getEndSz().contains(expectedProcess.getEndSz()));
-        assertTrue(actualProcess.getPortNumber().contains(expectedProcess.getPortNumber()));
-        assertTrue(actualProcess.getSlotNumber().contains(expectedProcess.getSlotNumber()));
-    }
-
     @Step("Check process after restoration")
     public void checkRestoredProcess(Process restoredProcess, Process initialProcess){
         assertTrue(restoredProcess.getProcessId().equals(initialProcess.getProcessId()));
@@ -226,9 +222,19 @@ public class ProcessSearchPage {
         assertTrue(restoredProcess.getState().equals(STATUS_GESTARTET));
     }
 
-    public void collectDataFromRowExpansion(Process process){
+    @Step("Check row expansion data")
+    public void checkRowExpansionData(Process actualProcess, Process expectedProcess){
+        assertTrue(actualProcess.getEndSz().contains(expectedProcess.getEndSz()));
+        assertTrue(actualProcess.getPortNumber().contains(expectedProcess.getPortNumber()));
+        assertTrue(actualProcess.getSlotNumber().contains(expectedProcess.getSlotNumber()));
+    }
+
+    @Step("Collect data from row expansion")
+    public Process collectDataFromRowExpansion(){
+        Process process = new Process();
         process.setEndSz($$(VARIABLES).get(0).getText());
         process.setPortNumber($$(VARIABLES).get(1).getText());
         process.setSlotNumber($$(VARIABLES).get(2).getText());
+        return process;
     }
 }
