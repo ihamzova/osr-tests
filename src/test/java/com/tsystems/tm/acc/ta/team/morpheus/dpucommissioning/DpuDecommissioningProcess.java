@@ -44,7 +44,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. DPU-decommisioning without errors")
-    @Description("Positive case. DPU-decommisioning without errors")
+    @Description("Expected: no erors, dpuDecommissioning finished")
     public void dpuDecommissioningPositive() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -102,7 +102,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. Uplink.LifecycleState = RETIRING, DPU.Linfecyclestate = RETIRING")
-    @Description("Positive case. Uplink.LifecycleState = RETIRING, DPU.Linfecyclestate = RETIRING")
+    @Description("Positive case. Expected: Patch for UplinkPort and Device called only once at the end of the process")
     public void dpuDecommissioningDeviceAndUplinkLifeCycleRetiring() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceUplinkRetiring);
@@ -129,7 +129,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
-    @Description("Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
+    @Description("Negative case. Process aborted, error in callback from Wg-FTTB-AP")
     public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostWgFTTBDeviceDeprovisioningCallbackError);
@@ -152,7 +152,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
-    @Description("Negative case. deconfigure DPU in EMS for SEAL return error in Callback")
+    @Description("Negative case. Process aborted, error in callback from SEAL (EMS Config)")
     public void dpuDecommissioningPostSealDpuEmsConfigCallbackError(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -174,7 +174,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
-    @Description("Negative case. deconfigure DPU at OLT for SEAL return error in Callback")
+    @Description("Negative case. Process aborted, error in callback from SEAL (OLT Config)")
     public void dpuDecommissioningPostSealDpuOltConfigCallbackError(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -202,11 +202,11 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. DPU-decommisioning without errors, DpuEmsConfiguration exists")
-    @Description("Use case: DpuEmsConfiguration exists")
+    @Description("Positive case. Expected: no call on SEAL and no PUT on ORI")
     public void dpuDecommissioningDpuEmsConfigDoesntExist() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuEmsConfigurationExists);
 
         try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningDpuEmsConfigDoesntExist")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -230,11 +230,11 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. DPU-decommisioning without errors, DpuOltConfiguration exists")
-    @Description("Use case: DpuOltConfiguration exists")
+    @Description("Positive case. Expected: no call on SEAL and no PUT on ORI")
     public void dpuDecommissioningDpuOltConfigDoesntExist() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuOltConfigurationExist);
 
         try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningDpuOltConfigDoesntExist")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -264,11 +264,11 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Negative case. Post ReleaseOnuIdTask returned 400")
-    @Description("Negative case. Post ReleaseOnuIdTask returned 400")
+    @Description("Negative case. Expected: process aborted by reason of http-Error from AL-RI")
     public void dpuDecommissioningReleaseOnuIdTask400() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetOnuId400);
 
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningReleaseOnuIdTask400")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -289,11 +289,11 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. DPU-decommisioning, AncpSession doesn't exist")
-    @Description("Positive case. DPU-decommisioning, AncpSession doesn't exist")
+    @Description("Positive case. Expected: delete ANCPSession request not called  ")
     public void dpuDecommissioningPositiveAncpSessionDoesntExist() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.GetANCPSessionNull);
 
         try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositiveAncpSessionDoesntExist")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -307,12 +307,12 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. DPU-decommisioning, delete AncpSession error callback")
-    @Description("Positive case. DPU-decommisioning, delete AncpSession error callback")
+    @Test(description = "Negative case. DPU-decommisioning, delete AncpSession error callback")
+    @Description("Negative case. Expected: process aborted by reason of error callback from AncpConf ")
     public void dpuDecommissioningDeleteAncpErrorCallback() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DeleteANCPSessionErrorCallback);
 
         try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningDeleteAncpErrorCallback")){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -328,7 +328,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Negative case. Post Preprovision FTTH on PonPort returned error in callback")
-    @Description("Negative case. Post Preprovision FTTH on PonPort returned error in callback")
+    @Description("Negative case. Expected: process aborted by reason of error callback from WG-FTTH-AP")
     public void dpuDecommissioningPostPreprovisionFTTHCallbackError() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -352,8 +352,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. Another dpu is connected to OLT. PostPreprovisionFTTH expected")
-    @Description("Positive case. Another dpu is connected to OLT. PostPreprovisionFTTH expected")
+    @Test(description = "Positive case. Several dpus connected to OLT. PostPreprovisionFTTH expected")
+    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP sent")
     public void dpuDecommissioningPostPreprovisionFTTHAnotherDPUKnown(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHanotherDPUAtPonPortExist);
@@ -377,7 +377,7 @@ public class DpuDecommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
-    @Description("Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
+    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
     public void dpuDecommissioningPostPreprovisionFTTHDPUisAlreadyKnown(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHDPUAtPonPortAlreadyExist);
