@@ -11,7 +11,7 @@ values:
   typ: "SDX2221-16-TP"
   hersteller: "ADTRAN"
   klsId: "12223344"
-  seriennummer: "SN123123123"
+  seriennummer: "ADTN180600B9"
   ipAdresse: "10.182.125.196"
   ponConnectionWe: "1"
   ponConnectionGe: "0"

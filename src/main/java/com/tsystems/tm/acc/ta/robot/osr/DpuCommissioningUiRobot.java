@@ -45,6 +45,12 @@ public class DpuCommissioningUiRobot {
 
     }
 
+    @Step("Restore accessline-resource-inventory Database state")
+    public void restoreOsrDbState() {
+        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Clear devices (DPU and OLT) in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
