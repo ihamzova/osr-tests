@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.util.Assert;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
@@ -15,7 +16,7 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
-
+@Slf4j
 public class DpuInfoPage {
 
     public static final String APP = "olt-resource-inventory-ui";
@@ -32,7 +33,9 @@ public class DpuInfoPage {
     public static final By DPU_ACCESS_LINES_VIEW_TAB_LOCATOR = byQaData("a-access-lines-view");
 
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-commissioning/div/div[3]/button[1]"); //workaround as qa-data is in implementation
+    public static final By ETCD_BUSINESS_KEY  = byQaData("DPU_COMMISSIONING");
 
+    private  String businessKey;
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -44,9 +47,12 @@ public class DpuInfoPage {
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
         /**testable only on domain level
-         * $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
-         * check DPU COMMISSIONING PROCESS and catch businessKey
-           $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);*/
+         $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+        */
+        //check DPU COMMISSIONING PROCESS and catch businessKey
+        businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
+        log.info("startDpuCommissioning() businessKey = {}",  businessKey);
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);
         return this;
     }
 
@@ -76,5 +82,10 @@ public class DpuInfoPage {
     @Step("Get PORT life cycle state")
     public static String getPortLifeCycleState(String port) {
         return $(PON_PORT_LIFE_CYCLE_STATE_LOCATOR).getText();
+    }
+
+    @Step("get businessKey")
+    public String getBusinessKey() {
+        return businessKey;
     }
 }

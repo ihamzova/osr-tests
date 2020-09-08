@@ -19,6 +19,7 @@ public class DpuCommissioningUiRobot {
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
+    private String businessKey;
 
     @Step("Start automatic dpu creation and commissioning process")
     public void startDpuCommissioning(DpuDevice dpuDevice) throws InterruptedException {
@@ -38,6 +39,9 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         dpuInfoPage.startDpuCommissioning();
+        businessKey = dpuInfoPage.getBusinessKey();
+        Assert.assertNotNull(businessKey);
+        Assert.assertFalse(businessKey.isEmpty());
 
         Thread.sleep(1000);
         /**testable only on domain level
@@ -82,5 +86,10 @@ public class DpuCommissioningUiRobot {
 
         // accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
         //         .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("get businessKey")
+    public String getBusinessKey() {
+        return businessKey;
     }
 }
