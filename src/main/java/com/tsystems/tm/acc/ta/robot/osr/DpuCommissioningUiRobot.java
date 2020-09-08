@@ -2,11 +2,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import io.qameta.allure.Step;
+import org.testng.Assert;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -33,8 +35,14 @@ public class DpuCommissioningUiRobot {
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         dpuInfoPage.startDpuCommissioning();
+
         Thread.sleep(1000);
+        /**testable only on domain level
+         * Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.OPERATING.toString());*/
         dpuInfoPage.openDpuConfiguraionTab();
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
@@ -66,7 +74,7 @@ public class DpuCommissioningUiRobot {
                 ._11RunSQLQuery("1")
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-       // accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-       //         .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        // accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
+        //         .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 }

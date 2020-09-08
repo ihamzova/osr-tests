@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.dpucommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
@@ -9,6 +10,7 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
+import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -18,13 +20,19 @@ public class DpuInfoPage {
 
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
+    public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     private static final Integer WAITING_TIME_FOR_DPU_COMMISSIONING_PROCESS_END = 15_000;
+    public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
+
+    private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
+    public static final By PON_PORT_LIFE_CYCLE_STATE_LOCATOR = byQaData("port_1_pon_lifecyclestate");
 
     public static final By DPU_PORTS_VIEW_TAB_LOCATOR = byQaData("a-ports-view");
     public static final By DPU_CONFIGURATION_VIEW_TAB_LOCATOR = byQaData("a-configuration-view");
     public static final By DPU_ACCESS_LINES_VIEW_TAB_LOCATOR = byQaData("a-access-lines-view");
 
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-commissioning/div/div[3]/button[1]"); //workaround as qa-data is in implementation
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -35,6 +43,10 @@ public class DpuInfoPage {
     @Step("Start dpu commissioning")
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
+        /**testable only on domain level
+         * $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+         * check DPU COMMISSIONING PROCESS and catch businessKey
+           $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);*/
         return this;
     }
 
@@ -56,4 +68,13 @@ public class DpuInfoPage {
         return this;
     }
 
+    @Step("Get device life cycle state")
+    public static String getDeviceLifeCycleState() {
+        return $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).getText();
+    }
+
+    @Step("Get PORT life cycle state")
+    public static String getPortLifeCycleState(String port) {
+        return $(PON_PORT_LIFE_CYCLE_STATE_LOCATOR).getText();
+    }
 }
