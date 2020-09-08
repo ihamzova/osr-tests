@@ -48,7 +48,7 @@ public class SealStub extends AbstractStubMapping {
         return post(urlPathEqualTo(DPU_DPU_CONFIGURATION_TASK_URL))
                 .withName("postDomainDpuDpuConfiguration202")
                 .willReturn(aDefaultResponseWithBody("", 202))
-                .withRequestBody(matchingJsonPath(String.format("$[?(@.ancpDpuName=='%s%s')]", dpu.getVpsz(),dpu.getFsz())))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.ancpDpuName=='%s')]", dpu.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationMcpRequest(true))));
     }
 
@@ -56,7 +56,7 @@ public class SealStub extends AbstractStubMapping {
         return post(urlPathEqualTo(OLT_DPU_CONFIGURATION_TASK_URL))
                 .withName("postOltDpuConfiguration202")
                 .willReturn(aDefaultResponseWithBody("", 202))
-                .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s%s')]", dpu.getVpsz().replace("/", "_"),dpu.getFsz())))
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s')]", dpu.getEndsz().replace("/", "_"))))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationOltRequest(true))));
     }
 
