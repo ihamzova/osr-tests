@@ -7,8 +7,11 @@ import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import io.qameta.allure.Step;
 import org.testng.Assert;
+
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -55,6 +58,16 @@ public class DpuCommissioningUiRobot {
     @Step("Checks data in ri after commissioning process")
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU);
+        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz());
+        Device deviceAfterCommissioning = deviceList.get(0);
+
+        // check device lifecycle state
+        //Assert.assertEquals( deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING);
+
     }
 
     @Step("Restore accessline-resource-inventory Database state")
@@ -84,8 +97,8 @@ public class DpuCommissioningUiRobot {
                 ._11RunSQLQuery("1")
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        // accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-        //         .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("get businessKey")
