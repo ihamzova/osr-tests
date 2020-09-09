@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.DpuPonConnectionDto;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -67,6 +68,20 @@ public class DpuCommissioningUiRobot {
 
         // check device lifecycle state
         //Assert.assertEquals( deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING);
+
+        List<DpuPonConnectionDto> dpuPonConnectionDtos = oltResourceInventoryClient.getClient().dpuPonConnectionInternalController().findDpuPonConnectionByCriteria()
+                .dpuPonPortEndszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(dpuPonConnectionDtos.size(), 1L);
+        DpuPonConnectionDto dpuPonConnection = dpuPonConnectionDtos.get(0);
+        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz());
+        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot());
+        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort());
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortEndsz(), dpuDevice.getEndsz());
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortNumber(), "1");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()));
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()));
+
+
 
     }
 
