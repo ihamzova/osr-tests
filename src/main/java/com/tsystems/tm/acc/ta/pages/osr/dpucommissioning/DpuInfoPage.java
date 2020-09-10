@@ -16,6 +16,7 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+
 @Slf4j
 public class DpuInfoPage {
 
@@ -33,9 +34,14 @@ public class DpuInfoPage {
     public static final By DPU_ACCESS_LINES_VIEW_TAB_LOCATOR = byQaData("a-access-lines-view");
 
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-commissioning/div/div[3]/button[1]"); //workaround as qa-data is in implementation
-    public static final By ETCD_BUSINESS_KEY  = byQaData("DPU_COMMISSIONING");
+    public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
 
-    private  String businessKey;
+    private String businessKey;
+
+    public static final By DPU_ANCP_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/div/div[3]/div/div[1]/div/div");//workaround as qa-data is in implementation
+    public static final By OLT_EMS_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/app-dpu-at-olt-configuration/div/div/div/div[1]/div/div");//workaround as qa-data is in implementation
+    public static final By DPU_EMS_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/app-dpu-at-ems-configuration/div/div/div/div[1]/div/div");//workaround as qa-data is in implementation
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -46,12 +52,12 @@ public class DpuInfoPage {
     @Step("Start dpu commissioning")
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
-        /**testable only on domain level
+        /*testable only on domain level
          $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
-        */
+         */
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
-        log.info("startDpuCommissioning() businessKey = {}",  businessKey);
+        log.info("startDpuCommissioning() businessKey = {}", businessKey);
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);
         return this;
     }
@@ -65,6 +71,9 @@ public class DpuInfoPage {
     @Step("Open DPU Konfiguration Tab. Check DPU Verschaltung")
     public DpuInfoPage openDpuConfiguraionTab() {
         $(DPU_CONFIGURATION_VIEW_TAB_LOCATOR).click();
+        log.info("dpu ancp config state is {} ", $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText());
+        log.info("olt ems config state is {} ", $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText());
+        log.info("dpu ems config state is {} ", $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getText());
         return this;
     }
 
@@ -88,4 +97,20 @@ public class DpuInfoPage {
     public String getBusinessKey() {
         return businessKey;
     }
+
+    @Step("check dpu ancp config state")
+    public static String getDpuAncpConfigState() {
+        return $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getValue();
+    }
+
+    @Step("check olt ems config state")
+    public static String getOltEmsConfigState() {
+        return $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getValue();
+    }
+
+    @Step("check dpu ems config state")
+    public static String getDpuEmsConfigState() {
+        return $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getValue();
+    }
+
 }

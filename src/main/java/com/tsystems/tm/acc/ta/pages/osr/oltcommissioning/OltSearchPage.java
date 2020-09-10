@@ -66,6 +66,13 @@ public class OltSearchPage {
         return this;
     }
 
+    @Step("Search existing Device by EndSz")
+    public OltSearchPage searchDiscoveredByEndSz(String endSz) {
+        inputDeviceParameters(endSz);
+        $(SEARCH_BUTTON_LOCATOR).click();
+        return this;
+    }
+
     @Step("Search existing OLT by parameters")
     public OltDetailsPage searchDiscoveredOltByParameters(OltDevice oltDevice) {
         inputOltParameters(oltDevice);

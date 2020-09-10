@@ -16,6 +16,9 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class DpuCommissioningUiRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
+    private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
+    private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
+    private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
@@ -26,9 +29,9 @@ public class DpuCommissioningUiRobot {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
+        //oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
 
         oltSearchPage.pressCreateDpuButton();
-
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
@@ -44,17 +47,19 @@ public class DpuCommissioningUiRobot {
         Assert.assertFalse(businessKey.isEmpty());
 
         Thread.sleep(1000);
-        /**testable only on domain level
+        /*testable only on domain level
          * Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
          Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.OPERATING.toString());*/
         dpuInfoPage.openDpuConfiguraionTab();
+        Assert.assertEquals(DpuInfoPage.getDpuAncpConfigState(), DPU_ANCP_CONFIGURATION_STATE);
+        Assert.assertEquals(DpuInfoPage.getOltEmsConfigState(), OLT_EMS_CONFIGURATION_STATE_LOCATOR);
+        Assert.assertEquals(DpuInfoPage.getDpuEmsConfigState(), DPU_EMS_CONFIGURATION_STATE_LOCATOR);
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
     }
 
     @Step("Checks data in ri after commissioning process")
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
-
     }
 
     @Step("Restore accessline-resource-inventory Database state")
