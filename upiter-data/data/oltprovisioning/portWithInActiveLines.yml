@@ -9,4 +9,4 @@ values:
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
-  accessLinesCount: 3
+  accessLinesCount: 32
