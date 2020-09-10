@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsCont
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
@@ -22,12 +23,20 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-// Lutz: for Service Logging: Can we change definitions from UpiterConstants to OsrConstants?
-//                      see: UpiterConstants
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(OLT_RESOURCE_INVENTORY_MS)
+@ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog(LINE_ID_GENERATOR_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT)
+@ServiceLog("ancp-configuration")
+@ServiceLog("dpu-commissioning")
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
-    private DpuCommissioningRobot dpuCommissioningBackendRobot = new DpuCommissioningRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
 
@@ -35,7 +44,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
 
     @BeforeClass
     public void init() {
-        // dpuCommissioningUiRobot.restoreOsrDbState();
+        dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
@@ -45,7 +54,8 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @AfterClass
     public void teardown() {
         mappingsContext.close();
-
+        dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
+        dpuCommissioningUiRobot.restoreOsrDbState();
     }
 
     @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
@@ -53,7 +63,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
     @Owner("@t-systems.com")
     public void dpuCommissioning() throws InterruptedException {
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
@@ -65,7 +75,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
 
-        etcdRobot.checkEtcdValues(dpuCommissioningBackendRobot.getBusinessKey(),
+        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(),
                 Arrays.asList(
                         "EXECUTED Successfuly [Read DPU device data]",
                         "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",

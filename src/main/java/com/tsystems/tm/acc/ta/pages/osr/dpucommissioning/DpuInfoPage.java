@@ -25,6 +25,7 @@ public class DpuInfoPage {
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
     private static final Integer WAITING_TIME_FOR_DPU_COMMISSIONING_PROCESS_END = 15_000;
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
+    private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
     public static final By PON_PORT_LIFE_CYCLE_STATE_LOCATOR = byQaData("port_1_pon_lifecyclestate");
@@ -57,8 +58,8 @@ public class DpuInfoPage {
          */
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
-        log.info("startDpuCommissioning() businessKey = {}", businessKey);
-        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        log.info("startDpuCommissioning() businessKey = {}",  businessKey);
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_DPU_COMMISSIONING);
         return this;
     }
 
