@@ -24,8 +24,8 @@ public class DpuCreatePage {
     public static final By DPU_OLT_ENDSZ_INPUT_LOCATOR = byQaData("input-oltPonPortEndsz");
     public static final By DPU_OLT_SLOT_INPUT_LOCATOR = byQaData("input-oltPonSlotNumber");
     public static final By DPU_OLT_PORT_INPUT_LOCATOR = byQaData("input-oltPonPortNumber");
-    public static final By DPU_DEVICE_CREATE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-device-editor/app-dpu-editor/form/div[2]/div/div[2]/button"); //workaround as qa-data is in implementation
-    public static final By DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-device-editor/app-dpu-editor/div[2]/div/div[2]/button"); //workaround as qa-data is in implementation
+    public static final By DPU_DEVICE_CREATE_BUTTON_LOCATOR = byQaData("dpu_create");
+    public static final By DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR = byQaData("dpu_details");
 
     @Step("Validate Url")
     public void validateUrl() {

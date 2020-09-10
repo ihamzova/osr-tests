@@ -34,14 +34,18 @@ public class DpuInfoPage {
     public static final By DPU_CONFIGURATION_VIEW_TAB_LOCATOR = byQaData("a-configuration-view");
     public static final By DPU_ACCESS_LINES_VIEW_TAB_LOCATOR = byQaData("a-access-lines-view");
 
-    public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-commissioning/div/div[3]/button[1]"); //workaround as qa-data is in implementation
+    public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_commissioning_start");
     public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
 
-    private String businessKey;
+    private String businessKey; // check etcd values
 
-    public static final By DPU_ANCP_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/div/div[3]/div/div[1]/div/div");//workaround as qa-data is in implementation
-    public static final By OLT_EMS_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/app-dpu-at-olt-configuration/div/div/div/div[1]/div/div");//workaround as qa-data is in implementation
-    public static final By DPU_EMS_CONFIGURATION_STATE_LOCATOR = byXpath("/html/body/app-root/div/div/app-detail/app-device-detail/div/app-dpu-pon-connection/app-dpu-at-ems-configuration/div/div/div/div[1]/div/div");//workaround as qa-data is in implementation
+    // verify
+    public static final By DPU_ANCP_CONFIGURATION_STATE_LOCATOR = byQaData("dpu_ancp_session_status");
+    public static final By OLT_EMS_CONFIGURATION_STATE_LOCATOR = byQaData("olt_ems_configuration_status");
+    public static final By OLT_EMS_DPU_ENDSZ_LOCATOR = byQaData("olt_ems_dpu_endsz");
+    public static final By OLT_EMS_OLT_ENDSZ_LOCATOR = byQaData("olt_ems_olt_endsz");
+    public static final By DPU_EMS_CONFIGURATION_STATE_LOCATOR = byQaData("dpu_ems_configuration_status");
+    public static final By DPU_EMS_DPU_ENDSZ_LOCATOR = byQaData("dpu_ems_dpu_endsz");
 
 
     @Step("Validate Url")
@@ -72,9 +76,6 @@ public class DpuInfoPage {
     @Step("Open DPU Konfiguration Tab. Check DPU Verschaltung")
     public DpuInfoPage openDpuConfiguraionTab() {
         $(DPU_CONFIGURATION_VIEW_TAB_LOCATOR).click();
-        log.info("dpu ancp config state is {} ", $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText());
-        log.info("olt ems config state is {} ", $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText());
-        log.info("dpu ems config state is {} ", $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getText());
         return this;
     }
 
@@ -101,17 +102,34 @@ public class DpuInfoPage {
 
     @Step("check dpu ancp config state")
     public static String getDpuAncpConfigState() {
-        return $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getValue();
+        log.info("dpu ancp config state is {} ", $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText());
+        return $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText();
     }
 
     @Step("check olt ems config state")
     public static String getOltEmsConfigState() {
-        return $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getValue();
+        log.info("olt ems config state is {} ", $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText());
+        return $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText();
+    }
+
+    @Step("get olt_ems_dpu_endsz")
+    public static String getOltEmsDpuEndsz() {
+        return $(OLT_EMS_DPU_ENDSZ_LOCATOR).getText();
+    }
+
+    @Step("get olt_ems_olt_endsz")
+    public static String getOltEmsOltEndsz() {
+        return $(OLT_EMS_OLT_ENDSZ_LOCATOR).getText();
     }
 
     @Step("check dpu ems config state")
     public static String getDpuEmsConfigState() {
-        return $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getValue();
+        log.info("dpu ems config state is {} ", $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getText());
+        return $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getText();
     }
 
+    @Step("get olt_ems_olt_endsz")
+    public static String getDpuEmsDpuEndsz() {
+        return $(DPU_EMS_DPU_ENDSZ_LOCATOR).getText();
+    }
 }
