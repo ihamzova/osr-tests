@@ -230,9 +230,7 @@ public class AccessLineRiRobot {
     public void checkProvisioningResults(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkProvisioning = () -> {
-                return getAccessLines(port).size() == port.getAccessLinesCount();
-            };
+            Supplier<Boolean> checkProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
             timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
