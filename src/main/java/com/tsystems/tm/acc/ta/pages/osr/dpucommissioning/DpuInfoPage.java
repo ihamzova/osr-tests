@@ -62,7 +62,9 @@ public class DpuInfoPage {
          */
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
-        log.info("startDpuCommissioning() businessKey = {}",  businessKey);
+        log.info("startDpuCommissioning() businessKey = {}", businessKey);
+        log.info("get device life cycle state = {}", getDeviceLifeCycleState());
+        log.info("get port life cycle state = {}", getPortLifeCycleState());
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_DPU_COMMISSIONING);
         return this;
     }
@@ -91,7 +93,7 @@ public class DpuInfoPage {
     }
 
     @Step("Get PORT life cycle state")
-    public static String getPortLifeCycleState(String port) {
+    public static String getPortLifeCycleState() {
         return $(PON_PORT_LIFE_CYCLE_STATE_LOCATOR).getText();
     }
 
