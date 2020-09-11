@@ -128,9 +128,7 @@ public class OltProvisioning5600 extends BaseTest {
                 .body(Stream.of(new CardDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
-        Card cardAfterProvisioning;
-        cardAfterProvisioning = getCard();
-        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(), portEmpty.getSlotNumber(), cardAfterProvisioning.getPorts().get(0).getPortNumber());
+        PortProvisioning port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmpty5600);
 
         accessLineRiRobot.checkProvisioningResults(port);
     }
