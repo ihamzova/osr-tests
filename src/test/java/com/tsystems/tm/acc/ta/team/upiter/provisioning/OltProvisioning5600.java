@@ -11,9 +11,9 @@ import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -24,8 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.net.URL;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -83,8 +82,10 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-29664")
     @Description("Port provisioning case when port completely free")
     public void portProvisioningEmpty() {
-        wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portEmpty);
+        Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
+        wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
         accessLineRiRobot.checkProvisioningResults(portEmpty);
     }
 
@@ -92,8 +93,10 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-32288")
     @Description("Port provisioning case when port partly occupied")
     public void portProvisioningPartly() {
-        wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portProvisioningPartly);
+        Assert.assertEquals(accessLinesBeforeProvisioning.size(), 8);
 
+        wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
         accessLineRiRobot.checkProvisioningResults(portProvisioningPartly);
     }
 
@@ -101,8 +104,10 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-40631")
     @Description("Port provisioning case when port completely occupied")
     public void portProvisioningFully() {
-        wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portProvisioningFully);
+        Assert.assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
 
+        wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
         accessLineRiRobot.checkProvisioningResults(portProvisioningFully);
     }
 
@@ -123,14 +128,11 @@ public class OltProvisioning5600 extends BaseTest {
 
         Assert.assertNotNull(cardBeforeProvisioning);
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
+        Assert.assertEquals(accessLineRiRobot.getAccessLines(portEmpty).size(), 0);
 
-        wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+        wgAccessProvisioningRobot.startCardProvisioning(portEmpty);
 
-        PortProvisioning port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmpty5600);
-
-        accessLineRiRobot.checkProvisioningResults(port);
+        accessLineRiRobot.checkProvisioningResults(portEmpty);
     }
 
     @Test
