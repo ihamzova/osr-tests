@@ -1,9 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
-import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
@@ -14,14 +14,12 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.mode
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_ACTIVE;
 
 public class DpuCommissioningUiRobot {
 
@@ -37,7 +35,7 @@ public class DpuCommissioningUiRobot {
     private String businessKey;
 
     @Step("Start automatic dpu creation and commissioning process")
-    public void startDpuCommissioning(DpuDevice dpuDevice) throws InterruptedException {
+    public void startDpuCommissioning(DpuDevice dpuDevice) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
@@ -53,20 +51,22 @@ public class DpuCommissioningUiRobot {
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         dpuInfoPage.startDpuCommissioning();
         businessKey = dpuInfoPage.getBusinessKey();
         Assert.assertNotNull(businessKey);
         Assert.assertFalse(businessKey.isEmpty());
 
-        Thread.sleep(1000);
-        /*testable only on domain level
-         * Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
-         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.OPERATING.toString());*/
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertEquals(DpuInfoPage.getDpuAncpConfigState(), DPU_ANCP_CONFIGURATION_STATE);
         Assert.assertEquals(DpuInfoPage.getOltEmsConfigState(), OLT_EMS_CONFIGURATION_STATE_LOCATOR);
         Assert.assertEquals(DpuInfoPage.getDpuEmsConfigState(), DPU_EMS_CONFIGURATION_STATE_LOCATOR);
+        Assert.assertEquals(DpuInfoPage.getOltEmsDpuEndsz(), dpuDevice.getEndsz());
+        Assert.assertEquals(DpuInfoPage.getOltEmsOltEndsz(), dpuDevice.getOltEndsz());
+        Assert.assertEquals(DpuInfoPage.getDpuEmsDpuEndsz(), dpuDevice.getEndsz());
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
     }
@@ -82,7 +82,7 @@ public class DpuCommissioningUiRobot {
         Device deviceAfterCommissioning = deviceList.get(0);
 
         // check device lifecycle state
-        //Assert.assertEquals( deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING);
+        Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING);
 
         List<DpuPonConnectionDto> dpuPonConnectionDtos = oltResourceInventoryClient.getClient().dpuPonConnectionInternalController().findDpuPonConnectionByCriteria()
                 .dpuPonPortEndszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -150,7 +150,7 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning, "FTTB NE Profiles (Mosaic State) count is incorrect");
         Assert.assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning, "Default NetworkLine Profile count is incorrect");
         Assert.assertEquals(onuAccessIds, expectedOnuAccessIdsList, "OnuAccessIds are incorrect");
-        Assert.assertEquals(freeLineIdCount, LINE_ID_POOL_PER_PORT-numberOfAccessLinesForProvisioning, "Free LineIDs count is incorrect");
+        Assert.assertEquals(freeLineIdCount, LINE_ID_POOL_PER_PORT - numberOfAccessLinesForProvisioning, "Free LineIDs count is incorrect");
         Assert.assertEquals(usedLineIdCount, numberOfAccessLinesForProvisioning, "Used LineIDs count is incorrect");
         Assert.assertEquals(homeIdsCount, HOME_ID_POOL_PER_PORT.intValue(), "HomeIDs count is incorrect");
     }
