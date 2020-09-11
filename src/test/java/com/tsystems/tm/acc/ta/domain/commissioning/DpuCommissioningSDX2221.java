@@ -38,7 +38,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
-    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
 
@@ -51,8 +50,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
-        accessLineRiRobot.fillDatabaseForOltCommissioning();
-
     }
 
     @AfterClass
@@ -60,7 +57,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         mappingsContext.close();
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
-        accessLineRiRobot.clearDatabase();
     }
 
     @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
