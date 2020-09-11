@@ -76,20 +76,11 @@ public class OltProvisioning5800 extends BaseTest {
     @Test
     @TmsLink("DIGIHUB-30877")
     @Description("Port Provisioning with 32 WG Lines")
-    public void portProvisioning() throws InterruptedException {
+    public void portProvisioning() {
         List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portEmpty);
+        Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
-        Assert.assertEquals(accessLinesBeforeProvisioning.size(), portEmpty.getAccessLinesCount().intValue());
-
-        wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
-                .body(new PortDto()
-                        .endSz(portEmpty.getEndSz())
-                        .slotNumber(portEmpty.getSlotNumber())
-                        .portNumber(portEmpty.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-
-        Thread.sleep(LATENCY);
-
+        wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
         accessLineRiRobot.checkProvisioningResults(portEmpty);
     }
 
