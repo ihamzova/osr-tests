@@ -9,7 +9,7 @@ import org.openqa.selenium.By;
 public class A4MobileInbetriebnahmePage {
 
     @Getter
-    public static final By FERTIG_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Installation Fertig')]");
+    public static final By FERTIG_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Installation abschließen')]");
 
 
 
