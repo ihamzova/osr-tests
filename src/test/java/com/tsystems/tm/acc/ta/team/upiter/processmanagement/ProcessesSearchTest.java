@@ -52,7 +52,7 @@ public class ProcessesSearchTest extends BaseTest {
         processSearchPage.checkPaginationSizes(processSearchPage.getPaginatorSizes());
 
         processSearchPage.clickFirstRowExpansion();
-        Process foundProcess = new Process();
+        Process foundProcess = processSearchPage.collectDataFromRowExpansion();
         processSearchPage.checkRowExpansionData(foundProcess, process);
     }
 

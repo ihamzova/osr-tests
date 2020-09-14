@@ -115,28 +115,27 @@ public class AccessLineRiRobot {
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "AccessLines count");
 
         long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && fttbNeProfile.getStateOlt().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
 
         long countFttbNeMosaicActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && fttbNeProfile.getStateMosaic().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateMosaicEnum.ACTIVE.equals(fttbNeProfile.getStateMosaic())).count();
 
         long countDefaultNetworkLineProfilesActive = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-                .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && defaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+                .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && DefaultNetworkLineProfileDto.StateEnum.ACTIVE.equals(defaultNetworkLineProfile.getState())).count();
 
         long countAccessLinesWG = accessLines.stream()
                 .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
         List<Integer> expectedOnuIdsList = IntStream.rangeClosed(1, numberOfAccessLinesForProvisioning)
-                .mapToObj(Integer::valueOf).collect(Collectors.toList());
+                .boxed().collect(Collectors.toList());
 
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
-                map(OnuAccessId::getOnuAccessId).collect(Collectors.toList());
-        Collections.sort(onuAccessIds);
+                map(OnuAccessId::getOnuAccessId).sorted().collect(Collectors.toList());
 
         Assert.assertEquals(countFttbNeOltStateActive, port.getFttbNEProfilesActive().intValue(),
-                "FTTB NE Profiles(Olt State) count is incorrect");
+                "FTTB NE Profiles (Olt State) count is incorrect");
         Assert.assertEquals(countFttbNeMosaicActive, port.getFttbNEProfilesActive().intValue(),
-                "FTTB NE Profiles(Mosaic State) count is incorrect");
+                "FTTB NE Profiles (Mosaic State) count is incorrect");
         Assert.assertEquals(countDefaultNetworkLineProfilesActive, port.getDefaultNetworkLineProfilesActive().intValue(),
                 "Default NetworkLine Profile count is incorrect");
         Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),

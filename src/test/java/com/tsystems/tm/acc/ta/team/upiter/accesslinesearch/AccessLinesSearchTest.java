@@ -193,7 +193,7 @@ public class AccessLinesSearchTest extends BaseTest {
     }
 
     private void checkTableHeaders(List<String> tableHeaders) {
-        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Line ID", "Home ID", "Access Platform", "Status");
+        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
         Assert.assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
                 supposedHeaders.toArray());
     }
