@@ -11,6 +11,9 @@ public class A4MobileInbetriebnahmePage {
     @Getter
     public static final By FERTIG_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Installation abschließen')]");
 
+    @Getter
+    public static final By ZTPIDENT_FIELD_LOCATOR = By.id("ztpiFromForm");
+
 
 
 }
