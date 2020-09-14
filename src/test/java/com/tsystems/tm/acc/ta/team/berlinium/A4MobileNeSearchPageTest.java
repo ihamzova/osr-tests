@@ -272,4 +272,36 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
     }
 
+    @Test
+    @Owner("Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile Monitoring page")
+    public void testMonitoring() {
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+
+        //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
+        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
+        a4MobileUiRobot.clickSearchButton();
+
+        a4MobileUiRobot.checkRadioButton("1");
+        a4MobileUiRobot.clickInbetriebnahmeButton();
+
+        a4MobileUiRobot.clickFinishButton();
+        a4MobileUiRobot.clickMonitoringButton();
+
+        Map<String, A4NetworkElement> a4NeFilteredList = new HashMap<>();
+        a4NeFilteredList.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+//                .entrySet()
+//                .stream()
+//                .filter(map -> map.getValue().getCategory()
+//                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory()))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        a4MobileUiRobot.checkMonitoring(a4NeFilteredList);
+
+    }
+
+
+
 }

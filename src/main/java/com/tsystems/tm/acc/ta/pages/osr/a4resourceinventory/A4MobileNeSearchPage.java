@@ -51,6 +51,9 @@ public class A4MobileNeSearchPage {
     @Getter
     public static final By INBETRIEBNAHME_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
 
+    @Getter
+    public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
+
 
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {
@@ -61,7 +64,7 @@ public class A4MobileNeSearchPage {
 
     @Step("Login")
     public static A4MobileNeSearchPage login() {
-        URL url = new OCUrlBuilder(APP).withEndpoint("a4-resource-inventory-ui/a4-installation-process").build();
+        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         return open(url, A4MobileNeSearchPage.class);
     }
 
