@@ -80,6 +80,9 @@ public class A4MobileUiRobot {
     @Step("Click inbetriebnahme button")
     public void clickInbetriebnahmeButton() { $(a4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
 
+    @Step("Enter ztpIdent")
+    public void enterZtpIdent(String value) { $(a4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
+
     @Step("Back navigation")
     public void clickFinishButton() {$(a4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
 
