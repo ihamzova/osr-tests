@@ -25,6 +25,8 @@ public class A4MobileUiRobot {
     A4MobileInbetriebnahmePage a4MobileInbetriebnahmePage = new A4MobileInbetriebnahmePage();
     A4MobileMonitoringPage a4MobileMonitoringPage = new A4MobileMonitoringPage();
 
+
+    //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage(){
         A4MobileNeSearchPage
@@ -80,15 +82,20 @@ public class A4MobileUiRobot {
     @Step("Click inbetriebnahme button")
     public void clickInbetriebnahmeButton() { $(a4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
 
+    @Step("Click Monitoring Button")
+    public void clickMonitoringButton() {$(a4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
+
+
+    //inbetriebnahme-page
     @Step("Enter ztpIdent")
     public void enterZtpIdent(String value) { $(a4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
 
     @Step("Back navigation")
     public void clickFinishButton() {$(a4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
 
-    @Step("Click Monitoring Button")
-    public void clickMonitoringButton() {$(a4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
 
+
+    //monitoring-page
     @Step("check Monitoring")
     public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) {
         //check if rows of tables are there, before proceeding
