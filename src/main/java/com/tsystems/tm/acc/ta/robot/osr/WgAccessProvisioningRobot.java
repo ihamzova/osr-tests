@@ -12,6 +12,8 @@ import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.PortDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -46,6 +50,24 @@ public class WgAccessProvisioningRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
+    @Step("Start card provisioning")
+    public void startCardProvisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
+                .body(Stream.of(new CardDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber()))
+                        .collect(Collectors.toList()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Start device provisioning")
+    public void startDeviceProvisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
+                .body(new DeviceDto()
+                        .endSz(port.getEndSz()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
     @Step("Collect wg-access-provisioning logs")
     public void startWgAccessProvisioningLog() throws InterruptedException {
         // Set a start time from which logs will be fetched
@@ -70,7 +92,7 @@ public class WgAccessProvisioningRobot {
         return businessInformations;
     }
 
-    public UUID startPortProvisioningAndGetProcessId(Process process){
+    public UUID startPortProvisioningAndGetProcessId(Process process) {
         return wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
                 .body(new PortDto()
                         .endSz(process.getEndSz())
@@ -79,6 +101,7 @@ public class WgAccessProvisioningRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getId();
     }
 
+    @Step("Start postprovisioning")
     public void startPostprovisioning(PortProvisioning port) {
         wgAccessProvisioningClient
                 .getClient()
