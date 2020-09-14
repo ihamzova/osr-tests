@@ -7,8 +7,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
-import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -24,7 +22,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -33,8 +31,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(EA_EXT_ROUTE_MS)
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
-@ServiceLog("ancp-configuration")
-@ServiceLog("dpu-commissioning")
+@ServiceLog(ANCP_CONFIGURATION_MS)
+@ServiceLog(DPU_COMMISSIONING_MS)
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
@@ -63,7 +61,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @TmsLink("DIGIHUB-75965")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
     @Owner("@t-systems.com")
-    public void dpuCommissioning() throws InterruptedException {
+    public void dpuCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 

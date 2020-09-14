@@ -20,7 +20,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -29,7 +29,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(EA_EXT_ROUTE_MS)
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
-@ServiceLog("olt-discovery")
+@ServiceLog(OLT_DISCOVERY_MS)
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
