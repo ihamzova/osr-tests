@@ -178,7 +178,9 @@ public class AccessLinesSearchTest extends BaseTest {
 
         accessLineSearchPage.sortAccessLinesByStatus();
 
-        Assert.assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(),AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
+        accessLineSearchPage.setPageSize(10);
+
+        Assert.assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
 
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
 
