@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -93,7 +95,22 @@ public class A4MobileUiRobot {
     @Step("Back navigation")
     public void clickFinishButton() {$(a4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
 
+    @Step("Remove Monitoring Item")
+    public void clickRemoveButton() {$(a4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();}
 
+
+
+
+    //monitoring-page
+    @Step("check empty Monitoring")
+    public void checkEmptyMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) {
+
+        $(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
+        assertEquals($(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
+        assertEquals(a4NeFilteredList.size() , 0);
+
+
+    }
 
     //monitoring-page
     @Step("check Monitoring")
@@ -127,6 +144,11 @@ public class A4MobileUiRobot {
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
         assertEquals(concat.size()/6, a4NeFilteredList.size());
+
+
+
+
+
     }
 
     //helper methods

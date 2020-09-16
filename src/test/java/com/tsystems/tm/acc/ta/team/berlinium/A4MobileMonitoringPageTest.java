@@ -16,11 +16,26 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.chrome.ChromeDriver;
+import sun.plugin.javascript.navig.Window;
+import org.openqa.selenium.remote.CapabilityType;
+
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.UnhandledAlertException;
 
 import java.util.*;
 
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static org.testng.Assert.assertTrue;
 
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI)
@@ -119,6 +134,39 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
         a4MobileUiRobot.checkMonitoring(a4NeFilteredList);
 
+        // remove all entries
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+
+            try {
+                a4MobileUiRobot.clickRemoveButton();
+            } catch (UnhandledAlertException f) {
+                try {
+
+                    WebDriver driver = new ChromeDriver();
+
+                    WebDriverWait wait = new WebDriverWait(driver, 50);
+                    Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                    try {
+                        Thread.sleep(5000);
+
+                    }catch (Exception e) {
+                        log.error("Interrupted");
+                    }
+
+                    //window().manage().getCookies();
+                    driver.switchTo().alert();
+
+
+                    alert.accept();
+                } catch (NoAlertPresentException e) {
+                    System.out.println(e.getCause());
+                }
+            }
+
+
+            a4NeFilteredList.remove(k, a4NetworkElement);
+        });
+        a4MobileUiRobot.checkEmptyMonitoring(a4NeFilteredList);
     }
 
 
