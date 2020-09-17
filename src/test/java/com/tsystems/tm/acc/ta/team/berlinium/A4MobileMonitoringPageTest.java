@@ -25,18 +25,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.chrome.ChromeDriver;
-import sun.plugin.javascript.navig.Window;
-import org.openqa.selenium.remote.CapabilityType;
-
-import org.openqa.selenium.UnexpectedAlertBehaviour;
-import org.openqa.selenium.UnhandledAlertException;
 
 import java.util.*;
 
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
-import static org.testng.Assert.assertTrue;
 
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI)
