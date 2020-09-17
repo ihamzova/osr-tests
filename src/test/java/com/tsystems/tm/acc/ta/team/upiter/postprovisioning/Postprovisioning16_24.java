@@ -62,11 +62,12 @@ public class Postprovisioning16_24 {
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
         accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
 
+        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
+
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
         //12 assigned lines +1 trigger postprovisioning
-        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
         wgAccessProvisioningRobot.prepareForPostprovisioning(13, portFor16_24Case, homeIdDto);
 
         //Create temp List to check business data
