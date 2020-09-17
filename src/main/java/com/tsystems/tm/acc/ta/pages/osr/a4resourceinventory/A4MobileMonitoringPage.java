@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selectors.byXpath;
 
+
 @Slf4j
 @Getter
 public class A4MobileMonitoringPage {

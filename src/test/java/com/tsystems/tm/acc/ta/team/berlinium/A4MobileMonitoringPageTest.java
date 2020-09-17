@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
@@ -113,59 +114,56 @@ public class A4MobileMonitoringPageTest extends BaseTest {
     public void testMonitoring() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
+
+        Map<String, A4NetworkElement> a4NeFilteredList = new HashMap<>();
+
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
         a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
         a4MobileUiRobot.clickSearchButton();
-
         a4MobileUiRobot.checkRadioButton("1");
         a4MobileUiRobot.clickInbetriebnahmeButton();
         a4MobileUiRobot.enterZtpIdent("ztp");
         a4MobileUiRobot.clickFinishButton();
-        a4MobileUiRobot.clickMonitoringButton();
-
-        Map<String, A4NetworkElement> a4NeFilteredList = new HashMap<>();
         a4NeFilteredList.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+
+
 //                .entrySet()
 //                .stream()
 //                .filter(map -> map.getValue().getCategory()
 //                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory()))
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+
+        a4MobileUiRobot.clickMonitoringButton();
         a4MobileUiRobot.checkMonitoring(a4NeFilteredList);
 
+        System.out.println("-------------------------------------------------");
         // remove all entries
-        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
-
-            try {
+        try {
+            a4NeFilteredList.forEach((k, a4NetworkElement) -> {
                 a4MobileUiRobot.clickRemoveButton();
-            } catch (UnhandledAlertException f) {
+                System.out.println("a4MobileUiRobot.clickRemoveButton");
+
                 try {
 
-                    WebDriver driver = new ChromeDriver();
-
-                    WebDriverWait wait = new WebDriverWait(driver, 50);
+                    WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                    WebDriverWait wait = new WebDriverWait(driver, 5000);
                     Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                    try {
-                        Thread.sleep(5000);
-
-                    }catch (Exception e) {
-                        log.error("Interrupted");
-                    }
-
                     //window().manage().getCookies();
                     driver.switchTo().alert();
-
-
                     alert.accept();
+                    System.out.println("ALERT ACCEPTED");
                 } catch (NoAlertPresentException e) {
-                    System.out.println(e.getCause());
+                    System.out.println("JM EXCEPTION " + e.getCause());
                 }
-            }
+                a4NeFilteredList.remove(k);
+            });
+        } catch (ConcurrentModificationException eee) {
+            System.out.println("ConcurrentModificationException is ok");
+        };
 
-
-            a4NeFilteredList.remove(k, a4NetworkElement);
-        });
+        System.out.println("-------------------------------------------------");
         a4MobileUiRobot.checkEmptyMonitoring(a4NeFilteredList);
     }
 
