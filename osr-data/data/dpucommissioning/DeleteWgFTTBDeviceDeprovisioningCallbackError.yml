@@ -1,4 +1,4 @@
-name: PostWgFTTBDeviceDeprovisioningCallbackError
+name: DeleteWgFTTBDeviceDeprovisioningCallbackError
 template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
 values:
   endSz: "49/0005/0/71AA"

@@ -264,7 +264,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -286,7 +286,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,false);
@@ -297,7 +297,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -312,7 +312,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, false);
         return this;
     }
@@ -321,7 +321,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, false);
         addGetDpuAtOltConfigStub(dpu, olt, false,false);
         return this;
@@ -331,7 +331,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -348,7 +348,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -366,7 +366,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -385,7 +385,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -408,7 +408,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -431,7 +431,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
         addPatchLifecycleStatePortStub(dpu);
-        addPostDeprovisioningDeviceStub(dpu, true);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
         addGetDpuEmsConfigStub(dpu, true);
         addPutDpuEmsConfigStub(dpu);
         addSealPostDpuDeconfStub(dpu,true);
@@ -447,6 +447,14 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuAtOltConfigAnotherDPUStub(dpu, olt);
         addGetDpuPonConnStub(olt, dpu, true);
         addPostPreprovisionFTTHStub(olt, dpu,true,true);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addAllForDeleteDeviceDeprovisioningCallbackError(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addDeleteDeprovisioningDeviceStub(dpu, false);
         return this;
     }
 
@@ -646,11 +654,11 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     }
 
     //4_Aid_DeprovisionFTTBaccessprovisioningDPU
-    public MorpeusWireMockMappingsContextBuilder addPostDeprovisioningDeviceStub(Dpu dpu, boolean callbackSuccess) {
+    public MorpeusWireMockMappingsContextBuilder addDeleteDeprovisioningDeviceStub(Dpu dpu, boolean callbackSuccess) {
         if (callbackSuccess) {
-            context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202(dpu));
+            context.add(new WgFttbAccessProvisioningStub().deleteDeviceDeprovisioning202(dpu));
         } else {
-            context.add(new WgFttbAccessProvisioningStub().postDeviceDeprovisioning202CallbackError(dpu));
+            context.add(new WgFttbAccessProvisioningStub().deleteDeviceDeprovisioning202CallbackError(dpu));
         }
         return this;
     }
