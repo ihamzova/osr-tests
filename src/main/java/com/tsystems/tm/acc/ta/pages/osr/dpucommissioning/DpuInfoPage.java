@@ -52,13 +52,10 @@ public class DpuInfoPage {
     @Step("Start dpu commissioning")
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
-        /*testable only on domain level
-         $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
-         */
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
         log.info("startDpuCommissioning() businessKey = {}", businessKey);
-        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+        // $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
         log.info("get port life cycle state = {}", getPortLifeCycleState());
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_DPU_COMMISSIONING);
@@ -118,7 +115,6 @@ public class DpuInfoPage {
 
     @Step("get olt_ems_olt_endsz")
     public static String getOltEmsOltEndsz() {
-        log.info("olt ems olt endsz is {} ", $(OLT_EMS_OLT_ENDSZ_LOCATOR).getText());
         return $(OLT_EMS_OLT_ENDSZ_LOCATOR).getText();
     }
 
@@ -130,7 +126,6 @@ public class DpuInfoPage {
 
     @Step("get dpu_ems_dpu_endsz")
     public static String getDpuEmsDpuEndsz() {
-        log.info("dpu ems dpu endsz is {} ", $(DPU_EMS_DPU_ENDSZ_LOCATOR).getText());
         return $(DPU_EMS_DPU_ENDSZ_LOCATOR).getText();
     }
 }
