@@ -128,7 +128,7 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
+    @Test(description = "Negative case. DELETE.WgFTTBDeviceDeprovisioning returned error in callback")
     @Description("Negative case. Process aborted, error in callback from Wg-FTTB-AP")
     public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
