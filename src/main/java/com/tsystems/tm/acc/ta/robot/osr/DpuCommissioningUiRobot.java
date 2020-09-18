@@ -39,7 +39,6 @@ public class DpuCommissioningUiRobot {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
-        //oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
 
         oltSearchPage.pressCreateDpuButton();
 
@@ -61,12 +60,12 @@ public class DpuCommissioningUiRobot {
         WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         dpuInfoPage.openDpuConfiguraionTab();
-        Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE));
-        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE));
-        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE));
-        Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()));
-        Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()));
-        Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()));
+        Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE),"OLT EMS configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE), "DPU EMS configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()),"OLT EMS DPU EndSz mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()),"OLT EMS OLT EndSz mismatch");
+        Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()),"DPU EMS DPU EndSz mismatch");
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
     }
@@ -88,13 +87,13 @@ public class DpuCommissioningUiRobot {
                 .dpuPonPortEndszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(dpuPonConnectionDtos.size(), 1L);
         DpuPonConnectionDto dpuPonConnection = dpuPonConnectionDtos.get(0);
-        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz());
-        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot());
-        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort());
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortEndsz(), dpuDevice.getEndsz());
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortNumber(), "1");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()));
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()));
+        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz(), "OLT EndSz wrong");
+        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot(), "OLT Gpon Slot wrong");
+        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort(), "OLT Gpon Port wrong");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortEndsz(), dpuDevice.getEndsz(), "DPU EndSz wrong");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortNumber(), "1", "DPU Pon port number wrong");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()), "DPU GE wrong");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()), "DPU WE wrong");
 
 
         // check AccessLines, corresponding profiles and pools
@@ -145,7 +144,7 @@ public class DpuCommissioningUiRobot {
         long homeIdsCount = homeIdDtos.stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdDto.StatusEnum.FREE)).count();
 
         Assert.assertEquals(wgFttbAccessLinesCount, numberOfAccessLinesForProvisioning, "FTTB AccessLines count is incorrect");
-        Assert.assertEquals(ftthAccessLinesCount, 0, "There are FTTH AccessLines on the OLT port");
+        //Assert.assertEquals(ftthAccessLinesCount, 0, "There are FTTH AccessLines on the OLT port");
         Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning, "FTTB NE Profiles (Olt State) count is incorrect");
         Assert.assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning, "FTTB NE Profiles (Mosaic State) count is incorrect");
         Assert.assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning, "Default NetworkLine Profile count is incorrect");

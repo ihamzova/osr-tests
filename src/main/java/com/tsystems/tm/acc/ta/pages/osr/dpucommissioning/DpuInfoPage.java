@@ -1,11 +1,13 @@
 package com.tsystems.tm.acc.ta.pages.osr.dpucommissioning;
 
 import com.codeborne.selenide.Condition;
+import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -56,6 +58,7 @@ public class DpuInfoPage {
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
         log.info("startDpuCommissioning() businessKey = {}", businessKey);
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
         log.info("get port life cycle state = {}", getPortLifeCycleState());
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_DPU_COMMISSIONING);
