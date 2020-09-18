@@ -25,8 +25,8 @@ public class DpuCommissioningUiRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
-    private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
-    private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";
+    private static final String OLT_EMS_CONFIGURATION_STATE = "ACTIVE";
+    private static final String DPU_EMS_CONFIGURATION_STATE = "ACTIVE";
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
     private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
@@ -62,8 +62,8 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE));
-        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE_LOCATOR));
-        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE_LOCATOR));
+        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE));
+        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE));
         Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()));
         Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()));
         Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()));
