@@ -61,12 +61,12 @@ public class DpuCommissioningUiRobot {
         WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         dpuInfoPage.openDpuConfiguraionTab();
-        Assert.assertEquals(DpuInfoPage.getDpuAncpConfigState(), DPU_ANCP_CONFIGURATION_STATE);
-        Assert.assertEquals(DpuInfoPage.getOltEmsConfigState(), OLT_EMS_CONFIGURATION_STATE_LOCATOR);
-        Assert.assertEquals(DpuInfoPage.getDpuEmsConfigState(), DPU_EMS_CONFIGURATION_STATE_LOCATOR);
-        Assert.assertEquals(DpuInfoPage.getOltEmsDpuEndsz(), dpuDevice.getEndsz());
-        Assert.assertEquals(DpuInfoPage.getOltEmsOltEndsz(), dpuDevice.getOltEndsz());
-        Assert.assertEquals(DpuInfoPage.getDpuEmsDpuEndsz(), dpuDevice.getEndsz());
+        Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE));
+        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE_LOCATOR));
+        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE_LOCATOR));
+        Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()));
+        Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()));
+        Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()));
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
     }

@@ -109,11 +109,13 @@ public class DpuInfoPage {
 
     @Step("get olt_ems_dpu_endsz")
     public static String getOltEmsDpuEndsz() {
+        log.info("olt ems dpu endsz is {} ", $(OLT_EMS_DPU_ENDSZ_LOCATOR).getText());
         return $(OLT_EMS_DPU_ENDSZ_LOCATOR).getText();
     }
 
     @Step("get olt_ems_olt_endsz")
     public static String getOltEmsOltEndsz() {
+        log.info("olt ems olt endsz is {} ", $(OLT_EMS_OLT_ENDSZ_LOCATOR).getText());
         return $(OLT_EMS_OLT_ENDSZ_LOCATOR).getText();
     }
 
@@ -123,8 +125,9 @@ public class DpuInfoPage {
         return $(DPU_EMS_CONFIGURATION_STATE_LOCATOR).getText();
     }
 
-    @Step("get olt_ems_olt_endsz")
+    @Step("get dpu_ems_dpu_endsz")
     public static String getDpuEmsDpuEndsz() {
+        log.info("dpu ems dpu endsz is {} ", $(DPU_EMS_DPU_ENDSZ_LOCATOR).getText());
         return $(DPU_EMS_DPU_ENDSZ_LOCATOR).getText();
     }
 }
