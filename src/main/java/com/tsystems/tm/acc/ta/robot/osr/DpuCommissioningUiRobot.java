@@ -144,7 +144,7 @@ public class DpuCommissioningUiRobot {
         long homeIdsCount = homeIdDtos.stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdDto.StatusEnum.FREE)).count();
 
         Assert.assertEquals(wgFttbAccessLinesCount, numberOfAccessLinesForProvisioning, "FTTB AccessLines count is incorrect");
-        //Assert.assertEquals(ftthAccessLinesCount, 0, "There are FTTH AccessLines on the OLT port");
+        Assert.assertEquals(ftthAccessLinesCount, 0, "There are FTTH AccessLines on the OLT port");
         Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning, "FTTB NE Profiles (Olt State) count is incorrect");
         Assert.assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning, "FTTB NE Profiles (Mosaic State) count is incorrect");
         Assert.assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning, "Default NetworkLine Profile count is incorrect");
