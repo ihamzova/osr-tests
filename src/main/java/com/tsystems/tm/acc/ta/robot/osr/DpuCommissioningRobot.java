@@ -308,15 +308,15 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkPostDeviceDeprovisioningCalled(String dpuEndsz) {
+    public void checkDeleteDeviceDeprovisioningCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?dpuEndSZ=" + dpuEndsz));
     }
 
     @Step
-    public void checkPostDeviceDeprovisioningNotCalled(String dpuEndsz) {
+    public void checkDeleteDeviceDeprovisioningNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?endSZ=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/fttbDeprovisioning/device?dpuEndSZ=" + dpuEndsz));
     }
 
     @Step
