@@ -36,19 +36,19 @@ public class WgFttbAccessProvisioningStub extends AbstractStubMapping {
                 .withQueryParam("endSZ", matching(dpu.getEndSz()));
     }
 
-    public MappingBuilder postDeviceDeprovisioning202CallbackError(Dpu dpu) {
-        return post(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
+    public MappingBuilder deleteDeviceDeprovisioning202CallbackError(Dpu dpu) {
+        return delete(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
                 .withName("postDeviceDerovisioning202CallbackError")
                 .willReturn(aDefaultResponseWithBody("", 202))
-                .withQueryParam("endSZ", matching(dpu.getEndSz()))
+                .withQueryParam("dpuEndSZ", matching(dpu.getEndSz()))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgFttbAccessProvisioningMapper().getAsyncResponseNotification(dpu.getEndSz(), false))));
     }
 
-    public MappingBuilder postDeviceDeprovisioning202(Dpu dpu) {
-        return post(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
+    public MappingBuilder deleteDeviceDeprovisioning202(Dpu dpu) {
+        return delete(urlPathEqualTo(DEVICE_DEPROVISIONING_URL))
                 .withName("postDeviceDeprovisioning202")
                 .willReturn(aDefaultResponseWithBody("", 202))
-                .withQueryParam("endSZ", matching(dpu.getEndSz()))
+                .withQueryParam("dpuEndSZ", matching(dpu.getEndSz()))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgFttbAccessProvisioningMapper().getAsyncResponseNotification(dpu.getEndSz(), true))));
     }
 

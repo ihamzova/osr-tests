@@ -31,6 +31,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(DECOUPLING_MS)
+@ServiceLog(GATEWAY_ROUTE_MS)
 public class AccessLineReservationByPortAndHomeId extends BaseTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

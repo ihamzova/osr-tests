@@ -120,7 +120,7 @@ public class AccessLineSearchPage {
                     accessLineInfo.setPortNumber(tds.get(3).getText());
                     accessLineInfo.setLineId(tds.get(4).getText());
                     accessLineInfo.setHomeId(tds.get(5).getText());
-                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(7).getText()));
+                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(13).getText()));
                     return accessLineInfo;
                 })
                 .collect(Collectors.toList());
@@ -187,7 +187,7 @@ public class AccessLineSearchPage {
         String status = getTableLines().get(0).getStatus().toString();
         $(SORT_BY_STATUS).click();
         ElementsCollection tds = $$(By.tagName("td"));
-        tds.get(7).waitUntil(Condition.not(text(status)),TIMEOUT);
+        tds.get(10).waitUntil(Condition.not(text(status)),TIMEOUT);
         return this;
     }
 
@@ -196,10 +196,7 @@ public class AccessLineSearchPage {
         return $(SORT_BY_STATUS).$("i").isDisplayed();
     }
 
-
-
-
-    private List<SelenideElement> getTableRows() {
+    public List<SelenideElement> getTableRows() {
         return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
     }
 }

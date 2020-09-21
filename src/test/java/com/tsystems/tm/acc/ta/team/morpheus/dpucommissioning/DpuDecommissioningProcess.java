@@ -43,8 +43,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         WireMockFactory.get().resetRequests();
     }
 
-    @Test(description = "Positive case. DPU-decommisioning without errors")
-    @Description("Expected: no erors, dpuDecommissioning finished")
+    @Test(description = "Positive case. DPU-decommissioning without errors")
+    @Description("Expected: no errors, dpuDecommissioning finished successfully")
     public void dpuDecommissioningPositive() {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -81,7 +81,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
@@ -122,21 +122,21 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
-    @Test(description = "Negative case. POST.WgFTTBDeviceDeprovisioning returned error in callback")
+    @Test(description = "Negative case. DELETE.WgFTTBDeviceDeprovisioning returned error in callback")
     @Description("Negative case. Process aborted, error in callback from Wg-FTTB-AP")
     public void dpuCommissioningPostDeviceProvisioningCallbackError() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostWgFTTBDeviceDeprovisioningCallbackError);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DeleteWgFTTBDeviceDeprovisioningCallbackError);
 
-        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPostDeviceDeprovisioningCallbackError")) {
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningDeleteDeviceDeprovisioningCallbackError")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addAllForPostDeviceProvisioningCallbackError(olt, dpu)
+                    .addAllForDeleteDeviceDeprovisioningCallbackError(olt, dpu)
                     .build()
                     .publish();
 
@@ -146,7 +146,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             Thread.sleep(4000);
 
-            dpuCommissioningRobot.checkPostDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
         }
     }
@@ -201,7 +201,7 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. DPU-decommisioning without errors, DpuEmsConfiguration exists")
+    @Test(description = "Positive case. DPU-decommisioning without errors, DpuEmsConfiguration doesnt exist")
     @Description("Positive case. Expected: no call on SEAL and no PUT on ORI")
     public void dpuDecommissioningDpuEmsConfigDoesntExist() {
 
@@ -229,7 +229,7 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. DPU-decommisioning without errors, DpuOltConfiguration exists")
+    @Test(description = "Positive case. DPU-decommisioning without errors, DpuOltConfiguration doesnt exist")
     @Description("Positive case. Expected: no call on SEAL and no PUT on ORI")
     public void dpuDecommissioningDpuOltConfigDoesntExist() {
 

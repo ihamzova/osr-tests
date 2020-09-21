@@ -21,11 +21,13 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.ACCESS_LINE_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.GATEWAY_ROUTE_MS;
 
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(DECOUPLING_MS)
+@ServiceLog(GATEWAY_ROUTE_MS)
 public class Postprovisioning16_24 {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -60,11 +62,12 @@ public class Postprovisioning16_24 {
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
         accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
 
+        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
+
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
         //12 assigned lines +1 trigger postprovisioning
-        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
         wgAccessProvisioningRobot.prepareForPostprovisioning(13, portFor16_24Case, homeIdDto);
 
         //Create temp List to check business data

@@ -30,6 +30,8 @@ import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.inter
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(DECOUPLING_MS)
+@ServiceLog(GATEWAY_ROUTE_MS)
 public class DGFaccessLineReservation extends BaseTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

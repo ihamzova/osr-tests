@@ -1,18 +1,32 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.codeborne.selenide.Selenide.$;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class A4MobileUiRobot {
 
     A4MobileNeSearchPage a4MobileNeSearchPage = new A4MobileNeSearchPage();
     A4MobileInbetriebnahmePage a4MobileInbetriebnahmePage = new A4MobileInbetriebnahmePage();
+    A4MobileMonitoringPage a4MobileMonitoringPage = new A4MobileMonitoringPage();
 
+
+    //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage(){
         A4MobileNeSearchPage
@@ -68,7 +82,60 @@ public class A4MobileUiRobot {
     @Step("Click inbetriebnahme button")
     public void clickInbetriebnahmeButton() { $(a4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
 
+    @Step("Click Monitoring Button")
+    public void clickMonitoringButton() {$(a4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
+
+
+    //inbetriebnahme-page
+    @Step("Enter ztpIdent")
+    public void enterZtpIdent(String value) { $(a4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
+
     @Step("Back navigation")
     public void clickFinishButton() {$(a4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
 
+
+
+    //monitoring-page
+    @Step("check Monitoring")
+    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) {
+        //check if rows of tables are there, before proceeding
+        waitForTableToFullyLoad(a4NeFilteredList.size());
+
+        ElementsCollection elementsCollection = $(a4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        List<String> concat = new ArrayList<>();
+
+        elementsCollection.forEach(k -> concat.add(k.getText()));
+
+        //VPSZ	FSZ	Type	Planning Device Name	ZTP Ident	Planned MatNumber	Lifecycle State	Operational State
+
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+            assertTrue(concat.contains(a4NetworkElement.getVpsz()),a4NetworkElement.getVpsz());
+            assertTrue(concat.contains(a4NetworkElement.getFsz()),a4NetworkElement.getFsz());
+            assertTrue(concat.contains(a4NetworkElement.getType()),a4NetworkElement.getType());
+            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()),a4NetworkElement.getPlanningDeviceName());
+            assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()),a4NetworkElement.getPlannedMatNr());
+            //assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
+            assertTrue(concat.contains(a4NetworkElement.getOperationalState()),a4NetworkElement.getOperationalState());
+        });
+
+        log.info("+++" + concat.toString());
+
+        a4NeFilteredList.forEach((k,v) -> log.info("+++" + v.getCategory()));
+
+        //check if table has only as many rows as expected by test data set
+        //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
+        assertEquals(concat.size()/6, a4NeFilteredList.size());
+    }
+
+    //helper methods
+    public void waitForTableToFullyLoad(int numberOfElements){
+
+        //add 1 to number of elements because of table header
+        numberOfElements++;
+
+        $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
+
+    }
 }
