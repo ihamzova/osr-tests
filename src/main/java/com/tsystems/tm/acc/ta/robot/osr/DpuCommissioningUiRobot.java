@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_ACTIVE;
 
 public class DpuCommissioningUiRobot {
 
@@ -100,7 +101,9 @@ public class DpuCommissioningUiRobot {
         int numberOfAccessLinesForProvisioning = Integer.parseInt(dpuDevice.getPonConnectionGe()) + Integer.parseInt(dpuDevice.getPonConnectionWe());
 
         List<AccessLineDto> wgFttbAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
-                .body(new SearchAccessLineDto().endSz(dpuDevice.getEndsz()).referenceType(SearchAccessLineDto.ReferenceTypeEnum.DPU)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .body(new SearchAccessLineDto().endSz(dpuDevice.getEndsz())
+                        .referenceType(SearchAccessLineDto.ReferenceTypeEnum.DPU))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
                 .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineDto.StatusEnum.WALLED_GARDEN)).collect(Collectors.toList());
 
         List<AccessLineDto> ftthAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
@@ -108,13 +111,17 @@ public class DpuCommissioningUiRobot {
                         .slotNumber(dpuDevice.getOltGponSlot())
                         .portNumber(dpuDevice.getOltGponPort())
                         .referenceType(SearchAccessLineDto.ReferenceTypeEnum.OLT))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().filter(accessLineDto -> accessLineDto.getTechnology().equals(AccessLineDto.TechnologyEnum.GPON)).collect(Collectors.toList());
 
         long wgFttbAccessLinesCount = wgFttbAccessLines.size();
         long ftthAccessLinesCount = ftthAccessLines.size();
 
+//        long countFttbNeOltStateActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
+//                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
+
         long countFttbNeOltStateActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
+                .filter(fttbNeProfile -> fttbNeProfile != null && STATUS_ACTIVE.equals(fttbNeProfile.getStateOlt().getValue())).count();
 
         long countFttbNeMosaicActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
                 .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateMosaicEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
