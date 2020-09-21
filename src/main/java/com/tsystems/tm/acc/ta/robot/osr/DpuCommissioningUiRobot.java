@@ -117,14 +117,11 @@ public class DpuCommissioningUiRobot {
         long wgFttbAccessLinesCount = wgFttbAccessLines.size();
         long ftthAccessLinesCount = ftthAccessLines.size();
 
-//        long countFttbNeOltStateActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
-//                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
-
         long countFttbNeOltStateActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && STATUS_ACTIVE.equals(fttbNeProfile.getStateOlt().getValue())).count();
+                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
 
         long countFttbNeMosaicActive = wgFttbAccessLines.stream().map(AccessLineDto::getFttbNeProfile)
-                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateMosaicEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
+                .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateMosaicEnum.ACTIVE.equals(fttbNeProfile.getStateMosaic())).count();
 
         long countDefaultNetworkLineProfilesActive = wgFttbAccessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
                 .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && DefaultNetworkLineProfileDto.StateEnum.ACTIVE.equals(defaultNetworkLineProfile.getState())).count();
