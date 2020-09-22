@@ -107,7 +107,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
 
-        Map<String, A4NetworkElement> a4NeFilteredList = new HashMap<>();
+        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
 
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
@@ -117,7 +117,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4MobileUiRobot.clickInbetriebnahmeButton();
         a4MobileUiRobot.enterZtpIdent("ztp");
         a4MobileUiRobot.clickFinishButton();
-        a4NeFilteredList.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
 
 
 //                .entrySet()
@@ -128,12 +128,12 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
 
         a4MobileUiRobot.clickMonitoringButton();
-        a4MobileUiRobot.checkMonitoring(a4NeFilteredList);
+        a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
+        List<String> toBeRemoved = new ArrayList<>();
 
         System.out.println("-------------------------------------------------");
         // remove all entries
-        try {
-            a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+            a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
                 a4MobileUiRobot.clickRemoveButton();
                 System.out.println("a4MobileUiRobot.clickRemoveButton");
 
@@ -142,21 +142,22 @@ public class A4MobileMonitoringPageTest extends BaseTest {
                     WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
                     WebDriverWait wait = new WebDriverWait(driver, 5000);
                     Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                    //window().manage().getCookies();
                     driver.switchTo().alert();
                     alert.accept();
                     System.out.println("ALERT ACCEPTED");
                 } catch (NoAlertPresentException e) {
-                    System.out.println("JM EXCEPTION " + e.getCause());
+                    System.out.println("EXCEPTION " + e.getCause());
                 }
-                a4NeFilteredList.remove(k);
+                toBeRemoved.add(k);
+
             });
-        } catch (ConcurrentModificationException eee) {
-            System.out.println("ConcurrentModificationException is ok");
-        };
+
+            toBeRemoved.forEach(A4ElementString ->  a4NeFilteredMap.remove(A4ElementString));
+
+
 
         System.out.println("-------------------------------------------------");
-        a4MobileUiRobot.checkEmptyMonitoring(a4NeFilteredList);
+        a4MobileUiRobot.checkEmptyMonitoring(a4NeFilteredMap);
     }
 
 
