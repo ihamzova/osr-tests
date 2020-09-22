@@ -33,7 +33,7 @@ public class OltRiCommissioningPage {
     private static final By DOWNLINK_ENDSZ_LOCATOR = byXpath("//input[normalize-space(@name)='bngendsztxt']");
     private static final By DOWNLINK_SLOT_LOCATOR = byXpath("//input[@name='bngslotnumbertxt']");
     private static final By DOWNLINK_PORT_LOCATOR = byXpath("//input[@name='bngportnumbertxt']");
-    private static final By LSZ_DROPDOWN_LOCATOR = byXpath("//sui-select[@name='lsz']");
+    private static final By LSZ_DROPDOWN_LOCATOR = byXpath("//app-sui-drop-down[@name='lsz']");
     private static final By ORDNUNGS_NUMBER_LOCATOR = byXpath("//input[@name='ordernumbertxt']");
     private static final By START_AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR = byXpath("//button[normalize-space(text())='automatisierte OLT-Inbetriebnahme starten']");
 
