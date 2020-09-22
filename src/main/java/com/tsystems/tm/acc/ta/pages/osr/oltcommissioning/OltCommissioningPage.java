@@ -28,8 +28,8 @@ public class OltCommissioningPage {
     public static final By OLT_BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngendsztxt");
     public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngslotnumbertxt");
     public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngportnumbertxt");
-    public static final By LSZ_SELECT_LOCATOR = byQaData("sui-select-lsz");
-    public String LSZ_VALUE_LOCATOR = "//*[@qa-data='sui-select-option-%s']";
+    public static final By LSZ_SELECT_LOCATOR = byQaData("div-lsz");
+    public String LSZ_VALUE_LOCATOR = "//*[@qa-data='div-%s']"; //div-4C1
     public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
     public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
     public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-view");
