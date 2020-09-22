@@ -19,9 +19,7 @@ import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -131,33 +129,27 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
         List<String> toBeRemoved = new ArrayList<>();
 
-        System.out.println("-------------------------------------------------");
         // remove all entries
-            a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
-                a4MobileUiRobot.clickRemoveButton();
-                System.out.println("a4MobileUiRobot.clickRemoveButton");
+        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
+            a4MobileUiRobot.clickRemoveButton();
+            try {
 
-                try {
+                WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriverWait wait = new WebDriverWait(driver, 5000);
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert();
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("EXCEPTION " + e.getCause());
+            }
+            toBeRemoved.add(k);
 
-                    WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
-                    WebDriverWait wait = new WebDriverWait(driver, 5000);
-                    Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                    driver.switchTo().alert();
-                    alert.accept();
-                    System.out.println("ALERT ACCEPTED");
-                } catch (NoAlertPresentException e) {
-                    System.out.println("EXCEPTION " + e.getCause());
-                }
-                toBeRemoved.add(k);
+        });
 
-            });
-
-            toBeRemoved.forEach(A4ElementString ->  a4NeFilteredMap.remove(A4ElementString));
+        toBeRemoved.forEach(A4ElementString ->  a4NeFilteredMap.remove(A4ElementString));
 
 
-
-        System.out.println("-------------------------------------------------");
-        a4MobileUiRobot.checkEmptyMonitoring(a4NeFilteredMap);
+        a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
 
 

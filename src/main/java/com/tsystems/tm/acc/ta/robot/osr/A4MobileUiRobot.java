@@ -103,7 +103,7 @@ public class A4MobileUiRobot {
 
     //monitoring-page
     @Step("check empty Monitoring")
-    public void checkEmptyMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) {
+    public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
 
         $(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
         assertEquals($(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
