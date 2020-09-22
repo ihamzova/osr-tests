@@ -81,7 +81,8 @@ public class WgAccessProvisioningRobot {
     }
 
     @Step("Get businessInformation from log")
-    public List<BusinessInformation> getBusinessInformation() {
+    public List<BusinessInformation> getBusinessInformation() throws InterruptedException {
+        Thread.sleep(5000);
         logExpect.fetch();
 
         List<BusinessInformation> businessInformations = LogConverter.logsToBusinessInformationMessages(

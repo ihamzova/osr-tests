@@ -10,6 +10,7 @@ public interface UpiterConstants {
     String ACCESS_MANAGEMENT_SUPPORT_UI_MS = "access-management-support-ui";
     String EA_EXT_ROUTE_MS = "ea-ext-route";
     String GATEWAY_ROUTE_MS = "gateway-route";
+    String DECOUPLING_MS = "decoupling-component";
     String ACCESS_LINE_BFF_PROXY_MS = "access-line-bff-proxy";
     String WG_A4_PROVISIONING_MS = "wg-a4-provisioning";
     String ONT_OLT_ORCHESTRATOR_MS = "ont-olt-orchestrator";

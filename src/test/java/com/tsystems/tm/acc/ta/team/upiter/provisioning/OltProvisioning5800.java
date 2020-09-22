@@ -39,7 +39,7 @@ import static io.restassured.RestAssured.given;
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(EA_EXT_ROUTE_MS)
+@ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
 public class OltProvisioning5800 extends BaseTest {
 
