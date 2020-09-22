@@ -1,0 +1,9 @@
+name: DefaultOltForCommissioningPositive
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/40/1234"
+  fsz: "76H2"
+  oltPort: "1"
+  oltSlot: "4"
+  uplinkSlot: "5"
+  uplinkPort: "3"

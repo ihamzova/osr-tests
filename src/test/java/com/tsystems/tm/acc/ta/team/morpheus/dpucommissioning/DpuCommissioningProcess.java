@@ -48,7 +48,7 @@ public class DpuCommissioningProcess extends BaseTest {
     @TmsLink("DIGIHUB-62083")
     @Description("Positive case. DPU-commisioning without errors")
     public void dpuCommissioningPositive() {
-        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DefaultOltForCommissioningPositive);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
 
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositive")) {
