@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selectors.byXpath;
 
+
 @Slf4j
 @Getter
 public class A4MobileMonitoringPage {
@@ -15,6 +16,9 @@ public class A4MobileMonitoringPage {
     public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
 
     @Getter
-    public static final By DELETE_BUTTON_LOCATOR = By.xpath("//u[contains(text(),'X')]");
+    public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.xpath("//div[@id='MessageNoNetworkElementsInMonitoringList']");
+
+    @Getter
+    public static final By DELETE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
 
 }
