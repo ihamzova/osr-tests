@@ -58,7 +58,7 @@ public class DpuCommissioningUiRobot {
         Assert.assertFalse(businessKey.isEmpty());
 
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after com. mismatch");
-        //WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
+        WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(),"Port LifeCycleState after com. mismatch");
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
