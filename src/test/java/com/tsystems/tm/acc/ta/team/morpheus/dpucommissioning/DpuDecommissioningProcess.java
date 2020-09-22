@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -398,6 +399,62 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
         }
+    }
+
+    @Test(description = "Restore process test")
+    @Description("Process is restored after fail on release onuid step")
+    public void restoreProcessDecommissioning() throws InterruptedException {
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        DpuCommissioningResponse resp;
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningReleaseOnuIdTask400")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
+                    .build()
+                    .publish();
+
+
+
+            resp = dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
+
+            Thread.sleep(10000);
+        }
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningSuccess")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningSuccess(olt, dpu)
+                    .build()
+                    .publish();
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startRestoreProcess(resp.getId());
+            dpuCommissioningRobot.checkPostSEALDpuOltDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
+            dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
+
     }
 
     private Consumer<RequestPatternBuilder> bodyContains(String str) {

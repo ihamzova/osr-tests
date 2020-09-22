@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -608,7 +609,7 @@ public class DpuCommissioningProcess extends BaseTest {
     }
 
     @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
-    @Description("Positive case. DPU-commisioning without errors")
+    @Description("Positive case. DPU-commissioning without errors")
     public void dpuCommissioningPositiveDomain() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
@@ -619,11 +620,11 @@ public class DpuCommissioningProcess extends BaseTest {
                     .build()
                     .publish();
 
-            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            DpuCommissioningResponse resp = dpuCommissioningRobot.startCommissioningProcess(dpu.getEndSz(), UUID.randomUUID());
 
             Thread.sleep(30000);
 
-            etcdRobot.checkEtcdValues(dpuCommissioningRobot.getBusinessKey(),
+            etcdRobot.checkEtcdValues(resp.getBusinessKey(),
                     Arrays.asList(
                             "EXECUTED Successfuly [Read DPU device data]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
@@ -631,7 +632,6 @@ public class DpuCommissioningProcess extends BaseTest {
                             "EXECUTED Successfuly [Read OltPonPort Data]",
                             "EXECUTED Successfuly [Read OltUpLinkPortData]",
                             "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                            "EXECUTED Successfuly [Read BackhaulId]",
                             "EXECUTED Successfuly [Read BackhaulId]",
                             "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
                             "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
