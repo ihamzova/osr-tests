@@ -422,6 +422,8 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             Thread.sleep(10000);
         }
+
+        WireMockFactory.get().resetRequests();
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningSuccess")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningSuccess(olt, dpu)
