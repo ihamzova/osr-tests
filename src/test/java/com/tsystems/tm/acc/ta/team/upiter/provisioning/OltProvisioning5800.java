@@ -16,7 +16,6 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.mode
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.PortDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;

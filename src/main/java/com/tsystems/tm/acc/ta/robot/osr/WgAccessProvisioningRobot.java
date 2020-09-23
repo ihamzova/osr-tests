@@ -17,6 +17,7 @@ import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.mode
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.PortDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.Assert;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +34,7 @@ import static com.tsystems.tm.acc.ta.helpers.log.ServiceLogExpectSince.given;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 200_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
     private static String CORRELATION_ID = UUID.randomUUID().toString();
     private ServiceLogExpectSince logExpect;
     private WgAccessProvisioningClient wgAccessProvisioningClient = new WgAccessProvisioningClient();
@@ -90,6 +91,7 @@ public class WgAccessProvisioningRobot {
                         .getExpecterMap()
                         .get(WG_ACCESS_PROVISIONING_MS))
                         .getCatched());
+        Assert.assertNotNull(businessInformations, "Business Info is not collected.");
         return businessInformations;
     }
 

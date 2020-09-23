@@ -61,7 +61,7 @@ public class WgFttbAccessProvisioning extends BaseTest {
     public void fttbDeviceProvisioningTest() throws InterruptedException {
         accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioning);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioning.getEndSz());
-        Thread.sleep(LATENCY_FOR_ACCESSLINE_FTTB_PROVISIONING*numberOfAccessLinesForProvisioning);
+        Thread.sleep(LATENCY_FOR_ACCESSLINE_FTTB_PROVISIONING * numberOfAccessLinesForProvisioning);
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioning, numberOfAccessLinesForProvisioning);
     }
 }
