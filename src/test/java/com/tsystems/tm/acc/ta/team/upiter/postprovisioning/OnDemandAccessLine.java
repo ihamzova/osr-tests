@@ -76,7 +76,7 @@ public class OnDemandAccessLine {
 
         List<BusinessInformation> businessInformationLogCollector = wgAccessProvisioningRobot.getBusinessInformation();
 
-        Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList),"Business information is not found");
+        Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList), "Business information is not found");
 
         accessLineRiRobot.checkPortParametersForLines(portForOnDemand);
         accessLineRiRobot.checkPortParametersForAssignedLines(portForOnDemand);

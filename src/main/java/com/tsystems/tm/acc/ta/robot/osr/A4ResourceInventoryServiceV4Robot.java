@@ -22,25 +22,25 @@ public class A4ResourceInventoryServiceV4Robot {
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client().getClient();
 
     @Step("Read all Network Elements as list from v4 API")
-    public List<NetworkElement> getAllNetworkElementsV4() {
-        return a4ResourceInventoryService.networkElement()
-                .listNetworkElement()
+    public List<NetworkElements> getAllNetworkElementsV4() {
+        return a4ResourceInventoryService.networkElements()
+                .listNetworkElements()
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Read all Network Elements as list from v4 API")
-    public List<NetworkElement> getNetworkElementsV4ByEndsz(String endsz) {
-        return a4ResourceInventoryService.networkElement()
-                .listNetworkElement()
+    public List<NetworkElements> getNetworkElementsV4ByEndsz(String endsz) {
+        return a4ResourceInventoryService.networkElements()
+                .listNetworkElements()
                 .endszQuery(endsz)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Read one NetworkElement from v4 API")
-    public NetworkElement getNetworkElementV4(String uuid) {
+    public NetworkElements getNetworkElementV4(String uuid) {
         return a4ResourceInventoryService
-                .networkElement()
-                .retrieveNetworkElement()
+                .networkElements()
+                .retrieveNetworkElements()
                 .idPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -82,7 +82,7 @@ public class A4ResourceInventoryServiceV4Robot {
 
     public void checkIfNetworkElementExistsByUuid(A4NetworkElement neData) {
         String endsz = neData.getVpsz() + "/" + neData.getFsz();
-        List<NetworkElement> neList = getNetworkElementsV4ByEndsz(endsz);
+        List<NetworkElements> neList = getNetworkElementsV4ByEndsz(endsz);
 
         assertEquals(neList.size(), 1);
         assertEquals(neList.get(0).getVpsz(), neData.getVpsz());
@@ -93,7 +93,7 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
     public void checkNumberOfNetworkElements(List<A4NetworkElement> neDataList) {
-        List<NetworkElement> neList = getAllNetworkElementsV4();
+        List<NetworkElements> neList = getAllNetworkElementsV4();
         assertEquals(neList.size(), neDataList.size());
     }
 

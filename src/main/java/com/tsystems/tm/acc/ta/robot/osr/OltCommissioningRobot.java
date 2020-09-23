@@ -144,7 +144,7 @@ public class OltCommissioningRobot {
 
         Assert.assertTrue(anpTagsList.contains(128));
 
-        List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
+        List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(uplinksList.size(), 1);
