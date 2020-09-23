@@ -17,8 +17,6 @@ public class DpuInfoPage {
 
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
-    public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
-    private static final Integer WAITING_TIME_FOR_DPU_COMMISSIONING_PROCESS_END = 15_000;
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 

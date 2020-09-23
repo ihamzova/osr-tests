@@ -58,7 +58,7 @@ public class DpuCommissioningUiRobot {
         Assert.assertFalse(businessKey.isEmpty());
 
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after com. mismatch");
-        //WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
+
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(),"Port LifeCycleState after com. mismatch");
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
@@ -88,13 +88,13 @@ public class DpuCommissioningUiRobot {
                 .dpuPonPortEndszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(dpuPonConnectionDtos.size(), 1L);
         DpuPonConnectionDto dpuPonConnection = dpuPonConnectionDtos.get(0);
-        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz(), "OLT EndSz wrong");
-        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot(), "OLT Gpon Slot wrong");
-        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort(), "OLT Gpon Port wrong");
+        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz(), "OLT EndSz mismatch");
+        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot(), "OLT Gpon Slot mismatch");
+        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort(), "OLT Gpon Port mismatch");
         Assert.assertEquals(dpuPonConnection.getDpuPonPortEndsz(), dpuDevice.getEndsz(), "DPU EndSz wrong");
         Assert.assertEquals(dpuPonConnection.getDpuPonPortNumber(), "1", "DPU Pon port number wrong");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()), "DPU GE wrong");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()), "DPU WE wrong");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()), "DPU GE mismatch");
+        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()), "DPU WE mismatch");
 
 
         // check AccessLines, corresponding profiles and pools
