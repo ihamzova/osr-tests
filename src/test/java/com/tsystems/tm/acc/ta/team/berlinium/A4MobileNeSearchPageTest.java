@@ -270,6 +270,8 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4MobileUiRobot.checkRadioButton("1");
         a4MobileUiRobot.clickInbetriebnahmeButton();
 
+        a4MobileUiRobot.enterZtpIdent("ztp");
+
         a4MobileUiRobot.clickFinishButton();
         assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
         assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
