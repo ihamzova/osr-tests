@@ -97,14 +97,10 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertEquals(concat.size()/6, a4NeFilteredList.size());
     }
 
-    @BeforeMethod()
-        public void doLogin() {
-            Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-            SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        }
-
     @BeforeClass()
     public void init() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -127,7 +123,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         cleanUp();
     }
 
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
