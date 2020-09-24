@@ -403,4 +403,9 @@ public class DpuCommissioningRobot {
         wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/provisioning/port"));
     }
 
+    @Step
+    public void checkDpuCommissioningStepsCalled(){
+
+    }
+
 }
