@@ -302,9 +302,20 @@ public class DpuDecommissioningProcess extends BaseTest {
                     .build()
                     .publish();
 
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
