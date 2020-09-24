@@ -17,4 +17,9 @@
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreation"/>
         </classes>
     </test>
+    <test name="DPU-Commissioning cases (for SDX2221-16-TP device)" thread-count="1">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221"/>
+        </classes>
+    </test>
 </suite>
