@@ -91,7 +91,6 @@ public class OltCommissioningRobot {
 
         oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
 
-        WebDriverRunner.getWebDriver().navigate().refresh(); // DIGIHUB-75807
         oltDetailsPage.checkGponPortLifeCycleState(DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 

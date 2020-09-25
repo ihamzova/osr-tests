@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.client.model.HomeIdDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -28,7 +29,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.GATEWAY_ROUTE_M
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
-public class Postprovisioning16_24 {
+public class Postprovisioning16_24 extends BaseTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();

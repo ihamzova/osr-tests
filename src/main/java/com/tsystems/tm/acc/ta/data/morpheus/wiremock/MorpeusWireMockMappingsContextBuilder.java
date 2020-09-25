@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.wiremock;
 
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.SealStub;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
@@ -450,6 +451,12 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addGetDpuAtOltConfigAnotherDPUStub(dpu, olt);
         addGetDpuPonConnStub(olt, dpu, true);
         addPostPreprovisionFTTHStub(olt, dpu,true,true);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addSEALMocksForDomain(DpuDevice dpu) {
+        context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
+        context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
         return this;
     }
 

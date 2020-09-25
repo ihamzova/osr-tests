@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
@@ -16,7 +17,12 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.*;
 
@@ -74,7 +80,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         cleanUp();
     }
 
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
@@ -82,7 +88,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
 
         a4NetworkElements.forEach((k,v)->
@@ -98,27 +104,52 @@ public class A4MobileMonitoringPageTest extends BaseTest {
     public void testMonitoring() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
+
+        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
+
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
         a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
         a4MobileUiRobot.clickSearchButton();
-
         a4MobileUiRobot.checkRadioButton("1");
         a4MobileUiRobot.clickInbetriebnahmeButton();
         a4MobileUiRobot.enterZtpIdent("ztp");
         a4MobileUiRobot.clickFinishButton();
-        a4MobileUiRobot.clickMonitoringButton();
+        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
 
-        Map<String, A4NetworkElement> a4NeFilteredList = new HashMap<>();
-        a4NeFilteredList.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+
 //                .entrySet()
 //                .stream()
 //                .filter(map -> map.getValue().getCategory()
 //                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory()))
 //                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        a4MobileUiRobot.checkMonitoring(a4NeFilteredList);
 
+        a4MobileUiRobot.clickMonitoringButton();
+        a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
+        List<String> toBeRemoved = new ArrayList<>();
+
+        // remove all entries
+        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
+            a4MobileUiRobot.clickRemoveButton();
+            try {
+
+                WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriverWait wait = new WebDriverWait(driver, 5000);
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert();
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("EXCEPTION " + e.getCause());
+            }
+            toBeRemoved.add(k);
+
+        });
+
+        toBeRemoved.forEach(A4ElementString ->  a4NeFilteredMap.remove(A4ElementString));
+
+
+        a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
 
 

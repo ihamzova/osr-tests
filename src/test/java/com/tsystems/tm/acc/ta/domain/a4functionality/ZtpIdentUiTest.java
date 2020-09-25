@@ -28,6 +28,7 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI)
 @ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(A4_INVENTORY_IMPORTER)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
 public class ZtpIdentUiTest extends BaseTest {
     private static final int WAIT_TIME = 5_000;

@@ -25,7 +25,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(GATEWAY_ROUTE_MS)
 public class WgFttbAccessProvisioning extends BaseTest {
 
-    private static final Integer LATENCY_FOR_ACCESSLINE_FTTB_PROVISIONING = 5_000;
     private WgFttbAccessProvisioningRobot wgFttbAccessProvisioningRobot;
     private AccessLineRiRobot accessLineRiRobot;
     private Dpu dpuDeviceFttbProvisioning;
@@ -58,10 +57,9 @@ public class WgFttbAccessProvisioning extends BaseTest {
     @Test
     @TmsLink("DIGIHUB-69325")
     @Description("FTTB Provisioning for a Device")
-    public void fttbDeviceProvisioningTest() throws InterruptedException {
+    public void fttbDeviceProvisioningTest() {
         accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioning);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioning.getEndSz());
-        Thread.sleep(LATENCY_FOR_ACCESSLINE_FTTB_PROVISIONING*numberOfAccessLinesForProvisioning);
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioning, numberOfAccessLinesForProvisioning);
     }
 }
