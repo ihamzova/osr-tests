@@ -359,7 +359,10 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         addSealPostDpuOltDeconfStub(dpu, true);
         addPostReleaseOnuIdTask(olt, true);
         addDeleteDpuOltConfigStub();
-        addGetDPUAncpStubEmptyBody(dpu);
+        addGetDPUAncpStub404(dpu);
+        addGetDpuAtOltConfigStub(dpu, olt, false,true);
+        addGetDpuPonConnStub(olt, dpu, true);
+        addPostPreprovisionFTTHStub(olt, dpu,true,true);
         return this;
     }
 
@@ -714,6 +717,11 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
 
     public MorpeusWireMockMappingsContextBuilder addGetDPUAncpStubEmptyBody(Dpu dpu){
         context.add(new OltResourceInventoryStub().getDpuAncpSession200EmptyBody(dpu));
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDPUAncpStub404(Dpu dpu){
+        context.add(new OltResourceInventoryStub().getDpuAncpSession404(dpu));
         return this;
     }
 
