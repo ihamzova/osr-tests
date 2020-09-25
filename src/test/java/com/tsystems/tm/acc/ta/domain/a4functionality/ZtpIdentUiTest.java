@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
+
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 
 @ServiceLog(A4_RESOURCE_INVENTORY)
@@ -65,8 +66,10 @@ public class ZtpIdentUiTest extends BaseTest {
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
+//        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
+//                .get(EquipmentDataCase.equipment_MatNr_42999900);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_42999900);
+                .get(EquipmentDataCase.equipment_MatNr_40958960);
 
         // Ensure that no old test data is in the way
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
