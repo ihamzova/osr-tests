@@ -63,13 +63,15 @@ public class Postprovisioning16_24 extends BaseTest {
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
         accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
 
-        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
-
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
-        //12 assigned lines +1 trigger postprovisioning
-        wgAccessProvisioningRobot.prepareForPostprovisioning(13, portFor16_24Case, homeIdDto);
+        //12 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(12, portFor16_24Case, homeIdDto);
+
+        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
+        //1 trigger postprovisioning
+        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor16_24Case, homeIdDto);
 
         //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();

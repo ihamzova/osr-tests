@@ -65,9 +65,9 @@ public class OnDemandAccessLine extends BaseTest {
 
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
-        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
         wgAccessProvisioningRobot.prepareForPostprovisioning(32, portForPostProvisioningPrecondition, homeIdDto); //create 32 assigned lines
 
+        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
         wgAccessProvisioningRobot.startPostprovisioning(portForOnDemand); //33 wg line creation
         List<BusinessInformation> businessInformationList = new ArrayList<>();
         businessInformationList.add(postprovisioningStart);

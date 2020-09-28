@@ -120,7 +120,7 @@ public class OntOltOrchestratorRobot {
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
                 30_000);
         log.info("Callback: " + requests);
-        Assert.assertEquals(requests.size(), 1);
+        Assert.assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
     }
 
