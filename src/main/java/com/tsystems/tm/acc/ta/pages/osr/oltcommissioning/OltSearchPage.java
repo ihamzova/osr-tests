@@ -92,7 +92,7 @@ public class OltSearchPage {
         return new OltDiscoveryPage();
     }
 
-    @Step("Start DPU creatione")
+    @Step("Start DPU commissioning process and go to dpu creation page")
     public DpuCreatePage pressCreateDpuButton() {
         $(MANUAL_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
         return new DpuCreatePage();
