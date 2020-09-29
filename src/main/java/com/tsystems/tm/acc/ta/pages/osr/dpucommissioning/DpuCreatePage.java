@@ -32,7 +32,7 @@ public class DpuCreatePage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Input params and start DPU creation")
+    @Step("Input parameters for DPU creation")
     public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
         $(DPU_KLS_ID_INPUT_LOCATOR).click();
         $(DPU_KLS_ID_INPUT_LOCATOR).val(dpuDevice.getKlsId());
@@ -56,7 +56,7 @@ public class DpuCreatePage {
         return this;
     }
 
-    @Step("Go back on the DPU Info page")
+    @Step("Go back to DPU Info page")
     public DpuCreatePage openDpuInfoPage() {
         $(DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR).click();
         return this;

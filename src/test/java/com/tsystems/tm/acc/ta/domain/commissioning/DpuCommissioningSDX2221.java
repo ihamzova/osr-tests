@@ -60,7 +60,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
     @TmsLink("DIGIHUB-75965")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
-    @Owner("@t-systems.com")
+    @Owner("DL-T-Magic.Mercury@telekom.de")
     public void dpuCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());

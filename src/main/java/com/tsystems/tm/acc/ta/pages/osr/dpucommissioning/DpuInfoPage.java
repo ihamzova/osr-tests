@@ -83,7 +83,7 @@ public class DpuInfoPage {
         return $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).getText();
     }
 
-    @Step("Get PORT life cycle state")
+    @Step("Get port life cycle state")
     public static String getPortLifeCycleState() {
         return $(PON_PORT_LIFE_CYCLE_STATE_LOCATOR).getText();
     }

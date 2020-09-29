@@ -214,7 +214,7 @@ public class OltDetailsPage {
         return $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).getText();
     }
 
-    @Step("Get PORT life cycle state")
+    @Step("Get port life cycle state")
     public String getPortLifeCycleState(String slot, String port) {
         return $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText();
     }
