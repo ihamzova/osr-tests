@@ -3,9 +3,11 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.api.DpuCommissioningApi;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuDecommissioningRequest;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.api.RestoreApi;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,7 @@ public class DpuCommissioningRobot {
     private static final Long DELAY = 8_000L;
     private DpuCommissioningClient dpuCommissioningClient;
     public String businessKey;
+    public String id;
 
     @Step("Start dpuCommissioning")
     public UUID startProcess(String endsz) {
@@ -45,21 +48,44 @@ public class DpuCommissioningRobot {
         return traceId;
     }
 
+    @Step("Start dpuCommissioning")
+    public DpuCommissioningResponse startCommissioningProcess(String endsz, UUID traceId) {
+        dpuCommissioningClient = new DpuCommissioningClient();
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(endsz);
+
+        return dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
+                .xB3TraceIdHeader(traceId.toString())
+                .xBusinessContextHeader(UUID.randomUUID().toString())
+                .xB3SpanIdHeader(UUID.randomUUID().toString())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
     @Step("Start dpuDecommissioning")
-    public void startDecomissioningProcess(String endsz) {
+    public DpuCommissioningResponse startDecomissioningProcess(String endsz) {
         dpuCommissioningClient = new DpuCommissioningClient();
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
 
-        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+        return dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
                 .body(dpuDecommissioningRequest)
                 .xB3ParentSpanIdHeader("1")
                 .xB3TraceIdHeader("2")
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
 
-        businessKey = response.getBusinessKey();
+    @Step("Start restore process")
+    public void startRestoreProcess(String id){
+        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient.getClient().dpuCommissioning().restoreProcess()
+                .processIdPath(id)
+                .xBusinessContextHeader("cef0cbf3-6458-4f13-a418-ee4d7e7505dd")
+                .xCallbackCorrelationIdHeader("cef0cbf3-6458-4f13-a418-ee4d7e7505dd")
+                .execute(validatedWith(shouldBeCode(200)));
     }
 
 
@@ -370,7 +396,7 @@ public class DpuCommissioningRobot {
     @Step
     public void checkDeleteDpuOltConfigurationCalled(){
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration.*"));
+        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlMatching("/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration.*"));
     }
 
     @Step

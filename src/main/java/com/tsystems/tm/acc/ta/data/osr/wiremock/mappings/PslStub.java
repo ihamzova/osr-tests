@@ -20,6 +20,7 @@ public class PslStub extends AbstractStubMapping {
         return post(urlPathMatching(READ_EQUIPMENT_UNIVERSAL_URL))
                 .withName("postReadEquipment202_" + oltDevice.getEndsz().replace("/", "_"))
                 .willReturn(aDefaultResponseWithBody("", 202))
+                .atPriority(1)
                 .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo(oltDevice.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(oltDevice))));
     }
@@ -28,6 +29,7 @@ public class PslStub extends AbstractStubMapping {
         return post(urlPathMatching(READ_EQUIPMENT_UNIVERSAL_URL))
                 .withName("postReadEquipment202_" + (networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))
                 .willReturn(aDefaultResponseWithBody("", 202))
+                .atPriority(1)
                 .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo((networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(equipmentData, networkElement))));
     }

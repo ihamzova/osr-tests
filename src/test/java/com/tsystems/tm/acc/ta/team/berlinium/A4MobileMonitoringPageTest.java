@@ -80,7 +80,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         cleanUp();
     }
 
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
@@ -88,7 +88,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
 
         a4NetworkElements.forEach((k,v)->

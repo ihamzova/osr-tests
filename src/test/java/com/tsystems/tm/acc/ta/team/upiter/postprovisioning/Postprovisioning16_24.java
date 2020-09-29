@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.client.model.HomeIdDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -28,7 +29,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.GATEWAY_ROUTE_M
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
-public class Postprovisioning16_24 {
+public class Postprovisioning16_24 extends BaseTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
@@ -62,13 +63,15 @@ public class Postprovisioning16_24 {
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
         accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
 
-        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
-
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
-        //12 assigned lines +1 trigger postprovisioning
-        wgAccessProvisioningRobot.prepareForPostprovisioning(13, portFor16_24Case, homeIdDto);
+        //12 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(12, portFor16_24Case, homeIdDto);
+
+        wgAccessProvisioningRobot.startWgAccessProvisioningLog();
+        //1 trigger postprovisioning
+        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor16_24Case, homeIdDto);
 
         //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();

@@ -129,6 +129,13 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
+    public MappingBuilder getDpuAncpSession404(Dpu dpu) {
+        return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
+                .withName("getDpuAncpSession404")
+                .willReturn(aDefaultResponseWithBody(null, 404))
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
     public MappingBuilder getOltAncpSession200(OltDevice olt, Dpu dpu) {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .willReturn(aDefaultResponseWithBody(

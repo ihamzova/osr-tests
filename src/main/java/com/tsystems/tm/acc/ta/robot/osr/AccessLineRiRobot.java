@@ -10,7 +10,6 @@ import io.qameta.allure.Step;
 import org.testng.Assert;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -111,6 +110,14 @@ public class AccessLineRiRobot {
 
     @Step("Check FTTB AccessLines (FTTB_NE_Profile, Default_NetworkLine_Profile")
     public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
+        } catch (Throwable e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "AccessLines count");
 
