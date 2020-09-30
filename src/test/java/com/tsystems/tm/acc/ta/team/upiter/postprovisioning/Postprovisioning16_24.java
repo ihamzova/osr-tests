@@ -38,6 +38,7 @@ public class Postprovisioning16_24 extends BaseTest {
     private AccessLine accessLine;
     private PortProvisioning portFor16_24Case;
     private PortProvisioning portForPostProvisioningPrecondition;
+    private PortProvisioning portFor24_32Case;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
@@ -83,5 +84,29 @@ public class Postprovisioning16_24 extends BaseTest {
 
         accessLineRiRobot.checkPortParametersForLines(portFor16_24Case);
         accessLineRiRobot.checkPortParametersForAssignedLines(portFor16_24Case);
+    }
+
+
+    @Test(dependsOnMethods = "postProvisioning16to24Test")
+    @TmsLink("DIGIHUB-34826")
+    @Description("OLT MA5600, 20/24, postprovisioning 24 --> 32")
+    public void postProvisioning24_32Test() {
+        portForPostProvisioningPrecondition = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFor16_24_32Precondition);
+        portFor24_32Case = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFor16_24_32);
+        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.assignAccessLines16_24_32);
+        //precondition
+        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+
+        accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+        HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
+
+        //13 + 7 assigned access lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(7, portFor24_32Case, homeIdDto);
+
+        //1 to trigger postprovisioning
+        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor24_32Case, homeIdDto);
+
+        accessLineRiRobot.checkPortParametersForLines(portFor24_32Case);
+        accessLineRiRobot.checkPortParametersForAssignedLines(portFor24_32Case);
     }
 }

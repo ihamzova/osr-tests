@@ -62,6 +62,14 @@ public class AccessLineRiRobot {
 
     @Step("Check access lines parameters of port template (lines count and wg lines count, count of default NE and NetworkLine profiles)")
     public void checkPortParametersForLines(PortProvisioning port) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
+        } catch (Throwable e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
                 "Access lines count");
