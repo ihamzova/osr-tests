@@ -1,0 +1,49 @@
+name: portFor16_24_32Precondition
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesWG: 11
+  defaultNEProfilesActive: 24
+  defaultNetworkLineProfilesActive: 24
+  accessLinesCount: 24
+---
+name: portFor16_24_32
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesWG: 11
+  defaultNEProfilesActive: 32
+  defaultNetworkLineProfilesActive: 32
+  accessLinesCount: 32
+---
+name: assignAccessLines16_24_32
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+---
+name: Postprovisioning24_32StartInfo
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is started"
+  slotNumber: "3"
+  portNumber: "6"
+---
+name: Postprovisioning24_32EndInfo
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is successfully completed"
+  slotNumber: "3"
+  portNumber: "6"
