@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
@@ -72,7 +73,7 @@ public class DeprovisioningTest extends BaseTest {
                         .endSz(portDepr.getEndSz())
                         .portNumber(portDepr.getPortNumber())
                         .slotNumber(portDepr.getSlotNumber()))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
 
         checkPostConditions(portDepr);
     }
@@ -89,7 +90,7 @@ public class DeprovisioningTest extends BaseTest {
                 .body(Collections.singletonList(new CardDto()
                         .endSz(cardDepr.getEndSz())
                         .slotNumber(cardDepr.getSlotNumber())))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
 
         checkPostConditions(cardDepr);
     }
@@ -104,7 +105,7 @@ public class DeprovisioningTest extends BaseTest {
                 .deprovisioningProcess()
                 .startDeviceDeprovisioning()
                 .body(new DeviceDto().endSz(deviceDepr.getEndSz()))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
 
         checkPostConditions(deviceDepr);
     }

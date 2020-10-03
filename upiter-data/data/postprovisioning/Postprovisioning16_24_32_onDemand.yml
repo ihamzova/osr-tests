@@ -1,0 +1,49 @@
+name: portFor24_32onDemandPrecondition
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesWG: 11
+  defaultNEProfilesActive: 32
+  defaultNetworkLineProfilesActive: 32
+  accessLinesCount: 32
+---
+name: portFor24_32_onDemand
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+  homeIdPool: 32
+  lineIdPool: 33
+  accessLinesWG: 1
+  defaultNEProfilesActive: 33
+  defaultNetworkLineProfilesActive: 33
+  accessLinesCount: 33
+---
+name: assignAccessLines16_24_32_onDemand
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "6"
+---
+name: Postprovisioning24_32_onDemandStartInfo
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is started"
+  slotNumber: "3"
+  portNumber: "6"
+---
+name: Postprovisioning24_32_onDemandEndInfo
+template: com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation
+values:
+  endSz: "49/30/179/76H1"
+  description: "Postprovisioning is successfully completed"
+  slotNumber: "3"
+  portNumber: "6"

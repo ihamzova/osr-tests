@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.helpers.WiremockHelper.CONSUMER_ENDPOINT;
@@ -48,7 +49,7 @@ public class WgAccessProvisioningRobot {
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     @Step("Start card provisioning")
@@ -58,7 +59,7 @@ public class WgAccessProvisioningRobot {
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber()))
                         .collect(Collectors.toList()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     @Step("Start device provisioning")
@@ -66,7 +67,7 @@ public class WgAccessProvisioningRobot {
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
                 .body(new DeviceDto()
                         .endSz(port.getEndSz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     @Step("Collect wg-access-provisioning logs")
@@ -101,7 +102,7 @@ public class WgAccessProvisioningRobot {
                         .endSz(process.getEndSz())
                         .slotNumber(process.getSlotNumber())
                         .portNumber(process.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getId();
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202))).getId();
     }
 
     @Step("Start postprovisioning")
@@ -123,7 +124,7 @@ public class WgAccessProvisioningRobot {
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     public void prepareForPostprovisioning(int linesCount, PortProvisioning port, HomeIdDto homeIdDto) {

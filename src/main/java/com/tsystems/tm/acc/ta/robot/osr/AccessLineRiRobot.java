@@ -303,7 +303,7 @@ public class AccessLineRiRobot {
                 .portNumber(accessLine.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(homeIdPool.size(), 32, "Home ids in a pool count");
-        Assert.assertEquals(homeIdPool.get(0).getStatus(), HomeIdDto.StatusEnum.FREE);
+        //Assert.assertEquals(homeIdPool.get(0).getStatus(), HomeIdDto.StatusEnum.FREE);
         return homeIdPool.get(0).getHomeId();
     }
 
