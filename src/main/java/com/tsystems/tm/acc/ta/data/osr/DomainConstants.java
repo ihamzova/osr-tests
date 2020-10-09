@@ -22,4 +22,5 @@ public interface DomainConstants {
     String OLT_DISCOVERY_MS = "olt-discovery";
     String ANCP_CONFIGURATION_MS = "ancp-configuration";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
+    String A10NSP_INVENTORY_MS = "a10nsp-inventory";
 }
