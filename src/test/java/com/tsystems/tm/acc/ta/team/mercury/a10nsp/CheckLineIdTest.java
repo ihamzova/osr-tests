@@ -51,7 +51,6 @@ public class CheckLineIdTest extends BaseTest {
         OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1_MA5600);
 
         // init test data
-        a10nspCheckRobot.init();
         a10nspCheckRobot.deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         a10nspCheckRobot.fillDeviceInResourceInventory(oltDevice);
     }
@@ -63,19 +62,17 @@ public class CheckLineIdTest extends BaseTest {
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
     public void CheckLineId() {
-        a10nspCheckRobot.CheckLineIdTestFound(checkLineIdA10nsp);
-        //a10nspCheckRobot.CheckLineIdTestNotFound(checkLineIdA10nspNotFound);
-        //a10nspCheckRobot.CheckLineIdTestWrongLine(checkLineIdA10nspWrongLineId);
+        a10nspCheckRobot.checkLineIdTestFound(checkLineIdA10nsp);
     }
 
     @Test(description = "DIGIHUB-54120  test carrierConnection was not found")
     public void CheckLineIdTestNotFound() {
-        a10nspCheckRobot.CheckLineIdTestNotFound(checkLineIdA10nspNotFound);
+        a10nspCheckRobot.checkLineIdTestNotFound(checkLineIdA10nspNotFound);
     }
 
     @Test(description = "DIGIHUB-54205 test invalid input parameter")
     public void CheckLineIdTestWrongLine() {
-        a10nspCheckRobot.CheckLineIdTestWrongLine(checkLineIdA10nspWrongLineId);
+        a10nspCheckRobot.checkLineIdTestWrongLineId(checkLineIdA10nspWrongLineId);
     }
 
 }
