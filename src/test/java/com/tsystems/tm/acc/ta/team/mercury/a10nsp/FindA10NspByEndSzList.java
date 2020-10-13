@@ -18,16 +18,16 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
+
 @Slf4j
 @ServiceLog(A10NSP_INVENTORY_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @Epic("OS&R")
 @Feature("Description a10nsp check LineId")
 @TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
-public class CheckLineIdTest extends BaseTest {
+public class FindA10NspByEndSzList extends BaseTest {
 
     private CheckLineIdA10nsp checkLineIdA10nsp;
-    private CheckLineIdA10nsp checkLineIdA10nspWrongLineId;
     private CheckLineIdA10nsp checkLineIdA10nspNotFound;
 
     private A10nspCheckRobot a10nspCheckRobot = new A10nspCheckRobot();
@@ -40,13 +40,9 @@ public class CheckLineIdTest extends BaseTest {
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.checkLineIdA10nsp);
 
-        checkLineIdA10nspWrongLineId = OsrTestContext.get().getData()
-                .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nspWrongLineId);
-
         checkLineIdA10nspNotFound = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
+                .get(CheckLineIdA10nspCase.findA10NspByEndSzListNotFound);
 
         OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1_MA5600);
 
@@ -61,19 +57,15 @@ public class CheckLineIdTest extends BaseTest {
     }
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
-    public void CheckLineId() {
-        //a10nspCheckRobot.checkLineIdTestFound(checkLineIdA10nsp);
+    public void findA10NspByEndSzListFound() {
         a10nspCheckRobot.findA10NspByEndSzListFound(checkLineIdA10nsp);
     }
 
-    @Test(description = "DIGIHUB-54120  test carrierConnection was not found")
-    public void CheckLineIdTestNotFound() {
-        a10nspCheckRobot.checkLineIdTestNotFound(checkLineIdA10nspNotFound);
-    }
-
-    @Test(description = "DIGIHUB-54205 test invalid input parameter")
-    public void CheckLineIdTestWrongLine() {
-        a10nspCheckRobot.checkLineIdTestWrongLineId(checkLineIdA10nspWrongLineId);
+    @Test(description = "DIGIHUB-xxxx ")
+    public void findA10NspByEndSzListNotFound() {
+        a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
     }
 
 }
+
+
