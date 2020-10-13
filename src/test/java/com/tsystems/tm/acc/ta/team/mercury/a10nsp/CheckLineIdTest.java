@@ -48,7 +48,7 @@ public class CheckLineIdTest extends BaseTest {
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
 
-        OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1_MA5600);
+        OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1);
 
         // init test data
         a10nspCheckRobot.deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());

@@ -76,9 +76,10 @@ public class A10nspCheckRobot {
 
         List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(checkLineIdA10nsp.getOltEndSz())
+                .endszQuery(checkLineIdA10nsp.getOltEndSz2())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        Assert.assertEquals(oltDtoList.size(), 1L, "oltDtoList found but wrong size");
+        Assert.assertEquals(oltDtoList.size(), 2L, "oltDtoList found but wrong size");
         OltDto oltDto = oltDtoList.get(0);
         Assert.assertEquals(oltDto.getOltEndSz(), checkLineIdA10nsp.getOltEndSz(), "OltDto found but wrong OLT EndSz");
         Assert.assertEquals(oltDto.getA10nspTerminationEndsz(), checkLineIdA10nsp.getBngEndSz(), "OltDto found but wrong BNG EndSz");

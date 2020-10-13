@@ -38,22 +38,27 @@ public class FindA10NspByEndSzList extends BaseTest {
         // load test data
         checkLineIdA10nsp = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nsp);
+                .get(CheckLineIdA10nspCase.findA10NspByEndSzListFound);
 
         checkLineIdA10nspNotFound = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.findA10NspByEndSzListNotFound);
 
-        OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1_MA5600);
+        OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1);
+        OltDevice oltDevice2 = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H5);
 
         // init test data
         a10nspCheckRobot.deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         a10nspCheckRobot.fillDeviceInResourceInventory(oltDevice);
+        a10nspCheckRobot.fillDeviceInResourceInventory(oltDevice2);
     }
 
     @AfterClass
     public void clear() {
-        a10nspCheckRobot.deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
+        OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1);
+        OltDevice oltDevice2 = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H5);
+        a10nspCheckRobot.deleteDeviceInResourceInventory(oltDevice.getEndsz());
+        a10nspCheckRobot.deleteDeviceInResourceInventory(oltDevice2.getEndsz());
     }
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
@@ -66,6 +71,8 @@ public class FindA10NspByEndSzList extends BaseTest {
         a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
     }
 
+    @Test(description = "DIGIHUB-xxxx ")
+    public void findA10NspByEndSzListEmpty() {
+        a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
+    }
 }
-
-

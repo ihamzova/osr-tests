@@ -1,0 +1,7 @@
+name: findA10NspByEndSzListFound
+template: com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp
+values:
+  oltEndSz: "49/30/179/76H1"
+  oltEndSz2: "49/30/179/76H5"
+  bngEndSz: "49/911/84/7ZJB"
+  rahmenVertragsNr: "1111113258594760"
