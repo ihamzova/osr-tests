@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
@@ -104,6 +105,12 @@ public class A10nspCheckRobot {
 
     }
 
+    @Step("Fill access-line-resource-inventory database with test data\"")
+    public void prepareAceessLineResourceInventoryDataBase() {
+        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("fill olt-resource-inventory database with test data")
     public void fillDeviceInResourceInventory(OltDevice oltDevice) {
 
@@ -128,15 +135,13 @@ public class A10nspCheckRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-
     @Step("clear the OLT device in olt-resource-invemtory database.")
     public void deleteDeviceInResourceInventory(String endSz) {
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-
-    @Step("clear and refresh the a10nsp-resource-invemtory database.")
+    @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-invemtory database.")
     private void refreshA10nspInventory() {
         // clear a10nsp-inventory database
         a10nspInventoryClient.getClient().databaseTestController().clearDatabase()

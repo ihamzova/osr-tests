@@ -11,6 +11,7 @@
     <test thread-count="1" name="Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.mercury.a10nsp.CheckLineIdTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.mercury.a10nsp.FindA10NspByEndSzList"/>
         </classes>
     </test>
 </suite>
