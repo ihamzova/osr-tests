@@ -71,12 +71,12 @@ public class FindA10NspByEndSzList extends BaseTest {
         a10nspCheckRobot.findA10NspByEndSzListFound(checkLineIdA10nsp);
     }
 
-    @Test(description = "DIGIHUB-xxxx ")
+    @Test(description = "DIGIHUB-81609 Find A10Nsp By EndSz List. NotFound")
     public void findA10NspByEndSzListNotFound() {
         a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
     }
 
-    @Test(description = "DIGIHUB-xxxx ")
+    @Test(description = "DIGIHUB-81611 Find A10Nsp By EndSz List. Empty list is returned")
     public void findA10NspByEndSzListEmpty() {
         a10nspCheckRobot.findA10NspByEndSzListEmpty(checkLineIdA10nspByEndSzListEmpty);
     }
