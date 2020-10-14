@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
@@ -93,7 +92,7 @@ public class A10nspCheckRobot {
                 .orElse(null), "RahmenVertragsNr not found in a10nspDtoList");
     }
 
-    @Step("DIGIHUB-xxxx  ")
+    @Step("Find A10NSP's by OLT-Endsz list not successfull")
     public void findA10NspByEndSzListNotFound(CheckLineIdA10nsp a10nsp) {
 
         a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
@@ -102,6 +101,23 @@ public class A10nspCheckRobot {
                 .endszQuery(a10nsp.getOltEndSz3())
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
+
+    }
+
+    @Step("Find A10NSP's by OLT-Endsz list empty")
+    public void findA10NspByEndSzListEmpty(CheckLineIdA10nsp checkLineIdA10nspEmptyList) {
+
+        List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
+                .endszQuery(checkLineIdA10nspEmptyList.getOltEndSz2())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(oltDtoList.size(), 1L, "oltDtoList found but wrong size");
+        OltDto oltDto = oltDtoList.get(0);
+        Assert.assertEquals(oltDto.getOltEndSz(), checkLineIdA10nspEmptyList.getOltEndSz2(), "OltDto found but wrong OLT EndSz");
+        Assert.assertEquals(oltDto.getA10nspTerminationEndsz(), checkLineIdA10nspEmptyList.getBngEndSz(), "OltDto found but wrong BNG EndSz");
+        Assert.assertEquals(oltDto.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "CompsitePartyId mismatch");
+        List<A10nspDto> a10nspDtoList = oltDto.getA10nsps();
+        assertEquals(a10nspDtoList.size(), 0, "nspDto List is empty");
 
     }
 

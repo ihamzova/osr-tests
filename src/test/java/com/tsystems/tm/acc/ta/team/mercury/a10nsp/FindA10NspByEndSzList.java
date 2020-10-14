@@ -29,6 +29,7 @@ public class FindA10NspByEndSzList extends BaseTest {
 
     private CheckLineIdA10nsp checkLineIdA10nsp;
     private CheckLineIdA10nsp checkLineIdA10nspNotFound;
+    private CheckLineIdA10nsp checkLineIdA10nspByEndSzListEmpty;
 
     private A10nspCheckRobot a10nspCheckRobot = new A10nspCheckRobot();
 
@@ -43,6 +44,10 @@ public class FindA10NspByEndSzList extends BaseTest {
         checkLineIdA10nspNotFound = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.findA10NspByEndSzListNotFound);
+
+        checkLineIdA10nspByEndSzListEmpty = OsrTestContext.get().getData()
+                .getCheckLineIdA10nspDataProvider()
+                .get(CheckLineIdA10nspCase.findA10NspByEndSzListEmpty);
 
         OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1);
         OltDevice oltDevice2 = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H5);
@@ -66,13 +71,13 @@ public class FindA10NspByEndSzList extends BaseTest {
         a10nspCheckRobot.findA10NspByEndSzListFound(checkLineIdA10nsp);
     }
 
-    @Test(description = "DIGIHUB-xxxx ")
+    @Test(description = "DIGIHUB-81609 Find A10Nsp By EndSz List. NotFound")
     public void findA10NspByEndSzListNotFound() {
         a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
     }
 
-    @Test(description = "DIGIHUB-xxxx ")
+    @Test(description = "DIGIHUB-81611 Find A10Nsp By EndSz List. Empty list is returned")
     public void findA10NspByEndSzListEmpty() {
-        a10nspCheckRobot.findA10NspByEndSzListNotFound(checkLineIdA10nspNotFound);
+        a10nspCheckRobot.findA10NspByEndSzListEmpty(checkLineIdA10nspByEndSzListEmpty);
     }
 }
