@@ -117,8 +117,14 @@ public class A10nspCheckRobot {
         Assert.assertEquals(oltDto.getA10nspTerminationEndsz(), checkLineIdA10nspEmptyList.getBngEndSz(), "OltDto found but wrong BNG EndSz");
         Assert.assertEquals(oltDto.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "CompsitePartyId mismatch");
         List<A10nspDto> a10nspDtoList = oltDto.getA10nsps();
-        Assert.assertTrue(a10nspDtoList.size() == 0, "nspDto List is empty");
+        assertEquals(a10nspDtoList.size(), 0, "nspDto List is empty");
 
+    }
+
+    @Step("Fill access-line-resource-inventory database with test data\"")
+    public void prepareAceessLineResourceInventoryDataBase() {
+        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("fill olt-resource-inventory database with test data")
@@ -145,15 +151,13 @@ public class A10nspCheckRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-
     @Step("clear the OLT device in olt-resource-invemtory database.")
     public void deleteDeviceInResourceInventory(String endSz) {
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-
-    @Step("clear and refresh the a10nsp-resource-invemtory database.")
+    @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-invemtory database.")
     private void refreshA10nspInventory() {
         // clear a10nsp-inventory database
         a10nspInventoryClient.getClient().databaseTestController().clearDatabase()
