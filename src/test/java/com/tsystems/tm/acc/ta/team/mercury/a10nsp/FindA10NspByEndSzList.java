@@ -24,7 +24,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @Epic("OS&R")
 @Feature("Description a10nsp check LineId")
-@TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
+@TmsLink("DIGIHUB-81608") // This is the Jira id of TestSet
 public class FindA10NspByEndSzList extends BaseTest {
 
     private CheckLineIdA10nsp checkLineIdA10nsp;
@@ -66,7 +66,7 @@ public class FindA10NspByEndSzList extends BaseTest {
         a10nspCheckRobot.deleteDeviceInResourceInventory(oltDevice2.getEndsz());
     }
 
-    @Test(description = "DIGIHUB-54119 test carrierConnection was found")
+    @Test(description = "DIGIHUB-81715 Find A10Nsp By EndSz List. Found")
     public void findA10NspByEndSzListFound() {
         a10nspCheckRobot.findA10NspByEndSzListFound(checkLineIdA10nsp);
     }

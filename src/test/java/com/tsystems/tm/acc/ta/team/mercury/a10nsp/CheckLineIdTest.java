@@ -62,8 +62,7 @@ public class CheckLineIdTest extends BaseTest {
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
     public void CheckLineId() {
-        //a10nspCheckRobot.checkLineIdTestFound(checkLineIdA10nsp);
-        a10nspCheckRobot.findA10NspByEndSzListFound(checkLineIdA10nsp);
+        a10nspCheckRobot.checkLineIdTestFound(checkLineIdA10nsp);
     }
 
     @Test(description = "DIGIHUB-54120  test carrierConnection was not found")

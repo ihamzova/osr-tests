@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
-import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.ErrorResponse;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.OltDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class A10nspCheckRobot {
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
-    @Step("DIGIHUB-54119 test carrierConnection was found")
+    @Step("Check if a carrierConnection is found for a given LineId")
     public void checkLineIdTestFound(CheckLineIdA10nsp checkLineIdA10nsp) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
@@ -47,7 +46,7 @@ public class A10nspCheckRobot {
         assertTrue(checkLineIdResult.isCarrierConnectionAvailable());
     }
 
-    @Step("DIGIHUB-54120  test carrierConnection was not found")
+    @Step("Check if a carrierConnection is not available for a given LineId")
     public void checkLineIdTestNotFound(CheckLineIdA10nsp checkLineIdA10nspNotFound) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
@@ -59,7 +58,7 @@ public class A10nspCheckRobot {
         assertFalse(checkLineIdResult.isCarrierConnectionAvailable());
     }
 
-    @Step("DIGIHUB-54205 test invalid input parameter")
+    @Step("Ceck error message for invalid input parameter")
     public void checkLineIdTestWrongLineId(CheckLineIdA10nsp checkLineIdA10nspWrongLineId) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()

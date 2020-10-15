@@ -26,7 +26,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 public class CheckLineIdTest extends BaseTest {
 
     private CheckLineIdA10nsp checkLineIdA10nsp;
-    private CheckLineIdA10nsp checkLineIdA10nspWrongLineId;
     private CheckLineIdA10nsp checkLineIdA10nspNotFound;
 
     private A10nspCheckRobot a10nspCheckRobot = new A10nspCheckRobot();
@@ -39,10 +38,6 @@ public class CheckLineIdTest extends BaseTest {
         checkLineIdA10nsp = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
                 .get(CheckLineIdA10nspCase.checkLineIdA10nsp);
-
-        checkLineIdA10nspWrongLineId = OsrTestContext.get().getData()
-                .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nspWrongLineId);
 
         checkLineIdA10nspNotFound = OsrTestContext.get().getData()
                 .getCheckLineIdA10nspDataProvider()
@@ -72,10 +67,4 @@ public class CheckLineIdTest extends BaseTest {
     public void CheckLineIdTestNotFound() {
         a10nspCheckRobot.checkLineIdTestNotFound(checkLineIdA10nspNotFound);
     }
-
-    @Test(description = "DIGIHUB-54205 test invalid input parameter")
-    public void CheckLineIdTestWrongLine() {
-        a10nspCheckRobot.checkLineIdTestWrongLineId(checkLineIdA10nspWrongLineId);
-    }
-
 }
