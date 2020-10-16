@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.team.mercury.a10nsp;
 
-import com.tsystems.tm.acc.data.osr.models.checklineida10nsp.CheckLineIdA10nspCase;
+import com.tsystems.tm.acc.data.osr.models.a10nspcheckdata.A10nspCheckDataCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
-import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
+import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
@@ -26,9 +26,9 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
 public class CheckLineIdTest extends BaseTest {
 
-    private CheckLineIdA10nsp checkLineIdA10nsp;
-    private CheckLineIdA10nsp checkLineIdA10nspWrongLineId;
-    private CheckLineIdA10nsp checkLineIdA10nspNotFound;
+    private A10nspCheckData checkLineIdA10nsp;
+    private A10nspCheckData checkLineIdA10nspWrongLineId;
+    private A10nspCheckData checkLineIdA10nspNotFound;
 
     private A10nspCheckRobot a10nspCheckRobot = new A10nspCheckRobot();
 
@@ -37,16 +37,16 @@ public class CheckLineIdTest extends BaseTest {
 
         // load test data
         checkLineIdA10nsp = OsrTestContext.get().getData()
-                .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nsp);
+                .getA10nspCheckDataDataProvider()
+                .get(A10nspCheckDataCase.checkLineIdA10nsp);
 
         checkLineIdA10nspWrongLineId = OsrTestContext.get().getData()
-                .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nspWrongLineId);
+                .getA10nspCheckDataDataProvider()
+                .get(A10nspCheckDataCase.checkLineIdA10nspWrongLineId);
 
         checkLineIdA10nspNotFound = OsrTestContext.get().getData()
-                .getCheckLineIdA10nspDataProvider()
-                .get(CheckLineIdA10nspCase.checkLineIdA10nspNotFound);
+                .getA10nspCheckDataDataProvider()
+                .get(A10nspCheckDataCase.checkLineIdA10nspNotFound);
 
         OltDevice oltDevice = OsrTestContext.get().getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_179_76H1);
 

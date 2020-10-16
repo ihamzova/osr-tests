@@ -1,5 +1,5 @@
 name: findA10NspByEndSzListEmpty
-template: com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp
+template: com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData
 values:
   oltEndSz: "49/30/179/76H1"
   oltEndSz2: "49/30/179/76H5"

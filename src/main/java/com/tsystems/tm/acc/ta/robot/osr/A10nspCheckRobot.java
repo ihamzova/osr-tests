@@ -4,7 +4,7 @@ import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.osr.models.CheckLineIdA10nsp;
+import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
@@ -35,7 +35,7 @@ public class A10nspCheckRobot {
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
     @Step("Check if a carrierConnection is found for a given LineId")
-    public void checkLineIdTestFound(CheckLineIdA10nsp checkLineIdA10nsp) {
+    public void checkLineIdTestFound(A10nspCheckData checkLineIdA10nsp) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
                 .rahmenvertragsnummerQuery(checkLineIdA10nsp.getRahmenVertragsNr())
@@ -47,7 +47,7 @@ public class A10nspCheckRobot {
     }
 
     @Step("Check if a carrierConnection is not available for a given LineId")
-    public void checkLineIdTestNotFound(CheckLineIdA10nsp checkLineIdA10nspNotFound) {
+    public void checkLineIdTestNotFound(A10nspCheckData checkLineIdA10nspNotFound) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
                 .rahmenvertragsnummerQuery(checkLineIdA10nspNotFound.getRahmenVertragsNr())
@@ -59,7 +59,7 @@ public class A10nspCheckRobot {
     }
 
     @Step("Ceck error message for invalid input parameter")
-    public void checkLineIdTestWrongLineId(CheckLineIdA10nsp checkLineIdA10nspWrongLineId) {
+    public void checkLineIdTestWrongLineId(A10nspCheckData checkLineIdA10nspWrongLineId) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
                 .rahmenvertragsnummerQuery(checkLineIdA10nspWrongLineId.getRahmenVertragsNr())
@@ -71,7 +71,7 @@ public class A10nspCheckRobot {
     }
 
     @Step("Find A10NSP's by OLT-Endsz list successfull")
-    public void findA10NspByEndSzListFound(CheckLineIdA10nsp checkLineIdA10nsp) {
+    public void findA10NspByEndSzListFound(A10nspCheckData checkLineIdA10nsp) {
 
         List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(checkLineIdA10nsp.getOltEndSz())
@@ -92,7 +92,7 @@ public class A10nspCheckRobot {
     }
 
     @Step("Find A10NSP's by OLT-Endsz list not successfull")
-    public void findA10NspByEndSzListNotFound(CheckLineIdA10nsp a10nsp) {
+    public void findA10NspByEndSzListNotFound(A10nspCheckData a10nsp) {
 
         a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(a10nsp.getOltEndSz())
@@ -104,7 +104,7 @@ public class A10nspCheckRobot {
     }
 
     @Step("Find A10NSP's by OLT-Endsz list empty")
-    public void findA10NspByEndSzListEmpty(CheckLineIdA10nsp checkLineIdA10nspEmptyList) {
+    public void findA10NspByEndSzListEmpty(A10nspCheckData checkLineIdA10nspEmptyList) {
 
         List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(checkLineIdA10nspEmptyList.getOltEndSz2())
