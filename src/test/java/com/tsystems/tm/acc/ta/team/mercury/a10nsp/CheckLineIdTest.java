@@ -61,17 +61,17 @@ public class CheckLineIdTest extends BaseTest {
     }
 
     @Test(description = "DIGIHUB-54119 test carrierConnection was found")
-    public void CheckLineId() {
+    public void checkLineIdFound() {
         a10nspCheckRobot.checkLineIdTestFound(checkLineIdA10nsp);
     }
 
     @Test(description = "DIGIHUB-54120  test carrierConnection was not found")
-    public void CheckLineIdTestNotFound() {
+    public void checkLineIdTestNotFound() {
         a10nspCheckRobot.checkLineIdTestNotFound(checkLineIdA10nspNotFound);
     }
 
     @Test(description = "DIGIHUB-54205 test invalid input parameter")
-    public void CheckLineIdTestWrongLine() {
+    public void checkLineIdTestWrongLine() {
         a10nspCheckRobot.checkLineIdTestWrongLineId(checkLineIdA10nspWrongLineId);
     }
 

@@ -100,7 +100,6 @@ public class A10nspCheckRobot {
                 .endszQuery(a10nsp.getOltEndSz3())
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
-
     }
 
     @Step("Find A10NSP's by OLT-Endsz list empty")
