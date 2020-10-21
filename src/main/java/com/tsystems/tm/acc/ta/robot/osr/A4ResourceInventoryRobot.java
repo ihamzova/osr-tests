@@ -116,9 +116,9 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check if one Network Service Profile connected to Termination Point exists")
-    public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp) {
+    public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
-        Assert.assertEquals(nspList.size(), 1);
+        Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
     }
 
     @Step("Delete existing Network Service Profile from A4 resource inventory")

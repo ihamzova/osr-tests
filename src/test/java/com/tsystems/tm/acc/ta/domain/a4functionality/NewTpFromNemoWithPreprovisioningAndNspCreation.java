@@ -95,7 +95,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
 
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
-        a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid());
+        a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfilePutRequestToNemoWiremock(tpData.getUuid());
 
         // AFTER / Clean-up

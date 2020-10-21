@@ -28,7 +28,7 @@ public class A4ResourceInventoryServiceMapper {
                         .value(OffsetDateTime.now().toString()))
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("subType")
-                        .value("type"))
+                        .value(tpData.getSubType()))
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("state")
                         .value("state"))

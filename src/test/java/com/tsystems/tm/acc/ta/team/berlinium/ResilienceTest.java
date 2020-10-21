@@ -20,15 +20,17 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-import java.util.UUID;
-
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOURCE_INVENTORY;
+import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOURCE_INVENTORY_SERVICE;
 
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
-public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
+public class ResilienceTest extends ApiTest {
     private OsrTestContext osrTestContext = OsrTestContext.get();
     private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
@@ -41,6 +43,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private A4TerminationPoint tpData;
 
     private WireMockMappingsContext mappingsContext;
+
+    private static final long REDELIVERY_DELAY = 155000;
 
     @BeforeClass
     public void init() {
@@ -64,8 +68,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
-                .addWgA4ProvisioningMock()
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest"))
+                .addPreprovisioningErrorMock()
                 .build();
         mappingsContext.publish();
     }
@@ -82,7 +86,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("NEMO creates new Termination Point with Preprovisioning")
-    public void newTpWithPreprovisioning() {
+    public void newTpWithPreprovisioning() throws InterruptedException {
         // GIVEN / Arrange
         // nothing to do
 
@@ -91,8 +95,17 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
-        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
 
+        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 0);
+
+        mappingsContext.deleteAll();
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest"))
+                .addWgA4ProvisioningMock()
+                .build();
+        mappingsContext.publish();
+
+        Thread.sleep(REDELIVERY_DELAY);
+        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
         // AFTER / Clean-up
     }
 
