@@ -1,0 +1,6 @@
+name: findA10NspByEndSzListNotFound
+template: com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData
+values:
+  oltEndSz: "49/30/179/76H5"
+  oltEndSz2: "49/30/179/76H6"
+  oltEndSz3: "49/30/179/76H7"

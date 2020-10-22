@@ -1,0 +1,6 @@
+name: EndSz_49_30_179_76H1
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "76H1"
+  bngEndsz: "49/911/84/7ZJB"

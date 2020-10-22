@@ -1,7 +1,7 @@
-name: checkLineIdA10nspWrongLineId
+name: findA10NspByEndSzListEmpty
 template: com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData
 values:
   oltEndSz: "49/30/179/76H1"
-  bngEndSz: "49/911/84/7ZJB"
-  lineId: "EU.DTAG.SQA2096879"
+  oltEndSz2: "49/30/179/76H5"
+  bngEndSz: "49/30/179/43G2"
   rahmenVertragsNr: "1111113258594760"
