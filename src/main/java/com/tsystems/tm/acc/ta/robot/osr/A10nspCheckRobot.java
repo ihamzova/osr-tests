@@ -58,7 +58,7 @@ public class A10nspCheckRobot {
         assertFalse(checkLineIdResult.isCarrierConnectionAvailable());
     }
 
-    @Step("Ceck error message for invalid input parameter")
+    @Step("Check error message for invalid input parameter")
     public void checkLineIdTestWrongLineId(A10nspCheckData checkLineIdA10nspWrongLineId) {
 
         CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
