@@ -15,10 +15,10 @@ public class WgAccessProvisioningStub extends AbstractStubMapping {
     public static final String PORT_DEPROVISIONING_URL = "/resource-order-resource-inventory/v1/deprovisioning/port";
     public static final String PORT_PREPROVISIONING_URL = "/resource-order-resource-inventory/v1/provisioning/port";
 
-    public MappingBuilder postPortDeprovisioning201(OltDevice olt, Dpu dpu) {
+    public MappingBuilder postPortDeprovisioning202(OltDevice olt, Dpu dpu) {
         return post(urlPathEqualTo(PORT_DEPROVISIONING_URL))
-                .withName("postPortDeprovisioning201")
-                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withName("postPortDeprovisioning202")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 202))
                 .withQueryParam("businessKey", matching(".*"))
                 .withQueryParam("deprovisioningForDpu", matching("true|false"))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
@@ -34,10 +34,10 @@ public class WgAccessProvisioningStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())));
     }
 
-    public MappingBuilder postPortDeprovisioning201CallbackError(OltDevice olt, Dpu dpu) {
+    public MappingBuilder postPortDeprovisioning202CallbackError(OltDevice olt, Dpu dpu) {
         return post(urlPathEqualTo(PORT_DEPROVISIONING_URL))
-                .withName("postPortDeprovisioning201")
-                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withName("postPortDeprovisioning202")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 202))
                 .withQueryParam("businessKey", matching(".*"))
                 .withQueryParam("deprovisioningForDpu", matching("true|false"))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
@@ -52,19 +52,19 @@ public class WgAccessProvisioningStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())));
     }
 
-    public MappingBuilder postPortProvisioning201CallbackError(OltDevice olt, Dpu dpu) {
+    public MappingBuilder postPortProvisioning202CallbackError(OltDevice olt, Dpu dpu) {
         return post(urlPathEqualTo(PORT_PREPROVISIONING_URL))
-                .withName("postPortProvisioning201")
-                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withName("postPortProvisioning202")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 202))
                 .withQueryParam("businessKey", matching(".*"))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgAccessProvisioningMapper().getDeprovisioningResponseHolder(false))));
     }
 
-    public MappingBuilder postPortProvisioning201(OltDevice olt, Dpu dpu) {
+    public MappingBuilder postPortProvisioning202(OltDevice olt, Dpu dpu) {
         return post(urlPathEqualTo(PORT_PREPROVISIONING_URL))
-                .withName("postPortProvisioning201")
-                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 201))
+                .withName("postPortProvisioning202")
+                .willReturn(aDefaultResponseWithBody(serialize(new WgAccessProvisioningMapper().getProcessDto()), 202))
                 .withQueryParam("businessKey", matching(".*"))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.endSz=='%s')]", olt.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new WgAccessProvisioningMapper().getDeprovisioningResponseHolder(true))));

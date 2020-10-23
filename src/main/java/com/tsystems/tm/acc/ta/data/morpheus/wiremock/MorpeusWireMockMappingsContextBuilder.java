@@ -522,9 +522,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     public MorpeusWireMockMappingsContextBuilder addPostDeprovisionOltStub(OltDevice olt, Dpu dpu, boolean success, boolean callbackSuccess) {
         if (success) {
             if (callbackSuccess) {
-                context.add(new WgAccessProvisioningStub().postPortDeprovisioning201(olt, dpu));
+                context.add(new WgAccessProvisioningStub().postPortDeprovisioning202(olt, dpu));
             } else {
-                context.add(new WgAccessProvisioningStub().postPortDeprovisioning201CallbackError(olt, dpu));
+                context.add(new WgAccessProvisioningStub().postPortDeprovisioning202CallbackError(olt, dpu));
             }
         } else {
             context.add(new WgAccessProvisioningStub().postPortDeprovisioning400(olt, dpu));
@@ -536,9 +536,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     public MorpeusWireMockMappingsContextBuilder addPostAncpConfStub(Dpu dpu, boolean success, boolean callbackSuccess) {
         if (success) {
             if (callbackSuccess) {
-                context.add(new AncpConfigurationStub().postCreateAncpConfiguration200(dpu));
+                context.add(new AncpConfigurationStub().postCreateAncpConfiguration202(dpu));
             } else {
-                context.add(new AncpConfigurationStub().postCreateAncpConfiguration200CallbackError(dpu));
+                context.add(new AncpConfigurationStub().postCreateAncpConfiguration202CallbackError(dpu));
             }
         } else {
             context.add(new AncpConfigurationStub().postCreateAncpConfiguration400(dpu));
@@ -727,9 +727,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
 
     public MorpeusWireMockMappingsContextBuilder addDeleteAncpStub(boolean success){
         if(success) {
-            context.add(new AncpConfigurationStub().deleteAncpConfiguration200());
+            context.add(new AncpConfigurationStub().deleteAncpConfiguration202());
         } else {
-            context.add(new AncpConfigurationStub().deleteAncpConfiguration200CallbackError());
+            context.add(new AncpConfigurationStub().deleteAncpConfiguration202CallbackError());
         }
         return this;
     }
@@ -741,9 +741,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     public MorpeusWireMockMappingsContextBuilder addPostPreprovisionFTTHStub(OltDevice olt, Dpu dpu, boolean success, boolean callbackSuccess){
         if (success) {
             if (callbackSuccess) {
-                context.add(new WgAccessProvisioningStub().postPortProvisioning201(olt, dpu));
+                context.add(new WgAccessProvisioningStub().postPortProvisioning202(olt, dpu));
             } else {
-                context.add(new WgAccessProvisioningStub().postPortProvisioning201CallbackError(olt, dpu));
+                context.add(new WgAccessProvisioningStub().postPortProvisioning202CallbackError(olt, dpu));
             }
         } else {
             context.add(new WgAccessProvisioningStub().postPortProvisioning400(olt, dpu));
