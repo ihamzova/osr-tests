@@ -13,20 +13,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class AncpConfigurationStub extends AbstractStubMapping {
     public static final String ANCP_CONFIGURATION_URL = "/resource-order-resource-inventory/v2/ancp/configuration";
 
-    public MappingBuilder postCreateAncpConfiguration200(Dpu dpu) {
+    public MappingBuilder postCreateAncpConfiguration202(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
-                .withName("postCreateAncpConfiguration200")
-                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withName("postCreateAncpConfiguration202")
+                .willReturn(aDefaultResponseWithBody(null, 202))
                 .withQueryParam("uplinkId", matching(".*"))
                 .withQueryParam("sessionType", equalTo("DPU"))
                 .withQueryParam("endSz", equalTo(dpu.getEndSz()))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(true))));
     }
 
-    public MappingBuilder postCreateAncpConfiguration200CallbackError(Dpu dpu) {
+    public MappingBuilder postCreateAncpConfiguration202CallbackError(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
-                .withName("postCreateAncpConfiguration200CallbackError")
-                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withName("postCreateAncpConfiguration202CallbackError")
+                .willReturn(aDefaultResponseWithBody(null, 202))
                 .withQueryParam("uplinkId", matching(".*"))
                 .withQueryParam("sessionType", equalTo("DPU"))
                 .withQueryParam("endSz", equalTo(dpu.getEndSz()))
@@ -36,24 +36,24 @@ public class AncpConfigurationStub extends AbstractStubMapping {
     public MappingBuilder postCreateAncpConfiguration400(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
                 .withName("postCreateAncpConfiguration400")
-                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 400))
+                .willReturn(aDefaultResponseWithBody(null, 400))
                 .withQueryParam("uplinkId", matching(".*"))
                 .withQueryParam("sessionType", equalTo("DPU"))
                 .withQueryParam("endSz", equalTo(dpu.getEndSz()));
     }
 
-    public MappingBuilder deleteAncpConfiguration200() {
+    public MappingBuilder deleteAncpConfiguration202() {
         return delete(urlMatching(ANCP_CONFIGURATION_URL + "/.*"))
-                .withName("deleteAncpConfiguration200")
-                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withName("deleteAncpConfiguration202")
+                .willReturn(aDefaultResponseWithBody(null, 202))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(true))
                 ));
     }
 
-    public MappingBuilder deleteAncpConfiguration200CallbackError() {
+    public MappingBuilder deleteAncpConfiguration202CallbackError() {
         return delete(urlMatching(ANCP_CONFIGURATION_URL + "/.*"))
-                .withName("deleteAncpConfiguration200CallbackError")
-                .willReturn(aDefaultResponseWithBody(serialize(new AncpConfigurationMapper().getANCPResponse()), 200))
+                .withName("deleteAncpConfiguration202CallbackError")
+                .willReturn(aDefaultResponseWithBody(null, 202))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(false))));
     }
 
