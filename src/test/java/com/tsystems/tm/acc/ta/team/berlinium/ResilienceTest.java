@@ -89,7 +89,7 @@ public class ResilienceTest extends ApiTest {
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning")
-    @Owner("bela.kovac@t-systems.com")
+    @Owner("thea.john@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("NEMO creates new Termination Point with Preprovisioning. This test takes appr. 3min.")
     public void newTpWithPreprovisioning() throws InterruptedException, IOException {
