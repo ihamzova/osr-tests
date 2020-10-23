@@ -31,6 +31,7 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
+@ServiceLog(A4_INVENTORY_IMPORTER)
 @Slf4j
 public class A4MobileMonitoringPageTest extends BaseTest {
 

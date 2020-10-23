@@ -39,6 +39,7 @@ import static org.testng.Assert.assertTrue;
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
+@ServiceLog(A4_INVENTORY_IMPORTER)
 @Slf4j
 public class A4MobileNeSearchPageTest extends BaseTest {
 
