@@ -1,9 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.wiremock;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PslStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.RebellStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.SealStub;
@@ -37,6 +35,16 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
     public OsrWireMockMappingsContextBuilder addSealMock(OltDevice oltDevice) {
         context.add(new SealStub().getAccessNodesConfiguration202(oltDevice));
+        return this;
+    }
+
+    public OsrWireMockMappingsContextBuilder addWgA4ProvisioningMock(){
+        context.add(new PreProvisioningStub().getAccessLine201());
+        return this;
+    }
+
+    public OsrWireMockMappingsContextBuilder addPreprovisioningErrorMock(){
+        context.add(new PreProvisioningStub().getAccessLine500());
         return this;
     }
 }
