@@ -8,6 +8,6 @@ values:
   category: "OLT"
   operationalState: "NOT_WORKING"
   lifecycleState: "INSTALLING"
-  type: "A4_OLT_v1"
-  plannedMatNr: "42999900"
+  type: "A4-OLT-v1"
+  plannedMatNr: "40958960"
   planningDeviceName: "dmst.olt.1"

@@ -8,6 +8,6 @@ values:
   category: "POD_SERVER"
   operationalState: "WORKING"
   lifecycleState: "RETIRING"
-  type: "A4_POD_SERVER_v1"
-  plannedMatNr: "42999903"
+  type: "A4-POD-SERVER-v1"
+  plannedMatNr: "40770140"
   planningDeviceName: "dmst.server.1"

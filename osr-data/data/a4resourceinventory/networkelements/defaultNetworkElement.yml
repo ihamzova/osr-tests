@@ -8,5 +8,5 @@ values:
   category: "OLT"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "A4_OLT_v1"
-  plannedMatNr: "123456" # if psl called will be overwritten
+  type: "A4-OLT-v1"
+  plannedMatNr: "40958960" # if psl called will be overwritten
