@@ -69,7 +69,7 @@ public class ZtpIdentUiTest extends BaseTest {
 //        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
 //                .get(EquipmentDataCase.equipment_MatNr_42999900);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_42999900);
+                .get(EquipmentDataCase.equipment_MatNr_40958960);
 
         // Ensure that no old test data is in the way
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);

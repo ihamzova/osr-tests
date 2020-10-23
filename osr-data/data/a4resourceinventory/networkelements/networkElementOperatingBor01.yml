@@ -8,6 +8,6 @@ values:
   category: "BOR"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "A4_POD_BOR_v1"
-  plannedMatNr: "42999900"
+  type: "A4-POD-BOR-v1"
+  plannedMatNr: "40318601"
   planningDeviceName: "dmst.bor.1"

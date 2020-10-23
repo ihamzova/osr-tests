@@ -8,6 +8,6 @@ values:
   category: "SPINE_SWITCH"
   operationalState: "NOT_WORKING"
   lifecycleState: "INSTALLING"
-  type: "A4_SPINE-Switch_v1"
-  plannedMatNr: "42999901"
+  type: "A4-SPINE-Switch-v1"
+  plannedMatNr: "40945513"
   planningDeviceName: "dmst.spine.2"

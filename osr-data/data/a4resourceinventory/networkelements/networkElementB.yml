@@ -8,5 +8,5 @@ values:
   category: "SPINE_SWITCH"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "A4_SPINE-Switch_v1"
-  plannedMatNr: "42999901"
+  type: "A4-SPINE-Switch-v1"
+  plannedMatNr: "40945513"
