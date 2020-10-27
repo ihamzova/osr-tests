@@ -99,7 +99,7 @@ public class NemoStatusUpdateTest {
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element")
     @Owner("bela.kovac@t-systems.com")
-    @Description("NEMO sends a status update for A4 Network Element Group")
+    @Description("NEMO sends a status update for A4 Network Element")
     public void testNemoStatusUpdateForNe() {
         // GIVEN
         final String newOperationalState = "WORKING";
@@ -114,9 +114,31 @@ public class NemoStatusUpdateTest {
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element")
     @Owner("bela.kovac@t-systems.com")
-    @Description("NEMO sends invalid status update for A4 Network Element Group")
+    @Description("NEMO sends invalid status update for A4 Network Element")
     public void testNemoInvalidStatusUpdateForNe() {
         nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElement(neData, negData);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Port")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Element Port")
+    public void testNemoStatusUpdateForNep() {
+        // GIVEN
+        final String newOperationalState = "WORKING";
+        // NEPs do not have a lifecycle state
+
+        // WHEN
+        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, newOperationalState);
+
+        // THEN
+        a4ResourceInventory.checkNetworkElementPortIsUpdatedWithNewState(nepDataA, newOperationalState);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element Port")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends invalid status update for A4 Network Element Port")
+    public void testNemoInvalidStatusUpdateForNep() {
+        nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementPort(nepDataA, neData);
     }
 
 }

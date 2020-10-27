@@ -78,7 +78,7 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Send invalid operational state for Network Element Group")
+    @Step("Send invalid operational state for Network Element")
     public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
         LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(neData, negData, INVALID_OPERATIONAL_STATE);
@@ -87,6 +87,32 @@ public class A4ResourceInventoryServiceRobot {
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(neData.getUuid())
+                .body(neLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+    }
+
+    @Step("Send new operational state for Network Element Port")
+    public void sendStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData, String newOperationalState) {
+        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nepData, neData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nepData.getUuid())
+                .body(neLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Send invalid operational state for Network Element Port")
+    public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
+        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nepData, neData, INVALID_OPERATIONAL_STATE);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nepData.getUuid())
                 .body(neLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }

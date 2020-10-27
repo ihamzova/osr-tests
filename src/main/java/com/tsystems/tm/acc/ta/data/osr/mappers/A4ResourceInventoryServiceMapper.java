@@ -28,6 +28,11 @@ public class A4ResourceInventoryServiceMapper {
         return generateNeLogicalResourceUpdate(neData, negData, operationalState);
     }
 
+    // Create logicalResource representation of network element port with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementPort nepData, A4NetworkElement neData, String operationalState) {
+        return generateNepLogicalResourceUpdate(nepData, neData, operationalState);
+    }
+
     private LogicalResourceUpdate generateNegLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
         return generateGenericLogicalResourceUpdate(negData.getUuid())
                 .type("NetworkElementGroup")
@@ -57,6 +62,20 @@ public class A4ResourceInventoryServiceMapper {
                         .resourceRef(new ResourceRef()
                                 .id(negData.getUuid())
                                 .type("NetworkElementGroup")));
+    }
+
+    private LogicalResourceUpdate generateNepLogicalResourceUpdate(A4NetworkElementPort nepData, A4NetworkElement neData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nepData.getUuid())
+                .type("NetworkElementPort")
+                .description("NEP for integration test")
+                // NEPs do not have a lifecycle state
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(neData.getUuid())
+                                .type("NetworkElement")));
     }
 
     public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
