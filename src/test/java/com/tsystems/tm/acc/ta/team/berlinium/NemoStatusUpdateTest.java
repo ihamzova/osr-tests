@@ -97,4 +97,26 @@ public class NemoStatusUpdateTest {
         nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementGroup(negData);
     }
 
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Element Group")
+    public void testNemoStatusUpdateForNe() {
+        // GIVEN
+        final String newOperationalState = "WORKING";
+        final String expectedNewLifecycleState = "OPERATING";
+
+        // WHEN
+        nemo.sendStatusUpdateForNetworkElement(neData, negData, newOperationalState);
+
+        // THEN
+        a4ResourceInventory.checkNetworkElementIsUpdatedWithNewStates(neData, newOperationalState, expectedNewLifecycleState);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends invalid status update for A4 Network Element Group")
+    public void testNemoInvalidStatusUpdateForNe() {
+        nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElement(neData, negData);
+    }
+
 }

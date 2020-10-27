@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
@@ -61,6 +62,32 @@ public class A4ResourceInventoryServiceRobot {
                 .updateLogicalResourcePatch()
                 .idPath(negData.getUuid())
                 .body(negLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+    }
+
+    @Step("Send new operational state for Network Element")
+    public void sendStatusUpdateForNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData, String newOperationalState) {
+        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(neData, negData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(neData.getUuid())
+                .body(neLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Send invalid operational state for Network Element Group")
+    public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
+        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(neData, negData, INVALID_OPERATIONAL_STATE);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(neData.getUuid())
+                .body(neLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 

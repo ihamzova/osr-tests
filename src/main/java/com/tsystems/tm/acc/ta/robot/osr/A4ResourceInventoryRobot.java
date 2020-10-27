@@ -258,12 +258,20 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementDto.getKlsId(), equipmentData.getKlsId());
     }
 
-    @Step("Check that lifecycle state and operational state have been updated")
+    @Step("Check that lifecycle state and operational state have been updated for network element group")
     public void checkNetworkElementGroupIsUpdatedWithNewStates(A4NetworkElementGroup negData, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
 
         assertEquals(networkElementGroupDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkElementGroupDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network element")
+    public void checkNetworkElementIsUpdatedWithNewStates(A4NetworkElement neData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
+
+        assertEquals(networkElementDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementDto.getOperationalState(), expectedNewOperationalState);
     }
 
     @Step("Delete all Network Element Groups with a given name")
