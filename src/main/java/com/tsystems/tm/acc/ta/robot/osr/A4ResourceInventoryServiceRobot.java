@@ -21,6 +21,8 @@ public class A4ResourceInventoryServiceRobot {
     private static final Integer HTTP_CODE_CREATED_201 = 201;
     private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
 
+    private static final String INVALID_OPERATIONAL_STATE = "grmblfx";
+
     private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
@@ -50,10 +52,8 @@ public class A4ResourceInventoryServiceRobot {
     }
 
     public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementGroup(A4NetworkElementGroup negData) {
-        String invalidOperationalState = "grmblfx";
-
         LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourceUpdate(negData, invalidOperationalState);
+                .getLogicalResourceUpdate(negData, INVALID_OPERATIONAL_STATE);
 
         a4ResourceInventoryService
                 .logicalResource()

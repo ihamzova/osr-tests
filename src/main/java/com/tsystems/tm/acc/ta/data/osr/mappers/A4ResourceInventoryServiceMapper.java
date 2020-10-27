@@ -12,38 +12,14 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class A4ResourceInventoryServiceMapper {
+    // Create logicalResource representation of network element group with operational state as defined in data package
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData) {
-        return generateGenericLogicalResourceUpdate(negData.getUuid())
-                .type("NetworkElementGroup")
-                .name(negData.getName())
-                .description("NEG for integration test")
-                .lifecycleState(negData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("centralOfficeNetworkOperator")
-                        .value("CONO"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("operationalState")
-                        .value(negData.getOperationalState()))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("neTypeName")
-                        .value("POD"));
+        return generateNegLogicalResourceUpdate(negData, negData.getOperationalState());
     }
 
-    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData, String newOperationalState) {
-        return generateGenericLogicalResourceUpdate(negData.getUuid())
-                .type("NetworkElementGroup")
-                .name(negData.getName())
-                .description("NEG for integration test")
-                .lifecycleState(negData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("centralOfficeNetworkOperator")
-                        .value("CONO"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("operationalState")
-                        .value(newOperationalState))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("neTypeName")
-                        .value("POD"));
+    // Create logicalResource representation of network element group with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
+        return generateNegLogicalResourceUpdate(negData, operationalState);
     }
 
     public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
@@ -88,5 +64,22 @@ public class A4ResourceInventoryServiceMapper {
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("correlationId")
                         .value(uuid));
+    }
+
+    private LogicalResourceUpdate generateNegLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(negData.getUuid())
+                .type("NetworkElementGroup")
+                .name(negData.getName())
+                .description("NEG for integration test")
+                .lifecycleState(negData.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("centralOfficeNetworkOperator")
+                        .value("CONO"))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("neTypeName")
+                        .value("POD"));
     }
 }
