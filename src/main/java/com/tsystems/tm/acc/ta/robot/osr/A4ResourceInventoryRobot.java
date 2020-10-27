@@ -287,6 +287,7 @@ public class A4ResourceInventoryRobot {
     public void checkNetworkElementPortIsUpdatedWithNewState(A4NetworkElementPort nepData, String expectedNewOperationalState) {
         NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());
 
+        // NEPs do not have a lifecycle state
         assertEquals(networkElementPortDto.getOperationalState(), expectedNewOperationalState);
     }
 
