@@ -93,27 +93,27 @@ public class A4ResourceInventoryServiceRobot {
 
     @Step("Send new operational state for Network Element Port")
     public void sendStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData, String newOperationalState) {
-        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nepData, neData, newOperationalState);
 
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nepData.getUuid())
-                .body(neLogicalResource)
+                .body(nepLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     @Step("Send invalid operational state for Network Element Port")
     public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nepData, neData, INVALID_OPERATIONAL_STATE);
 
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nepData.getUuid())
-                .body(neLogicalResource)
+                .body(nepLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
