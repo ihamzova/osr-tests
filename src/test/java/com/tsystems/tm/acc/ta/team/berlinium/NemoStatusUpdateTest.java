@@ -80,8 +80,6 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Element Group")
     public void testNemoStatusUpdateForNeg() {
         // GIVEN
-        negData.setOperationalState("NOT_WORKING");
-        negData.setLifecycleState("PLANNING");
         final String newOperationalState = "WORKING";
         final String expectedNewLifecycleState = "OPERATING";
 
