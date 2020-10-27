@@ -231,6 +231,15 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortBUuid(), uuidNetworkElementPortB);
     }
 
+    @Step("Get existing Network Element Group by UUID")
+    public NetworkElementGroupDto getExistingNetworkElementGroup(String uuid) {
+        return a4ResourceInventory
+                .networkElementGroups()
+                .findNetworkElementGroup()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element by UUID")
     public NetworkElementDto getExistingNetworkElement(String uuid) {
         return a4ResourceInventory
@@ -247,6 +256,14 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementDto.getUuid(), networkElementUuid);
         assertEquals(networkElementDto.getPlannedMatNumber(), equipmentData.getSubmt());
         assertEquals(networkElementDto.getKlsId(), equipmentData.getKlsId());
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated")
+    public void checkNetworkElementGroupIsUpdatedWithNewStates(A4NetworkElementGroup negData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
+
+        assertEquals(networkElementGroupDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementGroupDto.getOperationalState(), expectedNewOperationalState);
     }
 
     @Step("Delete all Network Element Groups with a given name")

@@ -19,6 +19,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class A4ResourceInventoryServiceRobot {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer HTTP_CODE_CREATED_201 = 201;
+    private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
 
     private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
@@ -33,6 +34,33 @@ public class A4ResourceInventoryServiceRobot {
                 .idPath(tpData.getUuid())
                 .body(terminationPointLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Set new lifecycle state for Network Element Group")
+    public void sendStatusUpdateForNetworkElementGroup(A4NetworkElementGroup negData, String newOperationalState) {
+        LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(negData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(negData.getUuid())
+                .body(negLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementGroup(A4NetworkElementGroup negData) {
+        String invalidOperationalState = "grmblfx";
+
+        LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(negData, invalidOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(negData.getUuid())
+                .body(negLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
     @Step("Check Network Element Group as Logical Resource representation")
