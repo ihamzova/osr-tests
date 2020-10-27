@@ -21,7 +21,7 @@ public class A4ResourceInventoryServiceRobot {
     private static final Integer HTTP_CODE_CREATED_201 = 201;
     private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
 
-    private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
+    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {

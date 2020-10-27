@@ -27,7 +27,7 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOUR
 public class NemoStatusUpdateTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot nemo = new A4ResourceInventoryServiceRobot();
+    private final A4ResourceInventoryServiceRobot nemo = new A4ResourceInventoryServiceRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
