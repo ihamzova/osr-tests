@@ -38,7 +38,7 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Set new lifecycle state for Network Element Group")
+    @Step("Send new operational state for Network Element Group")
     public void sendStatusUpdateForNetworkElementGroup(A4NetworkElementGroup negData, String newOperationalState) {
         LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(negData, newOperationalState);
@@ -51,6 +51,7 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
+    @Step("Send invalid operational state for Network Element Group")
     public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementGroup(A4NetworkElementGroup negData) {
         LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(negData, INVALID_OPERATIONAL_STATE);
