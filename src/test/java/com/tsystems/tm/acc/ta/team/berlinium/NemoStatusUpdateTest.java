@@ -68,8 +68,7 @@ public class NemoStatusUpdateTest {
 
     @AfterMethod
     public void cleanup() {
-        a4ResourceInventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4ResourceInventory.deleteNetworkElementGroups(negData);
+        a4ResourceInventory.deleteA4TestData(negData, neData);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Group")

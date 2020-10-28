@@ -335,6 +335,12 @@ public class A4ResourceInventoryRobot {
         deleteNetworkElementGroups(negData.getName());
     }
 
+    @Step("Delete A4 test data")
+    public void deleteA4TestData(A4NetworkElementGroup negData, A4NetworkElement neData) {
+        deleteA4NetworkElementsIncludingChildren(neData);
+        deleteNetworkElementGroups(negData.getName());
+    }
+
     @Step("Get a list of Network Element Groups by name")
     // As name is unique constraint, the list will have either 0 or 1 entries
     public List<NetworkElementGroupDto> getNetworkElementGroupsByName(String name) {
