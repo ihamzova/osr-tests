@@ -29,6 +29,9 @@ public class NemoStatusUpdateTest {
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot nemo = new A4ResourceInventoryServiceRobot();
 
+    private final static String NEW_OPERATIONAL_STATE = "WORKING";
+    private final static String EXPECTED_NEW_LIFECYCLE_STATE = "OPERATING";
+
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepDataA;
@@ -79,15 +82,11 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Group")
     public void testNemoStatusUpdateForNeg() {
-        // GIVEN
-        final String newOperationalState = "WORKING";
-        final String expectedNewLifecycleState = "OPERATING";
-
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementGroup(negData, newOperationalState);
+        nemo.sendStatusUpdateForNetworkElementGroup(negData, NEW_OPERATIONAL_STATE);
 
         // THEN
-        a4ResourceInventory.checkNetworkElementGroupIsUpdatedWithNewStates(negData, newOperationalState, expectedNewLifecycleState);
+        a4ResourceInventory.checkNetworkElementGroupIsUpdatedWithNewStates(negData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element Group")
@@ -101,15 +100,11 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element")
     public void testNemoStatusUpdateForNe() {
-        // GIVEN
-        final String newOperationalState = "WORKING";
-        final String expectedNewLifecycleState = "OPERATING";
-
         // WHEN
-        nemo.sendStatusUpdateForNetworkElement(neData, negData, newOperationalState);
+        nemo.sendStatusUpdateForNetworkElement(neData, negData, NEW_OPERATIONAL_STATE);
 
         // THEN
-        a4ResourceInventory.checkNetworkElementIsUpdatedWithNewStates(neData, newOperationalState, expectedNewLifecycleState);
+        a4ResourceInventory.checkNetworkElementIsUpdatedWithNewStates(neData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element")
@@ -123,15 +118,11 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Port")
     public void testNemoStatusUpdateForNep() {
-        // GIVEN
-        final String newOperationalState = "WORKING";
-        // NEPs do not have a lifecycle state
-
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, newOperationalState);
+        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, NEW_OPERATIONAL_STATE);
 
         // THEN
-        a4ResourceInventory.checkNetworkElementPortIsUpdatedWithNewState(nepDataA, newOperationalState);
+        a4ResourceInventory.checkNetworkElementPortIsUpdatedWithNewState(nepDataA, NEW_OPERATIONAL_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element Port")
@@ -145,15 +136,11 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     public void testNemoStatusUpdateForNspFtth() {
-        // GIVEN
-        final String newOperationalState = "WORKING";
-        final String expectedNewLifecycleState = "OPERATING";
-
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpData, newOperationalState);
+        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpData, NEW_OPERATIONAL_STATE);
 
         // THEN
-        a4ResourceInventory.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, newOperationalState, expectedNewLifecycleState);
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Service Profile (FTTH Access)")
@@ -167,15 +154,11 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Link")
     public void testNemoStatusUpdateForNel() {
-        // GIVEN
-        final String newOperationalState = "WORKING";
-        final String expectedNewLifecycleState = "OPERATING";
-
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, newOperationalState);
+        nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, NEW_OPERATIONAL_STATE);
 
         // THEN
-        a4ResourceInventory.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, newOperationalState, expectedNewLifecycleState);
+        a4ResourceInventory.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element Link")
