@@ -231,11 +231,47 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementLinkDtoList.get(0).getNetworkElementPortBUuid(), uuidNetworkElementPortB);
     }
 
+    @Step("Get existing Network Element Group by UUID")
+    public NetworkElementGroupDto getExistingNetworkElementGroup(String uuid) {
+        return a4ResourceInventory
+                .networkElementGroups()
+                .findNetworkElementGroup()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element by UUID")
     public NetworkElementDto getExistingNetworkElement(String uuid) {
         return a4ResourceInventory
                 .networkElements()
                 .findNetworkElement()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get existing Network Element Port by UUID")
+    public NetworkElementPortDto getExistingNetworkElementPort(String uuid) {
+        return a4ResourceInventory
+                .networkElementPorts()
+                .findNetworkElementPort()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get existing Network Service Profile (FTTH Access) by UUID")
+    public NetworkServiceProfileFtthAccessDto getExistingNetworkServiceProfileFtthAccess(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get existing Network Element Link by UUID")
+    public NetworkElementLinkDto getExistingNetworkElementLink(String uuid) {
+        return a4ResourceInventory
+                .networkElementLinks()
+                .findNetworkElementLink()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -249,6 +285,46 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementDto.getKlsId(), equipmentData.getKlsId());
     }
 
+    @Step("Check that lifecycle state and operational state have been updated for network element group")
+    public void checkNetworkElementGroupIsUpdatedWithNewStates(A4NetworkElementGroup negData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
+
+        assertEquals(networkElementGroupDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementGroupDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network element")
+    public void checkNetworkElementIsUpdatedWithNewStates(A4NetworkElement neData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
+
+        assertEquals(networkElementDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that operational state has been updated for network element port")
+    public void checkNetworkElementPortIsUpdatedWithNewState(A4NetworkElementPort nepData, String expectedNewOperationalState) {
+        NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());
+
+        // NEPs do not have a lifecycle state
+        assertEquals(networkElementPortDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network service profile (FTTH Access)")
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(A4NetworkServiceProfileFtthAccess nspFtthData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
+
+        assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network element link")
+    public void checkNetworkElementLinkIsUpdatedWithNewStates(A4NetworkElementLink nelData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
+
+        assertEquals(networkElementLinkDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementLinkDto.getOperationalState(), expectedNewOperationalState);
+    }
+
     @Step("Delete all Network Element Groups with a given name")
     /*
     Unfortunately this cannot be combined with deleteA4NetworkElementsIncludingChildren method, because not possible to
@@ -256,6 +332,12 @@ public class A4ResourceInventoryRobot {
     newly-to-be-created test data. To be solved with DIGIHUB-68288
      */
     public void deleteNetworkElementGroups(A4NetworkElementGroup negData) {
+        deleteNetworkElementGroups(negData.getName());
+    }
+
+    @Step("Delete A4 test data")
+    public void deleteA4TestData(A4NetworkElementGroup negData, A4NetworkElement neData) {
+        deleteA4NetworkElementsIncludingChildren(neData);
         deleteNetworkElementGroups(negData.getName());
     }
 
@@ -418,5 +500,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Create test data for all A4 element types")
+    public void createTestDataForAllA4ElementTypes(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4TerminationPoint tpData, A4NetworkServiceProfileFtthAccess nspFtthData, A4NetworkElementLink nelData) {
+        createNetworkElementGroup(negData);
+        createNetworkElement(neData, negData);
+        createNetworkElementPort(nepDataA, neData);
+        createNetworkElementPort(nepDataB, neData);
+        createTerminationPoint(tpData, nepDataA);
+        createNetworkServiceProfileFtthAccess(nspFtthData, tpData);
+        createNetworkElementLink(nelData, nepDataA, nepDataB);
+    }
 
 }

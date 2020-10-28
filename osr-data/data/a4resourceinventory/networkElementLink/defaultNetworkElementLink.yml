@@ -4,3 +4,5 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NEL
   ueWegId: ""
   lbz: ""
+  operationalState: "NOT_WORKING"
+  lifecycleState: "PLANNING"
