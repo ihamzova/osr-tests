@@ -141,4 +141,48 @@ public class NemoStatusUpdateTest {
         nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementPort(nepDataA, neData);
     }
 
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
+    public void testNemoStatusUpdateForNspFtth() {
+        // GIVEN
+        final String newOperationalState = "WORKING";
+        final String expectedNewLifecycleState = "OPERATING";
+
+        // WHEN
+        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpData, newOperationalState);
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, newOperationalState, expectedNewLifecycleState);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Service Profile (FTTH Access)")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends invalid status update for A4 Network Service Profile (FTTH Access)")
+    public void testNemoInvalidStatusUpdateForNspFtth() {
+        nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpData);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Link")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Element Link")
+    public void testNemoStatusUpdateForNel() {
+        // GIVEN
+        final String newOperationalState = "WORKING";
+        final String expectedNewLifecycleState = "OPERATING";
+
+        // WHEN
+        nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, newOperationalState);
+
+        // THEN
+        a4ResourceInventory.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, newOperationalState, expectedNewLifecycleState);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends invalid status update for A4 Network Element Link")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends invalid status update for A4 Network Element Link")
+    public void testNemoInvalidStatusUpdateForNel() {
+        nemo.receiveErrorWhenSendingInvalidStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB);
+    }
+
 }

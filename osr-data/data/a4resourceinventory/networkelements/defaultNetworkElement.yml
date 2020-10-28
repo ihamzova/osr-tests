@@ -6,7 +6,7 @@ values:
   fsz: "${scope, global.a4Provisioning.fsz}"
   klsId: "1234567"
   category: "OLT"
-  operationalState: "WORKING"
-  lifecycleState: "OPERATING"
+  operationalState: "NOT_WORKING"
+  lifecycleState: "PLANNING"
   type: "A4-OLT-v1"
   plannedMatNr: "40958960" # if psl called will be overwritten

@@ -1,9 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
@@ -31,6 +28,46 @@ public class A4ResourceInventoryServiceMapper {
     // Create logicalResource representation of network element port with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementPort nepData, A4NetworkElement neData, String operationalState) {
         return generateNepLogicalResourceUpdate(nepData, neData, operationalState);
+    }
+
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+        if (tpData.getUuid().isEmpty())
+            tpData.setUuid(UUID.randomUUID().toString());
+
+        return generateGenericLogicalResourceUpdate(tpData.getUuid())
+                .type("TerminationPoint")
+                .version("1")
+                .description("TP for integration test")
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("subType")
+                        .value(tpData.getSubType()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("state")
+                        .value("state"))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lockedForNspUsage")
+                        .value("true"))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("supportedDiagnosesName")
+                        .value("(Diagnose1,Diagnose2)"))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("supportedDiagnosesSpecificationVersion")
+                        .value("(V1,V2)"))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(nepData.getUuid())
+                                .type("NetworkElementPort"))
+                );
+    }
+
+    // Create logicalResource representation of network service profile (FTTH Access) with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData, String operationalState) {
+        return generateNspFtthLogicalResourceUpdate(nspFtthData, tpData, operationalState);
+    }
+
+    // Create logicalResource representation of network element link with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
+        return generateNelLogicalResourceUpdate(nelData, nepDataA, nepDataB, operationalState);
     }
 
     private LogicalResourceUpdate generateNegLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
@@ -78,34 +115,36 @@ public class A4ResourceInventoryServiceMapper {
                                 .type("NetworkElement")));
     }
 
-    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        if (tpData.getUuid().isEmpty())
-            tpData.setUuid(UUID.randomUUID().toString());
-
-        return generateGenericLogicalResourceUpdate(tpData.getUuid())
-                .type("TerminationPoint")
-                .version("1")
-                .description("TP for integration test")
+    private LogicalResourceUpdate generateNspFtthLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nspFtthData.getUuid())
+                .type("NspFtthAccess")
+                .description("NSP-FTTH-ACCESS for integration test")
+                .lifecycleState(nspFtthData.getLifecycleState())
                 .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("subType")
-                        .value(tpData.getSubType()))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("state")
-                        .value("state"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("lockedForNspUsage")
-                        .value("true"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("supportedDiagnosesName")
-                        .value("(Diagnose1,Diagnose2)"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("supportedDiagnosesSpecificationVersion")
-                        .value("(V1,V2)"))
+                        .name("operationalState")
+                        .value(operationalState))
                 .addResourceRelationshipItem(new ResourceRelationship()
                         .resourceRef(new ResourceRef()
-                                .id(nepData.getUuid())
-                                .type("NetworkElementPort"))
-                );
+                                .id(tpData.getUuid())
+                                .type("TerminationPoint")));
+    }
+
+    private LogicalResourceUpdate generateNelLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nelData.getUuid())
+                .type("NetworkElementLink")
+                .description("NEL for integration test")
+                .lifecycleState(nelData.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(nepDataA.getUuid())
+                                .type("NetworkElementPort")))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(nepDataB.getUuid())
+                                .type("NetworkElementPort")));
     }
 
     private LogicalResourceUpdate generateGenericLogicalResourceUpdate(String uuid) {

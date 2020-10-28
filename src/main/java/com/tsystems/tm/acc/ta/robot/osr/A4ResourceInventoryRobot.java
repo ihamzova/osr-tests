@@ -258,6 +258,24 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get existing Network Service Profile (FTTH Access) by UUID")
+    public NetworkServiceProfileFtthAccessDto getExistingNetworkServiceProfileFtthAccess(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get existing Network Element Link by UUID")
+    public NetworkElementLinkDto getExistingNetworkElementLink(String uuid) {
+        return a4ResourceInventory
+                .networkElementLinks()
+                .findNetworkElementLink()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Check that existing Network Element has been enriched with data from PSL")
     public void checkNetworkElementIsUpdatedWithPslData(String networkElementUuid, EquipmentData equipmentData) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(networkElementUuid);
@@ -289,6 +307,22 @@ public class A4ResourceInventoryRobot {
 
         // NEPs do not have a lifecycle state
         assertEquals(networkElementPortDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network service profile (FTTH Access)")
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(A4NetworkServiceProfileFtthAccess nspFtthData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
+
+        assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network element link")
+    public void checkNetworkElementLinkIsUpdatedWithNewStates(A4NetworkElementLink nelData, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
+
+        assertEquals(networkElementLinkDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkElementLinkDto.getOperationalState(), expectedNewOperationalState);
     }
 
     @Step("Delete all Network Element Groups with a given name")
