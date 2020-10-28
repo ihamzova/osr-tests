@@ -63,13 +63,7 @@ public class NemoStatusUpdateTest {
 
     @BeforeMethod
     public void setup() {
-        a4ResourceInventory.createNetworkElementGroup(negData);
-        a4ResourceInventory.createNetworkElement(neData, negData);
-        a4ResourceInventory.createNetworkElementPort(nepDataA, neData);
-        a4ResourceInventory.createNetworkElementPort(nepDataB, neData);
-        a4ResourceInventory.createTerminationPoint(tpData, nepDataA);
-        a4ResourceInventory.createNetworkServiceProfileFtthAccess(nspFtthData, tpData);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
+        a4ResourceInventory.createTestDataForAllA4ElementTypes(negData, neData, nepDataA, nepDataB, tpData, nspFtthData, nelData);
     }
 
     @AfterMethod
