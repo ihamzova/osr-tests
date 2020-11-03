@@ -64,7 +64,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
-        log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+        log.info("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -89,7 +89,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
-        log.debug("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
+        log.info("OltAutoCommissioningGFNWTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
