@@ -144,7 +144,7 @@ public class A4ResourceInventoryMapper {
                 .lineId(nspData.getLineId())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
-                .productionScheme("ein Production Scheme")
+//                .productionScheme("ein Production Scheme")
                 .administrativeMode("ACTIVATED")
                 .operationalState("WORKING")
                 .lifecycleState(nspData.getLifecycleState())

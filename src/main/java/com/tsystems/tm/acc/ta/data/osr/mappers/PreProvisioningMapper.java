@@ -14,7 +14,7 @@ public class PreProvisioningMapper {
                 .operationalState("NOT_WORKING")
                 .description("Berlinium-Test PreProvisioning FtthAccess")
                 .administrativeMode("adminMode")
-                .productionScheme("prodScheme")
+//                .productionScheme("prodScheme")
                 .virtualServiceProvider("virtServiceProv")
                 .specificationVersion("v1")
                 .lineId(UUID.randomUUID().toString())

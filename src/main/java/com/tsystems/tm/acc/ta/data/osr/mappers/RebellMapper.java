@@ -17,8 +17,6 @@ public class RebellMapper {
         String endSzB = neB.getVpsz() + "/" + neB.getFsz();
         endSzB = endSzB.replace("/", "_");
 
-        String endSzQueryParam = endSzA;
-
         return Collections.singletonList(new Ueweg()
                 .id(1)
                 .lsz("LSZ")
