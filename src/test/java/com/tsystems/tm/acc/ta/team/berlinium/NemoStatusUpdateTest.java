@@ -51,7 +51,7 @@ public class NemoStatusUpdateTest {
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         nspFtthData = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()

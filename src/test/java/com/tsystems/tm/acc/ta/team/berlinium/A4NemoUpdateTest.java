@@ -23,9 +23,9 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @Feature("Sending update calls to NEMO")
 @TmsLink("DIGIHUB-xxxxx")
 public class A4NemoUpdateTest extends ApiTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
 
     private A4NetworkElementGroup negData;
 
@@ -35,7 +35,7 @@ public class A4NemoUpdateTest extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         // Ensure that no old test data is in the way
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -53,17 +53,11 @@ public class A4NemoUpdateTest extends ApiTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Trigger an update call to NEMO for existing network element group")
     public void testNemoUpdateWithNeg() {
-        // GIVEN / Arrange
-        // nothing to do
-
         // WHEN / Action
         a4NemoUpdater.triggerNemoUpdate(negData.getUuid());
 
         // THEN / Assert
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(negData.getUuid());
-
-        // AFTER / Clean-up
-        // nothing to do
     }
 
     @Test(description = "DIGIHUB-xxxxx Trigger an update call (DELETE) to NEMO for non-existing entity type element")
@@ -79,8 +73,5 @@ public class A4NemoUpdateTest extends ApiTest {
 
         // THEN / Assert
         a4NemoUpdater.checkLogicalResourceDeleteRequestToNemoWiremock(uuid);
-
-        // AFTER / Clean-up
-        // nothing to do
     }
 }

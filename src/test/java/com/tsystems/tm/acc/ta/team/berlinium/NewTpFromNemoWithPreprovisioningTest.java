@@ -36,7 +36,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
-    private A4TerminationPoint tpData;
+    private A4TerminationPoint tpFtthData;
+    private A4TerminationPoint tpA10Data;
 
     private WireMockMappingsContext mappingsContext;
 
@@ -48,12 +49,15 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+        tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+        tpA10Data = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
 
         // Ensure that no old test data is in the way
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -62,8 +66,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
-                .addWgA4ProvisioningMock()
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest"))
+                .addPreprovisioningErrorMock()
                 .build();
         mappingsContext.publish();
     }
@@ -72,27 +76,32 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     public void cleanup() {
         mappingsContext.deleteAll();
 
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        a4Inventory.deleteA4TestData(negData, neData);
     }
 
-    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with Preprovisioning")
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with FTTH Accesss Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
-    @Description("NEMO creates new Termination Point with Preprovisioning")
-    public void newTpWithPreprovisioning() {
-        // GIVEN / Arrange
-        // nothing to do
-
+    @Description("NEMO creates new Termination Point with FTTH Accesss Preprovisioning")
+    public void newTpWithFtthAccessPreprovisioning() {
         // WHEN / Action
-        a4Nemo.createTerminationPoint(tpData, nepData);
+        a4Nemo.createTerminationPoint(tpFtthData, nepData);
 
         // THEN
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
-        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
-
-        // AFTER / Clean-up
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
     }
 
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
+    public void newTpWithA10NspPreprovisioning() {
+        // WHEN / Action
+        a4Nemo.createTerminationPoint(tpA10Data, nepData);
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
+    }
 
 }

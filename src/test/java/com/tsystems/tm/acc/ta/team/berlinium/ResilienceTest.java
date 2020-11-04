@@ -61,11 +61,12 @@ public class ResilienceTest extends ApiTest {
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
 
         // Ensure that no old test data is in the way
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -94,7 +95,6 @@ public class ResilienceTest extends ApiTest {
     @Description("NEMO creates new Termination Point with Preprovisioning. This test takes appr. 3min.")
     public void newTpWithPreprovisioning() throws InterruptedException, IOException {
         // GIVEN / Arrange
-        // nothing to do
         REDELIVERY_DELAY = Long.parseLong(a4Resilience.getRedeliveryDelay());
 
         // WHEN / Action
@@ -117,8 +117,6 @@ public class ResilienceTest extends ApiTest {
         log.debug("Thread sleeps for {} seconds...", REDELIVERY_DELAY/1000);
         Thread.sleep(REDELIVERY_DELAY);
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
-        // AFTER / Clean-up
     }
-
 
 }

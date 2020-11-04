@@ -72,9 +72,7 @@ public class ZtpIdentUiTest extends BaseTest {
                 .get(EquipmentDataCase.equipment_MatNr_40958960);
 
         // Ensure that no old test data is in the way
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        cleanUp();
     }
 
     @BeforeMethod
@@ -126,4 +124,5 @@ public class ZtpIdentUiTest extends BaseTest {
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
     }
+
 }

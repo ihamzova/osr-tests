@@ -45,7 +45,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
-    private A4TerminationPoint tpData;
+    private A4TerminationPoint tpFtthData;
     private PortProvisioning port;
 
     @BeforeClass
@@ -56,15 +56,13 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+        tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         port = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4Port);
 
         // Ensure that no old test data is in the way
-        a4PreProvisioning.clearData();
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -77,28 +75,21 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     @AfterMethod
     public void cleanup() {
         a4PreProvisioning.clearData();
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        a4Inventory.deleteA4TestData(negData, neData);
     }
 
-    @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
+    @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-59383")
-    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
-    public void newTpWithPreprovisioning() throws InterruptedException {
-        // GIVEN / Arrange
-        // nothing to do
-
+    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
+    public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
         // WHEN / Action
-        a4Nemo.createTerminationPoint(tpData, nepData);
+        a4Nemo.createTerminationPoint(tpFtthData, nepData);
         Thread.sleep(WAIT_TIME);
 
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
-        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpData.getUuid());
-
-        // AFTER / Clean-up
-        // nothing to do
+        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }
 }
