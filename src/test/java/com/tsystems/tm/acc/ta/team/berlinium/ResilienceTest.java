@@ -36,12 +36,12 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOUR
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
 public class ResilienceTest extends ApiTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
-    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
-    private A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
-    private A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -104,7 +104,7 @@ public class ResilienceTest extends ApiTest {
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
 
         //because the wiremock answers with 500, nsp should not be created
-        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 0);
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 0);
 
         //next time it is trying to redeliver to wiremock it should answer with 201 and create nsp
         mappingsContext.deleteAll();
@@ -116,7 +116,7 @@ public class ResilienceTest extends ApiTest {
         //after a little time, nsp should be existent
         log.debug("Thread sleeps for {} seconds...", REDELIVERY_DELAY/1000);
         Thread.sleep(REDELIVERY_DELAY);
-        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
         // AFTER / Clean-up
     }
 

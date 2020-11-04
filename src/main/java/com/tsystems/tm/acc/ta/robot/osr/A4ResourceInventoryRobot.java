@@ -115,9 +115,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Check if one Network Service Profile connected to Termination Point exists")
-    public void checkNetworkServiceProfileConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
-        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
+    @Step("Check if one Network Service Profile FTTH Access connected to Termination Point exists")
+    public void checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
+    }
+
+    @Step("Check if one Network Service Profile A10NSP connected to Termination Point exists")
+    public void checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
+        List<NetworkServiceProfileA10NSPDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
     }
 
@@ -132,7 +138,7 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete all Network Service Profiles connected to given Termination Point")
     public void deleteNetworkServiceProfilesConnectedToTerminationPoint(String uuidTp) {
-        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesByTerminationPoint(uuidTp);
+        List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
 
         nspList.forEach(nsp ->
                 deleteNetworkServiceProfile(nsp.getUuid())
@@ -149,11 +155,20 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get a list of Network Service Profiles by Termination Point UUID")
-    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByTerminationPoint(String uuidTp) {
+    @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
+                .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
+    public List<NetworkServiceProfileA10NSPDto> getNetworkServiceProfilesA10NspByTerminationPoint(String uuidTp) {
+        return a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .findNetworkServiceProfilesA10NSP()
                 .terminationPointUuidQuery(uuidTp)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -495,6 +510,19 @@ public class A4ResourceInventoryRobot {
         a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new NetworkServiceProfileA10NSP in A4 resource inventory")
+    public void createNetworkServiceProfileA10Nsp(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
+        NetworkServiceProfileA10NSPDto nspDto = new A4ResourceInventoryMapper()
+                .getNetworkServiceProfileA10NspDto(nspData, tpData);
+
+        a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .createOrUpdateNetworkServiceProfileA10NSP()
                 .body(nspDto)
                 .uuidPath(nspData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));

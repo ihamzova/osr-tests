@@ -22,18 +22,16 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
 
-import java.util.UUID;
-
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
-    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
-    private A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -91,7 +89,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
-        a4ResourceInventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
 
         // AFTER / Clean-up
     }

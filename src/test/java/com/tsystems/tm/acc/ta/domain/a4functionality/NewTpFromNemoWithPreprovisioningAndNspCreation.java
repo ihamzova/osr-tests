@@ -36,11 +36,11 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
 
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
-    private A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
-    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -95,8 +95,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
 
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
-        a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfilePutRequestToNemoWiremock(tpData.getUuid());
+        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpData.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpData.getUuid());
 
         // AFTER / Clean-up
         // nothing to do

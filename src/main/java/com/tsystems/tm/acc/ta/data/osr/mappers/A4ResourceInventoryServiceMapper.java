@@ -129,6 +129,20 @@ public class A4ResourceInventoryServiceMapper {
                                 .type("TerminationPoint")));
     }
 
+    private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nspA10Data.getUuid())
+                .type("NspA10Nsp")
+                .description("NSP-A10NSP for integration test")
+                .lifecycleState(nspA10Data.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(tpData.getUuid())
+                                .type("TerminationPoint")));
+    }
+
     private LogicalResourceUpdate generateNelLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
         return generateGenericLogicalResourceUpdate(nelData.getUuid())
                 .type("NetworkElementLink")

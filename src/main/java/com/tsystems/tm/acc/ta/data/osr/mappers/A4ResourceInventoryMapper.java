@@ -144,13 +144,30 @@ public class A4ResourceInventoryMapper {
                 .lineId(nspData.getLineId())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
-//                .productionScheme("ein Production Scheme")
                 .administrativeMode("ACTIVATED")
-                .operationalState("WORKING")
+                .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointFtthAccessUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
-                .description("NSP created during osr-test integration test")
+                .description("NSP FTTH Access created during osr-test integration test")
+                .creationTime(OffsetDateTime.now());
+    }
+
+    public NetworkServiceProfileA10NSPDto getNetworkServiceProfileA10NspDto(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
+        if (nspData.getUuid().isEmpty())
+            nspData.setUuid(UUID.randomUUID().toString());
+
+        return new NetworkServiceProfileA10NSPDto()
+                .uuid(nspData.getUuid())
+                .href("HREF?")
+                .specificationVersion("3")
+                .virtualServiceProvider("ein Virtual Service Provider")
+                .administrativeMode("ACTIVATED")
+                .operationalState(nspData.getOperationalState())
+                .lifecycleState(nspData.getLifecycleState())
+                .terminationPointA10NSPUuid(tpData.getUuid())
+                .lastUpdateTime(OffsetDateTime.now())
+                .description("NSP A10NSP created during osr-test integration test")
                 .creationTime(OffsetDateTime.now());
     }
 
