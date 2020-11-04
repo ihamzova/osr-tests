@@ -127,8 +127,8 @@ public class A4ResourceInventoryRobot {
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
     }
 
-    @Step("Delete existing Network Service Profile from A4 resource inventory")
-    public void deleteNetworkServiceProfile(String uuid) {
+    @Step("Delete existing Network Service Profile (FTTH Access) from A4 resource inventory")
+    public void deleteNetworkServiceProfileFtthAccess(String uuid) {
         a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .deleteNetworkServiceProfileFtthAccess()
@@ -136,21 +136,47 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Delete all Network Service Profiles connected to given Termination Point")
-    public void deleteNetworkServiceProfilesConnectedToTerminationPoint(String uuidTp) {
+    @Step("Delete existing Network Service Profile (A10NSP) from A4 resource inventory")
+    public void deleteNetworkServiceProfileA10Nsp(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .deleteNetworkServiceProfileA10NSP()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Delete all Network Service Profiles (FTTH Access) connected to given Termination Point")
+    public void deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
 
         nspList.forEach(nsp ->
-                deleteNetworkServiceProfile(nsp.getUuid())
+                deleteNetworkServiceProfileFtthAccess(nsp.getUuid())
         );
     }
 
+    @Step("Delete all Network Service Profiles (A10NSP) connected to given Termination Point")
+    public void deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(String uuidTp) {
+        List<NetworkServiceProfileA10NSPDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
 
-    @Step("Get Network Service Profiles by UUID")
-    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileByUuid(String uuid) {
+        nspList.forEach(nsp ->
+                deleteNetworkServiceProfileA10Nsp(nsp.getUuid())
+        );
+    }
+
+    @Step("Get Network Service Profiles (FTTH Access) by UUID")
+    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessByUuid(String uuid) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get Network Service Profiles (A10NSP) by UUID")
+    public NetworkServiceProfileA10NSPDto getNetworkServiceProfileA10NspByUuid(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .findNetworkServiceProfileA10NSP()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -175,7 +201,7 @@ public class A4ResourceInventoryRobot {
 
 
     @Step("Get a list of Network Service Profiles by LineId")
-    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesByLineId(String lineId) {
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByLineId(String lineId) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
@@ -282,6 +308,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get existing Network Service Profile (A10NSP) by UUID")
+    public NetworkServiceProfileA10NSPDto getExistingNetworkServiceProfileA10Nsp(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .findNetworkServiceProfileA10NSP()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element Link by UUID")
     public NetworkElementLinkDto getExistingNetworkElementLink(String uuid) {
         return a4ResourceInventory
@@ -330,6 +365,14 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network service profile (A10NSP)")
+    public void checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(A4NetworkServiceProfileA10Nsp nspA10Data, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkServiceProfileA10NSPDto networkServiceProfileA10NspDto = getExistingNetworkServiceProfileA10Nsp(nspA10Data.getUuid());
+
+        assertEquals(networkServiceProfileA10NspDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileA10NspDto.getOperationalState(), expectedNewOperationalState);
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element link")
@@ -392,7 +435,8 @@ public class A4ResourceInventoryRobot {
                 List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
 
                 tpList.forEach(tp -> {
-                    deleteNetworkServiceProfilesConnectedToTerminationPoint(tp.getUuid());
+                    deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
+                    deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
                     deleteTerminationPoint(tp.getUuid());
                 });
 
