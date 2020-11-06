@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.invoker.Api
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.model.UpdateNemoTask;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementLinkDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementPortDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileA10NSPDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileFtthAccessDto;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -24,9 +25,9 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class A4NemoUpdaterRobot {
     private static final Integer HTTP_CODE_CREATED_201 = 201;
 
-    private ApiClient a4NemoUpdater = new A4NemoUpdaterClient().getClient();
+    private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient().getClient();
 
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
 
     @Step("Trigger NEMO Update")
     public void triggerNemoUpdate(String uuid) {
@@ -64,10 +65,19 @@ public class A4NemoUpdaterRobot {
                                 urlMatching(".*/logicalResource/" + uuid)));
     }
 
-    @Step("Check if PUT request to NEMO wiremock with network service profile has happened")
-    public void checkNetworkServiceProfilePutRequestToNemoWiremock(String uuidTp) {
+    @Step("Check if PUT request to NEMO wiremock with network service profile FTTH Access has happened")
+    public void checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = a4Inventory
-                .getNetworkServiceProfilesByTerminationPoint(uuidTp);
+                .getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+
+        checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
+    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(String uuidTp) {
+        List<NetworkServiceProfileA10NSPDto> nspList = a4Inventory
+                .getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), 1);
 
         checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());

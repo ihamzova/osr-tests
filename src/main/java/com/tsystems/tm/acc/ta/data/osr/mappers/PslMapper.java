@@ -6,8 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class PslMapper {
     private static final String DEFAULT_SHELF = "0";
     private static final String DEFAULT_PON_SLOT = "1";

@@ -65,6 +65,11 @@ public class A4ResourceInventoryServiceMapper {
         return generateNspFtthLogicalResourceUpdate(nspFtthData, tpData, operationalState);
     }
 
+    // Create logicalResource representation of network service profile (A10NSP) with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
+        return generateNspA10NspLogicalResourceUpdate(nspA10Data, tpData, operationalState);
+    }
+
     // Create logicalResource representation of network element link with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
         return generateNelLogicalResourceUpdate(nelData, nepDataA, nepDataB, operationalState);
@@ -120,6 +125,20 @@ public class A4ResourceInventoryServiceMapper {
                 .type("NspFtthAccess")
                 .description("NSP-FTTH-ACCESS for integration test")
                 .lifecycleState(nspFtthData.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(tpData.getUuid())
+                                .type("TerminationPoint")));
+    }
+
+    private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nspA10Data.getUuid())
+                .type("NspA10Nsp")
+                .description("NSP-A10NSP for integration test")
+                .lifecycleState(nspA10Data.getLifecycleState())
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("operationalState")
                         .value(operationalState))

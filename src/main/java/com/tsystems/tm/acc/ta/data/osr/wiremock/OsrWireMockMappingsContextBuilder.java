@@ -1,10 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.wiremock;
 
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PslStub;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.RebellStub;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.SealStub;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextBuilder;
@@ -45,6 +42,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
     public OsrWireMockMappingsContextBuilder addPreprovisioningErrorMock(){
         context.add(new PreProvisioningStub().getAccessLine500());
+        return this;
+    }
+
+    public OsrWireMockMappingsContextBuilder addNemoMock(String uuid) {
+        context.add(new NemoStub().postNemoUpdate200(uuid));
         return this;
     }
 }

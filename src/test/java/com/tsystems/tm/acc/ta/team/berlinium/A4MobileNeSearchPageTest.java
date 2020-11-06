@@ -62,12 +62,10 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements){
-
         //add 1 to number of elements because of table header
         numberOfElements++;
 
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
-
     }
 
     public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) {

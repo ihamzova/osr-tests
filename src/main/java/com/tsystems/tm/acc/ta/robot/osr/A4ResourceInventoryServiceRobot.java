@@ -127,6 +127,19 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
+    @Step("Send new operational state for Network Service Profile (A10NSP)")
+    public void sendStatusUpdateForNetworkServiceProfileA10Nsp(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String newOperationalState) {
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspA10Data, tpData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspA10Data.getUuid())
+                .body(nepLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
     @Step("Send invalid operational state for Network Service Profile (FTTH Access)")
     public void receiveErrorWhenSendingInvalidStatusUpdateForNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData) {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()

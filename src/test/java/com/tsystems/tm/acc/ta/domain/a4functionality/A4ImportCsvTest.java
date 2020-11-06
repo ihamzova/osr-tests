@@ -28,10 +28,10 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
 @ServiceLog(A4_NEMO_UPDATER)
 public class A4ImportCsvTest extends BaseTest {
-    private OsrTestContext context = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
-    private A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
+    private final OsrTestContext context = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
 
     private A4ImportCsvData csvData;
 
@@ -43,7 +43,7 @@ public class A4ImportCsvTest extends BaseTest {
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
 
         // Ensure that no old test data is in the way
-        a4ResourceInventoryRobot.deleteA4EntriesIncludingChildren(csvData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -61,17 +61,11 @@ public class A4ImportCsvTest extends BaseTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Import Network Element (Group) CSV file into A4 Resource Inventory")
     public void testImportCsvFile() {
-        // Given / Arrange
-        // nothing to do
-
         // When / Action
         a4ResourceInventoryImporterUiRobot.importCsvFileViaUi(csvData);
 
         // Then / Assert
         a4ResourceInventoryImporterUiRobot.checkNetworkElementsViaUi(csvData);
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
-
-        // After / Clean-up
-        // nothing to do
     }
 }

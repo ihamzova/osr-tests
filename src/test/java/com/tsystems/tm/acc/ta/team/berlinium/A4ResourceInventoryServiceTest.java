@@ -21,9 +21,9 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @Feature("Accessing entries in a4-resource-inventory via the a4-resource-inventory-service as logical resource objects")
 @TmsLink("DIGIHUB-57771")
 public class A4ResourceInventoryServiceTest extends ApiTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
 
     private A4NetworkElementGroup negData;
 
@@ -33,7 +33,7 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         // Ensure that no old test data is in the way
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -51,16 +51,11 @@ public class A4ResourceInventoryServiceTest extends ApiTest {
     @TmsLink("DIGIHUB-57774")
     @Description("Create new network element in inventory and read it as logical resource")
     public void testCreateNeg_checkLogicalResource_deleteNeg() {
-        // GIVEN / Arrange
-        // nothing to do
-
         // WHEN / Action
         a4Inventory.createNetworkElementGroup(negData);
 
         // THEN / Assert
         a4Nemo.checkLogicalResourceIsNetworkElementGroup(negData);
-
-        // AFTER / Clean-up
-        // nothing to do
     }
+
 }

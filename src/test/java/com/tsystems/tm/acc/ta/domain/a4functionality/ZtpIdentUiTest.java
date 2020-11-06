@@ -72,9 +72,7 @@ public class ZtpIdentUiTest extends BaseTest {
                 .get(EquipmentDataCase.equipment_MatNr_40958960);
 
         // Ensure that no old test data is in the way
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        cleanUp();
     }
 
     @BeforeMethod
@@ -88,6 +86,11 @@ public class ZtpIdentUiTest extends BaseTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ZtpIdentUiTest"))
                 .addRebellMock(uewegData, a4NetworkElementA, a4NetworkElementB)
                 .addPslMock(equipmentDataA, a4NetworkElementA)
+                .addNemoMock(a4NetworkElementGroup.getUuid())
+                .addNemoMock(a4NetworkElementA.getUuid())
+                .addNemoMock(a4NetworkElementB.getUuid())
+                .addNemoMock(a4NetworkElementPortA.getUuid())
+                .addNemoMock(a4NetworkElementPortB.getUuid())
                 .build();
 
         mappingsContext.publish();
@@ -111,7 +114,7 @@ public class ZtpIdentUiTest extends BaseTest {
         a4ResourceInventoryImporterUiRobot.openNetworkElement(a4NetworkElementA);
         a4ResourceInventoryImporterUiRobot.enterZtpIdent(ztpIdent);
 
-        // THEN
+        // THEN / Assert
         a4ResourceInventoryImporterUiRobot.checkMonitoringPage(a4NetworkElementA, ztpIdent);
         Thread.sleep(WAIT_TIME);
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElementA.getUuid(), equipmentDataA);
@@ -120,8 +123,6 @@ public class ZtpIdentUiTest extends BaseTest {
         a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(),
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
-
-        // AFTER / Clean-up
-        // nothing to do
     }
+
 }

@@ -21,6 +21,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
@@ -35,17 +37,18 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
+    private long SLEEP_TIMER = 15; // in seconds
 
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
-    private A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
-    private A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
-    private A4TerminationPoint tpData;
+    private A4TerminationPoint tpFtthData;
     private PortProvisioning port;
 
     @BeforeClass
@@ -56,15 +59,13 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+        tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         port = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4Port);
 
         // Ensure that no old test data is in the way
-        a4PreProvisioning.clearData();
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        cleanup();
     }
 
     @BeforeMethod
@@ -77,28 +78,22 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     @AfterMethod
     public void cleanup() {
         a4PreProvisioning.clearData();
-        a4Inventory.deleteA4NetworkElementsIncludingChildren(neData);
-        a4Inventory.deleteNetworkElementGroups(negData);
+        a4Inventory.deleteA4TestData(negData, neData);
     }
 
-    @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
+    @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-59383")
-    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile creation")
-    public void newTpWithPreprovisioning() throws InterruptedException {
-        // GIVEN / Arrange
-        // nothing to do
-
+    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
+    public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
         // WHEN / Action
-        a4Nemo.createTerminationPoint(tpData, nepData);
-        Thread.sleep(WAIT_TIME);
+        a4Nemo.createTerminationPoint(tpFtthData, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER);
 
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
-        a4Inventory.checkNetworkServiceProfileConnectedToTerminationPointExists(tpData.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfilePutRequestToNemoWiremock(tpData.getUuid());
-
-        // AFTER / Clean-up
-        // nothing to do
+        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }
+
 }

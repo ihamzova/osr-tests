@@ -52,10 +52,10 @@ public class A4MobileMonitoringPageTest extends BaseTest {
     final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
 
     @BeforeMethod()
-        public void doLogin() {
-            Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-            SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        }
+    public void doLogin() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+    }
 
     @BeforeClass()
     public void init() {
@@ -69,13 +69,13 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4NetworkElements.put(A4_NE_INSTALLING_SPINE_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
-        a4NetworkElements.put(A4_NE_OPERATING_BOR_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_OPERATING_BOR_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
 
-        a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01));
 
-        a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
         cleanUp();
@@ -85,14 +85,13 @@ public class A4MobileMonitoringPageTest extends BaseTest {
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
-        a4NetworkElements.forEach((k, networkElement)->
-               a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
+        a4NetworkElements.forEach((k, networkElement) ->
+                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
     }
 
     @AfterMethod
     public void cleanUp() {
-
-        a4NetworkElements.forEach((k,v)->
+        a4NetworkElements.forEach((k, v) ->
                 a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
 
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
@@ -135,7 +134,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
             a4MobileUiRobot.clickRemoveButton();
             try {
 
-                WebDriver driver  = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
                 WebDriverWait wait = new WebDriverWait(driver, 5000);
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
                 driver.switchTo().alert();
@@ -147,12 +146,11 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
         });
 
-        toBeRemoved.forEach(A4ElementString ->  a4NeFilteredMap.remove(A4ElementString));
+        toBeRemoved.forEach(A4ElementString -> a4NeFilteredMap.remove(A4ElementString));
 
 
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
-
 
 
 }

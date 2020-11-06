@@ -21,9 +21,9 @@ import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
 public class A4ResourceInventoryServiceV4Test extends ApiTest {
-    private OsrTestContext osrTestContext = OsrTestContext.get();
-    private A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private A4ResourceInventoryServiceV4Robot a4ResourceInventoryServiceV4Robot = new A4ResourceInventoryServiceV4Robot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryServiceV4Robot a4ResourceInventoryServiceV4Robot = new A4ResourceInventoryServiceV4Robot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neDataA;
@@ -45,7 +45,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementB);
         tpDataA = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPoint);
+                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         tpDataB = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -60,9 +60,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
                 .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessB);
 
         // Ensure that no old test data is in the way
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neDataA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neDataB);
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(negData);
+        tearDown();
 
         // Set up test data. Needs only to be done once, because all test cases here are read-only-requests (not necessary to use @BeforeMethod)
         a4ResourceInventoryRobot.createNetworkElementGroup(negData);
