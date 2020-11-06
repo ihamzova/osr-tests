@@ -105,19 +105,20 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         // THEN
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
+
     }
 
-//    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning")
-//    @Owner("bela.kovac@t-systems.com")
-//    @TmsLink("DIGIHUB-xxxxx")
-//    @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
-//    public void newTpWithA10NspPreprovisioning() throws InterruptedException {
-//        // WHEN / Action
-//        a4Nemo.createTerminationPoint(tpA10Data, nepData);
-//        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Need to wait a bit because queues might need some time to process all events
-//
-//        // THEN
-//        a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
-//    }
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
+    public void newTpWithA10NspPreprovisioning() throws InterruptedException {
+        // WHEN / Action
+        a4Nemo.createTerminationPoint(tpA10Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Need to wait a bit because queues might need some time to process all events
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
+    }
 
 }
