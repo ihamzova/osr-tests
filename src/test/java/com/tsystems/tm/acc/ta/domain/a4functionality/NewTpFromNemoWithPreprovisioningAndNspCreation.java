@@ -21,6 +21,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
@@ -35,6 +37,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     private static final int WAIT_TIME = 15_000;
+    private long SLEEP_TIMER = 15; // in seconds
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
@@ -85,11 +88,12 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpFtthData, nepData);
-        Thread.sleep(WAIT_TIME);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER);
 
         // THEN / Assert
         a4PreProvisioning.checkResults(port);
         a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }
+
 }

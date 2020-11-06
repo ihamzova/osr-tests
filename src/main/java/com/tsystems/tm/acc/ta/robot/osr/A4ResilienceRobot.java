@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -16,7 +17,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 
-
+@Slf4j
 public class A4ResilienceRobot {
 
     A4ResourceInventoryServiceClient a4ResourceInventoryService;
@@ -37,6 +38,12 @@ public class A4ResilienceRobot {
         String a = response.readEntity(String.class);
 
         Environment e = objectMapper.readValue(a, Environment.class);
+
+        log.debug(">>> url = " + url);
+        log.debug(">>> delay = " + e.getProperty().getValue());
+
+        log.info(">>> url = " + url);
+        log.info(">>> delay = " + e.getProperty().getValue());
 
         return e.getProperty().getValue();
     }
