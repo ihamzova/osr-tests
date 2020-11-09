@@ -72,7 +72,7 @@ public class ZtpIdentUiTest extends BaseTest {
                 .get(EquipmentDataCase.equipment_MatNr_40958960);
 
         // Need to set up this dummy wiremock so that cleanUp() call below doesn't run into nullpointer
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ZtpIdentUiTest")).build();
 
         // Ensure that no old test data is in the way
         cleanUp();
@@ -89,11 +89,7 @@ public class ZtpIdentUiTest extends BaseTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ZtpIdentUiTest"))
                 .addRebellMock(uewegData, a4NetworkElementA, a4NetworkElementB)
                 .addPslMock(equipmentDataA, a4NetworkElementA)
-                .addNemoMock(a4NetworkElementGroup.getUuid())
-                .addNemoMock(a4NetworkElementA.getUuid())
-                .addNemoMock(a4NetworkElementB.getUuid())
-                .addNemoMock(a4NetworkElementPortA.getUuid())
-                .addNemoMock(a4NetworkElementPortB.getUuid())
+                .addNemoMock()
                 .build();
 
         mappingsContext.publish();

@@ -114,14 +114,13 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementExistsByUuid(neDataB);
     }
 
-    // Disabled for now: Old test data might intervene
-//    @Test(description = "DIGIHUB-xxx Read termination point from resource inventory service v4 api")
-//    @Owner("thea.john@telekom.de")
-//    @TmsLink("DIGIHUB-xxx")
-//    @Description("Read terminationPoint from resource inventory service v4 api")
-//    public void readTerminationPointFromA4Api() {
-//        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointsExist(2);
-//    }
+    @Test(description = "DIGIHUB-xxx Read termination point from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read terminationPoint from resource inventory service v4 api")
+    public void readTerminationPointFromA4Api() {
+        a4ResourceInventoryServiceV4Robot.checkIfAnyTerminationPointsExist(2);
+    }
 
     @Test(description = "DIGIHUB-xxx Find termination point by Port from resource inventory service v4 api")
     @Owner("thea.john@telekom.de")
@@ -131,14 +130,13 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpDataA, nepDataA);
     }
 
-    // Disabled for now: Old test data might intervene
-//    @Test(description = "DIGIHUB-xxx Read networkElementLink from resource inventory service v4 api")
-//    @Owner("thea.john@telekom.de")
-//    @TmsLink("DIGIHUB-xxx")
-//    @Description("Read networkElementLink from resource inventory service v4 api")
-//    public void test_readNetworkElementLinkFromA4Api() {
-//        a4ResourceInventoryServiceV4Robot.checkIfNetworkElementLinksExist(2);
-//    }
+    @Test(description = "DIGIHUB-xxx Read networkElementLink from resource inventory service v4 api")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read networkElementLink from resource inventory service v4 api")
+    public void test_readNetworkElementLinkFromA4Api() {
+        a4ResourceInventoryServiceV4Robot.checkIfAnyNetworkElementLinksExist(1);
+    }
 
     @Test(description = "DIGIHUB-xxx Read networkElementLink by lbz from resource inventory service v4 api")
     @Owner("thea.john@telekom.de")
@@ -148,16 +146,15 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkElementLinkExistsByLbz(nelData);
     }
 
-    // Disabled for now: Old test data might intervene
-//    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
-//    @Owner("juergen.mayer@t-systems.com")
-//    @TmsLink("DIGIHUB-xxx")
-//    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
-//    public void test_readNetworkServiceProfileFtthAccessFromA4Api() {
-//        a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileFtthAccessesExist(2);
-//    }
+    @Test(description = "DIGIHUB-xxx Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxx")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void test_readNetworkServiceProfileFtthAccessFromA4Api() {
+        a4ResourceInventoryServiceV4Robot.checkIfAnyNetworkServiceProfileFtthAccessesExist(2);
+    }
 
-    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access from resource inventory service v4 api")
+    @Test(description = "DIGIHUB-xxx Read Network Service Profile Ftth Access from resource inventory service v4 api")
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxx")
     @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
@@ -165,7 +162,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileFtthAccessExistsByLineId(nspDataA);
     }
 
-    @Test(description = "DIGIHUB-xxx Read  Network Service Profile Ftth Access by ontSerialNumber from resource inventory service v4 api")
+    @Test(description = "DIGIHUB-xxx Read Network Service Profile Ftth Access by ontSerialNumber from resource inventory service v4 api")
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxx")
     @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
