@@ -48,7 +48,9 @@ public class ResilienceTest extends ApiTest {
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpData;
 
-    private WireMockMappingsContext mappingsContext;
+    // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
+    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+
 
     private long REDELIVERY_DELAY = 155000;
 
@@ -77,6 +79,7 @@ public class ResilienceTest extends ApiTest {
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest"))
                 .addPreprovisioningErrorMock()
+                .addNemoMock()
                 .build();
         mappingsContext.publish();
     }
@@ -110,6 +113,7 @@ public class ResilienceTest extends ApiTest {
         mappingsContext.deleteAll();
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest"))
                 .addWgA4ProvisioningMock()
+                .addNemoMock()
                 .build();
         mappingsContext.publish();
 

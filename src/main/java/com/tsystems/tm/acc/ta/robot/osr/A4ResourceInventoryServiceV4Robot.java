@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class A4ResourceInventoryServiceV4Robot {
     private static final Integer HTTP_CODE_OK_200 = 200;
@@ -165,9 +166,10 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void checkIfTerminationPointsExist(int count) {
+    @Step("Check if list of all existing Termination Points (v4 API) contains at least one entry")
+    public void checkIfAnyTerminationPointsExist(int minimalExpectedCount) {
         List<TerminationPoint> tpList = getAllTerminationPointsV4();
-        assertEquals(tpList.size(), count);
+        assertTrue(tpList.size() >= minimalExpectedCount);
     }
 
     public void checkIfTerminationPointExistsByPort(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
@@ -180,9 +182,10 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(tpV4UuidList.get(0), tpData.getUuid());
     }
 
-    public void checkIfNetworkServiceProfileFtthAccessesExist(int count) {
+    @Step("Check if list of all existing Network Service Profiles FTTH Access (v4 API) contains at least one entry")
+    public void checkIfAnyNetworkServiceProfileFtthAccessesExist(int minimalExpectedCount) {
         List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
-        assertEquals(nspList.size(), count);
+        assertTrue(nspList.size() >= minimalExpectedCount);
     }
 
     public void checkIfNetworkServiceProfileFtthAccessExistsByOntSerialNumber(A4NetworkServiceProfileFtthAccess nspData) {
@@ -237,9 +240,10 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void checkIfNetworkElementLinksExist(int count) {
+    @Step("Check if list of all existing NetworkElementLink (v4 API) contains at least one entry")
+    public void checkIfAnyNetworkElementLinksExist(int minimalExpectedCount) {
         List<NetworkElementLink> nelList = getAllNetworkElementLinksV4();
-        assertEquals(nelList.size(), count);
+        assertTrue(nelList.size() >= minimalExpectedCount);
     }
 
     public void checkIfNetworkElementLinkExistsByLbz(A4NetworkElementLink nelData) {

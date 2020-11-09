@@ -45,8 +45,8 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
-    public OsrWireMockMappingsContextBuilder addNemoMock(String uuid) {
-        context.add(new NemoStub().postNemoUpdate200(uuid));
+    public OsrWireMockMappingsContextBuilder addNemoMock() {
+        context.add(new NemoStub().postNemoUpdate201());
         return this;
     }
 }
