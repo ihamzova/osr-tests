@@ -71,6 +71,9 @@ public class ZtpIdentUiTest extends BaseTest {
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40958960);
 
+        // Need to set up this dummy wiremock so that cleanUp() call below doesn't run into nullpointer
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
+
         // Ensure that no old test data is in the way
         cleanUp();
     }

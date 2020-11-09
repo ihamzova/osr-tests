@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -33,10 +34,10 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private final long SLEEP_TIMER = 5; // in seconds
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
+    private final A4ResourceInventoryServiceRobot a4ResourceInventoryService = new A4ResourceInventoryServiceRobot();
     private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final A4NemoUpdaterRobot nemo = new A4NemoUpdaterRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -44,7 +45,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private A4TerminationPoint tpFtthData;
     private A4TerminationPoint tpA10Data;
 
-    private WireMockMappingsContext mappingsContext;
+    private WireMockMappingsContext wiremock;
 
     @BeforeClass
     public void init() {
@@ -59,7 +60,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         tpA10Data = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
+        // Need to set up this dummy wiremock so that cleanUp() call below doesn't run into nullpointer
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ResilienceTest")).build();
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -67,22 +69,22 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     @BeforeMethod
     public void setup() {
-        a4Inventory.createNetworkElementGroup(negData);
-        a4Inventory.createNetworkElement(neData, negData);
-        a4Inventory.createNetworkElementPort(nepData, neData);
+        a4ResourceInventory.createNetworkElementGroup(negData);
+        a4ResourceInventory.createNetworkElement(neData, negData);
+        a4ResourceInventory.createNetworkElementPort(nepData, neData);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
                 .addWgA4ProvisioningMock()
                 .build();
-        mappingsContext.publish();
+        wiremock.publish();
     }
 
     @AfterMethod
     public void cleanup() {
-        mappingsContext.deleteAll();
+        wiremock.deleteAll();
 //        mappingsContext.close();
 
-        a4Inventory.deleteA4TestData(negData, neData);
+        a4ResourceInventory.deleteA4TestData(negData, neData);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with FTTH Accesss Preprovisioning")
@@ -99,13 +101,13 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 //        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Need to wait a bit because queues might need some time to process all events
 
         // WHEN / Action
-        a4Nemo.createTerminationPoint(tpFtthData, nepData);
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Need to wait a bit because queues might need some time to process all events
+        a4ResourceInventoryService.createTerminationPoint(tpFtthData, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
 
         // THEN
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
-
+        nemo.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning")
@@ -114,11 +116,12 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
     public void newTpWithA10NspPreprovisioning() throws InterruptedException {
         // WHEN / Action
-        a4Nemo.createTerminationPoint(tpA10Data, nepData);
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Need to wait a bit because queues might need some time to process all events
+        a4ResourceInventoryService.createTerminationPoint(tpA10Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
+        nemo.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
     }
 
 }
