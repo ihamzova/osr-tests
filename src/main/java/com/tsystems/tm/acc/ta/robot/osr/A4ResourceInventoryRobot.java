@@ -190,7 +190,7 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
+    @Step("Get a list of Network Service Profiles A10NSP by Termination Point UUID")
     public List<NetworkServiceProfileA10NSPDto> getNetworkServiceProfilesA10NspByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
