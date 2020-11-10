@@ -47,7 +47,7 @@ public class ZtpIdentUiTest extends BaseTest {
     private UewegData uewegData;
     private EquipmentData equipmentDataA;
 
-    private WireMockMappingsContext mappingsContext;
+    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
 
     @BeforeClass
     public void init() {
@@ -70,9 +70,6 @@ public class ZtpIdentUiTest extends BaseTest {
 //                .get(EquipmentDataCase.equipment_MatNr_42999900);
         equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40958960);
-
-        // Need to set up this dummy wiremock so that cleanUp() call below doesn't run into nullpointer
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "ZtpIdentUiTest")).build();
 
         // Ensure that no old test data is in the way
         cleanUp();
@@ -97,7 +94,7 @@ public class ZtpIdentUiTest extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        mappingsContext.close();
+        mappingsContext.deleteAll();
 
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
         a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
