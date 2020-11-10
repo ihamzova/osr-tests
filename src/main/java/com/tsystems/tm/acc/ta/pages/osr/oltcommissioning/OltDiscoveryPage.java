@@ -23,8 +23,8 @@ public class OltDiscoveryPage {
     public static final By DISCOVERY_RESULT_SAVE_BUTTON_LOCATOR = byQaData("button-save-changes");
     public static final By OLT_SEARCH_PAGE_TAB_LOCATOR = byQaData("a-olt-search-tab");
 
-    private static final Integer TIMEOUT_FOR_OLT_DISCOVERY = 60_000;
-    private static final Integer WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE = 15_000;
+    private static final Integer TIMEOUT_FOR_OLT_DISCOVERY = 10_000;
+    private static final Integer WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE = 25_000;
 
     @Step("Validate Url")
     public void validateUrl() {
