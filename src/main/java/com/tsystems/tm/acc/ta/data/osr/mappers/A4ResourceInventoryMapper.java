@@ -4,11 +4,14 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot.getPortNumberByFunctionalPortLabel;
 
 public class A4ResourceInventoryMapper {
+
+    private final String UNDEFINED = "undefined";
 
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
@@ -122,7 +125,7 @@ public class A4ResourceInventoryMapper {
                 .state("state")
                 .supportedDiagnosesName("supportedDiagnoseName")
                 .supportedDiagnosesSpecificationVersion("supportedDiagnoseVerison")
-                .type("type")
+                .type(tpData.getSubType())
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now());
     }
@@ -157,18 +160,39 @@ public class A4ResourceInventoryMapper {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
+        VlanRangeDto vrDto = new VlanRangeDto();
+        vrDto.setVlanRangeLower(UNDEFINED);
+        vrDto.setVlanRangeUpper(UNDEFINED);
+
+        A10NspQosDto a10NspQosDto = new A10NspQosDto();
+        a10NspQosDto.setQosBandwidthDown(UNDEFINED);
+        a10NspQosDto.setQosBandwidthUp(UNDEFINED);
+        a10NspQosDto.setQosClass(UNDEFINED);
+
         return new NetworkServiceProfileA10NSPDto()
                 .uuid(nspData.getUuid())
-                .href("HREF?")
-                .specificationVersion("3")
-                .virtualServiceProvider("ein Virtual Service Provider")
+                .href("HREF")
+                .specificationVersion("1")
+                .virtualServiceProvider("a Virtual Service Provider")
                 .administrativeMode("ACTIVATED")
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointA10NSPUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NSP A10NSP created during osr-test integration test")
-                .creationTime(OffsetDateTime.now());
+                .creationTime(OffsetDateTime.now())
+                .mtuSize("1590")
+                .etherType("0x88a8")
+                .lacpActive(true)
+                .minActiveLagLinks("1")
+                .qosMode("TOLERANT")
+                .l2CcId(UNDEFINED)
+                .itAccountingKey(UNDEFINED)
+                .lacpMode(UNDEFINED)
+                .dataRate(UNDEFINED)
+                .lagId(UNDEFINED)
+                .sVlanRange(Collections.singletonList(vrDto))
+                .qosClasses(Collections.singletonList(a10NspQosDto));
     }
 
     private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
