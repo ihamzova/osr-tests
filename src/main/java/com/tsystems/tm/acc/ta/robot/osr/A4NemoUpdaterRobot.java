@@ -16,11 +16,11 @@ import org.testng.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 
 public class A4NemoUpdaterRobot {
     private static final Integer HTTP_CODE_CREATED_201 = 201;
@@ -62,7 +62,9 @@ public class A4NemoUpdaterRobot {
                         exactly(count),
                         newRequestPattern(
                                 RequestMethod.fromString(method),
-                                urlMatching(".*/logicalResource/" + uuid)));
+//                                urlMatching(".*/logicalResource/" + uuid)));
+                                urlMatching(".*" + NEMO_URL + "/" + uuid)));
+//                                urlPathEqualTo(NEMO_URL + "/" + uuid)));
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile FTTH Access has happened")
