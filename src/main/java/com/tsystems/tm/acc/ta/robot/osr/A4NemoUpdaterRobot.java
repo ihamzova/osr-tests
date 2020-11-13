@@ -45,6 +45,11 @@ public class A4NemoUpdaterRobot {
         checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 1);
     }
 
+    @Step("Check if PUT request to NEMO wiremock with logical resource has NOT happened")
+    public void checkLogicalResourcePutRequestToNemoWiremockDidntHappen(String uuid) {
+        checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 0);
+    }
+
     @Step("Check if DELETE request to NEMO wiremock with logical resource has happened")
     public void checkLogicalResourceDeleteRequestToNemoWiremock(String uuid) {
         checkLogicalResourceRequestToNemoWiremock(uuid, "DELETE", 1);
@@ -62,9 +67,7 @@ public class A4NemoUpdaterRobot {
                         exactly(count),
                         newRequestPattern(
                                 RequestMethod.fromString(method),
-//                                urlMatching(".*/logicalResource/" + uuid)));
-                                urlMatching(".*" + NEMO_URL + "/" + uuid)));
-//                                urlPathEqualTo(NEMO_URL + "/" + uuid)));
+                                urlPathEqualTo(NEMO_URL + "/" + uuid)));
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile FTTH Access has happened")
@@ -83,6 +86,15 @@ public class A4NemoUpdaterRobot {
         Assert.assertEquals(nspList.size(), 1);
 
         checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has NOT happened")
+    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(String uuidTp) {
+        List<NetworkServiceProfileA10NSPDto> nspList = a4Inventory
+                .getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1);
+
+        checkLogicalResourcePutRequestToNemoWiremockDidntHappen(nspList.get(0).getUuid());
     }
 
     @Step("Check if PUT request to NEMO wiremock with network element link has happened")
