@@ -35,6 +35,11 @@ public class AccessLineRiRobot {
         accessLineResourceInventory.fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Add FTTB access lines to olt device")
+    public void fillDatabaseAddFttbLinesToOltDevice() {
+        accessLineResourceInventory.fillDatabase().addFttbLinesToOltDevice().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Fill database with test data as a part of DPU Preprovisioning process emulation")
     public void fillDatabaseForDpuPreprovisioning() {
         accessLineResourceInventory.fillDatabase().fillDatabaseForDpuPreprovisioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));

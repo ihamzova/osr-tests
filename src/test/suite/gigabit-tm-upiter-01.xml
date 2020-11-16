@@ -47,4 +47,9 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
         </classes>
     </test>
+    <test thread-count="1" name="FTTB Deprovisioning Backend Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>
+        </classes>
+    </test>
 </suite>
