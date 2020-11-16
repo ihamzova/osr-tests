@@ -59,4 +59,24 @@ public class WgFttbAccessProvisioningRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
         log.info("Received xCallbackCorrelationId: " + uuid.toString());
     }
+
+    @Step("Start FTTB deprovisioning process for a device")
+    public void startWgFttbAccessDeprovisioningForDevice(String dpuEndSz) {
+        wgFttbAccessProvisioningClient
+                .getClient()
+                .fttbDeprovisioningController()
+                .startDeviceDeprovisioning()
+                .xCallbackCorrelationIdHeader(String.valueOf(uuid))
+                .xCallbackUrlHeader(new OCUrlBuilder("wiremock-acc")
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .xCallbackErrorUrlHeader(new OCUrlBuilder("wiremock-acc")
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .dpuEndSZQuery(dpuEndSz)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+        log.info("Received xCallbackCorrelationId: " + uuid.toString());
+    }
 }
