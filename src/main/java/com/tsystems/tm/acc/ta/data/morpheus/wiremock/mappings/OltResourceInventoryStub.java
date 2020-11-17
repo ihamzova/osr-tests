@@ -5,10 +5,10 @@ import com.tsystems.tm.acc.ta.data.morpheus.mappers.OltResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.AncpSessionDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.AncpSessionDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Port;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
