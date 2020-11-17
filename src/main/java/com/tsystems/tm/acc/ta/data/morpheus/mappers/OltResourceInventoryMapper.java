@@ -2,7 +2,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.*;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -41,7 +41,8 @@ public class OltResourceInventoryMapper {
                 .lifeCycleState(deviceState)
                 .compositePartyId(0L)
                 .equipmentHolders(getEquipmentHolders())
-                .ports(Collections.singletonList(getPort(portState)));
+                .ports(Collections.singletonList(getPort(portState)))
+                .fiberOnLocationId("1111222233334444555");
     }
 
     public Port getPort(Port.LifeCycleStateEnum portState) {
