@@ -27,6 +27,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
+@ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
 @ServiceLog(LINE_ID_GENERATOR_MS)

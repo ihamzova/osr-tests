@@ -34,4 +34,9 @@ public class DpuDevice {
     public String getEndsz() {
         return String.format("%s/%s", getVpsz(), getFsz());
     }
+
+    public int getNumberOfAccessLines(){
+        return Integer.parseInt(getPonConnectionWe()) + Integer.parseInt(getPonConnectionGe());
+    }
+
 }

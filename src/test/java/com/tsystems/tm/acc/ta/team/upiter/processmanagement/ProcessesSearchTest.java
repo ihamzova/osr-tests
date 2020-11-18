@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.data.upiter.models.process.ProcessCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
-import com.tsystems.tm.acc.ta.pages.osr.processmanagement.ProcessSearchPage;
+import com.tsystems.tm.acc.ta.pages.osr.accessprocessmanagement.ProcessSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -40,8 +40,8 @@ public class ProcessesSearchTest extends BaseTest {
 
     @Test
     @TmsLink("DIGIHUB-45514")
-    @Description("Search processes by EndSZ in Access Process Management UI")
-    public void searchProcessesByEndSzTest() {
+    @Description("Search processes by EndSZ, Slot, Port in Access Process Management UI")
+    public void searchProcessesByEndSzTest() throws Exception {
         ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
         processSearchPage.validateUrl();
         processSearchPage.searchProcessesByDevice(process)
@@ -49,17 +49,19 @@ public class ProcessesSearchTest extends BaseTest {
 
         processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
         processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
-        processSearchPage.checkPaginationSizes(processSearchPage.getPaginatorSizes());
 
-        processSearchPage.clickFirstRowExpansion();
-        Process foundProcess = processSearchPage.collectDataFromRowExpansion();
-        processSearchPage.checkRowExpansionData(foundProcess, process);
+        processSearchPage.sortTableByStartTimeDescending();
+        Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
+        processSearchPage.checkMainProcess(foundProcess, process);
+
+        processSearchPage.clickOpenSubprocessesButton(0);
+        processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
     }
 
     @Test
     @TmsLink("DIGIHUB-44044")
     @Description("Search processes by ProcessId in Access Process Management UI")
-    public void searchProcessesByProcessIdTest() {
+    public void searchProcessesByProcessIdTest() throws Exception {
 
         ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
         processSearchPage.validateUrl();
@@ -68,28 +70,27 @@ public class ProcessesSearchTest extends BaseTest {
 
         processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
         processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
-        processSearchPage.checkPaginationSizes(processSearchPage.getPaginatorSizes());
-        processSearchPage.clickFirstRowExpansion();
-        Process foundProcess = processSearchPage.collectDataFromRowExpansion();
-        processSearchPage.checkRowExpansionData(foundProcess, process);
+        Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
+        processSearchPage.checkMainProcess(foundProcess, process);
+        processSearchPage.clickOpenSubprocessesButton(0);
+        processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
     }
 
     @Test
     @TmsLink("DIGIHUB-44044")
     @Description("Search processes by ProcessId in Access Process Management UI and restore it")
-    public void restoreProcessTest() {
+    public void srestoreProcessTest() throws Exception {
         ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
         processSearchPage.validateUrl();
         processSearchPage.searchProcessesByProcessId(processUuid).clickSearchButton();
 
-        Process initialProcess = processSearchPage.getTableLines().get(0);
+        Process initialProcess = processSearchPage.getInfoForMainProcesses().get(0);
 
-        processSearchPage.clickRestartForFirstProcess();
+        processSearchPage.clickRestartButton(0);
         processSearchPage.checkConfirmationDialog();
-        processSearchPage.clickOkInConfirmationDialog().clickSearchButton();
+        processSearchPage.clickOkInConfirmationDialog();
 
-        Process restoredProcess = processSearchPage.getTableLines().get(0);
-
+        Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
         processSearchPage.checkRestoredProcess(restoredProcess, initialProcess);
     }
 }

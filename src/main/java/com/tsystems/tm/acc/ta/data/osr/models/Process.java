@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Process {
-    private String processId;
-    private String processInfo;
-    private String startTime;
-    private String endTime;
-    private String state;
+    private String processName;
     private String endSz;
     private String slotNumber;
     private String portNumber;
+    private String lineId;
+    private String startTime;
+    private String endTime;
+    private String duration;
+    private String state;
+    private String processId;
 }
