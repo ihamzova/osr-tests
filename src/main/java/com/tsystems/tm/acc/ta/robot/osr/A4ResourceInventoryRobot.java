@@ -123,7 +123,13 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check if one Network Service Profile A10NSP connected to Termination Point exists")
     public void checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
-        List<NetworkServiceProfileA10NSPDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
+        List<NetworkServiceProfileA10NspDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
+    }
+
+    @Step("Check if one Network Service Profile L2BSA connected to Termination Point exists")
+    public void checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
+        List<NetworkServiceProfileL2BsaDto> nspList = getNetworkServiceProfilesL2BsaByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
     }
 
@@ -140,7 +146,16 @@ public class A4ResourceInventoryRobot {
     public void deleteNetworkServiceProfileA10Nsp(String uuid) {
         a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
-                .deleteNetworkServiceProfileA10NSP()
+                .deleteNetworkServiceProfileA10Nsp()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Delete existing Network Service Profile (L2BSA) from A4 resource inventory")
+    public void deleteNetworkServiceProfileL2Bsa(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .deleteNetworkServiceProfileL2Bsa()
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
@@ -156,10 +171,19 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete all Network Service Profiles (A10NSP) connected to given Termination Point")
     public void deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(String uuidTp) {
-        List<NetworkServiceProfileA10NSPDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
+        List<NetworkServiceProfileA10NspDto> nspList = getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
 
         nspList.forEach(nsp ->
                 deleteNetworkServiceProfileA10Nsp(nsp.getUuid())
+        );
+    }
+
+    @Step("Delete all Network Service Profiles (L2BSA) connected to given Termination Point")
+    public void deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(String uuidTp) {
+        List<NetworkServiceProfileL2BsaDto> nspList = getNetworkServiceProfilesL2BsaByTerminationPoint(uuidTp);
+
+        nspList.forEach(nsp ->
+                deleteNetworkServiceProfileL2Bsa(nsp.getUuid())
         );
     }
 
@@ -173,10 +197,10 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Get Network Service Profiles (A10NSP) by UUID")
-    public NetworkServiceProfileA10NSPDto getNetworkServiceProfileA10NspByUuid(String uuid) {
+    public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspByUuid(String uuid) {
         return a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfileA10NSP()
+                .findNetworkServiceProfileA10Nsp()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -191,14 +215,22 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Get a list of Network Service Profiles A10NSP by Termination Point UUID")
-    public List<NetworkServiceProfileA10NSPDto> getNetworkServiceProfilesA10NspByTerminationPoint(String uuidTp) {
+    public List<NetworkServiceProfileA10NspDto> getNetworkServiceProfilesA10NspByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfilesA10NSP()
+                .findNetworkServiceProfilesA10Nsp()
                 .terminationPointUuidQuery(uuidTp)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get a list of Network Service Profiles L2BSA by Termination Point UUID")
+    public List<NetworkServiceProfileL2BsaDto> getNetworkServiceProfilesL2BsaByTerminationPoint(String uuidTp) {
+        return a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .findNetworkServiceProfilesL2Bsa()
+                .terminationPointUuidQuery(uuidTp)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
     @Step("Get a list of Network Service Profiles by LineId")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByLineId(String lineId) {
@@ -309,10 +341,10 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Get existing Network Service Profile (A10NSP) by UUID")
-    public NetworkServiceProfileA10NSPDto getExistingNetworkServiceProfileA10Nsp(String uuid) {
+    public NetworkServiceProfileA10NspDto getExistingNetworkServiceProfileA10Nsp(String uuid) {
         return a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfileA10NSP()
+                .findNetworkServiceProfileA10Nsp()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -369,7 +401,7 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check that lifecycle state and operational state have been updated for network service profile (A10NSP)")
     public void checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(A4NetworkServiceProfileA10Nsp nspA10Data, String expectedNewOperationalState, String expectedNewLifecycleState) {
-        NetworkServiceProfileA10NSPDto networkServiceProfileA10NspDto = getExistingNetworkServiceProfileA10Nsp(nspA10Data.getUuid());
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = getExistingNetworkServiceProfileA10Nsp(nspA10Data.getUuid());
 
         assertEquals(networkServiceProfileA10NspDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileA10NspDto.getOperationalState(), expectedNewOperationalState);
@@ -435,6 +467,7 @@ public class A4ResourceInventoryRobot {
                 List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
 
                 tpList.forEach(tp -> {
+                    deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
                     deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
                     deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
                     deleteTerminationPoint(tp.getUuid());
@@ -561,12 +594,25 @@ public class A4ResourceInventoryRobot {
 
     @Step("Create new NetworkServiceProfileA10NSP in A4 resource inventory")
     public void createNetworkServiceProfileA10Nsp(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
-        NetworkServiceProfileA10NSPDto nspDto = new A4ResourceInventoryMapper()
+        NetworkServiceProfileA10NspDto nspDto = new A4ResourceInventoryMapper()
                 .getNetworkServiceProfileA10NspDto(nspData, tpData);
 
         a4ResourceInventory
                 .networkServiceProfilesA10Nsp()
-                .createOrUpdateNetworkServiceProfileA10NSP()
+                .createOrUpdateNetworkServiceProfileA10Nsp()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new NetworkServiceProfileL2Bsa in A4 resource inventory")
+    public void createNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
+        NetworkServiceProfileL2BsaDto nspDto = new A4ResourceInventoryMapper()
+                .getNetworkServiceProfileL2BsaDto(nspData, tpData);
+
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .createOrUpdateNetworkServiceProfileL2Bsa()
                 .body(nspDto)
                 .uuidPath(nspData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));

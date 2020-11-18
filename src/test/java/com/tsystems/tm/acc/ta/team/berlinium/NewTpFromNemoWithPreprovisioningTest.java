@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
@@ -42,6 +43,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpFtthData;
     private A4TerminationPoint tpA10Data;
+    private A4TerminationPoint tpL2Data;
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
@@ -58,6 +60,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         tpA10Data = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+        tpL2Data = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -114,6 +118,20 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
     }
 
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with L2BSA Preprovisioning")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point with L2BSA Preprovisioning")
+    public void newTpWithL2BsaPreprovisioning() throws InterruptedException {
+        // WHEN / Action
+        a4ResourceInventoryService.createTerminationPoint(tpL2Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(tpL2Data.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremock(tpL2Data.getUuid());
+    }
+
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (A10NSP) with TP and NSP already existing in inventory")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
@@ -134,6 +152,26 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
     }
 
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP and NSP already existing in inventory")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point (L2BSA) with TP and NSP already existing in inventory")
+    public void newTpWithL2BsaPreprovisioningWithExistingTerminationPointAndNsp() throws InterruptedException {
+        // GIVEN /Arrange
+        A4NetworkServiceProfileL2Bsa nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
+                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+        a4ResourceInventory.createTerminationPoint(tpL2Data,nepData);
+        a4ResourceInventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2Data);
+
+        // WHEN / Action
+        a4ResourceInventoryService.createTerminationPoint(tpL2Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(tpL2Data.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(tpL2Data.getUuid());
+    }
+
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (A10NSP) with TP already existing in inventory, NSP not existing")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
@@ -149,6 +187,23 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP already existing in inventory, NSP not existing")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point (L2BSA) with TP already existing in inventory, NSP not existing")
+    public void newTpWithL2BsaPreprovisioningWithExistingTerminationPoint() throws InterruptedException {
+        // GIVEN /Arrange
+        a4ResourceInventory.createTerminationPoint(tpL2Data,nepData);
+
+        // WHEN / Action
+        a4ResourceInventoryService.createTerminationPoint(tpL2Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(tpL2Data.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremock(tpL2Data.getUuid());
     }
 
 }

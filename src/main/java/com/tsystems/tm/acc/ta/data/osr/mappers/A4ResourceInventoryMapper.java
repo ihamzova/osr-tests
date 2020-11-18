@@ -4,7 +4,9 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot.getPortNumberByFunctionalPortLabel;
@@ -156,7 +158,7 @@ public class A4ResourceInventoryMapper {
                 .creationTime(OffsetDateTime.now());
     }
 
-    public NetworkServiceProfileA10NSPDto getNetworkServiceProfileA10NspDto(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
+    public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspDto(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
@@ -169,7 +171,7 @@ public class A4ResourceInventoryMapper {
         a10NspQosDto.setQosBandwidthUp(UNDEFINED);
         a10NspQosDto.setQosClass(UNDEFINED);
 
-        return new NetworkServiceProfileA10NSPDto()
+        return new NetworkServiceProfileA10NspDto()
                 .uuid(nspData.getUuid())
                 .href("HREF")
                 .specificationVersion("1")
@@ -177,7 +179,7 @@ public class A4ResourceInventoryMapper {
                 .administrativeMode("ACTIVATED")
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
-                .terminationPointA10NSPUuid(tpData.getUuid())
+                .terminationPointA10NspUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NSP A10NSP created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
@@ -193,6 +195,42 @@ public class A4ResourceInventoryMapper {
                 .lagId(UNDEFINED)
                 .sVlanRange(Collections.singletonList(vrDto))
                 .qosClasses(Collections.singletonList(a10NspQosDto));
+    }
+
+    public NetworkServiceProfileL2BsaDto getNetworkServiceProfileL2BsaDto(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
+        if (nspData.getUuid().isEmpty())
+            nspData.setUuid(UUID.randomUUID().toString());
+
+        L2BsaQosDto l2BsaQosDto = new L2BsaQosDto();
+        l2BsaQosDto.setQosBandwidthUp(UNDEFINED);
+        l2BsaQosDto.setQosBandwidthDown(UNDEFINED);
+        l2BsaQosDto.setQosPbit(UNDEFINED);
+
+        List<L2BsaQosDto> l2BsaQosDtoList = new ArrayList<>();
+        l2BsaQosDtoList.add(l2BsaQosDto);
+
+        ServiceBandwidthDto serviceBandwidthDto = new ServiceBandwidthDto();
+        serviceBandwidthDto.setDataRateUp(UNDEFINED);
+        serviceBandwidthDto.setDataRateDown(UNDEFINED);
+
+        List<ServiceBandwidthDto> serviceBandwidthDtoList = new ArrayList<>();
+        serviceBandwidthDtoList.add(serviceBandwidthDto);
+
+        return new NetworkServiceProfileL2BsaDto()
+                .uuid(nspData.getUuid())
+                .href("HREF")
+                .specificationVersion("1")
+                .virtualServiceProvider("a Virtual Service Provider")
+                .administrativeMode("ACTIVATED")
+                .operationalState(nspData.getOperationalState())
+                .lifecycleState(nspData.getLifecycleState())
+                .terminationPointL2BsaUuid(tpData.getUuid())
+                .lastUpdateTime(OffsetDateTime.now())
+                .description("NSP L2BSA created during osr-test integration test")
+                .creationTime(OffsetDateTime.now())
+//                .nspAccess("123") // skip this because optional
+                .activeQosClasses(l2BsaQosDtoList)
+                .serviceBandwidth(serviceBandwidthDtoList);
     }
 
     private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
