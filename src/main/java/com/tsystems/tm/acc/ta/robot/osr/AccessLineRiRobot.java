@@ -69,8 +69,8 @@ public class AccessLineRiRobot {
     public void checkPortParametersForLines(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
-            timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
+            Supplier<Boolean> checkFtthProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            timeoutBlock.addBlock(checkFtthProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
@@ -125,14 +125,14 @@ public class AccessLineRiRobot {
     public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == numberOfAccessLinesForProvisioning;
             timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
         List<AccessLineDto> accessLines = getAccessLines(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "AccessLines count");
+        Assert.assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
 
         long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
                 .filter(fttbNeProfile -> fttbNeProfile != null && FttbNeProfileDto.StateOltEnum.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
@@ -152,13 +152,13 @@ public class AccessLineRiRobot {
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
                 map(OnuAccessId::getOnuAccessId).sorted().collect(Collectors.toList());
 
-        Assert.assertEquals(countFttbNeOltStateActive, port.getFttbNEProfilesActive().intValue(),
+        Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Olt State) count is incorrect");
-        Assert.assertEquals(countFttbNeMosaicActive, port.getFttbNEProfilesActive().intValue(),
+        Assert.assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Mosaic State) count is incorrect");
-        Assert.assertEquals(countDefaultNetworkLineProfilesActive, port.getDefaultNetworkLineProfilesActive().intValue(),
+        Assert.assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning,
                 "Default NetworkLine Profile count is incorrect");
-        Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
+        Assert.assertEquals(countAccessLinesWG, numberOfAccessLinesForProvisioning,
                 "WG AccessLines count is incorrect");
         Assert.assertEquals(onuAccessIds, expectedOnuIdsList,
                 "OnuAccessIds are incorrect");

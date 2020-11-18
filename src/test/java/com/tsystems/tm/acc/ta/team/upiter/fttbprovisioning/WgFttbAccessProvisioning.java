@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning;
 
-import com.tsystems.tm.acc.data.upiter.models.dpu.DpuCase;
+import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -11,7 +11,6 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +26,7 @@ public class WgFttbAccessProvisioning extends BaseTest {
 
     private WgFttbAccessProvisioningRobot wgFttbAccessProvisioningRobot;
     private AccessLineRiRobot accessLineRiRobot;
-    private Dpu dpuDeviceFttbProvisioning;
+    private DpuDevice dpuDeviceFttbProvisioning;
     private PortProvisioning oltDeviceFttbProvisioning;
     private int numberOfAccessLinesForProvisioning;
 
@@ -38,10 +37,10 @@ public class WgFttbAccessProvisioning extends BaseTest {
         accessLineRiRobot.fillDatabaseForDpuPreprovisioning();
     }
 
-    @AfterMethod
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
+//    @AfterMethod
+//    public void clearData() {
+//        accessLineRiRobot.clearDatabase();
+//    }
 
     @BeforeClass
     public void init() {
@@ -49,9 +48,12 @@ public class WgFttbAccessProvisioning extends BaseTest {
         accessLineRiRobot = new AccessLineRiRobot();
 
         UpiterTestContext context = UpiterTestContext.get();
-        dpuDeviceFttbProvisioning = context.getData().getDpuDataProvider().get(DpuCase.dpuDeviceForFttbProvisioning);
+        dpuDeviceFttbProvisioning = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioning);
         oltDeviceFttbProvisioning = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioning);
-        numberOfAccessLinesForProvisioning = oltDeviceFttbProvisioning.getAccessLinesWG();
+        numberOfAccessLinesForProvisioning = dpuDeviceFttbProvisioning.getNumberOfAccessLines();
+        if (numberOfAccessLinesForProvisioning > 16) {
+            numberOfAccessLinesForProvisioning = 16;
+        }
     }
 
     @Test
@@ -59,7 +61,7 @@ public class WgFttbAccessProvisioning extends BaseTest {
     @Description("FTTB Provisioning for a Device")
     public void fttbDeviceProvisioningTest() {
         accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioning);
-        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioning.getEndSz());
+        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioning.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioning, numberOfAccessLinesForProvisioning);
     }
 }
