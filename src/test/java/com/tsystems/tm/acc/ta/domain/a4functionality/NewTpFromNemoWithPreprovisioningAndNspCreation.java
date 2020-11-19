@@ -78,7 +78,11 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     @AfterMethod
     public void cleanup() {
         a4PreProvisioning.clearData();
-        a4Inventory.deleteA4TestData(negData, neData);
+
+        // TODO: Replace the following line with the commented one below when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
+        a4Inventory.deleteA4TestDataExceptL2BSA(negData, neData);
+
+//        a4Inventory.deleteA4TestData(negData, neData);
     }
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
