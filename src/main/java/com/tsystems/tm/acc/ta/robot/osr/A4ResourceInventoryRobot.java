@@ -431,6 +431,13 @@ public class A4ResourceInventoryRobot {
         deleteNetworkElementGroups(negData.getName());
     }
 
+    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
+    @Step("Delete A4 test data without L2BSA")
+    public void deleteA4TestDataExceptL2BSA(A4NetworkElementGroup negData, A4NetworkElement neData) {
+        deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(neData);
+        deleteNetworkElementGroups(negData.getName());
+    }
+
     @Step("Get a list of Network Element Groups by name")
     // As name is unique constraint, the list will have either 0 or 1 entries
     public List<NetworkElementGroupDto> getNetworkElementGroupsByName(String name) {
@@ -455,6 +462,12 @@ public class A4ResourceInventoryRobot {
         deleteA4NetworkElementsIncludingChildren(neData.getVpsz(), neData.getFsz());
     }
 
+    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
+    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs, except for L2BSA")
+    public void deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(A4NetworkElement neData) {
+        deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(neData.getVpsz(), neData.getFsz());
+    }
+
     @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
     public void deleteA4NetworkElementsIncludingChildren(String vpsz, String fsz) {
         List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
@@ -470,6 +483,32 @@ public class A4ResourceInventoryRobot {
                     deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
                     deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
                     deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
+                    deleteTerminationPoint(tp.getUuid());
+                });
+
+                deleteNetworkElementPort(nep.getUuid());
+            });
+
+            deleteNetworkElement(ne.getUuid());
+        });
+    }
+
+    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
+    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
+    public void deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(String vpsz, String fsz) {
+        List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
+
+        neList.forEach(ne -> {
+            List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+
+            nepList.forEach(nep -> {
+                deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
+                List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
+
+                tpList.forEach(tp -> {
+//                    deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
+                    deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
+//                    deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
                     deleteTerminationPoint(tp.getUuid());
                 });
 
