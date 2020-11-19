@@ -96,13 +96,8 @@ public class ZtpIdentUiTest extends BaseTest {
     public void cleanUp() {
         mappingsContext.deleteAll();
 
-        // TODO: Replace the following two lines with the commented ones below when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(a4NetworkElementA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(a4NetworkElementB);
-
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
-//        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
-
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
