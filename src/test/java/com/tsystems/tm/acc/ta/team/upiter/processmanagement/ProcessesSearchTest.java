@@ -76,10 +76,10 @@ public class ProcessesSearchTest extends BaseTest {
         processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
     }
 
-    @Test
+    @Test(dependsOnMethods = {"searchProcessesByEndSzTest", "searchProcessesByProcessIdTest"})
     @TmsLink("DIGIHUB-44044")
     @Description("Search processes by ProcessId in Access Process Management UI and restore it")
-    public void srestoreProcessTest() throws Exception {
+    public void restoreProcessTest() throws Exception {
         ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
         processSearchPage.validateUrl();
         processSearchPage.searchProcessesByProcessId(processUuid).clickSearchButton();

@@ -59,7 +59,10 @@ public class OntOltOrchestratorRobot {
         ReserveLineByHomeIdResultV2 result = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), ReserveLineByHomeIdResultV2.class);
         // TODO: add error check
-        return result.getResponse().getLineId();
+        if (result.isSuccess() && result.getResponse() != null) {
+            return result.getResponse().getLineId();
+        } else
+            return result.getError().getMessage();
     }
 
     @Step("Send request to create ONT resource")
@@ -88,8 +91,13 @@ public class OntOltOrchestratorRobot {
 
         CommissioningResult result = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), CommissioningResult.class);
-        Assert.assertNotNull(result.getResponse().getLineId(),"Cannot get lineId from callback");
+        Assert.assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
         Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
+
+        if (result.isSuccess() && result.getResponse() != null) {
+            result.getResponse().getLineId();
+        } else
+            result.getError().getMessage();
     }
 
     @Step("Send request to test ONT state")
@@ -108,7 +116,8 @@ public class OntOltOrchestratorRobot {
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .lineIdPath(lineId);
+                .lineIdPath(lineId)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
     }
 
@@ -158,6 +167,32 @@ public class OntOltOrchestratorRobot {
         ReserveLineByHomeIdResultV2 result = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), ReserveLineByHomeIdResultV2.class);
 
-        return result.getResponse().getLineId();
+        if (result.isSuccess() && result.getResponse() != null) {
+            return result.getResponse().getLineId();
+        } else
+            return result.getError().getMessage();
+    }
+
+
+    @Step("Change ONT serial number")
+    public void changeOntSerialNumber(AccessLine accessLine, String newSerialNumber) {
+        CORRELATION_ID = UUID.randomUUID().toString();
+        ontOltOrchestratorClient
+                .getClient()
+                .ontOltOrchestratorV2()
+                .changeOntSerialNumberV2()
+                .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
+                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .lineIdPath(accessLine.getLineId())
+                .newSerialNumberQuery(newSerialNumber)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+        log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
     }
 }
