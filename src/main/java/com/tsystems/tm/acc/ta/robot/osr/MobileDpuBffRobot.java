@@ -15,7 +15,7 @@ public class MobileDpuBffRobot {
 
     @Step("Returns a WorkorderResponse determined by given Workorder-Id.")
 
-public void getWorkorder (String woid){
+public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
                 .woIdPath(woid)
