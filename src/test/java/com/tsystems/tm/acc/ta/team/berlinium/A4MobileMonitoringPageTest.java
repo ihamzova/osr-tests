@@ -152,5 +152,4 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
 
-
 }

@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RebellMapper {
+
     public List<Ueweg> getUewegList(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
         String endSzA = neA.getVpsz() + "/" + neA.getFsz();
         endSzA = endSzA.replace("/", "_");
@@ -52,4 +53,5 @@ public class RebellMapper {
                                 .nkz("ignored")
                                 .vkz("ignored"))));
     }
+
 }

@@ -32,6 +32,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(A4_INVENTORY_IMPORTER_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
 public class ZtpIdentUiTest extends BaseTest {
+
     private static final int WAIT_TIME = 5_000;
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();

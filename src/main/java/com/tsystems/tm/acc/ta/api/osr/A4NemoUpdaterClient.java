@@ -16,7 +16,8 @@ import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
 @Getter
 public class A4NemoUpdaterClient implements Resetable {
-    private ApiClient client;
+
+    private final ApiClient client;
 
     public A4NemoUpdaterClient() {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
@@ -34,4 +35,5 @@ public class A4NemoUpdaterClient implements Resetable {
     @Override
     public void reset() {
     }
+
 }

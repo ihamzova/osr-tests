@@ -35,6 +35,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(A4_NEMO_UPDATER_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
+
     private static final int WAIT_TIME = 15_000;
     private long SLEEP_TIMER = 15; // in seconds
 

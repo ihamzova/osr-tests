@@ -14,6 +14,4 @@ public class A4MobileInbetriebnahmePage {
     @Getter
     public static final By ZTPIDENT_FIELD_LOCATOR = By.id("ztpiFromForm");
 
-
-
 }

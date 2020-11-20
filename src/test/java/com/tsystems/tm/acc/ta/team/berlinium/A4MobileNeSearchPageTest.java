@@ -275,6 +275,4 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
     }
 
-
-
 }

@@ -17,10 +17,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 
 public class A4NemoUpdaterRobot {
-    private static final Integer HTTP_CODE_CREATED_201 = 201;
 
     private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient().getClient();
 
@@ -157,4 +157,5 @@ public class A4NemoUpdaterRobot {
         //if so delivery by AMQ-consumer was successful
         uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
     }
+
 }

@@ -90,4 +90,5 @@ public class A4NemoUpdateTest extends ApiTest {
         // THEN / Assert
         a4NemoUpdater.checkLogicalResourceDeleteRequestToNemoWiremock(uuid);
     }
+
 }

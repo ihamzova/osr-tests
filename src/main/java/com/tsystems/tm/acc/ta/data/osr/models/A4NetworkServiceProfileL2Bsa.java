@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class A4NetworkServiceProfileL2Bsa {
+
     private String uuid;
     private String operationalState;
     private String lifecycleState;
+
 }

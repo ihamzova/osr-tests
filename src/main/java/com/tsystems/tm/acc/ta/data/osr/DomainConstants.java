@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr;
 
 public interface DomainConstants {
+
     String LINE_ID_GENERATOR_MS = "line-id-generator";
     String HOME_ID_GENERATOR_MS = "home-id-generator";
     String WG_ACCESS_PROVISIONING_MS = "wg-access-provisioning";
@@ -31,4 +32,5 @@ public interface DomainConstants {
     String A4_NEMO_UPDATER_MS = "a4-nemo-updater";
     String DECOUPLING_MS = "decoupling-component";
     String APIGW_MS = "apigw";
+
 }

@@ -31,6 +31,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
 @ServiceLog(A4_NEMO_UPDATER_MS)
 public class A4ImportCsvTest extends BaseTest {
+
     private final OsrTestContext context = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
@@ -78,4 +79,5 @@ public class A4ImportCsvTest extends BaseTest {
         a4ResourceInventoryImporterUiRobot.checkNetworkElementsViaUi(csvData);
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
     }
+
 }

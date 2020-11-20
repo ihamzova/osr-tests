@@ -35,4 +35,5 @@ public class A4ResourceInventoryServiceClient implements Resetable {
     @Override
     public void reset() {
     }
+
 }

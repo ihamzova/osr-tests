@@ -45,11 +45,15 @@ public class A4ResilienceRobot {
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Environment {
+
     Property property;
+
 }
 
 @Getter
 class Property {
+
     String source;
     String value;
+
 }

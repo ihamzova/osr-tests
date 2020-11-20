@@ -13,11 +13,9 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 
 public class A4ResourceInventoryServiceRobot {
-    private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer HTTP_CODE_CREATED_201 = 201;
-    private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
 
     private static final String INVALID_OPERATIONAL_STATE = "grmblfx";
 
@@ -194,4 +192,5 @@ public class A4ResourceInventoryServiceRobot {
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
         Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
     }
+
 }
