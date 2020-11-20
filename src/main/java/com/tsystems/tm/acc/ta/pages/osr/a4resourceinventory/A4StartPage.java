@@ -27,7 +27,7 @@ public class A4StartPage {
     public A4StartPage validate() {
         $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).waitUntil(visible, 3000);
         $(TO_INSTALLATION_BUTTON).waitUntil(visible, 3000);
-        assertContains(url(), A4_RESOURCE_INVENTORY_UI_MS);
+        assertContains(url(), ENDPOINT);
         return this;
     }
 
