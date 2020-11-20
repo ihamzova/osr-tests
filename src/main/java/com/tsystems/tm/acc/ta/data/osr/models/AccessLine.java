@@ -16,4 +16,5 @@ public class AccessLine {
     private String portNumber;
     private String homeId;
     private String lineId;
+    private int partyId;
 }

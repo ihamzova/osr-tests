@@ -20,6 +20,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.cli
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -58,10 +59,10 @@ public class AccessLinesSearchTest extends BaseTest {
         prepareData();
     }
 
-//    @AfterClass
-//    public void clearData() {
-//        accessLineRiRobot.clearDatabase();
-//    }
+    @AfterClass
+    public void clearData() {
+        accessLineRiRobot.clearDatabase();
+    }
 
     @Test
     @TmsLink("DIGIHUB-39501")
