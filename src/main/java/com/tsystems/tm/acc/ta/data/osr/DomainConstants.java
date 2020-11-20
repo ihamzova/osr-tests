@@ -23,4 +23,12 @@ public interface DomainConstants {
     String ANCP_CONFIGURATION_MS = "ancp-configuration";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
     String A10NSP_INVENTORY_MS = "a10nsp-inventory";
+    String A4_RESOURCE_INVENTORY_BFF_PROXY_MS = "a4-resource-inventory-bff-proxy";
+    String A4_RESOURCE_INVENTORY_UI_MS = "a4-resource-inventory-ui";
+    String A4_RESOURCE_INVENTORY_SERVICE_MS = "a4-resource-inventory-service";
+    String A4_RESOURCE_INVENTORY_MS = "a4-resource-inventory";
+    String A4_INVENTORY_IMPORTER_MS = "a4-inventory-importer";
+    String A4_NEMO_UPDATER_MS = "a4-nemo-updater";
+    String DECOUPLING_MS = "decoupling-component";
+    String APIGW_MS = "apigw";
 }
