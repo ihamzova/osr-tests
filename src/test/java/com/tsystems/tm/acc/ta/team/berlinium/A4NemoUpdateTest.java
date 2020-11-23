@@ -18,10 +18,11 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_NEMO_UPDATER_MS)
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
 @TmsLink("DIGIHUB-xxxxx")
@@ -89,4 +90,5 @@ public class A4NemoUpdateTest extends ApiTest {
         // THEN / Assert
         a4NemoUpdater.checkLogicalResourceDeleteRequestToNemoWiremock(uuid);
     }
+
 }

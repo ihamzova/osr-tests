@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class A4ResourceInventoryServiceV4Robot {
-    private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
 
-    private ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client().getClient();
+    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client().getClient();
 
     @Step("Read all Network Elements as list from v4 API")
     public List<NetworkElement> getAllNetworkElementsV4() {

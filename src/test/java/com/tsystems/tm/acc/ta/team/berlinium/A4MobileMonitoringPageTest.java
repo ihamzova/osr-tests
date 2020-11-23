@@ -26,12 +26,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.*;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_UI)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
-@ServiceLog(A4_INVENTORY_IMPORTER)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
+@ServiceLog(A4_INVENTORY_IMPORTER_MS)
 @Slf4j
 public class A4MobileMonitoringPageTest extends BaseTest {
 
@@ -151,6 +151,5 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
-
 
 }

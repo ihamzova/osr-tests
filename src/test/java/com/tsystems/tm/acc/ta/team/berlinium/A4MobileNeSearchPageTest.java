@@ -32,14 +32,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_UI)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
-@ServiceLog(A4_INVENTORY_IMPORTER)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
+@ServiceLog(A4_INVENTORY_IMPORTER_MS)
 @Slf4j
 public class A4MobileNeSearchPageTest extends BaseTest {
 
@@ -274,7 +274,5 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
     }
-
-
 
 }

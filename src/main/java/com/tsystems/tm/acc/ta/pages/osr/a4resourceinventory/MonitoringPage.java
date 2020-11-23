@@ -14,6 +14,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
 public class MonitoringPage {
+
     public static final String ENDPOINT = "/monitoring";
 
     public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("//h2[contains(text(),'NetworkElement Status-Monitoring')]");
@@ -34,4 +35,5 @@ public class MonitoringPage {
         assertContains($(NETWORK_ELEMENT_TABLE).getText(), neData.getFsz());
         assertContains($(ZTP_FIELD).getText(), ztpIdent);
     }
+
 }

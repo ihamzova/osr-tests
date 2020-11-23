@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class PreProvisioningMapper {
+
     public NetworkServiceProfileFtthAccessDto getNetworkServiceProfile() {
 
         return new NetworkServiceProfileFtthAccessDto()
@@ -23,4 +24,5 @@ public class PreProvisioningMapper {
                 .creationTime(OffsetDateTime.now())
                 .terminationPointFtthAccessUuid("{{jsonPath request.body '$.tpRef'}}");
     }
+
 }

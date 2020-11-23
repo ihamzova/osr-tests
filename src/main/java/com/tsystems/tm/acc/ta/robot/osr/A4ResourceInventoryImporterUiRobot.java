@@ -3,25 +3,20 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4StartPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.InstallationPage;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-import static com.codeborne.selenide.Selenide.open;
-
 @Slf4j
 public class A4ResourceInventoryImporterUiRobot {
-    private A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
+
+    private final A4ImportCsvRobot a4ImportCsvRobot = new A4ImportCsvRobot();
 
     @Step("Open UI, log in, and search for existing Network Element")
     public void openNetworkElement(A4NetworkElement neData) {

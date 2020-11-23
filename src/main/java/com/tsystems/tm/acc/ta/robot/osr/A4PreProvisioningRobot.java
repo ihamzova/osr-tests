@@ -6,12 +6,14 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
 import io.qameta.allure.Step;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
+import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub.ACCESS_LINE_URL;
 
 public class A4PreProvisioningRobot {
-    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
-    private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
+
+    private final AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+    private final WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
 
     @Step("Check results")
     public void checkResults(PortProvisioning port) {
@@ -37,6 +39,7 @@ public class A4PreProvisioningRobot {
                 .retrieve(
                         newRequestPattern(
                                 RequestMethod.POST,
-                                urlMatching(".*/v1/a4/accessLines")));
+                                urlPathEqualTo(ACCESS_LINE_URL)));
     }
+
 }

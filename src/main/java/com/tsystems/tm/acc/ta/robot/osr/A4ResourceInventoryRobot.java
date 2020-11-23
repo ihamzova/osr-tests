@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static org.testng.Assert.assertEquals;
 
 public class A4ResourceInventoryRobot {
-    private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer HTTP_CODE_NO_CONTENT_204 = 204;
 
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
 

@@ -13,14 +13,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
 @Epic("OS&R domain")
 @Feature("Accessing entries in a4-resource-inventory via the a4-resource-inventory-service as logical resource objects")
 @TmsLink("DIGIHUB-57771")
 public class A4ResourceInventoryServiceTest extends ApiTest {
+
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();

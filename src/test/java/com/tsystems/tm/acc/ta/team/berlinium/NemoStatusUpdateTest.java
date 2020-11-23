@@ -17,14 +17,15 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOURCE_INVENTORY;
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.A4_RESOURCE_INVENTORY_SERVICE;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
 @Epic("OS&R domain")
 @Feature("Status update requests from NEMO for different A4 network element types")
 public class NemoStatusUpdateTest {
+
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot nemo = new A4ResourceInventoryServiceRobot();

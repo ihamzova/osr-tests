@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class A4NetworkElement {
+
     private String uuid;
     private String vpsz;
     private String fsz;
@@ -14,4 +15,5 @@ public class A4NetworkElement {
     private String type;
     private String plannedMatNr;
     private String planningDeviceName;
+
 }

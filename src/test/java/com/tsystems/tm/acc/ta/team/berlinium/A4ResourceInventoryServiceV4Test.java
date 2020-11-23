@@ -16,11 +16,13 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
 public class A4ResourceInventoryServiceV4Test extends ApiTest {
+
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceV4Robot a4ResourceInventoryServiceV4Robot = new A4ResourceInventoryServiceV4Robot();
