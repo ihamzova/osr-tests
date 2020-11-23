@@ -21,7 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
 
 public class AccessLineRiRobot {
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 200_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
 
