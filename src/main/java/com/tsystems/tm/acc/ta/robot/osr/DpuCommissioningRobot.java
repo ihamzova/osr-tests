@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoBrowserFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.api.DpuCommissioningApi;
@@ -27,6 +30,8 @@ public class DpuCommissioningRobot {
     private DpuCommissioningClient dpuCommissioningClient;
     public String businessKey;
     public String id;
+
+   // private  final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning","VfynslyzImAD3LKW");
 
     @Step("Start dpuCommissioning")
     public UUID startProcess(String endsz) {

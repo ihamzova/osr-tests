@@ -1,10 +1,14 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
+import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.invoker.GsonObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -25,6 +29,18 @@ public class DpuCommissioningClient implements Resetable {
                         .addFilter(new RequestLoggingFilter())
                         .addFilter(new ResponseLoggingFilter())
                         .setBaseUri(new OCUrlBuilder("dpu-commissioning").buildUri())));
+    }
+
+    public DpuCommissioningClient(AuthTokenProvider tokenProvider) {
+        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
+                () -> RequestSpecBuilders.getDefaultWithAuth(
+                        GsonObjectMapper.gson(),
+                        new OCUrlBuilder("dpu-commissioning")
+                                .withoutSuffix()
+                                .withoutAuth()
+                                .buildExternalUri(),
+                        new BearerHeaderAuthTokenInjector(tokenProvider))
+        ));
     }
 
     public static JSON json() {

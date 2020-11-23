@@ -468,6 +468,13 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addWorkorderDpuInstallationStub(){
+        addGetWorkorderStub();
+        addPatchInProgressWorkorderStub();
+        addPatchCreatedWorkorderStub();
+        return this;
+    }
+
     // 1_OLT_RI_GET_DeviceDPU.json
     public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceStub(Dpu dpu, boolean success) {
         if (success) {
@@ -748,6 +755,21 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         } else {
             context.add(new WgAccessProvisioningStub().postPortProvisioning400(olt, dpu));
         }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(){
+        context.add(new WorkorderStub().getWorkorder200());
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchInProgressWorkorderStub(){
+        context.add(new WorkorderStub().patchWorkorderInProgress200());
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchCreatedWorkorderStub(){
+        context.add(new WorkorderStub().patchWorkorderCreated200());
         return this;
     }
 }

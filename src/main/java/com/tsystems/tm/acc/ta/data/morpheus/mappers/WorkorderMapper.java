@@ -36,6 +36,58 @@ public class WorkorderMapper {
 
     }
 
+    public Workorder patchWorkorderInProgress() {
+        return new Workorder()
+                .id(2L)
+                .type("DPU_INSTALLATION")
+                .status(Workorder.StatusEnum.IN_PROGRESS)
+                .source(Workorder.SourceEnum.IBT)
+                .networkTopology(Workorder.NetworkTopologyEnum.NE4)
+                .dueDateTimeBegin(OffsetDateTime.now())
+                .dueDateTimeEnd(OffsetDateTime.now())
+                .completionDateTimeEnd(OffsetDateTime.now())
+                .workforceExternalId("123456ABC")
+                .taskDescription("Gf-AP Installation im Hausanschluss-Raum inkl. Netzschalt-Taetigkeiten im NvT")
+                .supplierProjectId(10032L)
+                .supplierPartyId(new BigDecimal(10001))
+                .externalOrderReferenceType(Workorder.ExternalOrderReferenceTypeEnum.CUSTOMER_INSTALLATION_ORDER)
+                .externalOrderReferenceId("10122")
+                .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
+                .klsId(new BigDecimal(123456789))
+                .folId("123456789")
+                .gigaAreaNumber("GigaArea_001")
+                .contactPersons(Collections.singletonList(getContactPerson()))
+                .creationDate(OffsetDateTime.now())
+                .workCharacteristic(Collections.singletonList(getWorkCharacteristic()));
+
+    }
+
+    public Workorder patchWorkorderCreated() {
+        return new Workorder()
+                .id(2L)
+                .type("DPU_INSTALLATION")
+                .status(Workorder.StatusEnum.CREATED)
+                .source(Workorder.SourceEnum.IBT)
+                .networkTopology(Workorder.NetworkTopologyEnum.NE4)
+                .dueDateTimeBegin(OffsetDateTime.now())
+                .dueDateTimeEnd(OffsetDateTime.now())
+                .completionDateTimeEnd(OffsetDateTime.now())
+                .workforceExternalId("123456ABC")
+                .taskDescription("Gf-AP Installation im Hausanschluss-Raum inkl. Netzschalt-Taetigkeiten im NvT")
+                .supplierProjectId(10032L)
+                .supplierPartyId(new BigDecimal(10001))
+                .externalOrderReferenceType(Workorder.ExternalOrderReferenceTypeEnum.CUSTOMER_INSTALLATION_ORDER)
+                .externalOrderReferenceId("10122")
+                .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
+                .klsId(new BigDecimal(123456789))
+                .folId("123456789")
+                .gigaAreaNumber("GigaArea_001")
+                .contactPersons(Collections.singletonList(getContactPerson()))
+                .creationDate(OffsetDateTime.now())
+                .workCharacteristic(Collections.singletonList(getWorkCharacteristic()));
+
+    }
+
     public ContactPerson getContactPerson(){
         return new ContactPerson()
                 .salutation(ContactPerson.SalutationEnum.MR)

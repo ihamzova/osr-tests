@@ -29,17 +29,7 @@ public class MobileDpuBffClient implements Resetable {
                         .setBaseUri(new OCUrlBuilder("mobile-dpu-bff").buildUri())));
     }
 
-    public MobileDpuBffClient(AuthTokenProvider tokenProvider) {
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> RequestSpecBuilders.getDefaultWithAuth(
-                        GsonObjectMapper.gson(),
-                        new OCUrlBuilder("mobile-dpu-bff")
-                                .withoutSuffix()
-                                .withoutAuth()
-                                .buildExternalUri(),
-                        new BearerHeaderAuthTokenInjector(tokenProvider))
-        ));
-    }
+
 
     public static JSON json() {
         return new JSON();
