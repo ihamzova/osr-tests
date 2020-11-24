@@ -110,11 +110,12 @@ public class A4OntCommissioning extends BaseTest {
     @Test(dependsOnMethods = {"a4ontTest"})
     @TmsLink("DIGIHUB-58725")
     @Description("A4 ONT Change test")
-    public void a4ontChangeTest() {
+    public void a4ontChangeTest() throws InterruptedException {
         //check serial number is stored
         Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
         //change Ont
         ontOltOrchestratorRobot.changeOntSerialNumber(accessLine,ontSerialNumber.getNewSerialNumber());
+        Thread.sleep(5000);
         Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     }
 
