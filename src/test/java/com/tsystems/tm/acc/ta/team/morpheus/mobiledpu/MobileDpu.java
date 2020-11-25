@@ -4,8 +4,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.mobiledpu.MobileDpuPage;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
-import io.qameta.allure.Description;
-import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

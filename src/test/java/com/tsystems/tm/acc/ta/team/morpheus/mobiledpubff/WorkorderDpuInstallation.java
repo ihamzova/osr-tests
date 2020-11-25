@@ -33,6 +33,8 @@ try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireM
                 .publish();
 
         mobileDpuBffRobot.getWorkorder(2);
+        mobileDpuBffRobot.startWorkorder(2);
+        mobileDpuBffRobot.completeWorkorder(2);
     }
     }
 }

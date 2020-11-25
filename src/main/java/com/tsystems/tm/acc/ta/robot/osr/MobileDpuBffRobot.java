@@ -22,19 +22,30 @@ public void getWorkorder (long woid){
                 .executeAs(validatedWith(shouldBeCode(200)));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
         Assert.assertEquals(workorderResponse.getStatus(), "CREATED");
-        Assert.assertEquals(workorderResponse.getFolId().longValue(), 2L);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
 
     }
 
     @Step("Starts a workorder for given Workorder-Id and returns WorkorderResponse.")
-    public void startWorkorder(){
-
+    public void startWorkorder(long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+                .woIdPath(woid)
+                .executeAs(validatedWith(shouldBeCode(200)));
+        Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
+        Assert.assertEquals(workorderResponse.getStatus(), "IN_PROGRESS");
+        Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
     }
 
     @Step("Completes a workorder for given Workorder-Id and returns WorkorderResponse.")
-    public void completeWorkorder(){
-
+    public void completeWorkorder(long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+                .woIdPath(woid)
+                .executeAs(validatedWith(shouldBeCode(200)));
+        Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
+        Assert.assertEquals(workorderResponse.getStatus(), "COMPLETED");
+        Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
     }
 
 }
