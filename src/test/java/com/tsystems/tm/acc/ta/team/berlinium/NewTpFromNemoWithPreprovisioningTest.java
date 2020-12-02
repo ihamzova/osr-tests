@@ -159,7 +159,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
+//        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP and NSP already existing in inventory")
@@ -179,7 +180,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(tpL2Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(tpL2Data.getUuid());
+//        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(tpL2Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremock(tpL2Data.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (A10NSP) with TP already existing in inventory, NSP not existing")
