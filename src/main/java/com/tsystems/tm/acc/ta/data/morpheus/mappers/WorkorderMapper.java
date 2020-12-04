@@ -28,7 +28,7 @@ public class WorkorderMapper {
                 .externalOrderReferenceId("10122")
                 .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
                 .klsId(new BigDecimal(123456789))
-                .folId("123456789")
+                .folId("1111222233334444555")
                 .gigaAreaNumber("GigaArea_001")
                 .contactPersons(Collections.singletonList(getContactPerson()))
                 .creationDate(OffsetDateTime.now())
@@ -54,7 +54,7 @@ public class WorkorderMapper {
                 .externalOrderReferenceId("10122")
                 .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
                 .klsId(new BigDecimal(123456789))
-                .folId("123456789")
+                .folId("1111222233334444555")
                 .gigaAreaNumber("GigaArea_001")
                 .contactPersons(Collections.singletonList(getContactPerson()))
                 .creationDate(OffsetDateTime.now())
@@ -62,11 +62,11 @@ public class WorkorderMapper {
 
     }
 
-    public Workorder patchWorkorderCreated() {
+    public Workorder patchWorkorderCompleted() {
         return new Workorder()
                 .id(2L)
                 .type("DPU_INSTALLATION")
-                .status(Workorder.StatusEnum.CREATED)
+                .status(Workorder.StatusEnum.COMPLETED)
                 .source(Workorder.SourceEnum.IBT)
                 .networkTopology(Workorder.NetworkTopologyEnum.NE4)
                 .dueDateTimeBegin(OffsetDateTime.now())
@@ -80,7 +80,7 @@ public class WorkorderMapper {
                 .externalOrderReferenceId("10122")
                 .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
                 .klsId(new BigDecimal(123456789))
-                .folId("123456789")
+                .folId("1111222233334444555")
                 .gigaAreaNumber("GigaArea_001")
                 .contactPersons(Collections.singletonList(getContactPerson()))
                 .creationDate(OffsetDateTime.now())

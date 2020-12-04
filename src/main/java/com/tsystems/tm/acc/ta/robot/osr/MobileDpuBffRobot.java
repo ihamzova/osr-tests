@@ -21,7 +21,7 @@ public void getWorkorder (long woid){
                 .woIdPath(woid)
                 .executeAs(validatedWith(shouldBeCode(200)));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
-        Assert.assertEquals(workorderResponse.getStatus(), "CREATED");
+        Assert.assertEquals(workorderResponse.getStatus(), WorkorderResponse.StatusEnum.CREATED);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
 
     }
@@ -29,22 +29,22 @@ public void getWorkorder (long woid){
     @Step("Starts a workorder for given Workorder-Id and returns WorkorderResponse.")
     public void startWorkorder(long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
-        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().startWorkorder()
                 .woIdPath(woid)
                 .executeAs(validatedWith(shouldBeCode(200)));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
-        Assert.assertEquals(workorderResponse.getStatus(), "IN_PROGRESS");
+        Assert.assertEquals(workorderResponse.getStatus(), WorkorderResponse.StatusEnum.IN_PROGRESS);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
     }
 
     @Step("Completes a workorder for given Workorder-Id and returns WorkorderResponse.")
     public void completeWorkorder(long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
-        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+        WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().completeWorkorder()
                 .woIdPath(woid)
                 .executeAs(validatedWith(shouldBeCode(200)));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
-        Assert.assertEquals(workorderResponse.getStatus(), "COMPLETED");
+        Assert.assertEquals(workorderResponse.getStatus(),WorkorderResponse.StatusEnum.COMPLETED);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
     }
 

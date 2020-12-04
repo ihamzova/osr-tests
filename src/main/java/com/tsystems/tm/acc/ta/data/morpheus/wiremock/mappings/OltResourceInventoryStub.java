@@ -289,6 +289,16 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withName("deleteDpuOltConf201");
     }
 
+    public MappingBuilder getDpuDeviceFolId200(Dpu dpu) {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceFolId200")
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDevice(dpu.getLifeCycleDpu(), dpu.getLifeCycleUplink()))),
+                        200
+                ))
+                .withQueryParam("fiberOnLocationId", equalTo("1111222233334444555"));
+    }
+
     private String serialize(Object obj) {
         JSON json = new JSON();
         json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME);

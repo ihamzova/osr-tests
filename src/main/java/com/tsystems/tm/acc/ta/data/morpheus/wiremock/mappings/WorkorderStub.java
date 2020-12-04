@@ -31,14 +31,14 @@ public class WorkorderStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='IN_PROGRESS')]")));
     }
 
-    public MappingBuilder patchWorkorderCreated200() {
+    public MappingBuilder patchWorkorderCompleted200() {
         return patch(urlMatching(PATCH_WORKORDER_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new WorkorderMapper().patchWorkorderCreated()),
+                        serialize(new WorkorderMapper().patchWorkorderCompleted()),
                         200
                 ))
-                .withName("patchWorkorderCreated200")
-                .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='CREATED')]")));
+                .withName("patchWorkorderCompleted200")
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='COMPLETED')]")));
     }
 
 
