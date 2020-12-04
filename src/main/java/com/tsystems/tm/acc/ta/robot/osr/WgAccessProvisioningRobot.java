@@ -34,7 +34,7 @@ import static com.tsystems.tm.acc.ta.helpers.log.ServiceLogExpectSince.given;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 320_000;
     private static String CORRELATION_ID = UUID.randomUUID().toString();
     private ServiceLogExpectSince logExpect;
     private WgAccessProvisioningClient wgAccessProvisioningClient = new WgAccessProvisioningClient();
