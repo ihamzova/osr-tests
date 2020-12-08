@@ -299,6 +299,15 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("fiberOnLocationId", equalTo("1111222233334444555"));
     }
 
+    public MappingBuilder getDpuDeviceFolId400(Dpu dpu) {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceFolId400")
+                .willReturn(aDefaultResponseWithBody(null,
+                        400
+                ))
+                .withQueryParam("fiberOnLocationId", equalTo("1111222233334444555"));
+    }
+
     public MappingBuilder getDpuDeviceMobileDpuBffEndsz200(Dpu dpu) {
         return get(urlPathEqualTo(DPU_DEVICE_URL))
                 .withName("getDpuDeviceMobileDpuBffEndsz200")
@@ -307,6 +316,40 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder patchDpuDeviceMobileDpuBff200(Dpu dpu) {
+        return patch(urlMatching(DPU_DEVICE_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(new OltResourceInventoryMapper().getDeviceMobileDpuBff(dpu)),
+                        200
+                ))
+                .withName("patchDpuDeviceMobileDpuBff200");
+    }
+
+    public MappingBuilder patchDpuPortMobileDpuBff200(Dpu dpu) {
+        return patch(urlMatching(DPU_PORT_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(new OltResourceInventoryMapper().getPortMobileDpuBff()),
+                        200
+                ))
+                .withName("patchDpuPortMobileDpuBff200");
+    }
+
+    public MappingBuilder patchDpuDeviceMobileDpuBff404() {
+        return patch(urlMatching(DPU_DEVICE_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        404
+                ))
+                .withName("patchDpuDeviceMobileDpuBff404");
+    }
+
+    public MappingBuilder patchDpuPortMobileDpuBff404() {
+        return patch(urlMatching(DPU_PORT_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        404
+                ))
+                .withName("patchDpuPortMobileDpuBff404");
     }
 
 

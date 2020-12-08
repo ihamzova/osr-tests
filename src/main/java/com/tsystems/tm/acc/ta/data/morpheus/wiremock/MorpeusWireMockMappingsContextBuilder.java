@@ -476,8 +476,10 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     }
 
     public MorpeusWireMockMappingsContextBuilder addOlRiStub(Dpu dpu){
-        addGetDpuDeviceFolIdStub(dpu);
-        addGetDpuDeviceMobileDpuBffEndsz200(dpu);
+        addGetDpuDeviceFolIdStub(dpu, true);
+        addGetDpuDeviceMobileDpuBffEndsz(dpu, true);
+        addPatchDpuDeviceMobileDpuBff(dpu, true);
+        addPatchDpuPortMobileDpuBff(dpu, true);
         return this;
     }
 
@@ -779,13 +781,41 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceFolIdStub(Dpu dpu){
-        context.add(new OltResourceInventoryStub().getDpuDeviceFolId200(dpu));
+    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceFolIdStub(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().getDpuDeviceFolId200(dpu));
+        }else{
+            context.add(new OltResourceInventoryStub().getDpuDeviceFolId400(dpu));
+        }
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceMobileDpuBffEndsz200(Dpu dpu){
-        context.add(new OltResourceInventoryStub().getDpuDeviceMobileDpuBffEndsz200(dpu));
+    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceMobileDpuBffEndsz(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().getDpuDeviceMobileDpuBffEndsz200(dpu));
+        }else{
+            context.add(new OltResourceInventoryStub().getDpuDevice400(dpu));
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchDpuDeviceMobileDpuBff(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().patchDpuDeviceMobileDpuBff200(dpu));
+        } else {
+            context.add(new OltResourceInventoryStub().patchDpuDeviceMobileDpuBff404());
+        }
+        return this;
+
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchDpuPortMobileDpuBff(Dpu dpu, boolean success){
+        if(success){
+            context.add(new OltResourceInventoryStub().patchDpuPortMobileDpuBff200(dpu));
+        } else{
+            context.add(new OltResourceInventoryStub().patchDpuPortMobileDpuBff404());
+        }
+
         return this;
     }
 }

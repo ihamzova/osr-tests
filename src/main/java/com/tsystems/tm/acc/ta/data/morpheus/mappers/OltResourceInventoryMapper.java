@@ -154,11 +154,11 @@ public class OltResourceInventoryMapper {
                 .lifeCycleState(Device.LifeCycleStateEnum.OPERATING)
                 .compositePartyId(0L)
                 .equipmentHolders(getEquipmentHolders())
-                .ports(Collections.singletonList(getPortByFolId()))
+                .ports(Collections.singletonList(getPortMobileDpuBff()))
                 .fiberOnLocationId("1111222233334444555");
     }
 
-    public Port getPortByFolId() {
+    public Port getPortMobileDpuBff() {
         return new Port()
                 .id(2222L)
                 .resourceId("2222")

@@ -63,6 +63,14 @@ public void getWorkorder (long woid){
         Assert.assertEquals(dpuResponse.getLifeCycleState(), DpuResponse.LifeCycleStateEnum.OPERATING);
     }
 
+    @Step("Returns a dpu response determined by given fiberOnLocationId. Negative case, error code 404")
+    public void getDpuByFolIdNegative(String folId){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
+                .fiberOnLocationIdPath(folId)
+                .executeAs(validatedWith(shouldBeCode(404)));
+    }
+
     @Step("Update SerialNumber of DPU.")
     public void updateDpuSerialNumber(String folId, String dpuEndsz, String serialNumber){
         UpdateDpuSerialNumberRequest updateDpuSerialNumberRequest = new UpdateDpuSerialNumberRequest();
@@ -83,6 +91,7 @@ public void getWorkorder (long woid){
         MarkDpuAsOperatingRequest markDpuAsOperatingRequest = new MarkDpuAsOperatingRequest();
         markDpuAsOperatingRequest.setEndSZ(dpuEndsz);
         markDpuAsOperatingRequest.setUplinkPortOperating(true);
+        mobileDpuBffClient = new MobileDpuBffClient();
         DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().markDpuAsOperating()
                 .body(markDpuAsOperatingRequest)
                 .executeAs(validatedWith(shouldBeCode(200)));
