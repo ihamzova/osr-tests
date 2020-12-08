@@ -293,11 +293,22 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
         return get(urlPathEqualTo(DPU_DEVICE_URL))
                 .withName("getDpuDeviceFolId200")
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDevice(dpu.getLifeCycleDpu(), dpu.getLifeCycleUplink()))),
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDeviceMobileDpuBff(dpu))),
                         200
                 ))
                 .withQueryParam("fiberOnLocationId", equalTo("1111222233334444555"));
     }
+
+    public MappingBuilder getDpuDeviceMobileDpuBffEndsz200(Dpu dpu) {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceMobileDpuBffEndsz200")
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDeviceMobileDpuBff(dpu))),
+                        200
+                ))
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
 
     private String serialize(Object obj) {
         JSON json = new JSON();

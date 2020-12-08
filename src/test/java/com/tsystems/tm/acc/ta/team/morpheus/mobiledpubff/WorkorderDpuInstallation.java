@@ -30,21 +30,46 @@ public void init(){
     }
 
 @Test
-public void workorderDpuInstallation () {
+public void testBffToWorkorder() {
 
     OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DefaultOltForCommissioningPositive);
     Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
 
-try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderDpuInstallationPositive"))
+    long woid = 2;
+
+try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
     {
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addWorkorderDpuInstallationStub(dpu)
+                .addWorkorderStub()
                 .build()
                 .publish();
 
-        mobileDpuBffRobot.getWorkorder(2);
-        mobileDpuBffRobot.startWorkorder(2);
-        mobileDpuBffRobot.completeWorkorder(2);
+        mobileDpuBffRobot.getWorkorder(woid);
+        mobileDpuBffRobot.startWorkorder(woid);
+        mobileDpuBffRobot.completeWorkorder(woid);
     }
+    }
+
+    @Test
+    public void testBffToOLRI(){
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DefaultOltForCommissioningPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
+
+        String folId = "1111222233334444555";
+        String serialNumber = "08120000";
+        String dpuEndsz = dpu.getEndSz();
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRIPositive"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addOlRiStub(dpu)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.getDpuByFolId(folId, dpuEndsz, serialNumber);
+            mobileDpuBffRobot.updateDpuSerialNumber(folId, dpuEndsz, serialNumber);
+           // mobileDpuBffRobot.setDpuAsOperating(folId, dpuEndsz, serialNumber);
+        }
+
     }
 }

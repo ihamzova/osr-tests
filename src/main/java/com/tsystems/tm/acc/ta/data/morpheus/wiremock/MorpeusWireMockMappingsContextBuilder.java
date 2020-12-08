@@ -468,11 +468,16 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addWorkorderDpuInstallationStub(Dpu dpu){
+    public MorpeusWireMockMappingsContextBuilder addWorkorderStub(){
         addGetWorkorderStub();
         addPatchInProgressWorkorderStub();
         addPatchCreatedWorkorderStub();
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addOlRiStub(Dpu dpu){
         addGetDpuDeviceFolIdStub(dpu);
+        addGetDpuDeviceMobileDpuBffEndsz200(dpu);
         return this;
     }
 
@@ -776,6 +781,11 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
 
     public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceFolIdStub(Dpu dpu){
         context.add(new OltResourceInventoryStub().getDpuDeviceFolId200(dpu));
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceMobileDpuBffEndsz200(Dpu dpu){
+        context.add(new OltResourceInventoryStub().getDpuDeviceMobileDpuBffEndsz200(dpu));
         return this;
     }
 }

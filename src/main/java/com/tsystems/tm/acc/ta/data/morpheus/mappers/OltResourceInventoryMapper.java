@@ -45,6 +45,7 @@ public class OltResourceInventoryMapper {
                 .fiberOnLocationId("1111222233334444555");
     }
 
+
     public Port getPort(Port.LifeCycleStateEnum portState) {
         return new Port()
                 .id(1049L)
@@ -119,6 +120,67 @@ public class OltResourceInventoryMapper {
                         .compositePartyId(0L)
                 )
         );
+    }
+
+    public Device getDeviceMobileDpuBff(Dpu dpu) {
+        return new Device()
+                .shortName("MABC VB")
+                .materialNumber("40247069")
+                .emsNbiName("MA5600T")
+                .tkz1("02351082")
+                .tkz2(null)
+                .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40247069")
+                .lastDiscovery(OffsetDateTime.now())
+                .id(1111L)
+                .resourceId("1111")
+                .deviceName("ETSI Service Shelf H8-MABC")
+                .endSz(dpu.getEndSz())
+                .fachSz(null)
+                .klsId(16063944L)
+                .ipAddress("10.182.112.196")
+                .firmwareVersion(null)
+                .resourceState(Device.ResourceStateEnum.NON_WORKING)
+                .communicationState(Device.CommunicationStateEnum.AVAILABLE)
+                .serialNumber("08120000")
+                .importState(Device.ImportStateEnum.PLANNED)
+                .type(Device.TypeEnum.DPU)
+                .importDate(OffsetDateTime.now())
+                .description("string")
+                .asb(0L)
+                .technicalLocation("string")
+                .equipmentNumber("string")
+                .manufacturer("string")
+                .distributionPointId("123456789")
+                .lifeCycleState(Device.LifeCycleStateEnum.OPERATING)
+                .compositePartyId(0L)
+                .equipmentHolders(getEquipmentHolders())
+                .ports(Collections.singletonList(getPortByFolId()))
+                .fiberOnLocationId("1111222233334444555");
+    }
+
+    public Port getPortByFolId() {
+        return new Port()
+                .id(2222L)
+                .resourceId("2222")
+                .lifeCycleState(Port.LifeCycleStateEnum.OPERATING)
+                .portType(Port.PortTypeEnum.PON)
+                .portNumber("1")
+                .opticalModule(new OpticalModule()
+                        .shortName("GPPD")
+                        .materialNumber("40261742")
+                        .emsNbiName("H805GPBD")
+                        .tkz1("03021BQW")
+                        .tkz2("string")
+                        .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742")
+                        .lastDiscovery(OffsetDateTime.now())
+                        .id(0L)
+                        .resourceId("1049")
+                        .name("8-port GPON OLT Interface Board V2")
+                        .description("string")
+                        .manufacturer("string")
+                        .compositePartyId(0L)
+                )
+                .compositePartyId(0L);
     }
 
     public DpuPonConnectionDto getDpuPonConnection(OltDevice oltDevice, Dpu dpu) {
