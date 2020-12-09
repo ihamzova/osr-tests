@@ -468,6 +468,21 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addWorkorderStub(){
+        addGetWorkorderStub(true);
+        addPatchInProgressWorkorderStub(true);
+        addPatchCreatedWorkorderStub(true);
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addOlRiStub(Dpu dpu){
+        addGetDpuDeviceFolIdStub(dpu, true);
+        addGetDpuDeviceMobileDpuBffEndsz(dpu, true);
+        addPatchDpuDeviceMobileDpuBff(dpu, true);
+        addPatchDpuPortMobileDpuBff(dpu, true);
+        return this;
+    }
+
     // 1_OLT_RI_GET_DeviceDPU.json
     public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceStub(Dpu dpu, boolean success) {
         if (success) {
@@ -748,6 +763,71 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         } else {
             context.add(new WgAccessProvisioningStub().postPortProvisioning400(olt, dpu));
         }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(boolean success){
+        if(success) {
+            context.add(new WorkorderStub().getWorkorder200());
+        }else{
+            context.add(new WorkorderStub().getWorkorder404());
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchInProgressWorkorderStub(boolean success){
+        if (success) {
+            context.add(new WorkorderStub().patchWorkorderInProgress200());
+        }else{
+            context.add(new WorkorderStub().patchWorkorderInProgress404());
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchCreatedWorkorderStub(boolean success){
+        if (success) {
+            context.add(new WorkorderStub().patchWorkorderCompleted200());
+        }else{
+            context.add(new WorkorderStub().patchWorkorderCompleted404());
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceFolIdStub(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().getDpuDeviceFolId200(dpu));
+        }else{
+            context.add(new OltResourceInventoryStub().getDpuDeviceFolId400(dpu));
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDpuDeviceMobileDpuBffEndsz(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().getDpuDeviceMobileDpuBffEndsz200(dpu));
+        }else{
+            context.add(new OltResourceInventoryStub().getDpuDevice400(dpu));
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchDpuDeviceMobileDpuBff(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().patchDpuDeviceMobileDpuBff200(dpu));
+        } else {
+            context.add(new OltResourceInventoryStub().patchDpuDeviceMobileDpuBff404());
+        }
+        return this;
+
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addPatchDpuPortMobileDpuBff(Dpu dpu, boolean success){
+        if(success){
+            context.add(new OltResourceInventoryStub().patchDpuPortMobileDpuBff200(dpu));
+        } else{
+            context.add(new OltResourceInventoryStub().patchDpuPortMobileDpuBff404());
+        }
+
         return this;
     }
 }
