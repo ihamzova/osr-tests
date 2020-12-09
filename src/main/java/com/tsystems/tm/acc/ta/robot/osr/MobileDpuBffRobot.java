@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.MobileDpuBffClient;
 import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.DpuResponse;
 import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.MarkDpuAsOperatingRequest;
@@ -29,6 +30,16 @@ public void getWorkorder (long woid){
 
     }
 
+    @Step("Returns a WorkorderResponse determined by given Workorder-Id. Negative case, error code 404, DPU not found")
+
+    public void getWorkorderNegative (long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+                .woIdPath(woid)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+
+    }
+
     @Step("Starts a workorder for given Workorder-Id and returns WorkorderResponse.")
     public void startWorkorder(long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
@@ -40,6 +51,14 @@ public void getWorkorder (long woid){
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
     }
 
+    @Step("Starts a workorder for given Workorder-Id and returns WorkorderResponse. Negative case, error code 404, DPU not found")
+    public void startWorkorderNegative (long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffInternal().startWorkorder()
+                .woIdPath(woid)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+    }
+
     @Step("Completes a workorder for given Workorder-Id and returns WorkorderResponse.")
     public void completeWorkorder(long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
@@ -49,6 +68,14 @@ public void getWorkorder (long woid){
         Assert.assertEquals(workorderResponse.getId().longValue(), woid);
         Assert.assertEquals(workorderResponse.getStatus(),WorkorderResponse.StatusEnum.COMPLETED);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
+    }
+
+    @Step("Completes a workorder for given Workorder-Id and returns WorkorderResponse. Negative case, error code 404, DPU not found")
+    public void completeWorkorderNegative (long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffInternal().completeWorkorder()
+                .woIdPath(woid)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
     }
 
     @Step("Returns a dpu response determined by given fiberOnLocationId.")
@@ -66,9 +93,9 @@ public void getWorkorder (long woid){
     @Step("Returns a dpu response determined by given fiberOnLocationId. Negative case, error code 404")
     public void getDpuByFolIdNegative(String folId){
         mobileDpuBffClient = new MobileDpuBffClient();
-        DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
+        mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
                 .fiberOnLocationIdPath(folId)
-                .executeAs(validatedWith(shouldBeCode(404)));
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
     }
 
     @Step("Update SerialNumber of DPU.")
@@ -86,6 +113,17 @@ public void getWorkorder (long woid){
         Assert.assertEquals(dpuResponse.getLifeCycleState(), DpuResponse.LifeCycleStateEnum.OPERATING);
     }
 
+    @Step("Update SerialNumber of DPU. Negative case, error code 404")
+    public void updateDpuSerialNumberNegative(String dpuEndsz, String serialNumber) {
+        UpdateDpuSerialNumberRequest updateDpuSerialNumberRequest = new UpdateDpuSerialNumberRequest();
+        updateDpuSerialNumberRequest.setEndSZ(dpuEndsz);
+        updateDpuSerialNumberRequest.setSerialNumber(serialNumber);
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().updateDpuSerialNumber()
+                .body(updateDpuSerialNumberRequest)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+    }
+
     @Step("Mark the DPU functional as OPERATING.")
     public void setDpuAsOperating(String folId, String dpuEndsz, String serialNumber){
         MarkDpuAsOperatingRequest markDpuAsOperatingRequest = new MarkDpuAsOperatingRequest();
@@ -99,6 +137,17 @@ public void getWorkorder (long woid){
         Assert.assertEquals(dpuResponse.getEndSZ(), dpuEndsz);
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
         Assert.assertEquals(dpuResponse.getLifeCycleState(), DpuResponse.LifeCycleStateEnum.OPERATING);
+    }
+
+    @Step("Mark the DPU functional as OPERATING. Negative case, error code 404, DPU not found")
+    public void setDpuAsOperatingNegative(String dpuEndsz, String serialNumber){
+        MarkDpuAsOperatingRequest markDpuAsOperatingRequest = new MarkDpuAsOperatingRequest();
+        markDpuAsOperatingRequest.setEndSZ(dpuEndsz);
+        markDpuAsOperatingRequest.setUplinkPortOperating(true);
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().markDpuAsOperating()
+                .body(markDpuAsOperatingRequest)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
     }
 
 }

@@ -21,6 +21,15 @@ public class WorkorderStub extends AbstractStubMapping {
                 .withName("getWorkorder200");
     }
 
+    public MappingBuilder getWorkorder404() {
+        return get(urlMatching(GET_WORKORDER_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        404
+                ))
+                .withName("getWorkorder404");
+    }
+
+
     public MappingBuilder patchWorkorderInProgress200() {
         return patch(urlMatching(PATCH_WORKORDER_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(
@@ -31,6 +40,15 @@ public class WorkorderStub extends AbstractStubMapping {
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='IN_PROGRESS')]")));
     }
 
+    public MappingBuilder patchWorkorderInProgress404() {
+        return patch(urlMatching(PATCH_WORKORDER_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        404
+                ))
+                .withName("patchWorkorderInProgress404")
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='IN_PROGRESS')]")));
+    }
+
     public MappingBuilder patchWorkorderCompleted200() {
         return patch(urlMatching(PATCH_WORKORDER_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(
@@ -38,6 +56,15 @@ public class WorkorderStub extends AbstractStubMapping {
                         200
                 ))
                 .withName("patchWorkorderCompleted200")
+                .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='COMPLETED')]")));
+    }
+
+    public MappingBuilder patchWorkorderCompleted404() {
+        return patch(urlMatching(PATCH_WORKORDER_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        404
+                ))
+                .withName("patchWorkorderCompleted404")
                 .withRequestBody(matchingJsonPath(String.format("$[?(@.status=='COMPLETED')]")));
     }
 

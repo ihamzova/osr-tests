@@ -1,10 +1,8 @@
 package com.tsystems.tm.acc.ta.team.morpheus.mobiledpubff;
 
 import com.tsystems.tm.acc.data.osr.models.dpu.DpuCase;
-import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.MobileDpuBffRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -40,11 +38,26 @@ public void init(){
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addWorkorderStub()
+                    .addGetWorkorderStub(true)
                     .build()
                     .publish();
 
             mobileDpuBffRobot.getWorkorder(woid);
+
+        }
+    }
+
+    @Test
+    public void getWorkorder404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderNegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetWorkorderStub(false)
+                    .build()
+                    .publish();
+
+            mobileDpuBffRobot.getWorkorderNegative(woid);
 
         }
     }
@@ -55,11 +68,25 @@ public void init(){
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addWorkorderStub()
+                    .addPatchInProgressWorkorderStub(true)
                     .build()
                     .publish();
 
             mobileDpuBffRobot.startWorkorder(woid);
+        }
+    }
+
+    @Test
+    public void startWorkorder404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderNegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addPatchInProgressWorkorderStub(false)
+                    .build()
+                    .publish();
+
+            mobileDpuBffRobot.startWorkorderNegative(woid);
         }
     }
 
@@ -69,7 +96,7 @@ public void init(){
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addWorkorderStub()
+                    .addPatchCreatedWorkorderStub(true)
                     .build()
                     .publish();
 
@@ -78,36 +105,19 @@ public void init(){
     }
 
     @Test
-public void testBffToWorkorder() {
+    public void completeWorkorder404() {
 
-try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
-    {
-        new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addWorkorderStub()
-                .build()
-                .publish();
-
-        mobileDpuBffRobot.getWorkorder(woid);
-        mobileDpuBffRobot.startWorkorder(woid);
-        mobileDpuBffRobot.completeWorkorder(woid);
-    }
-    }
-
-    @Test
-    public void testBffToOLRI(){
-
-        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRIPositive"))
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderNegative"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addOlRiStub(dpu)
+                    .addPatchCreatedWorkorderStub(false)
                     .build()
                     .publish();
-            mobileDpuBffRobot.getDpuByFolId(folId, dpuEndsz, serialNumber);
-            mobileDpuBffRobot.updateDpuSerialNumber(folId, dpuEndsz, serialNumber);
-            mobileDpuBffRobot.setDpuAsOperating(folId, dpuEndsz, serialNumber);
-        }
 
+            mobileDpuBffRobot.completeWorkorderNegative(woid);
+        }
     }
+
 
     @Test
     public void getDpuByFolId() {
@@ -122,7 +132,7 @@ try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireM
     }
 
     @Test
-    public void getDpuByFolId400(){
+    public void getDpuByFolId404(){
 
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRINegative"))
         {
@@ -149,6 +159,19 @@ try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireM
     }
 
     @Test
+    public void updateDpuSerialNumber404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRINegative")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, false)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.updateDpuSerialNumberNegative(dpuEndsz, serialNumber);
+        }
+    }
+
+    @Test
     public void setDpuAsOperating() {
 
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRIPositive"))
@@ -160,6 +183,54 @@ try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireM
                     .build()
                     .publish();
             mobileDpuBffRobot.setDpuAsOperating(folId, dpuEndsz, serialNumber);
+
+        }
+    }
+
+    @Test
+    public void setDpuAsOperatingPatchDpuDevice404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRINegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, false)
+                    .addPatchDpuPortMobileDpuBff(dpu, true)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
+
+        }
+    }
+
+    @Test
+    public void setDpuAsOperatingPatchDpuPort404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRINegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, true)
+                    .addPatchDpuPortMobileDpuBff(dpu, false)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
+
+        }
+    }
+
+    @Test
+    public void setDpuAsOperatingGetDpuDevice404() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "OLRINegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, false)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, true)
+                    .addPatchDpuPortMobileDpuBff(dpu, true)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
 
         }
     }

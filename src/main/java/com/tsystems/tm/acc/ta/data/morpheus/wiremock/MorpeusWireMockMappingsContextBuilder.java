@@ -469,9 +469,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     }
 
     public MorpeusWireMockMappingsContextBuilder addWorkorderStub(){
-        addGetWorkorderStub();
-        addPatchInProgressWorkorderStub();
-        addPatchCreatedWorkorderStub();
+        addGetWorkorderStub(true);
+        addPatchInProgressWorkorderStub(true);
+        addPatchCreatedWorkorderStub(true);
         return this;
     }
 
@@ -766,18 +766,30 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(){
-        context.add(new WorkorderStub().getWorkorder200());
+    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(boolean success){
+        if(success) {
+            context.add(new WorkorderStub().getWorkorder200());
+        }else{
+            context.add(new WorkorderStub().getWorkorder404());
+        }
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addPatchInProgressWorkorderStub(){
-        context.add(new WorkorderStub().patchWorkorderInProgress200());
+    public MorpeusWireMockMappingsContextBuilder addPatchInProgressWorkorderStub(boolean success){
+        if (success) {
+            context.add(new WorkorderStub().patchWorkorderInProgress200());
+        }else{
+            context.add(new WorkorderStub().patchWorkorderInProgress404());
+        }
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addPatchCreatedWorkorderStub(){
-        context.add(new WorkorderStub().patchWorkorderCompleted200());
+    public MorpeusWireMockMappingsContextBuilder addPatchCreatedWorkorderStub(boolean success){
+        if (success) {
+            context.add(new WorkorderStub().patchWorkorderCompleted200());
+        }else{
+            context.add(new WorkorderStub().patchWorkorderCompleted404());
+        }
         return this;
     }
 
