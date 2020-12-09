@@ -6,5 +6,7 @@ import java.util.List;
 
 @Data
 public class A4ImportCsvData {
+
     private List<A4ImportCsvLine> csvLines;
+
 }

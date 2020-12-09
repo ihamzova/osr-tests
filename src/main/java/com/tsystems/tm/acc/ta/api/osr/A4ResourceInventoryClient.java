@@ -9,13 +9,15 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
 @Getter
 public class A4ResourceInventoryClient implements Resetable {
-    private ApiClient client;
+
+    private final ApiClient client;
 
     public A4ResourceInventoryClient() {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
@@ -23,7 +25,7 @@ public class A4ResourceInventoryClient implements Resetable {
                         .addFilter(new RequestLoggingFilter())
                         .addFilter(new ResponseLoggingFilter())
                         .addHeader("Content-Type", "application/json")
-                        .setBaseUri(new OCUrlBuilder("a4-resource-inventory").buildUri())));
+                        .setBaseUri(new OCUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri())));
     }
 
     public static JSON json() {
@@ -33,4 +35,5 @@ public class A4ResourceInventoryClient implements Resetable {
     @Override
     public void reset() {
     }
+
 }

@@ -21,7 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
 
 public class AccessLineRiRobot {
-    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 200_000;
+    private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
 
@@ -111,6 +111,14 @@ public class AccessLineRiRobot {
 
     @Step("Check A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
     public void checkA4LineParameters(PortProvisioning port) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            Supplier<Boolean> checkA4PreProvisioning = () -> getAccessLines(port).size() == 1;
+            timeoutBlock.addBlock(checkA4PreProvisioning); // execute the runnable precondition
+        } catch (Throwable e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+
         List<AccessLineDto> accessLines = getAccessLines(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
 
@@ -118,7 +126,7 @@ public class AccessLineRiRobot {
 
         Assert.assertNotNull(accessLine.getReference(), "Reference");
         Assert.assertEquals(accessLine.getProductionPlatform(), AccessLineDto.ProductionPlatformEnum.A4, "Production platform");
-        Assert.assertNotNull(accessLine.getNetworkServiceProfileReference(), "NSP ref");
+        Assert.assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
     }
 
     @Step("Check FTTB AccessLines (FTTB_NE_Profile, Default_NetworkLine_Profile")

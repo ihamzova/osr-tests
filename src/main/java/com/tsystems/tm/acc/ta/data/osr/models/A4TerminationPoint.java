@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class A4TerminationPoint {
+
     private String uuid;
     private String subType;
+
 }

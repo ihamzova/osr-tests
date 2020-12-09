@@ -20,6 +20,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
 public class InstallationPage {
+
     public static final String ENDPOINT = "/";
     public static final String NETWORK_ELEMENT_FOUND = "plannedRack";
     public static final String ZTP_SAVED_SUCCESSFULLY = "Speichern erfolgreich";
@@ -105,4 +106,5 @@ public class InstallationPage {
         $(RESET_SEARCH_BUTTON).click();
         $(INPUT_FSZ_LOCATOR).waitUntil(empty, 5000);
     }
+
 }

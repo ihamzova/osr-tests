@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import org.apache.commons.lang3.StringUtils;
 
 public class PslMapper {
+
     private static final String DEFAULT_SHELF = "0";
     private static final String DEFAULT_PON_SLOT = "1";
     private static final String DEFAULT_ETHERNET_SLOT = "19";
@@ -119,4 +120,5 @@ public class PslMapper {
                                 )
                 );
     }
+
 }

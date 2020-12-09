@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class Ont {
     private String serialNumber;
     private String assignedEmployee;
+    private String klsId;
+    private String newSerialNumber;
 }

@@ -23,19 +23,19 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 
 @ServiceLog(WG_A4_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
-@ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
+@ServiceLog(A4_NEMO_UPDATER_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
+
     private static final int WAIT_TIME = 15_000;
     private long SLEEP_TIMER = 15; // in seconds
 

@@ -20,17 +20,18 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
-@ServiceLog(A4_INVENTORY_IMPORTER)
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_UI)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY)
-@ServiceLog(A4_NEMO_UPDATER)
+@ServiceLog(A4_INVENTORY_IMPORTER_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
+@ServiceLog(A4_NEMO_UPDATER_MS)
 public class A4ImportCsvTest extends BaseTest {
+
     private final OsrTestContext context = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
@@ -78,4 +79,5 @@ public class A4ImportCsvTest extends BaseTest {
         a4ResourceInventoryImporterUiRobot.checkNetworkElementsViaUi(csvData);
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
     }
+
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class A4ImportCsvLine {
+
     private String negName;
 //    private String negCno;
 //    private String negDescription;
@@ -17,4 +18,5 @@ public class A4ImportCsvLine {
 //    private String neLocRackId;
 //    private String neLocRackPosition;
     private String neDescription;
+
 }

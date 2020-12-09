@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="order test suite" parallel="methods" thread-count="1" verbose="1" data-provider-thread-count="1">
-
-    <test thread-count="1" name="Integration Tests for Berlinium services">
+<suite name="order test suite" parallel="false" thread-count="1" verbose="1" data-provider-thread-count="1" group-by-instances="true">
+    <test verbose="1" thread-count="1" parallel="false" name="Integration Tests for Berlinium services" group-by-instances="true">
         <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.ZtpIdentUiTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryServiceTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4NemoUpdateTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NewTpFromNemoWithPreprovisioningTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NemoStatusUpdateTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
-            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.ZtpIdentUiTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryServiceV4Test"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileMonitoringPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileNeSearchPageTest"/>
-            <class name="com.tsystems.tm.acc.ta.team.berlinium.ResilienceTest"/>
         </classes>
     </test>
 </suite>

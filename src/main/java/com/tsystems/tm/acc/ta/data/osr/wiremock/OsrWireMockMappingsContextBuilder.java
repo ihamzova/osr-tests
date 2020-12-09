@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextBuilder;
 
 public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBuilder {
+
     public OsrWireMockMappingsContextBuilder(ExtendedWireMock wireMock) {
         super(wireMock);
     }
@@ -36,12 +37,8 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     }
 
     public OsrWireMockMappingsContextBuilder addWgA4ProvisioningMock(){
-        context.add(new PreProvisioningStub().getAccessLine201());
-        return this;
-    }
-
-    public OsrWireMockMappingsContextBuilder addPreprovisioningErrorMock(){
         context.add(new PreProvisioningStub().getAccessLine500());
+        context.add(new PreProvisioningStub().getAccessLine201());
         return this;
     }
 
@@ -50,4 +47,5 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         context.add(new NemoStub().deleteNemoUpdate204());
         return this;
     }
+
 }

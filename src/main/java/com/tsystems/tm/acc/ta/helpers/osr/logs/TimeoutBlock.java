@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 public class TimeoutBlock {
 
     private final long timeoutMilliSeconds;
-    private long timeoutInterval = 16000;
+    private long timeoutInterval = 7000;
 
     public TimeoutBlock(long timeoutMilliSeconds) {
         this.timeoutMilliSeconds = timeoutMilliSeconds;

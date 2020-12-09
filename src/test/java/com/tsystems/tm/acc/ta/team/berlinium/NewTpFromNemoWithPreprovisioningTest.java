@@ -11,10 +11,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
@@ -22,12 +19,14 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.tsystems.tm.acc.ta.data.berlinium.BerliniumConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE)
+@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     private final long SLEEP_TIMER = 5; // in seconds
@@ -37,6 +36,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -87,17 +87,27 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         a4ResourceInventory.deleteA4TestData(negData, neData);
     }
 
-    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with FTTH Accesss Preprovisioning")
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
-    @Description("NEMO creates new Termination Point with FTTH Accesss Preprovisioning")
-    public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
+    @Description("NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
+    public void newTpWithFailedAndRetriedFtthAccessPreprovisioning() throws InterruptedException, IOException {
+        // GIVEN / Arrange
+        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelay();
+
         // WHEN / Action
         a4ResourceInventoryService.createTerminationPoint(tpFtthData, nepData);
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
 
-        // THEN
+        // THEN / Assert
         a4PreProvisioning.checkPostToPreprovisioningWiremock();
+
+        // because the wiremock answers with 500, nsp should not be created
+        a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 0);
+
+        // after a little time it is trying to redeliver to wiremock it should answer with 201...
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
+
+        // ... and create nsp
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
 
         // Deactivated this check, because wiremock currently supports only one webhook callback. We'd need a 2nd one for this check to be successful
@@ -149,7 +159,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
+//        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP and NSP already existing in inventory")
@@ -169,7 +180,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileL2BsaConnectedToTerminationPointExists(tpL2Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(tpL2Data.getUuid());
+//        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(tpL2Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileL2BsaPutRequestToNemoWiremock(tpL2Data.getUuid());
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (A10NSP) with TP already existing in inventory, NSP not existing")
