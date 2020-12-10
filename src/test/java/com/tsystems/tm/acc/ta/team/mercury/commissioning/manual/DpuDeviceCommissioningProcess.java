@@ -88,6 +88,8 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
         oltSearchPage.searchNotDiscoveredByEndSz(endSz);
         Thread.sleep(1000);
         DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
+
+        log.info("patchDevice startDpuCreation");
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
 
@@ -102,7 +104,7 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
                 .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
                         .from("string")
                         .path("/fiberOnLocationId")
-                        .value("100000001")))
+                        .value("71520003000100")))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
