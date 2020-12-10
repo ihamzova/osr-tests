@@ -5,6 +5,7 @@
     <classes>
         <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuCommissioningProcess"/>
         <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuDecommissioningProcess"/>
+        <class name="com.tsystems.tm.acc.ta.team.morpheus.mobiledpubff.WorkorderDpuInstallation"/>
     </classes>
 </test>
 </suite>
