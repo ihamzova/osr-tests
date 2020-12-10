@@ -15,11 +15,17 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.JsonPatchOperation;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
@@ -84,6 +90,28 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
         DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
+
+        // workaround
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Device patchDevice = deviceList.get(0);
+
+        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
+                .idPath(patchDevice.getId())
+                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
+                        .from("string")
+                        .path("/fiberOnLocationId")
+                        .value("100000001")))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        patchDevice = deviceList.get(0);
+        log.info("patchDevice = {}", patchDevice);
+        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
+        // workaround end
 
         dpuCreatePage.openDpuInfoPage();
 
