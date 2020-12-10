@@ -8,6 +8,7 @@ import lombok.Data;
 public class Dpu {
     private String endSz;
     private Integer onuId;
+    private String gfApFolId;
     private Device.LifeCycleStateEnum lifeCycleDpu = Device.LifeCycleStateEnum.NOT_OPERATING;
     private Port.LifeCycleStateEnum lifeCycleUplink = Port.LifeCycleStateEnum.NOT_OPERATING;
 }

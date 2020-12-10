@@ -101,15 +101,15 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkGetDpuPonConnCalled(String dpuEndsz) {
+    public void checkGetDpuPonConnCalled(String gfApFolId) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?gfApFolId=" + gfApFolId + "&page=0&pageSize=64&direction=ASC"));
     }
 
     @Step
-    public void checkGetDpuPonConnNotCalled(String dpuEndsz) {
+    public void checkGetDpuPonConnNotCalled(String gfApFolId) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/dpu/dpuPonConnection?dpuPonPortEndsz=" + dpuEndsz + "&dpuPonPortNumber=1"));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?gfApFolId=" + gfApFolId + "&page=0&pageSize=64&direction=ASC"));
     }
 
     @Step
