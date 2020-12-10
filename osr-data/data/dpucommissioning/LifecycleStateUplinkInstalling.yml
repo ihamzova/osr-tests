@@ -4,3 +4,4 @@ values:
   endSz: "49/8571/0/71GM"
   onuId: 12345678
   lifeCycleUplink: "INSTALLING"
+  gfApFolId: "1111222233334444555"

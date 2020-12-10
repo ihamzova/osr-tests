@@ -5,3 +5,4 @@ values:
   onuId: 12345678
   lifeCycleDpu: "RETIRING"
   lifeCycleUplink: "RETIRING"
+  gfApFolId: "1111222233334444555"

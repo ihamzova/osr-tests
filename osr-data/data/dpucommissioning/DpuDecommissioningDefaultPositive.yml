@@ -5,3 +5,4 @@ values:
   onuId: 12345678
   lifeCycleDpu: "OPERATING"
   lifeCycleUplink: "OPERATING"
+  gfApFolId: "1111222233334444555"
