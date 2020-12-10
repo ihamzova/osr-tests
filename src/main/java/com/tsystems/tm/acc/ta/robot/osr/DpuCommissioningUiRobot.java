@@ -49,12 +49,22 @@ public class DpuCommissioningUiRobot {
 
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
+        log.info("patchDevice startDpuCreation");
         dpuCreatePage.startDpuCreation(dpuDevice);
 
+        dpuCreatePage.openDpuInfoPage();
+
         // workaround
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+
+        log.info("patchDevice getDevice");
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 1 is wrong");
         Device patchDevice = deviceList.get(0);
 
         oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
@@ -67,14 +77,12 @@ public class DpuCommissioningUiRobot {
 
         deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 2 is wrong");
         patchDevice = deviceList.get(0);
         log.info("patchDevice = {}", patchDevice);
         log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
         // workaround end
 
-
-        dpuCreatePage.openDpuInfoPage();
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();

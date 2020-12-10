@@ -93,10 +93,14 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
 
+        dpuCreatePage.openDpuInfoPage();
+
+        Thread.sleep(1000);
+        log.info("patchDevice getDevice");
         // workaround
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 1 is wrong");
         Device patchDevice = deviceList.get(0);
 
         oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
@@ -109,13 +113,13 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
 
         deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L);
+        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 2 is wrong");
         patchDevice = deviceList.get(0);
         log.info("patchDevice = {}", patchDevice);
         log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
         // workaround end
 
-        dpuCreatePage.openDpuInfoPage();
+
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
