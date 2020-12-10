@@ -11,9 +11,12 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.DpuPonConnectionDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.JsonPatchOperation;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,6 +25,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_ACTIVE;
 
+@Slf4j
 public class DpuCommissioningUiRobot {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
@@ -46,6 +50,30 @@ public class DpuCommissioningUiRobot {
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
+
+        // workaround
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        Device patchDevice = deviceList.get(0);
+
+        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
+                .idPath(patchDevice.getId())
+                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
+                        .from("string")
+                        .path("/fiberOnLocationId")
+                        .value("71520003000100")))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L);
+        patchDevice = deviceList.get(0);
+        log.info("patchDevice = {}", patchDevice);
+        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
+        // workaround end
+
+
         dpuCreatePage.openDpuInfoPage();
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
