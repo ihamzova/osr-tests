@@ -94,7 +94,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
@@ -311,7 +311,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
@@ -461,7 +461,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);

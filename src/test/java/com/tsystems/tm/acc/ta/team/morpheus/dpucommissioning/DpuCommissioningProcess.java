@@ -109,7 +109,7 @@ public class DpuCommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -162,7 +162,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -221,7 +221,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -259,7 +259,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
         }
     }
@@ -282,7 +282,7 @@ public class DpuCommissioningProcess extends BaseTest {
                     bodyContains(olt.getOltPort()));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
         }
