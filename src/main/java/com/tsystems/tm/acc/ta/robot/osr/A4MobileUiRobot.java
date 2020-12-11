@@ -35,9 +35,15 @@ public class A4MobileUiRobot {
                 .login();
     }
 
+    public String[] getSplittedVpszValues(String vpszUnsplitted){
+        return vpszUnsplitted.split("/");
+    }
+
     @Step("Enter vpsz")
     public void enterVpsz(String value) {
-        $(a4MobileNeSearchPage.getVPSZ_INPUT_FIELD_LOCATOR()).val(value);
+        $(a4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[0]);
+        $(a4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[1]);
+        $(a4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[2]);
     }
 
     @Step("Read vpsz")

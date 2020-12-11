@@ -28,6 +28,15 @@ public class A4MobileNeSearchPage {
     public static final By VPSZ_INPUT_FIELD_LOCATOR = By.id("vpsz");
 
     @Getter
+    public static final By AKZ_INPUT_FIELD_LOCATOR = By.id("akz");
+
+    @Getter
+    public static final By ONKZ_INPUT_FIELD_LOCATOR = By.id("onkz");
+
+    @Getter
+    public static final By VKZ_INPUT_FIELD_LOCATOR = By.id("vkz");
+
+    @Getter
     public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
 
     @Getter
