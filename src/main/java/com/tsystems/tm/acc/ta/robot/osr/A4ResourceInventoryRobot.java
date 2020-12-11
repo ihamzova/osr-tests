@@ -384,11 +384,12 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that operational state has been updated for network element port")
-    public void checkNetworkElementPortIsUpdatedWithNewState(A4NetworkElementPort nepData, String expectedNewOperationalState) {
+    public void checkNetworkElementPortIsUpdatedWithNewStateAndDescription(A4NetworkElementPort nepData, String expectedNewOperationalState, String expectedNewDescription) {
         NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());
 
         // NEPs do not have a lifecycle state
         assertEquals(networkElementPortDto.getOperationalState(), expectedNewOperationalState);
+        assertEquals(networkElementPortDto.getDescription(), expectedNewDescription);
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network service profile (FTTH Access)")
