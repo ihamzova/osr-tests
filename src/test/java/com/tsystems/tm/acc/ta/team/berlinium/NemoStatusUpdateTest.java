@@ -100,10 +100,11 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Element Port")
     public void testNemoStatusUpdateForNep() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, NEW_OPERATIONAL_STATE);
+        final String NEW_DESCRIPTION = "DIGIHUB-77227 new description value";
+        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, NEW_OPERATIONAL_STATE, NEW_DESCRIPTION);
 
         // THEN
-        a4ResourceInventory.checkNetworkElementPortIsUpdatedWithNewState(nepDataA, NEW_OPERATIONAL_STATE);
+        a4ResourceInventory.checkNetworkElementPortIsUpdatedWithNewStateAndDescription(nepDataA, NEW_OPERATIONAL_STATE, NEW_DESCRIPTION);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (FTTH Access)")

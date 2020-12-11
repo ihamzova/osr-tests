@@ -59,9 +59,9 @@ public class A4ResourceInventoryServiceRobot {
     }
 
     @Step("Send new operational state for Network Element Port")
-    public void sendStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData, String newOperationalState) {
+    public void sendStatusUpdateForNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData, String newOperationalState, String newDescription) {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourceUpdate(nepData, neData, newOperationalState);
+                .getLogicalResourceUpdate(nepData, neData, newOperationalState, newDescription);
 
         a4ResourceInventoryService
                 .logicalResource()
