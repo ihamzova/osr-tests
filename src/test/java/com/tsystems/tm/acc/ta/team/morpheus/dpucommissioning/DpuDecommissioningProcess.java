@@ -46,7 +46,7 @@ public class DpuDecommissioningProcess extends BaseTest {
 
     @Test(description = "Positive case. DPU-decommissioning without errors")
     @Description("Expected: no errors, dpuDecommissioning finished successfully")
-    public void dpuDecommissioningPositive() {
+    public void dpuDecommissioningPositive(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
@@ -412,15 +412,37 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
+    @Test(description = "Negative case. Different slots returned in response from PonInventory. No PostPreprovisionFTTH expected")
+    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
+    public void dpuDecommissioningGetPonConReturnedDifferentSlots(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDifferentSlotsError);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addAllForDecomGetPonPortDiffSlotError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForDecomGetPonPortDiffSlotError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+        }
+    }
+
+
     @Test(description = "Restore process test")
     @Description("Process is restored after fail on release onuid step")
     public void restoreProcessDecommissioning() throws InterruptedException {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecomRestore);
         DpuCommissioningResponse resp;
 
-        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningReleaseOnuIdTask400")) {
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningRestore")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
                     .build()
