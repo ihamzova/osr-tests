@@ -408,7 +408,7 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
 
