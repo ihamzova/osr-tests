@@ -21,10 +21,9 @@ public class DpuDevice {
     private String hersteller;
     private String klsId;
     private String seriennummer;
-    private String ipAdresse;
+    private String fiberOnLocationId;
     private String ponConnectionWe;
     private String ponConnectionGe;
-    private String dpuDistributionPointId;
 
     @Override
     public String toString() {

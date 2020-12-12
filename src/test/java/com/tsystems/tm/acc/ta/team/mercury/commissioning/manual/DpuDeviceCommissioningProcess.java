@@ -89,37 +89,18 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
         Thread.sleep(1000);
         DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
 
-        log.info("patchDevice startDpuCreation");
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
 
         dpuCreatePage.openDpuInfoPage();
 
         Thread.sleep(1000);
-        log.info("patchDevice getDevice");
         // workaround
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+        List<Device>  deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 1 is wrong");
+        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size is wrong");
         Device patchDevice = deviceList.get(0);
-
-        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
-                .idPath(patchDevice.getId())
-                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
-                        .from("string")
-                        .path("/fiberOnLocationId")
-                        .value("71520003000100")))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 2 is wrong");
-        patchDevice = deviceList.get(0);
-        log.info("patchDevice = {}", patchDevice);
-        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
-        // workaround end
-
-
+        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());  // 71520003000100
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();

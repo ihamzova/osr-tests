@@ -12,7 +12,6 @@ values:
   hersteller: "ADTRAN"
   klsId: "12223344"
   seriennummer: "ADTN180600B9"
-  ipAdresse: "10.182.125.196"
+  fiberOnLocationId: "71520003000100"
   ponConnectionWe: "1"
   ponConnectionGe: "0"
-  dpuDistributionPointId: "1"
