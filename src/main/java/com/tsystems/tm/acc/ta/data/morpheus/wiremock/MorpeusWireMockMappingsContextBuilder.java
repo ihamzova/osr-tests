@@ -261,6 +261,15 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+
+    public MorpeusWireMockMappingsContextBuilder addAllForGetPonConnDiffPortsError(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addGetDpuPonConnDiffPortsStub(dpu, olt, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        return this;
+    }
+
     public MorpeusWireMockMappingsContextBuilder addDpuDecommissioningSuccess(OltDevice olt, Dpu dpu) {
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);
@@ -454,6 +463,27 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addAllForDecomGetPonPortDiffSlotError(OltDevice olt, Dpu dpu) {
+        addGetDpuDeviceStub(dpu, true);
+        addPatchLifecycleStateDeviceStub(dpu);
+        addPatchLifecycleStatePortStub(dpu);
+        addDeleteDeprovisioningDeviceStub(dpu, true);
+        addGetDpuEmsConfigStub(dpu, true);
+        addPutDpuEmsConfigStub(dpu);
+        addSealPostDpuDeconfStub(dpu,true);
+        addDeleteDpuEmsConfigStub();
+        addGetDpuAtOltConfigStub(dpu, olt, true,false);
+        addPutDpuAtOltConfigStub(dpu, olt);
+        addSealPostDpuOltDeconfStub(dpu, true);
+        addPostReleaseOnuIdTask(olt, true);
+        addDeleteDpuOltConfigStub();
+        addGetDPUAncpStub(olt, dpu, true);
+        addDeleteAncpStub(true);
+        addGetDpuAtOltConfigStub(dpu, olt, false,true);
+        addGetDpuPonConnDiffSlotsStub(dpu, olt, true);
+        return this;
+    }
+
     public MorpeusWireMockMappingsContextBuilder addSEALMocksForDomain(DpuDevice dpu) {
         context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
         context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
@@ -497,6 +527,24 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     public MorpeusWireMockMappingsContextBuilder addGetDpuPonConnStub(Dpu dpu, OltDevice olt, boolean success) {
         if (success) {
             context.add(new PonInventoryStub().getLlc200(dpu, olt));
+        } else {
+            context.add(new PonInventoryStub().getLlc400(dpu, olt));
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDpuPonConnDiffPortsStub(Dpu dpu, OltDevice olt, boolean success) {
+        if (success) {
+            context.add(new PonInventoryStub().getLlcDiffPorts200(dpu, olt));
+        } else {
+            context.add(new PonInventoryStub().getLlc400(dpu, olt));
+        }
+        return this;
+    }
+
+    public MorpeusWireMockMappingsContextBuilder addGetDpuPonConnDiffSlotsStub(Dpu dpu, OltDevice olt, boolean success) {
+        if (success) {
+            context.add(new PonInventoryStub().getLlcDiffSlots200(dpu, olt));
         } else {
             context.add(new PonInventoryStub().getLlc400(dpu, olt));
         }

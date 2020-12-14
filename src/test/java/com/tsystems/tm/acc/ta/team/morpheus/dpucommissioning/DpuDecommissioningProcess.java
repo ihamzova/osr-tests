@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -44,9 +45,14 @@ public class DpuDecommissioningProcess extends BaseTest {
         WireMockFactory.get().resetRequests();
     }
 
+    @AfterMethod
+    public void resetAfter() {
+        WireMockFactory.get().resetRequests();
+    }
+
     @Test(description = "Positive case. DPU-decommissioning without errors")
     @Description("Expected: no errors, dpuDecommissioning finished successfully")
-    public void dpuDecommissioningPositive() {
+    public void dpuDecommissioningPositive(){
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
@@ -388,8 +394,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
-    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
+    @Test(description = "Negative case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
+    @Description("Negative case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
     public void dpuDecommissioningPostPreprovisionFTTHDPUisAlreadyKnown(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHDPUAtPonPortAlreadyExist);
@@ -408,19 +414,41 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
+
+    @Test(description = "Negative case. Different slots returned in response from PonInventory. No PostPreprovisionFTTH expected")
+    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
+    public void dpuDecommissioningGetPonConReturnedDifferentSlots(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDifferentSlotsError);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addAllForDecomGetPonPortDiffSlotError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForDecomGetPonPortDiffSlotError(olt, dpu)
+                    .build()
+                    .publish();
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+        }
+    }
+
 
     @Test(description = "Restore process test")
     @Description("Process is restored after fail on release onuid step")
     public void restoreProcessDecommissioning() throws InterruptedException {
 
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecomRestore);
         DpuCommissioningResponse resp;
 
-        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningReleaseOnuIdTask400")) {
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addDpuDecommissioningRestore")) {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
                     .build()
