@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -41,6 +42,11 @@ public class DpuDecommissioningProcess extends BaseTest {
 
     @BeforeMethod
     public void reset() {
+        WireMockFactory.get().resetRequests();
+    }
+
+    @AfterMethod
+    public void resetAfter() {
         WireMockFactory.get().resetRequests();
     }
 
@@ -388,8 +394,8 @@ public class DpuDecommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
-    @Description("Positive case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
+    @Test(description = "Negative case. Found existing dpu at oltPonPort. No PostPreprovisionFTTH expected")
+    @Description("Negative case. Expected: post request for preprovisioning device on WG-FTTH-AP not sent")
     public void dpuDecommissioningPostPreprovisionFTTHDPUisAlreadyKnown(){
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.PostPreprovisioningFTTHDPUAtPonPortAlreadyExist);
