@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
@@ -71,6 +72,11 @@ public class DpuCommissioningSDX2221 extends BaseTest {
                 .addSEALMocksForDomain(dpuDevice)
                 .build()
                 .publish();
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain"))
+                .addGigaAreasLocationMock(dpuDevice)
+                .build();
+        mappingsContext.publish();
 
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);

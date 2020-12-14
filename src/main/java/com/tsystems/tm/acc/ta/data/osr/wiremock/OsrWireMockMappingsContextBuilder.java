@@ -48,4 +48,9 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
+    public OsrWireMockMappingsContextBuilder addGigaAreasLocationMock(DpuDevice dpuDevice) {
+        context.add(new GigaAreasLocationStub().getPageFibreOnLocation200(dpuDevice));
+        return this;
+    }
+
 }

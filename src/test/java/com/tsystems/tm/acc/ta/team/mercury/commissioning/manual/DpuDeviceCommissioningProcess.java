@@ -3,17 +3,20 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.api.osr.AreaDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.JsonPatchOperation;
@@ -40,14 +43,21 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
     private OltResourceInventoryClient oltResourceInventoryClient;
     private DpuDevice dpuDevice;
     private String businessKey;
+    private WireMockMappingsContext mappingsContext;
 
     @BeforeClass
     public void init() {
 
         oltResourceInventoryClient = new OltResourceInventoryClient();
 
+
         OsrTestContext context = OsrTestContext.get();
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain"))
+                .addGigaAreasLocationMock(dpuDevice)
+                .build();
+        mappingsContext.publish();
 
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -69,6 +79,7 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
 
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")

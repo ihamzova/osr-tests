@@ -16,7 +16,7 @@ public class DpuCreatePage {
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/deviceeditor";
 
-    private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 1_000;
+    private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
 
     public static final By DPU_SERIALNUMBER_INPUT_LOCATOR = byQaData("input-dpuSerialNumber");
     public static final By DPU_KLS_ID_SEARCH_INPUT_LOCATOR = byQaData("klsidsearch_input");
@@ -40,6 +40,11 @@ public class DpuCreatePage {
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).val(dpuDevice.getKlsId());
         $(DPU_KLS_ID_SEARCH_START_LOCATOR).click();
         $(FIBERONLOCATION_OPTION_0).click();
+        try {
+            Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         $(DPU_DEVICE_CREATE_BUTTON_LOCATOR).waitUntil(enabled, WAIT_TIME_FOR_BUTTON_ENABLED).click();
         return this;
     }
