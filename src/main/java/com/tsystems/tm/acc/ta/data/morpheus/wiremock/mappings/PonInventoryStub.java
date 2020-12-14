@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.wiremock.mappings;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.invoker.JSON;
@@ -35,9 +36,21 @@ public class PonInventoryStub extends AbstractStubMapping {
     public MappingBuilder getLlc400(Dpu dpu, OltDevice olt){
         try {
             return get(urlPathEqualTo(GET_LLC_URL))
-                    .withName("getllc200")
+                    .withName("getllc400")
                     .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass().getResource(PATH_TO_PO_MOCK).getFile()), Charset.defaultCharset()),400))
                     .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MappingBuilder getLlcForDomain200(DpuDevice dpu, OltDevice olt){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllc200")
+                    .willReturn(aDefaultResponseWithBody(prepareBody(olt),200))
+                    .withQueryParam("gfApFolId", equalTo(dpu.getFiberOnLocationId()));
         } catch (IOException e) {
             e.printStackTrace();
         }
