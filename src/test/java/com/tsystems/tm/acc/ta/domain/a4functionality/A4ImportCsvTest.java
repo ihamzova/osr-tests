@@ -57,6 +57,7 @@ public class A4ImportCsvTest extends BaseTest {
                 .addNemoMock()
                 .build();
 
+        a4ResourceInventoryImporterUiRobot.openA4ImportPage();
         mappingsContext.publish();
     }
 
@@ -68,7 +69,7 @@ public class A4ImportCsvTest extends BaseTest {
     }
 
     @Test(description = "DIGIHUB-xxxxx Import Network Element (Group) CSV file into A4 Resource Inventory")
-    @Owner("bela.kovac@t-systems.com, stefan.masztalerz@aoe.com")
+    @Owner("Phillip.Moeller@t-systems.com, Anita.Junge@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Import Network Element (Group) CSV file into A4 Resource Inventory")
     public void testImportCsvFile() {
@@ -76,8 +77,7 @@ public class A4ImportCsvTest extends BaseTest {
         a4ResourceInventoryImporterUiRobot.importCsvFileViaUi(csvData);
 
         // Then / Assert
-        a4ResourceInventoryImporterUiRobot.checkNetworkElementsViaUi(csvData);
+        a4ResourceInventoryRobot.checkNetworkElementByCsvData(csvData);
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
     }
-
 }
