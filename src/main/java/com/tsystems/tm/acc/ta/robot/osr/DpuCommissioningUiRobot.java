@@ -49,7 +49,6 @@ public class DpuCommissioningUiRobot {
 
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
-        log.info("patchDevice startDpuCreation");
         dpuCreatePage.startDpuCreation(dpuDevice);
 
         dpuCreatePage.openDpuInfoPage();

@@ -2,10 +2,12 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
@@ -40,6 +42,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
+    private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
 
@@ -48,6 +51,8 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+        //TODO replace with appropriate oltDevice
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
     }
@@ -69,14 +74,15 @@ public class DpuCommissioningSDX2221 extends BaseTest {
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addSEALMocksForDomain(dpuDevice)
+                .addMocksForDomain(dpuDevice, oltDevice)
                 .build()
                 .publish();
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain"))
+        mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
+        new MercuryWireMockMappingsContextBuilder(mappingsContext)
                 .addGigaAreasLocationMock(dpuDevice)
-                .build();
-        mappingsContext.publish();
+                .build()
+                .publish();
 
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);

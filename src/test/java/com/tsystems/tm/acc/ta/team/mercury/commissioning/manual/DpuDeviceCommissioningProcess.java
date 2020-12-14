@@ -2,14 +2,11 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
-import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
-import com.tsystems.tm.acc.ta.api.osr.AreaDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
@@ -19,15 +16,14 @@ import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.JsonPatchOperation;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -50,14 +46,15 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
 
         oltResourceInventoryClient = new OltResourceInventoryClient();
 
-
         OsrTestContext context = OsrTestContext.get();
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain"))
+        WireMockFactory.get().resetToDefaultMappings();
+        mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
+        new MercuryWireMockMappingsContextBuilder(mappingsContext)
                 .addGigaAreasLocationMock(dpuDevice)
-                .build();
-        mappingsContext.publish();
+                .build()
+                .publish();
 
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -77,9 +74,13 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
     @AfterClass
     public void cleanUp() {
 
+        WireMockFactory.get().resetToDefaultMappings();
+
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -102,16 +103,18 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
 
         dpuCreatePage.validateUrl();
         dpuCreatePage.startDpuCreation(dpuDevice);
+        Thread.sleep(1000);
 
         dpuCreatePage.openDpuInfoPage();
 
-        Thread.sleep(1000);
-        // workaround
+        Thread.sleep(100);
+        // internal test
         List<Device>  deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(deviceList.size(), 1L, "deviceList.size is wrong");
         Device patchDevice = deviceList.get(0);
         log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());  // 71520003000100
+        Assert.assertEquals(dpuDevice.getFiberOnLocationId(), patchDevice.getFiberOnLocationId(), "FiberOnLocationId missmatch" );
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();

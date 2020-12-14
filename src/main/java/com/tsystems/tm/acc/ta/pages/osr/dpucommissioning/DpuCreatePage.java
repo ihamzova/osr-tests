@@ -1,16 +1,16 @@
 package com.tsystems.tm.acc.ta.pages.osr.dpucommissioning;
 
-import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
+@Slf4j
 public class DpuCreatePage {
 
     public static final String APP = "olt-resource-inventory-ui";
@@ -22,7 +22,6 @@ public class DpuCreatePage {
     public static final By DPU_KLS_ID_SEARCH_INPUT_LOCATOR = byQaData("klsidsearch_input");
     public static final By DPU_KLS_ID_SEARCH_START_LOCATOR = byQaData("klsidsearch_start");
     public static final By FIBERONLOCATION_OPTION_0 = byQaData("fiberonlocation_option_0");
-    public static final By FIBERONLOCATION_OPTION_1 = byQaData("fiberonlocation_option_1");
     public static final By DPU_DEVICE_CREATE_BUTTON_LOCATOR = byQaData("dpu_create");
     public static final By DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR = byQaData("dpu_details");
 
@@ -42,10 +41,10 @@ public class DpuCreatePage {
         $(FIBERONLOCATION_OPTION_0).click();
         try {
             Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("Interrupted");
         }
-        $(DPU_DEVICE_CREATE_BUTTON_LOCATOR).waitUntil(enabled, WAIT_TIME_FOR_BUTTON_ENABLED).click();
+        $(DPU_DEVICE_CREATE_BUTTON_LOCATOR).click();
         return this;
     }
 
