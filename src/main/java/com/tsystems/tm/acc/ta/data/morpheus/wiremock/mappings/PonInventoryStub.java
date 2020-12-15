@@ -20,6 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 public class PonInventoryStub extends AbstractStubMapping {
     public static final String GET_LLC_URL = "/resource-order-resource-inventory/v2/llc";
     public static final String PATH_TO_PO_MOCK = "/team/morpheus/ponInventory.json";
+    public static final String PATH_TO_DOMAIN_MOCK = "/team/morpheus/ponInventoryDomain.json";
 
     public MappingBuilder getLlc200(Dpu dpu, OltDevice olt){
         try {
@@ -45,11 +46,11 @@ public class PonInventoryStub extends AbstractStubMapping {
         return null;
     }
 
-    public MappingBuilder getLlcForDomain200(DpuDevice dpu, OltDevice olt){
+    public MappingBuilder getLlcForDomain200(DpuDevice dpu){
         try {
             return get(urlPathEqualTo(GET_LLC_URL))
-                    .withName("getllc200")
-                    .willReturn(aDefaultResponseWithBody(prepareBody(olt),200))
+                    .withName("getllcDomain200")
+                    .willReturn(aDefaultResponseWithBody(prepareBodyForDomain(dpu),200))
                     .withQueryParam("gfApFolId", equalTo(dpu.getFiberOnLocationId()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,6 +63,13 @@ public class PonInventoryStub extends AbstractStubMapping {
                 .getResource(PATH_TO_PO_MOCK).getFile()), Charset.defaultCharset())
                 .replace("$vpsz", oltDevice.getVpsz())
                 .replace("$vsz", oltDevice.getFsz());
+    }
+
+    private String prepareBodyForDomain(DpuDevice dpuDevice) throws IOException {
+        return FileUtils.readFileToString(new File(getClass()
+                .getResource(PATH_TO_DOMAIN_MOCK).getFile()), Charset.defaultCharset())
+                .replace("$vpsz", dpuDevice.getVpsz())
+                .replace("$vsz", dpuDevice.getFsz());
     }
 
     private String serialize(Object obj) {

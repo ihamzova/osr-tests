@@ -42,7 +42,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
-    private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
 
@@ -51,8 +50,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
-        //TODO replace with appropriate oltDevice
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
     }
@@ -74,7 +71,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addMocksForDomain(dpuDevice, oltDevice)
+                .addMocksForDomain(dpuDevice)
                 .build()
                 .publish();
 

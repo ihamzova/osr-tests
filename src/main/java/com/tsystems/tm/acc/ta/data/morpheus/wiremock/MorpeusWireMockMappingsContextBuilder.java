@@ -454,10 +454,10 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addMocksForDomain(DpuDevice dpu, OltDevice olt) {
+    public MorpeusWireMockMappingsContextBuilder addMocksForDomain(DpuDevice dpu) {
         context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
         context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
-        context.add(new PonInventoryStub().getLlcForDomain200(dpu,olt));
+        context.add(new PonInventoryStub().getLlcForDomain200(dpu));
         return this;
     }
 
