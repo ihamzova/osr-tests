@@ -67,9 +67,7 @@ public class PonInventoryStub extends AbstractStubMapping {
 
     private String prepareBodyForDomain(DpuDevice dpuDevice) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
-                .getResource(PATH_TO_DOMAIN_MOCK).getFile()), Charset.defaultCharset())
-                .replace("$vpsz", dpuDevice.getVpsz())
-                .replace("$vsz", dpuDevice.getFsz());
+                .getResource(PATH_TO_DOMAIN_MOCK).getFile()), Charset.defaultCharset());
     }
 
     private String serialize(Object obj) {
