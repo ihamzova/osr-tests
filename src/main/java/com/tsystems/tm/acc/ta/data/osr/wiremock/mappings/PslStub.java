@@ -31,7 +31,7 @@ public class PslStub extends AbstractStubMapping {
         return post(urlPathMatching(READ_EQUIPMENT_UNIVERSAL_URL))
                 .withName("postReadEquipment202_" + (networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))
                 .willReturn(aDefaultResponseWithBody("", HTTP_CODE_ACCEPTED_202))
-                .atPriority(1)
+                .atPriority(11)
                 .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo((networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(equipmentData, networkElement))));
     }

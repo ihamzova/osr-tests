@@ -2,5 +2,5 @@ name: defaultUeweg
 template: com.tsystems.tm.acc.ta.data.osr.models.UewegData
 values:
   uewegId: "${randomLong, 100000, 999999}, ${randomLong, 100000, 999999}"
-  vendorPortNameA: "10ge 0/1"
-  vendorPortNameB: "0/0/2"
+  vendorPortNameA: "ge-0/0/1"
+  vendorPortNameB: "PCI-1/0"

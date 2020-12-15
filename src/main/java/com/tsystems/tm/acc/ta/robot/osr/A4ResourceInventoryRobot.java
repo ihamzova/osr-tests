@@ -429,6 +429,8 @@ public class A4ResourceInventoryRobot {
             else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1"))
             {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
+            } else {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 0);
             }
         });
     }
