@@ -408,6 +408,31 @@ public class A4ResourceInventoryRobot {
         });
     }
 
+    @Step("Check that Ports are created after CSV Import")
+    public void checkNetworkElementPortsByImportCsvData(A4ImportCsvData a4ImportCsvData) {
+
+        AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
+        AtomicReference<List<NetworkElementPortDto>> networkElementPortDtoUnderTest = new AtomicReference<>(new ArrayList<>());
+
+        //AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
+
+        a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
+            networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
+                    (a4ImportCsvLine.getNeVpsz(), a4ImportCsvLine.getNeFsz()));
+
+            networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
+                    (networkElementDtoUnderTest.get().getUuid()));
+
+            if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
+            }
+            else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1"))
+            {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
+            }
+        });
+    }
+
     @Step("Check that operational state has been updated for network element port")
     public void checkNetworkElementPortIsUpdatedWithNewStateAndDescription(A4NetworkElementPort nepData, String expectedNewOperationalState, String expectedNewDescription) {
         NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());

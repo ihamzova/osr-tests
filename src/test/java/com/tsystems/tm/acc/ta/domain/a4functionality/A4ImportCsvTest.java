@@ -78,6 +78,7 @@ public class A4ImportCsvTest extends BaseTest {
 
         // Then / Assert
         a4ResourceInventoryRobot.checkNetworkElementByCsvData(csvData);
+        a4ResourceInventoryRobot.checkNetworkElementPortsByImportCsvData(csvData);
         a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
     }
 }
