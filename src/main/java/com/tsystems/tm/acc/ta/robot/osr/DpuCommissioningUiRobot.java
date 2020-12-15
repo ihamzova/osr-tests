@@ -66,6 +66,7 @@ public class DpuCommissioningUiRobot {
 
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(),"Port LifeCycleState after com. mismatch");
         dpuInfoPage.openDpuConfiguraionTab();
+        Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
         Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
         Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE),"OLT EMS configuration state mismatch");
         Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE), "DPU EMS configuration state mismatch");
@@ -85,6 +86,9 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
         Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
         Device deviceAfterCommissioning = deviceList.get(0);
+
+        Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+        Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
         // check device lifecycle state
         Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING, "DPU LifeCycleState mismatch");

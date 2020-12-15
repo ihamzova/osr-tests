@@ -130,12 +130,21 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
          * Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
          Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(dpuDevice.getOltGponPort()), DevicePortLifeCycleStateUI.OPERATING.toString());*/
         dpuInfoPage.openDpuConfiguraionTab();
-        //Assert.assertEquals(DpuInfoPage.getDpuAncpConfigState(), DPU_ANCP_CONFIGURATION_STATE);
-        //Assert.assertEquals(DpuInfoPage.getOltEmsConfigState(), OLT_EMS_CONFIGURATION_STATE_LOCATOR);
-        //Assert.assertEquals(DpuInfoPage.getDpuEmsConfigState(), DPU_EMS_CONFIGURATION_STATE_LOCATOR);
+        Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
+
         Thread.sleep(1000);
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
+
+        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
+        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
+        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
+        Device deviceAfterCommissioning = deviceList.get(0);
+
+        Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+        Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
     }
 }
