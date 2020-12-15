@@ -3,11 +3,11 @@ template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
 values:
   uuid: "" # if blank: field will be filled with returned uuid of created NE
   vpsz: "49/1198/0"
-  fsz: "7KCA"
+  fsz: "7KC1"
   klsId: "1234567"
   category: "BOR"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
-  type: "A4-POD-BOR-v1"
+  type: "A4-BOR-v1"
   plannedMatNr: ""
   planningDeviceName: "dmst.bor.1"
