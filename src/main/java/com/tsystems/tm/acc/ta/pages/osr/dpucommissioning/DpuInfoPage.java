@@ -18,7 +18,7 @@ public class DpuInfoPage {
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
-    private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
+    private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 20 * 60_000;
 
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
     public static final By PON_PORT_LIFE_CYCLE_STATE_LOCATOR = byQaData("port_1_pon_lifecyclestate");
