@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import static com.codeborne.selenide.Condition.matchText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -48,6 +49,8 @@ public class A4ResourceInventoryImporterUiRobot {
         uploadCsvFile(csvFile);
         clickSendenButton();
 
-        $(a4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(visible, 10000);
+        $(a4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(visible, 25000);
+
+        $(a4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(matchText("csvLine"), 25000);
     }
 }
