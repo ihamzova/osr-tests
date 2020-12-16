@@ -97,6 +97,19 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
+    @Step("Send new operational state for Network Service Profile (A10NSP)")
+    public void sendStatusUpdateForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String newOperationalState) {
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspL2Data.getUuid())
+                .body(nepLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
     @Step("Send new operational state for Network Element Link")
     public void sendStatusUpdateForNetworkElementLink(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String newOperationalState) {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
