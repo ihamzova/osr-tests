@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.wiremock.mappings;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.invoker.JSON;
@@ -21,6 +22,7 @@ public class PonInventoryStub extends AbstractStubMapping {
     public static final String PATH_TO_PO_MOCK = "/team/morpheus/ponInventory.json";
     public static final String PATH_TO_PO_MOCK_COM_DIFF_PORT = "/team/morpheus/ponInventory_negative_comissioning_different_ports.json";
     public static final String PATH_TO_PO_MOCK_DECOM_DIFF_SLOT = "/team/morpheus/ponInventory_negative_decomissioning_different_slots.json";
+    public static final String PATH_TO_DOMAIN_MOCK = "/team/morpheus/ponInventoryDomain.json";
 
     //TODO refactor this in inno sprint: return null is rough
     public MappingBuilder getLlc200(Dpu dpu, OltDevice olt){
@@ -71,10 +73,27 @@ public class PonInventoryStub extends AbstractStubMapping {
         return null;
     }
 
+    public MappingBuilder getLlcForDomain200(DpuDevice dpu){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllcDomain200")
+                    .willReturn(aDefaultResponseWithBody(prepareBodyForDomain(dpu),200))
+                    .withQueryParam("gfApFolId", equalTo(dpu.getFiberOnLocationId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private String prepareBody(OltDevice oltDevice, String mockPath) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
                 .getResource(mockPath).getFile()), Charset.defaultCharset())
                 .replace("$vpsz", oltDevice.getVpsz())
                 .replace("$vsz", oltDevice.getFsz());
+    }
+
+    private String prepareBodyForDomain(DpuDevice dpuDevice) throws IOException {
+        return FileUtils.readFileToString(new File(getClass()
+                .getResource(PATH_TO_DOMAIN_MOCK).getFile()), Charset.defaultCharset());
     }
 }

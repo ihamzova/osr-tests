@@ -2,9 +2,12 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
@@ -68,7 +71,13 @@ public class DpuCommissioningSDX2221 extends BaseTest {
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addSEALMocksForDomain(dpuDevice)
+                .addMocksForDomain(dpuDevice)
+                .build()
+                .publish();
+
+        mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
+        new MercuryWireMockMappingsContextBuilder(mappingsContext)
+                .addGigaAreasLocationMock(dpuDevice)
                 .build()
                 .publish();
 

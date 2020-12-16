@@ -33,6 +33,7 @@ public class DpuInfoPage {
     private String businessKey; // check etcd values
 
     // verify
+    public static final By DPU_KLS_ID_LOCATOR = byQaData("span-olt-klsid");
     public static final By DPU_ANCP_CONFIGURATION_STATE_LOCATOR = byQaData("dpu_ancp_session_status");
     public static final By OLT_EMS_CONFIGURATION_STATE_LOCATOR = byQaData("olt_ems_configuration_status");
     public static final By OLT_EMS_DPU_ENDSZ_LOCATOR = byQaData("olt_ems_dpu_endsz");
@@ -93,13 +94,18 @@ public class DpuInfoPage {
         return businessKey;
     }
 
-    @Step("check dpu ancp config state")
+    @Step("get displayed KlsId")
+    public static String getDpuKlsId() {
+        return $(DPU_KLS_ID_LOCATOR).getText();
+    }
+
+    @Step("get dpu ancp config state")
     public static String getDpuAncpConfigState() {
         log.info("dpu ancp config state is {} ", $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText());
         return $(DPU_ANCP_CONFIGURATION_STATE_LOCATOR).getText();
     }
 
-    @Step("check olt ems config state")
+    @Step("get olt ems config state")
     public static String getOltEmsConfigState() {
         log.info("olt ems config state is {} ", $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText());
         return $(OLT_EMS_CONFIGURATION_STATE_LOCATOR).getText();

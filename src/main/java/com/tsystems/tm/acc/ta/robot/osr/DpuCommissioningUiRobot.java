@@ -49,40 +49,9 @@ public class DpuCommissioningUiRobot {
 
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
-        log.info("patchDevice startDpuCreation");
         dpuCreatePage.startDpuCreation(dpuDevice);
 
         dpuCreatePage.openDpuInfoPage();
-
-        // workaround
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            log.error("Interrupted");
-        }
-
-        log.info("patchDevice getDevice");
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 1 is wrong");
-        Device patchDevice = deviceList.get(0);
-
-        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
-                .idPath(patchDevice.getId())
-                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
-                        .from("string")
-                        .path("/fiberOnLocationId")
-                        .value("71520003000100")))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size 2 is wrong");
-        patchDevice = deviceList.get(0);
-        log.info("patchDevice = {}", patchDevice);
-        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());
-        // workaround end
-
 
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
@@ -97,6 +66,7 @@ public class DpuCommissioningUiRobot {
 
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(),"Port LifeCycleState after com. mismatch");
         dpuInfoPage.openDpuConfiguraionTab();
+        Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
         Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
         Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE),"OLT EMS configuration state mismatch");
         Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE), "DPU EMS configuration state mismatch");
@@ -112,26 +82,16 @@ public class DpuCommissioningUiRobot {
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L);
-        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU);
-        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz());
+        Assert.assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
+        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
+        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
         Device deviceAfterCommissioning = deviceList.get(0);
 
+        Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+        Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
+
         // check device lifecycle state
-        Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING);
-
-        List<DpuPonConnectionDto> dpuPonConnectionDtos = oltResourceInventoryClient.getClient().dpuPonConnectionInternalController().findDpuPonConnectionByCriteria()
-                .dpuPonPortEndszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(dpuPonConnectionDtos.size(), 1L);
-        DpuPonConnectionDto dpuPonConnection = dpuPonConnectionDtos.get(0);
-        Assert.assertEquals(dpuPonConnection.getOltPonPortEndsz(), dpuDevice.getOltEndsz(), "OLT EndSz mismatch");
-        Assert.assertEquals(dpuPonConnection.getOltPonSlotNumber(), dpuDevice.getOltGponSlot(), "OLT Gpon Slot mismatch");
-        Assert.assertEquals(dpuPonConnection.getOltPonPortNumber(), dpuDevice.getOltGponPort(), "OLT Gpon Port mismatch");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortEndsz(), dpuDevice.getEndsz(), "DPU EndSz wrong");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortNumber(), "1", "DPU Pon port number wrong");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortGe(), Integer.valueOf(dpuDevice.getPonConnectionGe()), "DPU GE mismatch");
-        Assert.assertEquals(dpuPonConnection.getDpuPonPortWe(), Integer.valueOf(dpuDevice.getPonConnectionWe()), "DPU WE mismatch");
-
+        Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING, "DPU LifeCycleState mismatch");
 
         // check AccessLines, corresponding profiles and pools
         int numberOfAccessLinesForProvisioning = Integer.parseInt(dpuDevice.getPonConnectionGe()) + Integer.parseInt(dpuDevice.getPonConnectionWe());

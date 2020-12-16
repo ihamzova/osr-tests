@@ -1,0 +1,93 @@
+{
+  "content": [
+    {
+      "creationDate": "2020-11-04T05:01:40.152Z",
+      "modificationDate": "2020-11-04T05:01:40.152Z",
+      "id": "$fiberOnLocationId",
+      "klsId": $klsId,
+      "distributionPointID": "A",
+      "installationStatus": "CONNECTED",
+      "demandCarrier": "COMMERCIAL_BUILDING",
+      "areaType": "INDUSTRIAL",
+      "reasonForNoConstruction": "TELEKOM_CANCELLATION",
+      "technology": "FTTH",
+      "rolloutSponsor": "NATIONWIDE_PROMOTION_PROGRAM",
+      "we": $we,
+      "ge": $ge,
+      "sl": 0,
+      "gigaArea": {
+        "creationDate": "2020-11-04T05:01:40.084Z",
+        "modificationDate": "2020-11-04T05:01:40.084Z",
+        "name": "FRANKFURT_002",
+        "number": "FRANKFURT_002",
+        "rolloutDate": "2021-12-31T11:26:20Z",
+        "areaStatus": "VVM_ONGOING",
+        "initiative": "SELF_EXPANSION",
+        "plannedFrom": "2019-01-02T11:26:20Z",
+        "plannedTo": "2021-12-28T11:26:20Z",
+        "netCoOrganisationId": 10001,
+        "thresholdData": {
+          "threshold": 50,
+          "ordersCountInVVM": 30,
+          "additionalOrdersCountInVVM": 40
+        },
+        "rolloutPartnerRegular": 10009,
+        "internalExpansionDecisionDate": "2020-01-01T11:26:20Z"
+      },
+      "nvtArea": {
+        "creationDate": "2020-11-04T05:01:40.111Z",
+        "modificationDate": "2020-11-04T05:01:40.111Z",
+        "businessId": 9025,
+        "asb": 555,
+        "name": "NVt2 Frankfurt 002",
+        "onkz": "49",
+        "nvtKlsId": 323473,
+        "rolloutPartnerRegular": 10009,
+        "gigaArea": {
+          "creationDate": "2020-11-04T05:01:40.084Z",
+          "modificationDate": "2020-11-04T05:01:40.084Z",
+          "name": "FRANKFURT_002",
+          "number": "FRANKFURT_002",
+          "rolloutDate": "2021-12-31T11:26:20Z",
+          "areaStatus": "VVM_ONGOING",
+          "initiative": "SELF_EXPANSION",
+          "plannedFrom": "2019-01-02T11:26:20Z",
+          "plannedTo": "2021-12-28T11:26:20Z",
+          "netCoOrganisationId": 10001,
+          "thresholdData": {
+            "threshold": 50,
+            "ordersCountInVVM": 30,
+            "additionalOrdersCountInVVM": 40
+          },
+          "rolloutPartnerRegular": 10009,
+          "internalExpansionDecisionDate": "2020-01-01T11:26:20Z"
+        }
+      }
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "pageNumber": 0,
+    "pageSize": 25,
+    "offset": 0,
+    "unpaged": false,
+    "paged": true
+  },
+  "totalPages": 1,
+  "totalElements": 1,
+  "last": true,
+  "first": true,
+  "sort": {
+    "sorted": false,
+    "unsorted": true,
+    "empty": true
+  },
+  "size": 25,
+  "number": 0,
+  "numberOfElements": 1,
+  "empty": false
+}
