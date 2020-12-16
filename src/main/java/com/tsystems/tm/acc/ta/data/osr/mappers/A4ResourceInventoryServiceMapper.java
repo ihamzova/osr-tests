@@ -70,6 +70,11 @@ public class A4ResourceInventoryServiceMapper {
         return generateNspA10NspLogicalResourceUpdate(nspA10Data, tpData, operationalState);
     }
 
+    // Create logicalResource representation of network service profile (L2BSA) with manually set operational state
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
+        return generateNspL2BsaLogicalResourceUpdate(nspL2Data, tpData, operationalState);
+    }
+
     // Create logicalResource representation of network element link with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
         return generateNelLogicalResourceUpdate(nelData, nepDataA, nepDataB, operationalState);
@@ -139,6 +144,23 @@ public class A4ResourceInventoryServiceMapper {
                 .type("NspA10Nsp")
                 .description("NSP-A10NSP for integration test")
                 .lifecycleState(nspA10Data.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lacpActive")
+                        .value("false"))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(tpData.getUuid())
+                                .type("TerminationPoint")));
+    }
+
+    private LogicalResourceUpdate generateNspL2BsaLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
+        return generateGenericLogicalResourceUpdate(nspL2Data.getUuid())
+                .type("NspL2BSA")
+                .description("NSP-L2BSA for integration test")
+                .lifecycleState(nspL2Data.getLifecycleState())
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("operationalState")
                         .value(operationalState))

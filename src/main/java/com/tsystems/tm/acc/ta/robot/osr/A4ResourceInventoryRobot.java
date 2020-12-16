@@ -351,6 +351,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get existing Network Service Profile (L2BSA) by UUID")
+    public NetworkServiceProfileL2BsaDto getExistingNetworkServiceProfileL2Bsa(String uuid) {
+        return a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .findNetworkServiceProfileL2Bsa()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element Link by UUID")
     public NetworkElementLinkDto getExistingNetworkElementLink(String uuid) {
         return a4ResourceInventory
@@ -458,6 +467,14 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkServiceProfileA10NspDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileA10NspDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network service profile (L2BSA)")
+    public void checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(A4NetworkServiceProfileL2Bsa nspL2Data, String expectedNewOperationalState, String expectedNewLifecycleState) {
+        NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDto = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+
+        assertEquals(networkServiceProfileL2BsaDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileL2BsaDto.getOperationalState(), expectedNewOperationalState);
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element link")

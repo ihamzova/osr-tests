@@ -4,7 +4,9 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -39,6 +41,8 @@ public class NemoStatusUpdateTest {
     private A4NetworkElementPort nepDataB;
     private A4TerminationPoint tpData;
     private A4NetworkServiceProfileFtthAccess nspFtthData;
+    private A4NetworkServiceProfileA10Nsp nspA10Data;
+    private A4NetworkServiceProfileL2Bsa nspL2Data;
     private A4NetworkElementLink nelData;
 
     @BeforeClass
@@ -55,6 +59,10 @@ public class NemoStatusUpdateTest {
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         nspFtthData = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+        nspA10Data = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+        nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
+                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
@@ -116,6 +124,28 @@ public class NemoStatusUpdateTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (A10NSP)")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (A10NSP)")
+    public void testNemoStatusUpdateForNspA10() {
+        // WHEN
+        nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpData, NEW_OPERATIONAL_STATE);
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    public void testNemoStatusUpdateForNspL2() {
+        // WHEN
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpData, NEW_OPERATIONAL_STATE);
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Link")
