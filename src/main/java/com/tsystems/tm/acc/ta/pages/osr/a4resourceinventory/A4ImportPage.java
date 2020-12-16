@@ -30,6 +30,9 @@ public class A4ImportPage {
     @Getter
     public static final By A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR = byId("btnUploadCSV");
 
+    @Getter
+    public static final By A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR = byId("UploadMessage");
+
     @Step("Validate page")
     public A4ImportPage validate() {
         $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).shouldBe(visible);

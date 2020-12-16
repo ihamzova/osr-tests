@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 @Slf4j
@@ -46,5 +47,7 @@ public class A4ResourceInventoryImporterUiRobot {
         a4ImportCsvRobot.generateCsvFile(csvData, csvFile);
         uploadCsvFile(csvFile);
         clickSendenButton();
+
+        $(a4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(visible, 10000);
     }
 }
