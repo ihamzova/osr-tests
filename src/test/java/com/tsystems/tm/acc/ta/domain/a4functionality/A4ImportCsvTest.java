@@ -20,6 +20,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Epic("OS&R")
