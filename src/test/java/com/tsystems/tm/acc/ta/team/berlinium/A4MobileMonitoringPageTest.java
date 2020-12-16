@@ -117,14 +117,6 @@ public class A4MobileMonitoringPageTest extends BaseTest {
         a4MobileUiRobot.clickFinishButton();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
 
-
-//                .entrySet()
-//                .stream()
-//                .filter(map -> map.getValue().getCategory()
-//                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getCategory()))
-//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
         a4MobileUiRobot.clickMonitoringButton();
         a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
         List<String> toBeRemoved = new ArrayList<>();

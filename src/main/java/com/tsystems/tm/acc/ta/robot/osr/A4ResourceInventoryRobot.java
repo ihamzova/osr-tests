@@ -9,7 +9,9 @@ import io.qameta.allure.Step;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -381,6 +383,56 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkElementDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkElementDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lifecycle state and operational state have been updated for network element")
+    public void checkNetworkElementByCsvData(A4ImportCsvData a4ImportCsvData) {
+
+        AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
+
+        AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
+
+        a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
+            networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
+                    (a4ImportCsvLine.getNeVpsz(), a4ImportCsvLine.getNeFsz()));
+
+            networkElementGroupDtoListUnderTest.set(getNetworkElementGroupsByName(a4ImportCsvLine.getNegName()));
+
+            //check of vpsz and fsz is redundant, so proceed with the other params
+
+            //if neg with name was found, name was correct, additional check is
+            //that only and exactly this one group with this name was found
+            assertEquals(networkElementGroupDtoListUnderTest.get().size(), 1);
+            assertEquals(networkElementDtoUnderTest.get().getKlsId(), a4ImportCsvLine.getNeKlsId());
+            assertEquals(networkElementDtoUnderTest.get().getDescription(), a4ImportCsvLine.getNeDescription());
+        });
+    }
+
+    @Step("Check that Ports are created after CSV Import")
+    public void checkNetworkElementPortsByImportCsvData(A4ImportCsvData a4ImportCsvData) {
+
+        AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
+        AtomicReference<List<NetworkElementPortDto>> networkElementPortDtoUnderTest = new AtomicReference<>(new ArrayList<>());
+
+        //AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
+
+        a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
+            networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
+                    (a4ImportCsvLine.getNeVpsz(), a4ImportCsvLine.getNeFsz()));
+
+            networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
+                    (networkElementDtoUnderTest.get().getUuid()));
+
+            if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
+            }
+            else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1"))
+            {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
+            } else {
+                assertEquals(networkElementPortDtoUnderTest.get().size(), 0);
+            }
+        });
     }
 
     @Step("Check that operational state has been updated for network element port")

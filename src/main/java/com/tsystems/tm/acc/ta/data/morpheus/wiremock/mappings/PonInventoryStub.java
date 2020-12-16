@@ -20,13 +20,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 public class PonInventoryStub extends AbstractStubMapping {
     public static final String GET_LLC_URL = "/resource-order-resource-inventory/v2/llc";
     public static final String PATH_TO_PO_MOCK = "/team/morpheus/ponInventory.json";
+    public static final String PATH_TO_PO_MOCK_COM_DIFF_PORT = "/team/morpheus/ponInventory_negative_comissioning_different_ports.json";
+    public static final String PATH_TO_PO_MOCK_DECOM_DIFF_SLOT = "/team/morpheus/ponInventory_negative_decomissioning_different_slots.json";
     public static final String PATH_TO_DOMAIN_MOCK = "/team/morpheus/ponInventoryDomain.json";
 
+    //TODO refactor this in inno sprint: return null is rough
     public MappingBuilder getLlc200(Dpu dpu, OltDevice olt){
         try {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc200")
-                    .willReturn(aDefaultResponseWithBody(prepareBody(olt),200))
+                    .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK),200))
                     .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,6 +49,30 @@ public class PonInventoryStub extends AbstractStubMapping {
         return null;
     }
 
+    public MappingBuilder getLlcDiffPorts200(Dpu dpu, OltDevice olt){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllc200")
+                    .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK_COM_DIFF_PORT),200))
+                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MappingBuilder getLlcDiffSlots200(Dpu dpu, OltDevice olt){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllc200")
+                    .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK_DECOM_DIFF_SLOT),200))
+                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public MappingBuilder getLlcForDomain200(DpuDevice dpu){
         try {
             return get(urlPathEqualTo(GET_LLC_URL))
@@ -58,9 +85,9 @@ public class PonInventoryStub extends AbstractStubMapping {
         return null;
     }
 
-    private String prepareBody(OltDevice oltDevice) throws IOException {
+    private String prepareBody(OltDevice oltDevice, String mockPath) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
-                .getResource(PATH_TO_PO_MOCK).getFile()), Charset.defaultCharset())
+                .getResource(mockPath).getFile()), Charset.defaultCharset())
                 .replace("$vpsz", oltDevice.getVpsz())
                 .replace("$vsz", oltDevice.getFsz());
     }
@@ -68,12 +95,5 @@ public class PonInventoryStub extends AbstractStubMapping {
     private String prepareBodyForDomain(DpuDevice dpuDevice) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
                 .getResource(PATH_TO_DOMAIN_MOCK).getFile()), Charset.defaultCharset());
-    }
-
-    private String serialize(Object obj) {
-        JSON json = new JSON();
-        json.setOffsetDateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
-        return json.serialize(obj);
     }
 }

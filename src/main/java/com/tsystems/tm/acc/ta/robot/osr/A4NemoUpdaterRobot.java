@@ -8,7 +8,10 @@ import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.invoker.Api
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.model.UpdateNemoTask;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.internal.thread.ThreadExecutionException;
+import org.testng.internal.thread.ThreadTimeoutException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +22,10 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.fail;
 
+@Slf4j
 public class A4NemoUpdaterRobot {
 
     private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient().getClient();
@@ -153,8 +159,15 @@ public class A4NemoUpdaterRobot {
                                 .findFirst().get().getNegName()).get(0).getUuid()
         );
 
+         //uuidList.add("kram");
         //check if requests reached Wiremock
         //if so delivery by AMQ-consumer was successful
+//            uuidList.forEach(uuid -> {
+//                new Thread(() -> {
+//                checkLogicalResourcePutRequestToNemoWiremock(uuid);
+//                log.debug(uuid + "+++finish+++");
+//                });
+//            });
         uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
     }
 

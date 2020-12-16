@@ -20,5 +20,5 @@ global:
     portNumber: "${randomLong, 1000, 9999}"
   a4CsvImport:
     negName: "Imported NEG-${randomLong, 100000, 999999}"
-    vpsz: "49/8492/0"
+    vpsz: "49/${randomLong, 1000, 9999}/0"
     klsId: "123456"

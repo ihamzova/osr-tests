@@ -23,7 +23,7 @@ public class A4ImportCsvDataGenerator {
                     .neVpsz(csvLine.getNeVpsz())
                     .neFsz(csvLine.getNeFsz())
                     .nePlanningDeviceName("PlanningName")
-                    .neType("value ignored")
+                    .neType(csvLine.getNeType())
                     .neVsp("Virtual Service Provider")
                     .neLocKlsId(csvLine.getNeKlsId())
                     .neLocAddress("Address")

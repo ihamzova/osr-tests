@@ -4,17 +4,22 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.data.osr.models.equipmentdata.EquipmentDataCase;
+import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -44,21 +49,30 @@ import static org.testng.Assert.assertTrue;
 public class A4MobileNeSearchPageTest extends BaseTest {
 
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     A4MobileNeSearchPage a4MobileNeSearchPage = new A4MobileNeSearchPage();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
+    private A4NetworkElementPort a4NetworkElementPortA;
+    private A4NetworkElementPort a4NetworkElementPortB;
 
     private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
-    final int WAITING_INTERVAL = 0;
+    private static final int WAIT_TIME = 5_000;
 
     final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
     final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";
     final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor01";
     final String A4_NE_PLANNING_LEAFSWITCH_01 = "a4NetworkElementPlanningLeafSwitch01";
     final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
+
+    private UewegData uewegData;
+    private EquipmentData equipmentDataA;
+
+    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+
 
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements){
@@ -119,6 +133,15 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01,osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
+        a4NetworkElementPortA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
+        a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
+        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
+                .get(EquipmentDataCase.equipment_MatNr_40318601);
+
         cleanUp();
     }
 
@@ -128,10 +151,24 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
         a4NetworkElements.forEach((k, networkElement)->
                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
+
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "MonitoringInstallingTest"))
+                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01), a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
+                .addPslMock(equipmentDataA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01))
+                .addNemoMock()
+                .build();
+
+        mappingsContext.publish();
+
     }
 
     @AfterClass
     public void cleanUp() {
+
+        mappingsContext.deleteAll();
 
         a4NetworkElements.forEach((k,v)->
                 a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
@@ -251,7 +288,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
-    public void testNeInstallation() {
+    public void testNeInstallation() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
@@ -273,6 +310,15 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
         assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
+        //check ztpIdent Field
+
+        Thread.sleep(WAIT_TIME);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
+//        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT",
+//                2);
+        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(),
+                a4NetworkElementPortB.getUuid());
+        a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
     }
 
 }

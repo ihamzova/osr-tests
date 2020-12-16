@@ -15,7 +15,7 @@ import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.StubUtils.serial
 public class PslStub extends AbstractStubMapping {
 
     public static final String READ_EQUIPMENT_URL = "/v1/psl/read-equipment";
-    public static final String READ_EQUIPMENT_3SCALE_URL = "/resource-order-resource-inventory/v1/psl/read-equipment";
+    public static final String READ_EQUIPMENT_3SCALE_URL = "/resource-order-resource-inventory/v1/psl/read-equipment/";
     public static final String READ_EQUIPMENT_UNIVERSAL_URL = String.format("(%s|%s)/?", READ_EQUIPMENT_URL, READ_EQUIPMENT_3SCALE_URL);
 
     public MappingBuilder postReadEquipment202(OltDevice oltDevice) {
@@ -28,11 +28,11 @@ public class PslStub extends AbstractStubMapping {
     }
 
     public MappingBuilder postReadEquipment202(EquipmentData equipmentData, A4NetworkElement networkElement) {
-        return post(urlPathMatching(READ_EQUIPMENT_UNIVERSAL_URL))
+        return post(urlPathMatching(READ_EQUIPMENT_3SCALE_URL))
                 .withName("postReadEquipment202_" + (networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))
                 .willReturn(aDefaultResponseWithBody("", HTTP_CODE_ACCEPTED_202))
                 .atPriority(1)
-                .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo((networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "_"))))
+                //.withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo((networkElement.getVpsz() + "/" + networkElement.getFsz()).replace("/", "/"))))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(equipmentData, networkElement))));
     }
 

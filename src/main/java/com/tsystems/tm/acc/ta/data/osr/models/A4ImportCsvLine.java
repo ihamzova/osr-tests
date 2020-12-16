@@ -11,7 +11,7 @@ public class A4ImportCsvLine {
     private String neVpsz;
     private String neFsz;
 //    private String nePlanningDeviceName;
-//    private String neType;
+    private String neType;
 //    private String neVsp;
     private String neKlsId;
 //    private String neLocAddress;

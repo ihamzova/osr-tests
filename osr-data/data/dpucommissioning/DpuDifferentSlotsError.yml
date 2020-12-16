@@ -1,0 +1,6 @@
+name: DpuDifferentSlotsError
+template: com.tsystems.tm.acc.ta.data.osr.models.Dpu
+values:
+  endSz: "49/8571/0/71GS"
+  onuId: 12345678
+  gfApFolId: "1111222233334444555"

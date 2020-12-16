@@ -288,6 +288,25 @@ public class DpuCommissioningProcess extends BaseTest {
         }
     }
 
+    @Test(description = "Negative case. GET DpuPonConn returned different ports in response")
+    @Description("Negative case. Expected: get request for GetEthernetLink not sent")
+    public void dpuCommissioningGetDpuPonConnReturnDifferentPorts() {
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDifferentPortsError);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "DpuDifferentPortsError")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllForGetPonConnDiffPortsError(olt, dpu)
+                    .build()
+                    .publish();
+
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
+        }
+    }
+
     @Test(description = "Negative case. GET EthernetLink returned 400")
     @Description("Negative case. GET EthernetLink returned 400")
     public void dpuCommissioningGetEthLink400() {

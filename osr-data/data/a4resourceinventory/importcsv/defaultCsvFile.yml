@@ -10,15 +10,17 @@ template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
 values:
   negName: "${scope, global.a4CsvImport.negName}"
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
-  neFsz: "7KDB"
+  neFsz: "7KH3"
   neKlsId: "${scope, global.a4CsvImport.klsId}"
   neDescription: "First imported NE"
+  neType: "A4-OLT-v1"
 ---
 name: secondCsvLine
 template: com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine
 values:
   negName: "${scope, global.a4CsvImport.negName}"
   neVpsz: "${scope, global.a4CsvImport.vpsz}"
-  neFsz: "7KDC"
+  neFsz: "7KE0"
   neKlsId: "${scope, global.a4CsvImport.klsId}"
   neDescription: "Second imported NE"
+  neType: "A4-LEAF-Switch-v1"
