@@ -208,6 +208,19 @@ public class AccessLineRiRobot {
         });
     }
 
+    @Step("Check physicalResourceRef absence")
+    public void checkPhysicalResourceRefAbsence(PortProvisioning port) {
+        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory
+                .physicalResourceReferenceInternalController()
+                .searchPhysicalResourceReference()
+                .body(new SearchPhysicalResourceReferenceDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber())
+                        .portNumber(port.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(physicalResourceRefs.size(), 0, "There is physicalResourceRef left");
+    }
+
     @Step("Check backHaul id absence")
     public void checkBackHaulIdAbsence(PortProvisioning port) {
         List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
