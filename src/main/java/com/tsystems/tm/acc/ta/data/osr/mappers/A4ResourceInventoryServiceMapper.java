@@ -158,7 +158,7 @@ public class A4ResourceInventoryServiceMapper {
 
     private LogicalResourceUpdate generateNspL2BsaLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
         return generateGenericLogicalResourceUpdate(nspL2Data.getUuid())
-                .type("NspL2BSA")
+                .type("NspL2Bsa")
                 .description("NSP-L2BSA for integration test")
                 .lifecycleState(nspL2Data.getLifecycleState())
                 .addCharacteristicItem(new ResourceCharacteristic()
