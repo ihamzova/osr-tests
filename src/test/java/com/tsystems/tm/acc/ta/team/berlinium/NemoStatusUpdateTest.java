@@ -39,7 +39,9 @@ public class NemoStatusUpdateTest {
     private A4NetworkElement neData;
     private A4NetworkElementPort nepDataA;
     private A4NetworkElementPort nepDataB;
-    private A4TerminationPoint tpData;
+    private A4TerminationPoint tpFtthAccessData;
+    private A4TerminationPoint tpA10NspData;
+    private A4TerminationPoint tpL2BsaData;
     private A4NetworkServiceProfileFtthAccess nspFtthData;
     private A4NetworkServiceProfileA10Nsp nspA10Data;
     private A4NetworkServiceProfileL2Bsa nspL2Data;
@@ -55,7 +57,7 @@ public class NemoStatusUpdateTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
-        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
+        tpFtthAccessData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         nspFtthData = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
@@ -65,6 +67,10 @@ public class NemoStatusUpdateTest {
                 .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        tpA10NspData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+        tpL2BsaData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -72,7 +78,11 @@ public class NemoStatusUpdateTest {
 
     @BeforeMethod
     public void setup() {
-        a4ResourceInventory.createTestDataForAllA4ElementTypes(negData, neData, nepDataA, nepDataB, tpData, nspFtthData, nelData);
+        a4ResourceInventory.createTestDataForAllA4ElementTypes(negData, neData, nepDataA, nepDataB, tpFtthAccessData, nspFtthData, nelData);
+        a4ResourceInventory.createTerminationPoint(tpA10NspData, nepDataA);
+        a4ResourceInventory.createTerminationPoint(tpL2BsaData, nepDataA);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data, tpA10NspData);
+        a4ResourceInventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
     }
 
     @AfterMethod
@@ -120,7 +130,7 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     public void testNemoStatusUpdateForNspFtth() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, NEW_OPERATIONAL_STATE);
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
@@ -131,7 +141,7 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Service Profile (A10NSP)")
     public void testNemoStatusUpdateForNspA10() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, NEW_OPERATIONAL_STATE);
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
@@ -142,7 +152,7 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
     public void testNemoStatusUpdateForNspL2() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, NEW_OPERATIONAL_STATE);
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);

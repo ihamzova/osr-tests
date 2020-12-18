@@ -86,27 +86,27 @@ public class A4ResourceInventoryServiceRobot {
 
     @Step("Send new operational state for Network Service Profile (A10NSP)")
     public void sendStatusUpdateForNetworkServiceProfileA10Nsp(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String newOperationalState) {
-        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+        LogicalResourceUpdate nspA10LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspA10Data, tpData, newOperationalState);
 
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspA10Data.getUuid())
-                .body(nepLogicalResource)
+                .body(nspA10LogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     @Step("Send new operational state for Network Service Profile (A10NSP)")
     public void sendStatusUpdateForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String newOperationalState) {
-        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+        LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
 
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspL2Data.getUuid())
-                .body(nepLogicalResource)
+                .body(nspL2LogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 

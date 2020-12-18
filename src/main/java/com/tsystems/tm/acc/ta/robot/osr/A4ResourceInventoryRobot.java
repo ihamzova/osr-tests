@@ -728,7 +728,10 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Create test data for all A4 element types")
-    public void createTestDataForAllA4ElementTypes(A4NetworkElementGroup negData, A4NetworkElement neData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4TerminationPoint tpData, A4NetworkServiceProfileFtthAccess nspFtthData, A4NetworkElementLink nelData) {
+    public void createTestDataForAllA4ElementTypes(A4NetworkElementGroup negData, A4NetworkElement neData,
+                                                   A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB,
+                                                   A4TerminationPoint tpData, A4NetworkServiceProfileFtthAccess nspFtthData,
+                                                   A4NetworkElementLink nelData) {
         createNetworkElementGroup(negData);
         createNetworkElement(neData, negData);
         createNetworkElementPort(nepDataA, neData);
