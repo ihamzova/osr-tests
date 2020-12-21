@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.*;
 
 import java.time.OffsetDateTime;
@@ -378,5 +379,13 @@ public class OltResourceInventoryMapper {
                     .managementDomain("49_30_179_43G1")
                     .serialNumber("48AB541118CC5191");
         }
+    }
+
+    public DpuCommissioningResponse startDPUComissioningResponse() {
+        return new DpuCommissioningResponse()
+                .id("12345")
+                .businessKey("dpu-commissioning/7e5ba4a7-3b3c-464f-8f24-894f2f59aef1")
+                .index(123)
+                .source("dpu-commissioning");
     }
 }

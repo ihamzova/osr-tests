@@ -235,4 +235,38 @@ public void init(){
         }
     }
 
+    @Test
+    public void startDpuComissioningPositive() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "DpuCommPositive"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, true)
+                    .addPatchDpuPortMobileDpuBff(dpu, true)
+                    .addStartDpuCommissioningMobileDpuBff(dpu,true)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.triggerStartDpuCommissioning(dpuEndsz);
+
+        }
+    }
+
+    @Test
+    public void startDpuComissioning500() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "DpuCommNegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
+                    .addPatchDpuDeviceMobileDpuBff(dpu, true)
+                    .addPatchDpuPortMobileDpuBff(dpu, true)
+                    .addStartDpuCommissioningMobileDpuBff(dpu,false)
+                    .build()
+                    .publish();
+            mobileDpuBffRobot.triggerStartDpuCommissioningNegative(dpuEndsz);
+
+        }
+    }
+
 }

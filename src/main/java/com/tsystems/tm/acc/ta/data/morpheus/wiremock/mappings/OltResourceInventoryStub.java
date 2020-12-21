@@ -24,6 +24,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
     public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v1/ancp/session/endsz";
     public static final String DPU_AT_OLT_CONF_URL = "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration";
     public static final String DPU_EMS_CONFIGURATION_URL = "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration";
+    public static final String DPU_COMMISSIONING_URL = "/resource-order-resource-inventory/v1/dpuProcessRestoreTask";
 
     public MappingBuilder getDpuDevice200(Dpu dpu) {
         return get(urlPathEqualTo(DPU_DEVICE_URL))
@@ -350,6 +351,23 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                         404
                 ))
                 .withName("patchDpuPortMobileDpuBff404");
+    }
+
+    public MappingBuilder postStartDpuComissioning200() {
+        return patch(urlMatching(DPU_COMMISSIONING_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().startDPUComissioningResponse())),
+                        201
+                ))
+                .withName("postDpuComissioning200");
+    }
+
+    public MappingBuilder postStartDpuComissioning500() {
+        return patch(urlMatching(DPU_COMMISSIONING_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(null,
+                        500
+                ))
+                .withName("postDpuComissioning200");
     }
 
 
