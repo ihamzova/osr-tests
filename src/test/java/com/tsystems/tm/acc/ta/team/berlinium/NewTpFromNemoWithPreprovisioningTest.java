@@ -20,13 +20,14 @@ import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
+@ServiceLog(A4_CARRIER_MANAGEMENT)
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     private final long SLEEP_TIMER = 5; // in seconds
@@ -44,12 +45,13 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     private A4TerminationPoint tpFtthData;
     private A4TerminationPoint tpA10Data;
     private A4TerminationPoint tpL2Data;
+    private String routeName;
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
 
     @BeforeClass
-    public void init() {
+    public void init() throws IOException {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -62,6 +64,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
         tpL2Data = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
+        routeName = "resource-order-resource-inventory.v1.a4TerminationPoints";
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -81,10 +84,12 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
     }
 
     @AfterMethod
-    public void cleanup() {
+    public void cleanup() throws IOException {
         wiremock.deleteAll();
 
         a4ResourceInventory.deleteA4TestData(negData, neData);
+
+        a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
@@ -126,6 +131,53 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
+    }
+
+    @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning, but resource-inventory is not reachable")
+    @Owner("thea.john@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
+    public void newTpWithA10NspPreprovisioningRedelivery() throws InterruptedException, IOException {
+        // what to do before this test:
+        //   edit yaml of service apigw
+        //   add ports:
+        //      - name: apigw-admin
+        //      port: 81
+        //      protocol: TCP
+        //      targetPort: 8001
+        //   then create new route called apigw-admin
+
+        String queue = "jms.queue.a10NspTP";
+        String dlq = "jms.dead-letter-queue.a10NspTP";
+        //BEFORE
+            // change kong route so wiremock is used for TerminationPoint, because that is the first request for preprovisioning
+        a4Resilience.changeRouteToWiremock(routeName);
+            // make wiremock return 500 for findTerminationPoint
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
+                .addA4ResourceInventoryMock500()
+                .build();
+        wiremock.publish();
+
+        // WHEN / Action
+            // start preprovisioning by creating TP and wait a little bit
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER);
+        a4ResourceInventoryService.createTerminationPoint(tpA10Data, nepData);
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); // Wait a bit because queues might need some time to process all events
+
+        // THEN
+            // check if message is still waiting in queue
+        a4Resilience.checkMessagesInQueue(queue, "1");
+        String old = a4Resilience.countMessagesInQueue(dlq);
+
+        //AFTER
+            // change route back over kong to a4-resource-inventory
+        a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
+
+            // wait time of redelivery and check if message it out of queue and
+        long sleepTime = a4Resilience.getRedeliveryDelayCarrierManagement();
+        TimeUnit.MILLISECONDS.sleep(sleepTime);
+        a4Resilience.checkMessagesInQueue(queue, "0");
+        a4Resilience.checkMessagesInQueue(dlq, old);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with L2BSA Preprovisioning")
