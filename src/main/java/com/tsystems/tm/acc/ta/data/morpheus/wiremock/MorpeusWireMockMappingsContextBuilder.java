@@ -879,4 +879,14 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
 
         return this;
     }
+
+    public MorpeusWireMockMappingsContextBuilder addStartDpuCommissioningMobileDpuBff(Dpu dpu, boolean success){
+        if(success) {
+            context.add(new OltResourceInventoryStub().postStartDpuComissioning200());
+        } else {
+            context.add(new OltResourceInventoryStub().postStartDpuComissioning500());
+        }
+        return this;
+
+    }
 }
