@@ -87,7 +87,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(),
                 Arrays.asList(
                         "EXECUTED Successfuly [Read DPU device data]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
                         "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
                         "EXECUTED Successfuly [Read OltPonPort Data]",
                         "EXECUTED Successfuly [Read OltUpLinkPortData]",
@@ -109,7 +108,6 @@ public class DpuCommissioningSDX2221 extends BaseTest {
                         "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
                         "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
                         "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
                         "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
 
     }
