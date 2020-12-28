@@ -6,11 +6,11 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
+import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
-import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.StubUtils.serialize;
 
 public class PslStub extends AbstractStubMapping {
 
@@ -36,4 +36,9 @@ public class PslStub extends AbstractStubMapping {
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(equipmentData, networkElement))));
     }
 
+    private String serialize(Object obj) {
+        JSON json = new JSON();
+        json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
+        return json.serialize(obj);
+    }
 }
