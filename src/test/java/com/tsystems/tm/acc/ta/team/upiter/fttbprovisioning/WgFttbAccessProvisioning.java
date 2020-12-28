@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -37,10 +38,10 @@ public class WgFttbAccessProvisioning extends BaseTest {
         accessLineRiRobot.fillDatabaseForDpuPreprovisioning();
     }
 
-//    @AfterMethod
-//    public void clearData() {
-//        accessLineRiRobot.clearDatabase();
-//    }
+    @AfterMethod
+    public void clearData() {
+        accessLineRiRobot.clearDatabase();
+    }
 
     @BeforeClass
     public void init() {

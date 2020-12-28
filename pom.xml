@@ -16,8 +16,9 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.63</osr.models.version>
+        <osr.models.version>0.0.64</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
+        <oc.project.name>gigabit-tm-dynamic-digihub-89837</oc.project.name>
     </properties>
 
     <profiles>
