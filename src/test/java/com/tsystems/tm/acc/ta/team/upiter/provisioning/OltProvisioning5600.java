@@ -14,7 +14,7 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.DeviceDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;

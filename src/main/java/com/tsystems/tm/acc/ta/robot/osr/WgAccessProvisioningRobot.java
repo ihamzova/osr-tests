@@ -12,9 +12,9 @@ import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.PortDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.CardRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.DeviceDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.PortDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
@@ -54,7 +54,7 @@ public class WgAccessProvisioningRobot {
     @Step("Start card provisioning")
     public void startCardProvisioning(PortProvisioning port) {
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardDto()
+                .body(Stream.of(new CardRequestDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber()))
                         .collect(Collectors.toList()))
@@ -66,6 +66,44 @@ public class WgAccessProvisioningRobot {
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
                 .body(new DeviceDto()
                         .endSz(port.getEndSz()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+    }
+
+    @Step("Start port deprovisioning")
+    public void startPortDeprovisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+                .body(new PortDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber())
+                        .portNumber(port.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+    }
+
+    @Step("Start card deprovisioning")
+    public void startCardDeprovisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning()
+                .body(Stream.of(new CardRequestDto()
+                        .endSz(port.getEndSz())
+                        .slotNumber(port.getSlotNumber()))
+                        .collect(Collectors.toList()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+    }
+    @Step("Start device deprovisioning")
+    public void startDeviceDeprovisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning()
+                .body(new DeviceDto()
+                        .endSz(port.getEndSz()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+    }
+
+    @Step("Start port deprovisioning for DPU Adtran OLT")
+    public void startPortDeprovisioningForDpuAdtran(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().deprovisioningProcess()
+                .startPortDeprovisioning()
+                .deprovisioningForDpuQuery(true)
+                .body(new PortDto()
+                        .endSz(port.getEndSz())
+                        .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 

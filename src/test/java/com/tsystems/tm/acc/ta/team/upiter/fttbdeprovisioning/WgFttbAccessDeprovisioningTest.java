@@ -59,7 +59,7 @@ public class WgFttbAccessDeprovisioningTest extends BaseTest {
     @Test
     @TmsLink("DIGIHUB-77785")
     @Description("FTTB Deprovisioning for a Device")
-    public void fttbDeviceProvisioningTest() {
+    public void fttbDeviceDeprovisioningTest() {
         accessLineRiRobot.checkLineIdsCount(oltDeviceForFttbDeprovisioning);
         wgFttbAccessDeprovisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbDeprovisioning.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceForFttbDeprovisioning, 0);
