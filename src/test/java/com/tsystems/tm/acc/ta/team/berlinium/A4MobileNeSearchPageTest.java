@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -167,8 +169,10 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
     @AfterClass
     public void cleanUp() {
-
-        mappingsContext.deleteAll();
+        mappingsContext.close();
+        mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         a4NetworkElements.forEach((k,v)->
                 a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));

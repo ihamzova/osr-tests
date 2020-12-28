@@ -6,7 +6,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
 import com.tsystems.tm.acc.ta.helpers.log.ContainsExpecter;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLogExpectSince;
+import com.tsystems.tm.acc.ta.helpers.log.batch.ServiceLogExpectSince;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.LogConverter;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
@@ -30,7 +30,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.helpers.WiremockHelper.CONSUMER_ENDPOINT;
-import static com.tsystems.tm.acc.ta.helpers.log.ServiceLogExpectSince.given;
+import static com.tsystems.tm.acc.ta.helpers.log.batch.ServiceLogExpectSince.given;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
