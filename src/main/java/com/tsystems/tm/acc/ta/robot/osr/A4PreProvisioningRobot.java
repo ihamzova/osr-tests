@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;

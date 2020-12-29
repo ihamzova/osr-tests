@@ -4,8 +4,9 @@ import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.HomeIdDto.StatusEnum;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -158,7 +159,7 @@ public class AccessLineRiRobot {
                 .boxed().collect(Collectors.toList());
 
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
-                map(OnuAccessId::getOnuAccessId).sorted().collect(Collectors.toList());
+                map(OnuAccessIdDto::getOnuAccessId).sorted().collect(Collectors.toList());
 
         Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Olt State) count is incorrect");
@@ -334,7 +335,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get homeID state")
-    public HomeIdDto.StatusEnum getHomeIdStateByHomeId(String homeId) {
+    public StatusEnum getHomeIdStateByHomeId(String homeId) {
         List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdInternalController()
                 .searchHomeIds()
                 .body(new SearchHomeIdDto()
