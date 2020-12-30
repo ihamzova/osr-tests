@@ -21,6 +21,8 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
