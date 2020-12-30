@@ -84,18 +84,12 @@ public class OltProvisioningAdtran extends BaseTest {
     @TmsLink("DIGIHUB-30824")
     @Description("Device Provisioning SDX 6320")
     public void deviceProvisioning() {
-
         Device deviceBeforeProvisioning = getDevice();
-        List<Port> ponPorts = deviceBeforeProvisioning.getPorts().stream()
-                .filter(ponPort -> ponPort.getPortType().equals(PON))
-                .collect(Collectors.toList()); // list of ponPorts
-
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        Assert.assertEquals(ponPorts.size(), 16);
+        Assert.assertEquals(getPonPorts().size(), 16);
 
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
-
         checkDevicePostConditions(portEmpty);
     }
 
@@ -109,15 +103,15 @@ public class OltProvisioningAdtran extends BaseTest {
         checkPostConditions(portDeprovisioningForDpu);
     }
 
-    private PortProvisioning getPortProvisioning(String endSz, String portNumber) {
+    private PortProvisioning getPortProvisioning(PortProvisioning portProvisioning, String portNumber) {
         PortProvisioning port = new PortProvisioning();
-        port.setEndSz(endSz);
+        port.setEndSz(portProvisioning.getEndSz());
         port.setPortNumber(portNumber);
-        port.setLineIdPool(portEmpty.getLineIdPool());
-        port.setHomeIdPool(portEmpty.getHomeIdPool());
-        port.setDefaultNEProfilesActive(portEmpty.getDefaultNEProfilesActive());
-        port.setDefaultNetworkLineProfilesActive(portEmpty.getDefaultNetworkLineProfilesActive());
-        port.setAccessLinesWG(portEmpty.getAccessLinesWG());
+        port.setLineIdPool(portProvisioning.getLineIdPool());
+        port.setHomeIdPool(portProvisioning.getHomeIdPool());
+        port.setDefaultNEProfilesActive(portProvisioning.getDefaultNEProfilesActive());
+        port.setDefaultNetworkLineProfilesActive(portProvisioning.getDefaultNetworkLineProfilesActive());
+        port.setAccessLinesWG(portProvisioning.getAccessLinesWG());
         return port;
     }
 
@@ -137,6 +131,12 @@ public class OltProvisioningAdtran extends BaseTest {
         return OltResourceInventoryClient.json().deserialize(response, Device.class);
     }
 
+    private List<Port> getPonPorts() {
+        return getDevice().getPorts().stream()
+                .filter(ponPort -> ponPort.getPortType().equals(PON))
+                .collect(Collectors.toList());
+    }
+
     private void checkPreconditions(PortProvisioning port) {
         accessLineRiRobot.prepareTestDataToDeprovisioning(port);
         accessLineRiRobot.checkDecommissioningPreconditions(port);
@@ -144,25 +144,19 @@ public class OltProvisioningAdtran extends BaseTest {
 
     private void checkPostConditions(PortProvisioning port) {
         accessLineRiRobot.checkPortParametersForLines(port);
-        accessLineRiRobot.checkPhysicalResourceRefAbsence(port);
-        accessLineRiRobot.checkBackHaulIdAbsence(port);
+        accessLineRiRobot.getPhysicalResourceRef(port);
+        accessLineRiRobot.getBackHaulId(port);
     }
 
     private void checkDevicePostConditions(PortProvisioning port) {
-        List<Port> ponPorts = getDevice()
-                .getPorts()
-                .stream()
-                .filter(ponPort -> ponPort.getPortType().equals(PON))
-                .collect(Collectors.toList()); // list of ponPorts
-
-        List<String> portNumbers = ponPorts
+        List<String> portNumbers = getPonPorts()
                 .stream()
                 .map(Port::getPortNumber)
                 .collect(Collectors.toList()); //list of ponPort numbers
 
         List<PortProvisioning> portProvisioningList = portNumbers
                 .stream()
-                .map(portNumber -> getPortProvisioning(port.getEndSz(), portNumber))
+                .map(portNumber -> getPortProvisioning(port, portNumber))
                 .collect(Collectors.toList()); //list of portProvisioning numbers
 
         portProvisioningList.forEach(portAfterProvisioning -> accessLineRiRobot.checkProvisioningResults(portAfterProvisioning));
