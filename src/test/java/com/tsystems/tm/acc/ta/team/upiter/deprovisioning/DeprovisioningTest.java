@@ -87,7 +87,6 @@ public class DeprovisioningTest extends BaseTest {
 
     private void checkPostConditions(PortProvisioning port) {
         accessLineRiRobot.checkPortParametersForLines(port);
-        accessLineRiRobot.checkPhysicalResourceRefAbsence(port);
-        accessLineRiRobot.checkBackHaulIdAbsence(port);
+        accessLineRiRobot.checkPhysicalResourceRefAndBackhaulIdAbsence(port);
     }
 }

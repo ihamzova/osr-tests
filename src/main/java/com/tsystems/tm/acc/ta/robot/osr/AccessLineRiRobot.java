@@ -209,8 +209,7 @@ public class AccessLineRiRobot {
         });
     }
 
-    @Step("Check physicalResourceRef absence")
-    public void checkPhysicalResourceRefAbsence(PortProvisioning port) {
+    public List<ReferenceDto> getPhysicalResourceRef(PortProvisioning port) {
         List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory
                 .physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
@@ -219,11 +218,10 @@ public class AccessLineRiRobot {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(physicalResourceRefs.size(), 0, "There is physicalResourceRef left");
+        return physicalResourceRefs;
     }
 
-    @Step("Check backHaul id absence")
-    public void checkBackHaulIdAbsence(PortProvisioning port) {
+    public List<BackhaulIdDto> getBackHaulId(PortProvisioning port) {
         List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
                 .backhaulIdController()
                 .searchBackhaulIds()
@@ -232,7 +230,22 @@ public class AccessLineRiRobot {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(backhaulIds.size(), 0, "Backhaul ids count");
+        return backhaulIds;
+    }
+
+    @Step("Check physicalResourceRef and backHaul id absence")
+    public void checkPhysicalResourceRefAndBackhaulIdAbsence(PortProvisioning port) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            Supplier<Boolean> PhysicalResourceReferenceAbsence = () -> getPhysicalResourceRef(port).size() == 0;
+            timeoutBlock.addBlock(PhysicalResourceReferenceAbsence); // execute the runnable precondition
+            Supplier<Boolean> BackHaulIdAbsence = () -> getBackHaulId(port).size() == 0;
+            timeoutBlock.addBlock(BackHaulIdAbsence); // execute the runnable precondition
+        } catch (Throwable e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+        Assert.assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
+        Assert.assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
     }
 
     @Step("Get list of access lines on the specified port")
