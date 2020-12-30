@@ -29,6 +29,8 @@ import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.inter
 
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
