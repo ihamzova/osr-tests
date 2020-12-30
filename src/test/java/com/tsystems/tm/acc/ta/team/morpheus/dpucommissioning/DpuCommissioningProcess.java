@@ -111,7 +111,6 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
@@ -130,7 +129,6 @@ public class DpuCommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
@@ -585,8 +583,8 @@ public class DpuCommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
-    @Description("Positive case. Dpu.LifecycleState = INSTALLING, Uplink.Linfecyclestate = NOT_OPERATING")
+    @Test(description = "Positive case. Uplink.Linfecyclestate = NOT_OPERATING")
+    @Description("Positive case. Uplink.Linfecyclestate = NOT_OPERATING")
     public void dpuCommissioningDpuLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceInstalling);
@@ -608,13 +606,12 @@ public class DpuCommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
-    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
-    @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = NOT_OPERATING")
+    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING")
+    @Description("Positive case. Uplink.LifecycleState = INSTALLING")
     public void dpuCommissioningUplinkLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateUplinkInstalling);
@@ -634,15 +631,13 @@ public class DpuCommissioningProcess extends BaseTest {
                     bodyContains("OPERATING"));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
-    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
-    @Description("Positive case. Uplink.LifecycleState = INSTALLING, DPU.Linfecyclestate = INSTALLING")
+    @Test(description = "Positive case. Uplink.LifecycleState = INSTALLING")
+    @Description("Positive case. Uplink.LifecycleState = INSTALLING")
     public void dpuCommissioningDeviceAndUplinkLifeCycleInstalling() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
         Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.LifecycleStateDeviceUplinkInstalling);
@@ -662,9 +657,7 @@ public class DpuCommissioningProcess extends BaseTest {
                     bodyContains("OPERATING"));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
@@ -690,7 +683,6 @@ public class DpuCommissioningProcess extends BaseTest {
             etcdRobot.checkEtcdValues(resp.getBusinessKey(),
                     Arrays.asList(
                             "EXECUTED Successfuly [Read DPU device data]",
-                            "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
                             "EXECUTED Successfuly [Read OltPonPort Data]",
                             "EXECUTED Successfuly [Read OltUpLinkPortData]",
@@ -711,7 +703,6 @@ public class DpuCommissioningProcess extends BaseTest {
                             "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
-                            "EXECUTED Successfuly [update LifecycleStatus of DPU to OPERATING]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
         }
     }
