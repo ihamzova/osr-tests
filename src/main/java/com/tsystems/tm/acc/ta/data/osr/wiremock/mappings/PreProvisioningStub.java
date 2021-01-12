@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.external.client.invoker.JSON;
 
+import javax.ws.rs.HttpMethod;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -31,7 +32,7 @@ public class PreProvisioningStub extends AbstractStubMapping {
                 .withName("getAccessLine201")
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_CREATED_201))
                 .withPostServeAction("webhook",
-                        aDefaultWebhookWithBody(serialize(new PreProvisioningMapper().getNetworkServiceProfile())).withUrl(NETWORK_SERVICE_PROFILE_URL));
+                        aDefaultWebhookWithBody(serialize(new PreProvisioningMapper().getNetworkServiceProfile())).withUrl(NETWORK_SERVICE_PROFILE_URL).withMethod(HttpMethod.PUT));
     }
 
     public MappingBuilder getAccessLine500() {
