@@ -21,6 +21,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -56,12 +58,17 @@ public class OltCommissioning5600 extends BaseTest {
                 .addPslMock(oltDeviceAutomatic)
                 .build();
 
-        mappingsContext.publish();
+        mappingsContext.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterClass
     public void teardown() {
         mappingsContext.close();
+        mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         oltCommissioningRobot.restoreOsrDbState();
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);

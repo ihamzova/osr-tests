@@ -1,0 +1,11 @@
+name: portDeprovisioningForDpuAdtran
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H3"
+  portNumber: "1"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
+  accessLinesCount: 0

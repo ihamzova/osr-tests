@@ -20,6 +20,8 @@ import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_NEMO_UPDATER_MS)
@@ -54,12 +56,17 @@ public class A4NemoUpdateTest extends ApiTest {
                 .addWgA4ProvisioningMock()
                 .addNemoMock()
                 .build();
-        wiremock.publish();
+        wiremock.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterMethod
     public void cleanup() {
-        wiremock.deleteAll();
+        wiremock.close();
+        wiremock
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         a4Inventory.deleteNetworkElementGroups(negData);
     }

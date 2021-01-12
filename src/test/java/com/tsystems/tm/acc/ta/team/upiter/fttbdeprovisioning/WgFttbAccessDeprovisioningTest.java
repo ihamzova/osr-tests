@@ -21,6 +21,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
 @ServiceLog(APIGW_MS)
@@ -59,7 +60,7 @@ public class WgFttbAccessDeprovisioningTest extends BaseTest {
     @Test
     @TmsLink("DIGIHUB-77785")
     @Description("FTTB Deprovisioning for a Device")
-    public void fttbDeviceProvisioningTest() {
+    public void fttbDeviceDeprovisioningTest() {
         accessLineRiRobot.checkLineIdsCount(oltDeviceForFttbDeprovisioning);
         wgFttbAccessDeprovisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbDeprovisioning.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceForFttbDeprovisioning, 0);

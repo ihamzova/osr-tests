@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -57,6 +59,9 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @AfterClass
     public void teardown() {
         mappingsContext.close();
+        mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
     }
@@ -79,7 +84,9 @@ public class DpuCommissioningSDX2221 extends BaseTest {
         new MercuryWireMockMappingsContextBuilder(mappingsContext)
                 .addGigaAreasLocationMock(dpuDevice)
                 .build()
-                .publish();
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
 
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);

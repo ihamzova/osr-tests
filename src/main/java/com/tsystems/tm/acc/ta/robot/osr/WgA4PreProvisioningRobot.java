@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.WgA4ProvisioningClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;

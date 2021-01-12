@@ -4,8 +4,9 @@ import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.HomeIdDto.StatusEnum;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -158,7 +159,7 @@ public class AccessLineRiRobot {
                 .boxed().collect(Collectors.toList());
 
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
-                map(OnuAccessId::getOnuAccessId).sorted().collect(Collectors.toList());
+                map(OnuAccessIdDto::getOnuAccessId).sorted().collect(Collectors.toList());
 
         Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Olt State) count is incorrect");
@@ -208,8 +209,7 @@ public class AccessLineRiRobot {
         });
     }
 
-    @Step("Check physicalResourceRef absence")
-    public void checkPhysicalResourceRefAbsence(PortProvisioning port) {
+    public List<ReferenceDto> getPhysicalResourceRef(PortProvisioning port) {
         List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory
                 .physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
@@ -218,11 +218,10 @@ public class AccessLineRiRobot {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(physicalResourceRefs.size(), 0, "There is physicalResourceRef left");
+        return physicalResourceRefs;
     }
 
-    @Step("Check backHaul id absence")
-    public void checkBackHaulIdAbsence(PortProvisioning port) {
+    public List<BackhaulIdDto> getBackHaulId(PortProvisioning port) {
         List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
                 .backhaulIdController()
                 .searchBackhaulIds()
@@ -231,7 +230,22 @@ public class AccessLineRiRobot {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(backhaulIds.size(), 0, "Backhaul ids count");
+        return backhaulIds;
+    }
+
+    @Step("Check physicalResourceRef and backHaul id absence")
+    public void checkPhysicalResourceRefAndBackhaulIdAbsence(PortProvisioning port) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            Supplier<Boolean> PhysicalResourceReferenceAbsence = () -> getPhysicalResourceRef(port).size() == 0;
+            timeoutBlock.addBlock(PhysicalResourceReferenceAbsence); // execute the runnable precondition
+            Supplier<Boolean> BackHaulIdAbsence = () -> getBackHaulId(port).size() == 0;
+            timeoutBlock.addBlock(BackHaulIdAbsence); // execute the runnable precondition
+        } catch (Throwable e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+        Assert.assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
+        Assert.assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
     }
 
     @Step("Get list of access lines on the specified port")
@@ -334,7 +348,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get homeID state")
-    public HomeIdDto.StatusEnum getHomeIdStateByHomeId(String homeId) {
+    public StatusEnum getHomeIdStateByHomeId(String homeId) {
         List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdInternalController()
                 .searchHomeIds()
                 .body(new SearchHomeIdDto()

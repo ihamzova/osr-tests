@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -20,6 +21,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
 public class WgFttbAccessProvisioning extends BaseTest {
@@ -37,10 +39,10 @@ public class WgFttbAccessProvisioning extends BaseTest {
         accessLineRiRobot.fillDatabaseForDpuPreprovisioning();
     }
 
-//    @AfterMethod
-//    public void clearData() {
-//        accessLineRiRobot.clearDatabase();
-//    }
+    @AfterMethod
+    public void clearData() {
+        accessLineRiRobot.clearDatabase();
+    }
 
     @BeforeClass
     public void init() {
