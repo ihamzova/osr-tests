@@ -158,9 +158,10 @@ public void getWorkorder (long woid){
                 .mobileDpuBffDpuInternal().startDpuCommissioning()
                 .body(startDpuCommissioningRequest)
                 .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(201)));
-        System.out.println(startDpuCommissioningResponse.toString());
-        //System.out.println(startDpuCommissioningResponse.getProcessStatus().toString());
-        //Assert.assertEquals(startDpuCommissioningResponse.getProcessStatus().getValue(), "RUNNING");
+        Assert.assertEquals(startDpuCommissioningResponse.getProcessStatus().getValue(), "RUNNING");
+        Assert.assertEquals(startDpuCommissioningResponse.getEndSZ(), dpuEndsz);
+        Assert.assertNotNull(startDpuCommissioningResponse.getProcessId());
+        Assert.assertNotNull(startDpuCommissioningResponse.getBusinessKey());
 
     }
 
