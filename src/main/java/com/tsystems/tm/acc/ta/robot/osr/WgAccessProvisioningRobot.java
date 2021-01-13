@@ -164,6 +164,7 @@ public class WgAccessProvisioningRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
+    @Step("Prepare data for postprovisioning")
     public void prepareForPostprovisioning(int linesCount, PortProvisioning port, HomeIdDto homeIdDto) {
         for (int i = 0; i < linesCount; i++) {
             ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto); //assigned linesCount
