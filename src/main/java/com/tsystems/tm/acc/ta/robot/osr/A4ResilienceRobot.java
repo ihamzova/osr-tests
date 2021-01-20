@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
 
 @Slf4j
 public class A4ResilienceRobot {
@@ -26,7 +26,7 @@ public class A4ResilienceRobot {
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelay() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_RESOURCE_INVENTORY_SERVICE_MS).buildUri();
+        URI uri = new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri();
         String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
 
         Client client = ClientBuilder.newClient();
