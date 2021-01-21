@@ -59,9 +59,9 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Device LifeCycleState mismatch");
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Port LifeCycleState mismatch");
         dpuInfoPage.startDpuCommissioning();
-        //businessKey = dpuInfoPage.getBusinessKey();
-        //Assert.assertNotNull(businessKey);
-        //Assert.assertFalse(businessKey.isEmpty());
+        businessKey = dpuInfoPage.getBusinessKey();
+        Assert.assertNotNull(businessKey);
+        Assert.assertFalse(businessKey.isEmpty());
 
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Device LifeCycleState after com. mismatch");
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Port LifeCycleState after com. mismatch");
@@ -76,6 +76,14 @@ public class DpuCommissioningUiRobot {
         Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()), "DPU EMS DPU EndSz mismatch");
         dpuInfoPage.openDpuAccessLinesTab();
         dpuInfoPage.openDpuPortsTab();
+        //DIGIHUB-79622
+        dpuInfoPage.openDpuEditPage();
+        DpuEditPage dpuEditPage = new DpuEditPage();
+        dpuEditPage.validateUrl();
+        dpuEditPage.SetDpuState();
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+
     }
 
     @Step("Checks data in ri after commissioning process")
