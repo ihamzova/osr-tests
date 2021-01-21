@@ -6,7 +6,7 @@
             <class name="com.tsystems.tm.acc.ta.domain.PreTest"/>
         </classes>
     </test>
-    <!-- <test name="Olt-Commissioning cases (for MA5600T device)" thread-count="2" parallel="methods">
+    <test name="Olt-Commissioning cases (for MA5600T device)" thread-count="2" parallel="methods">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioning5600"/>
         </classes>
@@ -16,15 +16,15 @@
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreation"/>
         </classes>
-    </test>-->
+    </test>
     <test name="DPU-Commissioning cases (for SDX2221-16-TP device)" thread-count="1">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221"/>
         </classes>
     </test>
-    <!--  <test thread-count="1" name="A10nsp test cases">
-         <classes>
-             <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
-         </classes>
-     </test>-->
- </suite>
+    <test thread-count="1" name="A10nsp test cases">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
+        </classes>
+    </test>
+</suite>
