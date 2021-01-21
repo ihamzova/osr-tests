@@ -57,12 +57,12 @@ public class DpuInfoPage {
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
         //check DPU COMMISSIONING PROCESS and catch businessKey
-        //businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
-        //log.info("startDpuCommissioning() businessKey = {}", businessKey);
+        businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
+        log.info("startDpuCommissioning() businessKey = {}", businessKey);
         $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
-        //log.info("get device life cycle state = {}", getDeviceLifeCycleState());
-        //log.info("get port life cycle state = {}", getPortLifeCycleState());
-        //$(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(appears, TIMEOUT_FOR_DPU_COMMISSIONING);
+        log.info("get device life cycle state = {}", getDeviceLifeCycleState());
+        log.info("get port life cycle state = {}", getPortLifeCycleState());
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(appears, TIMEOUT_FOR_DPU_COMMISSIONING);
         return this;
     }
 
