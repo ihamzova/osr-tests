@@ -30,6 +30,7 @@ public interface DomainConstants {
     String A4_RESOURCE_INVENTORY_MS = "a4-resource-inventory";
     String A4_INVENTORY_IMPORTER_MS = "a4-inventory-importer";
     String A4_NEMO_UPDATER_MS = "a4-nemo-updater";
+    String A4_CARRIER_MANAGEMENT_MS = "a4-carrier-management";
     String DECOUPLING_MS = "decoupling-component";
     String APIGW_MS = "apigw";
 
