@@ -81,9 +81,6 @@ public class DpuCommissioningUiRobot {
         DpuEditPage dpuEditPage = new DpuEditPage();
         dpuEditPage.validateUrl();
         dpuEditPage.SetDpuState();
-        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState mismatch");
-        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState mismatch");
-
     }
 
     @Step("Checks data in ri after commissioning process")
@@ -99,8 +96,9 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
         Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
-        // check device lifecycle state
+        // DIGIHUB-79622 check port and device lifecycle state
         Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING, "DPU LifeCycleState mismatch");
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState mismatch");
 
         // check AccessLines, corresponding profiles and pools
         int numberOfAccessLinesForProvisioning = Integer.parseInt(dpuDevice.getPonConnectionGe()) + Integer.parseInt(dpuDevice.getPonConnectionWe());

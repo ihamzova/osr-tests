@@ -22,9 +22,9 @@
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221"/>
         </classes>
     </test>
-   <!-- <test thread-count="1" name="A10nsp test cases">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
-        </classes>
-    </test>-->
+    <!-- <test thread-count="1" name="A10nsp test cases">
+         <classes>
+             <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
+         </classes>
+     </test>-->
 </suite>
