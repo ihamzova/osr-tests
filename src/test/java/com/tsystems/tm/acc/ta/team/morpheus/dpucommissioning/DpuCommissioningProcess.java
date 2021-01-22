@@ -129,7 +129,6 @@ public class DpuCommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -605,8 +604,6 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -632,7 +629,6 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -658,7 +654,6 @@ public class DpuCommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -702,8 +697,7 @@ public class DpuCommissioningProcess extends BaseTest {
                             "EXECUTED Successfuly [Configure DPU Ems][callback]",
                             "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]",
-                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to OPERATING]"));
+                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
         }
     }
 
