@@ -24,8 +24,9 @@ public class DpuEditPage {
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 
-    public static final By EDIT_DPU_STATE_LOCATOR = byCssSelector(".field:nth-child(3) label");
-    public static final By SAVE_CHANGES_BUTTON_LOCATOR = byCssSelector("div.ui.right.aligned.basic.segment> button.ui.primary.compact.button");
+    public static final By EDIT_DPU_STATE_LOCATOR = byQaData("lifecyclestate_operating");
+            //byCssSelector(".field:nth-child(3) label");
+    public static final By ACCEPT_CHANGES_BUTTON_LOCATOR = byCssSelector("div.ui.right.aligned.basic.segment> button.ui.primary.compact.button");
     public static final By BACK_TO_DPU_INFO_PAGE_BUTTON_LOCATOR = byQaData("cancel_edit");
 
 
@@ -39,7 +40,7 @@ public class DpuEditPage {
 
     public DpuEditPage SetDpuState() {
         $(EDIT_DPU_STATE_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        $(SAVE_CHANGES_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(ACCEPT_CHANGES_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(BACK_TO_DPU_INFO_PAGE_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         return this;
 
