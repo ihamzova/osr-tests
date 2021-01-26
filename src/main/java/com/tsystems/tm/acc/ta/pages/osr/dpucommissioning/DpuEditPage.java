@@ -1,15 +1,11 @@
 package com.tsystems.tm.acc.ta.pages.osr.dpucommissioning;
 
-import com.codeborne.selenide.Condition;
-import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
-import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
-import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage.MAX_LATENCY_FOR_ELEMENT_APPEARS;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
