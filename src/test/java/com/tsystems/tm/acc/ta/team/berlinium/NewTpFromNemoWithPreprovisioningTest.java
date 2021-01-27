@@ -25,13 +25,12 @@ import java.util.concurrent.TimeUnit;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
-@ServiceLog(A4_CARRIER_MANAGEMENT)
+@ServiceLog(A4_CARRIER_MANAGEMENT_MS)
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     private final long SLEEP_TIMER = 5; // in seconds
@@ -91,8 +90,6 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     @AfterMethod
     public void cleanup() throws IOException {
-        wiremock.deleteAll();
-    public void cleanup() {
         wiremock.close();
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
@@ -157,6 +154,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
         //      protocol: TCP
         //      targetPort: 8001
         //   then create new route called apigw-admin
+        //   and uses new port mapping (81 -> 8001)
 
         String queue = "jms.queue.a10NspTP";
         String dlq = "jms.dead-letter-queue.a10NspTP";
