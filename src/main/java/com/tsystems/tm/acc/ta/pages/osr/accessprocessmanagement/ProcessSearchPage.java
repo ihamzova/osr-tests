@@ -93,7 +93,7 @@ public class ProcessSearchPage {
 
     @Step("Click Search button")
     public ProcessSearchPage clickSearchButton() {
-        $(SEARCH_BUTTON).click();
+        $(SEARCH_BUTTON).shouldBe(visible).click();
         $(SEARCH_TABLE).shouldBe(visible);
         return this;
     }

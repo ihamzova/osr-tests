@@ -12,9 +12,9 @@ import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.client.model.PortAndHomeIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.model.TpRefDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -29,6 +29,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(WG_A4_PROVISIONING_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(APIGW_MS)

@@ -2,11 +2,9 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.MobileDpuBffClient;
-import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.DpuResponse;
-import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.MarkDpuAsOperatingRequest;
-import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.UpdateDpuSerialNumberRequest;
-import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.WorkorderResponse;
+import com.tsystems.tm.acc.tests.osr.mobile.dpu.bff.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import org.testng.Assert;
 
 
@@ -148,6 +146,33 @@ public void getWorkorder (long woid){
         mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().markDpuAsOperating()
                 .body(markDpuAsOperatingRequest)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+    }
+
+    @Step("trigger DPU comissioning process on bff side")
+    public void triggerStartDpuCommissioning(String dpuEndsz){
+        StartDpuCommissioningRequest startDpuCommissioningRequest = new StartDpuCommissioningRequest();
+        startDpuCommissioningRequest.setEndSZ(dpuEndsz);
+        mobileDpuBffClient = new MobileDpuBffClient();
+
+        StartDpuCommissioningResponse startDpuCommissioningResponse = mobileDpuBffClient.getClient()
+                .mobileDpuBffDpuInternal().startDpuCommissioning()
+                .body(startDpuCommissioningRequest)
+                .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(201)));
+        Assert.assertEquals(startDpuCommissioningResponse.getProcessStatus().getValue(), "RUNNING");
+        Assert.assertEquals(startDpuCommissioningResponse.getEndSZ(), dpuEndsz);
+        Assert.assertNotNull(startDpuCommissioningResponse.getProcessId());
+        Assert.assertNotNull(startDpuCommissioningResponse.getBusinessKey());
+
+    }
+
+    @Step("trigger DPU comissioning process on bff side")
+    public void triggerStartDpuCommissioningNegative(String dpuEndsz){
+        StartDpuCommissioningRequest startDpuCommissioningRequest = new StartDpuCommissioningRequest();
+        startDpuCommissioningRequest.setEndSZ(dpuEndsz);
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().startDpuCommissioning()
+                .body(startDpuCommissioningRequest)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(500)));
     }
 
 }

@@ -23,6 +23,8 @@ import org.testng.annotations.Test;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
@@ -60,12 +62,18 @@ public class A4ImportCsvTest extends BaseTest {
                 .build();
 
         a4ResourceInventoryImporterUiRobot.openA4ImportPage();
-        mappingsContext.publish();
+
+        mappingsContext.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterMethod
     public void cleanup() {
-        mappingsContext.deleteAll();
+        mappingsContext.close();
+        mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         a4ResourceInventoryRobot.deleteA4EntriesIncludingNeps(csvData);
     }

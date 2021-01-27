@@ -2,7 +2,7 @@ package com.tsystems.tm.acc.ta.data.upiter;
 
 public interface UpiterConstants {
     String LINE_ID_GENERATOR_MS = "line-id-generator";
-    String HOME_ID_GENERATOR_MS = "home-id-generator";
+    String HOME_ID_GENERATOR_MS = "home-id-management";
     String WG_ACCESS_PROVISIONING_MS = "wg-access-provisioning";
     String ACCESS_LINE_RESOURCE_INVENTORY_MS = "access-line-resource-inventory";
     String OLT_RESOURCE_INVENTORY_MS = "olt-resource-inventory";
@@ -19,6 +19,6 @@ public interface UpiterConstants {
     String ACCESS_PROCESS_MANAGEMENT_UI = "access-process-management-ui";
     String ACCESS_PROCESS_MANAGEMENT_BFF = "access-process-management-bff";
     String ACCESS_PROCESS_MANAGEMENT = "access-process-management";
-    String ACCESS_LINE_MANAGEMENT = "access-line-management";
+    String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
 }

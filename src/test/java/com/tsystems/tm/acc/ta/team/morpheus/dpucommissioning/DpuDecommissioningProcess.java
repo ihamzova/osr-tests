@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 
 
 public class DpuDecommissioningProcess extends BaseTest {
@@ -61,7 +63,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningSuccess(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
                     bodyContains("RETIRING"));
@@ -86,7 +90,6 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
@@ -103,7 +106,6 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
@@ -118,7 +120,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningSuccess(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
                     bodyContains("RETIRING"));
@@ -145,7 +149,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForDeleteDeviceDeprovisioningCallbackError(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
@@ -169,7 +175,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForPostSealDpuEmsDeconfigCallbackError(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
@@ -191,7 +199,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForPostSealDpuOltDeconfigCallbackError(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
@@ -219,7 +229,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningDpuEmsConfigDoesntExist(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
                     bodyContains(dpu.getEndSz()),
@@ -247,7 +259,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningDpuOltConfigDoesntExist(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
                     bodyContains(dpu.getEndSz()),
@@ -281,7 +295,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
                     bodyContains(olt.getEndsz()),
@@ -306,7 +322,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningAncpSessionDoesntExist(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
@@ -336,7 +354,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningDeleteAncpErrorCallback(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
@@ -356,7 +376,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForPostPreprovisionFTTHCallbackError(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
                     bodyContains(olt.getEndsz()));
@@ -380,7 +402,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForPostPreprovisionFTTHAnotherDPUKnown(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
                     bodyContains(olt.getEndsz()));
@@ -404,7 +428,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForPostPreprovisionFTTHDPUisAlreadyKnown(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> preprovisionFTTHcheckValues = Collections.singletonList(
                     bodyContains(olt.getEndsz()));
@@ -428,7 +454,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addAllForDecomGetPonPortDiffSlotError(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
@@ -452,9 +480,9 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningReleaseOnuIdTask400(olt, dpu)
                     .build()
-                    .publish();
-
-
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             resp = dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
@@ -467,7 +495,10 @@ public class DpuDecommissioningProcess extends BaseTest {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addDpuDecommissioningSuccess(olt, dpu)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 

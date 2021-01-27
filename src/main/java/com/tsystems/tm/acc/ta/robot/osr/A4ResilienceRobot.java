@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 import static org.testng.Assert.assertEquals;
@@ -32,7 +33,7 @@ public class A4ResilienceRobot {
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelay() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_RESOURCE_INVENTORY_SERVICE_MS).buildUri();
+        URI uri = new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri();
         String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
 
         Client client = ClientBuilder.newClient();

@@ -4,7 +4,9 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.mappers.PreProvisioningMapper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.external.client.invoker.JSON;
 
+import javax.ws.rs.HttpMethod;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -13,8 +15,6 @@ import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_INTERNAL_SERVER_ERROR_500;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.StubUtils.costumizedWebhookWithBody;
-import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.StubUtils.serialize;
 
 public class PreProvisioningStub extends AbstractStubMapping {
 
@@ -32,7 +32,7 @@ public class PreProvisioningStub extends AbstractStubMapping {
                 .withName("getAccessLine201")
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_CREATED_201))
                 .withPostServeAction("webhook",
-                        costumizedWebhookWithBody(serialize(new PreProvisioningMapper().getNetworkServiceProfile()), NETWORK_SERVICE_PROFILE_URL));
+                        aDefaultWebhookWithBody(serialize(new PreProvisioningMapper().getNetworkServiceProfile())).withUrl(NETWORK_SERVICE_PROFILE_URL).withMethod(HttpMethod.PUT));
     }
 
     public MappingBuilder getAccessLine500() {
@@ -44,4 +44,9 @@ public class PreProvisioningStub extends AbstractStubMapping {
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_INTERNAL_SERVER_ERROR_500));
     }
 
+    private String serialize(Object obj) {
+        JSON json = new JSON();
+        json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
+        return json.serialize(obj);
+    }
 }

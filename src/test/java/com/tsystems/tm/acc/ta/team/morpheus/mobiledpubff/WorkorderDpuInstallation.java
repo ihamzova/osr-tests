@@ -12,6 +12,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
+
 public class WorkorderDpuInstallation extends BaseTest  {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private MobileDpuBffRobot mobileDpuBffRobot;
@@ -40,10 +43,11 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addGetWorkorderStub(true)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.getWorkorder(woid);
-
         }
     }
 
@@ -55,10 +59,11 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addGetWorkorderStub(false)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.getWorkorderNegative(woid);
-
         }
     }
 
@@ -70,7 +75,9 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addPatchInProgressWorkorderStub(true)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.startWorkorder(woid);
         }
@@ -84,7 +91,9 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addPatchInProgressWorkorderStub(false)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.startWorkorderNegative(woid);
         }
@@ -98,7 +107,9 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addPatchCreatedWorkorderStub(true)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.completeWorkorder(woid);
         }
@@ -112,7 +123,9 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addPatchCreatedWorkorderStub(false)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.completeWorkorderNegative(woid);
         }
@@ -126,7 +139,10 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addGetDpuDeviceFolIdStub(dpu, true)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
             mobileDpuBffRobot.getDpuByFolId(folId, dpuEndsz, serialNumber);
         }
     }
@@ -139,7 +155,10 @@ public void init(){
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                     .addGetDpuDeviceFolIdStub(dpu, false)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
             mobileDpuBffRobot.getDpuByFolIdNegative(folId);
         }
 
@@ -153,7 +172,10 @@ public void init(){
                     .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
                     .addPatchDpuDeviceMobileDpuBff(dpu, true)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
             mobileDpuBffRobot.updateDpuSerialNumber(folId, dpuEndsz, serialNumber);
         }
     }
@@ -166,7 +188,10 @@ public void init(){
                     .addGetDpuDeviceMobileDpuBffEndsz(dpu, true)
                     .addPatchDpuDeviceMobileDpuBff(dpu, false)
                     .build()
-                    .publish();
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
             mobileDpuBffRobot.updateDpuSerialNumberNegative(dpuEndsz, serialNumber);
         }
     }
@@ -181,9 +206,11 @@ public void init(){
                     .addPatchDpuDeviceMobileDpuBff(dpu, true)
                     .addPatchDpuPortMobileDpuBff(dpu, true)
                     .build()
-                    .publish();
-            mobileDpuBffRobot.setDpuAsOperating(folId, dpuEndsz, serialNumber);
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
+            mobileDpuBffRobot.setDpuAsOperating(folId, dpuEndsz, serialNumber);
         }
     }
 
@@ -197,9 +224,11 @@ public void init(){
                     .addPatchDpuDeviceMobileDpuBff(dpu, false)
                     .addPatchDpuPortMobileDpuBff(dpu, true)
                     .build()
-                    .publish();
-            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
         }
     }
 
@@ -213,9 +242,11 @@ public void init(){
                     .addPatchDpuDeviceMobileDpuBff(dpu, true)
                     .addPatchDpuPortMobileDpuBff(dpu, false)
                     .build()
-                    .publish();
-            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
         }
     }
 
@@ -229,10 +260,19 @@ public void init(){
                     .addPatchDpuDeviceMobileDpuBff(dpu, true)
                     .addPatchDpuPortMobileDpuBff(dpu, true)
                     .build()
-                    .publish();
-            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
 
+            mobileDpuBffRobot.setDpuAsOperatingNegative(dpuEndsz, serialNumber);
         }
     }
+
+    @Test
+    public void startDpuComissioningPositive() {
+
+            mobileDpuBffRobot.triggerStartDpuCommissioning(dpuEndsz);
+    }
+
 
 }

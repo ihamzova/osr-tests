@@ -32,6 +32,8 @@ import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @Slf4j
 @ServiceLog("olt-resource-inventory")
@@ -63,7 +65,9 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
                 .addPslMock(oltDevice)
                 .build();
 
-        mappingsContext.publish();
+        mappingsContext.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         clearResourceInventoryDataBase(endSz);
@@ -71,7 +75,10 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        mappingsContext.deleteAll();
+        mappingsContext.close();
+        mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);

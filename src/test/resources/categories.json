@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Skipped",
+    "matchedStatuses": [
+      "skipped"
+    ]
+  },
+  {
+    "name": "Unexpected problems",
+    "traceRegex": ".*RuntimeException.*",
+    "matchedStatuses": [
+      "broken",
+      "failed"
+    ]
+  },
+  {
+    "name": "PostgreSQL problem",
+    "traceRegex": ".*org.postgresql.util.PSQLException.*",
+    "matchedStatuses": [
+      "broken",
+      "failed"
+    ]
+  },
+  {
+    "name": "WebElement not found",
+    "traceRegex": ".*NoSuchElementException.*"
+  },
+  {
+    "name": "Error in db cleaning",
+    "messageRegex": ".*Error in db cleaning.*"
+  },
+  {
+    "name": "Timeout is completed. But planning was not completed",
+    "messageRegex": ".*Timeout is completed. But planning was not completed.*"
+  }
+]
