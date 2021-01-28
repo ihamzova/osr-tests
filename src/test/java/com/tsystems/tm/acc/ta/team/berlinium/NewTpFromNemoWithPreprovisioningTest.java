@@ -20,7 +20,6 @@ import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;

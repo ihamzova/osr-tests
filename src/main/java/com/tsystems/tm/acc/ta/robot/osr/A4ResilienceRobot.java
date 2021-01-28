@@ -28,6 +28,7 @@ import static org.testng.Assert.fail;
 public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
+    String queueAuthenticate = "a4_user";
 
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelay() throws IOException {
@@ -62,7 +63,7 @@ public class A4ResilienceRobot {
     }
 
     @Step("changeRouteToWiremock")
-    public void changeRouteToWiremock(String route) throws IOException {
+    public void changeRouteToWiremock(String route) {
         String url = "http://apigw-admin-gigabit-tm-berlinium-01.telitcaas3.t-internal.com/routes/";
         String routeOfNemo = "resource-order-resource-inventory.v1.nemo.logicalResource";
 
@@ -154,7 +155,7 @@ public class A4ResilienceRobot {
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 
-        Client client = ClientBuilder.newClient().register(new Authenticator("a4_user", "a4_user"));
+        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
@@ -170,7 +171,7 @@ public class A4ResilienceRobot {
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 
-        Client client = ClientBuilder.newClient().register(new Authenticator("a4_user", "a4_user"));
+        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
