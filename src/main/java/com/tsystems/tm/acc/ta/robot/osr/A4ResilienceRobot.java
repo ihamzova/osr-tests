@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 @Slf4j
 public class A4ResilienceRobot {
@@ -68,38 +69,42 @@ public class A4ResilienceRobot {
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url + "?size=200");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
-        Response response = request.get();
-        Routes r = objectMapper.readValue(response.readEntity(String.class), Routes.class);
+        try {
+            Response response = request.get();
+            Routes r = objectMapper.readValue(response.readEntity(String.class), Routes.class);
 
-        List<Data> routeList = r.getData()
-                .stream()
-                .filter(i -> i.getName().equals(route))
-                .collect(Collectors.toList());
+            List<Data> routeList = r.getData()
+                    .stream()
+                    .filter(i -> i.getName().equals(route))
+                    .collect(Collectors.toList());
 
-        Data routeData = routeList.get(0);
-        String uuidOfRoute = routeData.getId();
+            Data routeData = routeList.get(0);
+            String uuidOfRoute = routeData.getId();
 
-        List<Data> mockList = r.getData()
-                .stream()
-                .filter(i -> i.getName().contains(routeOfNemo))
-                .collect(Collectors.toList());
+            List<Data> mockList = r.getData()
+                    .stream()
+                    .filter(i -> i.getName().contains(routeOfNemo))
+                    .collect(Collectors.toList());
 
-        Data mockData = mockList.get(0);
+            Data mockData = mockList.get(0);
 
-        String uuidOfMockService = mockData.getService().getId();
+            String uuidOfMockService = mockData.getService().getId();
 
-        Data newRoute = new Data();
-        newRoute.setProtocols(new ArrayList<>(Arrays.asList("http", "https")));
-        Service newService = new Service();
-        newService.setId(uuidOfMockService);
-        newRoute.setService(newService);
-        newRoute.setId(uuidOfRoute);
-        newRoute.setName(route);
+            Data newRoute = new Data();
+            newRoute.setProtocols(new ArrayList<>(Arrays.asList("http", "https")));
+            Service newService = new Service();
+            newService.setId(uuidOfMockService);
+            newRoute.setService(newService);
+            newRoute.setId(uuidOfRoute);
+            newRoute.setName(route);
 
-        resource = client.target(url + uuidOfRoute);
-        request = resource.request(MediaType.APPLICATION_JSON);
-        response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
-        assertEquals(response.getStatus(), HttpStatus.SC_OK);
+            resource = client.target(url + uuidOfRoute);
+            request = resource.request(MediaType.APPLICATION_JSON);
+            response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
+            assertEquals(response.getStatus(), HttpStatus.SC_OK);
+        }catch(Exception e){
+            fail("apigw-admin url is missing!");
+        }
     }
 
     @Step("changeRouteToA4ResourceInventoryService")
