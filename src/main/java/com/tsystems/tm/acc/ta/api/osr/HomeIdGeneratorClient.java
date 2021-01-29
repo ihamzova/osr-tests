@@ -22,7 +22,7 @@ public class HomeIdGeneratorClient implements Resetable {
                 () -> new RequestSpecBuilder().setConfig(config().objectMapperConfig(objectMapperConfig().defaultObjectMapper(gson())))
                         .addFilter(new RequestLoggingFilter())
                         .addFilter(new ResponseLoggingFilter())
-                        .setBaseUri(new OCUrlBuilder("home-id-generator").buildUri())));
+                        .setBaseUri(new OCUrlBuilder("home-id-management").buildUri())));
     }
 
     public static JSON json() {
