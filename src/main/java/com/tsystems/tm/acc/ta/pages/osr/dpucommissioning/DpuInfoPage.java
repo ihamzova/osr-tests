@@ -32,7 +32,9 @@ public class DpuInfoPage {
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_commissioning_start");
     public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
 
-    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("edit_dpu_device");
+    public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
+    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
+    public static final By START_EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
 
     private String businessKey; // check etcd values
 
@@ -85,7 +87,9 @@ public class DpuInfoPage {
 
     @Step("DPU editieren")
     public DpuInfoPage openDpuEditPage() {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
         $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
+        $(START_EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
         return this;
     }
 
