@@ -6,8 +6,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.PoolHomeId;
-import com.tsystems.tm.acc.tests.osr.home.id.generator.internal.client.model.SingleHomeId;
+import com.tsystems.tm.acc.tests.osr.home.id.management.internal.v1_1_2_0.client.model.PoolHomeId;
+import com.tsystems.tm.acc.tests.osr.home.id.management.internal.v1_1_2_0.client.model.SingleHomeId;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -39,7 +39,7 @@ public class HomeIdTest extends BaseTest {
     @Description("Create 1 Home Id")
     public void createSingleHomeId() {
         SingleHomeId response = homeIdGeneratorClient.getClient()
-                .homeIdGeneratorController()
+                .homeIdGeneratorInternalController()
                 .generate()
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
         assertNotNull(response);
@@ -49,7 +49,7 @@ public class HomeIdTest extends BaseTest {
     @TmsLink("DIGIHUB-34654")
     @Description("Create 32 Home Ids")
     public void createPoolHomeIds() {
-        PoolHomeId response = homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
+        PoolHomeId response = homeIdGeneratorClient.getClient().homeIdGeneratorInternalController().generateBatch()
                 .numberHomeIdsQuery(homeIdBatch.getNumberLineIds())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
         assertEquals(response.getHomeIds().size(), homeIdBatch.getNumberLineIds().intValue());
@@ -59,7 +59,7 @@ public class HomeIdTest extends BaseTest {
     @TmsLink("DIGIHUB-34654")
     @Description("Invalid number for Creation Pool of Home Ids")
     public void failCreatePoolHomeIdOver() {
-        homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
+        homeIdGeneratorClient.getClient().homeIdGeneratorInternalController().generateBatch()
                 .numberHomeIdsQuery(33)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
@@ -68,7 +68,7 @@ public class HomeIdTest extends BaseTest {
     @TmsLink("DIGIHUB-34654")
     @Description("Invalid number for Creation Pool of Home Ids")
     public void failCreatePoolHomeIdMinus() {
-        homeIdGeneratorClient.getClient().homeIdGeneratorController().generateBatch()
+        homeIdGeneratorClient.getClient().homeIdGeneratorInternalController().generateBatch()
                 .numberHomeIdsQuery(-1)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }

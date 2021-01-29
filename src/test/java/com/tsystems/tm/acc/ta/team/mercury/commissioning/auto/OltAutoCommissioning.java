@@ -48,6 +48,8 @@ public class OltAutoCommissioning extends BaseTest {
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
+    private static final String KLS_ID_EXPECTED = "17056514";
+
     private OltResourceInventoryClient oltResourceInventoryClient;
 
     @BeforeClass
@@ -146,7 +148,7 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), KLS_ID_EXPECTED, "KlsId coming from PSL (Mock)");
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         checkPortState(oltDevice, oltDetailsPage, 2);
@@ -175,7 +177,7 @@ public class OltAutoCommissioning extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId());
+        Assert.assertEquals(oltDetailsPage.getKlsID(), KLS_ID_EXPECTED, "KlsId coming from PSL (Mock)");
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         checkPortState(oltDevice, oltDetailsPage, 4);
