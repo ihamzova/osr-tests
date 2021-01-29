@@ -17,6 +17,7 @@ import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.JsonPatchOperation;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -122,6 +124,16 @@ public class DpuDeviceCommissioningProcess extends BaseTest {
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
+        // for team level test only
+        log.info("+++ set lifeCycleState");
+        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
+                .idPath(patchDevice.getId())
+                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
+                        .from("string")
+                        .path("/lifeCycleState")
+                        .value("INSTALLING")))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        // ----
 
         dpuInfoPage.startDpuCommissioning();
         //businessKey = dpuInfoPage.getBusinessKey();
