@@ -10,7 +10,6 @@ import org.openqa.selenium.By;
 import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage.MAX_LATENCY_FOR_ELEMENT_APPEARS;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
@@ -86,7 +85,7 @@ public class DpuInfoPage {
 
     @Step("DPU editieren")
     public DpuInfoPage openDpuEditPage() {
-        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
         return this;
     }
 

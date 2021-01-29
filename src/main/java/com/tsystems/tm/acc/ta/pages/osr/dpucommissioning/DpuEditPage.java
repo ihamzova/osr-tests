@@ -7,17 +7,17 @@ import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage.MAX_LATENCY_FOR_ELEMENT_APPEARS;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
 @Slf4j
 
 public class DpuEditPage {
+
+    public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 5_000;
+
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
-    public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
-    private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 
     public static final By EDIT_DPU_STATE_RADIO_BUTTON_LOCATOR = byQaData("lifecyclestate_operating");
     public static final By ACCEPT_CHANGES_BUTTON_LOCATOR = byQaData("lifecyclestate-accept-changes_edit");
