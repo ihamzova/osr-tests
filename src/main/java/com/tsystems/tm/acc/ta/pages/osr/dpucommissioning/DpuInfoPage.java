@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -20,6 +21,7 @@ public class DpuInfoPage {
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 
+
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
     public static final By PON_PORT_LIFE_CYCLE_STATE_LOCATOR = byQaData("port_1_pon_lifecyclestate");
 
@@ -29,6 +31,10 @@ public class DpuInfoPage {
 
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_commissioning_start");
     public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
+
+    public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
+    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
+    public static final By START_EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
 
     private String businessKey; // check etcd values
 
@@ -57,7 +63,7 @@ public class DpuInfoPage {
         $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
         log.info("get port life cycle state = {}", getPortLifeCycleState());
-        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_DPU_COMMISSIONING);
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(appears, TIMEOUT_FOR_DPU_COMMISSIONING);
         return this;
     }
 
@@ -76,6 +82,14 @@ public class DpuInfoPage {
     @Step("Open DPU Access-Lines Tab")
     public DpuInfoPage openDpuAccessLinesTab() {
         $(DPU_ACCESS_LINES_VIEW_TAB_LOCATOR).click();
+        return this;
+    }
+
+    @Step("DPU editieren")
+    public DpuInfoPage openDpuEditPage() {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
+        $(START_EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
         return this;
     }
 
