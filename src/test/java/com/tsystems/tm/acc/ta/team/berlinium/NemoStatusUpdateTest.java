@@ -158,6 +158,17 @@ public class NemoStatusUpdateTest {
         a4ResourceInventory.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
     }
 
+    @Test(description = "DIGIHUB-76365 extend NEMO API to handle L2BSA Network Service Profile status PATCH")
+    @Owner("@t-systems.com")
+    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA)")
+    public void testNemoStatusPatchForNspL2BSA() {
+        // WHEN
+        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(nspL2Data, NEW_OPERATIONAL_STATE);
+
+        // THEN
+        a4ResourceInventory.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+    }
+
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Link")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Link")
