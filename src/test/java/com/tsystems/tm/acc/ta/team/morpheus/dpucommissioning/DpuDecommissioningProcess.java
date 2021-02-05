@@ -388,8 +388,7 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHcheckValues);
-            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
-            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
 
@@ -441,7 +440,8 @@ public class DpuDecommissioningProcess extends BaseTest {
 
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
-            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
