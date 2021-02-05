@@ -132,7 +132,7 @@ public class DpuCommissioningProcess extends BaseTest {
         }
     }
 
-    @Test(description = "Positive case. DPU-commisioning without errors")
+    @Test(description = "Positive case. DPU-commissioning without errors")
     @Description("Use case: DpuAtOltConfiguration exists")
     public void dpuCommissioningDpuAtOltConfigurationExists() {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -655,6 +655,27 @@ public class DpuCommissioningProcess extends BaseTest {
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
         }
+    }
+
+    @Test(description = "Double calls check and reject")
+    @Description("Double start dpu-commissioning calls check and reject in dpu-commissioning process")
+    public void doubleCallsRejectTest(){
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DefaultOltForCommissioningPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositive")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccess(olt, dpu)
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startProcess500(dpu.getEndSz());
+
+        }
+
     }
 
     @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
