@@ -12,9 +12,9 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.cli
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.OntResourceV2Dto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.api.CallbackControllerV2Api;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.CommissioningResult;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.ReserveLineByHomeIdResultV2;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
@@ -29,6 +29,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.helpers.WiremockHelper.CONSUMER_ENDPOINT;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class OntOltOrchestratorRobot {
@@ -91,7 +93,7 @@ public class OntOltOrchestratorRobot {
 
         CommissioningResult result = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), CommissioningResult.class);
-        Assert.assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
+        assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
         Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
 
         if (result.isSuccess() && result.getResponse() != null) {
@@ -129,7 +131,7 @@ public class OntOltOrchestratorRobot {
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
                 30_000);
         log.info("Callback: " + requests);
-        Assert.assertTrue(requests.size() >= 1, "Callback is found");
+        assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
     }
 
@@ -194,5 +196,36 @@ public class OntOltOrchestratorRobot {
                 .newSerialNumberQuery(newSerialNumber)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
+
+        OntChangeResultV2 result = new JSON()
+                .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), OntChangeResultV2.class);
+        assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
+        assertNotNull(result.getResponse().getSerialNumber(), "Cannot get SerialNumber from callback");
+        Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
+    }
+
+    @Step("Decommission Ont")
+    public void decommissionOnt(AccessLine accessline){
+        CORRELATION_ID = UUID.randomUUID().toString();
+        ontOltOrchestratorClient
+                .getClient()
+                .ontOltOrchestratorV2()
+                .decommissioningNetworkElementProfile()
+                .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
+                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                        .withEndpoint(CONSUMER_ENDPOINT)
+                        .build()
+                        .toString())
+                .lineIdQuery(accessline.getLineId())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+        log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
+
+        DecommissioningResultV2 result = new JSON()
+                .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), DecommissioningResultV2.class);
+        assertTrue(result.isSuccess(), "ONT failed to be decommissioned");
     }
 }

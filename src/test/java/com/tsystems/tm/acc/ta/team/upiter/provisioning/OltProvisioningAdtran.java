@@ -74,7 +74,7 @@ public class OltProvisioningAdtran extends BaseTest {
     @TmsLink("DIGIHUB-30877")
     @Description("Port Provisioning with 32 WG Lines on SDX 6320")
     public void portProvisioning() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portEmpty);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
         wgAccessProvisioningRobot.startPortProvisioning(portEmpty);

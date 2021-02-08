@@ -18,7 +18,7 @@
     </test>
     <test thread-count="1" name="Ont commissioning Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.AccessLineReservationByPortAndHomeId"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.DGFaccessLineReservation"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.A4OntCommissioning"/>
         </classes>

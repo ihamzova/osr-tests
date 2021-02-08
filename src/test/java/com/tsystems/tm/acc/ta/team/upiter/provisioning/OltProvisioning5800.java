@@ -14,7 +14,6 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.client.model.CardDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.internal.v1_5_0.client.model.CardRequestDto;
 import io.qameta.allure.Description;
@@ -78,7 +77,7 @@ public class OltProvisioning5800 extends BaseTest {
     @TmsLink("DIGIHUB-30877")
     @Description("Port Provisioning with 32 WG Lines")
     public void portProvisioning() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portEmpty);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
         wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
@@ -97,7 +96,7 @@ public class OltProvisioning5800 extends BaseTest {
 
         Assert.assertNotNull(cardBeforeProvisioning);
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
-        Assert.assertEquals(accessLineRiRobot.getAccessLines(port).size(), 0);
+        Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
                 .body(Stream.of(new CardRequestDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
@@ -122,7 +121,7 @@ public class OltProvisioning5800 extends BaseTest {
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
         Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
-        Assert.assertEquals(accessLineRiRobot.getAccessLines(port).size(), 0);
+        Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
         wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
                 .body(new DeviceDto().endSz(portEmpty.getEndSz())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
