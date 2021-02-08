@@ -9,3 +9,4 @@ name: OntSerialNumber
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:
   serialNumber: "1234123412341234"
+  newSerialNumber: "9876987698769876"

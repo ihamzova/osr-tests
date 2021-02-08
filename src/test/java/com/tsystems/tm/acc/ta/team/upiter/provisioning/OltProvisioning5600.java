@@ -83,7 +83,7 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-29664")
     @Description("Port provisioning case when port completely free")
     public void portProvisioningEmpty() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portEmpty);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
         wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
@@ -94,7 +94,7 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-32288")
     @Description("Port provisioning case when port partly occupied")
     public void portProvisioningPartly() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portProvisioningPartly);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningPartly);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), 8);
 
         wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
@@ -105,7 +105,7 @@ public class OltProvisioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-40631")
     @Description("Port provisioning case when port completely occupied")
     public void portProvisioningFully() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLines(portProvisioningFully);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningFully);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
 
         wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
@@ -129,7 +129,7 @@ public class OltProvisioning5600 extends BaseTest {
 
         Assert.assertNotNull(cardBeforeProvisioning);
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
-        Assert.assertEquals(accessLineRiRobot.getAccessLines(portEmpty).size(), 0);
+        Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
 
         wgAccessProvisioningRobot.startCardProvisioning(portEmpty);
 

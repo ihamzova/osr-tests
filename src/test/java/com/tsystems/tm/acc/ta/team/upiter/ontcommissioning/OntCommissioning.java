@@ -7,25 +7,27 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.DefaultNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.PortAndHomeIdDto;
 import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Supplier;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.*;
 
 
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
@@ -35,7 +37,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(DECOUPLING_MS)
 @ServiceLog(GATEWAY_ROUTE_MS)
-public class AccessLineReservationByPortAndHomeId extends BaseTest {
+public class OntCommissioning extends BaseTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
@@ -84,7 +86,7 @@ public class AccessLineReservationByPortAndHomeId extends BaseTest {
         AccessLineDto.StatusEnum lineIdState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
         //Check that access line became assigned
-        Assert.assertEquals(AccessLineDto.StatusEnum.ASSIGNED, lineIdState);
+        assertEquals(AccessLineDto.StatusEnum.ASSIGNED, lineIdState);
 
 /*        //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();
@@ -105,9 +107,10 @@ public class AccessLineReservationByPortAndHomeId extends BaseTest {
 
         //Check subscriberNEProfile
         SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-        Assert.assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
-        Assert.assertEquals(subscriberNEProfile.getState(), SubscriberNeProfileDto.StateEnum.ACTIVE);
-        Assert.assertEquals(subscriberNEProfile.getOntState(), SubscriberNeProfileDto.OntStateEnum.UNKNOWN);
+        assertNotNull(subscriberNEProfile);
+        assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
+        assertEquals(subscriberNEProfile.getState(), SubscriberNeProfileDto.StateEnum.ACTIVE);
+        assertEquals(subscriberNEProfile.getOntState(), SubscriberNeProfileDto.OntStateEnum.UNKNOWN);
     }
 
     @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration"})
@@ -120,6 +123,33 @@ public class AccessLineReservationByPortAndHomeId extends BaseTest {
         //update Ont state
         ontOltOrchestratorRobot.updateOntState(accessLine);
         SubscriberNeProfileDto subscriberNEProfile2 = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-        Assert.assertEquals(subscriberNEProfile2.getOntState(), SubscriberNeProfileDto.OntStateEnum.ONLINE);
+        assertNotNull(subscriberNEProfile2);
+        assertEquals(subscriberNEProfile2.getOntState(), SubscriberNeProfileDto.OntStateEnum.ONLINE);
+    }
+
+    @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration", "ontTest"})
+    @TmsLink("DIGIHUB-53891")
+    @Description("ONT Change")
+    public void ontChangeTest() {
+        assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber(),
+                ontSerialNumber.getSerialNumber());
+        ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
+        assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber(),
+                ontSerialNumber.getNewSerialNumber());
+    }
+
+    @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration", "ontTest", "ontChangeTest"})
+    @TmsLink("DIGIHUB-53292")
+    @Description("ONT Decommissioning, rollback to reservation = false")
+    public void ontDecommissioningTest() {
+        ontOltOrchestratorRobot.decommissionOnt(accessLine);
+        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
+        assertNull(subscriberNEProfile);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
+                AccessLineDto.StatusEnum.WALLED_GARDEN);
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
+                accessLine.getHomeId());
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
+                DefaultNeProfileDto.StateEnum.ACTIVE);
     }
 }

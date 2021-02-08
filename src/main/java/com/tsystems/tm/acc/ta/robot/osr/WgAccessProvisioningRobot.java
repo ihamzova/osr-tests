@@ -172,7 +172,7 @@ public class WgAccessProvisioningRobot {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
             Supplier<Boolean> precondition = () -> {
-                List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLines(port);
+                List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port);
                 return accessLines.size() == port.getAccessLinesCount();
             };
 
