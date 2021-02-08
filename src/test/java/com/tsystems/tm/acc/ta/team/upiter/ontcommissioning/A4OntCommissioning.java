@@ -87,14 +87,14 @@ public class A4OntCommissioning extends BaseTest {
 
         //Check that access line became assigned
         Assert.assertEquals(AccessLineDto.StatusEnum.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
-        Assert.assertNull(accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "Serial number is not null");
+        Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "Serial number is not null");
 
         //Register ONT
         ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
 
         //Check that access line became assigned
         Assert.assertEquals(AccessLineDto.StatusEnum.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
-        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
 }
 
     @Test(dependsOnMethods = {"a4ontRegistration"})
@@ -104,21 +104,20 @@ public class A4OntCommissioning extends BaseTest {
         ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
         //save HomeId in accessLine
         ontOltOrchestratorRobot.updateOntState(accessLine);
-        Assert.assertNotNull(accessLineRiRobot.getAccessLines(a4port).get(0).getHomeId(), "HomeId is null");
-        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+        Assert.assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
+        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
 
     }
 
     @Test(dependsOnMethods = {"a4ontTest"})
     @TmsLink("DIGIHUB-58725")
     @Description("A4 ONT Change test")
-    public void a4ontChangeTest() throws InterruptedException {
+    public void a4ontChangeTest(){
         //check serial number is stored
-        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
         //change Ont
         ontOltOrchestratorRobot.changeOntSerialNumber(accessLine,ontSerialNumber.getNewSerialNumber());
-        Thread.sleep(5000);
-        Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLines(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+        Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     }
 
     @Test(dependsOnMethods = {"a4ontTest"})

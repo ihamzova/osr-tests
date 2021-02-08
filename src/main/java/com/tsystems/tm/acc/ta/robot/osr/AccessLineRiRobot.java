@@ -70,13 +70,13 @@ public class AccessLineRiRobot {
     public void checkPortParametersForLines(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkFtthProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            Supplier<Boolean> checkFtthProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
             timeoutBlock.addBlock(checkFtthProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        List<AccessLineDto> accessLines = getAccessLines(port);
+        List<AccessLineDto> accessLines = getAccessLinesByPort(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
                 "Access lines count");
 
@@ -99,7 +99,7 @@ public class AccessLineRiRobot {
 
     @Step("Check assigned access lines count of port template")
     public void checkPortParametersForAssignedLines(PortProvisioning port) {
-        List<AccessLineDto> accessLines = getAccessLines(port);
+        List<AccessLineDto> accessLines = getAccessLinesByPort(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
                 "Access lines count");
 
@@ -114,13 +114,13 @@ public class AccessLineRiRobot {
     public void checkA4LineParameters(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkA4PreProvisioning = () -> getAccessLines(port).size() == 1;
+            Supplier<Boolean> checkA4PreProvisioning = () -> getAccessLinesByPort(port).size() == 1;
             timeoutBlock.addBlock(checkA4PreProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        List<AccessLineDto> accessLines = getAccessLines(port);
+        List<AccessLineDto> accessLines = getAccessLinesByPort(port);
         Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
 
         AccessLineDto accessLine = accessLines.get(0);
@@ -134,13 +134,13 @@ public class AccessLineRiRobot {
     public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLines(port).size() == numberOfAccessLinesForProvisioning;
+            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLinesByPort(port).size() == numberOfAccessLinesForProvisioning;
             timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        List<AccessLineDto> accessLines = getAccessLines(port);
+        List<AccessLineDto> accessLines = getAccessLinesByPort(port);
         Assert.assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
 
         long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
@@ -176,7 +176,7 @@ public class AccessLineRiRobot {
     @Step("Remove lines with id > 1008, change some port refs")
     public void prepareTestDataToDeprovisioning(PortProvisioning port) {
         // delete extra lines
-        getAccessLines(port).stream()
+        getAccessLinesByPort(port).stream()
                 .filter(line -> line.getId() > 1008)
                 .forEach(line -> {
                     accessLineResourceInventory.accessLineInternalController()
@@ -197,7 +197,7 @@ public class AccessLineRiRobot {
 
     @Step("Check absence of assigned lines, subscriber profiles")
     public void checkDecommissioningPreconditions(PortProvisioning port) {
-        List<AccessLineDto> accessLines = getAccessLines(port);
+        List<AccessLineDto> accessLines = getAccessLinesByPort(port);
 
         Assert.assertEquals(accessLines.stream()
                 .filter(line -> line.getStatus().equals(AccessLineDto.StatusEnum.ASSIGNED)).count(), 0, "Assigned lines count:");
@@ -249,7 +249,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get list of access lines on the specified port")
-    public List<AccessLineDto> getAccessLines(PortProvisioning port) {
+    public List<AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
         return accessLineResourceInventory
                 .accessLineInternalController()
                 .searchAccessLines()
@@ -257,6 +257,16 @@ public class AccessLineRiRobot {
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get access line by lineId")
+    public List<AccessLineDto> getAccessLinesByLineId(String lineId) {
+        return accessLineResourceInventory
+                .accessLineInternalController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto()
+                        .lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -284,13 +294,13 @@ public class AccessLineRiRobot {
     public void checkProvisioningResults(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkProvisioning = () -> getAccessLines(port).size() == port.getAccessLinesCount();
+            Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
             timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        List<AccessLineDto> accessLinesAfterProvisioning = getAccessLines(port);
+        List<AccessLineDto> accessLinesAfterProvisioning = getAccessLinesByPort(port);
         long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
                 .filter(Objects::nonNull).filter(defaultNeProfile -> defaultNeProfile.getState().getValue()
                         .equals(STATUS_ACTIVE))
@@ -388,7 +398,6 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertNotNull(line.get(0).getDefaultNeProfile(), "Default NE profile is null");
         SubscriberNeProfileDto subscriberNeProfile = line.get(0).getDefaultNeProfile().getSubscriberNeProfile();
-        Assert.assertNotNull(subscriberNeProfile, "Subscriber NE profile is null");
         return subscriberNeProfile;
     }
 }
