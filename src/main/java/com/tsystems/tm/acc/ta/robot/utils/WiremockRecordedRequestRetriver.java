@@ -46,7 +46,7 @@ public class WiremockRecordedRequestRetriver {
     public void isGetRequestCalled(Long timeout, UrlPattern url) {
         RequestPatternBuilder requestPatternBuilder = getRequestedFor(url);
         WireMockFactory.get().retrieve(
-                WireMock.exactly(1),
+                WireMock.moreThanOrExactly(1),
                 requestPatternBuilder,
                 timeout);
     }
@@ -55,7 +55,7 @@ public class WiremockRecordedRequestRetriver {
         RequestPatternBuilder requestPatternBuilder = postRequestedFor(url);
         consumers.forEach(c -> c.accept(requestPatternBuilder));
         WireMockFactory.get().retrieve(
-                WireMock.exactly(1),
+                WireMock.moreThanOrExactly(1),
                 requestPatternBuilder,
                 timeout);
     }
@@ -64,7 +64,7 @@ public class WiremockRecordedRequestRetriver {
         RequestPatternBuilder requestPatternBuilder = putRequestedFor(url);
         consumers.forEach(c -> c.accept(requestPatternBuilder));
         WireMockFactory.get().retrieve(
-                WireMock.exactly(1),
+                WireMock.moreThanOrExactly(1),
                 requestPatternBuilder,
                 timeout);
     }
@@ -73,7 +73,7 @@ public class WiremockRecordedRequestRetriver {
         RequestPatternBuilder requestPatternBuilder = patchRequestedFor(url);
         consumers.forEach(c -> c.accept(requestPatternBuilder));
         WireMockFactory.get().retrieve(
-                WireMock.exactly(1),
+                WireMock.moreThanOrExactly(1),
                 requestPatternBuilder,
                 timeout);
     }
@@ -82,7 +82,7 @@ public class WiremockRecordedRequestRetriver {
         RequestPatternBuilder requestPatternBuilder = deleteRequestedFor(url);
         consumers.forEach(c -> c.accept(requestPatternBuilder));
         WireMockFactory.get().retrieve(
-                WireMock.exactly(1),
+                WireMock.moreThanOrExactly(1),
                 requestPatternBuilder,
                 timeout);
     }

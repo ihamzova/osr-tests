@@ -88,7 +88,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
                     bodyContains(olt.getEndsz()));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
@@ -130,7 +130,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
@@ -156,7 +156,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             Thread.sleep(4000);
 
             dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
@@ -182,7 +182,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkDeleteDpuEmsConfigurationNotCalled();
         }
@@ -212,7 +212,7 @@ public class DpuDecommissioningProcess extends BaseTest {
                     bodyContains(olt.getOltPort()),
                     bodyContains("onuId"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskNotCalled(releaseOnuIdTaskValues);
         }
@@ -240,7 +240,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
                     bodyContains(dpu.getEndSz().replace("/", "_")));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuEmsConfigNotCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
@@ -276,7 +276,7 @@ public class DpuDecommissioningProcess extends BaseTest {
                     bodyContains(olt.getOltPort()),
                     bodyContains("onuId"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuAtOltConfigNotCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuOltDEConfigNotCalled(dpuSealAtOLTCheckValuesDpu);
@@ -305,7 +305,7 @@ public class DpuDecommissioningProcess extends BaseTest {
                     bodyContains(olt.getOltPort()),
                     bodyContains("onuId"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
         }
@@ -332,7 +332,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
                     bodyContains(olt.getEndsz()));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
             dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
@@ -358,7 +358,7 @@ public class DpuDecommissioningProcess extends BaseTest {
                     .publishedHook(savePublishedToDefaultDir())
                     .publishedHook(attachStubsToAllureReport());
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
             dpuCommissioningRobot.checkGetDpuPonConnNotCalled(dpu.getEndSz());
@@ -386,7 +386,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHcheckValues);
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
@@ -412,7 +412,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHcheckValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
         }
@@ -438,9 +438,10 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskNotCalled(preprovisionFTTHcheckValues);
-            dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
     }
 
@@ -461,7 +462,7 @@ public class DpuDecommissioningProcess extends BaseTest {
             List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
                     bodyContains("NOT_OPERATING"));
 
-            dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
@@ -484,7 +485,7 @@ public class DpuDecommissioningProcess extends BaseTest {
                     .publishedHook(savePublishedToDefaultDir())
                     .publishedHook(attachStubsToAllureReport());
 
-            resp = dpuCommissioningRobot.startDecomissioningProcess(dpu.getEndSz());
+            resp = dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationNotCalled();
 
             Thread.sleep(10000);
@@ -527,6 +528,67 @@ public class DpuDecommissioningProcess extends BaseTest {
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
 
+    }
+
+    @Test(description = "Double calls check and reject")
+    @Description("Double start dpu-decommissioning calls check and reject in dpu-decommissioning process")
+    public void dpuDecommissioningDoubleCallsRejectTest(){
+
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DpuDecommissioningDefaultPositive);
+
+        try(WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuDecommissioningPositive")){
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addDpuDecommissioningSuccess(olt, dpu)
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("RETIRING"));
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("NOT_OPERATING"));
+
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtEMSCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            List<Consumer<RequestPatternBuilder>> releaseOnuIdTaskValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltSlot()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("onuId"));
+
+            List<Consumer<RequestPatternBuilder>> preprovisionFTTHValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
+
+            dpuCommissioningRobot.startDecommissioningProcess500(dpu.getEndSz());
+
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkDeleteDpuEmsConfigurationCalled();
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostSEALDpuOltDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
+            dpuCommissioningRobot.checkPostReleaseOnuIdTaskCalled(releaseOnuIdTaskValues);
+            dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteAncpConfigCalled();
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
+            dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
+        }
     }
 
     private Consumer<RequestPatternBuilder> bodyContains(String str) {

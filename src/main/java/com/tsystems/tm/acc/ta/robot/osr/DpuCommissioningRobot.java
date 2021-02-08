@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoBrowserFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
@@ -53,6 +54,25 @@ public class DpuCommissioningRobot {
         return traceId;
     }
 
+    @Step("Start dpuCommissioning error code 500")
+    public UUID startProcess500(String endsz) {
+        dpuCommissioningClient = new DpuCommissioningClient();
+        StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
+        dpuCommissioningRequest.setEndSZ(endsz);
+
+        UUID traceId = UUID.randomUUID();
+
+        dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+                .body(dpuCommissioningRequest)
+                .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
+                .xB3TraceIdHeader(traceId.toString())
+                .xBusinessContextHeader(UUID.randomUUID().toString())
+                .xB3SpanIdHeader(UUID.randomUUID().toString())
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(500)));
+
+        return traceId;
+    }
+
     @Step("Start dpuCommissioning")
     public DpuCommissioningResponse startCommissioningProcess(String endsz, UUID traceId) {
         dpuCommissioningClient = new DpuCommissioningClient();
@@ -69,7 +89,7 @@ public class DpuCommissioningRobot {
     }
 
     @Step("Start dpuDecommissioning")
-    public DpuCommissioningResponse startDecomissioningProcess(String endsz) {
+    public DpuCommissioningResponse startDecommissioningProcess(String endsz) {
         dpuCommissioningClient = new DpuCommissioningClient();
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
@@ -81,6 +101,21 @@ public class DpuCommissioningRobot {
                 .xBusinessContextHeader("3")
                 .xB3SpanIdHeader("4")
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Start dpuDecommissioning 500")
+    public void startDecommissioningProcess500(String endsz) {
+        dpuCommissioningClient = new DpuCommissioningClient();
+        StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
+        dpuDecommissioningRequest.setEndSZ(endsz);
+
+        dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+                .body(dpuDecommissioningRequest)
+                .xB3ParentSpanIdHeader("1")
+                .xB3TraceIdHeader("2")
+                .xBusinessContextHeader("3")
+                .xB3SpanIdHeader("4")
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(500)));
     }
 
     @Step("Start restore process")
