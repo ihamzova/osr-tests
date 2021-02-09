@@ -188,7 +188,7 @@ public class A4ResourceInventoryMapper {
                 .lacpActive(true)
                 .minActiveLagLinks("1")
                 .qosMode("TOLERANT")
-                .l2CcId(UNDEFINED)
+                .carrierBsaReference(UNDEFINED)
                 .itAccountingKey(UNDEFINED)
                 .lacpMode(UNDEFINED)
                 .dataRate(UNDEFINED)
@@ -202,16 +202,16 @@ public class A4ResourceInventoryMapper {
             nspData.setUuid(UUID.randomUUID().toString());
 
         L2BsaQosDto l2BsaQosDto = new L2BsaQosDto();
-        l2BsaQosDto.setQosBandwidthUp(UNDEFINED);
-        l2BsaQosDto.setQosBandwidthDown(UNDEFINED);
-        l2BsaQosDto.setQosPbit(UNDEFINED);
+        l2BsaQosDto.setQosBandwidthUp("666");
+        l2BsaQosDto.setQosBandwidthDown("333");
+        l2BsaQosDto.setQosPbit("5");
 
         List<L2BsaQosDto> l2BsaQosDtoList = new ArrayList<>();
         l2BsaQosDtoList.add(l2BsaQosDto);
 
         ServiceBandwidthDto serviceBandwidthDto = new ServiceBandwidthDto();
-        serviceBandwidthDto.setDataRateUp(UNDEFINED);
-        serviceBandwidthDto.setDataRateDown(UNDEFINED);
+        serviceBandwidthDto.setDataRateUp("150000");
+        serviceBandwidthDto.setDataRateDown("300000");
 
         List<ServiceBandwidthDto> serviceBandwidthDtoList = new ArrayList<>();
         serviceBandwidthDtoList.add(serviceBandwidthDto);
@@ -221,9 +221,10 @@ public class A4ResourceInventoryMapper {
                 .href("HREF")
                 .specificationVersion("1")
                 .virtualServiceProvider("a Virtual Service Provider")
-                .administrativeMode("ACTIVATED")
+                .administrativeMode(nspData.getAdministrativeMode()) // neu im Model
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
+                .lineId(nspData.getLineId())
                 .terminationPointL2BsaUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
                 .description("NSP L2BSA created during osr-test integration test")
