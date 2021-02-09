@@ -500,7 +500,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     }
 
     public MorpeusWireMockMappingsContextBuilder addWorkorderStub(){
-        addGetWorkorderStub(true);
+        addGetWorkorderStub(true, "DPU_INSTALLATION");
         addPatchInProgressWorkorderStub(true);
         addPatchCreatedWorkorderStub(true);
         return this;
@@ -815,9 +815,11 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(boolean success){
-        if(success) {
+    public MorpeusWireMockMappingsContextBuilder addGetWorkorderStub(boolean success, String woType){
+        if(success && woType=="DPU_INSTALLATION") {
             context.add(new WorkorderStub().getWorkorder200());
+        }else if(success){
+            context.add(new WorkorderStub().getWorkorderGF_AP_INSTALLATION());
         }else{
             context.add(new WorkorderStub().getWorkorder404());
         }

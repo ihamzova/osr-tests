@@ -41,7 +41,7 @@ public void init(){
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderPositive"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addGetWorkorderStub(true)
+                    .addGetWorkorderStub(true, "DPU_INSTALLATION")
                     .build()
                     .publish()
                     .publishedHook(savePublishedToDefaultDir())
@@ -57,13 +57,29 @@ public void init(){
         try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderNegative"))
         {
             new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addGetWorkorderStub(false)
+                    .addGetWorkorderStub(false, "DPU_INSTALLATION")
                     .build()
                     .publish()
                     .publishedHook(savePublishedToDefaultDir())
                     .publishedHook(attachStubsToAllureReport());
 
             mobileDpuBffRobot.getWorkorderNegative(woid);
+        }
+    }
+
+    @Test
+    public void getWorkorderWrongWorkorderType() {
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "workorderNegative"))
+        {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addGetWorkorderStub(true, "GF_AP_INSTALLATION")
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
+            mobileDpuBffRobot.getWorkorder400(woid);
         }
     }
 

@@ -36,6 +36,32 @@ public class WorkorderMapper {
 
     }
 
+    public Workorder getWorkorderGF_AP_INSTALLATION() {
+        return new Workorder()
+                .id(2L)
+                .type("GF_AP_INSTALLATION")
+                .status(Workorder.StatusEnum.CREATED)
+                .source(Workorder.SourceEnum.IBT)
+                .networkTopology(Workorder.NetworkTopologyEnum.NE4)
+                .dueDateTimeBegin(OffsetDateTime.now())
+                .dueDateTimeEnd(OffsetDateTime.now())
+                .completionDateTimeEnd(OffsetDateTime.now())
+                .workforceExternalId("123456ABC")
+                .taskDescription("Gf-AP Installation im Hausanschluss-Raum inkl. Netzschalt-Taetigkeiten im NvT")
+                .supplierProjectId(10032L)
+                .supplierPartyId(new BigDecimal(10001))
+                .externalOrderReferenceType(Workorder.ExternalOrderReferenceTypeEnum.CUSTOMER_INSTALLATION_ORDER)
+                .externalOrderReferenceId("10122")
+                .comment("Bitte beim Nachbarn klingeln falls nicht anwesend.")
+                .klsId(new BigDecimal(123456789))
+                .folId("1111222233334444555")
+                .gigaAreaNumber("GigaArea_001")
+                .contactPersons(Collections.singletonList(getContactPerson()))
+                .creationDate(OffsetDateTime.now())
+                .workCharacteristic(Collections.singletonList(getWorkCharacteristic()));
+
+    }
+
     public Workorder patchWorkorderInProgress() {
         return new Workorder()
                 .id(2L)

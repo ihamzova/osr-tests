@@ -38,6 +38,16 @@ public void getWorkorder (long woid){
 
     }
 
+    @Step("Returns a WorkorderResponse determined by given Workorder-Id. Negative case, error code 400, wrong workorder type")
+
+    public void getWorkorder400 (long woid){
+        mobileDpuBffClient = new MobileDpuBffClient();
+        mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
+                .woIdPath(woid)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(400)));
+
+    }
+
     @Step("Starts a workorder for given Workorder-Id and returns WorkorderResponse.")
     public void startWorkorder(long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
