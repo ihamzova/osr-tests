@@ -4,3 +4,10 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NSP
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
+  administrativeMode: "ACTIVATED"
+  # faultyOperationalState : "FAULTY OPERATIONAL_STATE"
+# creationTime: "2021-01-27T10:00:02.105Z"
+# lastUpdateTime: "2021-02-02T08:59:50.888Z"
+#  lineId: "DEU.DTAG.123ABC0000"
+  lineId: "DEU.DTAG.123ABC1112"
+# virtualServiceProvider: "DTAG"

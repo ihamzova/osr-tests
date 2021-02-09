@@ -80,6 +80,11 @@ public class A4ResourceInventoryServiceMapper {
         return generateNspL2BsaLogicalResourcePatch(operationalState);
     }
 
+    // Create logicalResource minimal representation of network service profile (L2BSA) with manually set operational state
+    public LogicalResourceUpdate getLogicalResourcePatch(A4NetworkServiceProfileL2Bsa a4NetworkServiceProfileL2Bsa) {
+        return generateNspL2BsaLogicalResourcePatch(a4NetworkServiceProfileL2Bsa);
+    }
+
     // Create logicalResource representation of network element link with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
         return generateNelLogicalResourceUpdate(nelData, nepDataA, nepDataB, operationalState);
@@ -182,6 +187,31 @@ public class A4ResourceInventoryServiceMapper {
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("operationalState")
                         .value(operationalState));
+    }
+    private LogicalResourceUpdate generateNspL2BsaLogicalResourcePatch(A4NetworkServiceProfileL2Bsa nspL2Data) {
+        LogicalResourceUpdate logicalResourceUpdate = generateGenericLogicalResourcePatch()
+                .type("NspL2Bsa")
+                .description("NSP-L2BSA for integration test for patch");
+
+        if (nspL2Data.getLifecycleState() != null) {
+            logicalResourceUpdate.lifecycleState(nspL2Data.getLifecycleState());
+        }
+        if (nspL2Data.getOperationalState() != null) {
+                logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
+                            .name("operationalState")
+                            .value(nspL2Data.getOperationalState()));
+                }
+        if (nspL2Data.getAdministrativeMode() != null) {
+            logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
+                    .name("administrativeMode")
+                    .value(nspL2Data.getAdministrativeMode()));
+        }
+        if (nspL2Data.getLineId() != null) {
+            logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
+                    .name("lineId")
+                    .value(nspL2Data.getLineId()));
+        }
+        return logicalResourceUpdate;
     }
 
 
