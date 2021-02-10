@@ -59,6 +59,7 @@ public class A4InventarSuchePageTest extends BaseTest {
 
     private A4NetworkElementGroup a4NetworkElementGroup;
 
+    private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
 
     private static final int WAIT_TIME = 5_000;
 
@@ -86,8 +87,9 @@ public class A4InventarSuchePageTest extends BaseTest {
         elementsCollection.forEach(k -> concat.add(k.getText()));
 
         a4NegFilteredList.forEach((k, a4NetworkElement) -> {
-            // und so weiter
+
             assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
+            // das gleiche mit den anderen Atributen
         });
 
         log.info("+++" + concat.toString());
@@ -95,7 +97,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4NegFilteredList.forEach((k,v) -> log.info("+++" + v.getName()));
 
         //check if table has only as many rows as expected by test data set
-        //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
+        //check testdata
         assertEquals(concat.size()/6, a4NegFilteredList.size());
     }
 
@@ -129,10 +131,13 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Description("Test Inventar-Suche page of Access 4.0 Inventar Browser")
     public void testNegSearchByName() {
 
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());
+        a4InventarSucheRobot.readNegName();
         a4InventarSucheRobot.clickSearchButton();
 
-       // checkTableAccordingToSearchCriteria(a4NetworkElementGroup);
+        checkTableAccordingToSearchCriteria(a4NetworkElementGroups);
     }
 
 

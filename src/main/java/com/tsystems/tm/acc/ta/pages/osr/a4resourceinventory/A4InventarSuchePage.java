@@ -20,18 +20,21 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 @Getter
 public class A4InventarSuchePage {
 
-    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-installation-process";
+    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser/inventory-search";
 
-    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[4]/h2");
-
-    @Getter
-    public static final By NEG_NAME_INPUT_FIELD_LOCATOR = By.id("name");
+    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[1]");
 
     @Getter
-    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
+    public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
 
     @Getter
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
+    public static final By NEG_NAME_INPUT_FIELD_LOCATOR = By.id("negName");
+
+    @Getter
+    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
+
+    @Getter
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/app-inventory-search-result/div/table");
 
 
     @Step("Validate page")

@@ -26,21 +26,17 @@ public class A4InventarSucheRobot {
     A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
 
 
-    //ne-search-page
-    @Step("Open UI, log in, and goTo Ne-mobile-search-page")
-    public void openNetworkElementMobileSearchPage(){
-        A4MobileNeSearchPage
+    //Inventar-Suche-page
+    @Step("Open UI, log in, and goTo Inventar-Suche-page")
+    public void openInventarSuchePage(){
+        A4InventarSuchePage
                 .login();
     }
 
-    public String[] getSplittedVpszValues(String vpszUnsplitted){
-        return vpszUnsplitted.split("/");
-    }
 
-
-    @Step("Click search button")
-    public void clickSearchButton() {
-        $(a4InventarSuchePage.getSEARCH_BUTTON_LOCATOR()).click();
+    @Step("Choose search by NetworkElementGroupName")
+    public void clickNetworkElementGroup() {
+        $(a4InventarSuchePage.getNEG_CHOOSE_BUTTON_LOCATOR()).click();
     }
 
     @Step("Enter neg name")
@@ -51,14 +47,9 @@ public class A4InventarSucheRobot {
         return $(a4InventarSuchePage.getNEG_NAME_INPUT_FIELD_LOCATOR()).val();
     }
 
-        
-    //helper methods
-    public void waitForTableToFullyLoad(int numberOfElements){
-
-        //add 1 to number of elements because of table header
-        numberOfElements++;
-
-        $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
-
+    @Step("Click search button")
+    public void clickSearchButton() {
+        $(a4InventarSuchePage.getSEARCH_BUTTON_LOCATOR()).click();
     }
+
 }
