@@ -53,4 +53,9 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>
         </classes>
     </test>
+    <test thread-count="1" name="Update data in RDQ Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.subscribernetworkline.SubscriberNetworklineProfile"/>
+        </classes>
+    </test>
 </suite>
