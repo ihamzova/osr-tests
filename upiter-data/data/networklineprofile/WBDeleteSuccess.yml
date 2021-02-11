@@ -1,0 +1,19 @@
+name: networkLineProfileDeleteSuccessWB
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "DELETE"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "CALID"
+              value: "DEU.GFNW.SQA0000777"
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"

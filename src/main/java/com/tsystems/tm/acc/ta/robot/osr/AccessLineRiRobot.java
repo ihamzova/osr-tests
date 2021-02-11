@@ -400,4 +400,15 @@ public class AccessLineRiRobot {
         SubscriberNeProfileDto subscriberNeProfile = line.get(0).getDefaultNeProfile().getSubscriberNeProfile();
         return subscriberNeProfile;
     }
+
+    @Step("Get subscriber network line profile by LineId")
+    public SubscriberNetworkLineProfileDto getSubscriberNLProfile(String lineId) {
+        List<AccessLineDto> line = accessLineResourceInventory.accessLineInternalController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto()
+                        .lineId(lineId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertNotNull(line.get(0).getSubscriberNetworkLineProfile(), "Subscriber NL profile is null");
+        return line.get(0).getSubscriberNetworkLineProfile();
+    }
 }
