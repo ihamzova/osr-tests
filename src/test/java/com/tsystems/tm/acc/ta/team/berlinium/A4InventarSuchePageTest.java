@@ -59,13 +59,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
     private A4NetworkElementGroup a4NetworkElementGroup;
 
-    private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
-
-    private static final int WAIT_TIME = 5_000;
-
-
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
-
 
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements){
@@ -75,31 +68,6 @@ public class A4InventarSuchePageTest extends BaseTest {
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
-    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElementGroup> a4NegFilteredList) {
-        //check if rows of tables are there, before proceeding
-        waitForTableToFullyLoad(a4NegFilteredList.size());
-
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        List<String> concat = new ArrayList<>();
-
-        elementsCollection.forEach(k -> concat.add(k.getText()));
-
-        a4NegFilteredList.forEach((k, a4NetworkElement) -> {
-
-            assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
-            // das gleiche mit den anderen Atributen
-        });
-
-        log.info("+++" + concat.toString());
-
-        a4NegFilteredList.forEach((k,v) -> log.info("+++" + v.getName()));
-
-        //check if table has only as many rows as expected by test data set
-        //check testdata
-        assertEquals(concat.size()/6, a4NegFilteredList.size());
-    }
 
     @BeforeClass()
     public void init() {
@@ -137,7 +105,18 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.readNegName();
         a4InventarSucheRobot.clickSearchButton();
 
-        checkTableAccordingToSearchCriteria(a4NetworkElementGroups);
+        waitForTableToFullyLoad(1);
+
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getUuid()),a4NetworkElementGroup.getUuid());
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getName()),a4NetworkElementGroup.getName());
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getOperationalState()),a4NetworkElementGroup.getOperationalState());
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getLifecycleState()),a4NetworkElementGroup.getLifecycleState());
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getCreationTime()),a4NetworkElementGroup.getCreationTime());
+        assertTrue(elementsCollection.contains(a4NetworkElementGroup.getLastUpdateTime()),a4NetworkElementGroup.getLastUpdateTime());
+
     }
 
 
