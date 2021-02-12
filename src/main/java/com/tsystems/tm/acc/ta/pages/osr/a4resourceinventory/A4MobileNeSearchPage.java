@@ -22,7 +22,8 @@ public class A4MobileNeSearchPage {
 
     public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-installation-process";
 
-    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[4]/h2");
+    //public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[4]/h2");
+    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2");
 
     @Getter
     public static final By VPSZ_INPUT_FIELD_LOCATOR = By.id("vpsz");

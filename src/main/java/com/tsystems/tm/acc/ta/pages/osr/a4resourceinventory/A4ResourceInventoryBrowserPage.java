@@ -33,6 +33,7 @@ public class A4ResourceInventoryBrowserPage {
     public static final By MobilUiButton_Locator = By.id("btnMobileUi");
 
 
+
     @Step("Validate page")
     public A4ResourceInventoryBrowserPage validate() {
         $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
