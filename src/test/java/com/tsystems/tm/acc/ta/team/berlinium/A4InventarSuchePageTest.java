@@ -93,19 +93,180 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
+
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchWorking() throws InterruptedException {
+        // 2 NEG
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxWorking();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchOpInstalling() throws InterruptedException {
+
+        // 1 NEG
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxOpInstalling();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchNotWorking() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxNotWorking();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchNotManageable() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxNotManageable();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchFailed() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxFailed();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchActivating() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxActivating();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchDeActivating() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxDeactivating();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchPlanning() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxPlanning();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchLifecycleInstalling() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxLifeInstalling();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchOperating() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxOperating();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchRetiring() throws InterruptedException {
+
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElementGroup();
+        a4InventarSucheRobot.checkboxRetiring();
+        a4InventarSucheRobot.clickSearchButton();
+
+        Thread.sleep(3000);
+    }
+
+
+
     @Test
     @Owner("Anita.Junge@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test Inventar-Suche page of Access 4.0 Inventar Browser")
-    public void testNegSearchByName() {
+    @TmsLink("DIGIHUB-94403")
+    @Description("test neg inventory search page of Access 4.0 browser")
+    public void testNegSearchByName() throws InterruptedException {
 
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());
-        a4InventarSucheRobot.readNegName();
+        // a4InventarSucheRobot.readNegName();  // hat keinen Sinn
         a4InventarSucheRobot.clickSearchButton();
 
         waitForTableToFullyLoad(1);
+
+        Thread.sleep(3000);
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
@@ -116,8 +277,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         assertEquals(elementsCollection.get(3).getText(),a4NetworkElementGroup.getLifecycleState());
         //assertEquals(elementsCollection.get(4).getText(),a4NetworkElementGroup.getCreationTime());
         //assertEquals(elementsCollection.get(5).getText(),a4NetworkElementGroup.getLastUpdateTime());
-
+        Thread.sleep(2000);
     }
-
 
 }
