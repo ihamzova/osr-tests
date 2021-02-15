@@ -70,7 +70,7 @@ public class A4InventarSuchePage {
 
     @Getter
     //alt: public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
-    //heute: public static final By SEARCH_BUTTON_LOCATOR= By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/div[2]/app-search-networkelementgroup/form/div/button");
+    //heute 15.02.21: public static final By SEARCH_BUTTON_LOCATOR= By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/div[2]/app-search-networkelementgroup/form/div/button");
      public static final By SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");  // ab 16.02.21
 
 
