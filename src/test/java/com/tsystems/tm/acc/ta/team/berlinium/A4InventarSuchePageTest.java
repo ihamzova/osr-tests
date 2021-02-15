@@ -135,6 +135,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxNotWorking();
         a4InventarSucheRobot.clickSearchButton();
 
+
         Thread.sleep(3000);
     }
 
