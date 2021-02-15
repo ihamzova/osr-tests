@@ -30,7 +30,7 @@ public class A4InventarSucheRobot {
     public void checkboxWorking() { $(a4InventarSuchePage.getWORKING_CHECKBOX_LOCATOR()).click();}
 
     @Step("Checkbox Op INSTALLING")
-    public void checkboxOpInstalling() { $(a4InventarSuchePage.getOPERATIONAL_INSTALLING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxOpInstalling() { $(a4InventarSuchePage.getOPS_INSTALLING_CHECKBOX_LOCATOR()).click();}
 
     @Step("Checkbox NOT WORKING")
     public void checkboxNotWorking() { $(a4InventarSuchePage.getNOT_WORKING_CHECKBOX_LOCATOR()).click();}
