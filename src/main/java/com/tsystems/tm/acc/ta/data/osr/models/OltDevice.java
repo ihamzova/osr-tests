@@ -31,6 +31,9 @@ public class OltDevice {
     private String oltPort;
     private String uplinkSlot;
     private String uplinkPort;
+    private Integer numberOfPonSlots;
+    private Integer numberOfEthernetSlots;
+    private Integer matNumber;
 
     @Override
     public String toString() {

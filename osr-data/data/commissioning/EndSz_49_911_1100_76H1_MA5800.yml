@@ -17,3 +17,6 @@ values:
   seriennummer: "unbekannt"
   firmwareVersion: "MA5800V800R016C00"
   ipAdresse: "10.182.123.196"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40247069
