@@ -50,10 +50,10 @@ public class A4MobileNeSearchPage {
     public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");
 
     @Getter
-    public static final By PLANNING_CHECKBOX_LOCATOR = By.id("PLANNING");
+    public static final By PLANNING_CHECKBOX_LOCATOR = By.id("lcsPLANNING");
 
     @Getter
-    public static final By OPERATING_CHECKBOX_LOCATOR = By.id("OPERATING");
+    public static final By OPERATING_CHECKBOX_LOCATOR = By.id("lcsOPERATING");
 
     @Getter
     public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
