@@ -4,3 +4,6 @@ values:
   vpsz: "49/30/179"
   fsz: "76H1"
   bngEndsz: "49/911/84/7ZJB"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40247069

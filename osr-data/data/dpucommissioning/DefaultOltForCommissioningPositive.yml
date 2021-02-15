@@ -7,3 +7,6 @@ values:
   oltSlot: "4"
   uplinkSlot: "5"
   uplinkPort: "3"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40247069
