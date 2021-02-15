@@ -25,6 +25,43 @@ public class A4InventarSuchePage {
     public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[1]");
 
     @Getter
+    public static final By WORKING_CHECKBOX_LOCATOR = By.id("10"); // 10 = WORKING
+
+    @Getter
+    public static final By OPERATIONAL_INSTALLING_CHECKBOX_LOCATOR = By.id("20"); // 20 = INSTALLING
+
+    @Getter
+    public static final By NOT_WORKING_CHECKBOX_LOCATOR = By.id("30");  // 30 = NOT_WORKING
+
+    @Getter
+    public static final By NOT_MANAGEABLE_CHECKBOX_LOCATOR = By.id("40");  // 40 = NOT_MANAGEABLE
+
+    @Getter
+    public static final By FAILED_CHECKBOX_LOCATOR = By.id("50");  // 50 = FAILED
+
+    @Getter
+    public static final By ACTIVATING_CHECKBOX_LOCATOR = By.id("60");  // 60 = ACTIVATING
+
+    @Getter
+    public static final By DEACTIVATING_CHECKBOX_LOCATOR = By.id("70");  // 70 = DEACTIVATING
+
+
+
+    @Getter
+    public static final By PLANNING_CHECKBOX_LOCATOR = By.id("lcsPLANNING");   // lcsPLANNING   = PLANNING
+
+    @Getter
+    public static final By LIFECYCLE_INSTALLING_CHECKBOX_LOCATOR = By.id("lcsINSTALLING");   // lcsINSTALLING = INSTALLING
+
+    @Getter
+    public static final By OPERATING_CHECKBOX_LOCATOR = By.id("lcsOPERATING");   // lcsOPERATING = OPERATING
+
+    @Getter
+    public static final By RETIRING_CHECKBOX_LOCATOR = By.id("lcsRETIRING");   // lcsRETIRING = RETIRING
+
+
+
+    @Getter
     public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
 
     @Getter
@@ -43,11 +80,9 @@ public class A4InventarSuchePage {
         assertContains(url(), ENDPOINT);
         return this;
     }
-
     @Step("Login")
     public static A4InventarSuchePage login() {
         URL url = new OCUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
         return open(url, A4InventarSuchePage.class);
     }
-
 }
