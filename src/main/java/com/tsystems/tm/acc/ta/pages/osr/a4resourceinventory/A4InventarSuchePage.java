@@ -25,16 +25,17 @@ public class A4InventarSuchePage {
     public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[1]");
 
     @Getter
-    public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
+    public static final By NEG_CHOOSE_BUTTON_LOCATOR = By.id("searchNetworkElementGroup");
 
     @Getter
     public static final By NEG_NAME_INPUT_FIELD_LOCATOR = By.id("negName");
 
     @Getter
-    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
+    public static final By SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/app-inventory-search-result/div/table");
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div[2]/app-search-results-networkelementgroup/div/table");
+//    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkelementgroup");
 
 
     @Step("Validate page")
