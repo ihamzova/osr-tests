@@ -6,6 +6,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.model.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,7 +21,6 @@ public class PslMapper {
     private static final AtomicInteger equipmentCount = new AtomicInteger(0);
 
     public ReadEquipmentResponseHolder getReadEquipmentResponseHolder(OltDevice oltDevice) {
-
         return new ReadEquipmentResponseHolder()
                 .success(true)
                 .response(
@@ -44,7 +45,19 @@ public class PslMapper {
                                                 .system("Linux")
                                                 .type("S")
                                         )
-                                        .equipment(
+                                        .equipment(Stream.of(
+                                                Collections.singletonList(new Equipment()
+                                                        .equnr("123456700")
+                                                        .tplnr(oltDevice.getTplnr())
+                                                        .hequi("123456000")
+                                                        .heqnr("0057")
+                                                        .submt(String.valueOf(oltDevice.getMatNumber()))
+                                                        .eqart("G")
+                                                        .endsz(oltDevice.getEndsz())
+                                                        .serge("21023533106TG410000" + String.format("%03d", equipmentCount.getAndIncrement()))
+                                                        .anzEbenen("1")
+                                                        .adrId(oltDevice.getVst().getAddress().getKlsId())
+                                                        .asb("1")),
                                                 Stream.concat(
                                                         IntStream.range(START_PON_SLOT, START_PON_SLOT + oltDevice.getNumberOfPonSlots())
                                                                 .mapToObj(slot -> new Equipment()
@@ -61,25 +74,14 @@ public class PslMapper {
                                                                         .equnr("123456700" + String.format("%03d", equipmentCount.getAndIncrement()))
                                                                         .hequi("123456700")
                                                                         .heqnr(StringUtils.leftPad(String.valueOf(slot), 4, '0'))
-                                                                        .submt("40261742")
+                                                                        .submt("40247074")
                                                                         .eqart("P")
                                                                         .endsz(oltDevice.getEndsz())
                                                                         .serge("21023533106TG410000" + equipmentCount)
-                                                                        .anzEbenen("2"))
-                                                ).collect(Collectors.toList())
-                                        )
-                                        .addEquipmentItem(new Equipment()
-                                                .equnr("123456700")
-                                                .tplnr(oltDevice.getTplnr())
-                                                .hequi("123456000")
-                                                .heqnr("0057")
-                                                .submt(String.valueOf(oltDevice.getMatNumber()))
-                                                .eqart("G")
-                                                .endsz(oltDevice.getEndsz())
-                                                .serge("21023533106TG410000" + String.format("%03d", equipmentCount.getAndIncrement()))
-                                                .anzEbenen("1")
-                                                .adrId(oltDevice.getVst().getAddress().getKlsId())
-                                                .asb("1")
+                                                                        .anzEbenen("2")))
+                                                        .collect(Collectors.toList()))
+                                                .flatMap(List::stream)
+                                                .collect(Collectors.toList())
                                         )
                                 )
                 );
