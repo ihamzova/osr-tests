@@ -110,19 +110,6 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Send new operational state for Network Service Profile (L2BSA)")
-    public void sendStatusPatchForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data, String newOperationalState) {
-        LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourcePatch(newOperationalState);
-
-        a4ResourceInventoryService
-                .logicalResource()
-                .updateLogicalResourcePatch()
-                .idPath(nspL2Data.getUuid())
-                .body(nspL2LogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-    }
-
     @Step("Send new patch attributes for Network Service Profile (L2BSA)")
     public void sendStatusPatchForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data) {
         LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()

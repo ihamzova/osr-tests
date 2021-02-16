@@ -76,11 +76,6 @@ public class A4ResourceInventoryServiceMapper {
     }
 
     // Create logicalResource minimal representation of network service profile (L2BSA) with manually set operational state
-    public LogicalResourceUpdate getLogicalResourcePatch(String operationalState) {
-        return generateNspL2BsaLogicalResourcePatch(operationalState);
-    }
-
-    // Create logicalResource minimal representation of network service profile (L2BSA) with manually set operational state
     public LogicalResourceUpdate getLogicalResourcePatch(A4NetworkServiceProfileL2Bsa a4NetworkServiceProfileL2Bsa) {
         return generateNspL2BsaLogicalResourcePatch(a4NetworkServiceProfileL2Bsa);
     }

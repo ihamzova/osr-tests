@@ -755,6 +755,19 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Set new LifecycleState for existing NetworkServiceProfile L2BSA")
+    public void setLifecycleState(A4NetworkServiceProfileL2Bsa nspL2Data, String lifecycleState) {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+        nspL2Bsa.setLifecycleState(lifecycleState);
+
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .createOrUpdateNetworkServiceProfileL2Bsa()
+                .body(nspL2Bsa)
+                .uuidPath(nspL2Bsa.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create test data for all A4 element types")
     public void createTestDataForAllA4ElementTypes(A4NetworkElementGroup negData, A4NetworkElement neData,
                                                    A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB,

@@ -6,7 +6,8 @@ public enum AllowedOperationalStateL2BsaNSP {
     INSTALLING("INSTALLING"),
     FAILED("FAILED"),
     ACTIVATING("ACTIVATING"),
-    DEACTIVATING("DEACTIVATING");
+    DEACTIVATING("DEACTIVATING"),
+    NOT_MANAGEABLE("NOT_MANAGEABLE");
 
     private final String value;
 

@@ -15,13 +15,11 @@ import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import io.qameta.allure.*;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
@@ -37,8 +35,8 @@ public class NemoStatusUpdateTest {
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot nemo = new A4ResourceInventoryServiceRobot();
 
-    private final static String NEW_OPERATIONAL_STATE = "WORKING";
-    private final static String EXPECTED_NEW_LIFECYCLE_STATE = "OPERATING";
+    private final static String OPERATIONAL_STATE_WORKING = "WORKING";
+    private final static String LIFECYCLE_STATE_OPERATING = "OPERATING";
     private final static String FAULTY_OPERATIONAL_STATE = "FAULTY_OPERATIONAL_STATE";
 
     private A4NetworkElementGroup negData;
@@ -102,10 +100,10 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Element Group")
     public void testNemoStatusUpdateForNeg() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementGroup(negData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkElementGroup(negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithNewStates(negData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithNewStates(negData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element")
@@ -113,10 +111,10 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Element")
     public void testNemoStatusUpdateForNe() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkElement(neData, negData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkElement(neData, negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
 
@@ -126,10 +124,10 @@ public class NemoStatusUpdateTest {
     public void testNemoStatusUpdateForNep() {
         // WHEN
         final String NEW_DESCRIPTION = "DIGIHUB-77227 new description value";
-        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, NEW_OPERATIONAL_STATE, NEW_DESCRIPTION);
+        nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithNewStateAndDescription(nepDataA, NEW_OPERATIONAL_STATE, NEW_DESCRIPTION);
+        a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithNewStateAndDescription(nepDataA, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
@@ -137,10 +135,10 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     public void testNemoStatusUpdateForNspFtth() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (A10NSP)")
@@ -148,32 +146,50 @@ public class NemoStatusUpdateTest {
     @Description("NEMO sends a status update for A4 Network Service Profile (A10NSP)")
     public void testNemoStatusUpdateForNspA10() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
-    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    @DataProvider(name = "toBeChangedLcs")
+    public static Object[] toBeChangedLifefcycleStates() {
+        return new Object[] {"PLANNING", "INSTALLING"};
+    }
+
+    @Test(dataProvider = "toBeChangedLcs", description = "DIGIHUB-xxxxx NEMO sends a status update (WORKING) for A4 NSP L2BSA which also changes Lifecycle State")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
-    public void testNemoStatusUpdateForNspL2() {
+    public void testNemoStatusUpdateWorkingForNspL2WithChangedLcs(String oldLifecycleState) {
+        // GIVEN
+        // Prepare existing NSP L2BSA to have lifecycle state 'oldLifecycleState'
+        a4ResourceInventoryRobot.setLifecycleState(nspL2Data, oldLifecycleState);
+
         // WHEN
-        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
-    @Test(description = "DIGIHUB-76365 extend NEMO API to handle L2BSA Network Service Profile status PATCH with OperationalState only")
-    @Owner("@t-systems.com")
-    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA)")
-    public void testNemoStatusPatchForNspL2BSA() {
+    @DataProvider(name = "toNotBeChangedLcs")
+    public static Object[] toNotBeChangedLiefcycleStates() {
+        return new Object[] {"OPERATING", "RETIRING"};
+    }
+
+    @Test(dataProvider = "toNotBeChangedLcs", description = "DIGIHUB-xxxxx NEMO sends a status update (WORKING) for A4 NSP L2BSA which DOESN'T change Lifecycle State")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    public void testNemoStatusUpdateWorkingForNspL2WithUnchangedLcs(String oldLifecycleState) {
+        // GIVEN
+        // Prepare existing NSP L2BSA to have lifecycle state 'oldLifecycleState'
+        a4ResourceInventoryRobot.setLifecycleState(nspL2Data, oldLifecycleState);
+
         // WHEN
-        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(nspL2Data, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, OPERATIONAL_STATE_WORKING, oldLifecycleState);
     }
 
     @Test(description = "DIGIHUB-94384 extend NEMO API to handle L2BSA Network Service Profile status PATCH with new OperationalState and additionally lineId attribute staying the same")
@@ -185,7 +201,7 @@ public class NemoStatusUpdateTest {
 
         newNspL2Data.setUuid(nspL2Data.getUuid());
         newNspL2Data.setLineId("NichtErlaubt");
-        newNspL2Data.setOperationalState(NEW_OPERATIONAL_STATE);
+        newNspL2Data.setOperationalState(OPERATIONAL_STATE_WORKING);
         nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(newNspL2Data);
 
         // THEN
@@ -194,77 +210,108 @@ public class NemoStatusUpdateTest {
         expectedA4NetworkServiceProfileL2Bsa.setUuid(nspL2Data.getUuid());
         expectedA4NetworkServiceProfileL2Bsa.setAdministrativeMode(nspL2Data.getAdministrativeMode());
         expectedA4NetworkServiceProfileL2Bsa.setLineId(nspL2Data.getLineId());
-        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(NEW_OPERATIONAL_STATE);
-        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(EXPECTED_NEW_LIFECYCLE_STATE);
+        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(OPERATIONAL_STATE_WORKING);
+        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(LIFECYCLE_STATE_OPERATING);
 
         a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsSameAsDB(expectedA4NetworkServiceProfileL2Bsa);
     }
 
-    @Test(description = "DIGIHUB-94384 Checking Lifecycle_State staying the same while changing Operational_State")
-    @Owner("e.balla@telekom.de")
-    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA)")
-    public void testNemoStatusPatchForNspL2BSA_checkingAllPossibleOperationalStates() {
-        // WHEN
-        // in order to set operational state to WORKING and lifecycle state to OPERATING
-        testNemoStatusPatchForNspL2BSA();
-
-        A4NetworkServiceProfileL2Bsa newNspL2Data = new A4NetworkServiceProfileL2Bsa();
-        // for each loop created for iterating through operational states which are defined in Enum class
-        for (AllowedOperationalStateL2BsaNSP operationalState: AllowedOperationalStateL2BsaNSP.values()) {
-
-        newNspL2Data.setUuid(nspL2Data.getUuid());
-        newNspL2Data.setLineId(nspL2Data.getLineId());
-        newNspL2Data.setOperationalState(operationalState.toString());
-        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(newNspL2Data);
-
-        // THEN
-        A4NetworkServiceProfileL2Bsa expectedA4NetworkServiceProfileL2Bsa = new A4NetworkServiceProfileL2Bsa();
-
-        expectedA4NetworkServiceProfileL2Bsa.setUuid(nspL2Data.getUuid());
-        expectedA4NetworkServiceProfileL2Bsa.setAdministrativeMode(nspL2Data.getAdministrativeMode());
-        expectedA4NetworkServiceProfileL2Bsa.setLineId(nspL2Data.getLineId());
-        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(operationalState.toString());
-        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(EXPECTED_NEW_LIFECYCLE_STATE);
-
-        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsSameAsDB(expectedA4NetworkServiceProfileL2Bsa);
-
-        }
+    @DataProvider(name = "opStatesWoWorking")
+    public static Object[] allOpStatesExceptWorking() {
+        return new Object[] {"INSTALLING", "NOT_WORKING", "NOT_MANAGEABLE", "FAILED", "ACTIVATING", "DEACTIVATING"};
     }
-    @Test(description = "DIGIHUB-94384 NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage values into Operational_State field")
-    @Owner("e.balla@telekom.de")
-    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage values into Operational_State field")
-    public void testNemoStatusPatchForNspL2BSA_checkingFaultyOperationalStateInsertion() {
-        // WHEN
-        // in order to set operational state to WORKING and lifecycle state to OPERATING
-        testNemoStatusPatchForNspL2BSA();
 
-        // Creating a new Object which will be patched
-        A4NetworkServiceProfileL2Bsa newNspL2Data = new A4NetworkServiceProfileL2Bsa();
-        newNspL2Data.setUuid(nspL2Data.getUuid());
-        newNspL2Data.setOperationalState(FAULTY_OPERATIONAL_STATE);
-        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(newNspL2Data);
+    @Test(dataProvider = "opStatesWoWorking", description = "DIGIHUB-94384 Checking Lifecycle_State staying the same while changing Operational_State")
+    @Owner("e.balla@telekom.de, bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    public void testNemoStatusUpdateAllExceptWorkingForNspL2WithUnchangedLcs(String operationalState) {
+        // WHEN
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, operationalState);
 
         // THEN
-        // Creation of another Object expectedA4NetworkServiceProfileL2Bsa  which will be used for comparison with newNspL2Data
-        A4NetworkServiceProfileL2Bsa expectedA4NetworkServiceProfileL2Bsa = new A4NetworkServiceProfileL2Bsa();
-        expectedA4NetworkServiceProfileL2Bsa.setUuid(nspL2Data.getUuid());
+        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, operationalState, "PLANNING");
+    }
 
-        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(FAULTY_OPERATIONAL_STATE);
-        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(EXPECTED_NEW_LIFECYCLE_STATE);
+//    @DataProvider(name = "opStates")
+//    public static Iterator<Object[]> opStates() {
+//        return Stream.of(Arrays.toString(AllowedOperationalStateL2BsaNSP.values())).map((current) -> new Object[]{current}).iterator();
+//    }
+//
+//    @Test(dataProvider = "opStates", description = "DIGIHUB-94384 Checking Lifecycle_State staying the same while changing Operational_State")
+//    @Owner("e.balla@telekom.de")
+//    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA)")
+//    public void testNemoStatusPatchForNspL2BSA_checkingAllPossibleOperationalStates(String operationalState) {
+//        // WHEN
+//        // in order to set operational state to WORKING and lifecycle state to OPERATING
+//        testNemoStatusPatchForNspL2BSA();
+//
+//        A4NetworkServiceProfileL2Bsa newNspL2Data = new A4NetworkServiceProfileL2Bsa();
+//
+//        newNspL2Data.setUuid(nspL2Data.getUuid());
+//        newNspL2Data.setLineId(nspL2Data.getLineId());
+//        newNspL2Data.setOperationalState(operationalState);
+//        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(newNspL2Data);
+//
+//        // THEN
+//        A4NetworkServiceProfileL2Bsa expectedA4NetworkServiceProfileL2Bsa = new A4NetworkServiceProfileL2Bsa();
+//
+//        expectedA4NetworkServiceProfileL2Bsa.setUuid(nspL2Data.getUuid());
+//        expectedA4NetworkServiceProfileL2Bsa.setAdministrativeMode(nspL2Data.getAdministrativeMode());
+//        expectedA4NetworkServiceProfileL2Bsa.setLineId(nspL2Data.getLineId());
+//        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(operationalState);
+//        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(LIFECYCLE_STATE_OPERATING);
+//
+//        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsSameAsDB(expectedA4NetworkServiceProfileL2Bsa);
+//    }
 
-        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, FAULTY_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+    @Test(description = "DIGIHUB-94384 NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage value for Operational_State field, should be allowed")
+    @Owner("e.balla@telekom.de, bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
+    public void testNemoInvalidStatusUpdateForNspL2() {
+        // GIVEN
+        final String operationalState = "I_am_an_invalid_operational_state";
+        // WHEN
+        nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, operationalState);
 
-        }
+        // THEN
+        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, operationalState, "PLANNING");
+    }
+
+//    @Test(description = "DIGIHUB-94384 NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage values into Operational_State field")
+//    @Owner("e.balla@telekom.de")
+//    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage values into Operational_State field")
+//    public void testNemoStatusPatchForNspL2BSA_checkingFaultyOperationalStateInsertion() {
+//        // WHEN
+//        // in order to set operational state to WORKING and lifecycle state to OPERATING
+//        testNemoStatusPatchForNspL2BSA();
+//
+//        // Creating a new Object which will be patched
+//        A4NetworkServiceProfileL2Bsa newNspL2Data = new A4NetworkServiceProfileL2Bsa();
+//        newNspL2Data.setUuid(nspL2Data.getUuid());
+//        newNspL2Data.setOperationalState(FAULTY_OPERATIONAL_STATE);
+//        nemo.sendStatusPatchForNetworkServiceProfileL2Bsa(newNspL2Data);
+//
+//        // THEN
+//        // Creation of another Object expectedA4NetworkServiceProfileL2Bsa  which will be used for comparison with newNspL2Data
+//        A4NetworkServiceProfileL2Bsa expectedA4NetworkServiceProfileL2Bsa = new A4NetworkServiceProfileL2Bsa();
+//        expectedA4NetworkServiceProfileL2Bsa.setUuid(nspL2Data.getUuid());
+//
+//        expectedA4NetworkServiceProfileL2Bsa.setOperationalState(FAULTY_OPERATIONAL_STATE);
+//        expectedA4NetworkServiceProfileL2Bsa.setLifecycleState(LIFECYCLE_STATE_OPERATING);
+//
+//        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, FAULTY_OPERATIONAL_STATE, LIFECYCLE_STATE_OPERATING);
+//
+//    }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Link")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Link")
     public void testNemoStatusUpdateForNel() {
         // WHEN
-        nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, NEW_OPERATIONAL_STATE);
+        nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, NEW_OPERATIONAL_STATE, EXPECTED_NEW_LIFECYCLE_STATE);
+        a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
     }
 
 }
