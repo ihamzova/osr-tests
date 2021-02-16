@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
@@ -10,7 +10,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -34,6 +34,7 @@ public class OltCommissioningRobot {
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
     private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient();
+    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
 
     @Step("Starts automatic olt commissioning process")
     public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -123,9 +124,9 @@ public class OltCommissioningRobot {
         Assert.assertTrue(uplinkPort.isPresent());
         Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING,  uplinkPort.get().getLifeCycleState());
 
-        List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineInternalController().searchAccessLines()
+        List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineDto.StatusEnum.WALLED_GARDEN)).collect(Collectors.toList());
+                .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
         long wgLinesCount = wgAccessLines.size();
 
         Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
@@ -156,23 +157,23 @@ public class OltCommissioningRobot {
 
         Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
 
-        long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdInternalController().searchHomeIds()
+        long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
                 .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdDto.StatusEnum.FREE)).count();
+                .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdStatus.FREE)).count();
 
         Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
 
         long backhaulIdCount = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
                 .body(new SearchBackhaulIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().filter(backhaulIdDto -> BackhaulIdDto.StatusEnum.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
+                .stream().filter(backhaulIdDto -> BackhaulStatus.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
 
         Assert.assertEquals(backhaulIdCount, portsCount);
 
         List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
                 .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdDto.StatusEnum.FREE)).count();
-        long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdDto.StatusEnum.USED)).count();
+        long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.FREE)).count();
+        long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.USED)).count();
 
         Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
         Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
@@ -180,7 +181,7 @@ public class OltCommissioningRobot {
 
     @Step("Restore OSR Database state")
     public void restoreOsrDbState() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
+        accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         oltDiscoveryClient.reset();
     }

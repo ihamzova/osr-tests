@@ -11,7 +11,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Port;
 import io.qameta.allure.Description;

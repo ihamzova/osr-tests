@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -33,6 +34,7 @@ public class A10nspCheckRobot {
     private A10nspInventoryClient a10nspInventoryClient = new A10nspInventoryClient();
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
+    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
 
     @Step("Check if a carrierConnection is found for a given LineId")
     public void checkLineIdTestFound(A10nspCheckData checkLineIdA10nsp) {
@@ -120,8 +122,8 @@ public class A10nspCheckRobot {
     }
 
     @Step("Fill access-line-resource-inventory database with test data\"")
-    public void prepareAceessLineResourceInventoryDataBase() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
+    public void prepareAccessLineResourceInventoryDataBase() {
+        accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -145,7 +147,7 @@ public class A10nspCheckRobot {
 
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {
-        accessLineResourceInventoryClient.getClient().fillDatabase().deleteDatabase()
+        accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
