@@ -47,7 +47,7 @@ public class CheckLineIdTest extends BaseTest {
 
         // init test data
         a10nspCheckRobot.restoreOsrDbState();
-        a10nspCheckRobot.prepareAceessLineResourceInventoryDataBase();
+        a10nspCheckRobot.prepareAccessLineResourceInventoryDataBase();
         a10nspCheckRobot.deleteDeviceInResourceInventory(checkLineIdA10nsp.getOltEndSz());
         a10nspCheckRobot.fillDeviceInResourceInventory(oltDevice);
     }

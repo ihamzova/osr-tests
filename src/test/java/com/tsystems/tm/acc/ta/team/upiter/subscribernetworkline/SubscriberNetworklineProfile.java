@@ -9,9 +9,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.DefaultNetworkLineProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.SubscriberNetworkLineProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -54,8 +52,8 @@ public class SubscriberNetworklineProfile extends BaseTest {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.NetworkLineProfileModifySuccess);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLP);
         networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
-        Assert.assertEquals(accessLineRiRobot.getSubscriberNLProfile(accessLine.getLineId()).getState(), SubscriberNetworkLineProfileDto.StateEnum.ACTIVE);
-        Assert.assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), DefaultNetworkLineProfileDto.StateEnum.INACTIVE);
+        Assert.assertEquals(accessLineRiRobot.getSubscriberNLProfile(accessLine.getLineId()).getState(), ProfileState.ACTIVE);
+        Assert.assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
     }
 
     @Test(dependsOnMethods = "createSubscriberNetworkLineProfileRetail")
@@ -67,7 +65,7 @@ public class SubscriberNetworklineProfile extends BaseTest {
         networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         Assert.assertNull(accessLineDto.getSubscriberNetworkLineProfile());
-        Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), DefaultNetworkLineProfileDto.StateEnum.ACTIVE);
+        Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     }
 
     @Test
@@ -80,8 +78,8 @@ public class SubscriberNetworklineProfile extends BaseTest {
         SubscriberNetworkLineProfileDto subscriberNetworkLineProfile = accessLineRiRobot.getSubscriberNLProfile(accessLine.getLineId());
         Assert.assertEquals(subscriberNetworkLineProfile.getDownBandwidth().intValue(),123000);
         Assert.assertEquals(subscriberNetworkLineProfile.getUpBandwidth().intValue(),123000);
-        Assert.assertEquals(subscriberNetworkLineProfile.getState(), SubscriberNetworkLineProfileDto.StateEnum.ACTIVE);
-        Assert.assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), DefaultNetworkLineProfileDto.StateEnum.INACTIVE);
+        Assert.assertEquals(subscriberNetworkLineProfile.getState(), ProfileState.ACTIVE);
+        Assert.assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
     }
 
     @Test(dependsOnMethods = "createSubscriberNetworkLineProfileWS")
@@ -93,7 +91,7 @@ public class SubscriberNetworklineProfile extends BaseTest {
         networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         Assert.assertNull(accessLineDto.getSubscriberNetworkLineProfile());
-        Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), DefaultNetworkLineProfileDto.StateEnum.ACTIVE);
+        Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     }
 
     @Test
@@ -106,9 +104,8 @@ public class SubscriberNetworklineProfile extends BaseTest {
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(this.accessLine.getLineId()).get(0);
         Assert.assertNotNull(accessLineDto.getSubscriberNetworkLineProfile(),
                 "There is no Subscriber networkline profile");
-        Assert.assertEquals(accessLineDto.getStatus(), AccessLineDto.StatusEnum.ASSIGNED);
-        Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), DefaultNetworkLineProfileDto.StateEnum.INACTIVE);
-        Assert.assertEquals(accessLineDto.getSubscriberNetworkLineProfile().getState(), SubscriberNetworkLineProfileDto.StateEnum.ACTIVE);
+        Assert.assertEquals(accessLineDto.getStatus(), AccessLineStatus.ASSIGNED);
+        Assert.assertEquals(accessLineDto.getSubscriberNetworkLineProfile().getState(), ProfileState.ACTIVE);
     }
 
 
@@ -119,6 +116,6 @@ public class SubscriberNetworklineProfile extends BaseTest {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileDeleteSuccessWB);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLPWB);
         networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
-        Assert.assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()));
+        Assert.assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).isEmpty(), "WB Access line is not deleted");
     }
 }

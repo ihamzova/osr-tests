@@ -10,8 +10,9 @@ import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.LineIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.HomeIdStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.LineIdStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.HomeIdDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -19,9 +20,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.HomeIdDto.StatusEnum;
@@ -75,18 +73,18 @@ public class DGFaccessLineReservation extends BaseTest {
         accessLine.setLineId(lineId);
 
         //Get HomeId and LineId state
-        StatusEnum homeIdState = accessLineRiRobot.getHomeIdStateByHomeId(accessLine.getHomeId());
-        LineIdDto.StatusEnum lineIdState = accessLineRiRobot.getLineIdStateByLineId(lineId);
+        HomeIdStatus homeIdState = accessLineRiRobot.getHomeIdStateByHomeId(accessLine.getHomeId());
+        LineIdStatus lineIdState = accessLineRiRobot.getLineIdStateByLineId(lineId);
 
         //Check that homeId and LineId change state
-        Assert.assertEquals(homeIdState, StatusEnum.ASSIGNED);
-        Assert.assertEquals(lineIdState, LineIdDto.StatusEnum.USED);
+        Assert.assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
+        Assert.assertEquals(lineIdState, LineIdStatus.USED);
 
         //Get Access line state
-        AccessLineDto.StatusEnum accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
+        AccessLineStatus accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
         //Check that access line became assigned
-        Assert.assertEquals(AccessLineDto.StatusEnum.ASSIGNED, accesslineState);
+        Assert.assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
 
 /*        //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();
