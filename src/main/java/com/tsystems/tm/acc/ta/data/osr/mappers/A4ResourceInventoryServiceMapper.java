@@ -183,6 +183,7 @@ public class A4ResourceInventoryServiceMapper {
                         .name("operationalState")
                         .value(operationalState));
     }
+
     private LogicalResourceUpdate generateNspL2BsaLogicalResourcePatch(A4NetworkServiceProfileL2Bsa nspL2Data) {
         LogicalResourceUpdate logicalResourceUpdate = generateGenericLogicalResourcePatch()
                 .type("NspL2Bsa")
@@ -191,21 +192,25 @@ public class A4ResourceInventoryServiceMapper {
         if (nspL2Data.getLifecycleState() != null) {
             logicalResourceUpdate.lifecycleState(nspL2Data.getLifecycleState());
         }
+
         if (nspL2Data.getOperationalState() != null) {
                 logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
                             .name("operationalState")
                             .value(nspL2Data.getOperationalState()));
                 }
+
         if (nspL2Data.getAdministrativeMode() != null) {
             logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
                     .name("administrativeMode")
                     .value(nspL2Data.getAdministrativeMode()));
         }
+
         if (nspL2Data.getLineId() != null) {
             logicalResourceUpdate.addCharacteristicItem(new ResourceCharacteristic()
                     .name("lineId")
                     .value(nspL2Data.getLineId()));
         }
+
         return logicalResourceUpdate;
     }
 
