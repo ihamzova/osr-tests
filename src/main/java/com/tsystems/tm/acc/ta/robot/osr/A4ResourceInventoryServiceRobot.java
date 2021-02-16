@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -110,19 +111,15 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Send new patch attributes for Network Service Profile (L2BSA)")
-    public void sendStatusPatchForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data) {
-        LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourcePatch(nspL2Data);
-
+    @Step("Send PATCH request with logical resource")
+    public void sendPatchForLogicalResource(String uuid, LogicalResourceUpdate logicalResource) {
         a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
-                .idPath(nspL2Data.getUuid())
-                .body(nspL2LogicalResource)
+                .idPath(uuid)
+                .body(logicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
-
 
     @Step("Send new operational state for Network Element Link")
     public void sendStatusUpdateForNetworkElementLink(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String newOperationalState) {
@@ -151,6 +148,35 @@ public class A4ResourceInventoryServiceRobot {
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
         Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
+    }
+
+    @Step("Check Logical Resource representation has expected characteristic and value")
+    public void checkLogicalResourceHasCharacteristic(String uuid, String characteristic, String expectedValue) {
+        List<LogicalResource> logicalResourceList =
+                a4ResourceInventoryService
+                        .logicalResource()
+                        .retrieveLogicalResource()
+                        .idPath(uuid)
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        // Only one logical resource should be found by uuid
+        Assert.assertEquals(logicalResourceList.size(), 1);
+
+        boolean found = false;
+        String foundValue = "";
+        List<ResourceCharacteristic> characteristics = logicalResourceList.get(0).getCharacteristic();
+
+        // Search for existence of characteristic in characteristics
+        for (ResourceCharacteristic resourceCharacteristic : characteristics) {
+            if (resourceCharacteristic.getName().equals(characteristic)) {
+                found = true;
+                foundValue = resourceCharacteristic.getValue();
+                break;
+            }
+        }
+
+        Assert.assertTrue(found);
+        Assert.assertEquals(foundValue, expectedValue);
     }
 
 }

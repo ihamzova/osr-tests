@@ -19,7 +19,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class A4ResourceInventoryRobot {
 
@@ -435,9 +434,7 @@ public class A4ResourceInventoryRobot {
 
             if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
-            }
-            else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1"))
-            {
+            } else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
             } else {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 0);
@@ -474,12 +471,17 @@ public class A4ResourceInventoryRobot {
     public void checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(A4NetworkServiceProfileL2Bsa nspL2Data, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDto = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
 
-        if (networkServiceProfileL2BsaDto.getLifecycleState() != null) {
-            assertEquals(networkServiceProfileL2BsaDto.getLifecycleState(), expectedNewLifecycleState);
-        }
-        if (networkServiceProfileL2BsaDto.getOperationalState() != null) {
-            assertEquals(networkServiceProfileL2BsaDto.getOperationalState(), expectedNewOperationalState);
-        }
+        assertEquals(networkServiceProfileL2BsaDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileL2BsaDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    public void checkThatNoFieldsAreChanged(A4NetworkServiceProfileL2Bsa nspL2Data, NetworkServiceProfileL2BsaDto nspOld) {
+        NetworkServiceProfileL2BsaDto nspNew = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+
+        // Known "feature": LastUpdateTime is updated, despite no other fields being changed. Ignore this in assertion
+        nspNew.setLastUpdateTime(nspOld.getLastUpdateTime());
+
+        assertEquals(nspNew, nspOld);
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element link")
@@ -488,27 +490,6 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkElementLinkDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkElementLinkDto.getOperationalState(), expectedNewOperationalState);
-    }
-
-    @Step("Check that all attributes of nspData are the same as in DB for network service profile (L2BSA)")
-    public void checkNetworkServiceProfileL2BsaIsSameAsDB(A4NetworkServiceProfileL2Bsa nspL2DataExpectedResult) {
-        //Get actual results from DB
-        NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDtoActualResult = getExistingNetworkServiceProfileL2Bsa(nspL2DataExpectedResult.getUuid());
-
-        if(nspL2DataExpectedResult.getLifecycleState() != null) {
-            assertEquals(networkServiceProfileL2BsaDtoActualResult.getLifecycleState(), nspL2DataExpectedResult.getLifecycleState());
-        }
-        // Check on Null-Pointer Exception and if expected Operational State is set correctly
-        if(nspL2DataExpectedResult.getOperationalState() != null) {
-            assertEquals(networkServiceProfileL2BsaDtoActualResult.getOperationalState(), nspL2DataExpectedResult.getOperationalState());
-        }
-        if(nspL2DataExpectedResult.getLineId() != null) {
-        assertEquals(networkServiceProfileL2BsaDtoActualResult.getLineId(), nspL2DataExpectedResult.getLineId());
-        }
-
-        if(nspL2DataExpectedResult.getAdministrativeMode() != null) {
-        assertEquals(networkServiceProfileL2BsaDtoActualResult.getAdministrativeMode(), nspL2DataExpectedResult.getAdministrativeMode());
-        }
     }
 
     @Step("Delete all Network Element Groups with a given name")
