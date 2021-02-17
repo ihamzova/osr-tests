@@ -17,4 +17,7 @@ public class AccessLine {
     private String homeId;
     private String lineId;
     private int partyId;
+    private DpuDevice dpuDevice;
+    private String dpuPortNumber;
+    private String dpuPortType;
 }
