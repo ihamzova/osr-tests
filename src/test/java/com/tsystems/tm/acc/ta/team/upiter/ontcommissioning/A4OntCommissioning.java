@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
@@ -132,6 +134,15 @@ public class A4OntCommissioning extends BaseTest {
                 .portNumber(accessLine.getPortNumber())
                 .homeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         String response = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-        Assert.assertEquals(response,"Walled Garden access line not found");
+        assertEquals(response,"Walled Garden access line not found");
+    }
+    @Test(dependsOnMethods = {"a4ontChangeTest"})
+    @TmsLink("DIGIHUB-59626")
+    @Description("Decommissioning case A4")
+    public void a4Decommissioning() {
+        ontOltOrchestratorRobot.decommissionOnt(accessLine);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+        assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),accessLine.getHomeId());
     }
 }

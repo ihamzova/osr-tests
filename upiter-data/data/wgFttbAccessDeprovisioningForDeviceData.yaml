@@ -7,6 +7,7 @@ values:
   oltEndsz: "49/30/179/76H1"
   oltGponSlot: "5"
   oltGponPort: "0"
+
 ---
 name: oltDeviceForFttbDeprovisioning
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning

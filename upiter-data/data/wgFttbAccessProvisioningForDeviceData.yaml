@@ -6,6 +6,8 @@ values:
   fsz: "71G0"
   ponConnectionWe: "8"
   ponConnectionGe: "4"
+
+
 ---
 name: oltDeviceForFttbProvisioning
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
