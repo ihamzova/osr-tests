@@ -14,7 +14,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;

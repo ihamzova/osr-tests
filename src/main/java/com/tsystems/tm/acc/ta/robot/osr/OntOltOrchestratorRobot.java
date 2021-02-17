@@ -9,9 +9,10 @@ import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.OntResourceV2Dto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.internal.v2_8_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntResourceV2Dto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.api.CallbackControllerV2Api;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.*;
@@ -87,7 +88,7 @@ public class OntOltOrchestratorRobot {
                         .homeId(accessLine.getHomeId())
                         .lineId(accessLine.getLineId())
                         .ontSerialNumber(ont.getSerialNumber())
-                        .ontState(OntResourceV2Dto.OntStateEnum.UNKNOWN))
+                        .ontState(OntState.UNKNOWN))
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
@@ -139,7 +140,7 @@ public class OntOltOrchestratorRobot {
     public void updateOntState(AccessLine accessLine) {
         ontOltOrchestratorClient
                 .getClient()
-                .ontOltOrchestratorV2()
+                .ontOltOrchestratorSyncV2()
                 .updateOntResourceV2()
                 .homeIdQuery(accessLine.getHomeId())
                 .lineIdQuery(accessLine.getLineId())
