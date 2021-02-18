@@ -22,8 +22,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.v5_1_0.client.model.HomeIdDto.StatusEnum;
-
 
 @ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)

@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
@@ -10,12 +9,9 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.CardRequestDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -24,16 +20,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.URL;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static io.restassured.RestAssured.given;
 
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -89,19 +78,16 @@ public class OltProvisioning5800 extends BaseTest {
     @Description("Card Provisioning with 1 port")
     public void cardProvisioning() throws InterruptedException {
 
-        Card cardBeforeProvisioning = getCard();
-        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
+        Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
+        PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
                 portEmpty.getSlotNumber(),
-                cardBeforeProvisioning.getPorts().get(0).getPortNumber());
+                cardBeforeProvisioning.getPorts().get(0).getPortNumber(),portEmpty);
 
         Assert.assertNotNull(cardBeforeProvisioning);
         Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
         Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-        wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-                .body(Stream.of(new CardRequestDto().endSz(portEmpty.getEndSz()).slotNumber(portEmpty.getSlotNumber())).collect(Collectors.toList()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-
+        wgAccessProvisioningRobot.startCardProvisioning(portEmpty);
         Thread.sleep(LATENCY);
 
         accessLineRiRobot.checkProvisioningResults(port);
@@ -112,54 +98,20 @@ public class OltProvisioning5800 extends BaseTest {
     @Description("Device Provisioning with 1 card and 1 port")
     public void deviceProvisioning() throws InterruptedException {
 
-        Device deviceBeforeProvisioning = getDevice();
+        Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
 
-        PortProvisioning port = getPortProvisioning(portEmpty.getEndSz(),
+        PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
                 deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
-                deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber());
+                deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmpty);
 
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
         Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
         Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-        wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
-                .body(new DeviceDto().endSz(portEmpty.getEndSz())).executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-
+        wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
         Thread.sleep(LATENCY);
 
         accessLineRiRobot.checkProvisioningResults(port);
-    }
-
-    private PortProvisioning getPortProvisioning(String endSz, String slotNumber, String portNumber) {
-        PortProvisioning port = new PortProvisioning();
-        port.setEndSz(endSz);
-        port.setSlotNumber(slotNumber);
-        port.setPortNumber(portNumber);
-        port.setLineIdPool(portEmpty.getLineIdPool());
-        port.setHomeIdPool(portEmpty.getHomeIdPool());
-        port.setDefaultNEProfilesActive(portEmpty.getDefaultNEProfilesActive());
-        port.setDefaultNetworkLineProfilesActive(portEmpty.getDefaultNetworkLineProfilesActive());
-        port.setAccessLinesWG(portEmpty.getAccessLinesWG());
-        return port;
-    }
-
-    private Device getDevice() {
-        URL deviceUrl = new OCUrlBuilder("wiremock-acc")
-                .withEndpoint("/api/oltResourceInventory/v1/olt")
-                .withParameter("endSZ", portEmpty.getEndSz()).build();
-        String response = given().when().get(deviceUrl.toString().replace("%2F", "/"))
-                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
-        return OltResourceInventoryClient.json().deserialize(response, Device.class);
-    }
-
-    private Card getCard() {
-        URL cardUrl = new OCUrlBuilder("wiremock-acc")
-                .withEndpoint("/api/oltResourceInventory/v1/card")
-                .withParameter("endSz", portEmpty.getEndSz())
-                .withParameter("slotNumber", portEmpty.getSlotNumber()).build();
-        String response = given().when().get(cardUrl.toString().replace("%2F", "/"))
-                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
-        return OltResourceInventoryClient.json().deserialize(response, Card.class);
     }
 }

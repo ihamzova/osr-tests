@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
@@ -10,7 +9,6 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Port;
@@ -22,13 +20,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
-import static io.restassured.RestAssured.given;
 
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -85,7 +81,7 @@ public class OltProvisioningAdtran extends BaseTest {
     @TmsLink("DIGIHUB-30824")
     @Description("Device Provisioning SDX 6320")
     public void deviceProvisioning() {
-        Device deviceBeforeProvisioning = getDevice();
+        Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
         Assert.assertEquals(getPonPorts().size(), 16);
@@ -116,24 +112,8 @@ public class OltProvisioningAdtran extends BaseTest {
         return port;
     }
 
-    private Device getDevice() {
-        URL deviceUrl = new OCUrlBuilder("wiremock-acc")
-                .withEndpoint("/api/oltResourceInventory/v1/olt")
-                .withParameter("endSZ", portEmpty.getEndSz()).build();
-        String response =
-                given()
-                        .when()
-                        .get(deviceUrl.toString().replace("%2F", "/"))
-                        .then()
-                        .extract()
-                        .body()
-                        .asString()
-                        .replaceFirst("\"lastDiscovery\": \".+\",\n", "");
-        return OltResourceInventoryClient.json().deserialize(response, Device.class);
-    }
-
     private List<Port> getPonPorts() {
-        return getDevice().getPorts().stream()
+        return wgAccessProvisioningRobot.getDevice(portEmpty).getPorts().stream()
                 .filter(ponPort -> ponPort.getPortType().equals(PON))
                 .collect(Collectors.toList());
     }

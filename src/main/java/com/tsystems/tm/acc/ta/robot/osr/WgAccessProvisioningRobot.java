@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
@@ -11,14 +12,18 @@ import com.tsystems.tm.acc.ta.helpers.osr.logs.LogConverter;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.PortDto;
 import io.qameta.allure.Step;
+import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -180,5 +185,40 @@ public class WgAccessProvisioningRobot {
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
+    }
+
+    @Step("Check card before provisioning")
+    public Card getCard(PortProvisioning port) {
+        URL cardUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/card")
+                .withParameter("endSz", port.getEndSz())
+                .withParameter("slotNumber", port.getSlotNumber()).build();
+        String response = RestAssured.given().when().get(cardUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Card.class);
+    }
+
+    @Step("Check device before/after provisioning")
+    public Device getDevice(PortProvisioning port) {
+        URL deviceUrl = new OCUrlBuilder("wiremock-acc")
+                .withEndpoint("/api/oltResourceInventory/v1/olt")
+                .withParameter("endSZ", port.getEndSz()).build();
+        String response = RestAssured.given().when().get(deviceUrl.toString().replace("%2F", "/"))
+                .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n","");
+        return OltResourceInventoryClient.json().deserialize(response, Device.class);
+    }
+
+    @Step("Check port after provisioning")
+    public PortProvisioning getPortProvisioning(String endSz, String slotNumber, String portNumber, PortProvisioning port) {
+        PortProvisioning portBeforeProvisioning = new PortProvisioning();
+        portBeforeProvisioning.setEndSz(endSz);
+        portBeforeProvisioning.setSlotNumber(slotNumber);
+        portBeforeProvisioning.setPortNumber(portNumber);
+        portBeforeProvisioning.setLineIdPool(port.getLineIdPool());
+        portBeforeProvisioning.setHomeIdPool(port.getHomeIdPool());
+        portBeforeProvisioning.setDefaultNEProfilesActive(port.getDefaultNEProfilesActive());
+        portBeforeProvisioning.setDefaultNetworkLineProfilesActive(port.getDefaultNetworkLineProfilesActive());
+        portBeforeProvisioning.setAccessLinesWG(port.getAccessLinesWG());
+        return portBeforeProvisioning;
     }
 }
