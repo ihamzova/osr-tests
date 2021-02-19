@@ -22,8 +22,10 @@ import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
+import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -32,13 +34,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
@@ -55,19 +57,35 @@ public class A4InventarSuchePageTest extends BaseTest {
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
+
     A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
 
+    private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
 
-    //helper methods
+    //helper method 'wait'
     public void waitForTableToFullyLoad(int numberOfElements){
-        //add 1 to number of elements because of table header
-        //numberOfElements++;
-
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
+    //helper method 'filter and check'
+    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElementGroup> a4NegFilteredList) {
+
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        waitForTableToFullyLoad(a4NegFilteredList.size());
+
+        List<String> concat = new ArrayList<>();
+
+        elementsCollection.forEach(k -> concat.add(k.getText()));
+
+        a4NegFilteredList.forEach((k, a4NetworkElementGroup) -> {
+            assertTrue(concat.contains(a4NetworkElementGroup.getOperationalState()),a4NetworkElementGroup.getOperationalState());
+            assertTrue(concat.contains(a4NetworkElementGroup.getLifecycleState()),a4NetworkElementGroup.getLifecycleState());
+        });
+    }
 
     @BeforeClass()
     public void init() {
@@ -76,37 +94,80 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-
-
         cleanUp();
     }
 
     @BeforeMethod
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
-
     }
 
     @AfterClass
     public void cleanUp() {
-
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
-
-
 
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
     public void testNegSearchWorking() throws InterruptedException {
-        // 2 NEG
+        // 2 NEG in DB
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
         a4InventarSucheRobot.clickSearchButton();
 
-        Thread.sleep(3000);
+        // aus DB muss später noch die richtige Zahl ermittelt werden
+        waitForTableToFullyLoad(2);
+
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+
+        // Anzahl = 2
+        assertEquals(elementsCollection.size()/6, 2);  // je 6 Felder pro NEG; später mit Wert aus DB vergleichen
+
+        // Prüfungen
+        assertEquals(elementsCollection.get(1).getText(),"49/228/230/POD/00_UI1");   // Vergleich mit Wert aus DB
+
+
+        // hole alle NEGs aus DB
+        List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
+        log.info("+++"+allNegList.size());
+
+        // erzeuge expected result in java
+        List<NetworkElementGroupDto> negFilteredList;
+        negFilteredList = allNegList.stream().filter(group -> group.getOperationalState().equals("WORKING")).collect(Collectors.toList());
+        negFilteredList = negFilteredList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());  // a4NetworkElementGroup.getUuid()
+        log.info("+++"+negFilteredList.size());
+
+
+        // vergleiche actual and expected result
+        List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
+        NetworkElementGroupDto negActual01 = new NetworkElementGroupDto();
+        NetworkElementGroupDto negActual02 = new NetworkElementGroupDto();
+
+        negActualResultList.add(negActual01);
+        negActualResultList.add(negActual02);
+
+        //for (int j = 0; j<elementsCollection.size(); j++){          // 6 Elemente je Zeile
+
+
+        for (int i = 0; i<negActualResultList.size(); i++){
+            negActualResultList.get(i).setUuid(elementsCollection.get(i*6+0).getText());
+            negActualResultList.get(i).setName(elementsCollection.get(i*6+1).getText());
+        }
+        negActualResultList = negActualResultList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
+
+        negActual01.setUuid(elementsCollection.get(0).getText());
+        assertEquals(negFilteredList.get(1).getUuid(), negActualResultList.get(1).getUuid()); // Reihenfolge in beiden Listen unterschiedlich
+
+
+
+
+
+
+
     }
 
     @Test
@@ -271,12 +332,12 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         waitForTableToFullyLoad(1);
 
-        //Thread.sleep(3000);
+        Thread.sleep(6000);
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
 
-        // woher kommen die a4NetworkElementGroup-Daten in der BeforeClass?
+
         //assertEquals(elementsCollection.get(0).getText(),a4NetworkElementGroup.getUuid());
 
         //assertEquals(elementsCollection.get(1).getText(),a4NetworkElementGroup.getName()); // holt default-Wert

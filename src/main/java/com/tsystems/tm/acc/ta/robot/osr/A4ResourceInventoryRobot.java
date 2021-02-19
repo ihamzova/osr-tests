@@ -316,6 +316,14 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get all existing Network Element Groups")
+    public List<NetworkElementGroupDto> getExistingNetworkElementGroupAll() {
+        return a4ResourceInventory
+                .networkElementGroups()
+                .listNetworkElementGroups()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element by UUID")
     public NetworkElementDto getExistingNetworkElement(String uuid) {
         return a4ResourceInventory
