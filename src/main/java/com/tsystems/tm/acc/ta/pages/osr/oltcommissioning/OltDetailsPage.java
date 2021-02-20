@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -64,6 +65,18 @@ public class OltDetailsPage {
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
     public String slotPortViewLocator = "a-card-portview-slot-%s";
     public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
+
+    public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
+    public static final By DELETE_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option_3");
+    public static final By START_EDIT_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
+
+
+    //public static final By BACK_TO_SEARCH_PAGE_LOCATOR = byCssSelector(".ui > span");
+    //public static final By DELETE_CARD_BUTTON_LOCATOR = byQaData("button-card-deletion-slot-%");
+
+    //public String deleteCardButtonLocator = "button-card-deletion-slot-%d";
+    public static final By DELETE_CARD_BUTTON_LOCATOR = byQaData("button-card-deletion-slot-1");
+    public static final By DELETE_CARD_BUTTON_CONFIRM_LOCATOR = byXpath("//span[contains(.,'GPON Line Karte löschen')]");
 
 
     @Step("Validate Url")
@@ -191,6 +204,22 @@ public class OltDetailsPage {
                 }
             }
         }
+        return this;
+    }
+
+    @Step("Delete device")
+    public OltDetailsPage deleteDevice() {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+        $(DELETE_DEVICE_BUTTON_LOCATOR).click();
+        $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+        return this;
+    }
+
+    @Step("Delete card")
+
+    public OltDetailsPage deleteGponCard() {
+        $(DELETE_CARD_BUTTON_LOCATOR).click();
+        $(DELETE_CARD_BUTTON_CONFIRM_LOCATOR).click();
         return this;
     }
 
