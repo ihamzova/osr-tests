@@ -54,9 +54,11 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class A4InventarSuchePageTest extends BaseTest {
 
+
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final int numberOfColumnsNegList = 6;
 
     A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
 
@@ -68,6 +70,39 @@ public class A4InventarSuchePageTest extends BaseTest {
     public void waitForTableToFullyLoad(int numberOfElements){
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
+
+    // helper
+    public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
+
+
+
+        // erzeuge actual result, --> Schleife für alle Datensätze bauen mit elementsCollection.size()/6
+        List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
+
+
+        for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++) {
+            NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
+            negActualResultList.add(negActualGeneric);   //
+
+            // negActualResultList.add(negActual02);   // ohne Schleife
+            //negActualResultList.addAll(elementsCollection ?);  // ?
+        }  // für Schleife
+
+        log.info("+++negActualResultList: "+negActualResultList.size());
+
+        // Einlesen der Liste des UI (actual result)
+        // for (int i = 0; i<negActualResultList.size(); i++){   // Ersatz durch elementsCollection.size()/6
+        for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++){
+            negActualResultList.get(i).setUuid(elementsCollection.get(i*numberOfColumnsNegList+0).getText());
+            negActualResultList.get(i).setName(elementsCollection.get(i*numberOfColumnsNegList+1).getText());
+        }
+        // Sortieren
+        negActualResultList = negActualResultList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
+           return negActualResultList;
+
+    }
+
+
 
     //helper method 'filter and check'
     public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElementGroup> a4NegFilteredList) {
@@ -116,57 +151,39 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
+        a4InventarSucheRobot.checkboxOpInstalling();    // Test 3 NEG
         a4InventarSucheRobot.clickSearchButton();
-
-        // aus DB muss später noch die richtige Zahl ermittelt werden
-        waitForTableToFullyLoad(2);
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
 
-        // Anzahl = 2
-        assertEquals(elementsCollection.size()/6, 2);  // je 6 Felder pro NEG; später mit Wert aus DB vergleichen
+        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
-        // Prüfungen
-        assertEquals(elementsCollection.get(1).getText(),"49/228/230/POD/00_UI1");   // Vergleich mit Wert aus DB
-
-
-        // hole alle NEGs aus DB
+        // hole alle NEGs aus DB, nach Before schieben?
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++"+allNegList.size());
+        log.info("+++Anzahl NEGs: "+allNegList.size());
 
-        // erzeuge expected result in java
+        // erzeuge expected result, Verknüpfung mehrerer Listen notwendig? ("WORKING", "INSTALLING", usw)?
         List<NetworkElementGroupDto> negFilteredList;
-        negFilteredList = allNegList.stream().filter(group -> group.getOperationalState().equals("WORKING")).collect(Collectors.toList());
-        negFilteredList = negFilteredList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());  // a4NetworkElementGroup.getUuid()
-        log.info("+++"+negFilteredList.size());
+
+        negFilteredList = allNegList
+                .stream()
+                .filter(group -> group.getOperationalState().equals("WORKING") || group.getOperationalState().equals("INSTALLING"))
+                .collect(Collectors.toList());
+
+        negFilteredList = negFilteredList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
+        log.info("+++negFilteredList : "+negFilteredList.size());
 
 
-        // vergleiche actual and expected result
-        List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
-        NetworkElementGroupDto negActual01 = new NetworkElementGroupDto();
-        NetworkElementGroupDto negActual02 = new NetworkElementGroupDto();
+        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        negActualResultList.add(negActual01);
-        negActualResultList.add(negActual02);
+        // Vergleichen, actual and expected result  --> Schleife bauen, ok
+        // compareExpectedResultWithActualResultNegList
+        for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++) {
 
-        //for (int j = 0; j<elementsCollection.size(); j++){          // 6 Elemente je Zeile
-
-
-        for (int i = 0; i<negActualResultList.size(); i++){
-            negActualResultList.get(i).setUuid(elementsCollection.get(i*6+0).getText());
-            negActualResultList.get(i).setName(elementsCollection.get(i*6+1).getText());
+            assertEquals(negFilteredList.get(i).getUuid(), negActualResultList.get(i).getUuid()); // Reihenfolge in beiden Listen durch Sortierung gleich
+            log.info("+++uuid: "+negActualResultList.get(i).getUuid());
         }
-        negActualResultList = negActualResultList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
-
-        negActual01.setUuid(elementsCollection.get(0).getText());
-        assertEquals(negFilteredList.get(1).getUuid(), negActualResultList.get(1).getUuid()); // Reihenfolge in beiden Listen unterschiedlich
-
-
-
-
-
-
 
     }
 
