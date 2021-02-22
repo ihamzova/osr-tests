@@ -66,60 +66,50 @@ public class A4InventarSuchePageTest extends BaseTest {
 
     private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
 
-    //helper method 'wait'
+    // helper method 'wait'
     public void waitForTableToFullyLoad(int numberOfElements){
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
-    // helper
+    // helper 'createActualResult'
     public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
 
-
-
-        // erzeuge actual result, --> Schleife für alle Datensätze bauen mit elementsCollection.size()/6
         List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
 
-
-        for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++) {
+        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNegList; i++) {
             NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
-            negActualResultList.add(negActualGeneric);   //
-
-            // negActualResultList.add(negActual02);   // ohne Schleife
-            //negActualResultList.addAll(elementsCollection ?);  // ?
-        }  // für Schleife
+            negActualResultList.add(negActualGeneric);
+        }
 
         log.info("+++negActualResultList: "+negActualResultList.size());
 
         // Einlesen der Liste des UI (actual result)
-        // for (int i = 0; i<negActualResultList.size(); i++){   // Ersatz durch elementsCollection.size()/6
         for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++){
-            negActualResultList.get(i).setUuid(elementsCollection.get(i*numberOfColumnsNegList+0).getText());
-            negActualResultList.get(i).setName(elementsCollection.get(i*numberOfColumnsNegList+1).getText());
+            negActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNegList +0).getText());
+            negActualResultList.get(i).setName(elementsCollection.get(i * numberOfColumnsNegList +1).getText());
+            negActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNegList +2).getText());
+            negActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNegList +3).getText());
+           // negActualResultList.get(i).setCreationTime(elementsCollection.get(i*numberOfColumnsNegList+4).getText()); // String-Problem
+           // negActualResultList.get(i).setLastUpdateTime(elementsCollection.get(i*numberOfColumnsNegList+5).getText()); // String-Problem
         }
         // Sortieren
         negActualResultList = negActualResultList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
            return negActualResultList;
-
     }
 
-
-
-    //helper method 'filter and check'
-    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElementGroup> a4NegFilteredList) {
-
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-
-        waitForTableToFullyLoad(a4NegFilteredList.size());
-
-        List<String> concat = new ArrayList<>();
-
-        elementsCollection.forEach(k -> concat.add(k.getText()));
-
-        a4NegFilteredList.forEach((k, a4NetworkElementGroup) -> {
-            assertTrue(concat.contains(a4NetworkElementGroup.getOperationalState()),a4NetworkElementGroup.getOperationalState());
-            assertTrue(concat.contains(a4NetworkElementGroup.getLifecycleState()),a4NetworkElementGroup.getLifecycleState());
-        });
+    // helper 'compare'
+    public void compareExpectedResultWithActualResultNegList (List <NetworkElementGroupDto>negFilteredList,
+                                                              List <NetworkElementGroupDto>negActualResultList,
+                                                              int elementsCollectionSize ){
+        for (int i = 0; i < elementsCollectionSize / numberOfColumnsNegList; i++) {
+            assertEquals(negFilteredList.get(i).getUuid(), negActualResultList.get(i).getUuid());
+            assertEquals(negFilteredList.get(i).getName(), negActualResultList.get(i).getName());
+            assertEquals(negFilteredList.get(i).getLifecycleState(), negActualResultList.get(i).getLifecycleState());
+            assertEquals(negFilteredList.get(i).getOperationalState(), negActualResultList.get(i).getOperationalState());
+            // assertEquals(negFilteredList.get(i).getCreationTime(), negActualResultList.get(i).getCreationTime()); // String-Problem
+            // assertEquals(negFilteredList.get(i).getLastUpdateTime(), negActualResultList.get(i).getLastUpdateTime()); // String-Problem
+            log.info("+++uuid: "+negActualResultList.get(i).getUuid());
+        }
     }
 
     @BeforeClass()
@@ -147,11 +137,10 @@ public class A4InventarSuchePageTest extends BaseTest {
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
     public void testNegSearchWorking() throws InterruptedException {
-        // 2 NEG in DB
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
-        a4InventarSucheRobot.checkboxWorking();
-        a4InventarSucheRobot.checkboxOpInstalling();    // Test 3 NEG
+        a4InventarSucheRobot.checkboxWorking();         // 2 NEG
+        a4InventarSucheRobot.checkboxOpInstalling();    // Test +1 NEG
         a4InventarSucheRobot.clickSearchButton();
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
@@ -159,32 +148,27 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
-        // hole alle NEGs aus DB, nach Before schieben?
+        // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
         log.info("+++Anzahl NEGs: "+allNegList.size());
 
-        // erzeuge expected result, Verknüpfung mehrerer Listen notwendig? ("WORKING", "INSTALLING", usw)?
+        // create expected result
         List<NetworkElementGroupDto> negFilteredList;
-
         negFilteredList = allNegList
                 .stream()
                 .filter(group -> group.getOperationalState().equals("WORKING") || group.getOperationalState().equals("INSTALLING"))
                 .collect(Collectors.toList());
-
-        negFilteredList = negFilteredList.stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)).collect(Collectors.toList());
+        // sort
+        negFilteredList = negFilteredList
+                .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
+                .collect(Collectors.toList());
         log.info("+++negFilteredList : "+negFilteredList.size());
 
-
+        // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // Vergleichen, actual and expected result  --> Schleife bauen, ok
-        // compareExpectedResultWithActualResultNegList
-        for (int i = 0; i < elementsCollection.size()/numberOfColumnsNegList; i++) {
-
-            assertEquals(negFilteredList.get(i).getUuid(), negActualResultList.get(i).getUuid()); // Reihenfolge in beiden Listen durch Sortierung gleich
-            log.info("+++uuid: "+negActualResultList.get(i).getUuid());
-        }
-
+        // compare, actual and expected result
+         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
