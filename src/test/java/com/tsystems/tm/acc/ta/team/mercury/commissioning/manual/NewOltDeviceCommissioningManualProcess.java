@@ -39,6 +39,8 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
+    private static final String KLS_ID_EXPECTED = "17056514";
+
     private OltResourceInventoryClient oltResourceInventoryClient;
 
     @BeforeClass
@@ -140,7 +142,7 @@ public class NewOltDeviceCommissioningManualProcess extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5800);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), "17056514");
+        Assert.assertEquals(oltDetailsPage.getKlsID(), KLS_ID_EXPECTED, "KlsId coming from PSL (Mock)");
     }
 
     /**

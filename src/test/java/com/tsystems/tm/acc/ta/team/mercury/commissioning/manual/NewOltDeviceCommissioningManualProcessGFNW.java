@@ -40,6 +40,8 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
     private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
+    private static final String KLS_ID_EXPECTED = "17056514";
+
     private OltResourceInventoryClient oltResourceInventoryClient;
 
     @BeforeClass
@@ -143,7 +145,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
-        Assert.assertEquals(oltDetailsPage.getKlsID(), "17056514");
+        Assert.assertEquals(oltDetailsPage.getKlsID(), KLS_ID_EXPECTED, "KlsId coming from PSL (Mock)");
     }
 
     /**
