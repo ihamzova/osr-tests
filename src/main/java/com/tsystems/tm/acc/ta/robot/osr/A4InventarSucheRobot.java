@@ -34,7 +34,7 @@ public class A4InventarSucheRobot {
     public ElementsCollection getElementsCollection () {
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-        //  waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);  // notwendig?
+        // waitForTableToFullyLoad(elementsCollection.size());
         return elementsCollection;
     }
 

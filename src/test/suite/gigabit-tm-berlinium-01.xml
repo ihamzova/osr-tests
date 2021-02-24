@@ -12,6 +12,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileMonitoringPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileNeSearchPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryBrowserTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4InventarSuchePageTest"/>
         </classes>
     </test>
 </suite>
