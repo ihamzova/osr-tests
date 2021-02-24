@@ -68,7 +68,6 @@ public class A4InventarSuchePageTest extends BaseTest {
             negActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNegList +3).getText());
             OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNegList+4).getText());
             OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNegList+5).getText());
-           // log.info("+++time "+creationTime.toString());
             negActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
             negActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
             //negActualResultList.get(i).setLastUpdateTime(elementsCollection.get(i*numberOfColumnsNegList+5).getText()); // Formatproblem
@@ -89,8 +88,8 @@ public class A4InventarSuchePageTest extends BaseTest {
             assertEquals(negFilteredList.get(i).getName(), negActualResultList.get(i).getName());
             assertEquals(negFilteredList.get(i).getLifecycleState(), negActualResultList.get(i).getLifecycleState());
             assertEquals(negFilteredList.get(i).getOperationalState(), negActualResultList.get(i).getOperationalState());
-            assertEquals(negFilteredList.get(i).getCreationTime().toString(), negActualResultList.get(i).getCreationTime().toString()); // wegen Formatproblem String-OffsetDateTime
-            assertEquals(negFilteredList.get(i).getLastUpdateTime().toString(), negActualResultList.get(i).getLastUpdateTime().toString()); // wegen Formatproblem String-OffsetDateTime
+            assertEquals(negFilteredList.get(i).getCreationTime().toString(), negActualResultList.get(i).getCreationTime().toString());
+            assertEquals(negFilteredList.get(i).getLastUpdateTime().toString(), negActualResultList.get(i).getLastUpdateTime().toString());
             log.info("+++uuid: "+negActualResultList.get(i).getUuid());
         }
     }
@@ -331,8 +330,8 @@ public class A4InventarSuchePageTest extends BaseTest {
         assertEquals(elementsCollection.get(1).getText(),a4NetworkElementGroup.getName());
         assertEquals(elementsCollection.get(2).getText(),a4NetworkElementGroup.getOperationalState());
         assertEquals(elementsCollection.get(3).getText(),a4NetworkElementGroup.getLifecycleState());
-        //assertEquals(elementsCollection.get(4).getText(),a4NetworkElementGroup.getCreationTime()); // not set in default
-        //assertEquals(elementsCollection.get(5).getText(),a4NetworkElementGroup.getLastUpdateTime()); // not set in default
+        //assertEquals(elementsCollection.get(4).getText(),a4NetworkElementGroup.getCreationTime()); //  a4NetworkElementGroup.get... --> null ? Methode fehlt in A4ResourceInventoryServiceMapper
+        //assertEquals(elementsCollection.get(5).getText(),a4NetworkElementGroup.getLastUpdateTime()); //  a4NetworkElementGroup.get... --> null ? Methode fehlt in A4ResourceInventoryServiceMapper
 
         //log.info("+++xxxtime "+elementsCollection.get(4).getText());     // 2021-02-23T14:11:19.316+01:00
         //log.info("+++xxxtime "+elementsCollection.get(4).toString());    // <td>2021-02-23T14:11:19.316+01:00</td>
