@@ -39,16 +39,8 @@ public class A4InventarSuchePageTest extends BaseTest {
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final int numberOfColumnsNegList = 6;
-
-    A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
-
     private A4NetworkElementGroup a4NetworkElementGroup;
     private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
-
-    // helper method 'wait'
-    public void waitForTableToFullyLoad(int numberOfElements){
-        $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
-    }
 
     // helper 'createActualResult'
     public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
@@ -70,7 +62,6 @@ public class A4InventarSuchePageTest extends BaseTest {
             OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNegList+5).getText());
             negActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
             negActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
-            //negActualResultList.get(i).setLastUpdateTime(elementsCollection.get(i*numberOfColumnsNegList+5).getText()); // Formatproblem
         }
         // sort
         negActualResultList = negActualResultList
@@ -90,7 +81,7 @@ public class A4InventarSuchePageTest extends BaseTest {
             assertEquals(negFilteredList.get(i).getOperationalState(), negActualResultList.get(i).getOperationalState());
             assertEquals(negFilteredList.get(i).getCreationTime().toString(), negActualResultList.get(i).getCreationTime().toString());
             assertEquals(negFilteredList.get(i).getLastUpdateTime().toString(), negActualResultList.get(i).getLastUpdateTime().toString());
-            log.info("+++uuid: "+negActualResultList.get(i).getUuid());
+           // log.info("+++uuid: "+negActualResultList.get(i).getUuid());
         }
     }
 
@@ -125,13 +116,11 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxOpInstalling();
         a4InventarSucheRobot.clickSearchButton();
 
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++Anzahl NEGs: "+allNegList.size());
 
         // create expected result
         List<NetworkElementGroupDto> negFilteredList;
@@ -163,13 +152,11 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxOperating();
         a4InventarSucheRobot.clickSearchButton();
 
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++Anzahl NEGs: "+allNegList.size());
 
         // create expected result
         List<NetworkElementGroupDto> negFilteredList;
@@ -201,13 +188,11 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxLifeInstalling();
         a4InventarSucheRobot.clickSearchButton();
 
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++Anzahl NEGs: "+allNegList.size());
 
         // create expected result
         List<NetworkElementGroupDto> negFilteredList;
@@ -239,13 +224,11 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxPlanning();
         a4InventarSucheRobot.clickSearchButton();
 
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++Anzahl NEGs: "+allNegList.size());
 
         // create expected result
         List<NetworkElementGroupDto> negFilteredList;
@@ -277,13 +260,11 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.checkboxRetiring();
         a4InventarSucheRobot.clickSearchButton();
 
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
-        log.info("+++Anzahl NEGs: "+allNegList.size());
 
         // create expected result
         List<NetworkElementGroupDto> negFilteredList;
@@ -315,9 +296,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
-        waitForTableToFullyLoad(1);
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();

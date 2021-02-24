@@ -23,7 +23,20 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class A4InventarSucheRobot {
 
+
+    // helper method 'wait'
+    public void waitForTableToFullyLoad(int numberOfElements){
+        $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
+    }
+
     A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
+
+    public ElementsCollection getElementsCollection () {
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+        //  waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);  // notwendig?
+        return elementsCollection;
+    }
 
 
     @Step("Checkbox WORKING")
@@ -58,7 +71,6 @@ public class A4InventarSucheRobot {
 
     @Step("Checkbox RETIRING")
     public void checkboxRetiring() { $(a4InventarSuchePage.getRETIRING_CHECKBOX_LOCATOR()).click();}
-
 
     @Step("Open UI, log in, and goTo Inventar-Suche-page")
     public void openInventarSuchePage(){
