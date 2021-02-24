@@ -64,7 +64,7 @@ public class A4ResilienceRobot {
 
     @Step("changeRouteToWiremock")
     public void changeRouteToWiremock(String route) {
-        String url = "http://apigw-admin-gigabit-tm-berlinium-01.telitcaas3.t-internal.com/routes/";
+        String url = "http://apigw-admin-gigabit-tm-berlinium-03.priv.cl01.gigadev.telekom.de/routes/";
         String routeOfNemo = "resource-order-resource-inventory.v1.nemo.logicalResource";
 
         Client client = ClientBuilder.newClient();
@@ -110,7 +110,7 @@ public class A4ResilienceRobot {
 
     @Step("changeRouteToA4ResourceInventoryService")
     public void changeRouteToA4ResourceInventoryService(String route) throws IOException {
-        String url = "http://apigw-admin-gigabit-tm-berlinium-01.telitcaas3.t-internal.com/";
+        String url = "http://apigw-admin-gigabit-tm-berlinium-03.priv.cl01.gigadev.telekom.de/";
 
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url + "routes/");
@@ -151,7 +151,7 @@ public class A4ResilienceRobot {
 
     @Step("checkMessagesInQueue")
     public void checkMessagesInQueue(String queue, String expected) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-01.telitcaas3.t-internal.com:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 
@@ -167,7 +167,7 @@ public class A4ResilienceRobot {
 
     @Step("countMessagesInQueue")
     public String countMessagesInQueue(String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-01.telitcaas3.t-internal.com:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 
