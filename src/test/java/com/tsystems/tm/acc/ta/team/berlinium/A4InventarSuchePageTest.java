@@ -127,7 +127,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
         // get all NEGs from DB
@@ -149,7 +148,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // compare, actual and expected result
+        // compare, expected and actual result
          compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
@@ -166,7 +165,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
         // get all NEGs from DB
@@ -188,7 +186,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // compare, actual and expected result
+        // compare, expected and actual result
         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
@@ -205,7 +203,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
         // get all NEGs from DB
@@ -227,7 +224,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // compare, actual and expected result
+        // compare, expected and actual result
         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
@@ -244,7 +241,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
         // get all NEGs from DB
@@ -266,7 +262,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // compare, actual and expected result
+        // compare, expected and actual result
         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
@@ -283,7 +279,6 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         waitForTableToFullyLoad(elementsCollection.size()/numberOfColumnsNegList);
 
         // get all NEGs from DB
@@ -305,7 +300,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
-        // compare, actual and expected result
+        // compare, expected and actual result
         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
@@ -316,25 +311,28 @@ public class A4InventarSuchePageTest extends BaseTest {
     public void testNegSearchByName() throws InterruptedException {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
-        a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default NEG: NEG-367326
+        a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default: NEG-367326
         a4InventarSucheRobot.clickSearchButton();
-
-        waitForTableToFullyLoad(1);
 
         // read ui
         ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
+        waitForTableToFullyLoad(1);
 
-        // compare ui and default
-        assertEquals(elementsCollection.get(0).getText(),a4NetworkElementGroup.getUuid());
-        assertEquals(elementsCollection.get(1).getText(),a4NetworkElementGroup.getName());
-        assertEquals(elementsCollection.get(2).getText(),a4NetworkElementGroup.getOperationalState());
-        assertEquals(elementsCollection.get(3).getText(),a4NetworkElementGroup.getLifecycleState());
-        //assertEquals(elementsCollection.get(4).getText(),a4NetworkElementGroup.getCreationTime()); //  a4NetworkElementGroup.get... --> null ? Methode fehlt in A4ResourceInventoryServiceMapper
-        //assertEquals(elementsCollection.get(5).getText(),a4NetworkElementGroup.getLastUpdateTime()); //  a4NetworkElementGroup.get... --> null ? Methode fehlt in A4ResourceInventoryServiceMapper
+        // get all NEGs from DB
+        List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
 
-        //log.info("+++xxxtime "+elementsCollection.get(4).getText());     // 2021-02-23T14:11:19.316+01:00
-        //log.info("+++xxxtime "+elementsCollection.get(4).toString());    // <td>2021-02-23T14:11:19.316+01:00</td>
-        //log.info("+++xxxtime "+a4NetworkElementGroup.getCreationTime()); // null
+        // create expected result
+        List<NetworkElementGroupDto> negFilteredList;
+        negFilteredList = allNegList
+                .stream()
+                .filter(group -> group.getName().equals(a4NetworkElementGroup.getName()) )
+                .collect(Collectors.toList());
+
+        // create actual result
+        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+
+        // compare, expected and actual result
+        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 }
