@@ -78,6 +78,9 @@ public class DpuCommissioningUiRobot {
         DpuEditPage dpuEditPage = new DpuEditPage();
         dpuEditPage.validateUrl();
         dpuEditPage.SetDpuState();
+
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after com. mismatch");
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after com. mismatch");
     }
 
     @Step("Checks data in ri after commissioning process")
