@@ -34,6 +34,7 @@ public class DpuInfoPage {
 
     public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
+    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR_0 = byQaData("device_functions_option_0");
     public static final By START_EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
 
     private String businessKey; // check etcd values
@@ -88,7 +89,11 @@ public class DpuInfoPage {
     @Step("DPU editieren")
     public DpuInfoPage openDpuEditPage() {
         $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
-        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
+        if($(EDIT_DPU_DEVICE_BUTTON_LOCATOR_0).exists()) {
+            $(EDIT_DPU_DEVICE_BUTTON_LOCATOR_0).click();
+        }  else {
+            $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
+        }
         $(START_EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
         return this;
     }
