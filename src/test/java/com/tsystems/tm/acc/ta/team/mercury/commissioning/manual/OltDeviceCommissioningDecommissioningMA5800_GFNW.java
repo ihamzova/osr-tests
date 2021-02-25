@@ -54,9 +54,9 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
         oltResourceInventoryClient = new OltResourceInventoryClient();
     }
 
-    @Test(description = "DIGIHUB-xxxx")
-    @TmsLink("DIGIHUB-xxxx") // Jira Id for this test in Xray
-    @Description("Perform manual commissioning and decommissioning for not discovered MA5800 device as GFNW user")
+    @Test(description = "DIGIHUB-96865 Manual commissioning and decommissioning for not discovered MA5800 device as GFNW user")
+    @TmsLink("DIGIHUB-96865") // Jira Id for this test in Xray
+    @Description("Perform manual commissioning and decommissioning for not discovered MA5800 device as GFNW user on team environment")
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();

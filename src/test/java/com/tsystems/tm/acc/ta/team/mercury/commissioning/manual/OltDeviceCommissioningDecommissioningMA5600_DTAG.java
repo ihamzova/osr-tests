@@ -49,9 +49,9 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
         oltResourceInventoryClient = new OltResourceInventoryClient();
     }
 
-    @Test(description = "DIGIHUB-xxxx")
-    @TmsLink("DIGIHUB-xxxx") // Jira Id for this test in Xray
-    @Description("Perform manual commissioning and decommissioning for not discovered MA5600 device as DTAG user")
+    @Test(description = "DIGIHUB-96866 Manual commissioning and decommissioning for not discovered MA5800 device as DTAG user")
+    @TmsLink("DIGIHUB-96866") // Jira Id for this test in Xray
+    @Description("Perform manual commissioning and decommissioning for not discovered MA5600 device as DTAG user on team environment")
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
