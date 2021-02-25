@@ -42,6 +42,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
     private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
+    private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
     private static final Integer TIMEOUT_FOR_DEVICE_DELETION = 5_000;
     private static final Integer TIMEOUT_FOR_CARD_DELETION = 5_000;
@@ -76,6 +77,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
         oltDiscoveryPage.saveDiscoveryResults();
         oltDiscoveryPage.openOltSearchPage();
 
+        Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
