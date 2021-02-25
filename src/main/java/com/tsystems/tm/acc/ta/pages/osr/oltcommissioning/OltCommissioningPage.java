@@ -43,8 +43,11 @@ public class OltCommissioningPage {
 
     @Step("Input params and start commissioning")
     public OltCommissioningPage startOltCommissioning(OltDevice olt, Integer timeout) {
-        $(OLT_KLS_ID_INPUT_LOCATOR).click();
-        $(OLT_KLS_ID_INPUT_LOCATOR).val(olt.getVst().getAddress().getKlsId());
+        // Temporarily backwards compatible until the input fields for KlsId in the UI have been removed in all environments.
+        if($(OLT_KLS_ID_INPUT_LOCATOR).exists()) {
+            $(OLT_KLS_ID_INPUT_LOCATOR).click();
+            $(OLT_KLS_ID_INPUT_LOCATOR).val("99875");
+        }
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
         $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(olt.getOltSlot());
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
