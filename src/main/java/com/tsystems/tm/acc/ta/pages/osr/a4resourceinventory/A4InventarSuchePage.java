@@ -24,6 +24,7 @@ public class A4InventarSuchePage {
 
     public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[1]");
 
+    // ops checkboxes
     @Getter
     public static final By WORKING_CHECKBOX_LOCATOR = By.id("opsWORKING");
 
@@ -46,7 +47,7 @@ public class A4InventarSuchePage {
     public static final By DEACTIVATING_CHECKBOX_LOCATOR = By.id("opsDEACTIVATING");
 
 
-
+    // lcs checkboxes
     @Getter
     public static final By PLANNING_CHECKBOX_LOCATOR = By.id("lcsPLANNING");
 
@@ -59,8 +60,35 @@ public class A4InventarSuchePage {
     @Getter
     public static final By RETIRING_CHECKBOX_LOCATOR = By.id("lcsRETIRING");
 
+    // network element
+    @Getter
+    public static final By NE_CHOOSE_BUTTON_LOCATOR = By.id("searchNetworkElement");
 
+    @Getter
+    public static final By NE_VPSZ_FIELD_LOCATOR = By.id("vpsz");
 
+    @Getter
+    public static final By NE_AKZ_FIELD_LOCATOR = By.id("akz");
+
+    @Getter
+    public static final By NE_ONKZ_FIELD_LOCATOR = By.id("onkz");
+
+    @Getter
+    public static final By NE_VKZ_FIELD_LOCATOR = By.id("vkz");
+
+    @Getter
+    public static final By NE_FSZ_FIELD_LOCATOR = By.id("fsz");
+
+    @Getter
+    public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");
+
+    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
+
+    @Getter
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
+    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("xxxxxxxxxx");  // fehlt noch
+
+    // network element group
     @Getter
     //public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
     public static final By NEG_CHOOSE_BUTTON_LOCATOR = By.id("searchNetworkElementGroup");
@@ -70,14 +98,14 @@ public class A4InventarSuchePage {
 
     @Getter
     //alt: public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
-    //heute 15.02.21: public static final By SEARCH_BUTTON_LOCATOR= By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/div[2]/app-search-networkelementgroup/form/div/button");
-    public static final By SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");  // ab 16.02.21
-
+    public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
     //public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/app-inventory-search-result/div/table");
     public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
 
+
+    // common
     @Step("Validate page")
     public A4InventarSuchePage validate() {
         $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
