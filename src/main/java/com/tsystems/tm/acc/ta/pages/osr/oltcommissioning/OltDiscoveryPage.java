@@ -55,7 +55,13 @@ public class OltDiscoveryPage {
     public OltDiscoveryPage saveDiscoveryResults() {
         $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).last().click();
         $(DISCOVERY_RESULT_SAVE_BUTTON_LOCATOR).click();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return this;
+
     }
 
     @Step("Open olt search page")
