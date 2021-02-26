@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;

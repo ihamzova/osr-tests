@@ -29,7 +29,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
 @ServiceLog("olt-resource-inventory")
-@ServiceLog("ea-ext-route")
 @ServiceLog("olt-discovery")
 @ServiceLog("ancp-configuration")
 
@@ -103,7 +102,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
 
-        //DIGIHUB-55036 device deletion
+        //DIGIHUB-55036 device and card deletion
         oltDetailsPage.deleteGponCard();
         Thread.sleep(TIMEOUT_FOR_CARD_DELETION);
         checkCardDeleted(endSz, "1");

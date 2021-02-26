@@ -34,7 +34,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
 @ServiceLog("olt-resource-inventory")
-@ServiceLog("ea-ext-route")
 @ServiceLog("olt-discovery")
 @ServiceLog("ancp-configuration")
 public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
