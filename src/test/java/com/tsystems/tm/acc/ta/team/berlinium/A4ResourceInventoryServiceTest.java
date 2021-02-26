@@ -21,8 +21,8 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
+/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
 @Epic("OS&R domain")
 @Feature("Accessing entries in a4-resource-inventory via the a4-resource-inventory-service as logical resource objects")
 @TmsLink("DIGIHUB-57771")
