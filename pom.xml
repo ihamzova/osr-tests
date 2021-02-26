@@ -65,7 +65,9 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
+                <oc.global.proxy.domain.name>priv.cl01.gigadev.telekom.de</oc.global.proxy.domain.name>
                 <oc.domain.name>priv.cl01.gigadev.telekom.de</oc.domain.name>
+                <verbose.rest.level>FULL</verbose.rest.level>
                 <log.access.strategy>OC</log.access.strategy>
             </properties>
         </profile>
