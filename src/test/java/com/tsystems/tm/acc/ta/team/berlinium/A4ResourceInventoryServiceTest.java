@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.ta.ui.BaseTest;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -25,7 +26,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 @Epic("OS&R domain")
 @Feature("Accessing entries in a4-resource-inventory via the a4-resource-inventory-service as logical resource objects")
 @TmsLink("DIGIHUB-57771")
-public class A4ResourceInventoryServiceTest extends ApiTest {
+public class A4ResourceInventoryServiceTest extends BaseTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
