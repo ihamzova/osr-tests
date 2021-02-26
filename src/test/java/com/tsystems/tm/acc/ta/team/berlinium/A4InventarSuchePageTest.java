@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -67,7 +68,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negActualResultList = negActualResultList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-           return negActualResultList;
+        return negActualResultList;
     }
 
     // helper 'compare'
@@ -81,7 +82,7 @@ public class A4InventarSuchePageTest extends BaseTest {
             assertEquals(negFilteredList.get(i).getOperationalState(), negActualResultList.get(i).getOperationalState());
             assertEquals(negFilteredList.get(i).getCreationTime().toString(), negActualResultList.get(i).getCreationTime().toString());
             assertEquals(negFilteredList.get(i).getLastUpdateTime().toString(), negActualResultList.get(i).getLastUpdateTime().toString());
-           // log.info("+++uuid: "+negActualResultList.get(i).getUuid());
+            // log.info("+++uuid: "+negActualResultList.get(i).getUuid());
         }
     }
 
@@ -105,6 +106,65 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
     }
 
+    // tests network element
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-96766")
+    @Description("test ne inventory search page of A4 browser")
+    public void testNeSearch() throws InterruptedException {
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeile befüllt,  49/40/104
+        a4InventarSucheRobot.enterNeAkz("49");     // 49,
+        a4InventarSucheRobot.enterNeOnkz("30");    // dev-01: 40,  dev-03: 30
+        a4InventarSucheRobot.enterNeVkz("13");    // dev-01: 104,  dev-03: 13
+        //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
+
+        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
+        // a4InventarSucheRobot.enterNeCategory("SPINE_SWITCH");  // funzt so nicht
+
+        a4InventarSucheRobot.clickNeSearchButton();
+
+        Thread.sleep(3000);
+
+
+        // read ui
+
+
+        // get all NEs from DB
+        List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
+        log.info("+++ Anzahl NEs in DB : "+allNeList.size());  // bisher 2
+
+        // create expected result
+
+        // sort
+
+        // create actual result
+
+
+        // compare, expected and actual result
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // tests neg
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
@@ -114,7 +174,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
         a4InventarSucheRobot.checkboxOpInstalling();
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
@@ -138,7 +198,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -150,7 +210,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
         a4InventarSucheRobot.checkboxOperating();
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
@@ -186,7 +246,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
         a4InventarSucheRobot.checkboxLifeInstalling();
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
@@ -222,7 +282,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxNotWorking();
         a4InventarSucheRobot.checkboxPlanning();
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
@@ -258,7 +318,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxNotManageable();
         a4InventarSucheRobot.checkboxRetiring();
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
@@ -293,7 +353,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default: NEG-367326
-        a4InventarSucheRobot.clickSearchButton();
+        a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
         ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();

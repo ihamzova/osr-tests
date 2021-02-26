@@ -38,7 +38,44 @@ public class A4InventarSucheRobot {
         return elementsCollection;
     }
 
+    // network element
+    @Step("Choose search by NetworkElement")
+    public void clickNetworkElement() {
+        $(a4InventarSuchePage.getNE_CHOOSE_BUTTON_LOCATOR()).click();
+    }
 
+    @Step("Enter vpsz")
+    public void enterNeVpsz(String value) { $(a4InventarSuchePage.getNE_VPSZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter akz")
+    public void enterNeAkz(String value) { $(a4InventarSuchePage.getNE_AKZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter onkz")
+    public void enterNeOnkz(String value) { $(a4InventarSuchePage.getNE_ONKZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter vkz")
+    public void enterNeVkz(String value) { $(a4InventarSuchePage.getNE_VKZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter fsz")
+    public void enterNeFsz(String value) { $(a4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter category")
+    public void enterNeCategory(String value) { $(a4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).val(value); }
+
+
+
+    @Step("Click ne search button")
+    public void clickNeSearchButton() {
+        $(a4InventarSuchePage.getNE_SEARCH_BUTTON_LOCATOR()).click();
+    }
+
+
+
+
+
+
+
+    // checkboxes
     @Step("Checkbox WORKING")
     public void checkboxWorking() { $(a4InventarSuchePage.getWORKING_CHECKBOX_LOCATOR()).click();}
 
@@ -72,13 +109,8 @@ public class A4InventarSucheRobot {
     @Step("Checkbox RETIRING")
     public void checkboxRetiring() { $(a4InventarSuchePage.getRETIRING_CHECKBOX_LOCATOR()).click();}
 
-    @Step("Open UI, log in, and goTo Inventar-Suche-page")
-    public void openInventarSuchePage(){
-        A4InventarSuchePage
-                .login();
-    }
-
-    @Step("Choose search by NetworkElementGroupName")
+    // neg
+    @Step("Choose search by NetworkElementGroup")
     public void clickNetworkElementGroup() {
         $(a4InventarSuchePage.getNEG_CHOOSE_BUTTON_LOCATOR()).click();
     }
@@ -94,8 +126,15 @@ public class A4InventarSucheRobot {
     }
 
     @Step("Click search button")
-    public void clickSearchButton() {
-        $(a4InventarSuchePage.getSEARCH_BUTTON_LOCATOR()).click();
+    public void clickNegSearchButton() {
+        $(a4InventarSuchePage.getNEG_SEARCH_BUTTON_LOCATOR()).click();
+    }
+
+    // common
+    @Step("Open UI, log in, and goTo Inventar-Suche-page")
+    public void openInventarSuchePage(){
+        A4InventarSuchePage
+                .login();
     }
 
 }
