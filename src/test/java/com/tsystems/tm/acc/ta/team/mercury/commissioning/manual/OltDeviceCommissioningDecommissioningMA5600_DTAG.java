@@ -111,11 +111,8 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
         deleteDevicePage.DeleteOltDevice();
-        System.out.println("DeleteDeviceTest");
         Thread.sleep(TIMEOUT_FOR_DEVICE_DELETION);
         checkDeviceDeleted(endSz);
-        System.out.println("Device is deleted");
-
     }
 
     /**
@@ -196,8 +193,6 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
     private void checkCardDeleted(String endSz, String slot) {
         oltResourceInventoryClient.getClient().cardController().findCard()
                 .endSzQuery(endSz).slotNumberQuery(slot).executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
-        System.out.println("It's work!!!");
-        //deviceList.get(0).getEquipmentHolders().contains()
     }
 
     /**

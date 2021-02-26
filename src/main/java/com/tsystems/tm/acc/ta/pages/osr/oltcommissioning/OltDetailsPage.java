@@ -70,13 +70,8 @@ public class OltDetailsPage {
     public static final By DELETE_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option_3");
     public static final By START_EDIT_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
 
-
-    //public static final By BACK_TO_SEARCH_PAGE_LOCATOR = byCssSelector(".ui > span");
-    //public static final By DELETE_CARD_BUTTON_LOCATOR = byQaData("button-card-deletion-slot-%");
-
-    //public String deleteCardButtonLocator = "button-card-deletion-slot-%d";
     public static final By DELETE_CARD_BUTTON_LOCATOR = byQaData("button-card-deletion-slot-1");
-    public static final By DELETE_CARD_BUTTON_CONFIRM_LOCATOR = byXpath("//span[contains(.,'GPON Line Karte löschen')]");
+    public static final By DELETE_CARD_BUTTON_CONFIRM_LOCATOR = byQaData("card_delete_perform");
 
 
     @Step("Validate Url")

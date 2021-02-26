@@ -39,7 +39,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 @ServiceLog("ancp-configuration")
 public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
     private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
 
@@ -104,26 +103,21 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
         // check uplink port life cycle state
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-//
-//        Thread.sleep(1000); // ensure that the resource inventory database is updated
+
+        //Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
 
         //DIGIHUB-55036 device and card deletion
         oltDetailsPage.deleteGponCard();
         Thread.sleep(TIMEOUT_FOR_CARD_DELETION);
         checkCardIsNotDeleted(endSz, "1");
-        System.out.println("DeleteCardTest");
-        System.out.println("Card isn't deleted");
         oltDetailsPage.deleteDevice();
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
 
         deleteDevicePage.DeleteOltDevice();
-        System.out.println("DeleteDeviceTest");
         Thread.sleep(TIMEOUT_FOR_DEVICE_DELETION);
         checkDeviceIsNotDeleted(endSz);
-        System.out.println("Device isn't deleted");
-
     }
 
     /**
@@ -205,11 +199,8 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
      * check CARD exists in olt-resource-inventory
      */
     private void checkCardIsNotDeleted(String endSz, String slot) {
-        Card card = oltResourceInventoryClient.getClient().cardController().findCard()
+        oltResourceInventoryClient.getClient().cardController().findCard()
                 .endSzQuery(endSz).slotNumberQuery(slot).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        System.out.println("It's work!!!");
-       // card.getCardType(); + check Message
-        //Assert.assertEquals(cardList. 1L, "Card is deleted");
     }
 
     /**

@@ -18,7 +18,7 @@ public class DeleteDevicePage {
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
 
-    public static final By DELETE_DEVICE_FROM_DELETE_DEVICE_PAGE_BUTTON_LOCATOR = byCssSelector(".right > span");
+    public static final By DELETE_DEVICE_FROM_DELETE_DEVICE_PAGE_BUTTON_LOCATOR = byQaData("device_delete_perform");
 
 
     @Step("Validate Url")
@@ -31,7 +31,6 @@ public class DeleteDevicePage {
 
     public DeleteDevicePage DeleteOltDevice() {
         $(DELETE_DEVICE_FROM_DELETE_DEVICE_PAGE_BUTTON_LOCATOR).click();
-        //$(BACK_TO_SEARCH_PAGE_LOCATOR).click();
         return this;
     }
 
