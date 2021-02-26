@@ -28,11 +28,11 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_NEMO_UPDATER_MS)
 @ServiceLog(A4_INVENTORY_IMPORTER_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
+@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)*/
 public class ZtpIdentUiTest extends BaseTest {
 
     private static final int WAIT_TIME = 5_000;

@@ -27,9 +27,9 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
-@ServiceLog(A4_CARRIER_MANAGEMENT_MS)
+@ServiceLog(A4_CARRIER_MANAGEMENT_MS)*/
 public class NewTpFromNemoWithPreprovisioningTest extends ApiTest {
 
     private final long SLEEP_TIMER = 5; // in seconds

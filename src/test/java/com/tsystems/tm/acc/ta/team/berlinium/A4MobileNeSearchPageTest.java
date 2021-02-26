@@ -43,10 +43,10 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
-@ServiceLog(A4_INVENTORY_IMPORTER_MS)
+@ServiceLog(A4_INVENTORY_IMPORTER_MS)*/
 @Slf4j
 public class A4MobileNeSearchPageTest extends BaseTest {
 

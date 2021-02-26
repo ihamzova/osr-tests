@@ -29,10 +29,10 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
+/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
-@ServiceLog(A4_INVENTORY_IMPORTER_MS)
+@ServiceLog(A4_INVENTORY_IMPORTER_MS)*/
 @Slf4j
 public class A4InventarSuchePageTest extends BaseTest {
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();

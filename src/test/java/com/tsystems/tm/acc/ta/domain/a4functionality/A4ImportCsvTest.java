@@ -29,11 +29,11 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
-@ServiceLog(A4_INVENTORY_IMPORTER_MS)
+/*@ServiceLog(A4_INVENTORY_IMPORTER_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
-@ServiceLog(A4_NEMO_UPDATER_MS)
+@ServiceLog(A4_NEMO_UPDATER_MS)*/
 public class A4ImportCsvTest extends BaseTest {
 
     private final OsrTestContext context = OsrTestContext.get();

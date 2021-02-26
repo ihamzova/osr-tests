@@ -17,9 +17,9 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
-@ServiceLog(A10NSP_INVENTORY_MS)
+/*@ServiceLog(A10NSP_INVENTORY_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
+@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)*/
 @Epic("OS&R")
 @Feature("Description Check if an a10nsp exists for a given LineId")
 @TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
