@@ -9,7 +9,7 @@ import org.openqa.selenium.By;
 import java.net.URL;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.url;
@@ -85,8 +85,21 @@ public class A4InventarSuchePage {
     // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
     @Getter
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
-    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("xxxxxxxxxx");  // fehlt noch
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div[1]/div[2]/app-search-networkelement/form/div[2]/div/button");
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input"); // funzt nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("w3-col w3-container m5 l5 w3-padding"); // funzt nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("w3-row"); // ja, geht; es wird aber keine Tabelle angezeigt
+    // type="submit"
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byText("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input"); // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byText("submit"); // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byId("submit"); // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = byTitle("submit"); // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("button");  // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.linkText("button");  // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.className("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input");  // geht nicht
+    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.className("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input");  //
+
+    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");  // id="searchSubmit"
 
     // network element group
     @Getter

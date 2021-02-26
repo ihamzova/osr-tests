@@ -323,6 +323,14 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get all existing Network Elements")
+    public List<NetworkElementDto> getExistingNetworkElementAll() {
+        return a4ResourceInventory
+                .networkElements()
+                .listNetworkElements()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get existing Network Element by UUID")
     public NetworkElementDto getExistingNetworkElement(String uuid) {
         return a4ResourceInventory
@@ -770,5 +778,6 @@ public class A4ResourceInventoryRobot {
         createNetworkServiceProfileFtthAccess(nspFtthData, tpData);
         createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
+
 
 }

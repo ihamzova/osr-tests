@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkElementGroupDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -67,7 +68,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negActualResultList = negActualResultList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-           return negActualResultList;
+        return negActualResultList;
     }
 
     // helper 'compare'
@@ -81,7 +82,7 @@ public class A4InventarSuchePageTest extends BaseTest {
             assertEquals(negFilteredList.get(i).getOperationalState(), negActualResultList.get(i).getOperationalState());
             assertEquals(negFilteredList.get(i).getCreationTime().toString(), negActualResultList.get(i).getCreationTime().toString());
             assertEquals(negFilteredList.get(i).getLastUpdateTime().toString(), negActualResultList.get(i).getLastUpdateTime().toString());
-           // log.info("+++uuid: "+negActualResultList.get(i).getUuid());
+            // log.info("+++uuid: "+negActualResultList.get(i).getUuid());
         }
     }
 
@@ -113,29 +114,26 @@ public class A4InventarSuchePageTest extends BaseTest {
     public void testNeSearch() throws InterruptedException {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElement();
-       // a4InventarSucheRobot.enterNeVpsz("1");   // nicht notwendig
-        a4InventarSucheRobot.enterNeAkz("2");
-        a4InventarSucheRobot.enterNeOnkz("3");
-        a4InventarSucheRobot.enterNeVkz("4");
-        //a4InventarSucheRobot.enterNeFsz("5");   // nicht unbedingt notwendig
+        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeile befüllt,  49/40/104
+        a4InventarSucheRobot.enterNeAkz("49");     // 49,
+        a4InventarSucheRobot.enterNeOnkz("30");    // dev-01: 40,  dev-03: 30
+        a4InventarSucheRobot.enterNeVkz("13");    // dev-01: 104,  dev-03: 13
+        //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
 
         // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-       // a4InventarSucheRobot.enterNeCategory("LEAF_SWITCH");  // funzt noch nicht
+        // a4InventarSucheRobot.enterNeCategory("SPINE_SWITCH");  // funzt so nicht
 
+        a4InventarSucheRobot.clickNeSearchButton();
 
-        //a4InventarSucheRobot.clickNeSearchButton();  // funzt noch nicht
-
-        Thread.sleep(1000);
-
-
-
+        Thread.sleep(3000);
 
 
         // read ui
 
 
         // get all NEs from DB
-
+        List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
+        log.info("+++ Anzahl NEs in DB : "+allNeList.size());  // bisher 2
 
         // create expected result
 
@@ -200,7 +198,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-         compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
