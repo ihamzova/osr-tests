@@ -29,6 +29,7 @@ public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
     String queueAuthenticate = "a4_user";
+    String urlApiGw = "https://apigw-admin-berlinium-03.priv.cl01.gigadev.telekom.de/";
 
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelay() throws IOException {
@@ -64,11 +65,10 @@ public class A4ResilienceRobot {
 
     @Step("changeRouteToWiremock")
     public void changeRouteToWiremock(String route) {
-        String url = "http://apigw-admin-gigabit-tm-berlinium-03.priv.cl01.gigadev.telekom.de/routes/";
         String routeOfNemo = "resource-order-resource-inventory.v1.nemo.logicalResource";
 
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(url + "?size=200");
+        WebTarget resource = client.target(urlApiGw + "routes/?size=200");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         try {
             Response response = request.get();
@@ -99,7 +99,7 @@ public class A4ResilienceRobot {
             newRoute.setId(uuidOfRoute);
             newRoute.setName(route);
 
-            resource = client.target(url + uuidOfRoute);
+            resource = client.target(urlApiGw + "routes/" + uuidOfRoute);
             request = resource.request(MediaType.APPLICATION_JSON);
             response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
             assertEquals(response.getStatus(), HttpStatus.SC_OK);
@@ -110,12 +110,13 @@ public class A4ResilienceRobot {
 
     @Step("changeRouteToA4ResourceInventoryService")
     public void changeRouteToA4ResourceInventoryService(String route) throws IOException {
-        String url = "http://apigw-admin-gigabit-tm-berlinium-03.priv.cl01.gigadev.telekom.de/";
 
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(url + "routes/");
+        WebTarget resource = client.target(urlApiGw + "routes/");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+        log.debug("Will call " + urlApiGw);
         Response response = request.get();
+        log.debug(String.valueOf(response));
         Routes r = objectMapper.readValue(response.readEntity(String.class), Routes.class);
         List<Data> routeList = r.getData()
                 .stream()
@@ -124,7 +125,7 @@ public class A4ResilienceRobot {
         String uuidOfRoute = routeList.get(0).getId();
 
         client = ClientBuilder.newClient();
-        resource = client.target(url + "services/");
+        resource = client.target(urlApiGw + "services/");
         request = resource.request(MediaType.APPLICATION_JSON);
         response = request.get();
         Routes services = objectMapper.readValue(response.readEntity(String.class), Routes.class);
@@ -143,7 +144,7 @@ public class A4ResilienceRobot {
         newRoute.setName(route);
 
         client = ClientBuilder.newClient();
-        resource = client.target(url + "routes/" + uuidOfRoute);
+        resource = client.target(urlApiGw + "routes/" + uuidOfRoute);
         request = resource.request(MediaType.APPLICATION_JSON);
         response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
