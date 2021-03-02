@@ -23,7 +23,7 @@ public class A4ImportPage {
     public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser/inventory-import";
 
     //public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("//h2[contains(text(),'Access 4.0 Inventory Browser')]");
-    public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2");
+    public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
 
     @Getter
     public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = byXpath("//input");
