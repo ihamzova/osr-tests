@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
@@ -36,7 +37,9 @@ public class A4ResourceInventoryServiceTest extends BaseTest {
     private A4NetworkElement neData;
     private A4NetworkElementPort nepDataA;
     private A4TerminationPoint tpL2BsaData;
+    private A4TerminationPoint tpA10NspData;
     private A4NetworkServiceProfileL2Bsa nspL2Data;
+    private A4NetworkServiceProfileA10Nsp nspA10NspData;
 
     @BeforeClass
     public void init() {
@@ -48,8 +51,12 @@ public class A4ResourceInventoryServiceTest extends BaseTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
                 .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+        nspA10NspData = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
         tpL2BsaData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
+        tpA10NspData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -61,7 +68,9 @@ public class A4ResourceInventoryServiceTest extends BaseTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepDataA, neData);
         a4Inventory.createTerminationPoint(tpL2BsaData, nepDataA);
+        a4Inventory.createTerminationPoint(tpA10NspData, nepDataA);
         a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
+        a4Inventory.createNetworkServiceProfileA10Nsp(nspA10NspData, tpA10NspData);
     }
 
     @AfterMethod
@@ -78,12 +87,20 @@ public class A4ResourceInventoryServiceTest extends BaseTest {
         a4Nemo.checkLogicalResourceIsNetworkElementGroup(negData);
     }
 
-    @Test(description = "DIGIHUB-xxxx LineID should be included in logicalResource represenation of NSP L2BSA")
+    @Test(description = "DIGIHUB-xxxx LineID should be included in logicalResource representation of NSP L2BSA")
     @Owner("e.balla@t-systems.com, bela.kovac@t-systems.com")
-    @Description("NEMO sends a status patch for A4 Network Service Profile (L2BSA)")
-    public void testNemoStatusPatchForNspL2BSA_noChanges() {
+    @Description("LineID should be included in logicalResource represenation of NSP L2BSA")
+    public void testLineIdIsInNspL2BSA() {
         // THEN
         a4Nemo.checkLogicalResourceHasCharacteristic(nspL2Data.getUuid(), "lineId", nspL2Data.getLineId());
+    }
+
+    @Test(description = "DIGIHUB-xxxx CarrierBSAReference should be included in logicalResource represenation of NSP A10NSP")
+    @Owner("e.balla@t-systems.com, bela.kovac@t-systems.com")
+    @Description("CarrierBSAReference should be included in logicalResource representation of NSP A10NSP")
+    public void testCarrierBSAReferenceIsInNspA10Nsp() {
+        // THEN
+        a4Nemo.checkLogicalResourceHasCharacteristic(nspA10NspData.getUuid(), "carrierBsaReference", "CarrierBsaReference");
     }
 
 }
