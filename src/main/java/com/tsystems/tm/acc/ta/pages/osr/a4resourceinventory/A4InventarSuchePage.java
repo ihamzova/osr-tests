@@ -82,34 +82,26 @@ public class A4InventarSuchePage {
     @Getter
     public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
-    //@Getter
-    //public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");
 
-
-
-
-
+    @Getter
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");   //
 
 
     @Getter
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div[1]/div[2]/app-search-networkelement/form/div[2]/div/button");
-    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");  // id="searchSubmit"
+    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
 
     // network element group
     @Getter
-    //public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
     public static final By NEG_CHOOSE_BUTTON_LOCATOR = By.id("searchNetworkElementGroup");
 
     @Getter
     public static final By NEG_NAME_INPUT_FIELD_LOCATOR = By.id("negName");
 
     @Getter
-    //alt: public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
     public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    //public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/app-inventory-search-result/div/table");
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
+    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
 
 
     // common

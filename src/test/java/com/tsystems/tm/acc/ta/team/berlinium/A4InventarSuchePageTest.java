@@ -1,13 +1,10 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -18,7 +15,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -27,7 +23,6 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
@@ -40,10 +35,11 @@ public class A4InventarSuchePageTest extends BaseTest {
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final int numberOfColumnsNegList = 6;
+    private final int numberOfColumnsNeList = 12;
     private A4NetworkElementGroup a4NetworkElementGroup;
     private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
 
-    // helper 'createActualResult'
+    // helper 'createActualResult NEG'
     public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
         // create empty list
         List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
@@ -51,7 +47,7 @@ public class A4InventarSuchePageTest extends BaseTest {
             NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
             negActualResultList.add(negActualGeneric);
         }
-        log.info("+++negActualResultList: "+negActualResultList.size());
+       // log.info("+++negActualResultList: "+negActualResultList.size());
 
         // read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNegList; i++){
@@ -71,7 +67,63 @@ public class A4InventarSuchePageTest extends BaseTest {
         return negActualResultList;
     }
 
-    // helper 'compare'
+    // helper 'createActualResult NE'
+    public List<NetworkElementDto> createNeListActualResult ( ElementsCollection elementsCollection ){
+        // create empty list
+        List <NetworkElementDto> neActualResultList = new ArrayList<>();
+        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
+            NetworkElementDto neActualGeneric = new NetworkElementDto();
+            neActualResultList.add(neActualGeneric);
+        }
+      //  log.info("+++ neActualResultList: "+neActualResultList.size());
+
+        // read table from ui and fill list (actual result)
+        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++){
+            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList +0).getText());
+            neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList +1).getText());
+            neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList +2).getText());
+            neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList +3).getText());
+            neActualResultList.get(i).setType(elementsCollection.get(i * numberOfColumnsNeList +4).getText());
+            neActualResultList.get(i).setZtpIdent(elementsCollection.get(i * numberOfColumnsNeList +5).getText());
+            neActualResultList.get(i).setKlsId(elementsCollection.get(i * numberOfColumnsNeList +6).getText());
+            neActualResultList.get(i).setPlanningDeviceName(elementsCollection.get(i * numberOfColumnsNeList +7).getText());
+            neActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList +8).getText());
+            neActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList +9).getText());
+            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+10).getText());
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+11).getText());
+            neActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            neActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+           // log.info("+++ uuid: "+neActualResultList.get(i).getUuid());
+        }
+        // sort
+        neActualResultList = neActualResultList
+                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+                .collect(Collectors.toList());
+        return neActualResultList;
+    }
+
+    // helper 'compare ne'
+    public void compareExpectedResultWithActualResultNeList (List <NetworkElementDto>neFilteredList,
+                                                              List <NetworkElementDto>neActualResultList,
+                                                              int elementsCollectionSize ){
+        for (int i = 0; i < elementsCollectionSize / numberOfColumnsNeList; i++) {
+            assertEquals(neFilteredList.get(i).getUuid(), neActualResultList.get(i).getUuid());
+            assertEquals(neFilteredList.get(i).getVpsz(), neActualResultList.get(i).getVpsz());
+            assertEquals(neFilteredList.get(i).getFsz(), neActualResultList.get(i).getFsz());
+            assertEquals(neFilteredList.get(i).getCategory(), neActualResultList.get(i).getCategory());
+            assertEquals(neFilteredList.get(i).getType(), neActualResultList.get(i).getType());
+            //assertEquals(neFilteredList.get(i).getZtpIdent(), neActualResultList.get(i).getZtpIdent()); // null
+            assertEquals(neFilteredList.get(i).getKlsId(), neActualResultList.get(i).getKlsId());
+            assertEquals(neFilteredList.get(i).getPlanningDeviceName(), neActualResultList.get(i).getPlanningDeviceName());
+            assertEquals(neFilteredList.get(i).getLifecycleState(), neActualResultList.get(i).getLifecycleState());
+            assertEquals(neFilteredList.get(i).getOperationalState(), neActualResultList.get(i).getOperationalState());
+            assertEquals(neFilteredList.get(i).getCreationTime().toString(), neActualResultList.get(i).getCreationTime().toString());
+            assertEquals(neFilteredList.get(i).getLastUpdateTime().toString(), neActualResultList.get(i).getLastUpdateTime().toString());
+            // log.info("+++ uuid: "+neActualResultList.get(i).getUuid());
+        }
+    }
+
+    // helper 'compare neg'
     public void compareExpectedResultWithActualResultNegList (List <NetworkElementGroupDto>negFilteredList,
                                                               List <NetworkElementGroupDto>negActualResultList,
                                                               int elementsCollectionSize ){
@@ -111,58 +163,159 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-96766")
     @Description("test ne inventory search page of A4 browser")
-    public void testNeSearch() throws InterruptedException {
+    public void testNeSearchByVpszNotWorkingInstalling() throws InterruptedException {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElement();
-        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeile befüllt,  49/40/104
+        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
         a4InventarSucheRobot.enterNeAkz("49");     // 49,
         a4InventarSucheRobot.enterNeOnkz("30");    // dev-01: 40,  dev-03: 30
         a4InventarSucheRobot.enterNeVkz("13");    // dev-01: 104,  dev-03: 13
         //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
 
         // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        a4InventarSucheRobot.enterNeCategory("OLT");  // funzt mit selectOptionByValue
+        a4InventarSucheRobot.enterNeCategory("OLT");  // dropdown mit selectOptionByValue
+        a4InventarSucheRobot.checkboxNotWorking();
+        a4InventarSucheRobot.checkboxLifeInstalling();
 
         a4InventarSucheRobot.clickNeSearchButton();
 
-        Thread.sleep(3000);
-
+        //Thread.sleep(5000);
 
         // read ui
-
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
+        //log.info("+++ Anzahl NEs in UI : "+elementsCollection.size()/12);     // 12 Felder pro Eintrag
 
         // get all NEs from DB
         List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
-        log.info("+++ Anzahl NEs in DB : "+allNeList.size());  // bisher 2,   1.3.21:8
+        //log.info("+++ Anzahl NEs in DB : "+allNeList.size());  //
 
         // create expected result
+        List<NetworkElementDto> neFilteredList;
+        neFilteredList = allNeList
+                .stream()
+                .filter(group -> group.getOperationalState().equals("NOT_WORKING") && group.getLifecycleState().equals("INSTALLING"))
+                .collect(Collectors.toList());
+        //log.info("+++ Anzahl NEs in Filterliste : "+neFilteredList.size());
 
         // sort
+        neFilteredList = neFilteredList
+                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+                .collect(Collectors.toList());
+        //log.info("+++neFilteredList : "+neFilteredList.size());
 
         // create actual result
-
+        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
-
+        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
     }
 
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-96766")
+    @Description("test ne inventory search page of A4 browser")
+    public void testNeSearchFszLeafSwitch() throws InterruptedException {
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
+        a4InventarSucheRobot.enterNeAkz("49");     // 49,
+        a4InventarSucheRobot.enterNeOnkz("9715");    // dev-01: 40,  dev-03: 30
+        a4InventarSucheRobot.enterNeVkz("0");    // dev-01: 104,  dev-03: 13
+        a4InventarSucheRobot.enterNeFsz("7KE0");   // nicht unbedingt notwendig,  7KDA
 
+        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
+        a4InventarSucheRobot.enterNeCategory("LEAF_SWITCH");  // dropdown mit selectOptionByValue
 
+        a4InventarSucheRobot.clickNeSearchButton();
 
+        //Thread.sleep(5000);
 
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
+        //log.info("+++ Anzahl NEs in UI : "+elementsCollection.size()/12);     // 12 Felder pro Eintrag
 
+        // get all NEs from DB
+        List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
+        //log.info("+++ Anzahl NEs in DB : "+allNeList.size());  //
 
+        // create expected result
+        List<NetworkElementDto> neFilteredList;
+        neFilteredList = allNeList
+                .stream()
+                .filter(group -> group.getVpsz().equals("49/9715/0") && group.getCategory().equals("LEAF_SWITCH") )
+                .collect(Collectors.toList());
+        //log.info("+++ Anzahl NEs in Filterliste : "+neFilteredList.size());
 
+        // sort
+        neFilteredList = neFilteredList
+                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+                .collect(Collectors.toList());
+        //log.info("+++neFilteredList : "+neFilteredList.size());
 
+        // create actual result
+        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
 
+        // compare, expected and actual result
+        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
+    }
 
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-96766")
+    @Description("test ne inventory search page of A4 browser")
+    public void testNeSearchVpszAllCheckboxes() throws InterruptedException {
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
+        a4InventarSucheRobot.enterNeAkz("49");     // 49,
+        a4InventarSucheRobot.enterNeOnkz("9715");    // dev-01: 40,  dev-03: 30
+        a4InventarSucheRobot.enterNeVkz("0");    // dev-01: 104,  dev-03: 13
+        //a4InventarSucheRobot.enterNeFsz("7KE0");   // nicht unbedingt notwendig,  7KDA
 
+        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
+        //a4InventarSucheRobot.enterNeCategory("LEAF_SWITCH");  // dropdown mit selectOptionByValue
 
+        a4InventarSucheRobot.checkboxOpInstalling();
+        a4InventarSucheRobot.checkboxFailed();
+        a4InventarSucheRobot.checkboxWorking();
+        a4InventarSucheRobot.checkboxNotWorking();
+        a4InventarSucheRobot.checkboxPlanning();
+        a4InventarSucheRobot.checkboxLifeInstalling();
+        a4InventarSucheRobot.checkboxOperating();
+        a4InventarSucheRobot.checkboxRetiring();
 
+        a4InventarSucheRobot.clickNeSearchButton();
 
+        //Thread.sleep(5000);
 
+        // read ui
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
+        //log.info("+++ Anzahl NEs in UI : "+elementsCollection.size()/12);     // 12 Felder pro Eintrag
 
+        // get all NEs from DB
+        List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
+        //log.info("+++ Anzahl NEs in DB : "+allNeList.size());  //
 
+        // create expected result
+        List<NetworkElementDto> neFilteredList;
+        neFilteredList = allNeList
+                .stream()
+                .filter(group -> group.getVpsz().equals("49/9715/0")  )
+                .collect(Collectors.toList());
+        //log.info("+++ Anzahl NEs in Filterliste : "+neFilteredList.size());
+
+        // sort
+        neFilteredList = neFilteredList
+                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+                .collect(Collectors.toList());
+        //log.info("+++neFilteredList : "+neFilteredList.size());
+
+        // create actual result
+        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
+
+        // compare, expected and actual result
+        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
+    }
 
     // tests neg
     @Test
@@ -177,7 +330,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
@@ -192,7 +345,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negFilteredList = negFilteredList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-        log.info("+++negFilteredList : "+negFilteredList.size());
+        //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
@@ -213,7 +366,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
@@ -228,7 +381,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negFilteredList = negFilteredList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-        log.info("+++negFilteredList : "+negFilteredList.size());
+        //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
@@ -249,7 +402,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
@@ -264,7 +417,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negFilteredList = negFilteredList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-        log.info("+++negFilteredList : "+negFilteredList.size());
+        //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
@@ -285,7 +438,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
@@ -300,7 +453,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negFilteredList = negFilteredList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-        log.info("+++negFilteredList : "+negFilteredList.size());
+        //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
@@ -321,7 +474,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
@@ -336,7 +489,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         negFilteredList = negFilteredList
                 .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
                 .collect(Collectors.toList());
-        log.info("+++negFilteredList : "+negFilteredList.size());
+        //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
         List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
@@ -357,7 +510,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNegElementsCollection();
 
         // get all NEGs from DB
         List<NetworkElementGroupDto> allNegList = a4ResourceInventoryRobot.getExistingNetworkElementGroupAll();
