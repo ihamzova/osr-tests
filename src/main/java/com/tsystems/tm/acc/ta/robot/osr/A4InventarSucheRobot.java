@@ -2,20 +2,11 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -31,12 +22,19 @@ public class A4InventarSucheRobot {
 
     A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
 
-    public ElementsCollection getElementsCollection () {
-        ElementsCollection elementsCollection = $(a4InventarSuchePage.getSEARCH_RESULT_TABLE_LOCATOR())
+    public ElementsCollection getNegElementsCollection() {
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
         // waitForTableToFullyLoad(elementsCollection.size());
         return elementsCollection;
     }
+    public ElementsCollection getNeElementsCollection() {
+        ElementsCollection elementsCollection = $(a4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+        // waitForTableToFullyLoad(elementsCollection.size());
+        return elementsCollection;
+    }
+
 
     // network element
     @Step("Choose search by NetworkElement")
@@ -60,19 +58,12 @@ public class A4InventarSucheRobot {
     public void enterNeFsz(String value) { $(a4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value); }
 
     @Step("Enter category")
-    public void enterNeCategory(String value) { $(a4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).val(value); }
-
-
+    public void enterNeCategory(String value) { $(a4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value); }
 
     @Step("Click ne search button")
     public void clickNeSearchButton() {
         $(a4InventarSuchePage.getNE_SEARCH_BUTTON_LOCATOR()).click();
     }
-
-
-
-
-
 
 
     // checkboxes

@@ -80,42 +80,28 @@ public class A4InventarSuchePage {
     public static final By NE_FSZ_FIELD_LOCATOR = By.id("fsz");
 
     @Getter
-    public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");
+    public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
-    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
     @Getter
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div[1]/div[2]/app-search-networkelement/form/div[2]/div/button");
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input"); // funzt nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("w3-col w3-container m5 l5 w3-padding"); // funzt nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byClassName("w3-row"); // ja, geht; es wird aber keine Tabelle angezeigt
-    // type="submit"
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byText("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input"); // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byText("submit"); // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byId("submit"); // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = byTitle("submit"); // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("button");  // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.linkText("button");  // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.className("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input");  // geht nicht
-    //public static final By NE_SEARCH_BUTTON_LOCATOR = By.className("btn w3-button w3-white w3-border w3-round-large border-telekom berlinium-input");  //
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");   //
 
-    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");  // id="searchSubmit"
+
+    @Getter
+    public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
 
     // network element group
     @Getter
-    //public static final By NEG_CHOOSE_BUTTON_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inventory-search/form/div[1]/div[1]/p");
     public static final By NEG_CHOOSE_BUTTON_LOCATOR = By.id("searchNetworkElementGroup");
 
     @Getter
     public static final By NEG_NAME_INPUT_FIELD_LOCATOR = By.id("negName");
 
     @Getter
-    //alt: public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//*[@id=\"searchButton\"]");
     public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    //public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("/html/body/app-root/div/app-portal/div/app-inventory-search/div/app-inventory-search-result/div/table");
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
+    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
 
 
     // common
