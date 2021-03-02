@@ -1,0 +1,5 @@
+name: terminationPointA10NspPrePro
+template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
+values:
+  uuid: "" # if blank: field will be filled with returned uuid of created TP
+  subType: "A10NSP_TP"
