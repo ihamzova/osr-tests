@@ -65,10 +65,8 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <oc.global.proxy.domain.name>priv.cl01.gigadev.telekom.de</oc.global.proxy.domain.name>
-                <oc.domain.name>priv.cl01.gigadev.telekom.de</oc.domain.name>
                 <verbose.rest.level>FULL</verbose.rest.level>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
             </properties>
         </profile>
     </profiles>
