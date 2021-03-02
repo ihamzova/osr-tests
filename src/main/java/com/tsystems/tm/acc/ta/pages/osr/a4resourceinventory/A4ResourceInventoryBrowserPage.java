@@ -21,7 +21,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 public class A4ResourceInventoryBrowserPage {
 
     public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser";
-    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2");
+    public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
 
     @Getter
     public static final By InventorySearchButton_Locator = By.id("btnInventorySearch");
