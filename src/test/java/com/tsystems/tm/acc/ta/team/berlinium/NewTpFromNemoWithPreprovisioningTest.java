@@ -59,11 +59,11 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+                .get(A4TerminationPointCase.terminationPointFtthAccessPrePro);
         tpA10Data = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+                .get(A4TerminationPointCase.terminationPointA10NspPrePro);
         tpL2Data = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
+                .get(A4TerminationPointCase.terminationPointL2BsaPrePro);
         routeName = "resource-order-resource-inventory.v1.a4TerminationPoints";
 
         // Ensure that no old test data is in the way
@@ -207,7 +207,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
     public void newTpWithA10NspPreprovisioningWithExistingTerminationPointAndNsp() throws InterruptedException {
         // GIVEN /Arrange
         A4NetworkServiceProfileA10Nsp nspA10Data = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+                .get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro);
         a4ResourceInventory.createTerminationPoint(tpA10Data,nepData);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data, tpA10Data);
 
@@ -228,7 +228,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
     public void newTpWithL2BsaPreprovisioningWithExistingTerminationPointAndNsp() throws InterruptedException {
         // GIVEN /Arrange
         A4NetworkServiceProfileL2Bsa nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
-                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+                .get(A4NetworkServiceProfileL2BsaCase.networkServiceProfileL2BsaPrePro);
         a4ResourceInventory.createTerminationPoint(tpL2Data,nepData);
         a4ResourceInventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2Data);
 
