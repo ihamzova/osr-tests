@@ -60,7 +60,9 @@ public class A4InventarSucheRobot {
     public void enterNeFsz(String value) { $(a4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value); }
 
     @Step("Enter category")
-    public void enterNeCategory(String value) { $(a4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).val(value); }
+    public void enterNeCategory(String value) { $(a4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value); } // ja, super, geht
+
+
 
 
 

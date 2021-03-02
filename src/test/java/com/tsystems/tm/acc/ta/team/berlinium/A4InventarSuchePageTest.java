@@ -121,7 +121,7 @@ public class A4InventarSuchePageTest extends BaseTest {
         //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
 
         // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        // a4InventarSucheRobot.enterNeCategory("SPINE_SWITCH");  // funzt so nicht
+        a4InventarSucheRobot.enterNeCategory("OLT");  // funzt mit selectOptionByValue
 
         a4InventarSucheRobot.clickNeSearchButton();
 
@@ -133,7 +133,7 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         // get all NEs from DB
         List<NetworkElementDto> allNeList = a4ResourceInventoryRobot.getExistingNetworkElementAll();
-        log.info("+++ Anzahl NEs in DB : "+allNeList.size());  // bisher 2
+        log.info("+++ Anzahl NEs in DB : "+allNeList.size());  // bisher 2,   1.3.21:8
 
         // create expected result
 
@@ -352,7 +352,8 @@ public class A4InventarSuchePageTest extends BaseTest {
     public void testNegSearchByName() throws InterruptedException {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
-        a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default: NEG-367326
+        a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default: dev-01: NEG-367326, dev-03: NEG-130568, NEG-656487
+        //a4InventarSucheRobot.enterNegName("NEG130568");
         a4InventarSucheRobot.clickNegSearchButton();
 
         // read ui
