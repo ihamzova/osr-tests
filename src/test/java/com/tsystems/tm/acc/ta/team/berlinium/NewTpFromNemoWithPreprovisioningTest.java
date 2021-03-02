@@ -9,11 +9,11 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -27,9 +27,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
-@ServiceLog(A4_CARRIER_MANAGEMENT_MS)*/
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS,A4_CARRIER_MANAGEMENT_MS})
 public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
 
     private final long SLEEP_TIMER = 5; // in seconds
