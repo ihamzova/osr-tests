@@ -69,6 +69,16 @@
                 <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
             </properties>
         </profile>
+        <profile>
+            <id>gigabit-tm-upiter-03</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
+                <verbose.rest.level>FULL</verbose.rest.level>
+            </properties>
+        </profile>
     </profiles>
 
     <repositories>

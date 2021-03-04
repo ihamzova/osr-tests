@@ -295,6 +295,7 @@ public class AccessLineRiRobot {
     public void checkProvisioningResults(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+            timeoutBlock.setTimeoutInterval(10000);
             Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
             timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
         } catch (Throwable e) {
@@ -303,18 +304,18 @@ public class AccessLineRiRobot {
 
         List<AccessLineDto> accessLinesAfterProvisioning = getAccessLinesByPort(port);
         long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-                .filter(Objects::nonNull).filter(defaultNeProfile -> defaultNeProfile.getState().getValue()
+                .filter(Objects::nonNull).filter(defaultNeProfile -> Objects.requireNonNull(defaultNeProfile.getState()).getValue()
                         .equals(STATUS_ACTIVE))
                 .count();
 
         long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-                .filter(Objects::nonNull).filter(defaultNetworkLineProfile -> defaultNetworkLineProfile
-                        .getState().getValue()
+                .filter(Objects::nonNull).filter(defaultNetworkLineProfile -> Objects.requireNonNull(defaultNetworkLineProfile
+                        .getState()).getValue()
                         .equals(STATUS_ACTIVE))
                 .count();
 
         long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
-                .filter(accessLine -> accessLine.getStatus().getValue()
+                .filter(accessLine -> Objects.requireNonNull(accessLine.getStatus()).getValue()
                         .equals(STATUS_WALLED_GARDEN))
                 .count();
 
