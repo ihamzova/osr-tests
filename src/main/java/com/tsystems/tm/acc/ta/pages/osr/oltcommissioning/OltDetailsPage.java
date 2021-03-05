@@ -72,6 +72,8 @@ public class OltDetailsPage {
     public static final By DELETE_CARD_BUTTON_LOCATOR = byQaData("button-card-deletion-slot-1");
     public static final By DELETE_CARD_BUTTON_CONFIRM_LOCATOR = byQaData("card_delete_perform");
 
+    public static final By START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_2");
+
 
     @Step("Validate Url")
     public void validateUrl() {
@@ -214,6 +216,29 @@ public class OltDetailsPage {
     public OltDetailsPage deleteGponCard() {
         $(DELETE_CARD_BUTTON_LOCATOR).click();
         $(DELETE_CARD_BUTTON_CONFIRM_LOCATOR).click();
+        return this;
+    }
+
+    @Step("Access lines deprovisioning from Gpon LC")
+
+    public OltDetailsPage startAccessLinesDeProvisioningFromCard(Integer timeout) {
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
+            if ($(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).isDisplayed()) {
+                $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).click();
+                $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
+            }
+        }
+        return this;
+    }
+
+    @Step("Access lines deprovisioning from Device")
+
+    public OltDetailsPage startAccessLinesDeProvisioningFromDevice(Integer timeout) {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+        $(START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
+        $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+
         return this;
     }
 

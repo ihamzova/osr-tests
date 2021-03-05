@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.OltDeCommissioningRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
@@ -35,6 +36,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 public class OltCommissioning5600 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
+    private OltDeCommissioningRobot oltDeCommissioningRobot = new OltDeCommissioningRobot();
     private OltDevice oltDeviceManual;
     private OltDevice oltDeviceAutomatic;
 
