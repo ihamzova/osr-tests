@@ -22,7 +22,7 @@ import static io.restassured.config.RestAssuredConfig.config;
 @Slf4j
 public class MobileDpuBffClient implements Resetable {
 	private static final AuthTokenProvider authTokenProvider = new UserTokenProvider(
-			"autotest", "Mobile!3","mobile-dpu-user");
+			"autotest", "Mobile!4","mobile-dpu-user");
 
 
 	@Getter
