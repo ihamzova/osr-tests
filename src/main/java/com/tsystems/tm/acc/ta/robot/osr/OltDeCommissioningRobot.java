@@ -29,9 +29,8 @@ public class OltDeCommissioningRobot {
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
 
-    @Step("Start olt decommissionung process after manual commissioning")
-    public  void startOltDecommissioningAfterManualCommissioning(OltDevice olt) throws InterruptedException {
-        //String oltEndSz = olt.getVpsz() + "/" + olt.getFsz();
+    @Step("Start olt decommissioning process after manual commissioning")
+    public void startOltDecommissioningAfterManualCommissioning(OltDevice olt) throws InterruptedException {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
@@ -51,8 +50,8 @@ public class OltDeCommissioningRobot {
         Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
     }
 
-    @Step("Start olt decommissionung process after auto commissioning")
-    public  void startOltDecommissioningAfterAutoCommissioning(OltDevice olt) throws InterruptedException {
+    @Step("Start olt decommissioning process after auto commissioning")
+    public void startOltDecommissioningAfterAutoCommissioning(OltDevice olt) throws InterruptedException {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();

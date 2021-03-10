@@ -34,6 +34,9 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 @ServiceLog(OLT_DISCOVERY_MS)*/
 public class OltCommissioning5600 extends BaseTest {
+
+    private static final String START_PON_SLOT = "1"; //pon slot from SealMapper
+
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private OltDeCommissioningRobot oltDeCommissioningRobot = new OltDeCommissioningRobot();
@@ -83,21 +86,25 @@ public class OltCommissioning5600 extends BaseTest {
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
-    public void automaticallyOltCommissioning() {
+    public void automaticallyOltCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
+        oltDeCommissioningRobot.startOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
+        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-45656")
     @Description("Olt-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
-    public void manuallyOltCommissioning() {
+    public void manuallyOltCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+        oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceAutomatic);
+        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
     }
 }
