@@ -1,0 +1,30 @@
+name: EndSz_49_911_1100_76H3
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/911/1100"
+  fsz: "76H3"
+  bngEndsz: "49/911/30/7ZJA"
+  bngDownlinkPort: "ge-1/2/3"
+  bngDownlinkSlot: "0"
+  lsz: "4C1"
+  orderNumber: "1234567890"
+  vst: "@DefaultVst"
+  oltPort: "0"
+  oltSlot: "0"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40247069
+---
+name: adtranOntAccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_911_1100_76H3"
+  portNumber: "0"
+  partyId: 10001
+---
+name: adtranOntSerialNumber
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "A434123412341235"
+  klsId: "123456"
+  newSerialNumber: "B434123412341235"
