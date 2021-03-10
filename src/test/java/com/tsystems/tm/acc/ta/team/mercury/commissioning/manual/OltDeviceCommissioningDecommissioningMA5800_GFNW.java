@@ -15,13 +15,11 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.ANCPSession;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.UplinkDTO;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -42,8 +40,8 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
     private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
-    private static final Integer TIMEOUT_FOR_DEVICE_DELETION = 5_000;
-    private static final Integer TIMEOUT_FOR_CARD_DELETION = 5_000;
+    private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
+    private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -110,14 +108,14 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
 
         //DIGIHUB-55036 device and card deletion
         oltDetailsPage.deleteGponCard();
-        Thread.sleep(TIMEOUT_FOR_CARD_DELETION);
+        Thread.sleep(WAIT_TIME_FOR_CARD_DELETION);
         checkCardIsNotDeleted(endSz, "1");
         oltDetailsPage.deleteDevice();
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
 
         deleteDevicePage.DeleteOltDevice();
-        Thread.sleep(TIMEOUT_FOR_DEVICE_DELETION);
+        Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
         checkDeviceIsNotDeleted(endSz);
     }
 
