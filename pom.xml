@@ -51,12 +51,13 @@
             </properties>
         </profile>
         <profile>
-            <id>gigabit-tm-mercury-02</id>
+            <id>gigabit-tm-mercury-03</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
+                <verbose.rest.level>FULL</verbose.rest.level>
             </properties>
         </profile>
         <profile>
