@@ -48,7 +48,7 @@ public class A4CarrierManagementTest extends BaseTest {
 
     @BeforeClass
     public void init() {
-        /*
+
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -68,12 +68,12 @@ public class A4CarrierManagementTest extends BaseTest {
 
         // Ensure that no old test data is in the way
         cleanup();
-        */
+
     }
 
     @BeforeMethod
     public void setup() {
-        /*
+
         a4Inventory.createNetworkElementGroup(negData);
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
@@ -83,12 +83,12 @@ public class A4CarrierManagementTest extends BaseTest {
         //a4Inventory.createTerminationPoint(tpL2BsaData,NEG);
         a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
 
-         */
+
     }
 
     @AfterMethod
     public void cleanup() {
-        //a4Inventory.deleteA4TestData(negData, neData);
+        a4Inventory.deleteA4TestData(negData, neData);
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask")
