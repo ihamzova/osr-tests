@@ -33,7 +33,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 @ServiceLog(OLT_DISCOVERY_MS)*/
-public class OltCommissioning5600 extends BaseTest {
+public class OltCommissioningDecommissioning5600 extends BaseTest {
 
     private static final String START_PON_SLOT = "1"; //pon slot from SealMapper
 
@@ -56,7 +56,7 @@ public class OltCommissioning5600 extends BaseTest {
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioning5600"))
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioningDecommissioning5600"))
                 .addSealMock(oltDeviceManual)
                 .addSealMock(oltDeviceAutomatic)
                 .addPslMock(oltDeviceManual)
@@ -82,9 +82,9 @@ public class OltCommissioning5600 extends BaseTest {
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
-    @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
+    @Test(description = "Olt-Commissioning and De-Commissioning (device : MA5600T) automatically case")
     @TmsLink("DIGIHUB-44733")
-    @Description("Olt-Commissioning (MA5600T) automatically case")
+    @Description("Olt-Commissioning and De-Commissioning (MA5600T) automatically case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void automaticallyOltCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
@@ -95,9 +95,9 @@ public class OltCommissioning5600 extends BaseTest {
         oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
     }
 
-    @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
+    @Test(description = "Olt-Commissioning and De-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-45656")
-    @Description("Olt-Commissioning (MA5600T) manually case")
+    @Description("Olt-Commissioning and De-Commissioning (MA5600T) manually case")
     @Owner("dmitrii.krylov@t-systems.com")
     public void manuallyOltCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
