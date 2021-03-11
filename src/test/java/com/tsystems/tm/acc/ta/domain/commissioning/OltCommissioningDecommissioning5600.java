@@ -82,28 +82,46 @@ public class OltCommissioningDecommissioning5600 extends BaseTest {
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
     }
 
-    @Test(description = "Olt-Commissioning and De-Commissioning (device : MA5600T) automatically case")
+    @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
     @TmsLink("DIGIHUB-44733")
-    @Description("Olt-Commissioning and De-Commissioning (MA5600T) automatically case")
-    @Owner("dmitrii.krylov@t-systems.com")
-    public void automaticallyOltCommissioning() throws InterruptedException {
+    @Description("Olt-Commissioning (MA5600T) automatically case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void automaticallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
+    }
+
+    @Test(dependsOnMethods = "automaticallyOltCommissioning", description = "Olt De-Commissioning (device : MA5600T) automatically case")
+    @TmsLink("DIGIHUB-98821")
+    @Description("Olt-Decommissioning (MA5600T) automatically case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void automaticallyOltDeCommissioning() throws InterruptedException {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltDeCommissioningRobot.startOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
         oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
     }
 
-    @Test(description = "Olt-Commissioning and De-Commissioning (device : MA5600T) manually case")
+    @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-45656")
-    @Description("Olt-Commissioning and De-Commissioning (MA5600T) manually case")
-    @Owner("dmitrii.krylov@t-systems.com")
-    public void manuallyOltCommissioning() throws InterruptedException {
+    @Description("Olt-Commissioning (MA5600T) manually case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void manuallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+    }
+
+    @Test(dependsOnMethods = "manuallyOltCommissioning", description = "Olt-Decommissioning (device : MA5600T) manually case")
+    @TmsLink("DIGIHUB-98823")
+    @Description("Olt-Decommissioning (MA5600T) manually case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void manuallyOltDeCommissioning() throws InterruptedException {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceAutomatic);
         oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
     }
