@@ -152,6 +152,16 @@ public class A4ResilienceRobot {
 
     @Step("checkMessagesInQueue")
     public void checkMessagesInQueue(String queue, String expected) throws IOException {
+        assertEquals(countMessagesInQueue(queue), expected, "in " + queue);
+    }
+
+    @Step("checkMessagesInQueueNemoUpdater")
+    public void checkMessagesInQueueNemoUpdater(String queue, String expected) throws IOException {
+        assertEquals(countMessagesInQueueNemoUpdater(queue), expected, "in " + queue);
+    }
+
+    @Step("countMessagesInQueue")
+    public String countMessagesInQueue(String queue) throws IOException {
         String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
@@ -163,12 +173,12 @@ public class A4ResilienceRobot {
         String responseAsString = response.readEntity(String.class);
         CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
-        assertEquals(cm.getValue(), expected, "in " + queue);
+        return cm.getValue();
     }
 
-    @Step("countMessagesInQueue")
-    public String countMessagesInQueue(String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+    @Step("countMessagesInQueueNemoUpdater")
+    public String countMessagesInQueueNemoUpdater(String queue) throws IOException {
+        String url = "https://a4-nemo-updater-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 

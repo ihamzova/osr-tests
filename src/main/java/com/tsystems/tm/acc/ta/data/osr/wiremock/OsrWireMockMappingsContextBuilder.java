@@ -48,6 +48,16 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
+    public OsrWireMockMappingsContextBuilder addNemoMock500() {
+        context.add(new NemoStub().deleteNemoUpdate500());
+        return this;
+    }
+
+    public OsrWireMockMappingsContextBuilder addNemoMock400() {
+        context.add(new NemoStub().deleteNemoUpdate400());
+        return this;
+    }
+
     public OsrWireMockMappingsContextBuilder addA4ResourceInventoryMock500() {
         context.add(new A4ResourceInventoryStub().getTPWith500());
         return this;
