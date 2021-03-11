@@ -98,7 +98,7 @@ public class OltCommissioningRobot {
 
     @Step("Checks olt data in olt-ri after commissioning process")
     public void checkOltCommissioningResult(OltDevice olt) {
-        String oltEndSz = olt.getVpsz() + "/" + olt.getFsz();
+        String oltEndSz = olt.getEndsz();
         long portsCount;
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()

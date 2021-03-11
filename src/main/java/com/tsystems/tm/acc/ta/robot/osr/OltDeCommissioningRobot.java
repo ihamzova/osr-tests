@@ -74,7 +74,7 @@ public class OltDeCommissioningRobot {
 
     @Step("Checks olt data in olt-ri and al-ri after decommissioning process")
     public void checkOltDeCommissioningResult(OltDevice olt, String slot) {
-        String oltEndSz = olt.getVpsz() + "/" + olt.getFsz();
+        String oltEndSz = olt.getEndsz();
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
