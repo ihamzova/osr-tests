@@ -14,10 +14,10 @@ import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
 @Getter
-public class HomeIdGeneratorClient implements Resetable {
+public class HomeIdManagementClient implements Resetable {
     private ApiClient client;
 
-    public HomeIdGeneratorClient() {
+    public HomeIdManagementClient() {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
                 () -> new RequestSpecBuilder().setConfig(config().objectMapperConfig(objectMapperConfig().defaultObjectMapper(gson())))
                         .addFilter(new RequestLoggingFilter())
