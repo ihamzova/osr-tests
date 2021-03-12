@@ -115,13 +115,13 @@ public class A4ResourceInventoryMapper {
                 .lastUpdateTime(OffsetDateTime.now());
     }
 
-    public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+    public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, String uuid) {
         if (tpData.getUuid().isEmpty())
             tpData.setUuid(UUID.randomUUID().toString());
 
         return new TerminationPointDto()
                 .uuid(tpData.getUuid())
-                .parentUuid(nepData.getUuid())
+                .parentUuid(uuid)
                 .description("TP for integration test")
                 .lockedForNspUsage(true)
                 .state("state")

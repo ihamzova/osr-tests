@@ -79,8 +79,7 @@ public class A4CarrierManagementTest extends BaseTest {
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpPonData, nepData);
         a4Inventory.createNetworkServiceProfileFtthAccess(nspFtthAccess,tpPonData);
-        // TerminationPointL2Bsa muss zur NEG passen
-        //a4Inventory.createTerminationPoint(tpL2BsaData,NEG);
+        a4Inventory.createTerminationPoint(tpL2BsaData,negData);
         a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
 
 
