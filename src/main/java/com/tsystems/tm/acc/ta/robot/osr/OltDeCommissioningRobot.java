@@ -34,7 +34,6 @@ public class OltDeCommissioningRobot {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        oltSearchPage.searchDiscoveredOltByParameters(olt);
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.startAccessLinesDeProvisioningFromCard(TIMEOUT_FOR_CARD_DEPROVISIONING);
@@ -55,7 +54,6 @@ public class OltDeCommissioningRobot {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
-        oltSearchPage.searchDiscoveredOltByParameters(olt);
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.startAccessLinesDeProvisioningFromDevice();
