@@ -22,6 +22,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.DGFaccessLineReservation"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.A4OntCommissioning"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.FTTBCommissioning"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.AdtranOntCommissioning"/>
         </classes>
     </test>
     <test thread-count="1" name="FTTH Provisioning(for 5600 and 5800 devices) Backend Tests">

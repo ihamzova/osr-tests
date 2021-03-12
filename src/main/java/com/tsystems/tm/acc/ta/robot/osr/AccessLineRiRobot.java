@@ -37,6 +37,14 @@ public class AccessLineRiRobot {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Fill database with test data as a part of Adtran OLT Commissioning process emulation")
+    public void fillDatabaseForAdtranOltCommissioning() {
+        accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseWithAdtranOlt()
+                .HOME_ID_SEQQuery(1)
+                .LINE_ID_SEQQuery(1)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+    }
+
     @Step("Add FTTB access lines to olt device")
     public void fillDatabaseAddFttbLinesToOltDevice() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().addFttbLinesToOltDevice().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -295,7 +303,7 @@ public class AccessLineRiRobot {
     public void checkProvisioningResults(PortProvisioning port) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            timeoutBlock.setTimeoutInterval(10000);
+            timeoutBlock.setTimeoutInterval(15000);
             Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
             timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
         } catch (Throwable e) {

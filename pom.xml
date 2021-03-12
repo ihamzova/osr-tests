@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.77</osr.models.version>
+        <osr.models.version>0.0.78</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
         <oc.project.name>gigabit-tm-dynamic-digihub-89837</oc.project.name>
         <oc.pf.token>0yge4VAOLmqWAfSYiZLPECztSX5dD1a-uKsPkL2EFJs</oc.pf.token>
@@ -51,12 +51,13 @@
             </properties>
         </profile>
         <profile>
-            <id>gigabit-tm-mercury-02</id>
+            <id>gigabit-tm-mercury-03</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
+                <verbose.rest.level>FULL</verbose.rest.level>
             </properties>
         </profile>
         <profile>
