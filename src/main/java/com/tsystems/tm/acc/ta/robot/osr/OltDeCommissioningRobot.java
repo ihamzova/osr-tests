@@ -1,15 +1,16 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Device;
 import io.qameta.allure.Step;
-import org.apache.http.protocol.HTTP;
-import org.testng.Assert;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class OltDeCommissioningRobot {
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
         oltDetailsPage.startAccessLinesDeProvisioningFromDevice();
         Thread.sleep(TIMEOUT_FOR_CARD_DEPROVISIONING);
+        WebDriverRunner.getWebDriver().navigate().refresh();//workaround for Stilllegung process
         oltDetailsPage.deconfigureAncpSession();
         oltDetailsPage.deleteUplinkConfiguration();
         assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());

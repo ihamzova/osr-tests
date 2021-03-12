@@ -214,6 +214,7 @@ public class OltDetailsPage {
     @Step("Delete card")
 
     public OltDetailsPage deleteGponCard() {
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(DELETE_CARD_BUTTON_LOCATOR).click();
         $(DELETE_CARD_BUTTON_CONFIRM_LOCATOR).click();
         return this;
