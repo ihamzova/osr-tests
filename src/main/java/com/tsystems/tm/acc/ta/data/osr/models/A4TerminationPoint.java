@@ -7,5 +7,7 @@ public class A4TerminationPoint {
 
     private String uuid;
     private String subType;
+    private String carrierBsaReference;
+    private String state;
 
 }
