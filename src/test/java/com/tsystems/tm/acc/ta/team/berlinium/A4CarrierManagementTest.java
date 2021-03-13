@@ -20,10 +20,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 
 @Slf4j
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_CARRIER_MANAGEMENT_MS})
@@ -50,15 +48,15 @@ public class A4CarrierManagementTest extends BaseTest {
     public void init() {
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
-                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+                .get(A4NetworkServiceProfileL2BsaCase.NetworkServiceProfileL2BsaAllocate);
         nspFtthAccess = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+                .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessL2Bsa);
         tpL2BsaData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
         tpPonData = osrTestContext.getData().getA4TerminationPointDataProvider()
@@ -105,10 +103,10 @@ public class A4CarrierManagementTest extends BaseTest {
     @Owner("heiko.schwanke@t-systems.com")
     @Description("determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTP() {
-        log.info("+++ Test startet ");
+
        // a4CarrierManagement.sendGetForNegCarrierConnection(negData.getUuid()); // init: c0b5da61-5359-4134-9d22-dc731d8520c3
         a4CarrierManagement.sendGetForNegCarrierConnection("c0b5da61-5359-4134-9d22-dc731d8520c3"); // in AWS: 712d393e-da93-49f2-a0cd-0d80195763b0
-        log.info("+++ Test endet ");
+
     }
 
 }
