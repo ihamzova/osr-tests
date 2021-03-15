@@ -20,10 +20,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 
 @Slf4j
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_CARRIER_MANAGEMENT_MS})
@@ -50,15 +48,15 @@ public class A4CarrierManagementTest extends BaseTest {
     public void init() {
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nspL2Data = osrTestContext.getData().getA4NetworkServiceProfileL2BsaDataProvider()
-                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+                .get(A4NetworkServiceProfileL2BsaCase.NetworkServiceProfileL2BsaAllocate);
         nspFtthAccess = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+                .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessL2Bsa);
         tpL2BsaData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
         tpPonData = osrTestContext.getData().getA4TerminationPointDataProvider()
@@ -79,6 +77,8 @@ public class A4CarrierManagementTest extends BaseTest {
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpPonData, nepData);
         a4Inventory.createNetworkServiceProfileFtthAccess(nspFtthAccess,tpPonData);
+        a4Inventory.createTerminationPoint(tpL2BsaData,negData);
+        a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
         log.info("+++ create NEG, NE, Port, TP PON, NSP FTTH in DB ok! ");
 
         // durch Anita auskommentiert:
