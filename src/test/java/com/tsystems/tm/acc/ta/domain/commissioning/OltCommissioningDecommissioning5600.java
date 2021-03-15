@@ -122,7 +122,7 @@ public class OltCommissioningDecommissioning5600 extends BaseTest {
     public void manuallyOltDeCommissioning() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
-        oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceAutomatic);
-        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
+        oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceManual);
+        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceManual, START_PON_SLOT);
     }
 }
