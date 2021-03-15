@@ -103,15 +103,15 @@ public class OltDeCommissioningRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
                 .stream().collect(Collectors.toList());
 
-        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventoryClient.getClient().physicalResourceReferenceInternalController().searchPhysicalResourceReference()
-                .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .stream().collect(Collectors.toList());
+//        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventoryClient.getClient().physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+//                .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
+//                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+//                .stream().collect(Collectors.toList());
 
         assertEquals(ftthAccessLines.size(), 0, "There are AccessLines left");
         assertEquals(homeIds.size(), 0, "There are HomeIds left");
         assertEquals(lineIds.size(), 0, "There are LineIds left");
         assertEquals(backhaulIds.size(), 0, "There are BackhaulIds left");
-        assertEquals(physicalResourceRefs.size(), 0, "There are PhysicalResourceRefs left");
+//        assertEquals(physicalResourceRefs.size(), 0, "There are PhysicalResourceRefs left");
     }
 }
