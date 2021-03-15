@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.WgA4ProvisioningClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.internal.v1_5_0.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -16,7 +16,7 @@ public class WgA4PreProvisioningRobot {
     @Step("Start preprovisioning process")
     public void startPreProvisioning(TpRefDto tpRefDto) {
         wgA4ProvisioningClient
-                .preProvisioningProcessController()
+                .preProvisioningProcessExternal()
                 .startAccessLinePreProvisioning()
                 .body(tpRefDto)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
