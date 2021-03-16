@@ -13,6 +13,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryBrowserTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4InventarSuchePageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NewTpFromNemoWithPreprovisioningTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4UiDetailsNetworkElementTest"/>
         </classes>
     </test>
 </suite>
