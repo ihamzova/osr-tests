@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.NetworkElementGroup;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
@@ -521,6 +522,7 @@ public class A4ResourceInventoryRobot {
     @Step("Delete A4 test data")
     public void deleteA4TestData(A4NetworkElementGroup negData, A4NetworkElement neData) {
         deleteA4NetworkElementsIncludingChildren(neData);
+        deleteTerminationPointsConnectedByNeg(negData);
         deleteNetworkElementGroups(negData.getName());
     }
 
@@ -570,20 +572,31 @@ public class A4ResourceInventoryRobot {
 
             nepList.forEach(nep -> {
                 deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-                List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
-
-                tpList.forEach(tp -> {
-                    deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
-                    deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
-                    deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
-                    deleteTerminationPoint(tp.getUuid());
-                });
-
+                deleteTerminationPointsConnectedByNep(nep.getUuid());
                 deleteNetworkElementPort(nep.getUuid());
             });
 
             deleteNetworkElement(ne.getUuid());
         });
+    }
+
+    public void deleteTerminationPointsAndNspChildren(List<TerminationPointDto> tpList) {
+        tpList.forEach(tp -> {
+            deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
+            deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
+            deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
+            deleteTerminationPoint(tp.getUuid());
+        });
+    }
+
+    public void deleteTerminationPointsConnectedByNep(String nepUuid) {
+        List<TerminationPointDto> tpList = getTerminationPointsByNePort(nepUuid);
+        deleteTerminationPointsAndNspChildren(tpList);
+    }
+
+    public void deleteTerminationPointsConnectedByNeg(A4NetworkElementGroup negData) {
+        List<TerminationPointDto> tpList = getTerminationPointsByNePort(negData.getUuid());
+        deleteTerminationPointsAndNspChildren(tpList);
     }
 
     // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
