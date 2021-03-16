@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -48,11 +49,29 @@ public class A4InventarSucheRobot {
     @Step("Enter akz")
     public void enterNeAkz(String value) { $(a4InventarSuchePage.getNE_AKZ_FIELD_LOCATOR()).val(value); }
 
+    @Step("Enter akz")
+    public void enterNeAkzByVpsz(String vpsz) {
+        final String akz = MiscUtils.stringSplit(vpsz, "/").get(0);
+        $(a4InventarSuchePage.getNE_AKZ_FIELD_LOCATOR()).val(akz);
+    }
+
     @Step("Enter onkz")
     public void enterNeOnkz(String value) { $(a4InventarSuchePage.getNE_ONKZ_FIELD_LOCATOR()).val(value); }
 
+    @Step("Enter onkz")
+    public void enterNeOnkzByVpsz(String vpsz) {
+        final String onkz = MiscUtils.stringSplit(vpsz, "/").get(1);
+        $(a4InventarSuchePage.getNE_ONKZ_FIELD_LOCATOR()).val(onkz);
+    }
+
     @Step("Enter vkz")
     public void enterNeVkz(String value) { $(a4InventarSuchePage.getNE_VKZ_FIELD_LOCATOR()).val(value); }
+
+    @Step("Enter vkz")
+    public void enterNeVkzByVpsz(String vpsz) {
+        final String vkz = MiscUtils.stringSplit(vpsz, "/").get(2);
+        $(a4InventarSuchePage.getNE_VKZ_FIELD_LOCATOR()).val(vkz);
+    }
 
     @Step("Enter fsz")
     public void enterNeFsz(String value) { $(a4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value); }

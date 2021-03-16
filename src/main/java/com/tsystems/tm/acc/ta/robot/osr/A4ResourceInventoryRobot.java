@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.invok
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
-import org.testng.internal.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,15 +188,6 @@ public class A4ResourceInventoryRobot {
         );
     }
 
-    @Step("Get Network Service Profiles (FTTH Access) by UUID")
-    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessByUuid(String uuid) {
-        return a4ResourceInventory
-                .networkServiceProfilesFtthAccess()
-                .findNetworkServiceProfileFtthAccess()
-                .uuidPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Get Network Service Profiles (A10NSP) by UUID")
     public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspByUuid(String uuid) {
         return a4ResourceInventory
@@ -234,21 +224,21 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get a list of Network Service Profiles by LineId")
-    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByLineId(String lineId) {
-        return a4ResourceInventory
-                .networkServiceProfilesFtthAccess()
-                .findNetworkServiceProfilesFtthAccess()
-                .lineIdQuery(lineId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Get a list of Network Element Links by Network Element Port UUID")
     public List<NetworkElementLinkDto> getNetworkElementLinksByNePort(String uuidNep) {
         return a4ResourceInventory
                 .networkElementLinks()
                 .listNetworkElementLinks()
                 .networkElementPortUuidQuery(uuidNep)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get a list of Network Elements by NEG uuid")
+    public List<NetworkElementDto> getNetworkElementsByNegUuid(String negUuid) {
+        return a4ResourceInventory
+                .networkElements()
+                .listNetworkElements()
+                .networkElementGroupUuidQuery(negUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -412,7 +402,6 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check that lifecycle state and operational state have been updated for network element")
     public void checkNetworkElementByCsvData(A4ImportCsvData a4ImportCsvData) {
-
         AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
 
         AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
@@ -435,7 +424,6 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check that Ports are created after CSV Import")
     public void checkNetworkElementPortsByImportCsvData(A4ImportCsvData a4ImportCsvData) {
-
         AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
         AtomicReference<List<NetworkElementPortDto>> networkElementPortDtoUnderTest = new AtomicReference<>(new ArrayList<>());
 
@@ -491,6 +479,7 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkServiceProfileL2BsaDto.getOperationalState(), expectedNewOperationalState);
     }
 
+    @Step("Check for Network Service Profile (L2BSA) that no properties have changed values")
     public void checkThatNoFieldsAreChanged(A4NetworkServiceProfileL2Bsa nspL2Data, NetworkServiceProfileL2BsaDto nspOld) {
         NetworkServiceProfileL2BsaDto nspNew = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
 
@@ -508,29 +497,6 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementLinkDto.getOperationalState(), expectedNewOperationalState);
     }
 
-    @Step("Delete all Network Element Groups with a given name")
-    /*
-    Unfortunately this cannot be combined with deleteA4NetworkElementsIncludingChildren method, because not possible to
-    get all NEs connected to a NEG. This means that there's still some danger that some old test data collides with the
-    newly-to-be-created test data. To be solved with DIGIHUB-68288
-     */
-    public void deleteNetworkElementGroups(A4NetworkElementGroup negData) {
-        deleteNetworkElementGroups(negData.getName());
-    }
-
-    @Step("Delete A4 test data")
-    public void deleteA4TestData(A4NetworkElementGroup negData, A4NetworkElement neData) {
-        deleteA4NetworkElementsIncludingChildren(neData);
-        deleteNetworkElementGroups(negData.getName());
-    }
-
-    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-    @Step("Delete A4 test data without L2BSA")
-    public void deleteA4TestDataExceptL2BSA(A4NetworkElementGroup negData, A4NetworkElement neData) {
-        deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(neData);
-        deleteNetworkElementGroups(negData.getName());
-    }
-
     @Step("Get a list of Network Element Groups by name")
     // As name is unique constraint, the list will have either 0 or 1 entries
     public List<NetworkElementGroupDto> getNetworkElementGroupsByName(String name) {
@@ -541,126 +507,67 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Delete all Network Element Groups with a given name")
-    public void deleteNetworkElementGroups(String negName) {
+    @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
+    public void deleteA4TestDataRecursively(String negName) {
         List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
 
-        negList.forEach(neg ->
-                deleteNetworkElementGroup(neg.getUuid())
+        negList.forEach(
+                neg -> {
+
+                    List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
+
+                    neList.forEach(ne -> {
+                        List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+
+                        nepList.forEach(nep -> {
+                            deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
+                            deleteTerminationPointsAndNspsConnectedToNep(nep.getUuid());
+                            deleteNetworkElementPort(nep.getUuid());
+                        });
+
+                        deleteNetworkElement(ne.getUuid());
+                    });
+
+                    deleteTerminationPointsAndNspsConnectedToNeg(neg.getUuid());
+                    deleteNetworkElementGroup(neg.getUuid());
+                }
         );
     }
 
-    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
-    public void deleteA4NetworkElementsIncludingChildren(A4NetworkElement neData) {
-        deleteA4NetworkElementsIncludingChildren(neData.getVpsz(), neData.getFsz());
+    @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
+    public void deleteA4TestDataRecursively(A4NetworkElementGroup negData) {
+        deleteA4TestDataRecursively(negData.getName());
     }
 
-    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs, except for L2BSA")
-    public void deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(A4NetworkElement neData) {
-        deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(neData.getVpsz(), neData.getFsz());
-    }
-
-    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
-    public void deleteA4NetworkElementsIncludingChildren(String vpsz, String fsz) {
-        List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
-
-        neList.forEach(ne -> {
-            List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
-
-            nepList.forEach(nep -> {
-                deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-                List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
-
-                tpList.forEach(tp -> {
-                    deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
-                    deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
-                    deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
-                    deleteTerminationPoint(tp.getUuid());
-                });
-
-                deleteNetworkElementPort(nep.getUuid());
-            });
-
-            deleteNetworkElement(ne.getUuid());
+    @Step("Delete all Termination Points, including all connected NSPs (FtthAccess, A10Nsp, L2Bsa)")
+    public void deleteTerminationPointsAndNspChildren(List<TerminationPointDto> tpList) {
+        tpList.forEach(tp -> {
+            deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
+            deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
+            deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
+            deleteTerminationPoint(tp.getUuid());
         });
     }
 
-    // TODO: Remove this robot when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-    @Step("Delete all Network Elements with given VPSZ/FSZ, including any connected NEPs, TPs, NELs and NSPs")
-    public void deleteA4NetworkElementsIncludingChildrenExceptL2Bsa(String vpsz, String fsz) {
-        List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
-
-        neList.forEach(ne -> {
-            List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
-
-            nepList.forEach(nep -> {
-                deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-                List<TerminationPointDto> tpList = getTerminationPointsByNePort(nep.getUuid());
-
-                tpList.forEach(tp -> {
-//                    deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
-                    deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
-//                    deleteNetworkServiceProfilesA10NspConnectedToTerminationPoint(tp.getUuid());
-                    deleteTerminationPoint(tp.getUuid());
-                });
-
-                deleteNetworkElementPort(nep.getUuid());
-            });
-
-            deleteNetworkElement(ne.getUuid());
-        });
+    @Step("Delete all Termination Points connected to NEP")
+    public void deleteTerminationPointsAndNspsConnectedToNep(String nepUuid) {
+        List<TerminationPointDto> tpList = getTerminationPointsByNePort(nepUuid);
+        deleteTerminationPointsAndNspChildren(tpList);
     }
 
-    @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs, TPs, NELs and NSPs")
-    public void deleteA4EntriesIncludingChildren(A4ImportCsvData csvData) {
-        List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
-        List<Pair<String, String>> vpszAndFszList = getDistinctListOfVpszAndFszFromCsvData(csvData);
-
-        /*
-        Delete all NEs (and any connected children) first. Don't include deletion of NEGs in this loop to make sure no
-        NE is connected to the NEGs anymore.
-        Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
-         */
-        vpszAndFszList.forEach(vpszAndFsz ->
-                deleteA4NetworkElementsIncludingChildren(vpszAndFsz.first(), vpszAndFsz.second())
-        );
-
-        // Now delete all NEGs in extra loop
-        negNameList.forEach(
-                this::deleteNetworkElementGroups
-        );
+    @Step("Delete all Termination Points connected to NEG")
+    public void deleteTerminationPointsAndNspsConnectedToNeg(String negUuid) {
+        List<TerminationPointDto> tpList = getTerminationPointsByNePort(negUuid);
+        deleteTerminationPointsAndNspChildren(tpList);
     }
 
-    @Step("Delete all Network Elements and Network Element Groups listed in the CSV, including any connected NEPs")
+    @Step("Delete all Network Elements and Network Element Groups listed in the CSV")
     // Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
     public void deleteA4EntriesIncludingNeps(A4ImportCsvData csvData) {
         List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
-        List<Pair<String, String>> vpszAndFszList = getDistinctListOfVpszAndFszFromCsvData(csvData);
 
-        /*
-        Delete all NEs (and any connected NEPs) first. Don't include deletion of NEGs in this loop to make sure no
-        NE is connected to the NEGs anymore.
-        Note that the double-loop is not necessary anymore when DIGIHUB-68288 is implemented
-         */
-        vpszAndFszList.forEach(vpszAndFsz -> {
-            List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpszAndFsz.first(), vpszAndFsz.second());
-
-            neList.forEach(ne -> {
-                List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
-
-                nepList.forEach(nep ->
-                        deleteNetworkElementPort(nep.getUuid())
-                );
-
-                deleteNetworkElement(ne.getUuid());
-            });
-
-        });
-
-        // Now delete all NEGs in extra loop
         negNameList.forEach(
-                this::deleteNetworkElementGroups
+                this::deleteA4TestDataRecursively
         );
     }
 
@@ -669,17 +576,6 @@ public class A4ResourceInventoryRobot {
         return csvData.getCsvLines()
                 .stream()
                 .map(A4ImportCsvLine::getNegName)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    // NEs (by VPSZ & FSZ) can appear in CSV multiple times. We only need to run through cleanup once per NE
-    private List<Pair<String, String>> getDistinctListOfVpszAndFszFromCsvData(A4ImportCsvData csvData) {
-        return csvData.getCsvLines()
-                .stream()
-                .map(
-                        ne -> Pair.create(ne.getNeVpsz(), ne.getNeFsz())
-                )
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -709,7 +605,6 @@ public class A4ResourceInventoryRobot {
                 .uuidPath(tpData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
-
 
     @Step("Create new NetworkElementLink in A4 resource inventory")
     public void createNetworkElementLink(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
@@ -752,7 +647,6 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Create new NetworkServiceProfileL2Bsa in A4 resource inventory")
-    //
     public void createNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
         // Creation of DTO-Object with NSP and TP Data with reference
         NetworkServiceProfileL2BsaDto nspDto = new A4ResourceInventoryMapper()
@@ -792,6 +686,5 @@ public class A4ResourceInventoryRobot {
         createNetworkServiceProfileFtthAccess(nspFtthData, tpData);
         createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
-
 
 }

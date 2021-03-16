@@ -92,7 +92,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4ResourceInventory.deleteA4TestData(negData, neData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
         a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
     }

@@ -11,7 +11,6 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileL2BsaDto;
@@ -29,9 +28,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
@@ -98,7 +94,7 @@ public class NemoStatusUpdateTest {
 
     @AfterMethod
     public void cleanup() {
-        a4ResourceInventoryRobot.deleteA4TestData(negData, neData);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(negData);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Group")

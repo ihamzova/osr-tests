@@ -11,7 +11,6 @@ import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
@@ -37,7 +36,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 import static org.testng.Assert.assertEquals;
@@ -54,13 +52,12 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    A4MobileNeSearchPage a4MobileNeSearchPage = new A4MobileNeSearchPage();
 
     private A4NetworkElementGroup a4NetworkElementGroup;
     private A4NetworkElementPort a4NetworkElementPortA;
     private A4NetworkElementPort a4NetworkElementPortB;
 
-    private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
+    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
     private static final int WAIT_TIME = 5_000;
 
@@ -88,7 +85,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
-        ElementsCollection elementsCollection = $(a4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+        ElementsCollection elementsCollection = $(A4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
 
         List<String> concat = new ArrayList<>();
@@ -174,10 +171,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4NetworkElements.forEach((k,v)->
-                a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
-
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
     }
 
     @Test

@@ -36,7 +36,7 @@ public class A4ResourceInventoryBrowserTest extends BaseTest {
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test RI Browser")
-    public void testRiBrowserInventoryImportButton() throws InterruptedException {
+    public void testRiBrowserInventoryImportButton() {
         a4ResourceInventoryBrowserRobot.openRiBrowserPage();
         a4ResourceInventoryBrowserRobot.clickInventoryImportButton();
         a4ImportPage.validate();
@@ -46,7 +46,7 @@ public class A4ResourceInventoryBrowserTest extends BaseTest {
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test RI Browser")
-    public void testRiBrowserInventorySearchButton() throws InterruptedException {
+    public void testRiBrowserInventorySearchButton() {
         a4ResourceInventoryBrowserRobot.openRiBrowserPage();
         a4ResourceInventoryBrowserRobot.clickInventorySearchButton();
         a4InventarSuchePage.validate();
@@ -56,7 +56,7 @@ public class A4ResourceInventoryBrowserTest extends BaseTest {
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test RI Browser")
-    public void testRiBrowserMobilUiButton() throws InterruptedException {
+    public void testRiBrowserMobilUiButton() {
         a4ResourceInventoryBrowserRobot.openRiBrowserPage();
         a4ResourceInventoryBrowserRobot.clickMobilUiButton();
         a4MobileNeSearchPage.validate();

@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -23,8 +22,6 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-
 
 /*@ServiceLog(WG_A4_PROVISIONING_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
@@ -35,9 +32,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog(A4_NEMO_UPDATER_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)*/
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
-
-    private static final int WAIT_TIME = 15_000;
-    private long SLEEP_TIMER = 15; // in seconds
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
@@ -78,11 +72,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     @AfterMethod
     public void cleanup() {
         a4PreProvisioning.clearData();
-
-        // TODO: Replace the following line with the commented one below when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-        a4Inventory.deleteA4TestDataExceptL2BSA(negData, neData);
-
-//        a4Inventory.deleteA4TestData(negData, neData);
+        a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
@@ -92,6 +82,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpFtthData, nepData);
+        long SLEEP_TIMER = 15;
         TimeUnit.SECONDS.sleep(SLEEP_TIMER);
 
         // THEN / Assert

@@ -9,7 +9,6 @@ import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -24,7 +23,6 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
@@ -34,8 +32,6 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @ServiceLog(A4_INVENTORY_IMPORTER_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)*/
 public class ZtpIdentUiTest extends BaseTest {
-
-    private static final int WAIT_TIME = 5_000;
 
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryImporterUiRobot a4ResourceInventoryImporterUiRobot = new A4ResourceInventoryImporterUiRobot();
@@ -104,13 +100,11 @@ public class ZtpIdentUiTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(a4NetworkElementB);
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
     }
 
     @Test(description = "DIGIHUB-xxxxx Installation user enters ZTP Ident for Network Element in UI")
-    void ztpTest() throws InterruptedException {
+    void ztpTest() {
         // GIVEN / Arrange
         String ztpIdent = "ZTP Ident UI Test " + UUID.randomUUID().toString().substring(1, 4);
 

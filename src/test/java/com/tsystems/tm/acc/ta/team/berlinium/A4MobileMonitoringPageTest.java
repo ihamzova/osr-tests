@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -26,8 +25,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.*;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
@@ -41,9 +38,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
     private A4NetworkElementGroup a4NetworkElementGroup;
 
-    private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
-
-    final int WAITING_INTERVAL = 0;
+    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
     final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
     final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";
@@ -91,10 +86,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
     @AfterMethod
     public void cleanUp() {
-        a4NetworkElements.forEach((k, v) ->
-                a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(v));
-
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
     }
 
     @Test
@@ -138,8 +130,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
         });
 
-        toBeRemoved.forEach(A4ElementString -> a4NeFilteredMap.remove(A4ElementString));
-
+        toBeRemoved.forEach(a4NeFilteredMap::remove);
 
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
