@@ -38,9 +38,7 @@ public class A4MobileMonitoringPageTest extends BaseTest {
 
     private A4NetworkElementGroup a4NetworkElementGroup;
 
-    private Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
-
-    final int WAITING_INTERVAL = 0;
+    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
     final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
     final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";

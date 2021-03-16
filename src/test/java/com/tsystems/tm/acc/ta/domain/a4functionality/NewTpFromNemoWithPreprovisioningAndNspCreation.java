@@ -33,9 +33,6 @@ import java.util.concurrent.TimeUnit;
 @ServiceLog(ACCESS_LINE_MANAGEMENT)*/
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
 
-    private static final int WAIT_TIME = 15_000;
-    private long SLEEP_TIMER = 15; // in seconds
-
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
@@ -85,6 +82,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     public void newTpWithFtthAccessPreprovisioning() throws InterruptedException {
         // WHEN / Action
         a4Nemo.createTerminationPoint(tpFtthData, nepData);
+        long SLEEP_TIMER = 15;
         TimeUnit.SECONDS.sleep(SLEEP_TIMER);
 
         // THEN / Assert

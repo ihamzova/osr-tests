@@ -3,7 +3,8 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -19,10 +20,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
-import static com.codeborne.selenide.Selenide.$;
+
 import static org.testng.Assert.assertEquals;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
@@ -37,7 +41,6 @@ public class A4InventarSuchePageTest extends BaseTest {
     private final int numberOfColumnsNegList = 6;
     private final int numberOfColumnsNeList = 12;
     private A4NetworkElementGroup a4NetworkElementGroup;
-    private Map<String, A4NetworkElementGroup> a4NetworkElementGroups = new HashMap<>();
 
     // helper 'createActualResult NEG'
     public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
