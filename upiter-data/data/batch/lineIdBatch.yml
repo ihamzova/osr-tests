@@ -1,7 +1,11 @@
 name: lineIdBatch
 template: com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch
 values:
-  endSz: "49/911/1100/76H1"
-  topasEndSz: "49/8571/0/76Z7"
+  partyID: "10001"
+  topasPartyID: "10000"
   numberLineIds: 32
   topasNumberLineIds: 10
+  negativPartyId: "10007"
+  negativNumberLineIds: -1
+  invalidNumberLineIds: 35
+
