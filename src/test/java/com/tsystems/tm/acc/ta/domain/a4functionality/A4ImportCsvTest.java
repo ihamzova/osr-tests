@@ -70,7 +70,7 @@ public class A4ImportCsvTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4ResourceInventoryRobot.deleteA4EntriesIncludingNeps(csvData);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(csvData);
     }
 
     @Test(description = "DIGIHUB-xxxxx Import Network Element (Group) CSV file into A4 Resource Inventory")

@@ -54,13 +54,13 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
+                .get(A4NetworkElementCase.networkElementInstallingOlt01);
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
@@ -104,7 +104,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         // Click first row in search result table
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
 
-        // Wait 10 seconds
+        // Wait 10 seconds (UI slow currently)
         try {
             final long SLEEP_TIMER = 10;
             TimeUnit.SECONDS.sleep(SLEEP_TIMER);
@@ -114,8 +114,6 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
         // THEN
 
-        // TODO expect to be in correct NE detail page
-
         // Expect table data to be correct
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
@@ -124,23 +122,23 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
     private List<NetworkElementDetails> generateExpectedData() {
         NetworkElementDetails neDetailsLine1 = new NetworkElementDetails();
-        neDetailsLine1.setNeUuid(neDataA.getUuid());
+//        neDetailsLine1.setNeUuid(neDataA.getUuid());
         neDetailsLine1.setLogicalLabel(nepDataA.getFunctionalPortLabel());
-        neDetailsLine1.setPhysicalLabel(""); // TODO
-        neDetailsLine1.setNelUuid(nelData.getUuid());
+        neDetailsLine1.setPhysicalLabel("10ge 0/1");
+//        neDetailsLine1.setNelUuid(nelData.getUuid());
         neDetailsLine1.setLsz("123");
         neDetailsLine1.setUewegeId(nelData.getUeWegId());
         neDetailsLine1.setLbz(nelData.getLbz());
-        neDetailsLine1.setGegenstelleUuid(neDataB.getUuid());
+//        neDetailsLine1.setGegenstelleUuid(neDataB.getUuid());
         neDetailsLine1.setGegenstelleCategory(neDataB.getCategory());
         neDetailsLine1.setGegenstelleVpsz(neDataB.getVpsz());
 
 //        NetworkElementDetails neDetailsLine2 = new NetworkElementDetails();
 //        neDetailsLine2.setNeUuid(neDataB.getUuid());
 //        neDetailsLine2.setLogicalLabel(nepDataB.getFunctionalPortLabel());
-//        neDetailsLine2.setPhysicalLabel(""); // TODO
+//        neDetailsLine2.setPhysicalLabel("0/0/49");
 //        neDetailsLine2.setNelUuid(nelData.getUuid());
-//        neDetailsLine2.setLsz(""); // TODO
+//        neDetailsLine2.setLsz("123");
 //        neDetailsLine2.setUewegeId(nelData.getUeWegId());
 //        neDetailsLine2.setLbz(nelData.getLbz());
 //        neDetailsLine2.setGegenstelleUuid(neDataA.getUuid());
@@ -163,21 +161,19 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
             NetworkElementDetails neActualGeneric = new NetworkElementDetails();
             neDetailtList.add(neActualGeneric);
         }
-        //  log.info("+++ neActualResultList: "+neActualResultList.size());
 
         // Read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeDetailList; i++) {
-            neDetailtList.get(i).setNeUuid(elementsCollection.get(i * numberOfColumnsNeDetailList).getText());
+//            neDetailtList.get(i).setNeUuid(elementsCollection.get(i * numberOfColumnsNeDetailList).getText());
             neDetailtList.get(i).setLogicalLabel(elementsCollection.get(i * numberOfColumnsNeDetailList + 1).getText());
             neDetailtList.get(i).setPhysicalLabel(elementsCollection.get(i * numberOfColumnsNeDetailList + 2).getText());
-            neDetailtList.get(i).setNelUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 3).getText());
+//            neDetailtList.get(i).setNelUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 3).getText());
             neDetailtList.get(i).setLsz(elementsCollection.get(i * numberOfColumnsNeDetailList + 4).getText());
             neDetailtList.get(i).setUewegeId(elementsCollection.get(i * numberOfColumnsNeDetailList + 5).getText());
             neDetailtList.get(i).setLbz(elementsCollection.get(i * numberOfColumnsNeDetailList + 6).getText());
-            neDetailtList.get(i).setGegenstelleUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 7).getText());
+//            neDetailtList.get(i).setGegenstelleUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 7).getText());
             neDetailtList.get(i).setGegenstelleCategory(elementsCollection.get(i * numberOfColumnsNeDetailList + 8).getText());
             neDetailtList.get(i).setGegenstelleVpsz(elementsCollection.get(i * numberOfColumnsNeDetailList + 9).getText());
-            // log.info("+++ uuid: "+neActualResultList.get(i).getUuid());
         }
 
         // Sort

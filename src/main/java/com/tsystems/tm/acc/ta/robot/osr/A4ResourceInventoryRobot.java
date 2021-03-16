@@ -511,27 +511,24 @@ public class A4ResourceInventoryRobot {
     public void deleteA4TestDataRecursively(String negName) {
         List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
 
-        negList.forEach(
-                neg -> {
+        negList.forEach(neg -> {
+            List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
 
-                    List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
+            neList.forEach(ne -> {
+                List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
 
-                    neList.forEach(ne -> {
-                        List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+                nepList.forEach(nep -> {
+                    deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
+                    deleteTerminationPointsAndNspsConnectedToNepOrNeg(nep.getUuid());
+                    deleteNetworkElementPort(nep.getUuid());
+                });
 
-                        nepList.forEach(nep -> {
-                            deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-                            deleteTerminationPointsAndNspsConnectedToNep(nep.getUuid());
-                            deleteNetworkElementPort(nep.getUuid());
-                        });
+                deleteNetworkElement(ne.getUuid());
+            });
 
-                        deleteNetworkElement(ne.getUuid());
-                    });
-
-                    deleteTerminationPointsAndNspsConnectedToNeg(neg.getUuid());
-                    deleteNetworkElementGroup(neg.getUuid());
-                }
-        );
+            deleteTerminationPointsAndNspsConnectedToNepOrNeg(neg.getUuid());
+            deleteNetworkElementGroup(neg.getUuid());
+        });
     }
 
     @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
@@ -550,20 +547,13 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Delete all Termination Points connected to NEP")
-    public void deleteTerminationPointsAndNspsConnectedToNep(String nepUuid) {
-        List<TerminationPointDto> tpList = getTerminationPointsByNePort(nepUuid);
-        deleteTerminationPointsAndNspChildren(tpList);
-    }
-
-    @Step("Delete all Termination Points connected to NEG")
-    public void deleteTerminationPointsAndNspsConnectedToNeg(String negUuid) {
-        List<TerminationPointDto> tpList = getTerminationPointsByNePort(negUuid);
+    public void deleteTerminationPointsAndNspsConnectedToNepOrNeg(String uuid) {
+        List<TerminationPointDto> tpList = getTerminationPointsByNePort(uuid);
         deleteTerminationPointsAndNspChildren(tpList);
     }
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV")
-    // Note that this step does not delete any connected NELs, TPs or NSPs, as after CSV import no such entities exist
-    public void deleteA4EntriesIncludingNeps(A4ImportCsvData csvData) {
+    public void deleteA4TestDataRecursively(A4ImportCsvData csvData) {
         List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
 
         negNameList.forEach(
@@ -671,20 +661,6 @@ public class A4ResourceInventoryRobot {
                 .body(nspL2Bsa)
                 .uuidPath(nspL2Bsa.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("Create test data for all A4 element types")
-    public void createTestDataForAllA4ElementTypes(A4NetworkElementGroup negData, A4NetworkElement neData,
-                                                   A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB,
-                                                   A4TerminationPoint tpData, A4NetworkServiceProfileFtthAccess nspFtthData,
-                                                   A4NetworkElementLink nelData) {
-        createNetworkElementGroup(negData);
-        createNetworkElement(neData, negData);
-        createNetworkElementPort(nepDataA, neData);
-        createNetworkElementPort(nepDataB, neData);
-        createTerminationPoint(tpData, nepDataA);
-        createNetworkServiceProfileFtthAccess(nspFtthData, tpData);
-        createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
 
 }
