@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
@@ -36,6 +37,7 @@ public class A4SupportPageTest extends BaseTest {
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final A4SupportPageRobot a4SupportPageRobot = new A4SupportPageRobot();
+    private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
     List<String> uuids = new ArrayList();
 
     @BeforeMethod()
@@ -68,7 +70,9 @@ public class A4SupportPageTest extends BaseTest {
     @Owner("Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - Unblock Queue")
-    public void testUnblockQueue() throws IOException {
+    public void testUnblockQueue() throws IOException, InterruptedException {
+        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
+
         // wiremock with 500 error
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
                 .addNemoMock500()
@@ -86,9 +90,15 @@ public class A4SupportPageTest extends BaseTest {
         // click unblock
         a4SupportPageRobot.openSupportPage();
         a4SupportPageRobot.clickCleanNemoQueueButton();
+        a4SupportPageRobot.clickCleanNemoQueueButtonConfirm();
+
+        TimeUnit.SECONDS.sleep(3);
+
+        a4SupportPageRobot.checkCleanNemoQueueMsg();
 
         // check DLQ if +1
-        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", (count + 1));
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
+        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", (Integer.parseInt(count) + 1));
 
 
         //AFTER
@@ -125,8 +135,10 @@ public class A4SupportPageTest extends BaseTest {
         a4SupportPageRobot.openSupportPage();
         a4SupportPageRobot.clickMoveFromDlqButton();
 
+        a4SupportPageRobot.checkMoveMessagesMsg();
+
         // check DLQ if empty
-        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", "0");
+        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", 0);
 
         //AFTER
         wiremock.close();

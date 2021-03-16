@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -32,9 +33,9 @@ public class A4ResilienceRobot {
     String urlApiGw = "https://apigw-admin-berlinium-03.priv.cl01.gigadev.telekom.de/";
 
     @Step("Get RedeliveryDelay time")
-    public long getRedeliveryDelay() throws IOException {
+    public long getRedeliveryDelayNemoUpdater() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri();
+        URI uri = new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri();
         String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
 
         Client client = ClientBuilder.newClient();
@@ -156,8 +157,8 @@ public class A4ResilienceRobot {
     }
 
     @Step("checkMessagesInQueueNemoUpdater")
-    public void checkMessagesInQueueNemoUpdater(String queue, String expected) throws IOException {
-        assertEquals(countMessagesInQueueNemoUpdater(queue), expected, "in " + queue);
+    public void checkMessagesInQueueNemoUpdater(String queue, int expected) throws IOException {
+        assertEquals(Integer.parseInt(countMessagesInQueueNemoUpdater(queue)), expected, "in " + queue);
     }
 
     @Step("countMessagesInQueue")
