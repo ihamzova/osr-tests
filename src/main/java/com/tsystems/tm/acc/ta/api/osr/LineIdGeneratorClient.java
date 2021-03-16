@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
 import com.tsystems.tm.acc.ta.api.Resetable;
-import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.line.id.generator.internal.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
