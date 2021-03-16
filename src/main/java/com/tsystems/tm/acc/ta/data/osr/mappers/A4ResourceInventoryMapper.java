@@ -13,8 +13,6 @@ import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot
 
 public class A4ResourceInventoryMapper {
 
-    private final String UNDEFINED = "undefined";
-
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
             neData.setUuid(UUID.randomUUID().toString());
@@ -163,6 +161,7 @@ public class A4ResourceInventoryMapper {
             nspData.setUuid(UUID.randomUUID().toString());
 
         VlanRangeDto vrDto = new VlanRangeDto();
+        String UNDEFINED = "undefined";
         vrDto.setVlanRangeLower(UNDEFINED);
         vrDto.setVlanRangeUpper(UNDEFINED);
 

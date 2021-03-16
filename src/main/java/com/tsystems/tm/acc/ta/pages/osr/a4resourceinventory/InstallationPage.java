@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
-import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;

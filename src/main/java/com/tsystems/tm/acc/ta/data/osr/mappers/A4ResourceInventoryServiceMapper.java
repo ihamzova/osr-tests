@@ -10,10 +10,6 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class A4ResourceInventoryServiceMapper {
-    // Create logicalResource representation of network element group with operational state as defined in data package
-    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData) {
-        return generateNegLogicalResourceUpdate(negData, negData.getOperationalState());
-    }
 
     // Create logicalResource representation of network element group with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {

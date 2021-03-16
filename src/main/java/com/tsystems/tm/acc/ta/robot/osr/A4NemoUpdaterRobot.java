@@ -10,20 +10,17 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
-import org.testng.internal.thread.ThreadExecutionException;
-import org.testng.internal.thread.ThreadTimeoutException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
 
 @Slf4j
 public class A4NemoUpdaterRobot {
