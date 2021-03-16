@@ -4,8 +4,7 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 
 public class NemoStub extends AbstractStubMapping {
 
@@ -22,6 +21,20 @@ public class NemoStub extends AbstractStubMapping {
         return delete(urlPathMatching(NEMO_URL + "/.*"))
                 .withName("deleteNemoUpdate204")
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_NO_CONTENT_204))
+                .atPriority(1);
+    }
+
+    public MappingBuilder deleteNemoUpdate500() {
+        return delete(urlPathMatching(NEMO_URL + "/.*"))
+                .withName("deleteNemoUpdate500")
+                .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_INTERNAL_SERVER_ERROR_500))
+                .atPriority(1);
+    }
+
+    public MappingBuilder deleteNemoUpdate400() {
+        return delete(urlPathMatching(NEMO_URL + "/.*"))
+                .withName("deleteNemoUpdate400")
+                .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_BAD_REQUEST_400))
                 .atPriority(1);
     }
 
