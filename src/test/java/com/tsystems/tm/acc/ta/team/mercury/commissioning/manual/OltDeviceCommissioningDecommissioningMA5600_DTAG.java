@@ -38,8 +38,8 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
     private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
-    private static final Integer TIMEOUT_FOR_DEVICE_DELETION = 5_000;
-    private static final Integer TIMEOUT_FOR_CARD_DELETION = 5_000;
+    private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
+    private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
     private OltResourceInventoryClient oltResourceInventoryClient;
 
@@ -104,13 +104,13 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
 
         //DIGIHUB-55036 device and card deletion
         oltDetailsPage.deleteGponCard();
-        Thread.sleep(TIMEOUT_FOR_CARD_DELETION);
+        Thread.sleep(WAIT_TIME_FOR_CARD_DELETION);
         checkCardDeleted(endSz, "1");
         oltDetailsPage.deleteDevice();
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
         deleteDevicePage.DeleteOltDevice();
-        Thread.sleep(TIMEOUT_FOR_DEVICE_DELETION);
+        Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
         checkDeviceDeleted(endSz);
     }
 
