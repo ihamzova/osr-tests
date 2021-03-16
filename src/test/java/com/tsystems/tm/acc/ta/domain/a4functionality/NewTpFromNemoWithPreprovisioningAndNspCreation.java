@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -22,8 +21,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 
 /*@ServiceLog(WG_A4_PROVISIONING_MS)
@@ -78,11 +75,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
     @AfterMethod
     public void cleanup() {
         a4PreProvisioning.clearData();
-
-        // TODO: Replace the following line with the commented one below when A4 L2BSA support is live on osr-autotest-01 (planned for 10.3)
-        a4Inventory.deleteA4TestDataExceptL2BSA(negData, neData);
-
-//        a4Inventory.deleteA4TestData(negData, neData);
+        a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")

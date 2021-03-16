@@ -9,15 +9,12 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.ta.apitest.ApiTest;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
@@ -79,9 +76,7 @@ public class A4ResourceInventoryServiceV4Test extends ApiTest {
 
     @AfterClass
     public void tearDown() {
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neDataA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementsIncludingChildren(neDataB);
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(negData);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(negData);
     }
 
     @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api")

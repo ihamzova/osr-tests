@@ -51,7 +51,7 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         // read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNegList; i++){
-            negActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNegList +0).getText());
+            negActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNegList).getText());
             negActualResultList.get(i).setName(elementsCollection.get(i * numberOfColumnsNegList +1).getText());
             negActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNegList +2).getText());
             negActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNegList +3).getText());
@@ -79,7 +79,7 @@ public class A4InventarSuchePageTest extends BaseTest {
 
         // read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++){
-            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList +0).getText());
+            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList).getText());
             neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList +1).getText());
             neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList +2).getText());
             neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList +3).getText());
@@ -155,7 +155,7 @@ public class A4InventarSuchePageTest extends BaseTest {
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventoryRobot.deleteNetworkElementGroups(a4NetworkElementGroup);
+        a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
     }
 
     // tests network element
@@ -163,7 +163,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-96766")
     @Description("test ne inventory search page of A4 browser")
-    public void testNeSearchByVpszNotWorkingInstalling() throws InterruptedException {
+    public void testNeSearchByVpszNotWorkingInstalling() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElement();
         // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
@@ -214,7 +214,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-96766")
     @Description("test ne inventory search page of A4 browser")
-    public void testNeSearchFszLeafSwitch() throws InterruptedException {
+    public void testNeSearchFszLeafSwitch() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElement();
         // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
@@ -263,7 +263,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-96766")
     @Description("test ne inventory search page of A4 browser")
-    public void testNeSearchVpszAllCheckboxes() throws InterruptedException {
+    public void testNeSearchVpszAllCheckboxes() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElement();
         // a4InventarSucheRobot.enterNeVpsz("49/40/104"); // nicht notwendig, wird aus den nächsten Zeilen befüllt,  49/40/104
@@ -322,7 +322,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchWorkingOpsInstalling() throws InterruptedException {
+    public void testNegSearchWorkingOpsInstalling() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
@@ -358,7 +358,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchWorkingOperating() throws InterruptedException {
+    public void testNegSearchWorkingOperating() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
@@ -394,7 +394,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchWorkingLcsInstalling() throws InterruptedException {
+    public void testNegSearchWorkingLcsInstalling() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxWorking();
@@ -430,7 +430,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchNotWorkingPlanning() throws InterruptedException {
+    public void testNegSearchNotWorkingPlanning() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxNotWorking();
@@ -466,7 +466,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchNotManageableRetiring() throws InterruptedException {
+    public void testNegSearchNotManageableRetiring() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.checkboxNotManageable();
@@ -502,7 +502,7 @@ public class A4InventarSuchePageTest extends BaseTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-94403")
     @Description("test neg inventory search page of Access 4.0 browser")
-    public void testNegSearchByName() throws InterruptedException {
+    public void testNegSearchByName() {
         a4InventarSucheRobot.openInventarSuchePage();
         a4InventarSucheRobot.clickNetworkElementGroup();
         a4InventarSucheRobot.enterNegName(a4NetworkElementGroup.getName());  // default: dev-01: NEG-367326, dev-03: NEG-130568, NEG-656487

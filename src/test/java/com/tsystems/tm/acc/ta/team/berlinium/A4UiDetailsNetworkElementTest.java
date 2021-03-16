@@ -80,9 +80,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventory.deleteA4NetworkElementsIncludingChildren(neDataB);
-        a4ResourceInventory.deleteA4NetworkElementsIncludingChildren(neDataA);
-        a4ResourceInventory.deleteNetworkElementGroups(negData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
     @Test

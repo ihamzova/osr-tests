@@ -62,8 +62,6 @@ public class A4CarrierManagementTest extends BaseTest {
         tpPonData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
 
-
-
         // Ensure that no old test data is in the way
         cleanup();
 
@@ -85,7 +83,7 @@ public class A4CarrierManagementTest extends BaseTest {
 
     @AfterMethod
     public void cleanup() {
-        a4Inventory.deleteA4TestData(negData, neData);
+        a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask")
