@@ -109,6 +109,8 @@ public class A4CarrierManagementTest extends BaseTest {
     @Description("determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTP() {
 
+        a4CarrierManagement.sendGetNegCarrierConnection(negData.getUuid());
+
         // in DB per sql: 711d393e-a007-49f2-a0cd-0d80195763b0
        // a4CarrierManagement.sendGetNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b0");
 

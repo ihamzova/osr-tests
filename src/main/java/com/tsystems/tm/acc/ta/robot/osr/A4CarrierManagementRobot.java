@@ -40,10 +40,7 @@ public class A4CarrierManagementRobot {
     @Step("send GET for determination of free L2BSA TP on NEG")
     public void sendGetNegCarrierConnection (String uuid) {
 
-        // unbekannte uuid
-        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
-                .negUuidQuery("711d393e-a007-49f2-a0cd-0d80195763b1")
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+       // System.out.println("+++ Robot meldet sich mit uuid: " + uuid);
 
         // 711d393e-a007-49f2-a0cd-0d80195763b0 wird übergeben, oder default-neg
         a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
