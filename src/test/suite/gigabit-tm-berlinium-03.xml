@@ -15,6 +15,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NewTpFromNemoWithPreprovisioningTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4UiDetailsNetworkElementTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4SupportPageTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4CarrierManagementTest"/>
         </classes>
     </test>
 </suite>

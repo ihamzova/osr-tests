@@ -5,16 +5,10 @@ import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.ApiCli
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.model.AllocateL2BsaNspTask;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import org.testng.Assert;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 
 @Slf4j
 public class A4CarrierManagementRobot {
@@ -35,6 +29,38 @@ public class A4CarrierManagementRobot {
                 .allocateL2BsaNspTask()
                 .body(allocateL2BsaNspTask)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    }
+    @Step("send POST for allocateL2BsaNspTask and not found free L2Bsa-NSP")
+    public void sendPostForAllocateL2BsaNspNotFound
+            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown) {
+        AllocateL2BsaNspTask allocateL2BsaNspTask = new AllocateL2BsaNspTask();
+        allocateL2BsaNspTask.setLineId(lineId);
+        allocateL2BsaNspTask.setCarrierBsaReference(carrierBsaReference);
+        allocateL2BsaNspTask.setDataRateDown(dataRateDown);
+        allocateL2BsaNspTask.setDataRateUp(dataRateUp);
+
+        a4CarrierManagement
+                .allocateL2BsaNspTask()
+                .allocateL2BsaNspTask()
+                .body(allocateL2BsaNspTask)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+
+    }
+    @Step("send POST for allocateL2BsaNspTask and not found free L2Bsa-NSP")
+    public void sendPostForAllocateL2BsaNspBadRequest
+            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown) {
+        AllocateL2BsaNspTask allocateL2BsaNspTask = new AllocateL2BsaNspTask();
+        allocateL2BsaNspTask.setLineId(lineId);
+        allocateL2BsaNspTask.setCarrierBsaReference(carrierBsaReference);
+        allocateL2BsaNspTask.setDataRateDown(dataRateDown);
+        allocateL2BsaNspTask.setDataRateUp(dataRateUp);
+
+        a4CarrierManagement
+                .allocateL2BsaNspTask()
+                .allocateL2BsaNspTask()
+                .body(allocateL2BsaNspTask)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
 
     }
     @Step("send GET for determination of free L2BSA TP on NEG")
