@@ -109,9 +109,19 @@ public class A4CarrierManagementTest extends BaseTest {
     @Description("determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTP() {
 
-       // a4CarrierManagement.sendGetForNegCarrierConnection(negData.getUuid()); // init: c0b5da61-5359-4134-9d22-dc731d8520c3
-        a4CarrierManagement.sendGetForNegCarrierConnection("c0b5da61-5359-4134-9d22-dc731d8520c3"); // in AWS: 712d393e-da93-49f2-a0cd-0d80195763b0
+        a4CarrierManagement.sendGetNegCarrierConnection(negData.getUuid());
+
+        // in DB per sql: 711d393e-a007-49f2-a0cd-0d80195763b0
+       // a4CarrierManagement.sendGetNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b0");
 
     }
+    @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("determination of free L2BSA TP on NEG")
+    public void testUnknownNegFreeL2BsaTP() throws InterruptedException {
 
+        // unbekannte uuid
+        a4CarrierManagement.sendGetNoNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b1");
+
+    }
 }
