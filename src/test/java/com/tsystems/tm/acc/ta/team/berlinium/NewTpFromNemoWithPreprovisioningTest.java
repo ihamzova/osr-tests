@@ -92,7 +92,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4ResourceInventory.deleteA4TestData(negData, neData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
         a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
     }
@@ -103,7 +103,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends BaseTest {
     @Description("NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
     public void newTpWithFailedAndRetriedFtthAccessPreprovisioning() throws InterruptedException, IOException {
         // GIVEN / Arrange
-        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelay();
+        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayCarrierManagement();
 
         // WHEN / Action
         a4ResourceInventoryService.createTerminationPoint(tpFtthData, nepData);

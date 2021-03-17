@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.OltDeCommissioningRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
@@ -24,17 +25,21 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
-/*@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)
 @ServiceLog(EA_EXT_ROUTE_MS)
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
-@ServiceLog(OLT_DISCOVERY_MS)*/
-public class OltCommissioning5600 extends BaseTest {
+@ServiceLog(OLT_DISCOVERY_MS)
+public class OltCommissioningDecommissioning5600 extends BaseTest {
+
+    private static final String START_PON_SLOT = "1"; //pon slot from SealMapper
+
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
+    private OltDeCommissioningRobot oltDeCommissioningRobot = new OltDeCommissioningRobot();
     private OltDevice oltDeviceManual;
     private OltDevice oltDeviceAutomatic;
 
@@ -51,7 +56,7 @@ public class OltCommissioning5600 extends BaseTest {
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioning5600"))
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltCommissioningDecommissioning5600"))
                 .addSealMock(oltDeviceManual)
                 .addSealMock(oltDeviceAutomatic)
                 .addPslMock(oltDeviceManual)
@@ -80,7 +85,7 @@ public class OltCommissioning5600 extends BaseTest {
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
     @TmsLink("DIGIHUB-44733")
     @Description("Olt-Commissioning (MA5600T) automatically case")
-    @Owner("dmitrii.krylov@t-systems.com")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void automaticallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
@@ -88,14 +93,36 @@ public class OltCommissioning5600 extends BaseTest {
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
     }
 
+    @Test(dependsOnMethods = "automaticallyOltCommissioning", description = "Olt De-Commissioning (device : MA5600T) automatically case")
+    @TmsLink("DIGIHUB-98821")
+    @Description("Olt-Decommissioning (MA5600T) automatically case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void automaticallyOltDeCommissioning() throws InterruptedException {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        oltDeCommissioningRobot.startOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
+        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
+    }
+
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
     @TmsLink("DIGIHUB-45656")
     @Description("Olt-Commissioning (MA5600T) manually case")
-    @Owner("dmitrii.krylov@t-systems.com")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void manuallyOltCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+    }
+
+    @Test(dependsOnMethods = "manuallyOltCommissioning", description = "Olt-Decommissioning (device : MA5600T) manually case")
+    @TmsLink("DIGIHUB-98823")
+    @Description("Olt-Decommissioning (MA5600T) manually case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void manuallyOltDeCommissioning() throws InterruptedException {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceManual);
+        oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceManual, START_PON_SLOT);
     }
 }

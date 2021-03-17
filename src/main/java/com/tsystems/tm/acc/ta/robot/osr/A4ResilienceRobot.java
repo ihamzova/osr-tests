@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -32,9 +33,9 @@ public class A4ResilienceRobot {
     String urlApiGw = "https://apigw-admin-berlinium-03.priv.cl01.gigadev.telekom.de/";
 
     @Step("Get RedeliveryDelay time")
-    public long getRedeliveryDelay() throws IOException {
+    public long getRedeliveryDelayNemoUpdater() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri();
+        URI uri = new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri();
         String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
 
         Client client = ClientBuilder.newClient();
@@ -152,6 +153,16 @@ public class A4ResilienceRobot {
 
     @Step("checkMessagesInQueue")
     public void checkMessagesInQueue(String queue, String expected) throws IOException {
+        assertEquals(countMessagesInQueue(queue), expected, "in " + queue);
+    }
+
+    @Step("checkMessagesInQueueNemoUpdater")
+    public void checkMessagesInQueueNemoUpdater(String queue, int expected) throws IOException {
+        assertEquals(Integer.parseInt(countMessagesInQueueNemoUpdater(queue)), expected, "in " + queue);
+    }
+
+    @Step("countMessagesInQueue")
+    public String countMessagesInQueue(String queue) throws IOException {
         String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
@@ -163,12 +174,12 @@ public class A4ResilienceRobot {
         String responseAsString = response.readEntity(String.class);
         CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
-        assertEquals(cm.getValue(), expected, "in " + queue);
+        return cm.getValue();
     }
 
-    @Step("countMessagesInQueue")
-    public String countMessagesInQueue(String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+    @Step("countMessagesInQueueNemoUpdater")
+    public String countMessagesInQueueNemoUpdater(String queue) throws IOException {
+        String url = "https://a4-nemo-updater-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 

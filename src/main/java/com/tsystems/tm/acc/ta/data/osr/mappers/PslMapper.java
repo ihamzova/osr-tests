@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 public class PslMapper {
 
-    private static final String DEFAULT_SHELF = "0";
     private static final int START_PON_SLOT = 1;
     private static final int START_ETHERNET_SLOT = 19;
     private static final AtomicInteger equipmentCount = new AtomicInteger(0);

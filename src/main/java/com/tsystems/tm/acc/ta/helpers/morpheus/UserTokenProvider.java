@@ -38,7 +38,7 @@ public class UserTokenProvider implements AuthTokenProvider {
 
 	public Token getToken() {
 		log.info("Getting User token for " + this.username);
-		URL url = new OCUrlBuilder("rhsso").withoutSuffix().withEndpoint(ENDPOINT).build();
+		URL url = new OCUrlBuilder("rhsso-public").withoutSuffix().withEndpoint(ENDPOINT).build();
 		HttpClient httpclient = HttpClients.createDefault();
 		HttpPost post = new HttpPost(url.toString());
 		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
