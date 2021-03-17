@@ -239,6 +239,7 @@ public class OltDetailsPage {
         $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
         $(START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
         $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).isDisplayed();
         return this;
     }
 
