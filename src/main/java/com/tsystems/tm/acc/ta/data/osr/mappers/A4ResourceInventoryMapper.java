@@ -123,6 +123,7 @@ public class A4ResourceInventoryMapper {
                 .description("TP for integration test")
                 .lockedForNspUsage(true)
                 .state("state")
+                .carrierBsaReference(tpData.getCarrierBsaReference())
                 .supportedDiagnosesName("supportedDiagnoseName")
                 .supportedDiagnosesSpecificationVersion("supportedDiagnoseVerison")
                 .type(tpData.getSubType())

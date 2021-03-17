@@ -94,14 +94,31 @@ public class A4CarrierManagementTest extends BaseTest {
     @Description("allocate one free L2BSA NSP for a dedicated AccessLine so that L2BSA products can be produced")
     public void testAllocateL2BsaNsp() {
         // THEN / Assert
-        // noch ausarbeiten
-        System.out.println("LineId:" + nspL2BsaData.getLineId());
-        System.out.println("dataRateUp: " + nspL2BsaData.getDataRateUp());
-        System.out.println("lifecycle: " + nspL2BsaData.getLifecycleState());
-        nspL2BsaData.setDataRateDown("undefined");
-        nspL2BsaData.setDataRateUp("undefined");
+
         a4CarrierManagement.sendPostForAllocateL2BsaNsp
                 ("Autotest-LineId","Autotest-Carrier", 100, 1000);
+    }
+
+    @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
+    @Owner("anita.junge@t-systems.com")
+    //@TmsLink("DIGIHUB-XXXXX")
+    @Description("dont found one free L2BSA NSP for a dedicated AccessLine")
+    public void testAllocateL2BsaNspWrongLineId() {
+        // THEN / Assert
+
+        a4CarrierManagement.sendPostForAllocateL2BsaNspBadRequest
+                ("Wrong-LineId","Autotest-Carrier", 100, 1000);
+    }
+
+    @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
+    @Owner("anita.junge@t-systems.com")
+    //@TmsLink("DIGIHUB-XXXXX")
+    @Description("dont found one free L2BSA NSP for a dedicated AccessLine")
+    public void testAllocateL2BsaNspWrongCarrierBsaReference() {
+        // THEN / Assert
+
+        a4CarrierManagement.sendPostForAllocateL2BsaNspNotFound
+                ("Autotest-LineId","Wrong-Carrier", 100, 1000);
     }
 
     @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
