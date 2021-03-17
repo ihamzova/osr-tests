@@ -66,34 +66,37 @@ public class A4CarrierManagementTest extends BaseTest {
 
         // Ensure that no old test data is in the way
         cleanup();
-        log.info("+++ cleanup beendet! ");
+        //log.info("+++ cleanup beendet! ");
     }
 
     @BeforeMethod
     public void setup() {
-        log.info("+++ create NEG, NE, Port, TP PON, NSP FTTH in DB startet! ");
-        a4Inventory.createNetworkElementGroup(negData);
+
+
+        a4Inventory.createNetworkElementGroup(negData); // neg
+
+       // Block kann bei Heikos Test auskommentiert werden:
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpPonData, nepData);
         a4Inventory.createNetworkServiceProfileFtthAccess(nspFtthAccess,tpPonData);
-        a4Inventory.createTerminationPoint(tpL2BsaData,negData);
+
+        // create L2BSA_TP with reference to neg
+        a4Inventory.createTerminationPoint(tpL2BsaData,negData); // create TP/NEG von Anita neu gebaut in a4-ri-robot
+        // create L2BSA_nsp with reference to L2BSA_TP
         a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
-        log.info("+++ create NEG, NE, Port, TP PON, NSP FTTH in DB ok! ");
-
-        // durch Anita auskommentiert:
-        // TerminationPointL2Bsa muss zur NEG passen
-        //a4Inventory.createTerminationPoint(tpL2BsaData,NEG);
-
-        // durch Heiko auskommentiert:
-        //log.info("+++ create NSP L2BSA in DB startet! ");
-        //a4Inventory.createNetworkServiceProfileL2Bsa(nspL2Data, tpL2BsaData);
+        log.info("+++ create in DB ok! ");
 
     }
 
     @AfterMethod
     public void cleanup() {
-        a4Inventory.deleteA4TestData(negData, neData);
+
+        //a4Inventory.deleteA4Data(negData); // gilt ab 17.3.21
+
+        //a4Inventory.deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tpL2BsaData.getUuid());
+        //a4Inventory.deleteTerminationPoint(tpL2BsaData.getUuid());
+        //a4Inventory.deleteA4TestData(negData, neData); // wird hier wirklich alles gelöscht? TP? NSP?
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask")
@@ -113,13 +116,24 @@ public class A4CarrierManagementTest extends BaseTest {
     public void testDeterminationFreeL2BsaTP() throws InterruptedException {
         log.info("+++ Test startet ");
         log.info("+++ NEG: "+negData);
-        log.info("+++ NE: "+neData);
-        log.info("+++ Port: "+nepData);
         log.info("+++ TP: "+tpL2BsaData);
-       // a4CarrierManagement.sendGetForNegCarrierConnection(negData.getUuid()); // init: c0b5da61-5359-4134-9d22-dc731d8520c3
-        a4CarrierManagement.sendGetForNegCarrierConnection("c0b5da61-5359-4134-9d22-dc731d8520c3"); // in AWS: 712d393e-da93-49f2-a0cd-0d80195763b0
-        log.info("+++ Test endet ");
-        Thread.sleep(2000);
-    }
+        log.info("+++ NSP: "+nspL2Data);
 
+        a4CarrierManagement.sendGetNegCarrierConnection(negData.getUuid());
+
+        // in DB per sql: 711d393e-a007-49f2-a0cd-0d80195763b0
+       // a4CarrierManagement.sendGetNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b0");
+
+        log.info("+++ Test endet ");
+       // Thread.sleep(10000);
+    }
+    @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("determination of free L2BSA TP on NEG")
+    public void testUnknownNegFreeL2BsaTP() throws InterruptedException {
+
+        // unbekannte uuid
+        a4CarrierManagement.sendGetNoNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b1");
+
+    }
 }

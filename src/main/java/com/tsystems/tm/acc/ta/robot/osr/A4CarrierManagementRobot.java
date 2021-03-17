@@ -15,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 
 @Slf4j
 public class A4CarrierManagementRobot {
@@ -44,16 +44,24 @@ public class A4CarrierManagementRobot {
 
     }
     @Step("send GET for determination of free L2BSA TP on NEG")
-    public void sendGetForNegCarrierConnection (String uuid) {
-        //NegCarrierConnection negCarrierConnection = new NegCarrierConnection();
-        //negCarrierConnection.getCarrierConnections().get(0);
-        //negCarrierConnection.getNegUuid();
-        log.info("+++ uuid: "+uuid);
+    public void sendGetNegCarrierConnection (String uuid) {
 
-       // a4CarrierManagement.negCarrierConnections();
-        //a4CarrierManagement.negCarrierConnections().getNegCarrierConnections().negUuidQuery(uuid);
+        // unbekannte uuid
+        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
+                .negUuidQuery("711d393e-a007-49f2-a0cd-0d80195763b1")
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
+        // 711d393e-a007-49f2-a0cd-0d80195763b0 wird übergeben, oder default-neg
+        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
+                .negUuidQuery(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+    @Step("send GET for determination of free L2BSA TP on unknown NEG")
+    public void sendGetNoNegCarrierConnection (String uuid) {
+
+        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
+                .negUuidQuery(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 
     }
-
 }
