@@ -57,7 +57,7 @@ public class OltDeCommissioningRobot {
         oltSearchPage.validateUrl();
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(olt);
-        oltDetailsPage.startAccessLinesDeProvisioningFromDevice();
+        oltDetailsPage.startAccessLinesDeProvisioningFromDevice(TIMEOUT_FOR_CARD_DEPROVISIONING);
         //Thread.sleep(TIMEOUT_FOR_CARD_DEPROVISIONING);
         //WebDriverRunner.getWebDriver().navigate().refresh();//workaround for Stilllegung process
         oltDetailsPage.deconfigureAncpSession();
