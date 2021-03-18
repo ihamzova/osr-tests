@@ -235,10 +235,11 @@ public class OltDetailsPage {
 
     @Step("Access lines deprovisioning from Device")
 
-    public OltDetailsPage startAccessLinesDeProvisioningFromDevice() {
+    public OltDetailsPage startAccessLinesDeProvisioningFromDevice(Integer timeout) {
         $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
         $(START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
         $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
         return this;
     }
 
