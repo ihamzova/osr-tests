@@ -36,8 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
 import static org.testng.Assert.assertEquals;
@@ -290,6 +289,8 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Description("Test Mobile NE-search-page with VPSZ and Category search criteria, perform installation process by entering ZTPIdent")
     public void testNeInstallation() {
         // GIVEN
+        final String ztpi = "test-ztpi" + getRandomDigits(4);
+
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         // !! Check if on search page (build into robot openNetworkElementMobileSearchPage)
 
@@ -306,25 +307,24 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4MobileUiRobot.clickInbetriebnahmeButton();
         // !! Check if on Inbetriebnahme page
 
-        a4MobileUiRobot.enterZtpIdent("ztp");
+        a4MobileUiRobot.enterZtpIdent(ztpi);
         a4MobileUiRobot.clickFinishButton();
 
         // THEN
         // !! Check if back on search page
         assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
-        // !! below 3 lines fail, bug in ui, needs to be fixed
-//        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(0));
-//        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(1));
-//        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(2));
+        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(0));
+        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(1));
+        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(2));
         assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
         assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
         assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
 
         // Check ZTPI value in search result table
-        // !! below line fails, bug in ui, needs to be fixed
-//        assertEquals(a4MobileUiRobot.readZtpIdent(), "ztp");
+        assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
 
+        // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         sleepForSeconds(5);
 
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
