@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.osr.A4CarrierManagementClient;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.model.AllocateL2BsaNspTask;
+import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.model.ReleaseL2BsaNspTask;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,6 +64,19 @@ public class A4CarrierManagementRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
 
     }
+    @Step("send POST for ReleaseL2BsaNspTask")
+    public void sendPostForReleaseL2BsaNsp(String uuid) {
+        ReleaseL2BsaNspTask releaseL2BsaNspTask = new ReleaseL2BsaNspTask();
+        releaseL2BsaNspTask.setUuid(uuid);
+
+        a4CarrierManagement
+                .releaseL2BsaNspTask()
+                .releaseL2BsaNspTask()
+                .body(releaseL2BsaNspTask)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    }
+
     @Step("send GET for determination of free L2BSA TP on NEG")
     public void sendGetNegCarrierConnection (String uuid) {
 

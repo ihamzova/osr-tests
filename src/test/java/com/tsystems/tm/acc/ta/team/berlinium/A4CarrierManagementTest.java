@@ -11,12 +11,14 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4CarrierManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileL2BsaDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -97,6 +99,9 @@ public class A4CarrierManagementTest extends BaseTest {
 
         a4CarrierManagement.sendPostForAllocateL2BsaNsp
                 ("Autotest-LineId","Autotest-Carrier", 100, 1000);
+
+        NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+        Assert.assertEquals(allocatedL2BsaNSP.getLineId(),"Autotest-LineId");
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
@@ -121,6 +126,21 @@ public class A4CarrierManagementTest extends BaseTest {
                 ("Autotest-LineId","Wrong-Carrier", 100, 1000);
     }
 
+    @Test(description = "DIGIHUB-89266 ReleaseL2BsaNspTask")
+    @Owner("anita.junge@t-systems.com")
+    //@TmsLink("DIGIHUB-XXXXX")
+    @Description("release L2BSA NSP for a dedicated AccessLine so that L2BSA products can be deleted")
+    public void testReleaseL2BsaNsp() {
+        // THEN / Assert
+
+        a4CarrierManagement.sendPostForReleaseL2BsaNsp(nspL2BsaData.getUuid());
+        NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+        Assert.assertNull(allocatedL2BsaNSP.getLineId());
+        //System.out.println("ServiceBandwidth: " + allocatedL2BsaNSP.getServiceBandwidth());
+        //Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().getClass().getField("dataRateDown"),"undefined");
+
+    }
+
     @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
     @Owner("heiko.schwanke@t-systems.com")
     @Description("determination of free L2BSA TP on NEG")
@@ -135,7 +155,7 @@ public class A4CarrierManagementTest extends BaseTest {
     @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
     @Owner("heiko.schwanke@t-systems.com")
     @Description("determination of free L2BSA TP on NEG")
-    public void testUnknownNegFreeL2BsaTP() throws InterruptedException {
+    public void testDeterminationFreeL2BsaTPUnknownNeg() throws InterruptedException {
 
         // unbekannte uuid
         a4CarrierManagement.sendGetNoNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b1");
