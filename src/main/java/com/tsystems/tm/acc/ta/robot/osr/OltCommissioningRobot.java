@@ -11,7 +11,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
