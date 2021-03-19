@@ -36,8 +36,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -58,8 +60,6 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     private A4NetworkElementPort a4NetworkElementPortB;
 
     private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
-
-    private static final int WAIT_TIME = 5_000;
 
     final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
     final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";
@@ -161,7 +161,9 @@ public class A4MobileNeSearchPageTest extends BaseTest {
                 .build();
 
         mappingsContext.publish();
-
+//        mappingsContext.publish()
+//                .publishedHook(savePublishedToDefaultDir())
+//                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterClass
@@ -283,11 +285,13 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     }
 
     @Test
-    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
+    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
-    public void testNeInstallation() throws InterruptedException {
+    @Description("Test Mobile NE-search-page with VPSZ and Category search criteria, perform installation process by entering ZTPIdent")
+    public void testNeInstallation() {
+        // GIVEN
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        // !! Check if on search page (build into robot openNetworkElementMobileSearchPage)
 
         //we assume it's always the same VPSZ so it doesn't matter which element the VPSZ was taken from
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
@@ -297,23 +301,35 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4MobileUiRobot.checkOperating();
         a4MobileUiRobot.clickSearchButton();
 
+        // WHEN
         a4MobileUiRobot.checkRadioButton("1");
         a4MobileUiRobot.clickInbetriebnahmeButton();
+        // !! Check if on Inbetriebnahme page
 
         a4MobileUiRobot.enterZtpIdent("ztp");
-
         a4MobileUiRobot.clickFinishButton();
+
+        // THEN
+        // !! Check if back on search page
         assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
-        assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
-        assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
+        // !! below 3 lines fail, bug in ui, needs to be fixed
+//        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(0));
+//        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(1));
+//        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(2));
         assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
-        //check ztpIdent Field
+        assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
+        assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
 
-        Thread.sleep(WAIT_TIME);
+        // Check ZTPI value in search result table
+        // !! below line fails, bug in ui, needs to be fixed
+//        assertEquals(a4MobileUiRobot.readZtpIdent(), "ztp");
+
+        sleepForSeconds(5);
+
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
-//        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT",
-//                2);
+        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT",
+                2);
         a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(),
                 a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
