@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
@@ -23,11 +22,6 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class A4MobileUiRobot {
 
-    A4MobileNeSearchPage a4MobileNeSearchPage = new A4MobileNeSearchPage();
-    A4MobileInbetriebnahmePage a4MobileInbetriebnahmePage = new A4MobileInbetriebnahmePage();
-    A4MobileMonitoringPage a4MobileMonitoringPage = new A4MobileMonitoringPage();
-
-
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage(){
@@ -41,68 +35,88 @@ public class A4MobileUiRobot {
 
     @Step("Enter vpsz")
     public void enterVpsz(String value) {
-        $(a4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[0]);
-        $(a4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[1]);
-        $(a4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[2]);
+        $(A4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[0]);
+        $(A4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[1]);
+        $(A4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[2]);
     }
 
     @Step("Read vpsz")
     public String readVpsz() {
-        return $(a4MobileNeSearchPage.getVPSZ_INPUT_FIELD_LOCATOR()).val();
+        return $(A4MobileNeSearchPage.getVPSZ_INPUT_FIELD_LOCATOR()).val();
+    }
+
+    @Step("Read akz")
+    public String readAkz() {
+        return $(A4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val();
+    }
+
+    @Step("Read onkz")
+    public String readOnkz() {
+        return $(A4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val();
+    }
+
+    @Step("Read vkz")
+    public String readVkz() {
+        return $(A4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val();
     }
 
     @Step("Click search button")
     public void clickSearchButton() {
-        $(a4MobileNeSearchPage.getSEARCH_BUTTON_LOCATOR()).click();
+        $(A4MobileNeSearchPage.getSEARCH_BUTTON_LOCATOR()).click();
     }
 
     @Step("Enter fsz")
-    public void enterFsz(String value) { $(a4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value); }
+    public void enterFsz(String value) { $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value); }
 
     @Step("Read fsz")
     public String readFsz() {
-        return $(a4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val();
+        return $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val();
     }
 
     @Step("Enter Category")
-    public void enterCategory(String category) {$(a4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);}
+    public void enterCategory(String category) {$(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);}
 
     @Step("Read Category")
     public String readCategory() {
-        return $(a4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).val();
+        return $(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).val();
+    }
+
+    @Step("Read ZTP Ident")
+    public String readZtpIdent() {
+        return $(A4MobileNeSearchPage.getZTPI_INPUT_FIELD_LOCATOR()).val();
     }
 
     @Step("Check planning")
-    public void checkPlanning() { $(a4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();}
+    public void checkPlanning() { $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();}
 
     @Step("Check if planning is checked")
-    public boolean checkIsPlanningChecked() { return $(a4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).isSelected();}
+    public boolean checkIsPlanningChecked() { return $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).isSelected();}
 
     @Step("Check operating")
-    public void checkOperating() { $(a4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();}
+    public void checkOperating() { $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();}
 
     @Step("Check if operating is checked")
-    public boolean checkIsOperatingChecked() { return $(a4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).isSelected();}
+    public boolean checkIsOperatingChecked() { return $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).isSelected();}
 
     @Step("Check radioButton")
-    public void checkRadioButton(String index) { $(a4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();}
+    public void checkRadioButton(String index) { $(A4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();}
 
     @Step("Click inbetriebnahme button")
-    public void clickInbetriebnahmeButton() { $(a4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
+    public void clickInbetriebnahmeButton() { $(A4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
 
     @Step("Click Monitoring Button")
-    public void clickMonitoringButton() {$(a4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
+    public void clickMonitoringButton() {$(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
 
 
     //inbetriebnahme-page
     @Step("Enter ztpIdent")
-    public void enterZtpIdent(String value) { $(a4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
+    public void enterZtpIdent(String value) { $(A4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
 
     @Step("Back navigation")
-    public void clickFinishButton() {$(a4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
+    public void clickFinishButton() {$(A4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
 
     @Step("Remove Monitoring Item")
-    public void clickRemoveButton() {$(a4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();}
+    public void clickRemoveButton() {$(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();}
 
 
 
@@ -111,8 +125,8 @@ public class A4MobileUiRobot {
     @Step("check empty Monitoring")
     public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
 
-        $(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        assertEquals($(a4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
+        $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
+        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
         assertEquals(a4NeFilteredList.size() , 0);
 
 
@@ -124,7 +138,7 @@ public class A4MobileUiRobot {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
-        ElementsCollection elementsCollection = $(a4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR())
+        ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
 
         List<String> concat = new ArrayList<>();

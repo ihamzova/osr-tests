@@ -41,6 +41,10 @@ public class A4MobileNeSearchPage {
     public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
 
     @Getter
+//    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.id("ztpi");
+    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[2]/td[6]");
+
+    @Getter
     public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
 
     @Getter
