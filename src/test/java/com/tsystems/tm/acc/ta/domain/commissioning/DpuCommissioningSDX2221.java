@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsCont
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
@@ -22,9 +23,10 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-/*@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
@@ -33,7 +35,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 @ServiceLog(ANCP_CONFIGURATION_MS)
-@ServiceLog(DPU_COMMISSIONING_MS)*/
+@ServiceLog(DPU_COMMISSIONING_MS)
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();

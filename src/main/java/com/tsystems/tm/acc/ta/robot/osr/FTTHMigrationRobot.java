@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.AncpConfigurationClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -44,7 +45,7 @@ public class FTTHMigrationRobot {
 //                .type()
 //                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
 
-    }
+//    }
 
 //    @Step("Delivers status of existing discovery processes")
 //    public void deviceDiscoveryDeliveryDiscoveryState(DeliveryDiscoveryState deliveryDiscoveryState) {
@@ -66,5 +67,11 @@ public class FTTHMigrationRobot {
 //
 //    }
 
+    @Step("Clear {oltDevice} device in olt-resource-inventory database")
+    public void clearResourceInventoryDataBase(OltDevice oltDevice) {
+        String endSz = oltDevice.getEndsz();
+        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
-//}
+}

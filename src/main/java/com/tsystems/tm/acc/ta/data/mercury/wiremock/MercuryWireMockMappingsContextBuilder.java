@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.data.mercury.wiremock;
 
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.DeviceDiscoveryCallbackStub;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.GigaAreasLocationStub;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
@@ -17,6 +18,11 @@ public class MercuryWireMockMappingsContextBuilder extends WireMockMappingsConte
 
     public MercuryWireMockMappingsContextBuilder addGigaAreasLocationMock(DpuDevice dpuDevice) {
         context.add(new GigaAreasLocationStub().getPageFibreOnLocation200(dpuDevice));
+        return this;
+    }
+
+    public MercuryWireMockMappingsContextBuilder addDiscoveryCallbackReceiver() {
+        context.add(new DeviceDiscoveryCallbackStub().addDiscoveryCallbackReceiver200());
         return this;
     }
 }
