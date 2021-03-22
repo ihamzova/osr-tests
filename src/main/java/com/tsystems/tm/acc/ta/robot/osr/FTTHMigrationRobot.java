@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.HttpConstants;
 import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
+import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnet;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
@@ -34,12 +35,10 @@ public class FTTHMigrationRobot {
     private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient();
 
     @Step("create an AncpIpSubnet entity")
-    void createAncpIpSubnet(OltDevice oltDevice) {
+    void createAncpIpSubnet(AncpIpSubnet ancpIpSubnet) {
 
-        /**
-         *  example request
-         */
-        ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3().body(new AncpIpSubnetCreate()
+        ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
+                .body(new AncpIpSubnetCreate()
                 .ipAddressBng("10.150.240.102")
                 .ipAddressBroadcast("10.150.240.103")
                 .ipAddressLoopback("10.150.240.100")

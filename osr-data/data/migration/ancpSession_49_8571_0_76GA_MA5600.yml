@@ -1,0 +1,9 @@
+name: ancpSession_49_8571_0_76GA_MA5600
+template: com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnet
+values:
+  ipAddressBng: "10.160.240.102"
+  ipAddressBroadcast: "10.160.240.103"
+  ipAddressLoopback: "10.160.240.100"
+  rmkAccessId: "1351535325"
+  subnetMask: "/30"
+  atType: "AncpIpSubnet"
