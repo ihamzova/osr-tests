@@ -6,14 +6,16 @@ import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.HttpConstants;
 import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
-import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnet;
+import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnet;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryMode;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStateEnum;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStatus;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryType;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
@@ -34,18 +36,30 @@ public class FTTHMigrationRobot {
     private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient();
     private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient();
 
-    @Step("create an AncpIpSubnet entity")
-    void createAncpIpSubnet(AncpIpSubnet ancpIpSubnet) {
+    @Step("Create an Ethernet link entity")
+    public void createEthernetLink(OltDevice oltDevice) {
+//        oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
+//                .body(new UplinkDTO()
+//                .bngEndSz(oltDevice.getBngEndsz())
+//                .oltEndSz(oltDevice.getEndsz()))
 
-        ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
+    }
+
+    @Step("Create an AncpIpSubnetData entity")
+    public String createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
+
+        AncpIpSubnet ancpIpSubnet = ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
                 .body(new AncpIpSubnetCreate()
-                .ipAddressBng("10.150.240.102")
-                .ipAddressBroadcast("10.150.240.103")
-                .ipAddressLoopback("10.150.240.100")
-                .subnetMask("/30")
-                .rmkAccessId("1341434324")
-                .atType("AncpIpSubnet")
-        ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .ipAddressBng(ancpIpSubnetData.getIpAddressBng())
+                        .ipAddressBroadcast(ancpIpSubnetData.getIpAddressBroadcast())
+                        .ipAddressLoopback(ancpIpSubnetData.getIpAddressLoopback())
+                        .subnetMask(ancpIpSubnetData.getSubnetMask())
+                        .rmkAccessId(ancpIpSubnetData.getRmkAccessId())
+                        .atType(ancpIpSubnetData.getAtType())
+                ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
+        return ancpIpSubnet.getId();
     }
 
 
@@ -115,8 +129,8 @@ public class FTTHMigrationRobot {
         Assert.assertEquals(discoveryStatus.getDiscoveryId(), uuid, "GetDiscoveryStatus DiscoveryId mismatch");
         Assert.assertEquals(discoveryStatus.getEndsz(), oltDevice.getEndsz(), "GetDiscoveryStatus EndSz mismatch");
         Assert.assertEquals(discoveryStatus.getStatus(), DiscoveryStateEnum.DONE, "GetDiscoveryStatus discovery stete error");
-        Assert.assertEquals(discoveryStatus.getType(), DiscoveryType.SEAL_PSL,"GetDiscoveryStatus discovery type mismatch");
-        Assert.assertEquals(discoveryStatus.getMode(), DiscoveryMode.MANUAL,"GetDiscoveryStatus discovery mode mismatch");
+        Assert.assertEquals(discoveryStatus.getType(), DiscoveryType.SEAL_PSL, "GetDiscoveryStatus discovery type mismatch");
+        Assert.assertEquals(discoveryStatus.getMode(), DiscoveryMode.MANUAL, "GetDiscoveryStatus discovery mode mismatch");
     }
 
 

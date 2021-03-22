@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class AncpIpSubnet {
+public class AncpIpSubnetData {
     private String ipAddressBng;
     private String ipAddressBroadcast;
     private String ipAddressLoopback;

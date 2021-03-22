@@ -1,7 +1,9 @@
 package com.tsystems.tm.acc.ta.team.mercury.migration;
 
+import com.tsystems.tm.acc.data.osr.models.ancpipsubnetdata.AncpIpSubnetDataCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -29,6 +31,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class FTTHMigrationTest extends BaseTest {
 
     private OltDevice oltDevice;
+    private AncpIpSubnetData ancpIpSubnetData;
 
     private FTTHMigrationRobot ftthMigrationRobot = new FTTHMigrationRobot();
 
@@ -40,6 +43,7 @@ public class FTTHMigrationTest extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76GA_MA5600);
+        ancpIpSubnetData = context.getData().getAncpIpSubnetDataDataProvider().get(AncpIpSubnetDataCase.ancpSession_49_8571_0_76GA_MA5600);
 
         mappingsContextCb = new WireMockMappingsContext(WireMockFactory.get(), "FTTHMigration");
         new MercuryWireMockMappingsContextBuilder(mappingsContextCb)
@@ -88,6 +92,8 @@ public class FTTHMigrationTest extends BaseTest {
             e.printStackTrace();
         }
         ftthMigrationRobot.deviceDiscoveryGetDiscoveryStatusTask(oltDevice, uuid);
+        ftthMigrationRobot.createEthernetLink(oltDevice);
+        ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
     }
 
 }
