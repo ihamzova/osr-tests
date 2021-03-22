@@ -4,6 +4,6 @@ values:
   ipAddressBng: "10.160.240.102"
   ipAddressBroadcast: "10.160.240.103"
   ipAddressLoopback: "10.160.240.100"
-  rmkAccessId: 1351535325
+  rmkAccessId: "1351535325"
   subnetMask: "/30"
   atType: "AncpIpSubnet"
