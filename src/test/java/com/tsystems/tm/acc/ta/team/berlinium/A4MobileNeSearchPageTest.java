@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -160,9 +159,6 @@ public class A4MobileNeSearchPageTest extends BaseTest {
                 .build();
 
         mappingsContext.publish();
-//        mappingsContext.publish()
-//                .publishedHook(savePublishedToDefaultDir())
-//                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterClass
@@ -305,13 +301,14 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         // WHEN
         a4MobileUiRobot.checkRadioButton("1");
         a4MobileUiRobot.clickInbetriebnahmeButton();
-        // !! Check if on Inbetriebnahme page
 
+        // !! Check if on Inbetriebnahme page
         a4MobileUiRobot.enterZtpIdent(ztpi);
         a4MobileUiRobot.clickFinishButton();
 
         // THEN
         // !! Check if back on search page
+        a4MobileUiRobot.checkInstalling();
         assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
         assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(0));
         assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(1));
@@ -321,11 +318,11 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
         assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
 
-        // Check ZTPI value in search result table
-        assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
-
         // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         sleepForSeconds(5);
+
+        // Check ZTPI value in search result table
+        assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
 
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
         a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT",

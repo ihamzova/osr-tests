@@ -27,9 +27,6 @@ src/main/logFiles/
 
 ### STS ###
 .apt_generated
-.classpath
-.factorypath
-.project
 .settings
 .springBeans
 
@@ -48,10 +45,13 @@ nbdist/
 .nb-gradle/
 
 ### Angular ###
-dist/
 node/
 node_modules/
 
 ### Allure ###
 .allure
 allure-results
+
+### self ###
+test.properties.yaml
+chromedriver.exe

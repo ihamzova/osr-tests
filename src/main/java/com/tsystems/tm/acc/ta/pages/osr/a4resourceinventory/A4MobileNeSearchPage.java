@@ -22,7 +22,6 @@ public class A4MobileNeSearchPage {
 
     public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-installation-process";
 
-    //public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2/div[4]/h2");
     public static final By A4_SEARCH_PAGE_HEADER = byXpath("/html/body/app-root/div/app-portal/app-page-header-v2");
 
     @Getter
@@ -41,7 +40,6 @@ public class A4MobileNeSearchPage {
     public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
 
     @Getter
-//    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.id("ztpi");
     public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[2]/td[6]");
 
     @Getter
@@ -58,6 +56,9 @@ public class A4MobileNeSearchPage {
 
     @Getter
     public static final By OPERATING_CHECKBOX_LOCATOR = By.id("lcsOPERATING");
+
+    @Getter
+    public static final By INSTALLING_CHECKBOX_LOCATOR = By.id("lcsINSTALLING");
 
     @Getter
     public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
@@ -77,9 +78,9 @@ public class A4MobileNeSearchPage {
     }
 
     @Step("Login")
-    public static A4MobileNeSearchPage login() {
+    public static void login() {
         URL url = new OCUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
-        return open(url, A4MobileNeSearchPage.class);
+        open(url, A4MobileNeSearchPage.class);
     }
 
 }
