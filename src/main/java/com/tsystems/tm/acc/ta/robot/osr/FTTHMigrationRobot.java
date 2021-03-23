@@ -11,6 +11,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnet;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpSession;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpSessionCreate;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryMode;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStateEnum;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStatus;
@@ -18,6 +20,7 @@ import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.Discovery
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeList;
 import org.testng.Assert;
 
 import java.util.List;
@@ -38,15 +41,22 @@ public class FTTHMigrationRobot {
 
     @Step("Create an Ethernet link entity")
     public void createEthernetLink(OltDevice oltDevice) {
-//        oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
-//                .body(new UplinkDTO()
-//                .bngEndSz(oltDevice.getBngEndsz())
-//                .oltEndSz(oltDevice.getEndsz()))
+        oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
+                .body(new UplinkDTO()
+                        .oltEndSz(oltDevice.getEndsz())
+                        .orderNumber(Integer.valueOf(oltDevice.getOrderNumber()))
+                        .oltSlot(oltDevice.getOltSlot())
+                        .oltPortNumber(oltDevice.getOltPort())
+                        .bngEndSz(oltDevice.getBngEndsz())
+                        .bngSlot(oltDevice.getBngDownlinkSlot())
+                        .bngPortNumber(oltDevice.getBngDownlinkPort())
+                        //.lsz(oltDevice.getLsz()))
+                        .lsz(UplinkDTO.LszEnum._4C1));
 
     }
 
     @Step("Create an AncpIpSubnetData entity")
-    public String createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
+    public Long createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
 
         AncpIpSubnet ancpIpSubnet = ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
                 .body(new AncpIpSubnetCreate()
@@ -59,10 +69,21 @@ public class FTTHMigrationRobot {
                 ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
-        return ancpIpSubnet.getId();
+        return Long.valueOf(ancpIpSubnet.getId());
     }
 
 
+    @Step("Create an AncpSession entity")
+    public void createAncpSession(long ancpIpSubnetId, OltDevice oltDevice) {
+
+//        AncpSession ancpSession = ancpConfigurationClient.getClient().ancpSessionV3().createAncpSessionV3()
+//                .body(new AncpSessionCreate()
+//                .partitionId()
+//                .rmkEndpointId()
+//                )
+
+
+    }
 //    @Step("Start Discovery Process")
 //    public void deviceDiscoveryStartDiscoveryTask(StartDiscovery startDiscovery) {
 
