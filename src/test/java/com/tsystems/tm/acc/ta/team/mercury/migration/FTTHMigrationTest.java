@@ -85,11 +85,14 @@ public class FTTHMigrationTest extends BaseTest {
     @Owner("DL-T-Magic.Mercury@telekom.de")
     public void ftthMigrationTest() {
         String uuid = UUID.randomUUID().toString();
+
         ftthMigrationRobot.deviceDiscoveryStartDiscoveryTask(oltDevice, uuid);
         ftthMigrationRobot.checkCallbackWiremock(uuid, 10_000);
         ftthMigrationRobot.deviceDiscoveryGetDiscoveryStatusTask(oltDevice, uuid);
         ftthMigrationRobot.createEthernetLink(oltDevice);
-        ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
+        Long ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
+        ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice);
+
     }
 
 }
