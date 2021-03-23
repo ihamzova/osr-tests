@@ -86,11 +86,7 @@ public class FTTHMigrationTest extends BaseTest {
     public void ftthMigrationTest() {
         String uuid = UUID.randomUUID().toString();
         ftthMigrationRobot.deviceDiscoveryStartDiscoveryTask(oltDevice, uuid);
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ftthMigrationRobot.checkCallbackWiremock(uuid, 10_000);
         ftthMigrationRobot.deviceDiscoveryGetDiscoveryStatusTask(oltDevice, uuid);
         ftthMigrationRobot.createEthernetLink(oltDevice);
         ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);

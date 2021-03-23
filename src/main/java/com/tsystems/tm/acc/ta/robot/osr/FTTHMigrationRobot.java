@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.github.tomakehurst.wiremock.http.RequestMethod;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.osr.AncpConfigurationClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
@@ -9,28 +11,30 @@ import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnet;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
-import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryMode;
-import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStateEnum;
-import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryStatus;
-import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.DiscoveryType;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 
 public class FTTHMigrationRobot {
 
+    static final String DISCOVRY_CALLBACK_PATH = "/autotestCbDiscoveryStart/";
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient();
@@ -116,6 +120,24 @@ public class FTTHMigrationRobot {
                 .xCallbackErrorUrlHeader(xCallbackUrl)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HttpConstants.HTTP_CODE_ACCEPTED_202)));
     }
+
+    @Step("Check if callback to wiremock has happened")
+    public void checkCallbackWiremock(String uuid, long timeout) {
+        List<LoggedRequest> requests = WireMockFactory.get()
+                .retrieve(
+                        exactly(1),
+                        newRequestPattern(RequestMethod.POST, urlPathEqualTo(DISCOVRY_CALLBACK_PATH))
+                                .withHeader("X-Callback-Correlation-Id", equalTo(uuid)), timeout);
+
+        //log.info("Discovery callback = {} ", requests);
+        assertTrue(requests.size() == 1, "Callback was not received");
+
+        DiscoveryResponseHolder discoveryResponseHolder = new JSON()
+                .deserialize(requests.get(0).getBodyAsString(), DiscoveryResponseHolder.class);
+        log.info("DiscoveryCallback discoveryResponseHolder = {} ", discoveryResponseHolder);
+        assertTrue(discoveryResponseHolder.getSuccess(), "callback success");
+    }
+
 
     @Step("Get discovery status and check discovery status ")
     public void deviceDiscoveryGetDiscoveryStatusTask(OltDevice oltDevice, String uuid) {
