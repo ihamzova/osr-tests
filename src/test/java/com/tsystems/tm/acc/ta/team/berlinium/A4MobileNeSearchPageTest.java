@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
@@ -72,7 +71,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
 
 
     //helper methods
-    public void waitForTableToFullyLoad(int numberOfElements){
+    public void waitForTableToFullyLoad(int numberOfElements) {
         //add 1 to number of elements because of table header
         numberOfElements++;
 
@@ -91,20 +90,20 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         elementsCollection.forEach(k -> concat.add(k.getText()));
 
         a4NeFilteredList.forEach((k, a4NetworkElement) -> {
-            assertTrue(concat.contains(a4NetworkElement.getVpsz()),a4NetworkElement.getVpsz());
-            assertTrue(concat.contains(a4NetworkElement.getFsz()),a4NetworkElement.getFsz());
-            assertTrue(concat.contains(a4NetworkElement.getCategory()),a4NetworkElement.getCategory());
-            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()),a4NetworkElement.getPlanningDeviceName());
-            assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
+            assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
+            assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
+            assertTrue(concat.contains(a4NetworkElement.getCategory()), a4NetworkElement.getCategory());
+            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
+            assertTrue(concat.contains(a4NetworkElement.getLifecycleState()), a4NetworkElement.getLifecycleState());
         });
 
         log.info("+++" + concat.toString());
 
-        a4NeFilteredList.forEach((k,v) -> log.info("+++" + v.getCategory()));
+        a4NeFilteredList.forEach((k, v) -> log.info("+++" + v.getCategory()));
 
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
-        assertEquals(concat.size()/6, a4NeFilteredList.size());
+        assertEquals(concat.size() / 6, a4NeFilteredList.size());
     }
 
     @BeforeClass()
@@ -121,13 +120,13 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         a4NetworkElements.put(A4_NE_INSTALLING_SPINE_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
-        a4NetworkElements.put(A4_NE_OPERATING_BOR_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_OPERATING_BOR_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
 
-        a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01));
 
-        a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01,osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
 
         a4NetworkElementPortA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -146,8 +145,8 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     public void setup() {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
 
-        a4NetworkElements.forEach((k, networkElement)->
-               a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
+        a4NetworkElements.forEach((k, networkElement) ->
+                a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
 
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
@@ -202,7 +201,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
                         map.getValue().getVpsz()
                                 .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz()))
                         && map.getValue().getFsz()
-                                .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getFsz())
+                        .equals(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getFsz())
                         )
                 )
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -214,7 +213,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAndLifecyleState(){
+    public void testNeSearchByVpszAndLifecyleState() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
@@ -325,10 +324,8 @@ public class A4MobileNeSearchPageTest extends BaseTest {
         assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
 
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
-        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT",
-                2);
-        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(),
-                a4NetworkElementPortB.getUuid());
+        //a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
+        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
     }
 
