@@ -22,6 +22,7 @@ import org.testng.Assert;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -39,7 +40,7 @@ import static org.testng.Assert.assertTrue;
 public class FTTHMigrationRobot {
 
     static final String DISCOVRY_CALLBACK_PATH = "/autotestCbDiscoveryStart/";
-    static final Long PORTS_PER_GPON_CARD = 8L;
+    static final Long MA5600_PORTS_PER_GPON_CARD = 8L;
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient();
@@ -83,7 +84,7 @@ public class FTTHMigrationRobot {
         DiscoveryResponseHolder discoveryResponseHolder = new JSON()
                 .deserialize(requests.get(0).getBodyAsString(), DiscoveryResponseHolder.class);
         log.info("DiscoveryCallback discoveryResponseHolder = {} ", discoveryResponseHolder);
-        assertTrue(discoveryResponseHolder.getSuccess(), "callback success");
+        assertTrue(discoveryResponseHolder.getSuccess() != null ? discoveryResponseHolder.getSuccess() : false, "callback success");
     }
 
 
@@ -112,7 +113,7 @@ public class FTTHMigrationRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         //log.info("inventoryCompareResult = {}", inventoryCompareResult);
-        Assert.assertEquals(inventoryCompareResult.getDevice().getId(), oltDevice.getEndsz(), "InventoryCompareResult endSz missmatch");
+        Assert.assertEquals(Objects.requireNonNull(inventoryCompareResult.getDevice()).getId(), oltDevice.getEndsz(), "InventoryCompareResult endSz missmatch");
         Assert.assertEquals(inventoryCompareResult.getDevice().getChangeStatus(), ComponentCompareResultChangeStatus.ADDED, "InventoryCompareResult changeStatus missmatch");
         Assert.assertEquals(inventoryCompareResult.getDevice().getAction(), ComponentCompareResultAction.UPDATE,  "InventoryCompareResult action missmatch");
         return inventoryCompareResult;
@@ -167,7 +168,7 @@ public class FTTHMigrationRobot {
                 ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
-        log.info("+++ ancpIpSubnet = {}", ancpIpSubnet.getId());
+        //log.info("+++ ancpIpSubnet = {}", ancpIpSubnet.getId());
         return ancpIpSubnet.getId();
     }
 
@@ -225,7 +226,7 @@ public class FTTHMigrationRobot {
     }
 
     @Step("Checks olt data in olt-ri after migration process")
-    public Long checkOltMigrationResult(OltDevice oltDevice, boolean uplinkAncpExist) {
+    public Long checkOltMigrationResult(OltDevice oltDevice, boolean uplinkAncpExist, String ancpIpSubnetId) {
 
         String oltEndSz = oltDevice.getEndsz();
 
@@ -242,7 +243,7 @@ public class FTTHMigrationRobot {
         Optional<Integer> portsCountOptional = deviceAfterMigration.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
                 .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
         long portsCount = portsCountOptional.orElse(0);
-        Assert.assertEquals(portsCount, oltDevice.getNumberOfPonSlots() * PORTS_PER_GPON_CARD, "numbers of pon ports mismatch");
+        Assert.assertEquals(portsCount, oltDevice.getNumberOfPonSlots() * MA5600_PORTS_PER_GPON_CARD, "numbers of pon ports mismatch");
 
         Optional<Port> uplinkPort = deviceAfterMigration.getEquipmentHolders().stream()
                 .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(oltDevice.getOltSlot()))
@@ -271,7 +272,10 @@ public class FTTHMigrationRobot {
             UplinkDTO uplink = uplinksList.get(0);
             Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE, "uplink not activ");
             Assert.assertEquals(uplink.getAncpSessions().size(), 1, "ANCP session size");
-            Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCP session not active");
+            ANCPSession ancpSession = uplink.getAncpSessions().get(0);
+            Assert.assertEquals(ancpSession.getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCP session not active");
+            Assert.assertEquals(ancpSession.getIpSubnet().getId().toString(), ancpIpSubnetId, "ancpIpSubnetId mismatch");
+
         }
         return oltDeviceId;
     }

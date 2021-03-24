@@ -25,12 +25,11 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog("olt-resource-inventory")
-@ServiceLog("olt-discovery")
-@ServiceLog("ancp-configuration")
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
 public class FTTHMigrationTest extends BaseTest {
 
     static final Long DISCOVERY_TIMEOUT = 10_000L;
@@ -83,7 +82,7 @@ public class FTTHMigrationTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        ftthMigrationRobot.clearResourceInventoryDataBase(oltDevice);
+        //ftthMigrationRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @Test(description = "PUT FTTH1.7 Migration (device : MA5600T)")
@@ -99,16 +98,12 @@ public class FTTHMigrationTest extends BaseTest {
         ftthMigrationRobot.deviceDiscoveryGetDiscoveryStatusTask(oltDevice, uuid);
         InventoryCompareResult inventoryCompareResult = ftthMigrationRobot.deviceDiscoveryCreateDiscrepancyReportTask(oltDevice, uuid);
         ftthMigrationRobot.deviceDiscoveryApplyDiscrepancyToInventoryTask(inventoryCompareResult, uuid);
-        Long oltDeviceId = ftthMigrationRobot.checkOltMigrationResult( oltDevice, false);
+        Long oltDeviceId = ftthMigrationRobot.checkOltMigrationResult( oltDevice, false, null);
+
         ftthMigrationRobot.createEthernetLink(oltDevice);
         String ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
         ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
-        //ancpSessionData.setRmkEndpointId("123456");
-        //ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
         ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
-        ftthMigrationRobot.checkOltMigrationResult( oltDevice, true);
-
-
+        ftthMigrationRobot.checkOltMigrationResult( oltDevice, true, ancpIpSubnetId);
     }
-
 }
