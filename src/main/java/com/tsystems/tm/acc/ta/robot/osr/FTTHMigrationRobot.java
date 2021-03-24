@@ -8,11 +8,11 @@ import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
+import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnet;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
@@ -52,13 +52,12 @@ public class FTTHMigrationRobot {
                         .bngEndSz(oltDevice.getBngEndsz())
                         .bngSlot(oltDevice.getBngDownlinkSlot())
                         .bngPortNumber(oltDevice.getBngDownlinkPort())
-                        //.lsz(oltDevice.getLsz()))
                         .lsz(UplinkDTO.LszEnum._4C1));
 
     }
 
     @Step("Create an AncpIpSubnetData entity")
-    public Long createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
+    public String createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
 
         AncpIpSubnet ancpIpSubnet = ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
                 .body(new AncpIpSubnetCreate()
@@ -71,19 +70,48 @@ public class FTTHMigrationRobot {
                 ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
-        return Long.valueOf(ancpIpSubnet.getId());
+        return ancpIpSubnet.getId();
     }
 
 
     @Step("Create an AncpSession entity")
-    public void createAncpSession(long ancpIpSubnetId, OltDevice oltDevice) {
+    public void createAncpSession(String ancpIpSubnetId, OltDevice oltDevice, AncpSessionData ancpSessionData) {
 
-//        AncpSession ancpSession = ancpConfigurationClient.getClient().ancpSessionV3().createAncpSessionV3()
-//                .body(new AncpSessionCreate()
-//                .partitionId()
-//                .rmkEndpointId()
-//                )
-
+        ancpConfigurationClient.getClient().ancpSessionV3().createAncpSessionV3()
+                .body(new AncpSessionCreate()
+                        .partitionId(ancpSessionData.getPartitionId())
+                        .rmkEndpointId(ancpSessionData.getRmkEndpointId())
+                        .sealConfigurationId(ancpSessionData.getSealConfigurationId())
+                        .sessionId(ancpSessionData.getSessionId())
+                        .sessionType(AncpSessionType.fromValue(ancpSessionData.getSessionType()))
+                        .vlan(ancpSessionData.getVlan())
+                        .accessNodeEquipmentBusinessRef(
+                                new EquipmentBusinessRef()
+                                        .deviceType(DeviceType.OLT)
+                                        .endSz(oltDevice.getEndsz())
+                                        .portType(PortType.ETHERNET)
+                                        .slotName(oltDevice.getOltSlot())
+                                        .portName(oltDevice.getOltPort())
+                        )
+                        .ancpIpSubnetRef(new EntityRef().id(ancpIpSubnetId))
+                        .bngDownlinkPortEquipmentBusinessRef(
+                                new EquipmentBusinessRef()
+                                        .deviceType(DeviceType.BNG)
+                                        .endSz(oltDevice.getBngEndsz())
+                                        .portType(PortType.ETHERNET)
+                                        .slotName(oltDevice.getBngDownlinkSlot())
+                                        .portName(oltDevice.getBngDownlinkPort())
+                        )
+                        .configurationStatus(AncpConfigurationStatus.fromValue(ancpSessionData.getConfigurationStatus()))
+                        .ipAddressAccessNode(ancpSessionData.getIpAddressAccessNode())
+                        .oltUplinkPortEquipmentBusinessRef(
+                                new EquipmentBusinessRef()
+                                        .deviceType(DeviceType.OLT)
+                                        .endSz(oltDevice.getEndsz())
+                                        .portType(PortType.ETHERNET)
+                                        .slotName(oltDevice.getOltSlot())
+                                        .portName(oltDevice.getOltPort())
+                        ));
 
     }
 //    @Step("Start Discovery Process")
