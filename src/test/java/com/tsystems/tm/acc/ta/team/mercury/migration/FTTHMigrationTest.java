@@ -1,9 +1,11 @@
 package com.tsystems.tm.acc.ta.team.mercury.migration;
 
 import com.tsystems.tm.acc.data.osr.models.ancpipsubnetdata.AncpIpSubnetDataCase;
+import com.tsystems.tm.acc.data.osr.models.ancpsessiondata.AncpSessionDataCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
+import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -35,6 +37,7 @@ public class FTTHMigrationTest extends BaseTest {
 
     private OltDevice oltDevice;
     private AncpIpSubnetData ancpIpSubnetData;
+    private AncpSessionData ancpSessionData;
 
     private FTTHMigrationRobot ftthMigrationRobot = new FTTHMigrationRobot();
 
@@ -46,7 +49,8 @@ public class FTTHMigrationTest extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76GA_MA5600);
-        ancpIpSubnetData = context.getData().getAncpIpSubnetDataDataProvider().get(AncpIpSubnetDataCase.ancpSession_49_8571_0_76GA_MA5600);
+        ancpIpSubnetData = context.getData().getAncpIpSubnetDataDataProvider().get(AncpIpSubnetDataCase.ancpIpSubnet_49_8571_0_76GA_MA5600);
+        ancpSessionData = context.getData().getAncpSessionDataDataProvider().get(AncpSessionDataCase.ancpSession_49_8571_0_76GA_MA5600);
 
         mappingsContextCb = new WireMockMappingsContext(WireMockFactory.get(), "FTTHMigration");
         new MercuryWireMockMappingsContextBuilder(mappingsContextCb)
@@ -79,11 +83,11 @@ public class FTTHMigrationTest extends BaseTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        //ftthMigrationRobot.clearResourceInventoryDataBase(oltDevice);
+        ftthMigrationRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @Test(description = "PUT FTTH1.7 Migration (device : MA5600T)")
-    @TmsLink("DIGIHUB-xxxx")
+    @TmsLink("DIGIHUB-100545")
     @Description("PUT FTTH1.7 Migration (device : MA5600T)")
     @Owner("DL-T-Magic.Mercury@telekom.de")
     public void ftthMigrationTest() {
@@ -97,8 +101,13 @@ public class FTTHMigrationTest extends BaseTest {
         ftthMigrationRobot.deviceDiscoveryApplyDiscrepancyToInventoryTask(inventoryCompareResult, uuid);
         Long oltDeviceId = ftthMigrationRobot.checkOltMigrationResult( oltDevice, false);
         ftthMigrationRobot.createEthernetLink(oltDevice);
-        //Long ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
-        //ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice);
+        String ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
+        ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
+        //ancpSessionData.setRmkEndpointId("123456");
+        //ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
+        ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
+        ftthMigrationRobot.checkOltMigrationResult( oltDevice, true);
+
 
     }
 
