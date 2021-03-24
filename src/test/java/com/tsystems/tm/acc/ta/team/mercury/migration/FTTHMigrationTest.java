@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.FTTHMigrationRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.InventoryCompareResult;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -29,6 +30,8 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog("olt-discovery")
 @ServiceLog("ancp-configuration")
 public class FTTHMigrationTest extends BaseTest {
+
+    static final Long DISCOVERY_TIMEOUT = 10_000L;
 
     private OltDevice oltDevice;
     private AncpIpSubnetData ancpIpSubnetData;
@@ -84,14 +87,18 @@ public class FTTHMigrationTest extends BaseTest {
     @Description("PUT FTTH1.7 Migration (device : MA5600T)")
     @Owner("DL-T-Magic.Mercury@telekom.de")
     public void ftthMigrationTest() {
+
         String uuid = UUID.randomUUID().toString();
 
         ftthMigrationRobot.deviceDiscoveryStartDiscoveryTask(oltDevice, uuid);
-        ftthMigrationRobot.checkCallbackWiremock(uuid, 10_000);
+        ftthMigrationRobot.checkCallbackWiremock(uuid, DISCOVERY_TIMEOUT);
         ftthMigrationRobot.deviceDiscoveryGetDiscoveryStatusTask(oltDevice, uuid);
+        InventoryCompareResult inventoryCompareResult = ftthMigrationRobot.deviceDiscoveryCreateDiscrepancyReportTask(oltDevice, uuid);
+        ftthMigrationRobot.deviceDiscoveryApplyDiscrepancyToInventoryTask(inventoryCompareResult, uuid);
+        Long oltDeviceId = ftthMigrationRobot.checkOltMigrationResult( oltDevice, false);
         ftthMigrationRobot.createEthernetLink(oltDevice);
-        Long ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
-        ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice);
+        //Long ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
+        //ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice);
 
     }
 

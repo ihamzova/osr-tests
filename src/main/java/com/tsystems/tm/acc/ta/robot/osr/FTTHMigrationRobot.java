@@ -15,12 +15,13 @@ import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.Ancp
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetCreate;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
@@ -36,6 +37,7 @@ import static org.testng.Assert.assertTrue;
 public class FTTHMigrationRobot {
 
     static final String DISCOVRY_CALLBACK_PATH = "/autotestCbDiscoveryStart/";
+    static final Integer PORTS_PER_GPON_CARD = 8;
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient();
@@ -43,7 +45,7 @@ public class FTTHMigrationRobot {
 
     @Step("Create an Ethernet link entity")
     public void createEthernetLink(OltDevice oltDevice) {
-        oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
+        UplinkDTO uplinkDTO = oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
                 .body(new UplinkDTO()
                         .oltEndSz(oltDevice.getEndsz())
                         .orderNumber(Integer.valueOf(oltDevice.getOrderNumber()))
@@ -52,9 +54,17 @@ public class FTTHMigrationRobot {
                         .bngEndSz(oltDevice.getBngEndsz())
                         .bngSlot(oltDevice.getBngDownlinkSlot())
                         .bngPortNumber(oltDevice.getBngDownlinkPort())
-                        //.lsz(oltDevice.getLsz()))
-                        .lsz(UplinkDTO.LszEnum._4C1));
+                        .lsz(UplinkDTO.LszEnum._4C1))
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
+        Assert.assertEquals(uplinkDTO.getOltEndSz(),oltDevice.getEndsz(), "create uplink OLT EndSZ mismatch");
+        Assert.assertEquals(uplinkDTO.getOrderNumber(),Integer.valueOf(oltDevice.getOrderNumber()), "create uplink OrderNumber mismatch");
+        Assert.assertEquals(uplinkDTO.getOltSlot(),oltDevice.getOltSlot(), "create uplink olt slot mismatch");
+        Assert.assertEquals(uplinkDTO.getOltPortNumber(),oltDevice.getOltPort(), "create uplink olt port mismatch");
+        Assert.assertEquals(uplinkDTO.getBngEndSz(),oltDevice.getBngEndsz(), "create uplink BNG EndSz mismatch");
+        Assert.assertEquals(uplinkDTO.getBngSlot(),oltDevice.getBngDownlinkSlot(), "create uplink BNG slot mismatch");
+        Assert.assertEquals(uplinkDTO.getBngPortNumber(),oltDevice.getBngDownlinkPort(), "create uplink BNG port mismatch");
+        Assert.assertEquals(uplinkDTO.getLsz(), UplinkDTO.LszEnum._4C1, "create uplink LSZ mismatch");
     }
 
     @Step("Create an AncpIpSubnetData entity")
@@ -174,6 +184,89 @@ public class FTTHMigrationRobot {
         Assert.assertEquals(discoveryStatus.getMode(), DiscoveryMode.MANUAL, "GetDiscoveryStatus discovery mode mismatch");
     }
 
+    @Step("Create discrepancy report. Delivers discrepancy data")
+    public InventoryCompareResult deviceDiscoveryCreateDiscrepancyReportTask(OltDevice oltDevice, String uuid) {
+        InventoryCompareResult inventoryCompareResult = oltDiscoveryClient.getClient()
+                .discrepancyControllerV2()
+                .compareWithResourceInventoryV2()
+                .discoveryIdQuery(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        //log.info("inventoryCompareResult = {}", inventoryCompareResult);
+        Assert.assertEquals(inventoryCompareResult.getDevice().getId(), oltDevice.getEndsz(), "InventoryCompareResult endSz missmatch");
+        Assert.assertEquals(inventoryCompareResult.getDevice().getChangeStatus(), ComponentCompareResultChangeStatus.ADDED, "InventoryCompareResult changeStatus missmatch");
+        Assert.assertEquals(inventoryCompareResult.getDevice().getAction(), ComponentCompareResultAction.UPDATE,  "InventoryCompareResult action missmatch");
+        return inventoryCompareResult;
+    }
+
+    @Step("Apply device discovery discrepancy to inventory")
+    public void deviceDiscoveryApplyDiscrepancyToInventoryTask(InventoryCompareResult inventoryCompareResult, String uuid ) {
+        oltDiscoveryClient.getClient()
+                .discrepancyControllerV2()
+                .applyChangesToResourceInventoryV2()
+                .discoveryIdQuery(uuid)
+                .body(inventoryCompareResult)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+        // response body is empty
+    }
+
+    @Step("Patch device and  set lifeCycleState to OPERATING")
+    public void patchDeviceLifeCycleState(Long oltDeviceId)  {
+        //oltResourceInventoryClient.getClient().deviceInternalController().patchDevice().body()
+
+    }
+
+    @Step("Checks olt data in olt-ri after migration process")
+    public Long checkOltMigrationResult(OltDevice oltDevice, boolean uplinkAncpExist) {
+        Long oltDeviceId = 0L;
+        String oltEndSz = oltDevice.getEndsz();
+
+        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+                .endszQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L, "device list mismatch");
+        Device deviceAfterMigration = deviceList.get(0);
+        Assert.assertEquals(deviceAfterMigration.getType(), Device.TypeEnum.OLT, "device type mismatch");
+        Assert.assertEquals(deviceAfterMigration.getEndSz(), oltEndSz, "device EndSz mismatch");
+        Assert.assertEquals(deviceAfterMigration.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "ddevice composite partyId mismatch");
+        oltDeviceId = deviceAfterMigration.getId();
+        Assert.assertTrue(oltDeviceId > 0);
+
+        Optional<Integer> portsCountOptional = deviceAfterMigration.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
+        long portsCount = portsCountOptional.orElse(0);
+        Assert.assertEquals(portsCount, oltDevice.getNumberOfPonSlots() * PORTS_PER_GPON_CARD, "numbers of pon ports mismatch");
+
+        Optional<Port> uplinkPort = deviceAfterMigration.getEquipmentHolders().stream()
+                .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(oltDevice.getOltSlot()))
+                .map(EquipmentHolder::getCard)
+                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
+                .flatMap(card -> card.getPorts().stream())
+                .filter(port -> port.getPortNumber().equals(oltDevice.getOltPort())).findFirst();
+        Assert.assertTrue(uplinkPort.isPresent(), "uplinkPort  not found");
+
+        if (!uplinkAncpExist) {
+            // check device lifecycle state
+            Assert.assertEquals(Device.LifeCycleStateEnum.NOT_OPERATING, deviceAfterMigration.getLifeCycleState(), "device without ANCP, device LifeCycleState mismatch");
+            // check uplink port lifecycle state
+            Assert.assertEquals(Port.LifeCycleStateEnum.NOT_OPERATING, uplinkPort.get().getLifeCycleState(), "device without ANCP, uplinkPort LifeCycleState mismatch");
+        } else {
+
+            // check device lifecycle state
+            Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterMigration.getLifeCycleState(), "device LifeCycleState mismatch");
+            // check uplink port lifecycle state
+            Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "uplinkPort LifeCycleState mismatch");
+
+            List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
+                    .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+
+            Assert.assertEquals(uplinksList.size(), 1);
+            UplinkDTO uplink = uplinksList.get(0);
+            Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE, "uplink not activ");
+            Assert.assertEquals(uplink.getAncpSessions().size(), 1, "ANCP session size");
+            Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCP session not active");
+        }
+        return oltDeviceId;
+    }
 
     @Step("Clear {oltDevice} device in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(OltDevice oltDevice) {
