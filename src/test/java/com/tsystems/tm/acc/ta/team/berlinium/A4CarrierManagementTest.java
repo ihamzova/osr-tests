@@ -102,6 +102,8 @@ public class A4CarrierManagementTest extends BaseTest {
 
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         Assert.assertEquals(allocatedL2BsaNSP.getLineId(),"Autotest-LineId");
+        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "1000");
+        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "100");
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
@@ -136,9 +138,8 @@ public class A4CarrierManagementTest extends BaseTest {
         a4CarrierManagement.sendPostForReleaseL2BsaNsp(nspL2BsaData.getUuid());
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         Assert.assertNull(allocatedL2BsaNSP.getLineId());
-        //System.out.println("ServiceBandwidth: " + allocatedL2BsaNSP.getServiceBandwidth());
-        //Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().getClass().getField("dataRateDown"),"undefined");
-
+        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
+        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
     }
 
     @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")

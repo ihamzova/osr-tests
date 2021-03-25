@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>1382.0</version>
+    <version>1383.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.83</osr.models.version>
+        <osr.models.version>0.0.84</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
         <oc.project.name>gigabit-tm-dynamic-digihub-89837</oc.project.name>
         <oc.pf.token>0yge4VAOLmqWAfSYiZLPECztSX5dD1a-uKsPkL2EFJs</oc.pf.token>

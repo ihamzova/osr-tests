@@ -24,12 +24,12 @@ public class A4MobileUiRobot {
 
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
-    public void openNetworkElementMobileSearchPage(){
+    public void openNetworkElementMobileSearchPage() {
         A4MobileNeSearchPage
                 .login();
     }
 
-    public String[] getSplittedVpszValues(String vpszUnsplitted){
+    public String[] getSplittedVpszValues(String vpszUnsplitted) {
         return vpszUnsplitted.split("/");
     }
 
@@ -66,7 +66,9 @@ public class A4MobileUiRobot {
     }
 
     @Step("Enter fsz")
-    public void enterFsz(String value) { $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value); }
+    public void enterFsz(String value) {
+        $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Read fsz")
     public String readFsz() {
@@ -74,7 +76,9 @@ public class A4MobileUiRobot {
     }
 
     @Step("Enter Category")
-    public void enterCategory(String category) {$(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);}
+    public void enterCategory(String category) {
+        $(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);
+    }
 
     @Step("Read Category")
     public String readCategory() {
@@ -83,42 +87,65 @@ public class A4MobileUiRobot {
 
     @Step("Read ZTP Ident")
     public String readZtpIdent() {
-        return $(A4MobileNeSearchPage.getZTPI_INPUT_FIELD_LOCATOR()).val();
+        return $(A4MobileNeSearchPage.getZTPI_INPUT_FIELD_LOCATOR()).getText();
     }
 
     @Step("Check planning")
-    public void checkPlanning() { $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();}
+    public void checkPlanning() {
+        $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Check if planning is checked")
-    public boolean checkIsPlanningChecked() { return $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).isSelected();}
+    public boolean checkIsPlanningChecked() {
+        return $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).isSelected();
+    }
 
     @Step("Check operating")
-    public void checkOperating() { $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();}
+    public void checkOperating() {
+        $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();
+    }
+
+    @Step("Check installing")
+    public void checkInstalling() {
+        $(A4MobileNeSearchPage.getINSTALLING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Check if operating is checked")
-    public boolean checkIsOperatingChecked() { return $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).isSelected();}
+    public boolean checkIsOperatingChecked() {
+        return $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).isSelected();
+    }
 
     @Step("Check radioButton")
-    public void checkRadioButton(String index) { $(A4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();}
+    public void checkRadioButton(String index) {
+        $(A4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();
+    }
 
     @Step("Click inbetriebnahme button")
-    public void clickInbetriebnahmeButton() { $(A4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();}
+    public void clickInbetriebnahmeButton() {
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();
+    }
 
     @Step("Click Monitoring Button")
-    public void clickMonitoringButton() {$(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();}
+    public void clickMonitoringButton() {
+        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();
+    }
 
 
     //inbetriebnahme-page
     @Step("Enter ztpIdent")
-    public void enterZtpIdent(String value) { $(A4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);}
+    public void enterZtpIdent(String value) {
+        $(A4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Back navigation")
-    public void clickFinishButton() {$(A4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();}
+    public void clickFinishButton() {
+        $(A4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();
+    }
 
     @Step("Remove Monitoring Item")
-    public void clickRemoveButton() {$(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();}
-
-
+    public void clickRemoveButton() {
+        $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+    }
 
 
     //monitoring-page
@@ -127,7 +154,7 @@ public class A4MobileUiRobot {
 
         $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
         assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
-        assertEquals(a4NeFilteredList.size() , 0);
+        assertEquals(a4NeFilteredList.size(), 0);
 
 
     }
@@ -148,31 +175,27 @@ public class A4MobileUiRobot {
         //VPSZ	FSZ	Type	Planning Device Name	ZTP Ident	Planned MatNumber	Lifecycle State	Operational State
 
         a4NeFilteredList.forEach((k, a4NetworkElement) -> {
-            assertTrue(concat.contains(a4NetworkElement.getVpsz()),a4NetworkElement.getVpsz());
-            assertTrue(concat.contains(a4NetworkElement.getFsz()),a4NetworkElement.getFsz());
-            assertTrue(concat.contains(a4NetworkElement.getType()),a4NetworkElement.getType());
-            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()),a4NetworkElement.getPlanningDeviceName());
-            assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()),a4NetworkElement.getPlannedMatNr());
-            //assertTrue(concat.contains(a4NetworkElement.getLifecycleState()),a4NetworkElement.getLifecycleState());
-            assertTrue(concat.contains(a4NetworkElement.getOperationalState()),a4NetworkElement.getOperationalState());
+            assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
+            assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
+            assertTrue(concat.contains(a4NetworkElement.getType()), a4NetworkElement.getType());
+            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
+            assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()), a4NetworkElement.getPlannedMatNr());
+            assertTrue(concat.contains(a4NetworkElement.getOperationalState()), a4NetworkElement.getOperationalState());
         });
 
         log.info("+++" + concat.toString());
 
-        a4NeFilteredList.forEach((k,v) -> log.info("+++" + v.getCategory()));
+        a4NeFilteredList.forEach((k, v) -> log.info("+++" + v.getCategory()));
 
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
-        assertEquals(concat.size()/6, a4NeFilteredList.size());
-
-
-
+        assertEquals(concat.size() / 6, a4NeFilteredList.size());
 
 
     }
 
     //helper methods
-    public void waitForTableToFullyLoad(int numberOfElements){
+    public void waitForTableToFullyLoad(int numberOfElements) {
 
         //add 1 to number of elements because of table header
         numberOfElements++;
