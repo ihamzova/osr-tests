@@ -30,6 +30,9 @@ public class A4SupportPage {
     @Getter
     public static final By A4_SUPPORT_UI_MOVE_FROM_DLQ_BUTTON_LOCATOR = byId("btnSupportMoveAllFromDeadletterQueueToNormal");
 
+    @Getter
+    public static final By A4_SUPPORT_UI_LIST_QUEUE_BUTTON_LOCATOR = byId("btnSupportListQueue");
+
     @Step("Validate page")
     public A4SupportPage validate() {
         $(A4_SUPPORT_UI_HEADER_LOCATOR).shouldBe(visible);
