@@ -1,7 +1,7 @@
 name: EndSz_49_7152_1234_76H1_MA5600
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
-  vpsz: "49/7152/1234/"
+  vpsz: "49/7152/1234"
   fsz: "76H1"
   bngEndsz: "49/30/179/43G1"
   bngDownlinkPort: "ge-3/5/7"

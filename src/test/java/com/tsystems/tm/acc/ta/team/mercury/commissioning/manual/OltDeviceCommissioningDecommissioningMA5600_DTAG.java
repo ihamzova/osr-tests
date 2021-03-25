@@ -60,7 +60,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends BaseTest {
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_7152_1234_76H1_MA5600);
-        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();

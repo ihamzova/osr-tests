@@ -60,7 +60,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends BaseTest {
 
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
-        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();

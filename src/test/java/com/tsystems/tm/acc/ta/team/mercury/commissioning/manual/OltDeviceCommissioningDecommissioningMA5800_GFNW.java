@@ -61,7 +61,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
         SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1234_76ZC_MA5800);
-        String endSz = oltDevice.getVpsz() + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         clearResourceInventoryDataBase(endSz);
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
