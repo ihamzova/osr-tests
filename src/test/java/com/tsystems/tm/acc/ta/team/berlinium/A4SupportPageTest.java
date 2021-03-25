@@ -109,7 +109,7 @@ public class A4SupportPageTest extends BaseTest {
     @Owner("Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - Empty DLQ")
-    public void testEmptyDlq() throws IOException {
+    public void testEmptyDlq() throws IOException, InterruptedException {
         // wiremock with 400 error
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
                 .addNemoMock400()
@@ -134,6 +134,50 @@ public class A4SupportPageTest extends BaseTest {
         // click Empty Dlq
         a4SupportPageRobot.openSupportPage();
         a4SupportPageRobot.clickMoveFromDlqButton();
+        a4SupportPageRobot.clickMoveFromDlqConfirmButton();
+        TimeUnit.SECONDS.sleep(8);
+        // comment because it is not working yet
+         a4SupportPageRobot.checkMoveMessagesMsg();
+
+        // check DLQ if empty
+        // comment because it is not working yet
+        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", 0);
+
+        //AFTER
+        wiremock.close();
+    }
+
+    @Test
+    @Owner("Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Support Page - List Queue")
+    public void testListQueue() throws IOException {
+        // wiremock with 400 error
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
+                .addNemoMock400()
+                .build();
+        wiremock.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
+        // write things in queue
+        a4NemoUpdater.triggerAsyncNemoUpdate(uuids);
+
+        // check DLQ
+        String count = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
+
+        // change wiremock
+        wiremock.close();
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
+                .addNemoMock()
+                .build();
+        wiremock.publish();
+
+        // click Empty Dlq
+        a4SupportPageRobot.openSupportPage();
+        a4SupportPageRobot.clickListQueueButton();
+
+        a4SupportPageRobot.checkTable();
 
         // comment because it is not working yet
         // a4SupportPageRobot.checkMoveMessagesMsg();

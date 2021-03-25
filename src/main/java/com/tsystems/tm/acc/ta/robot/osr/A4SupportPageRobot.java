@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.pages.osr.a4nemoupdater.A4SupportListQueuePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4nemoupdater.A4SupportMovePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4nemoupdater.A4SupportPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4nemoupdater.A4SupportUnblockPage;
@@ -15,6 +16,7 @@ public class A4SupportPageRobot {
     A4SupportPage a4SupportPage = new A4SupportPage();
     A4SupportUnblockPage a4SupportUnblockPage = new A4SupportUnblockPage();
     A4SupportMovePage a4SupportMovePage = new A4SupportMovePage();
+    A4SupportListQueuePage a4SupportListQueuePage = new A4SupportListQueuePage();
 
     @Step("Open UI, log in, and goTo support page")
     public void openSupportPage(){
@@ -44,17 +46,32 @@ public class A4SupportPageRobot {
 
     @Step("Check successful message - moved messages")
     public void checkMoveMessagesMsg() {
-        assertTrue(readMoveMsg().contains("move-all-from-deadletter-queue works!"));
+        assertTrue(readMoveMsg().contains("Einträge gesendet."));
     }
 
     @Step("")
     public String readMoveMsg(){
-        return $(a4SupportMovePage.getA4_SUPPORT_UI_MOVE_FROM_DLQ_MSG_LOCATOR_MSG_LOCATOR()).text();
+        return $(a4SupportMovePage.getA4_SUPPORT_UI_MOVE_FROM_DLQ_MSG_LOCATOR()).text();
     }
 
     @Step("Click move from nemo dlq button")
     public void clickMoveFromDlqButton() {
         $(a4SupportPage.getA4_SUPPORT_UI_MOVE_FROM_DLQ_BUTTON_LOCATOR()).click();
+    }
+
+    @Step("Click move from nemo dlq confirm button")
+    public void clickMoveFromDlqConfirmButton() {
+        $(a4SupportMovePage.getA4_SUPPORT_UI_MOVE_FROM_DLQ_BUTTON_LOCATOR()).click();
+    }
+
+    @Step("Click list queue button")
+    public void clickListQueueButton() {
+        $(a4SupportPage.getA4_SUPPORT_UI_LIST_QUEUE_BUTTON_LOCATOR()).click();
+    }
+
+    @Step("Check if table with queue list is existent")
+    public void checkTable() {
+        assertTrue($(a4SupportListQueuePage.getA4_SUPPORT_UI_TABLE_LOCATOR()).exists());
     }
 
 }

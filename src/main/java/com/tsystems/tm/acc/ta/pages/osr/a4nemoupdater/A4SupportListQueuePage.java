@@ -14,20 +14,17 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 
 @Slf4j
-public class A4SupportMovePage {
+public class A4SupportListQueuePage {
 
-    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-support-ui/move-all-from-deadletter-queue";
+    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-support-ui/list-queue";
 
     public static final By A4_SUPPORT_UI_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
 
     @Getter
-    public static final By A4_SUPPORT_UI_MOVE_FROM_DLQ_BUTTON_LOCATOR = byId("btnSupportCleanNemoQueue");
-
-    @Getter
-    public static final By A4_SUPPORT_UI_MOVE_FROM_DLQ_MSG_LOCATOR = byXpath("/html/body/app-root/div/app-support-portal/div/app-move-all-from-deadletter-queue/div/span");
+    public static final By A4_SUPPORT_UI_TABLE_LOCATOR = byId("thMessageID");
 
     @Step("Validate page")
-    public A4SupportMovePage validate() {
+    public A4SupportListQueuePage validate() {
         $(A4_SUPPORT_UI_HEADER_LOCATOR).shouldBe(visible);
         assertContains(url(), ENDPOINT);
         return this;

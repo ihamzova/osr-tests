@@ -4,9 +4,8 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.api.osr.A4NemoUpdaterClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.model.UpdateNemoTask;
-import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.model.UpdateNemoTaskAsync;
+import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.model.UpdateNemoTask;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ public class A4NemoUpdaterRobot {
 
     @Step("Trigger NEMO Update")
     public void triggerAsyncNemoUpdate(List<String> uuids) {
-        UpdateNemoTaskAsync updateNemoTaskAsync = new UpdateNemoTaskAsync();
+        ArrayList updateNemoTaskAsync = new ArrayList();
         updateNemoTaskAsync.addAll(uuids);
         a4NemoUpdater
                 .nemoUpdateServiceAsync()
