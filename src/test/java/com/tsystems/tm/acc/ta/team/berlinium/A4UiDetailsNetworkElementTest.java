@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryNeDetailRobot;
@@ -40,6 +41,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
     private final A4ResourceInventoryNeDetailRobot a4ResourceInventoryNeDetailRobot = new A4ResourceInventoryNeDetailRobot();
+    private final A4ResourceInventoryNeDetailPage a4ResourceInventoryNeDetailPage = new A4ResourceInventoryNeDetailPage();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neDataA;
@@ -58,10 +60,12 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        //neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
+          //      .get(A4NetworkElementCase.networkElementInstallingOlt01); // OLT01 hat Vpsz("49/1198/0")
         neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementInstallingOlt01);
+                .get(A4NetworkElementCase.networkElementInstallingOlt01); //
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
+                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01); // hat Vpsz("49/1198/0")
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -92,7 +96,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testDetailPageForNetworkElementInA4ResourceInventoryBrowserUi() {
+    public void testDetailPageForNetworkElementInA4ResourceInventoryBrowserUi() throws InterruptedException {
         // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
@@ -103,8 +107,6 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
         a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
         a4InventarSucheRobot.clickNeSearchButton();
-
-        // WHEN
 
         // Click first row in search result table
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
@@ -120,22 +122,21 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
 
         // sind wir auf der falschen Seite? ok bedeutet: /a4-inventory-browser/inventory-search
-        // a4InventarSuchePage.validate(); // es kommt eine Fehler, wir sind auf a4-resource-inventory-ui/a4-inventory-browser/network-element/xyz --> ok
-
+        // a4InventarSuchePage.validate(); // es kommt eine Fehler, also sind wir auf der richtigen Seite: a4-resource-inventory-ui/a4-inventory-browser/network-element/xyz --> ok
+        // warum funktioniert dann a4InventarSucheRobot.getNeElementsCollection()? auf der Seite sind wir nicht mehr!
 
         // Expect table data to be correct, compare inventory-search-page with NetworkElement-Details-page ??
         // warum ist die elementsCollection die Liste von der Detail-Page? sollte doch die inventory-search-page sein?
         // funktioniert das, weil die Tabellen-class auf beiden Seiten gleich ist? w3-table-all
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
-        System.out.println("+++ actual:   "+neDetailsResultList);
-        //assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
-        System.out.println("+++ expected:   "+neDetailsExpectedList);  // wird weiter unten manuell zusammengebaut
+        //System.out.println("+++ actual:   "+neDetailsResultList);
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+        // neDetailsExpectedList doppelt ausführen, führt zu anderem Ergebnis und damit zu Fehler
+        //System.out.println("+++ expected:   "+neDetailsExpectedList);  // wird weiter unten manuell zusammengebaut
 
-        // what do we compare?
-        //System.out.println("+++ expected: "+neDetailsExpectedList.toString());
-        //System.out.println("+++ actual:   "+neDetailsResultList.toString());
 
+        Thread.sleep(1000);
 
     }
 
@@ -155,6 +156,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
         a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
 
+
         // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
        // a4InventarSucheRobot.enterNeCategory("OLT");  // dropdown mit selectOptionByValue
        // a4InventarSucheRobot.checkboxNotWorking();
@@ -162,9 +164,21 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
         a4InventarSucheRobot.clickNeSearchButton();
 
+        // get uuid, ztpid, time
+        System.out.println("+++ uuid: "+a4InventarSucheRobot.getNeElementsCollection().get(0).innerText());
+        neDataA.setUuid(a4InventarSucheRobot.getNeElementsCollection().get(0).innerText());
+        neDataA.setZtpIdent(a4InventarSucheRobot.getNeElementsCollection().get(5).innerText());
+        neDataA.setCreationTime(a4InventarSucheRobot.getNeElementsCollection().get(10).innerText());
+        neDataA.setLastUpdateTime(a4InventarSucheRobot.getNeElementsCollection().get(11).innerText());
+
+        Thread.sleep(8000);
 
         // Click first row in search result table
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+
+
+
+
 
 
         // Wait 10 seconds (UI slow currently)
@@ -176,25 +190,55 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         }
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
 
-        Thread.sleep(5000);
+        a4ResourceInventoryNeDetailPage.validate();
+
+        System.out.println("+++ u: "+a4ResourceInventoryNeDetailRobot.readNeUuid());
+        System.out.println("+++ v: "+a4ResourceInventoryNeDetailRobot.readNeVpsz());
+        System.out.println("+++ f: "+a4ResourceInventoryNeDetailRobot.readNeFsz());
+        System.out.println("+++ c: "+a4ResourceInventoryNeDetailRobot.readNeCategory());
+        System.out.println("+++ t: "+a4ResourceInventoryNeDetailRobot.readNeType());
+        System.out.println("+++ p: "+a4ResourceInventoryNeDetailRobot.readNePlanningDeviceName());
+        System.out.println("+++ k: "+a4ResourceInventoryNeDetailRobot.readNeKlsId());
+        System.out.println("+++ z: "+a4ResourceInventoryNeDetailRobot.readNeZtpid());
+        System.out.println("+++ o: "+a4ResourceInventoryNeDetailRobot.readNeOps());
+        System.out.println("+++ l: "+a4ResourceInventoryNeDetailRobot.readNeLcs());
+        System.out.println("+++ c: "+a4ResourceInventoryNeDetailRobot.readNeCreationTime());
+        System.out.println("+++ l: "+a4ResourceInventoryNeDetailRobot.readNeLastUpdateTime());
 
 
-        // Click on NEL-loupe in thirst row
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataA.getUuid()); // nicht vorhanden in neData, oben gesetzt
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeVpsz(), neDataA.getVpsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeFsz(), neDataA.getFsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeCategory(), neDataA.getCategory());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeType(), neDataA.getType());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNePlanningDeviceName(), neDataA.getPlanningDeviceName());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeKlsId(), neDataA.getKlsId());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeZtpid(), neDataA.getZtpIdent()); // nicht vorhanden in neData, oben gesetzt
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeOps(), neDataA.getOperationalState());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeLcs(), neDataA.getLifecycleState());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeCreationTime(), neDataA.getCreationTime()); // nicht vorhanden in neData, oben gesetzt
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeLastUpdateTime(), neDataA.getLastUpdateTime()); // nicht vorhanden in neData, oben gesetzt
 
 
-        // check if we are at the NEL-page
+       // Thread.sleep(1000);
 
-
-
-
+        // Click on NEP/NEL-loupe in thirst row
+       // a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(0).click(); // comming-soon-page Port, ok
+       // a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(3).click(); // comming-soon-page Link, ok
 
 /*
-        // compare expected and actual result
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
-        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
-        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
 
- */
+        // compare expected and actual result
+        //ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection(); // falscher Robot auch ok
+        ElementsCollection elementsCollection = a4ResourceInventoryNeDetailRobot.getNelElementsCollection(); // richtiger Robot,
+        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+       // System.out.println("+++ Result: "+neDetailsResultList);
+        //System.out.println("+++ Expect: "+neDetailsExpectedList);
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+*/
+
+
+        Thread.sleep(2000);
     }
 
 
