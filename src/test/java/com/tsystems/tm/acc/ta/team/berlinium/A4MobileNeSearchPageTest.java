@@ -37,10 +37,8 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static org.testng.Assert.*;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
