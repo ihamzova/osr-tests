@@ -678,7 +678,7 @@ public class DpuCommissioningProcess extends BaseTest {
 
     }
 
-    @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
+    /*@Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
     @Description("Positive case. DPU-commissioning without errors")
     public void dpuCommissioningPositiveDomain() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
@@ -720,7 +720,7 @@ public class DpuCommissioningProcess extends BaseTest {
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
                             "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
         }
-    }
+    }*/
 
     private Consumer<RequestPatternBuilder> bodyContains(String str) {
         return requestPatternBuilder -> requestPatternBuilder.withRequestBody(containing(str));
