@@ -15,5 +15,8 @@ public class A4NetworkElement {
     private String type;
     private String plannedMatNr;
     private String planningDeviceName;
+    private String ztpIdent;
+    private String creationTime;
+    private String lastUpdateTime;
 
 }

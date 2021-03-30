@@ -8,7 +8,13 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElement
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNelDetailPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNepDetailPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryNeDetailRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
@@ -35,6 +41,11 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
+    private final A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
+    private final A4ResourceInventoryNeDetailRobot a4ResourceInventoryNeDetailRobot = new A4ResourceInventoryNeDetailRobot();
+    private final A4ResourceInventoryNeDetailPage a4ResourceInventoryNeDetailPage = new A4ResourceInventoryNeDetailPage();
+    private final A4ResourceInventoryNelDetailPage a4ResourceInventoryNelDetailPage = new A4ResourceInventoryNelDetailPage();
+    private final A4ResourceInventoryNepDetailPage a4ResourceInventoryNepDetailPage = new A4ResourceInventoryNepDetailPage();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neDataA;
@@ -54,9 +65,9 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementInstallingOlt01);
+                .get(A4NetworkElementCase.networkElementInstallingOlt01); // random-Vpsz
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
+                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01); // random-Vpsz
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -87,7 +98,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testDetailPageForNetworkElementInA4ResourceInventoryBrowserUi() {
+    public void testA4NeDetailPage() throws InterruptedException {
         // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
@@ -98,8 +109,6 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
         a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
         a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
         a4InventarSucheRobot.clickNeSearchButton();
-
-        // WHEN
 
         // Click first row in search result table
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
@@ -112,42 +121,196 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
             e.printStackTrace();
         }
 
-        // THEN
-
+        // now we have the detail-list with NE-Port, NE-Link and opposite NE
         // Expect table data to be correct
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
         assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+
     }
 
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-xxxx")
+    @Description("Test for Network Element Detail page")
+    public void testA4NeDetailPageAndClickOppositeNe() throws InterruptedException {
+
+        List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
+
+        // Execute steps which should lead to the actual page under test
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.clickNeSearchButton();
+
+        //Thread.sleep(1000);
+
+        // Click first row in search result table
+        a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+
+        // Wait 10 seconds (UI slow currently)
+        try {
+            final long SLEEP_TIMER = 10;
+            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // now we have the detail-list with NE-Port, NE-Link and opposite NE
+        a4ResourceInventoryNeDetailPage.validate();
+
+        // check ne-block
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataA.getUuid());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeVpsz(), neDataA.getVpsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeFsz(), neDataA.getFsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeCategory(), neDataA.getCategory());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeType(), neDataA.getType());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNePlanningDeviceName(), neDataA.getPlanningDeviceName());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeKlsId(), neDataA.getKlsId());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeOps(), neDataA.getOperationalState());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeLcs(), neDataA.getLifecycleState());
+
+        // compare expected and actual result
+        ElementsCollection elementsCollection = a4ResourceInventoryNeDetailRobot.getNelElementsCollection();
+        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+
+        // click opposite ne
+        a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(7).click();
+        // check uuid
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataB.getUuid());
+
+    }
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-xxxx")
+    @Description("Test for Network Element Detail page")
+    public void testA4NeDetailPageAndClickNepButton() throws InterruptedException {
+
+        List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
+
+        // Execute steps which should lead to the actual page under test
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.clickNeSearchButton();
+
+        // Click first row in search result table
+        a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+
+        // Wait 10 seconds (UI slow currently)
+        try {
+            final long SLEEP_TIMER = 10;
+            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // now we have the detail-list with NE-Port, NE-Link and opposite NE
+        a4ResourceInventoryNeDetailPage.validate();
+
+        // check ne-block
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataA.getUuid());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeVpsz(), neDataA.getVpsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeFsz(), neDataA.getFsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeCategory(), neDataA.getCategory());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeType(), neDataA.getType());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNePlanningDeviceName(), neDataA.getPlanningDeviceName());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeKlsId(), neDataA.getKlsId());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeOps(), neDataA.getOperationalState());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeLcs(), neDataA.getLifecycleState());
+
+        // compare expected and actual result
+        ElementsCollection elementsCollection = a4ResourceInventoryNeDetailRobot.getNelElementsCollection();
+        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+
+        // click nel-button
+        a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(0).click();
+        // check
+        a4ResourceInventoryNepDetailPage.validate();
+       // Thread.sleep(2000);
+    }
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-xxxx")
+    @Description("Test for Network Element Detail page")
+    public void testA4NeDetailPageAndClickNelButton() throws InterruptedException {
+
+        List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
+
+        // Execute steps which should lead to the actual page under test
+        a4InventarSucheRobot.openInventarSuchePage();
+        a4InventarSucheRobot.clickNetworkElement();
+        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
+        a4InventarSucheRobot.clickNeSearchButton();
+
+        // Click first row in search result table
+        a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+
+        // Wait 10 seconds (UI slow currently)
+        try {
+            final long SLEEP_TIMER = 10;
+            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // now we have the detail-list with NE-Port, NE-Link and opposite NE
+        a4ResourceInventoryNeDetailPage.validate();
+
+        // check ne-block
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataA.getUuid());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeVpsz(), neDataA.getVpsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeFsz(), neDataA.getFsz());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeCategory(), neDataA.getCategory());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeType(), neDataA.getType());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNePlanningDeviceName(), neDataA.getPlanningDeviceName());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeKlsId(), neDataA.getKlsId());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeOps(), neDataA.getOperationalState());
+        assertEquals(a4ResourceInventoryNeDetailRobot.readNeLcs(), neDataA.getLifecycleState());
+
+        // compare expected and actual result
+        ElementsCollection elementsCollection = a4ResourceInventoryNeDetailRobot.getNelElementsCollection();
+        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+
+        // click nel-button
+        a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(3).click();
+        // check
+        a4ResourceInventoryNelDetailPage.validate();
+       // Thread.sleep(2000);
+    }
+
+
+
+
+
+
+
+    // helper
     private List<NetworkElementDetails> generateExpectedData() {
         NetworkElementDetails neDetailsLine1 = new NetworkElementDetails();
-//        neDetailsLine1.setNeUuid(neDataA.getUuid());
         neDetailsLine1.setLogicalLabel(nepDataA.getFunctionalPortLabel());
         neDetailsLine1.setPhysicalLabel("10ge 0/1");
-//        neDetailsLine1.setNelUuid(nelData.getUuid());
         neDetailsLine1.setLsz("123");
         neDetailsLine1.setUewegeId(nelData.getUeWegId());
         neDetailsLine1.setLbz(nelData.getLbz());
-//        neDetailsLine1.setGegenstelleUuid(neDataB.getUuid());
         neDetailsLine1.setGegenstelleCategory(neDataB.getCategory());
         neDetailsLine1.setGegenstelleVpsz(neDataB.getVpsz());
 
-//        NetworkElementDetails neDetailsLine2 = new NetworkElementDetails();
-//        neDetailsLine2.setNeUuid(neDataB.getUuid());
-//        neDetailsLine2.setLogicalLabel(nepDataB.getFunctionalPortLabel());
-//        neDetailsLine2.setPhysicalLabel("0/0/49");
-//        neDetailsLine2.setNelUuid(nelData.getUuid());
-//        neDetailsLine2.setLsz("123");
-//        neDetailsLine2.setUewegeId(nelData.getUeWegId());
-//        neDetailsLine2.setLbz(nelData.getLbz());
-//        neDetailsLine2.setGegenstelleUuid(neDataA.getUuid());
-//        neDetailsLine2.setGegenstelleCategory(neDataA.getCategory());
-//        neDetailsLine1.setGegenstelleVpsz(neDataA.getVpsz());
-
         List<NetworkElementDetails> neDetailsExpectedList = new ArrayList<>();
         neDetailsExpectedList.add(neDetailsLine1);
-//        neDetailsExpectedList.add(neDetailsLine2);
 
         return neDetailsExpectedList;
     }
@@ -164,14 +327,11 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
 
         // Read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeDetailList; i++) {
-//            neDetailtList.get(i).setNeUuid(elementsCollection.get(i * numberOfColumnsNeDetailList).getText());
             neDetailtList.get(i).setLogicalLabel(elementsCollection.get(i * numberOfColumnsNeDetailList + 1).getText());
             neDetailtList.get(i).setPhysicalLabel(elementsCollection.get(i * numberOfColumnsNeDetailList + 2).getText());
-//            neDetailtList.get(i).setNelUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 3).getText());
             neDetailtList.get(i).setLsz(elementsCollection.get(i * numberOfColumnsNeDetailList + 4).getText());
             neDetailtList.get(i).setUewegeId(elementsCollection.get(i * numberOfColumnsNeDetailList + 5).getText());
             neDetailtList.get(i).setLbz(elementsCollection.get(i * numberOfColumnsNeDetailList + 6).getText());
-//            neDetailtList.get(i).setGegenstelleUuid(elementsCollection.get(i * numberOfColumnsNeDetailList + 7).getText());
             neDetailtList.get(i).setGegenstelleCategory(elementsCollection.get(i * numberOfColumnsNeDetailList + 8).getText());
             neDetailtList.get(i).setGegenstelleVpsz(elementsCollection.get(i * numberOfColumnsNeDetailList + 9).getText());
         }
