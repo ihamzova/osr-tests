@@ -1,0 +1,11 @@
+name: ancpSession_49_8571_0_76GA_MA5600
+template: com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData
+values:
+  partitionId: 2
+  rmkEndpointId: "1351535325"
+  sealConfigurationId: "0-19-0-2-16"
+  sessionId: 2
+  sessionType: "OLT"
+  vlan: 16
+  configurationStatus: "ACTIVE"
+  ipAddressAccessNode: "10.160.240.101"

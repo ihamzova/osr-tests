@@ -2,12 +2,10 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
-import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
@@ -27,9 +25,8 @@ import java.util.Arrays;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
-/*@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
+@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 @ServiceLog(WG_ACCESS_PROVISIONING_MS)
 @ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
@@ -38,7 +35,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @ServiceLog(LINE_ID_GENERATOR_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)
 @ServiceLog(ANCP_CONFIGURATION_MS)
-@ServiceLog(DPU_COMMISSIONING_MS)*/
+@ServiceLog(DPU_COMMISSIONING_MS)
 public class DpuCommissioningSDX2221 extends BaseTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
