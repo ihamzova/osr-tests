@@ -23,6 +23,10 @@ public class A4SupportListQueuePage {
     @Getter
     public static final By A4_SUPPORT_UI_TABLE_LOCATOR = byId("thMessageID");
 
+    @Getter
+    public static final By QueueElements_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");
+
+
     @Step("Validate page")
     public A4SupportListQueuePage validate() {
         $(A4_SUPPORT_UI_HEADER_LOCATOR).shouldBe(visible);
