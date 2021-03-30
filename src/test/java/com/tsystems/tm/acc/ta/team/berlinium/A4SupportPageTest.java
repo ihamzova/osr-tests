@@ -111,6 +111,7 @@ public class A4SupportPageTest extends BaseTest {
     @Description("Test Support Page - Empty DLQ")
     public void testEmptyDlq() throws IOException, InterruptedException {
         // wiremock with 400 error
+        //todo: wird leider kein Eintrag in DeadLetterQueue erzeugt
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
                 .addNemoMock400()
                 .build();
@@ -148,10 +149,10 @@ public class A4SupportPageTest extends BaseTest {
     }
 
     @Test
-    @Owner("Thea.John@telekom.de")
+    @Owner("Karin.Penne@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - List Queue")
-    public void testListQueue() throws IOException {
+    public void testListQueue() throws IOException, InterruptedException {
         // wiremock with 400 error
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
                 .addNemoMock400()
@@ -177,7 +178,8 @@ public class A4SupportPageTest extends BaseTest {
         a4SupportPageRobot.openSupportPage();
         a4SupportPageRobot.clickListQueueButton();
 
-        a4SupportPageRobot.checkTable();
+        TimeUnit.SECONDS.sleep(8);
+        a4SupportPageRobot.checkTable(Integer.parseInt(count));
 
         // comment because it is not working yet
         // a4SupportPageRobot.checkMoveMessagesMsg();

@@ -26,6 +26,7 @@ public class A4SupportMovePage {
     @Getter
     public static final By A4_SUPPORT_UI_MOVE_FROM_DLQ_MSG_LOCATOR = byXpath("/html/body/app-root/div/app-support-portal/div/app-move-all-from-deadletter-queue/div/span");
 
+
     @Step("Validate page")
     public A4SupportMovePage validate() {
         $(A4_SUPPORT_UI_HEADER_LOCATOR).shouldBe(visible);
