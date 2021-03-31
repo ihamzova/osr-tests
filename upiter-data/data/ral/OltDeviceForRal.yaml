@@ -1,0 +1,12 @@
+name: OltDeviceForRal
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+
+  vpsz: "49/30/179"
+  fsz: "76H1"
+  bezeichnung: "MA5600T"
+  oltSlot: "3"
+  portType: "PON"
+  oltPort: "0"
+  cardType: "GPON"
+  deviceType: "OLT"
