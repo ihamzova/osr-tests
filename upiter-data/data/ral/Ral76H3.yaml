@@ -1,0 +1,7 @@
+name: Ral76H3
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+
+  vpsz: "49/30/179"
+  fsz: "76H3"
+  deviceType: "OLT"

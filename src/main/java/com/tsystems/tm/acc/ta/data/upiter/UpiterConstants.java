@@ -21,4 +21,5 @@ public interface UpiterConstants {
     String ACCESS_PROCESS_MANAGEMENT = "access-process-management";
     String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
+    String RI_ABSTRACTION_LAYER_MS ="ri-abstraction-layer";
 }

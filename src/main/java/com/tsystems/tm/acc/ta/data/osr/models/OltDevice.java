@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OltDevice {
+    private String deviceType;
     private String vpsz;
     private String fsz;
     private String bngEndsz;
@@ -27,13 +28,16 @@ public class OltDevice {
     private String seriennummer;
     private String firmwareVersion;
     private String ipAdresse;
+    private String cardType;
     private String oltSlot;
     private String oltPort;
+    private String portType;
     private String uplinkSlot;
     private String uplinkPort;
     private Integer numberOfPonSlots;
     private Integer numberOfEthernetSlots;
     private Integer matNumber;
+
 
     @Override
     public String toString() {
