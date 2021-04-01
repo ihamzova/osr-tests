@@ -162,7 +162,7 @@ public class SealMapper {
                         )
                         .ports(
                                 Stream.of(
-                                        IntStream.range(1, 8)
+                                        IntStream.range(1, 17)
                                                 .mapToObj(i -> new CallbackgetaccessnodeinventoryrequestPayloadPorts()
                                                         .installedMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER)
                                                         .installedPartNumberSFP(OPTIC_VENDOR_PART_NUMBER)

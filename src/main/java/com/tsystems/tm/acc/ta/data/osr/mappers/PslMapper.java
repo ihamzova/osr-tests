@@ -86,6 +86,48 @@ public class PslMapper {
                 );
     }
 
+    public ReadEquipmentResponseHolder getReadEquipmentAdtranResponseHolder(OltDevice oltDevice) {
+        return new ReadEquipmentResponseHolder()
+                .success(true)
+                .response(
+                        new ReadEquipmentResponse()
+                                .messageContext(new MessageContext()
+                                        .correlationId("{{jsonPath request.body '$.messageContext.correlationId'}}")
+                                        .sender("{{jsonPath request.body '$.messageContext.sender'}}")
+                                        .target("{{jsonPath request.body '$.messageContext.target'}}")
+                                )
+                                .responseData(new ReadEquipmentResponseData()
+                                        .header(new Header()
+                                                .anfoKen("{{jsonPath request.body '$.requestData.header.anfoKen'}}")
+                                                .partner("{{jsonPath request.body '$.requestData.header.partner'}}")
+                                        )
+                                        .status(new Status()
+                                                .id("ZDIB")
+                                                .logMsgNo("string")
+                                                .logNo("0000000000")
+                                                .message("Die Anforderung wurde ausgeführt.")
+                                                .messageV1("")
+                                                .number("000")
+                                                .system("Linux")
+                                                .type("S")
+                                        )
+                                        .addEquipmentItem(new Equipment()
+                                                .equnr("212880011")
+                                                .tplnr(oltDevice.getTplnr())
+                                                .hequi("212879995")
+                                                .heqnr("0056")
+                                                .submt(String.valueOf(oltDevice.getMatNumber()))
+                                                .eqart("G")
+                                                .endsz(oltDevice.getEndsz())
+                                                .serge("21023533106TG4900198")
+                                                .anzEbenen("1")
+                                                .adrId(oltDevice.getVst().getAddress().getKlsId())
+                                                .asb("1"))
+                                )
+
+                );
+    }
+
     public ReadEquipmentResponseHolder getReadEquipmentResponseHolder(EquipmentData equipmentData, A4NetworkElement networkElement) {
         return new ReadEquipmentResponseHolder()
                 .success(true)

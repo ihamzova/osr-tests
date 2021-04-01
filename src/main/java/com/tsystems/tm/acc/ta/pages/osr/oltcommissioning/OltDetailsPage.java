@@ -64,6 +64,7 @@ public class OltDetailsPage {
     private static final By DEVICE_LIFE_CYCLE_STATE_LOCATOR = byQaData("device_lifecyclestate");
     public String slotPortViewLocator = "a-card-portview-slot-%s";
     public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
+    public String portLifeCycleStateLocatorEmptySlot = "port_%s_ethernet_lifecyclestate";
 
     public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
     public static final By DELETE_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option_3");
@@ -84,8 +85,10 @@ public class OltDetailsPage {
     @Step("Open port view")
     public OltDetailsPage openPortView(String slot) {
         $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-        if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
-            $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        if(slot != null && !slot.isEmpty()) {
+            if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
+                $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+            }
         }
         return this;
     }
@@ -99,8 +102,10 @@ public class OltDetailsPage {
 
     @Step("Input uplink parameters")
     public OltDetailsPage inputUplinkParameters(OltDevice olt) {
-        $(OLT_SLOT_SELECT_LOCATOR).click();
-        $(byQaData(String.format(slotValueLocatorString, olt.getOltSlot()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        if(olt.getOltSlot() != null) {
+            $(OLT_SLOT_SELECT_LOCATOR).click();
+            $(byQaData(String.format(slotValueLocatorString, olt.getOltSlot()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        }
         $(OLT_PORT_SELECT_LOCATOR).click();
         $(byQaData(String.format(portValueLocatorString, olt.getOltPort()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
         $(BNG_ENDSZ_INPUT_LOCATOR).val(olt.getBngEndsz());
@@ -265,6 +270,11 @@ public class OltDetailsPage {
 
     @Step("Get port life cycle state")
     public String getPortLifeCycleState(String slot, String port) {
-        return $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText();
+        if(slot != null && !slot.isEmpty()) {
+            return $(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText(); // HUAWEI
+        } else {
+            return $(byQaData(String.format(portLifeCycleStateLocatorEmptySlot, port))).getText(); // Adtran without Slots
+        }
+
     }
 }

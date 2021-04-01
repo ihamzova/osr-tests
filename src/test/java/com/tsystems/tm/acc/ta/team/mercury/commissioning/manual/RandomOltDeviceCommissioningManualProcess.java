@@ -52,11 +52,12 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
         oltResourceInventoryClient = new OltResourceInventoryClient();
 
         OsrTestContext context = OsrTestContext.get();
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
         Random rnd = new Random();
         char c = (char) ('B' + rnd.nextInt(25));
-        oltDevice.setFsz("76H" + c);
-        oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
+        //oltDevice.setFsz("76H" + c);
+        //oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
         //oltDevice.setFsz("76HC");
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
@@ -81,7 +82,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);
-        clearResourceInventoryDataBase(endSz);
+        //clearResourceInventoryDataBase(endSz);
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -106,6 +107,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
@@ -146,12 +148,16 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
      */
     public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
-        for (int port = 0; port <= 1; ++port) {
+        int startPort = 0;
+        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+            startPort = 1;
+        }
+        for (int port = startPort; port <= 1; ++port) {
             log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, device.getOltSlot(), detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
             if (device.getOltPort().equals((Integer.toString(port)))) {
-                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "active uplink portstate");
             } else {
-                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "non active uplink portstate");
             }
         }
     }
@@ -160,6 +166,11 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
      * check device MA5800 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5800(String endSz) {
+
+        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+         return;
+        }
+
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(deviceList.size(), 1L);
