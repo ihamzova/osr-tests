@@ -147,4 +147,40 @@ public class SealMapper {
                 );
 
     }
+
+    public CallbackGetAccessnodeInventoryRequest getCallbackGetAccessnodeAdtranInventoryRequest(OltDevice olt) {
+        return new CallbackGetAccessnodeInventoryRequest()
+                .payload(new CallbackgetaccessnodeinventoryrequestPayload()
+                        .managedElement(new CallbackgetaccessnodeinventoryrequestPayloadManagedElement()
+                                .name(olt.getEndsz().replace('/', '_'))
+                                .ipAddress(olt.getIpAdresse())
+                                .productName(olt.getBezeichnung())
+                                .manufacturer(olt.getHersteller())
+                                .softwareVersion(olt.getFirmwareVersion())
+                                .resourceState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.ResourceStateEnum.WORKING)
+                                .communicationState(CallbackgetaccessnodeinventoryrequestPayloadManagedElement.CommunicationStateEnum.AVAILABLE)
+                        )
+                        .ports(
+                                Stream.of(
+                                        IntStream.range(1, 8)
+                                                .mapToObj(i -> new CallbackgetaccessnodeinventoryrequestPayloadPorts()
+                                                        .installedMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER)
+                                                        .installedPartNumberSFP(OPTIC_VENDOR_PART_NUMBER)
+                                                        .port(String.valueOf(i))
+                                                        .portType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.PON)
+                                                        .shelf(DEFAULT_SHELF)),
+                                        IntStream.range(1, 2)
+                                                .mapToObj(i -> new CallbackgetaccessnodeinventoryrequestPayloadPorts()
+                                                        .installedMatNumberSFP("")
+                                                        .installedPartNumberSFP("")
+                                                        .port(String.valueOf(i))
+                                                        .portType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.ETHERNET)
+                                                        .shelf(DEFAULT_SHELF))
+
+                                )
+                                        .flatMap(i -> i)
+                                        .collect(Collectors.toList())
+                        ));
+
+    }
 }
