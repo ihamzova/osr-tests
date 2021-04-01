@@ -1,4 +1,4 @@
-name: EndSz_49_8571_0_76HE_SDX_6320-16
+name: EndSz_49_8571_0_76HE_SDX_6320_16
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/8571/0"
