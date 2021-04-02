@@ -29,14 +29,12 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5800"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioningAdtran"/>
         </classes>
     </test>
     <test thread-count="1" name="FTTH Postprovisioning(for 5600 device) Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.Postprovisioning"/>
-            <!--<class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.OnDemandAccessLine"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.Postprovisioning16_24"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.Postprovisioning24_32"/>-->
         </classes>
     </test>
     <test thread-count="1" name="HomeId, LineId Backend Tests">
