@@ -84,7 +84,7 @@ public class OltProvisioningAdtran extends BaseTest {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        Assert.assertEquals(getPonPorts().size(), 16);
+        Assert.assertEquals(getPonPorts().size(), 1);
 
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
         checkDevicePostConditions(portEmpty);
