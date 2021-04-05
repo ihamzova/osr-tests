@@ -10,8 +10,8 @@ import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.ui.BaseTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_2_0.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -84,10 +84,10 @@ public class OltProvisioningAdtran extends BaseTest {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        Assert.assertEquals(getPonPorts().size(), 16);
-
+        Assert.assertEquals(getPonPorts().size(), 1);
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
-        checkDevicePostConditions(portEmpty);
+        accessLineRiRobot.checkProvisioningResults(portEmpty);
+        //checkDevicePostConditions(portEmpty);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class OltProvisioningAdtran extends BaseTest {
 
     private List<Port> getPonPorts() {
         return wgAccessProvisioningRobot.getDevice(portEmpty).getPorts().stream()
-                .filter(ponPort -> ponPort.getPortType().equals(PON))
+                .filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString()))
                 .collect(Collectors.toList());
     }
 
