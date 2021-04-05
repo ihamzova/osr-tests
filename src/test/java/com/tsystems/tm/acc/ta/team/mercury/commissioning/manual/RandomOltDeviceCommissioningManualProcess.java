@@ -8,12 +8,12 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
@@ -35,11 +35,13 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog("olt-resource-inventory")
-@ServiceLog("ea-ext-route")
-@ServiceLog("olt-discovery")
-@ServiceLog("ancp-configuration")
-public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
+@ServiceLog({
+        "olt-resource-inventory",
+        "ea-ext-route",
+        "olt-discovery",
+        "ancp-configuration"
+})
+public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private OltResourceInventoryClient oltResourceInventoryClient;
@@ -91,7 +93,7 @@ public class RandomOltDeviceCommissioningManualProcess extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();

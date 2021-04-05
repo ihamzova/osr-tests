@@ -11,7 +11,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
 @ServiceLog(A4_NEMO_UPDATER_MS)
 @ServiceLog(ACCESS_LINE_MANAGEMENT)*/
-public class NewTpFromNemoWithPreprovisioningAndNspCreation extends BaseTest {
+public class NewTpFromNemoWithPreprovisioningAndNspCreation extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();

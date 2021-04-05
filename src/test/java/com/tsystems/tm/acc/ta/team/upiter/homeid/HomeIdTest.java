@@ -2,10 +2,10 @@ package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
 import com.tsystems.tm.acc.data.upiter.models.homeidbatch.HomeIdBatchCase;
 import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.home.id.management.v1_3_0.client.model.PoolHomeId;
 import com.tsystems.tm.acc.tests.osr.home.id.management.v1_3_0.client.model.SingleHomeId;
 import io.qameta.allure.Description;
@@ -20,7 +20,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @ServiceLog(HOME_ID_MANAGEMENT_MS)
-public class HomeIdTest extends BaseTest {
+public class HomeIdTest extends GigabitTest {
 
     private HomeIdManagementRobot homeIdManagementRobot;
     private HomeIdBatch homeIdBatch;

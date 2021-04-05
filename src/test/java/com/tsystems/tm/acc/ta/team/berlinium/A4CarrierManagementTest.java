@@ -10,7 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4CarrierManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileL2BsaDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -33,7 +33,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 @Epic("OS&R domain")
 @Feature("allocate one free L2BSA NSP for a dedicated AccessLine")
 // müssen wir noch anlegen: @TmsLink("DIGIHUB-57771")
-public class A4CarrierManagementTest extends BaseTest {
+public class A4CarrierManagementTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
 

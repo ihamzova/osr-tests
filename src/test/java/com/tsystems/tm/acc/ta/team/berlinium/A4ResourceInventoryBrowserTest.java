@@ -7,8 +7,8 @@ import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ImportPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 
 
 @Slf4j
-public class A4ResourceInventoryBrowserTest extends BaseTest {
+public class A4ResourceInventoryBrowserTest extends GigabitTest {
 
     private final A4ResourceInventoryBrowserRobot a4ResourceInventoryBrowserRobot = new A4ResourceInventoryBrowserRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -29,7 +29,7 @@ public class A4ResourceInventoryBrowserTest extends BaseTest {
     @BeforeClass()
     public void init() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test
