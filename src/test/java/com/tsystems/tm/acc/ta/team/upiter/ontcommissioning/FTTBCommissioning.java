@@ -2,11 +2,11 @@ package com.tsystems.tm.acc.ta.team.upiter.ontcommissioning;
 
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.PortType;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.ProfileState;
@@ -20,11 +20,13 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.AssertJUnit.assertEquals;
 
-@ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(GATEWAY_ROUTE_MS)
-public class FTTBCommissioning extends BaseTest {
+@ServiceLog({
+        ONT_OLT_ORCHESTRATOR_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+public class FTTBCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();

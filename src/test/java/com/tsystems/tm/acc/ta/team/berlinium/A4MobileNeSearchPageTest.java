@@ -15,8 +15,8 @@ import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
@@ -45,7 +45,7 @@ import static org.testng.Assert.*;
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
 @ServiceLog(A4_INVENTORY_IMPORTER_MS)*/
 @Slf4j
-public class A4MobileNeSearchPageTest extends BaseTest {
+public class A4MobileNeSearchPageTest extends GigabitTest {
 
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
     private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
@@ -109,7 +109,7 @@ public class A4MobileNeSearchPageTest extends BaseTest {
     @BeforeClass()
     public void init() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);

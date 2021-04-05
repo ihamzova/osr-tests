@@ -6,13 +6,13 @@ import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import io.qameta.allure.Description;
@@ -28,14 +28,16 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
 
 
-@ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(WG_ACCESS_PROVISIONING_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(GATEWAY_ROUTE_MS)
-public class OntCommissioning extends BaseTest {
+@ServiceLog({
+        ONT_OLT_ORCHESTRATOR_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+public class OntCommissioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();

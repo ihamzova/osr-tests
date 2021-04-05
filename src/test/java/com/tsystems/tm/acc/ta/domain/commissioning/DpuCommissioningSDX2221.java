@@ -7,11 +7,11 @@ import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsCont
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
@@ -26,17 +26,19 @@ import java.util.Arrays;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(WG_ACCESS_PROVISIONING_MS)
-@ServiceLog(WG_FTTB_ACCESS_PROVISIONING_MS)
-@ServiceLog(OLT_RESOURCE_INVENTORY_MS)
-@ServiceLog(EA_EXT_ROUTE_MS)
-@ServiceLog(LINE_ID_GENERATOR_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT)
-@ServiceLog(ANCP_CONFIGURATION_MS)
-@ServiceLog(DPU_COMMISSIONING_MS)
-public class DpuCommissioningSDX2221 extends BaseTest {
+@ServiceLog({
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        WG_FTTB_ACCESS_PROVISIONING_MS,
+        OLT_RESOURCE_INVENTORY_MS,
+        EA_EXT_ROUTE_MS,
+        LINE_ID_GENERATOR_MS,
+        ACCESS_LINE_MANAGEMENT,
+        ANCP_CONFIGURATION_MS,
+        DPU_COMMISSIONING_MS
+})
+public class DpuCommissioningSDX2221 extends GigabitTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
@@ -69,7 +71,7 @@ public class DpuCommissioningSDX2221 extends BaseTest {
     @Owner("DL-T-Magic.Mercury@telekom.de")
     public void dpuCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)

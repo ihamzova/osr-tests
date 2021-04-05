@@ -5,9 +5,9 @@ import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A10nspCheckRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
@@ -23,7 +23,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @Epic("OS&R")
 @Feature("Description Check if an a10nsp exists for a given LineId")
 @TmsLink("DIGIHUB-54117") // This is the Jira id of TestSet
-public class CheckLineIdTest extends BaseTest {
+public class CheckLineIdTest extends GigabitTest {
 
     private A10nspCheckData checkLineIdA10nsp;
     private A10nspCheckData checkLineIdA10nspNotFound;

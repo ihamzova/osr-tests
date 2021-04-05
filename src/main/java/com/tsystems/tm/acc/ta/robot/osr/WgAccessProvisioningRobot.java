@@ -6,10 +6,10 @@ import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
-import com.tsystems.tm.acc.ta.helpers.log.ContainsExpecter;
-import com.tsystems.tm.acc.ta.helpers.log.batch.ServiceLogExpectSince;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.LogConverter;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
+import com.tsystems.tm.acc.ta.log.ContainsExpecter;
+import com.tsystems.tm.acc.ta.log.ServiceLogExpectSince;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
@@ -18,6 +18,8 @@ import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.H
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v1_6_0.client.model.PortDto;
+import de.telekom.it.t3a.kotlin.log.ServiceDiscoveryStrategy;
+import de.telekom.it.t3a.kotlin.log.query.ServiceDescriptor;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +36,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
-import static com.tsystems.tm.acc.ta.helpers.WiremockHelper.CONSUMER_ENDPOINT;
-import static com.tsystems.tm.acc.ta.helpers.log.batch.ServiceLogExpectSince.given;
+import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
@@ -116,11 +117,8 @@ public class WgAccessProvisioningRobot {
     public void startWgAccessProvisioningLog() throws InterruptedException {
         // Set a start time from which logs will be fetched
 
-        logExpect =
-                given().service(WG_ACCESS_PROVISIONING_MS)
-                        .expect(WG_ACCESS_PROVISIONING_MS,
-                                new ContainsExpecter("business_information"))
-                        .buildAndStart();
+        logExpect = new ServiceLogExpectSince(new ServiceDescriptor(WG_ACCESS_PROVISIONING_MS, ServiceDiscoveryStrategy.APP));
+        logExpect.attach(WG_ACCESS_PROVISIONING_MS, new ContainsExpecter("business_information"));
         Thread.sleep(10000);
     }
 

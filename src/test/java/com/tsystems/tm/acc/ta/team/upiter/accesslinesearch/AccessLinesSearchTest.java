@@ -9,13 +9,13 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Address;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -31,10 +31,12 @@ import java.util.regex.Pattern;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
-@ServiceLog(ACCESS_MANAGEMENT_SUPPORT_UI_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(ACCESS_LINE_BFF_PROXY_MS)
-public class AccessLinesSearchTest extends BaseTest {
+@ServiceLog({
+        ACCESS_MANAGEMENT_SUPPORT_UI_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        ACCESS_LINE_BFF_PROXY_MS
+})
+public class AccessLinesSearchTest extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private AccessLineResourceInventoryClient alResourceInventory;
@@ -55,7 +57,7 @@ public class AccessLinesSearchTest extends BaseTest {
         addressWithKlsId = context.getData().getAddressDataProvider().get(AddressCase.linesByKlsId);
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.linesByOnt);
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
         prepareData();
     }
 
