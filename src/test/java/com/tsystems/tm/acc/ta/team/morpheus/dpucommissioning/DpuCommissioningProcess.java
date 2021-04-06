@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
@@ -30,7 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 
-public class DpuCommissioningProcess extends BaseTest {
+public class DpuCommissioningProcess extends GigabitTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;
     private ETCDRobot etcdRobot;

@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
-import com.tsystems.tm.acc.ta.apitest.ApiTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -25,7 +25,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
 @TmsLink("DIGIHUB-xxxxx")
-public class A4NemoUpdateTest extends ApiTest {
+public class A4NemoUpdateTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();

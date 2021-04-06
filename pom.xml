@@ -6,20 +6,18 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>1431.0</version>
+    <version>1431.1</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>0.1.66.6</version>
+        <version>11.6</version>
     </parent>
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.85</osr.models.version>
+        <osr.models.version>0.0.86</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
-        <oc.project.name>gigabit-tm-dynamic-digihub-89837</oc.project.name>
-        <oc.pf.token>0yge4VAOLmqWAfSYiZLPECztSX5dD1a-uKsPkL2EFJs</oc.pf.token>
     </properties>
 
     <profiles>
@@ -29,7 +27,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
             </properties>
         </profile>
         <profile>
@@ -38,7 +36,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
             </properties>
         </profile>
         <profile>
@@ -47,7 +45,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <log.access.strategy>OC</log.access.strategy>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
             </properties>
         </profile>
         <profile>
@@ -81,19 +79,6 @@
             </properties>
         </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>automation</id>
-            <name>automation</name>
-            <url>http://digihub-wbench.psst.t-online.corp/nexus/content/repositories/automation/</url>
-        </repository>
-        <repository>
-            <id>stage</id>
-            <name>stage</name>
-            <url>http://digihub-wbench.psst.t-online.corp/nexus/content/repositories/stage/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>

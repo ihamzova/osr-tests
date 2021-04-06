@@ -4,11 +4,11 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.networklineprofiledata.NetworkLineProfileDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -19,13 +19,15 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(WG_ACCESS_PROVISIONING_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(GATEWAY_ROUTE_MS)
-public class SubscriberNetworklineProfile extends BaseTest {
+@ServiceLog({
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+public class SubscriberNetworklineProfile extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private NetworkLineProfileManagementRobot networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();

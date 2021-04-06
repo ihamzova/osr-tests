@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsCont
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.MobileDpuBffRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import org.testng.annotations.BeforeClass;
@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 
-public class WorkorderDpuInstallation extends BaseTest  {
+public class WorkorderDpuInstallation extends GigabitTest  {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private MobileDpuBffRobot mobileDpuBffRobot;
     private Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);

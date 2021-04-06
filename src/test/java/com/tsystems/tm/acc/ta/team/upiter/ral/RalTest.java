@@ -3,10 +3,10 @@ package com.tsystems.tm.acc.ta.team.upiter.ral;
 
 import com.tsystems.tm.acc.data.upiter.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.RiAbstractionLayerRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.model.Device;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -21,7 +21,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.RI_ABSTRACTION_
 import static org.testng.Assert.assertEquals;
 
 @ServiceLog(RI_ABSTRACTION_LAYER_MS)
-public class RalTest extends BaseTest {
+public class RalTest extends GigabitTest {
 
   private OltDevice deviceForRal;
   private RiAbstractionLayerRobot riAbstractionLayerRobot = new RiAbstractionLayerRobot();

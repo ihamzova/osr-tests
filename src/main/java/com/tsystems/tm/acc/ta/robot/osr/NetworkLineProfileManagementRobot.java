@@ -21,7 +21,7 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
-import static com.tsystems.tm.acc.ta.helpers.WiremockHelper.CONSUMER_ENDPOINT;
+import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 

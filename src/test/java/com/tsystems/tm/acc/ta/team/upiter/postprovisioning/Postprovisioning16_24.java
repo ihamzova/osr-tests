@@ -6,11 +6,11 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -25,11 +25,13 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.GATEWAY_ROUTE_MS;
 
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(WG_ACCESS_PROVISIONING_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(GATEWAY_ROUTE_MS)
-public class Postprovisioning16_24 extends BaseTest {
+@ServiceLog({
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+public class Postprovisioning16_24 extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
