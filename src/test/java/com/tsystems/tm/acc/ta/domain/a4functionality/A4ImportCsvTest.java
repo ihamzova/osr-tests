@@ -9,8 +9,8 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.*;
@@ -29,7 +29,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
 @ServiceLog(A4_NEMO_UPDATER_MS)*/
-public class A4ImportCsvTest extends BaseTest {
+public class A4ImportCsvTest extends GigabitTest {
 
     private final OsrTestContext context = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
@@ -42,7 +42,7 @@ public class A4ImportCsvTest extends BaseTest {
     @BeforeClass
     public void init() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
 

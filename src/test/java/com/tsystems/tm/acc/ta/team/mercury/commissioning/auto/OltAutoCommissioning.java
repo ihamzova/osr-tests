@@ -7,12 +7,12 @@ import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
@@ -30,14 +30,11 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 @Slf4j
-@ServiceLog("olt-resource-inventory")
-@ServiceLog("ea-ext-route")
-@ServiceLog("olt-discovery")
-@ServiceLog("ancp-configuration")
+@ServiceLog({"olt-resource-inventory", "ea-ext-route", "olt-discovery", "ancp-configuration"})
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
 @TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
-public class OltAutoCommissioning extends BaseTest {
+public class OltAutoCommissioning extends GigabitTest {
 
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
@@ -62,7 +59,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
@@ -87,7 +84,7 @@ public class OltAutoCommissioning extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
         String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();

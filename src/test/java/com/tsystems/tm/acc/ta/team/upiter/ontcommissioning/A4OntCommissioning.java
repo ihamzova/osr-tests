@@ -6,12 +6,12 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
@@ -29,14 +29,16 @@ import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNull;
 
 
-@ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(WG_A4_PROVISIONING_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(APIGW_MS)
-public class A4OntCommissioning extends BaseTest {
+@ServiceLog({
+        ONT_OLT_ORCHESTRATOR_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        WG_A4_PROVISIONING_MS,
+        DECOUPLING_MS,
+        APIGW_MS
+})
+public class A4OntCommissioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();

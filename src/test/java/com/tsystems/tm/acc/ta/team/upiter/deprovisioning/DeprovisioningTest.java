@@ -2,11 +2,11 @@ package com.tsystems.tm.acc.ta.team.upiter.deprovisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterMethod;
@@ -16,13 +16,15 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
-@ServiceLog(WG_ACCESS_PROVISIONING_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT_MS)
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(GATEWAY_ROUTE_MS)
-public class DeprovisioningTest extends BaseTest {
+@ServiceLog({
+        WG_ACCESS_PROVISIONING_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+public class DeprovisioningTest extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;

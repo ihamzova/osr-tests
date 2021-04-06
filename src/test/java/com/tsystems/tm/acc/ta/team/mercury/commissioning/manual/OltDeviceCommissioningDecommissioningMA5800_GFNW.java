@@ -7,13 +7,13 @@ import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
@@ -31,10 +31,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 
 
 @Slf4j
-@ServiceLog("olt-resource-inventory")
-@ServiceLog("olt-discovery")
-@ServiceLog("ancp-configuration")
-public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
+@ServiceLog({"olt-resource-inventory", "olt-discovery", "ancp-configuration"})
+public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTest {
     private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
     private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
@@ -58,7 +56,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends BaseTest {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1234_76ZC_MA5800);
         String endSz = oltDevice.getEndsz();

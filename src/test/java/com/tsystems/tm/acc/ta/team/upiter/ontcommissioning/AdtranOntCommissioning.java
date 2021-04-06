@@ -4,11 +4,11 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.OntState;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.model.ProfileState;
@@ -25,11 +25,13 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
 
 
-@ServiceLog(ONT_OLT_ORCHESTRATOR_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(DECOUPLING_MS)
-@ServiceLog(APIGW_MS)
-public class AdtranOntCommissioning extends BaseTest {
+@ServiceLog({
+        ONT_OLT_ORCHESTRATOR_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        DECOUPLING_MS,
+        APIGW_MS
+})
+public class AdtranOntCommissioning extends GigabitTest {
 
   private final AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private final OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();

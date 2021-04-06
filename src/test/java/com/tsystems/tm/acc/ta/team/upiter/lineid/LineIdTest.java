@@ -5,9 +5,9 @@ import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.PoolL
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.SingleLineId;
 import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
 import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
-import com.tsystems.tm.acc.ta.helpers.log.ServiceLog;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -22,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @ServiceLog(LINE_ID_GENERATOR_MS)
-public class LineIdTest extends BaseTest {
+public class LineIdTest extends GigabitTest {
 
   private LineIdGeneratorClient lineidGeneratorClient;
   private LineIdBatch lineIdBatch;

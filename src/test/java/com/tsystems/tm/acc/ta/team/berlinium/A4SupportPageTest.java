@@ -7,8 +7,8 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4SupportPageRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
@@ -30,7 +30,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @Slf4j
-public class A4SupportPageTest extends BaseTest {
+public class A4SupportPageTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
@@ -43,7 +43,7 @@ public class A4SupportPageTest extends BaseTest {
     @BeforeMethod()
     public void doLogin() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     @BeforeClass()

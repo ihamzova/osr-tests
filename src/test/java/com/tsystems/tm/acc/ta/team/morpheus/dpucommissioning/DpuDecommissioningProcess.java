@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
@@ -29,7 +29,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 
 
-public class DpuDecommissioningProcess extends BaseTest {
+public class DpuDecommissioningProcess extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private DpuCommissioningRobot dpuCommissioningRobot;

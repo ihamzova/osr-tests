@@ -16,8 +16,8 @@ import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryNeDetailRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.ui.BaseTest;
-import com.tsystems.tm.acc.ta.util.driver.SelenideConfigurationManager;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+
 import io.qameta.allure.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4UiDetailsNetworkElementTest extends BaseTest {
+public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
@@ -60,7 +60,7 @@ public class A4UiDetailsNetworkElementTest extends BaseTest {
     @BeforeClass()
     public void init() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        SelenideConfigurationManager.get().setLoginData(loginData.getLogin(), loginData.getPassword());
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
