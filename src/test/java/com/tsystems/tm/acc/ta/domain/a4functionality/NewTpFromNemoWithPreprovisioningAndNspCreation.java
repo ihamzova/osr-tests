@@ -7,11 +7,8 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4PreProvisioningRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -37,7 +34,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends GigabitTest 
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
-    private final A4PreProvisioningRobot a4PreProvisioning = new A4PreProvisioningRobot();
+    private final AccessLineRiRobot accessLineRi = new AccessLineRiRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -71,7 +68,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends GigabitTest 
 
     @AfterMethod
     public void cleanup() {
-        a4PreProvisioning.clearData();
+        accessLineRi.clearDatabase();
         a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
@@ -86,7 +83,9 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreation extends GigabitTest 
         TimeUnit.SECONDS.sleep(SLEEP_TIMER);
 
         // THEN / Assert
-        a4PreProvisioning.checkResults(port);
+        accessLineRi.checkHomeIdsCount(port);
+        accessLineRi.checkLineIdsCount(port);
+        accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
         a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }

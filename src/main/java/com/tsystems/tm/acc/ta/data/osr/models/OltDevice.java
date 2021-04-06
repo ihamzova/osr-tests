@@ -37,7 +37,8 @@ public class OltDevice {
     private Integer numberOfPonSlots;
     private Integer numberOfEthernetSlots;
     private Integer matNumber;
-
+    private String klsId;
+    private int compositePartyId;
 
     @Override
     public String toString() {

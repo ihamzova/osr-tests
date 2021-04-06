@@ -1,8 +1,6 @@
 package com.tsystems.tm.acc.ta.team.upiter.provisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -39,8 +37,6 @@ public class OltProvisioning5600 extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;
-    private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
-    private WgAccessProvisioningClient wgAccessProvisioningClient;
     private PortProvisioning portEmpty;
     private PortProvisioning portProvisioningPartly;
     private PortProvisioning portProvisioningFully;
@@ -63,8 +59,6 @@ public class OltProvisioning5600 extends GigabitTest {
     public void init() {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
-        accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
-        wgAccessProvisioningClient = new WgAccessProvisioningClient();
         portEmpty = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmpty5600);
         portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
         portProvisioningFully = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);

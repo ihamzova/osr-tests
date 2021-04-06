@@ -1,0 +1,27 @@
+name: A4OltDevice
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH1"
+  klsId: "123456"
+  compositePartyId: 10001
+---
+name: A4PortForProvisioning
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH1"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1
+
+---
+name: A4TerminationPoint
+template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
+values:
+  uuid: "c6adce68-f8a4-4ed4-8e1c-f217259f6580"

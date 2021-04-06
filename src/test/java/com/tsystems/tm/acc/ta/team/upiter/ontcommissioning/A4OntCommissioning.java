@@ -46,6 +46,7 @@ public class A4OntCommissioning extends GigabitTest {
     private PortProvisioning a4port;
     private AccessLine accessLine;
     private Ont ontSerialNumber;
+    private TpRefDto tfRef;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @AfterClass
@@ -55,9 +56,15 @@ public class A4OntCommissioning extends GigabitTest {
 
     @BeforeClass
     public void loadContext() {
-        a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4port);
+        a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForReservation);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4ontAccessLine);
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.A4ontSerialNumber);
+        tfRef = new TpRefDto().endSz(accessLine.getOltDevice().getEndsz())
+                .slotNumber(accessLine.getSlotNumber())
+                .portNumber(accessLine.getPortNumber())
+                .klsId(ontSerialNumber.getKlsId())
+                .tpRef(UUID.randomUUID().toString())
+                .partyId((long) accessLine.getPartyId());
     }
 
     @Test
@@ -65,16 +72,8 @@ public class A4OntCommissioning extends GigabitTest {
     @Description("A4 Register ONT resource")
     public void a4ontRegistration() {
         //Precondition A4 preprovisioning
-        wgA4PreProvisioningRobot.startPreProvisioning(
-                new TpRefDto()
-                        .endSz(accessLine.getOltDevice().getEndsz())
-                        .slotNumber(accessLine.getSlotNumber())
-                        .portNumber(accessLine.getPortNumber())
-                        .klsId(ontSerialNumber.getKlsId())
-                        .tpRef(UUID.randomUUID().toString())
-                        .partyId((long) accessLine.getPartyId())
-        );
-        accessLineRiRobot.checkA4LineParameters(a4port);
+        wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
+        accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
 
         //Get 1 HomeId from pool
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
