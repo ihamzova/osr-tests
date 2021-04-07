@@ -16,3 +16,5 @@ values:
   firmwareVersion: "SDX632V100R031C10"
   ipAdresse: "11.182.123.196"
   matNumber: 40958960
+  numberOfPonPorts: 16
+  numberOfEthernetPorts: 1

@@ -24,7 +24,7 @@ public class PslStub extends AbstractStubMapping {
                 .willReturn(aDefaultResponseWithBody("", HTTP_CODE_ACCEPTED_202))
                 .atPriority(1)
                 .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo(oltDevice.getEndsz())))
-                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(oltDevice.getBezeichnung().equals("SDX 6320-16") ? new PslMapper().getReadEquipmentAdtranResponseHolder(oltDevice) : new PslMapper().getReadEquipmentResponseHolder(oltDevice))));
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(oltDevice))));
     }
 
     public MappingBuilder postReadEquipment202(EquipmentData equipmentData, A4NetworkElement networkElement) {

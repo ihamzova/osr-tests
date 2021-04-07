@@ -15,11 +15,19 @@ import java.util.stream.Stream;
 
 public class PslMapper {
 
+    //HUAWEI MA5600
     private static final int START_PON_SLOT = 1;
     private static final int START_ETHERNET_SLOT = 19;
     private static final AtomicInteger equipmentCount = new AtomicInteger(0);
 
     public ReadEquipmentResponseHolder getReadEquipmentResponseHolder(OltDevice oltDevice) {
+        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+            return  getReadEquipmentResponseHolderAdtran(oltDevice);
+        }
+        return getReadEquipmentResponseHolderMA5600(oltDevice);
+    }
+
+    public ReadEquipmentResponseHolder getReadEquipmentResponseHolderMA5600(OltDevice oltDevice) {
         return new ReadEquipmentResponseHolder()
                 .success(true)
                 .response(
@@ -86,7 +94,7 @@ public class PslMapper {
                 );
     }
 
-    public ReadEquipmentResponseHolder getReadEquipmentAdtranResponseHolder(OltDevice oltDevice) {
+    public ReadEquipmentResponseHolder getReadEquipmentResponseHolderAdtran(OltDevice oltDevice) {
         return new ReadEquipmentResponseHolder()
                 .success(true)
                 .response(
@@ -124,7 +132,6 @@ public class PslMapper {
                                                 .adrId(oltDevice.getVst().getAddress().getKlsId())
                                                 .asb("1"))
                                 )
-
                 );
     }
 
