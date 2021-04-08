@@ -7,15 +7,14 @@ import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +26,13 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 
 @Slf4j
-@ServiceLog({
-        "olt-resource-inventory",
-        "ea-ext-route",
-        "olt-discovery",
-        "ancp-configuration"
-})
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
 public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
 
-    private static final Integer HTTP_CODE_OK_200 = 200;
-    private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
-    private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
     private static final int WAIT_TIME_FOR_RENDERING = 2_000;
 
     private static final String KLS_ID_EXPECTED = "17056514";

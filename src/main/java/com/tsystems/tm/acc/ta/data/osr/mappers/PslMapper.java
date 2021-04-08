@@ -15,11 +15,19 @@ import java.util.stream.Stream;
 
 public class PslMapper {
 
+    //HUAWEI MA5600
     private static final int START_PON_SLOT = 1;
     private static final int START_ETHERNET_SLOT = 19;
     private static final AtomicInteger equipmentCount = new AtomicInteger(0);
 
     public ReadEquipmentResponseHolder getReadEquipmentResponseHolder(OltDevice oltDevice) {
+        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+            return  getReadEquipmentResponseHolderAdtran(oltDevice);
+        }
+        return getReadEquipmentResponseHolderMA5600(oltDevice);
+    }
+
+    public ReadEquipmentResponseHolder getReadEquipmentResponseHolderMA5600(OltDevice oltDevice) {
         return new ReadEquipmentResponseHolder()
                 .success(true)
                 .response(
@@ -82,6 +90,47 @@ public class PslMapper {
                                                 .flatMap(List::stream)
                                                 .collect(Collectors.toList())
                                         )
+                                )
+                );
+    }
+
+    public ReadEquipmentResponseHolder getReadEquipmentResponseHolderAdtran(OltDevice oltDevice) {
+        return new ReadEquipmentResponseHolder()
+                .success(true)
+                .response(
+                        new ReadEquipmentResponse()
+                                .messageContext(new MessageContext()
+                                        .correlationId("{{jsonPath request.body '$.messageContext.correlationId'}}")
+                                        .sender("{{jsonPath request.body '$.messageContext.sender'}}")
+                                        .target("{{jsonPath request.body '$.messageContext.target'}}")
+                                )
+                                .responseData(new ReadEquipmentResponseData()
+                                        .header(new Header()
+                                                .anfoKen("{{jsonPath request.body '$.requestData.header.anfoKen'}}")
+                                                .partner("{{jsonPath request.body '$.requestData.header.partner'}}")
+                                        )
+                                        .status(new Status()
+                                                .id("ZDIB")
+                                                .logMsgNo("string")
+                                                .logNo("0000000000")
+                                                .message("Die Anforderung wurde ausgeführt.")
+                                                .messageV1("")
+                                                .number("000")
+                                                .system("Linux")
+                                                .type("S")
+                                        )
+                                        .addEquipmentItem(new Equipment()
+                                                .equnr("212880011")
+                                                .tplnr(oltDevice.getTplnr())
+                                                .hequi("212879995")
+                                                .heqnr("0056")
+                                                .submt(String.valueOf(oltDevice.getMatNumber()))
+                                                .eqart("G")
+                                                .endsz(oltDevice.getEndsz())
+                                                .serge("21023533106TG4900198")
+                                                .anzEbenen("1")
+                                                .adrId(oltDevice.getVst().getAddress().getKlsId())
+                                                .asb("1"))
                                 )
                 );
     }

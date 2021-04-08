@@ -7,15 +7,14 @@ import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
@@ -28,22 +27,18 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 
 @Slf4j
-@ServiceLog({"olt-resource-inventory", "ea-ext-route", "olt-discovery", "ancp-configuration"})
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
 @TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
 public class OltAutoCommissioning extends GigabitTest {
 
-    private static final Integer HTTP_CODE_OK_200 = 200;
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
     private static final int WAIT_TIME_FOR_RENDERING = 2_000;
-
-    private static final String EMS_NBI_NAME_MA5600 = "MA5600T";
-    private static final String EMS_NBI_NAME_MA5800 = "MA5800-X7";
-    private static final Long COMPOSITE_PARTY_ID_GFNW = 10000L;
-    private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
     private static final String KLS_ID_EXPECTED = "17056514";
 
@@ -62,7 +57,7 @@ public class OltAutoCommissioning extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         log.info("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
 
@@ -87,7 +82,7 @@ public class OltAutoCommissioning extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         log.info("OltAutoCommissioningGFNWTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
 
@@ -127,7 +122,7 @@ public class OltAutoCommissioning extends GigabitTest {
      * check device MA5600 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5600(OltDevice oltDevice) {
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -156,7 +151,7 @@ public class OltAutoCommissioning extends GigabitTest {
      * check device MA5800 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5800(OltDevice oltDevice) {
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
