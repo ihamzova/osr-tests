@@ -82,7 +82,7 @@ public class OltAutoCommissioning extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
         log.info("OltAutoCommissioningGFNWTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
         deleteDeviceInResourceInventory(endSz);
 
@@ -122,7 +122,7 @@ public class OltAutoCommissioning extends GigabitTest {
      * check device MA5600 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5600(OltDevice oltDevice) {
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -151,7 +151,7 @@ public class OltAutoCommissioning extends GigabitTest {
      * check device MA5800 data from olt-resource-inventory and UI
      */
     private void checkDeviceMA5800(OltDevice oltDevice) {
-        String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
+        String endSz = oltDevice.getEndsz();
 
         List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
                 .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
