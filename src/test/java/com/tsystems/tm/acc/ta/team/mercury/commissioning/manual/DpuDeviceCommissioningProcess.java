@@ -13,7 +13,6 @@ import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
@@ -31,11 +30,11 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 
 @Slf4j
 public class DpuDeviceCommissioningProcess extends GigabitTest {
 
-    private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
     private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
     private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";

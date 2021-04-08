@@ -155,7 +155,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
         Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
         Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-        Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
+        //Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
         Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
         Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
 

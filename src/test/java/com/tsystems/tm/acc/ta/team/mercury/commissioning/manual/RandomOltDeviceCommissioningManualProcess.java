@@ -31,18 +31,14 @@ import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({
-        "olt-resource-inventory",
-        "ea-ext-route",
-        "olt-discovery",
-        "ancp-configuration"
-})
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
 public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
-    private static final Integer HTTP_CODE_OK_200 = 200;
     private OltResourceInventoryClient oltResourceInventoryClient;
     private OltDevice oltDevice;
 
