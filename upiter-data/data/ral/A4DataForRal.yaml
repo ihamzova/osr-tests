@@ -1,0 +1,10 @@
+name: A4DataForRal
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+
+  vpsz: "49/30/179"
+  fsz: "7KH2"
+  oltSlot: "99"
+  portType: "PON"
+  cardType: "GPON"
+  deviceType: "OLT"
