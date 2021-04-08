@@ -16,7 +16,7 @@ values:
   matNumber: 40247069
 
 ---
-name: A4port
+name: A4PortForReservation
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/8492/0/76A4"

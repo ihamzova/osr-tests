@@ -19,5 +19,6 @@ public class PortProvisioning {
     private Integer defaultNEProfilesActive;
     private Integer defaultNetworkLineProfilesActive;
     private Integer fttbNEProfilesActive;
+    private Integer nspReference;
     private Integer accessLinesCount;
 }

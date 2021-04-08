@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
@@ -20,6 +21,8 @@ import java.util.stream.IntStream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class AccessLineRiRobot {
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
@@ -27,7 +30,7 @@ public class AccessLineRiRobot {
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient().getClient();
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
 
-    @Step("Clear database with test data")
+    @Step("Clear Al RI db")
     public void clearDatabase() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
@@ -62,7 +65,7 @@ public class AccessLineRiRobot {
                 .slotNumber(port.getSlotNumber())
                 .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
+        assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
     }
 
     @Step("Check line id count for port")
@@ -72,7 +75,7 @@ public class AccessLineRiRobot {
                 .slotNumber(port.getSlotNumber())
                 .portNumber(port.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
+        assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
     }
 
     @Step("Check access lines parameters of port template (lines count and wg lines count, count of default NE and NetworkLine profiles)")
@@ -86,7 +89,7 @@ public class AccessLineRiRobot {
         }
 
         List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
+        assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
                 "Access lines count");
 
         long countDefaultNEProfileActive = accessLines.stream().map(AccessLineDto::getDefaultNeProfile)
@@ -98,29 +101,29 @@ public class AccessLineRiRobot {
         long countAccessLinesWG = accessLines.stream()
                 .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
-        Assert.assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue(),
+        assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue(),
                 "Default Network Line profile count");
-        Assert.assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue(),
+        assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue(),
                 "Default NE profile count");
-        Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
+        assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
                 "WG access lines count");
     }
 
     @Step("Check assigned access lines count of port template")
     public void checkPortParametersForAssignedLines(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
+        assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
                 "Access lines count");
 
         long countAssignedAccessLines = accessLines.stream()
                 .filter(accessLine -> accessLine.getStatus().getValue().equals(AccessLineStatus.ASSIGNED.getValue())).count();
-        Assert.assertEquals(countAssignedAccessLines,
+        assertEquals(countAssignedAccessLines,
                 port.getAccessLinesCount() - port.getAccessLinesWG(),
                 "Assigned access lines count");
     }
 
     @Step("Check A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
-    public void checkA4LineParameters(PortProvisioning port) {
+    public void checkA4LineParameters(PortProvisioning port, String tpRefUuid) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
             Supplier<Boolean> checkA4PreProvisioning = () -> getAccessLinesByPort(port).size() == 1;
@@ -130,13 +133,20 @@ public class AccessLineRiRobot {
         }
 
         List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-        Assert.assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
+        assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
 
         AccessLineDto accessLine = accessLines.get(0);
 
-        Assert.assertNotNull(accessLine.getReference(), "Reference");
-        Assert.assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
-        Assert.assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
+        assertEquals(accessLine.getStatus(), AccessLineStatus.WALLED_GARDEN, "AccessLine status");
+        assertEquals(accessLine.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
+        assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
+        assertEquals(accessLine.getNetworkServiceProfileReference().getTpRef(), tpRefUuid);
+        assertNotNull(accessLine.getReference(), "Reference");
+        assertEquals(accessLine.getReference().getEndSz(), port.getEndSz());
+        assertEquals(accessLine.getReference().getSlotNumber(), port.getSlotNumber());
+        assertEquals(accessLine.getReference().getPortNumber(), port.getPortNumber());
+        assertEquals(accessLine.getReference().getPortType(), PortType.GPON);
+        assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
     }
 
     @Step("Check FTTB AccessLines (FTTB_NE_Profile, Default_NetworkLine_Profile")
@@ -150,7 +160,7 @@ public class AccessLineRiRobot {
         }
 
         List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-        Assert.assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
+        assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
 
         long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
                 .filter(fttbNeProfile -> fttbNeProfile != null && ProfileState.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
@@ -170,15 +180,15 @@ public class AccessLineRiRobot {
         List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
                 map(OnuAccessIdDto::getOnuAccessId).sorted().collect(Collectors.toList());
 
-        Assert.assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
+        assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Olt State) count is incorrect");
-        Assert.assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning,
+        assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning,
                 "FTTB NE Profiles (Mosaic State) count is incorrect");
-        Assert.assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning,
+        assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning,
                 "Default NetworkLine Profile count is incorrect");
-        Assert.assertEquals(countAccessLinesWG, numberOfAccessLinesForProvisioning,
+        assertEquals(countAccessLinesWG, numberOfAccessLinesForProvisioning,
                 "WG AccessLines count is incorrect");
-        Assert.assertEquals(onuAccessIds, expectedOnuIdsList,
+        assertEquals(onuAccessIds, expectedOnuIdsList,
                 "OnuAccessIds are incorrect");
     }
 
@@ -208,7 +218,7 @@ public class AccessLineRiRobot {
     public void checkDecommissioningPreconditions(PortProvisioning port) {
         List<AccessLineDto> accessLines = getAccessLinesByPort(port);
 
-        Assert.assertEquals(accessLines.stream()
+        assertEquals(accessLines.stream()
                 .filter(line -> line.getStatus().equals(AccessLineStatus.ASSIGNED)).count(), 0, "Assigned lines count:");
         accessLines.forEach(line -> {
             Assert.assertNull(line.getSubscriberNetworkLineProfile(), "Subscriber network line profile is not null");
@@ -253,8 +263,8 @@ public class AccessLineRiRobot {
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
-        Assert.assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
-        Assert.assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
+        assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
+        assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
     }
 
     @Step("Get list of access lines on the specified port")
@@ -327,11 +337,11 @@ public class AccessLineRiRobot {
                         .equals(STATUS_WALLED_GARDEN))
                 .count();
 
-        Assert.assertEquals(getLineIdPool(port).size(), port.getLineIdPool().intValue());
-        Assert.assertEquals(getHomeIdPool(port).size(), port.getHomeIdPool().intValue());
-        Assert.assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue());
-        Assert.assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue());
-        Assert.assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
+        assertEquals(getLineIdPool(port).size(), port.getLineIdPool().intValue());
+        assertEquals(getHomeIdPool(port).size(), port.getHomeIdPool().intValue());
+        assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue());
+        assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue());
+        assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
     }
 
     private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
@@ -362,7 +372,7 @@ public class AccessLineRiRobot {
                 .slotNumber(accessLine.getSlotNumber())
                 .portNumber(accessLine.getPortNumber()))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(homeIdPool.size(), 32, "Home ids in a pool count");
+        assertEquals(homeIdPool.size(), 32, "Home ids in a pool count");
         //Assert.assertEquals(homeIdPool.get(0).getStatus(), HomeIdDto.StatusEnum.FREE);
         return homeIdPool.get(0).getHomeId();
     }
@@ -374,7 +384,7 @@ public class AccessLineRiRobot {
                 .body(new SearchHomeIdDto()
                         .homeId(homeId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertNotNull(homeIdPool.get(0), "HomeId is not found");
+        assertNotNull(homeIdPool.get(0), "HomeId is not found");
         return homeIdPool.get(0).getStatus();
     }
 
@@ -385,7 +395,7 @@ public class AccessLineRiRobot {
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertNotNull(line.get(0), "Access line is not found");
+        assertNotNull(line.get(0), "Access line is not found");
         return line.get(0).getStatus();
     }
 
@@ -395,7 +405,7 @@ public class AccessLineRiRobot {
                 .searchLineIds()
                 .body(new SearchLineIdDto().lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertNotNull(lineIdPool.get(0), "lineId is not found in pool");
+        assertNotNull(lineIdPool.get(0), "lineId is not found in pool");
         return lineIdPool.get(0).getStatus();
     }
 
@@ -406,7 +416,7 @@ public class AccessLineRiRobot {
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertNotNull(line.get(0).getDefaultNeProfile(), "Default NE profile is null");
+        assertNotNull(line.get(0).getDefaultNeProfile(), "Default NE profile is null");
         SubscriberNeProfileDto subscriberNeProfile = line.get(0).getDefaultNeProfile().getSubscriberNeProfile();
         return subscriberNeProfile;
     }
@@ -418,7 +428,7 @@ public class AccessLineRiRobot {
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertNotNull(line.get(0).getSubscriberNetworkLineProfile(), "Subscriber NL profile is null");
+        assertNotNull(line.get(0).getSubscriberNetworkLineProfile(), "Subscriber NL profile is null");
         return line.get(0).getSubscriberNetworkLineProfile();
     }
 }
