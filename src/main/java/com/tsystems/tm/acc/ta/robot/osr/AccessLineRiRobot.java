@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_8_0.client.invoker.ApiClient;
@@ -265,6 +266,27 @@ public class AccessLineRiRobot {
         }
         assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
         assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
+    }
+
+    public void checkPhysicalResourceRefAfterManualOltDecommissioning(OltDevice olt) {
+        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+                .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().collect(Collectors.toList());
+
+        long numberOfPhysicalResourceRefs = physicalResourceRefs.stream().map(ReferenceDto::getPortType)
+                .filter(PortType->!(PortType.getValue()).equals(PortType.ETHERNET.toString())).count();
+
+        assertEquals(numberOfPhysicalResourceRefs, 0, "There are PhysicalResourceRefs left");
+    }
+
+    public void checkPhysicalResourceRefAfterAutoOltDecommissioning(OltDevice olt) {
+        long physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+                .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .stream().collect(Collectors.toList()).size();
+
+        assertEquals(physicalResourceRefs, 0, "There are PhysicalResourceRefs left");
     }
 
     @Step("Get list of access lines on the specified port")

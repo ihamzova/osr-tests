@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OltDeCommissioningRobot;
@@ -42,6 +43,7 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
     private OsrTestContext context = OsrTestContext.get();
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private OltDeCommissioningRobot oltDeCommissioningRobot = new OltDeCommissioningRobot();
+    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OltDevice oltDeviceManual;
     private OltDevice oltDeviceAutomatic;
 
@@ -104,6 +106,7 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
         oltDeCommissioningRobot.startOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
         oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
+        accessLineRiRobot.checkPhysicalResourceRefAfterAutoOltDecommissioning(oltDeviceAutomatic);
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) manually case")
@@ -126,5 +129,6 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
         oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceManual);
         oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceManual, START_PON_SLOT);
+        accessLineRiRobot.checkPhysicalResourceRefAfterManualOltDecommissioning(oltDeviceManual);
     }
 }
