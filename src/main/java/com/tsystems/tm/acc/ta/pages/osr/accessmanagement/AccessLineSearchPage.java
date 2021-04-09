@@ -99,7 +99,7 @@ public class AccessLineSearchPage {
 
     @Step("Get table headers")
     public List<String> getTableHeaders() {
-        return $(P_SEARCH_TABLE).findAll(By.tagName("th")).stream()
+        return $(P_SEARCH_TABLE).shouldBe(exist).findAll(By.tagName("th")).stream()
                 .map(SelenideElement::text)
                 .collect(Collectors.toList());
     }
