@@ -1,46 +1,59 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.db.etcd.ETCDClient;
-import com.tsystems.tm.acc.ta.db.etcd.Node;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.tsystems.tm.acc.ta.etcd.ETCDV3Client;
+import com.tsystems.tm.acc.ta.kubernetes.ServicePortForwarder;
+import io.etcd.jetcd.Watch;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.testng.Assert;
 
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+@Slf4j
 public class ETCDRobot {
-    public void checkIfEtcdKeyContainsValue(String key, String value) {
-        ETCDClient client = new ETCDClient(new OCUrlBuilder("ont-etcd").withoutSuffix().buildUri());
+    public void checkEtcdValues(String key, List<String> values) {
+        try (ServicePortForwarder portForwarder = new ServicePortForwarder("ont-etcd-api", ETCDV3Client.DEEFAULT_ETCD_API_PORT)) {
+            ETCDV3Client client = new ETCDV3Client(portForwarder.getUri());
+            client.getAllKeys(true).getKvs().forEach(kv -> log.info(kv.getKey().toString(Charset.defaultCharset())));
+            ETCDV3Client.WatchListener listener = new ETCDV3Client.WatchListener();
+            try (Watch.Watcher watcher = client.watch(key, listener)) {
+                ObjectMapper mapper = new ObjectMapper();
+                await().atMost(5, SECONDS).and().pollInterval(500, MILLISECONDS)
+                        .untilAsserted(() -> {
+                            List<String> events = listener.getKv().stream()
+                                    .map(kv -> kv.getValue().toString(Charset.defaultCharset()))
+                                    .map(value -> {
+                                        try {
+                                            return mapper.readValue(value, DPUCommissioningEvent.class);
+                                        } catch (JsonProcessingException e) {
+                                            return null;
+                                        }
+                                    })
+                                    .filter(Objects::nonNull)
+                                    .map(event -> event.message)
+                                    .collect(Collectors.toList());
 
-        Assert.assertTrue(client.get(key).getValue().contains(value));
-    }
-
-    public void checkEtcdValues(String key, List<String> values){
-        List<Node> nodes = getEtcdNodes(key);
-        for(String value : values){
-            Assert.assertTrue(checkEtcdNodesValue(nodes, value), "Value: "+ value + " not found in ETCD");
-        }
-    }
-
-    public void checkIfEtcdDirContainsKey(String dir, String key) {
-        ETCDClient client = new ETCDClient(new OCUrlBuilder("ont-etcd").withoutSuffix().buildUri());
-
-        Assert.assertTrue(client.get(dir).getNodes().stream().anyMatch(n -> n.getKey().equals(dir + key)));
-    }
-
-
-    private boolean checkEtcdNodesValue(List<Node> nodes, String value) {
-        Boolean result = false;
-        for (Node node : nodes) {
-            if (node.getValue().contains(value)) {
-                result = true;
+                            assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
+                        });
             }
         }
-        return result;
+
     }
 
-    private List<Node> getEtcdNodes(String key){
-        ETCDClient client = new ETCDClient(new OCUrlBuilder("ont-etcd").withoutSuffix().buildUri());
-        return  client.get(key).getNodes();
+    @Data
+    static class DPUCommissioningEvent {
+        String source;
+        String type;
+        String message;
     }
 }
