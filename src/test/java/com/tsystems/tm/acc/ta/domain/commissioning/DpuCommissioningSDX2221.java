@@ -90,7 +90,7 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
 
-        /*etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(),
+        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(),
                 Arrays.asList(
                         "EXECUTED Successfuly [Read DPU device data]",
                         "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
@@ -114,7 +114,7 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
                         "EXECUTED Successfuly [Configure DPU Ems][callback]",
                         "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
                         "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));*/
+                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
 
     }
 }
