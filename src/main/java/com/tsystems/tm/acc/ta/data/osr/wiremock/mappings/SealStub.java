@@ -104,7 +104,7 @@ public class SealStub extends AbstractStubMapping {
         return get(urlPathMatching(CONFIGURATION_ACCESS_NODES_UNIVERSAL_URL.replace("{name}", oltDevice.getEndsz().replace("/", "_"))))
                 .willReturn(aDefaultResponseWithBody("", 202))
                 .withName("getAccessNodesConfiguration202_" + oltDevice.getEndsz().replace("/", "_"))
-                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(oltDevice.getBezeichnung().equals("SDX 6320-16") ? new SealMapper().getCallbackGetAccessnodeAdtranInventoryRequest(oltDevice) : new SealMapper().getCallbackGetAccessnodeInventoryRequest(oltDevice))));
+                .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackGetAccessnodeInventoryRequest(oltDevice))));
     }
 
     private String serialize(Object obj) {

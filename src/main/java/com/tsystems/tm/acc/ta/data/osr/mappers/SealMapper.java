@@ -21,11 +21,16 @@ public class SealMapper {
                     "                                ";
     private static final String OPTIC_VENDOR_MAT_NUMBER = "OpticUserEeprom:";
     private static final String DEFAULT_SHELF = "0";
+    // HUAWEI MA5600
     private static final int START_PON_SLOT = 1;
     private static final int START_ETHERNET_SLOT = 19;
     private static final int PON_PORTS_NUMBER = 8;
     private static final int ETH_PORTS_NUMBER = 2;
     private static final AtomicInteger moduleCount = new AtomicInteger(0);
+
+    // ADTRAN SDX 6320-16
+    private static final int SDX_START_PON_PORT = 1;
+    private static final int SDX_START_ETHERNET_PORT = 1;
 
     public CallbackV1DpuConfigurationOltRequest getCallbackV1DpuConfigurationOltRequest(boolean success) {
         if (success) {
@@ -84,6 +89,13 @@ public class SealMapper {
     }
 
     public CallbackGetAccessnodeInventoryRequest getCallbackGetAccessnodeInventoryRequest(OltDevice olt) {
+        if (olt.getBezeichnung().equals("SDX 6320-16")) {
+            return getCallbackGetAccessnodeInventoryRequestAdtran(olt);
+        }
+        return getCallbackGetAccessnodeInventoryRequestMA5600(olt);
+    }
+
+    public CallbackGetAccessnodeInventoryRequest getCallbackGetAccessnodeInventoryRequestMA5600(OltDevice olt) {
         return new CallbackGetAccessnodeInventoryRequest()
                 .payload(new CallbackgetaccessnodeinventoryrequestPayload()
                         .managedElement(new CallbackgetaccessnodeinventoryrequestPayloadManagedElement()
@@ -148,7 +160,7 @@ public class SealMapper {
 
     }
 
-    public CallbackGetAccessnodeInventoryRequest getCallbackGetAccessnodeAdtranInventoryRequest(OltDevice olt) {
+    public CallbackGetAccessnodeInventoryRequest getCallbackGetAccessnodeInventoryRequestAdtran(OltDevice olt) {
         return new CallbackGetAccessnodeInventoryRequest()
                 .payload(new CallbackgetaccessnodeinventoryrequestPayload()
                         .managedElement(new CallbackgetaccessnodeinventoryrequestPayloadManagedElement()
@@ -162,14 +174,14 @@ public class SealMapper {
                         )
                         .ports(
                                 Stream.of(
-                                        IntStream.range(1, 17)
+                                        IntStream.range(SDX_START_PON_PORT, olt.getNumberOfPonPorts() + SDX_START_PON_PORT)
                                                 .mapToObj(i -> new CallbackgetaccessnodeinventoryrequestPayloadPorts()
                                                         .installedMatNumberSFP(OPTIC_VENDOR_MAT_NUMBER)
                                                         .installedPartNumberSFP(OPTIC_VENDOR_PART_NUMBER)
                                                         .port(String.valueOf(i))
                                                         .portType(CallbackgetaccessnodeinventoryrequestPayloadPorts.PortTypeEnum.PON)
                                                         .shelf(DEFAULT_SHELF)),
-                                        IntStream.range(1, 2)
+                                        IntStream.range(SDX_START_ETHERNET_PORT, olt.getNumberOfEthernetPorts() + SDX_START_ETHERNET_PORT)
                                                 .mapToObj(i -> new CallbackgetaccessnodeinventoryrequestPayloadPorts()
                                                         .installedMatNumberSFP("")
                                                         .installedPartNumberSFP("")

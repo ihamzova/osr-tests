@@ -36,8 +36,11 @@ public class OltDevice {
     private String uplinkPort;
     private Integer numberOfPonSlots;
     private Integer numberOfEthernetSlots;
+    private Integer numberOfPonPorts;
+    private Integer numberOfEthernetPorts;
     private Integer matNumber;
-
+    private String klsId;
+    private int compositePartyId;
 
     @Override
     public String toString() {

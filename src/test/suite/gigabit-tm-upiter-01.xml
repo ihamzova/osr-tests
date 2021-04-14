@@ -37,6 +37,11 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.Postprovisioning"/>
         </classes>
     </test>
+    <test thread-count="1" name="WG A4 PreProvisioning Backend Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.a4provisioning.WgA4Provisioning"/>
+        </classes>
+    </test>
     <test thread-count="1" name="HomeId, LineId Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
