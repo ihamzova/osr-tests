@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
 
-
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,

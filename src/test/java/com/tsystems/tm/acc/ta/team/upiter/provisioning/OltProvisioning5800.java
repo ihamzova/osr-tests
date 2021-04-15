@@ -34,13 +34,14 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 })
 public class OltProvisioning5800 extends GigabitTest {
 
-  private static final Integer LATENCY = 2 * 80_000;
+  private static final Integer LATENCY = 2 * 60_000;
 
   private AccessLineRiRobot accessLineRiRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private WgAccessProvisioningClient wgAccessProvisioningClient;
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
-  private PortProvisioning portEmpty;
+  private PortProvisioning portEmptyV1;
+  private PortProvisioning portEmptyV2;
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeClass
@@ -49,9 +50,12 @@ public class OltProvisioning5800 extends GigabitTest {
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
     wgAccessProvisioningClient = new WgAccessProvisioningClient();
-    portEmpty = context.getData()
+    portEmptyV1 = context.getData()
             .getPortProvisioningDataProvider()
-            .get(PortProvisioningCase.portEmpty5800);
+            .get(PortProvisioningCase.portEmpty5800v1);
+    portEmptyV2 = context.getData()
+            .getPortProvisioningDataProvider()
+            .get(PortProvisioningCase.portEmpty5800v2);
   }
 
   @BeforeMethod
@@ -68,11 +72,11 @@ public class OltProvisioning5800 extends GigabitTest {
   @TmsLink("DIGIHUB-30877")
   @Description("Port Provisioning with 32 WG Lines")
   public void portProvisioning() {
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmptyV1);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
-    wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
-    accessLineRiRobot.checkProvisioningResults(portEmpty);
+    wgAccessProvisioningRobot.startPortProvisioning(portEmptyV1);
+    accessLineRiRobot.checkProvisioningResults(portEmptyV1);
   }
 
   @Test
@@ -80,16 +84,16 @@ public class OltProvisioning5800 extends GigabitTest {
   @Description("Card Provisioning with 1 port")
   public void cardProvisioning() throws InterruptedException {
 
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
-            portEmpty.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmpty);
+    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV1);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV1.getEndSz(),
+            portEmptyV1.getSlotNumber(),
+            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmptyV1);
 
     Assert.assertNotNull(cardBeforeProvisioning);
     Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioning(portEmpty);
+    wgAccessProvisioningRobot.startCardProvisioning(portEmptyV1);
     Thread.sleep(LATENCY);
     accessLineRiRobot.checkProvisioningResults(port);
   }
@@ -97,18 +101,16 @@ public class OltProvisioning5800 extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-83085")
   @Description("Card Provisioning with 1 card")
-  public void OneCardProvisioning() throws InterruptedException {
+  public void oneCardProvisioning() throws InterruptedException {
+    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV2);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV2.getEndSz(),
+            portEmptyV2.getSlotNumber(),
+            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmptyV2);
 
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
-            portEmpty.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmpty);
-
-    Assert.assertNotNull(cardBeforeProvisioning);
     Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioningV2(portEmpty);
+    wgAccessProvisioningRobot.startCardProvisioningV2(portEmptyV2);
     Thread.sleep(LATENCY);
     accessLineRiRobot.checkProvisioningResults(port);
   }
@@ -119,18 +121,18 @@ public class OltProvisioning5800 extends GigabitTest {
   @Description("Device Provisioning with 1 card and 1 port")
   public void deviceProvisioning() throws InterruptedException {
 
-    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
+    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyV1);
 
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV1.getEndSz(),
             deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
-            deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmpty);
+            deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmptyV1);
 
     Assert.assertNotNull(deviceBeforeProvisioning);
     Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
     Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
+    wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyV1);
     Thread.sleep(LATENCY);
 
     accessLineRiRobot.checkProvisioningResults(port);

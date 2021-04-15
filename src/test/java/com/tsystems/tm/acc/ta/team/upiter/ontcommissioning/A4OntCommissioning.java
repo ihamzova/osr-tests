@@ -28,7 +28,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNull;
 
-
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
