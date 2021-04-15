@@ -76,7 +76,7 @@ public class DeprovisioningTest extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-83085")
   @Description("Card deprovisioning case for 1 card")
-  public void OneCardDeprovisioningTest() {
+  public void oneCardDeprovisioningTest() {
     checkPreconditions(cardDepr);
     wgAccessProvisioningRobot.startCardDeprovisioningV2(cardDepr);
 
