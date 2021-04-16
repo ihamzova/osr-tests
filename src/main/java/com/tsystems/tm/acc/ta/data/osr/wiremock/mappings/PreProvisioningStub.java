@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.mappers.PreProvisioningMapper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.external.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.JSON;
 
 import javax.ws.rs.HttpMethod;
 import java.util.UUID;

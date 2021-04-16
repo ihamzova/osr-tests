@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.NetworkServiceProfileFtthAccessDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

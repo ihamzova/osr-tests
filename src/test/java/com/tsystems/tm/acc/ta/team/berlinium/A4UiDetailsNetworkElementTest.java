@@ -59,8 +59,8 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxxx")
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
+       // Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+       // setCredentials(loginData.getLogin(), loginData.getPassword());
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -81,6 +81,9 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neDataA, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);

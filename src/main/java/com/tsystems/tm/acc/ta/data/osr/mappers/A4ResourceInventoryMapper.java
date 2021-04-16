@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.internal.client.model.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
