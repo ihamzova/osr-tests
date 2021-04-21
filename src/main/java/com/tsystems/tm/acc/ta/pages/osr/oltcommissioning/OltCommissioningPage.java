@@ -48,8 +48,10 @@ public class OltCommissioningPage {
             $(OLT_KLS_ID_INPUT_LOCATOR).click();
             $(OLT_KLS_ID_INPUT_LOCATOR).val("99875");
         }
-        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(olt.getOltSlot());
+        if ($(OLT_SLOT_NUMBER_INPUT_LOCATOR).exists()) {
+            $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
+            $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(olt.getOltSlot());
+        }
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
         $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(olt.getOltPort());
         $(OLT_BNG_ENDSZ_INPUT_LOCATOR).click();
