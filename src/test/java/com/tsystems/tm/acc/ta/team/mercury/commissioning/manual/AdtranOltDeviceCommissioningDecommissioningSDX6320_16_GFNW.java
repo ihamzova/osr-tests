@@ -25,7 +25,6 @@ import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -94,7 +93,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
   @Test(description = "DIGIHUB-104219 Manual commissioning for not discovered SDX 6320-16 device as GFNW user")
   @TmsLink("DIGIHUB-104219") // Jira Id for this test in Xray
   @Description("Perform manual commissioning for not discovered SDX 6320-16 device as GFNW user on team environment")
-  public void SearchAndDiscoverOlt() throws InterruptedException {
+  public void manuallyAdtranOltCommissioningGFNW() throws InterruptedException {
 
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
@@ -134,7 +133,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     checkUplink(endSz);
   }
 
-  @Test(dependsOnMethods = "SearchAndDiscoverOlt", description = "Manual decommissioning for SDX 6320-16 device as GFNW user")
+  @Test(dependsOnMethods = "manuallyAdtranOltCommissioningGFNW", description = "Manual decommissioning for SDX 6320-16 device as GFNW user")
   @TmsLink("DIGIHUB-104221")
   @Description("Manual decommissioning for SDX 6320-16 device as GFNW user on team environment")
   public void manuallyAdtranOltDeCommissioningGFNW() throws InterruptedException {
