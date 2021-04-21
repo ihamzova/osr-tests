@@ -12,9 +12,11 @@
     <classes>
         <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.OltDeviceCommissioningDecommissioningMA5600_DTAG"/>
         <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.OltDeviceCommissioningDecommissioningMA5800_GFNW"/>
+        <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG"/>
+        <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW"/>
     </classes>
     </test>
-    <test thread-count="2" parallel="methods" name="OLT RI UI Tests2">
+    <test thread-count="4" parallel="methods" name="OLT RI UI Tests2">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.auto.OltAutoCommissioning"/>
         </classes>
