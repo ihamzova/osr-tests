@@ -70,12 +70,6 @@ public class OltAutoCommissioning extends GigabitTest {
     mappingsContext.publish()
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
-
-    String endSz = oltDeviceDTAG.getEndsz();
-
-    String endSz2 = oltDeviceGFNW.getEndsz();
-    //clearResourceInventoryDataBase(endSz);
-
   }
 
   @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")
@@ -154,7 +148,7 @@ public class OltAutoCommissioning extends GigabitTest {
     checkUplink(endSz);
   }
 
-  @Test(description = "DIGIHUB-104213 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
+  @Test(description = "DIGIHUB-104213 OLT RI UI. Auto Commissioning SDX 6320 for GFNW user.")
   public void OltAdtranAutoCommissioningGFNWTest() throws Exception {
 
     OsrTestContext context = OsrTestContext.get();

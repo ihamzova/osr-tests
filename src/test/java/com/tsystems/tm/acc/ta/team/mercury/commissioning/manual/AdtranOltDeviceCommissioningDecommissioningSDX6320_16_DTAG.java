@@ -25,7 +25,6 @@ import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -48,8 +47,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
   private WireMockMappingsContext mappingsContext;
   private WireMockMappingsContext mappingsContext2;
-  private WireMockMappingsContext mappingsContext3;
-
 
   @BeforeClass
   public void init() {
@@ -98,7 +95,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   @Test(description = "DIGIHUB-104216 Manual commissioning for not discovered SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-104216") // Jira Id for this test in Xray
   @Description("Perform manual commissioning and decommissioning for not discovered SDX 6320-16 device as DTAG user on team environment")
-  public void SearchAndDiscoverOlt() throws InterruptedException {
+  public void manuallyAdtranOltCommissioningDTAG() throws InterruptedException {
 
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
@@ -138,7 +135,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     checkUplink(endSz);
   }
 
-  @Test(dependsOnMethods = "SearchAndDiscoverOlt", description = "Manual decommissioning for SDX 6320-16 device as DTAG user")
+  @Test(dependsOnMethods = "manuallyAdtranOltCommissioningDTAG", description = "Manual decommissioning for SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-104217")
   @Description("Manual decommissioning for SDX 6320-16 device as DTAG user on team environment")
   public void manuallyAdtranOltDeCommissioningDTAG() throws InterruptedException {
