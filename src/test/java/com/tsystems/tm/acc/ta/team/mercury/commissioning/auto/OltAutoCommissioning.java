@@ -151,7 +151,7 @@ public class OltAutoCommissioning extends GigabitTest {
     oltCommissioningPage.startOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
     // checkDeviceSDX3620DTAG(endSz);
-    checkDeviceSDX3620(endSz);
+    checkDeviceSDX3620(endSz, COMPOSITE_PARTY_ID_DTAG);
     checkUplink(endSz);
   }
 
@@ -178,7 +178,7 @@ public class OltAutoCommissioning extends GigabitTest {
     oltCommissioningPage.startOltCommissioning(oltDevice2, TIMEOUT_FOR_OLT_COMMISSIONING);
 
     //checkDeviceSDX3620GFNW(endSz);
-    checkDeviceSDX3620(endSz);
+    checkDeviceSDX3620(endSz, COMPOSITE_PARTY_ID_GFNW);
     checkUplink(endSz);
   }
 
@@ -261,7 +261,7 @@ public class OltAutoCommissioning extends GigabitTest {
    * check device SDX3620-16 data from olt-resource-inventory and UI
    */
   //private void checkDeviceSDX3620DTAG(String endSz) {
-  private void checkDeviceSDX3620(String endSz) {
+  private void checkDeviceSDX3620(String endSz, Long compositePartyId ) {
 
     List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
             .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -273,12 +273,7 @@ public class OltAutoCommissioning extends GigabitTest {
     Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
     //Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
     Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    //Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
-    if (!device.getCompositePartyId().equals(COMPOSITE_PARTY_ID_DTAG)) {
-      System.out.println("composite partyId DTAG missmatch");
-    } else {
-      device.getCompositePartyId().equals(COMPOSITE_PARTY_ID_GFNW);
-    }
+    Assert.assertEquals(device.getCompositePartyId(), compositePartyId, "composite partyId missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();

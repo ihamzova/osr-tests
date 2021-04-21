@@ -32,11 +32,9 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
 @Slf4j
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
@@ -69,17 +67,10 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
     mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
             .addAccessLineInventoryMock()
-            .build();
-
-    mappingsContext2.publish()                                              //inject in WM
-            .publishedHook(savePublishedToDefaultDir())
-            .publishedHook(attachStubsToAllureReport());
-
-    mappingsContext3 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
             .addPonInventoryMock(oltDevice)
             .build();
 
-    mappingsContext3.publish()                                              //inject in WM
+    mappingsContext2.publish()                                              //inject in WM
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
@@ -99,11 +90,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
 
-    mappingsContext3.close();
-    mappingsContext3
-            .eventsHook(saveEventsToDefaultDir())
-            .eventsHook(attachEventsToAllureReport());
-  }
+   }
 
   @Test(description = "DIGIHUB-xxxx Manual commissioning and decommissioning for not discovered SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-xxxx") // Jira Id for this test in Xray
@@ -129,8 +116,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-    oltDetailsPage.openPortView(oltDevice.getOltSlot());
-    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    oltDetailsPage.openPortView(null);
+    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState( null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
     oltDetailsPage.inputUplinkParameters(oltDevice);
@@ -141,7 +128,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     oltDetailsPage.updateAncpSessionStatus();
     oltDetailsPage.checkAncpSessionStatus();
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
-    oltDetailsPage.openPortView(oltDevice.getOltSlot());
+    oltDetailsPage.openPortView(null);
     checkPortState(oltDevice, oltDetailsPage);
 
     checkDeviceSDX3620(endSz);
@@ -153,7 +140,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     // check uplink port life cycle state
-    oltDetailsPage.openPortView(oltDevice.getOltSlot());
+    oltDetailsPage.openPortView(null);
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     Thread.sleep(1000); // ensure that the resource inventory database is updated
@@ -167,6 +154,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     checkDeviceDeleted(endSz);
   }
 
+
+
   /**
    * check ethernet port state
    *
@@ -176,11 +165,11 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
     for (int port = 1; port <= device.getNumberOfEthernetPorts(); ++port) {
-      log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}",port,device.getOltSlot(),detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
+      log.info("checkPortState() Port={}, PortLifeCycleState ={}", detailsPage.getPortLifeCycleState( null, Integer.toString(port)));
       if (device.getOltPort().equals((Integer.toString(port)))) {
-        Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+        Assert.assertEquals(detailsPage.getPortLifeCycleState(null, device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
       } else {
-        Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Assert.assertEquals(detailsPage.getPortLifeCycleState( null, Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
       }
     }
   }
@@ -198,7 +187,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
     Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
     Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-    //Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
     Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
     Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
 
