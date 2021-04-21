@@ -24,6 +24,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -48,6 +49,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   private WireMockMappingsContext mappingsContext;
   private WireMockMappingsContext mappingsContext2;
   private WireMockMappingsContext mappingsContext3;
+
 
   @BeforeClass
   public void init() {
@@ -78,7 +80,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     clearResourceInventoryDataBase(endSz);
   }
 
-  @AfterMethod
+  @AfterClass
   public void cleanUp() {
     mappingsContext.close();
     mappingsContext
@@ -90,10 +92,11 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
 
-   }
+  }
 
-  @Test(description = "DIGIHUB-xxxx Manual commissioning and decommissioning for not discovered SDX 6320-16 device as DTAG user")
-  @TmsLink("DIGIHUB-xxxx") // Jira Id for this test in Xray
+
+  @Test(description = "DIGIHUB-104216 Manual commissioning for not discovered SDX 6320-16 device as DTAG user")
+  @TmsLink("DIGIHUB-104216") // Jira Id for this test in Xray
   @Description("Perform manual commissioning and decommissioning for not discovered SDX 6320-16 device as DTAG user on team environment")
   public void SearchAndDiscoverOlt() throws InterruptedException {
 
@@ -117,7 +120,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
     oltDetailsPage.openPortView(null);
-    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState( null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
     oltDetailsPage.inputUplinkParameters(oltDevice);
@@ -133,8 +136,27 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
     checkDeviceSDX3620(endSz);
     checkUplink(endSz);
+  }
 
-    //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+  @Test(dependsOnMethods = "SearchAndDiscoverOlt", description = "Manual decommissioning for SDX 6320-16 device as DTAG user")
+  @TmsLink("DIGIHUB-104217")
+  @Description("Manual decommissioning for SDX 6320-16 device as DTAG user on team environment")
+  public void manuallyAdtranOltDeCommissioningDTAG() throws InterruptedException {
+
+    OsrTestContext context = OsrTestContext.get();
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
+
+    OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
+    String endSz = oltDevice.getEndsz();
+    OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    oltSearchPage.validateUrl();
+
+    OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+    Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    oltDetailsPage.openPortView(null);
+    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+
     oltDetailsPage.deconfigureAncpSession();
     oltDetailsPage.deleteUplinkConfiguration();
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
@@ -155,7 +177,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   }
 
 
-
   /**
    * check ethernet port state
    *
@@ -165,11 +186,11 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
     for (int port = 1; port <= device.getNumberOfEthernetPorts(); ++port) {
-      log.info("checkPortState() Port={}, PortLifeCycleState ={}", detailsPage.getPortLifeCycleState( null, Integer.toString(port)));
+      log.info("checkPortState() Port={}, PortLifeCycleState ={}", detailsPage.getPortLifeCycleState(null, Integer.toString(port)));
       if (device.getOltPort().equals((Integer.toString(port)))) {
         Assert.assertEquals(detailsPage.getPortLifeCycleState(null, device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
       } else {
-        Assert.assertEquals(detailsPage.getPortLifeCycleState( null, Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+        Assert.assertEquals(detailsPage.getPortLifeCycleState(null, Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
       }
     }
   }
@@ -235,5 +256,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
+
 
 }

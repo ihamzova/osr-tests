@@ -24,6 +24,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -66,6 +67,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
     mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
             .addPonInventoryMock(oltDevice)
+            .addAccessLineInventoryMock()
             .build();
 
     mappingsContext2.publish()                                              //inject in WM
@@ -76,7 +78,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     clearResourceInventoryDataBase(endSz);
   }
 
-  @AfterMethod
+  @AfterClass
   public void cleanUp() {
     mappingsContext.close();
     mappingsContext
@@ -89,9 +91,9 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
             .eventsHook(attachEventsToAllureReport());
   }
 
-  @Test(description = "DIGIHUB-xxxx Manual commissioning and decommissioning for not discovered SDX 6320-16 device as GFNW user")
-  @TmsLink("DIGIHUB-xxxx") // Jira Id for this test in Xray
-  @Description("Perform manual commissioning and decommissioning for not discovered SDX 6320-16 device as GFNW user on team environment")
+  @Test(description = "DIGIHUB-104219 Manual commissioning for not discovered SDX 6320-16 device as GFNW user")
+  @TmsLink("DIGIHUB-104219") // Jira Id for this test in Xray
+  @Description("Perform manual commissioning for not discovered SDX 6320-16 device as GFNW user on team environment")
   public void SearchAndDiscoverOlt() throws InterruptedException {
 
     OsrTestContext context = OsrTestContext.get();
@@ -130,14 +132,32 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
     checkDeviceSDX3620(endSz);
     checkUplink(endSz);
+  }
 
-    //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+  @Test(dependsOnMethods = "SearchAndDiscoverOlt", description = "Manual decommissioning for SDX 6320-16 device as GFNW user")
+  @TmsLink("DIGIHUB-104221")
+  @Description("Manual decommissioning for SDX 6320-16 device as GFNW user on team environment")
+  public void manuallyAdtranOltDeCommissioningGFNW() throws InterruptedException {
+    OsrTestContext context = OsrTestContext.get();
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
+
+    OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z8_SDX_6320);
+    String endSz = oltDevice.getEndsz();
+    OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    oltSearchPage.validateUrl();
+
+    OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
+    Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    oltDetailsPage.openPortView(null);
+    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+
     oltDetailsPage.deconfigureAncpSession();
     oltDetailsPage.deleteUplinkConfiguration();
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     // check uplink port life cycle state
-    oltDetailsPage.openPortView(oltDevice.getOltSlot());
+    oltDetailsPage.openPortView(null);
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     Thread.sleep(1000); // ensure that the resource inventory database is updated
@@ -149,6 +169,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     deleteDevicePage.DeleteOltDevice();
     Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
     checkDeviceDeleted(endSz);
+
   }
 
   /**
@@ -160,7 +181,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
   public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
     for (int port = 1; port <= device.getNumberOfEthernetPorts(); ++port) {
-      log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}",port,device.getOltSlot(),detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
+      log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, device.getOltSlot(), detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)));
       if (device.getOltPort().equals((Integer.toString(port)))) {
         Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
       } else {
