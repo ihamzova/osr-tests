@@ -121,7 +121,7 @@ public class A4MobileUiRobot {
 
     @Step("Click inbetriebnahme button")
     public void clickInbetriebnahmeButton() {
-        $(A4MobileNeSearchPage.getINBETRIEBNAHME_BUTTON_LOCATOR()).click();
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
     }
 
     @Step("Click Monitoring Button")

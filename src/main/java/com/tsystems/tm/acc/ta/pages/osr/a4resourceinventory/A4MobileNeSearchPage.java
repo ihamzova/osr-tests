@@ -37,20 +37,13 @@ public class A4MobileNeSearchPage {
     public static final By VKZ_INPUT_FIELD_LOCATOR = By.id("vkz");
 
     @Getter
-    public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
-
-    @Getter
-    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[2]/td[6]");
-
-    @Getter
-    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
-
-    @Getter
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
-
-    @Getter
     public static final By FSZ_INPUT_FIELD_LOCATOR = By.id("fsz");
 
+    @Getter
+    public static final By CATEGORY_INPUT_FIELD_LOCATOR = By.id("category");
+
+
+    // checkboxes
     @Getter
     public static final By PLANNING_CHECKBOX_LOCATOR = By.id("lcsPLANNING");
 
@@ -60,14 +53,30 @@ public class A4MobileNeSearchPage {
     @Getter
     public static final By INSTALLING_CHECKBOX_LOCATOR = By.id("lcsINSTALLING");
 
+
+    // button
     @Getter
-    public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
+    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
 
     @Getter
-    public static final By INBETRIEBNAHME_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
+    public static final By INBETRIEBNAHME_NE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
 
     @Getter
     public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
+
+    @Getter
+    public static final By RADIO_BUTTON_LOCATOR = By.xpath("//*[@id=\"radioAuswahl\"]");
+
+
+
+
+    @Getter
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
+
+    @Getter
+    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]"); // bisher //table/tr[2]/td[6]
+
+
 
 
     @Step("Validate page")
