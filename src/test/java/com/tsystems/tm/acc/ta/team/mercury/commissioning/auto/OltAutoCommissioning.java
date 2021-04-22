@@ -252,7 +252,6 @@ public class OltAutoCommissioning extends GigabitTest {
   /**
    * check device SDX3620-16 data from olt-resource-inventory and UI
    */
-  //private void checkDeviceSDX3620DTAG(String endSz) {
   private void checkDeviceSDX3620(String endSz, Long compositePartyId) {
 
     List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
@@ -272,6 +271,7 @@ public class OltAutoCommissioning extends GigabitTest {
     Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
     Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_SDX6320_16, "UI EMS NBI name missmatch");
     Assert.assertEquals(oltDetailsPage.getKlsID(), oltDeviceDTAG.getVst().getAddress().getKlsId(), "KlsId coming from PSL (dynamic Mock)");
+    Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device/ port lifecycle state missmatch");
   }
 
 
