@@ -22,7 +22,6 @@ public class RiAbstractionLayerRobot {
             .endSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-
   @Step("Get list of OLTs by VPSZ")
   public List<String> getOLtsByVpsz(String deviceType, String vpsz) {
     return riAbstractionLayerClient
