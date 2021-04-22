@@ -63,6 +63,11 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest"/>
         </classes>
     </test>
+    <test thread-count="1" name="Search AccessLines For Assurance Test">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.assurance.SearchAccessLinesForAssurance"/>
+        </classes>
+    </test>
     <test thread-count="1" name="Update data in RDQ Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.subscribernetworkline.SubscriberNetworklineProfile"/>

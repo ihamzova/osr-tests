@@ -24,6 +24,7 @@ public class DpuDevice {
     private String fiberOnLocationId;
     private String ponConnectionWe;
     private String ponConnectionGe;
+    private String portNumber;
 
     @Override
     public String toString() {
