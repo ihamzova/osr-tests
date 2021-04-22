@@ -190,14 +190,13 @@ public class A4MobileUiRobot {
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
         assertEquals(concat.size() / 6, a4NeFilteredList.size());
 
-
     }
 
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
 
         //add 1 to number of elements because of table header
-        numberOfElements++;
+       // numberOfElements++;
 
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
 

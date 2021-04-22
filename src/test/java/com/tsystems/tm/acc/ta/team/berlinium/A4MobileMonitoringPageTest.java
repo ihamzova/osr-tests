@@ -90,12 +90,11 @@ public class A4MobileMonitoringPageTest extends GigabitTest {
     }
 
     @Test
-    @Owner("Thea.John@telekom.de")
+    @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile Monitoring page")
     public void testMonitoring() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-
 
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
 
@@ -111,6 +110,7 @@ public class A4MobileMonitoringPageTest extends GigabitTest {
 
         a4MobileUiRobot.clickMonitoringButton();
         a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
+
         List<String> toBeRemoved = new ArrayList<>();
 
         // remove all entries
