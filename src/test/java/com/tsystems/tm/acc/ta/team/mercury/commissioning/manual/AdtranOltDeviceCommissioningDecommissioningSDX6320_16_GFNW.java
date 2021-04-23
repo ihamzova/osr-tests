@@ -40,6 +40,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
 public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends GigabitTest {
 
+  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
 
   private OltResourceInventoryClient oltResourceInventoryClient;
@@ -93,7 +94,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
   @Test(description = "DIGIHUB-104219 Manual commissioning for not discovered SDX 6320-16 device as GFNW user")
   @TmsLink("DIGIHUB-104219") // Jira Id for this test in Xray
   @Description("Perform manual commissioning for not discovered SDX 6320-16 device as GFNW user on team environment")
-  public void manuallyAdtranOltCommissioningGFNW() {
+  public void manuallyAdtranOltCommissioningGFNW() throws InterruptedException {
 
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
@@ -112,6 +113,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     oltDiscoveryPage.saveDiscoveryResults();
     oltDiscoveryPage.openOltSearchPage();
 
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
     oltDetailsPage.openPortView(oltDevice.getOltSlot());
@@ -146,6 +148,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
 
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
     oltDetailsPage.openPortView(null);
