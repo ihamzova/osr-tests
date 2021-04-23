@@ -18,17 +18,9 @@ public class A4ImportCsvDataGenerator {
 
             A4ResourceInventoryEntry csvEntry = new A4ResourceInventoryEntry()
                     .negName(csvLine.getNegName())
-                    .negCno("NEG-CNO")
                     .negDescription("NEG created by csv import test")
                     .neVpsz(csvLine.getNeVpsz())
                     .neFsz(csvLine.getNeFsz())
-                    .nePlanningDeviceName("PlanningName")
-                    .neType(csvLine.getNeType())
-                    .neVsp("Virtual Service Provider")
-                    .neLocKlsId(csvLine.getNeKlsId())
-                    .neLocAddress("Address")
-                    .neLocRackId("RackID")
-                    .neLocRackPosition("RackPosition")
                     .neDescription(csvLine.getNeDescription());
 
             csvList.add(csvEntry);
