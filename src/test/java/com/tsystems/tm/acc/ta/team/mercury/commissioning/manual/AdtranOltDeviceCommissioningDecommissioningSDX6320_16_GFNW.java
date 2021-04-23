@@ -93,7 +93,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
   @Test(description = "DIGIHUB-104219 Manual commissioning for not discovered SDX 6320-16 device as GFNW user")
   @TmsLink("DIGIHUB-104219") // Jira Id for this test in Xray
   @Description("Perform manual commissioning for not discovered SDX 6320-16 device as GFNW user on team environment")
-  public void manuallyAdtranOltCommissioningGFNW() throws InterruptedException {
+  public void manuallyAdtranOltCommissioningGFNW() {
 
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
@@ -173,9 +173,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
   /**
    * check ethernet port state
-   *
-   * @param device
-   * @param detailsPage
    */
   public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
@@ -202,9 +199,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
     Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
     Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-    //Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
     Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_GFNW, "composite partyId DTAG missmatch");
+    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_GFNW, "composite partyId missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
