@@ -55,6 +55,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     OsrTestContext context = OsrTestContext.get();
     oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
 
+    log.info("AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG::init() EndSz = {}, LSZ = {}", oltDevice.getEndsz(), oltDevice.getLsz());
+
     mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
             .addSealMock(oltDevice)
             .addPslMock(oltDevice)
