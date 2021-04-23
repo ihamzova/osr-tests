@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -42,6 +43,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
+    private WireMockMappingsContext mappingsContext2;
 
     @BeforeClass
     public void init() {
@@ -59,6 +61,14 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
+        mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
+                .addPonInventoryMock(oltDevice)
+                .build();
+
+        mappingsContext2.publish()                                              //inject in WM
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         String endSz = oltDevice.getEndsz();
         clearResourceInventoryDataBase(endSz);
     }
@@ -67,6 +77,11 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
     public void cleanUp() {
         mappingsContext.close();
         mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
+
+        mappingsContext2.close();
+        mappingsContext2
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
     }
