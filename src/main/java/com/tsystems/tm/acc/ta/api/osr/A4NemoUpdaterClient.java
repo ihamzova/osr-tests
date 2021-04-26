@@ -10,7 +10,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
-import static com.tsystems.tm.acc.tests.osr.a4.nemo.updater.internal.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
