@@ -23,6 +23,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,8 +33,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
@@ -70,6 +70,14 @@ public class OltAutoCommissioning extends GigabitTest {
     mappingsContext.publish()
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
+  }
+
+  @AfterClass
+  public void cleanUp() {
+    mappingsContext.close();
+    mappingsContext
+            .eventsHook(saveEventsToDefaultDir())
+            .eventsHook(attachEventsToAllureReport());
   }
 
   @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")
