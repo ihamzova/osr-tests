@@ -18,6 +18,9 @@ public class DpuCreatePage {
 
     private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
 
+    public static final By DPU_OPTION_LOCATER = byQaData("dpuoption");
+    public String dpuOptionLocatorString = "dpuoption_option_%d";
+
     public static final By DPU_SERIALNUMBER_INPUT_LOCATOR = byQaData("input-dpuSerialNumber");
     public static final By DPU_KLS_ID_SEARCH_INPUT_LOCATOR = byQaData("klsidsearch_input");
     public static final By DPU_KLS_ID_SEARCH_START_LOCATOR = byQaData("klsidsearch_start");
@@ -33,6 +36,17 @@ public class DpuCreatePage {
 
     @Step("Input parameters for DPU creation")
     public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
+        $(DPU_OPTION_LOCATER).click();
+        for(int index = 0; index < 6; ++index) {
+            if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
+                log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                if($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())){
+                    log.info("startDpuCreation() choose DPU device {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                    $(byQaData(String.format(dpuOptionLocatorString, index))).click();
+                }
+            }
+        }
+
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).click();

@@ -17,7 +17,6 @@ public class DpuDevice {
     private String oltGponPort;
     private String bngEndsz;
     private String bezeichnung;
-    private String typ;
     private String hersteller;
     private String klsId;
     private String seriennummer;

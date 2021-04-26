@@ -8,7 +8,6 @@ values:
   oltGponPort: "3"
   bngEndsz: "49/30/179/43G2"
   bezeichnung: "SDX2221-16-TP"
-  typ: "SDX2221-16-TP"
   hersteller: "ADTRAN"
   klsId: "12223344"
   seriennummer: "ADTN180600B9"
