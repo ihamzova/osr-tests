@@ -179,7 +179,7 @@ public class A4ResilienceRobot {
 
     @Step("countMessagesInQueueNemoUpdater")
     public String countMessagesInQueueNemoUpdater(String queue) throws IOException {
-        String url = "https://a4-nemo-updater-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
                 queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
                 queue + "%22/countMessages()";
 
@@ -192,7 +192,18 @@ public class A4ResilienceRobot {
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
         return cm.getValue();
     }
+    @Step("removeAllMessagesInQueueNemoUpdater")
+    public void removeAllMessagesInQueueNemoUpdater (String queue) throws IOException {
+        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
+                queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
+                queue + "%22/removeAllMessages()";
 
+        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
+        WebTarget resource = client.target(url);
+        Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+        Response response = request.get();
+        assertEquals(response.getStatus(), HttpStatus.SC_OK);
+    }
 
 }
 
