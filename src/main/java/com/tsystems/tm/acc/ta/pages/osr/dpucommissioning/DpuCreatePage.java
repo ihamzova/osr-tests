@@ -17,6 +17,10 @@ public class DpuCreatePage {
     public static final String ENDPOINT = "/deviceeditor";
 
     private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
+    private static final Integer ANZ_OF_DPU_TYPES = 6;
+
+    public static final By DPU_OPTION_LOCATER = byQaData("dpuoption");
+    public String dpuOptionLocatorString = "dpuoption_option_%d";
 
     public static final By DPU_SERIALNUMBER_INPUT_LOCATOR = byQaData("input-dpuSerialNumber");
     public static final By DPU_KLS_ID_SEARCH_INPUT_LOCATOR = byQaData("klsidsearch_input");
@@ -33,6 +37,26 @@ public class DpuCreatePage {
 
     @Step("Input parameters for DPU creation")
     public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
+
+        // If the page is opened, the DPU devices are queried from the material-catalog. The DPU types are then entered in the selection list.
+        try {
+            Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+        if($(DPU_OPTION_LOCATER).exists()) {  // Backward compatibility for UI without qa-tags with DPU device selection
+            $(DPU_OPTION_LOCATER).click();
+            for (int index = 0; index < ANZ_OF_DPU_TYPES; ++index) {
+                if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
+                    log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                    if ($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())) {
+                        log.info("startDpuCreation() choose DPU device {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                        $(byQaData(String.format(dpuOptionLocatorString, index))).click();
+                    }
+                }
+            }
+        }
+
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).click();
