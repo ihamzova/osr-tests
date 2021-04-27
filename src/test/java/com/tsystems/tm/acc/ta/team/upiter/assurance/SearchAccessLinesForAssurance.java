@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLineStatus;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -48,7 +48,7 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
   @TmsLink("DIGIHUB-104136")
   @Description("Search AccessLine entities by Lineid")
   public void searchByLineId() {
-    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> response = accessLineRiRobot.getAccessLineEntitiesByLineId(accessLineForSearchByOlt.getLineId());
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> response = accessLineRiRobot.getAccessLineEntitiesByLineId(accessLineForSearchByOlt.getLineId());
     assertEquals(response.get(0).getLineId(), accessLineForSearchByOlt.getLineId());
     assertEquals(response.get(0).getStatus(), AccessLineStatus.ASSIGNED);
     assertEquals(response.get(0).getPortReferences().getOltDownlinkPortReference().getEndSZ(), accessLineForSearchByOlt.getEndSz());
@@ -60,7 +60,7 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
   @TmsLink("DIGIHUB-104137")
   @Description("Search AccessLine entities by OltEndSZ, slot, port and limit")
   public void searchByOltEndSZ() {
-    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> response = accessLineRiRobot
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> response = accessLineRiRobot
             .getAccessLineEntitiesByOlt(accessLineForSearchByOlt.getLimit(), accessLineForSearchByOlt.getEndSz(), accessLineForSearchByOlt.getSlotNumber(), accessLineForSearchByOlt.getPortNumber());
     assertEquals(response.get(0).getPortReferences().getOltDownlinkPortReference().getEndSZ(), accessLineForSearchByOlt.getEndSz());
     assertEquals(response.get(0).getPortReferences().getOltDownlinkPortReference().getSlotName(), accessLineForSearchByOlt.getSlotNumber());
@@ -72,7 +72,7 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
   @TmsLink("DIGIHUB-104138")
   @Description("Search AccessLine entities by DpuEndSZ and port")
   public void searchByDpuEndSZ() {
-    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> response = accessLineRiRobot
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> response = accessLineRiRobot
             .getAccessLineEntitiesByDpu(accessLineForSearchByDpu.getDpuEndSz(), accessLineForSearchByDpu.getDpuPortNumber());
     assertEquals(response.get(0).getPortReferences().getDpuDownlinkPortReference().getEndSZ(), accessLineForSearchByDpu.getDpuEndSz());
     assertEquals(response.get(0).getPortReferences().getDpuDownlinkPortReference().getPortName(), accessLineForSearchByDpu.getDpuPortNumber());
