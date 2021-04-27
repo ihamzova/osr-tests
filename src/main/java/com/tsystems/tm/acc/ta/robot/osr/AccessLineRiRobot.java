@@ -6,8 +6,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -454,7 +454,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AccessLine entities by LineId")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
     return accessLineResourceInventory
             .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -462,7 +462,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AccessLine entities by oltEndSz, slot, port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
     return accessLineResourceInventory
             .accessLineControllerExternal()
             .listAccessLine()
@@ -475,7 +475,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AccessLine entities by dpuEndSz, port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_12_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
     return accessLineResourceInventory
             .accessLineControllerExternal()
             .listAccessLine()
