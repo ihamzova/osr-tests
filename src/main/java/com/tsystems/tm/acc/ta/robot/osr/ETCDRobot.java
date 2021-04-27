@@ -22,7 +22,7 @@ import static org.awaitility.Awaitility.await;
 @Slf4j
 public class ETCDRobot {
     public void checkEtcdValues(String key, List<String> values) {
-        try (ServicePortForwarder portForwarder = new ServicePortForwarder("ont-etcd-api", ETCDV3Client.DEEFAULT_ETCD_API_PORT)) {
+        try (ServicePortForwarder portForwarder = new ServicePortForwarder("ont-etcd-api", ETCDV3Client.DEFAULT_ETCD_API_PORT)) {
             ETCDV3Client client = new ETCDV3Client(portForwarder.getUri());
             client.getAllKeys(true).getKvs().forEach(kv -> log.info(kv.getKey().toString(Charset.defaultCharset())));
             ETCDV3Client.WatchListener listener = new ETCDV3Client.WatchListener();
