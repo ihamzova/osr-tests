@@ -17,6 +17,7 @@ public class DpuCreatePage {
     public static final String ENDPOINT = "/deviceeditor";
 
     private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
+    private static final Integer ANZ_OF_DPU_TYPES = 6;
 
     public static final By DPU_OPTION_LOCATER = byQaData("dpuoption");
     public String dpuOptionLocatorString = "dpuoption_option_%d";
@@ -36,9 +37,16 @@ public class DpuCreatePage {
 
     @Step("Input parameters for DPU creation")
     public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
-        if($(DPU_OPTION_LOCATER).exists()) {
+
+        // If the page is opened, the DPU devices are queried from the material-catalog. The DPU types are then entered in the selection list.
+        try {
+            Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+        if($(DPU_OPTION_LOCATER).exists()) {  // Backward compatibility for UI without qa-tags with DPU device selection
             $(DPU_OPTION_LOCATER).click();
-            for (int index = 0; index < 6; ++index) {
+            for (int index = 0; index < ANZ_OF_DPU_TYPES; ++index) {
                 if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
                     log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
                     if ($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())) {
