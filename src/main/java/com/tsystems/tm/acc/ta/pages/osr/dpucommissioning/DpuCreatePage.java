@@ -36,13 +36,15 @@ public class DpuCreatePage {
 
     @Step("Input parameters for DPU creation")
     public DpuCreatePage startDpuCreation(DpuDevice dpuDevice) {
-        $(DPU_OPTION_LOCATER).click();
-        for(int index = 0; index < 6; ++index) {
-            if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
-                log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
-                if($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())){
-                    log.info("startDpuCreation() choose DPU device {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
-                    $(byQaData(String.format(dpuOptionLocatorString, index))).click();
+        if($(DPU_OPTION_LOCATER).exists()) {
+            $(DPU_OPTION_LOCATER).click();
+            for (int index = 0; index < 6; ++index) {
+                if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
+                    log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                    if ($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())) {
+                        log.info("startDpuCreation() choose DPU device {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                        $(byQaData(String.format(dpuOptionLocatorString, index))).click();
+                    }
                 }
             }
         }
