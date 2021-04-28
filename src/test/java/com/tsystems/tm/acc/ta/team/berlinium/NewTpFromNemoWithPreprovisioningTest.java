@@ -115,6 +115,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 0);
 
         // after a little time it is trying to redeliver to wiremock it should answer with 201...
+
         TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
 
         // ... and create nsp
