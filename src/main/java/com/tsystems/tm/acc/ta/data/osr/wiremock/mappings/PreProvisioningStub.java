@@ -23,7 +23,7 @@ public class PreProvisioningStub extends AbstractStubMapping {
 
     public MappingBuilder getAccessLine201() {
         final String NETWORK_SERVICE_PROFILE_URL = new OCUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri().toString()
-                + "/networkServiceProfilesFtthAccess/" + UUID.randomUUID().toString();
+                + "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/" + UUID.randomUUID().toString();
 
         return post(urlPathEqualTo(ACCESS_LINE_URL))
                 .inScenario("ResilienceTest")
