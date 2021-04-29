@@ -327,7 +327,14 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
         //a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
+
+        // Problem bei Nachtlauf, expected [1] but found [0]
+        System.out.println("+++ uewegData: "+uewegData);
+        System.out.println("+++ NEP A: "+a4NetworkElementPortA.getUuid());
+        System.out.println("+++ NEP B: "+a4NetworkElementPortB.getUuid());
         a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
+
+        // Problem bei Nachtlauf, Expected exactly 1 requests matching the following pattern but received 2
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
     }
 

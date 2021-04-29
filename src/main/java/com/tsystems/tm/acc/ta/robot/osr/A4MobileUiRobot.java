@@ -13,6 +13,7 @@ import org.openqa.selenium.By;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -150,28 +151,24 @@ public class A4MobileUiRobot {
     //monitoring-page
     @Step("check empty Monitoring")
     public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
-
         $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
+        //assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
+        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Keine NetworkElements gefunden");
         assertEquals(a4NeFilteredList.size(), 0);
-
-
     }
 
     //monitoring-page
     @Step("check Monitoring")
-    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) {
+    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) throws InterruptedException {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
         ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-
         List<String> concat = new ArrayList<>();
 
         elementsCollection.forEach(k -> concat.add(k.getText()));
-
-        //VPSZ	FSZ	Type	Planning Device Name	ZTP Ident	Planned MatNumber	Lifecycle State	Operational State
+        //VPSZ,FSZ,Type,Planning Device Name,ZTP Ident,Planned MatNumber,Lifecycle State,Operational State
 
         a4NeFilteredList.forEach((k, a4NetworkElement) -> {
             assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
@@ -181,7 +178,6 @@ public class A4MobileUiRobot {
             assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()), a4NetworkElement.getPlannedMatNr());
             assertTrue(concat.contains(a4NetworkElement.getOperationalState()), a4NetworkElement.getOperationalState());
         });
-
         log.info("+++" + concat.toString());
 
         a4NeFilteredList.forEach((k, v) -> log.info("+++" + v.getCategory()));
