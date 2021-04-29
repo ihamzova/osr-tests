@@ -696,7 +696,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             Thread.sleep(30000);
 
-            etcdRobot.checkEtcdValues(resp.getBusinessKey(),
+            etcdRobot.checkEtcdValuesWithRest(resp.getBusinessKey(),
                     Arrays.asList(
                             "EXECUTED Successfuly [Read DPU device data]",
                             "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
