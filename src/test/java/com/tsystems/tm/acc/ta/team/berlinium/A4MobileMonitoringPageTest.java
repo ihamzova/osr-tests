@@ -24,6 +24,7 @@ import org.testng.annotations.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
@@ -93,7 +94,7 @@ public class A4MobileMonitoringPageTest extends GigabitTest {
     @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile Monitoring page")
-    public void testMonitoring() {
+    public void testMonitoring() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
 
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
@@ -107,7 +108,6 @@ public class A4MobileMonitoringPageTest extends GigabitTest {
         a4MobileUiRobot.enterZtpIdent("ztp");
         a4MobileUiRobot.clickFinishButton();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-
         a4MobileUiRobot.clickMonitoringButton();
         a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
 
