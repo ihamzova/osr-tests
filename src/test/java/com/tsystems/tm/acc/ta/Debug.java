@@ -1,11 +1,14 @@
 package com.tsystems.tm.acc.ta;
 
+import com.tsystems.tm.acc.ta.etcd.ETCDV3Client;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.sql.Keys;
+import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import de.telekom.it.t3a.kotlin.kubernetes.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.Test;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -18,32 +21,8 @@ import static com.tsystems.tm.acc.ta.sql.UtilsKt.getJdbcDataDefaultSpring;
 public class Debug {
     @Test
     public void debug() {
-        ETCDRobot etcdRobot = new ETCDRobot();
-
-        etcdRobot.checkEtcdValues("dpu-commissioning/f7a8296a-0756-4ff9-a716-cd5dd6e718ce", Arrays.asList(
-                "EXECUTED Successfuly [Read DPU device data]",
-                "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
-                "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                "EXECUTED Successfuly [Read OltPonPort Data]",
-                "EXECUTED Successfuly [Read OltUpLinkPortData]",
-                "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                "EXECUTED Successfuly [Read BackhaulId]",
-                "EXECUTED Successfuly [Read BackhaulId]",
-                "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
-                "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
-                "EXECUTED Successfuly [Configure ANCP on BNG][call]",
-                "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
-                "EXECUTED Successfuly [Read ANCP Info]",
-                "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
-                "EXECUTED Successfuly [Configure DPU at OLT][call]",
-                "EXECUTED Successfuly [Configure DPU at OLT][callback]",
-                "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
-                "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
-                "EXECUTED Successfuly [Configure DPU Ems][call]",
-                "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
-                "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
+        ETCDV3Client client = new ETCDV3Client(new OCUrlBuilder("ont-etcd").withoutSuffix().withPort(443).buildUri());
+        client.getAllKeys(true).getKvs().forEach(kv -> log.info(kv.getKey().toString(Charset.defaultCharset())));
     }
 
     @Test
