@@ -192,7 +192,7 @@ public class A4ResourceInventoryMapper {
                 .itAccountingKey(UNDEFINED)
                 .lacpMode(UNDEFINED)
                 .dataRate(UNDEFINED)
-                .lagId(UNDEFINED)
+                .numberOfAssociatedNsps(UNDEFINED)
                 .sVlanRange(Collections.singletonList(vrDto))
                 .qosClasses(Collections.singletonList(a10NspQosDto));
     }
@@ -201,13 +201,6 @@ public class A4ResourceInventoryMapper {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
-        L2BsaQosDto l2BsaQosDto = new L2BsaQosDto();
-        l2BsaQosDto.setQosBandwidthUp("666");
-        l2BsaQosDto.setQosBandwidthDown("333");
-        l2BsaQosDto.setQosPbit("5");
-
-        List<L2BsaQosDto> l2BsaQosDtoList = new ArrayList<>();
-        l2BsaQosDtoList.add(l2BsaQosDto);
 
         ServiceBandwidthDto serviceBandwidthDto = new ServiceBandwidthDto();
         serviceBandwidthDto.setDataRateUp("150000");
@@ -230,7 +223,6 @@ public class A4ResourceInventoryMapper {
                 .description("NSP L2BSA created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
 //                .nspAccess("123") // skip this because optional
-                .activeQosClasses(l2BsaQosDtoList)
                 .serviceBandwidth(serviceBandwidthDtoList);
     }
 
