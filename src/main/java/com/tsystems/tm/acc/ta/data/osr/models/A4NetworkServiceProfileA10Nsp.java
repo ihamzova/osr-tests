@@ -8,5 +8,6 @@ public class A4NetworkServiceProfileA10Nsp {
     private String uuid;
     private String operationalState;
     private String lifecycleState;
-
+    private String numberOfAssociatedNsps;
+    private String routingInstanceId;
 }
