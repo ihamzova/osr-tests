@@ -275,9 +275,6 @@ public class NemoStatusUpdateTest {
                 .name("administrativeMode")
                 .value(value));
         characteristics.add(new ResourceCharacteristic()
-                .name("activeQosClasses")
-                .value("[{\"qosPbit\":\"value\",\"qosBandwidthUp\":\"value\",\"qosBandwidthDown\":\"value\"}]"));
-        characteristics.add(new ResourceCharacteristic()
                 .name("serviceBandwidth")
                 .value("[{\"dataRateDown\":\"1\",\"dataRateUp\":\"2\"}]"));
 
