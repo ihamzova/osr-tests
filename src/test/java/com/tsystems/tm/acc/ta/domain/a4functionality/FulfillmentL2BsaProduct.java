@@ -11,7 +11,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.LineIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdDto;
 import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;

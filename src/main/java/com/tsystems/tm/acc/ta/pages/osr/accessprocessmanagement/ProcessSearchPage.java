@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byClassName;
 import static com.codeborne.selenide.Selenide.*;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_FAILED;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_GESTARTET;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 import static org.testng.Assert.assertEqualsNoOrder;
@@ -214,8 +215,6 @@ public class ProcessSearchPage {
         assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()));
         assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()));
         assertTrue(actualProcess.getLineId().equals(expectedProcess.getLineId()));
-        assertTrue(actualProcess.getEndTime().equals(expectedProcess.getEndTime()));
-        assertTrue(actualProcess.getDuration().equals(expectedProcess.getDuration()));
         assertTrue(actualProcess.getState().equals(STATUS_FAILED));
     }
 
@@ -239,8 +238,6 @@ public class ProcessSearchPage {
         assertTrue(restoredProcess.getPortNumber().equals(initialProcess.getPortNumber()));
         assertTrue(restoredProcess.getLineId().equals(initialProcess.getLineId()));
         assertTrue(restoredProcess.getStartTime().equals(initialProcess.getStartTime()));
-        assertTrue(restoredProcess.getEndTime().equals(initialProcess.getEndTime()));
-        assertTrue(restoredProcess.getDuration().equals(initialProcess.getDuration()));
         assertTrue(restoredProcess.getState().equals(STATUS_GESTARTET));
     }
 
