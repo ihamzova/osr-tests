@@ -35,137 +35,137 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 @Slf4j
 public class DpuDeviceCommissioningProcess extends GigabitTest {
 
-    private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
-    private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
-    private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";
-    private OltResourceInventoryClient oltResourceInventoryClient;
-    private DpuDevice dpuDevice;
-    private String businessKey;
-    private WireMockMappingsContext mappingsContext;
+  private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
+  private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
+  private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";
+  private OltResourceInventoryClient oltResourceInventoryClient;
+  private DpuDevice dpuDevice;
+  private String businessKey;
+  private WireMockMappingsContext mappingsContext;
 
-    @BeforeClass
-    public void init() {
+  @BeforeClass
+  public void init() {
 
-        oltResourceInventoryClient = new OltResourceInventoryClient();
+    oltResourceInventoryClient = new OltResourceInventoryClient();
 
-        OsrTestContext context = OsrTestContext.get();
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    OsrTestContext context = OsrTestContext.get();
+    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
 
-        WireMockFactory.get().resetToDefaultMappings();
-        mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
-        new MercuryWireMockMappingsContextBuilder(mappingsContext)
-                .addGigaAreasLocationMock(dpuDevice)
-                .build()
-                .publish();
+    WireMockFactory.get().resetToDefaultMappings();
+    mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
+    new MercuryWireMockMappingsContextBuilder(mappingsContext)
+            .addGigaAreasLocationMock(dpuDevice)
+            .build()
+            .publish();
 
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
-                ._01EmsNbiNameQuery("MA5600T")
-                ._02EndszQuery(dpuDevice.getOltEndsz())
-                ._03SlotNumbersQuery("3,4,5,19")
-                ._06KLSIdQuery("12377812")
-                ._07CompositePartyIDQuery("10001")
-                ._08UplinkEndszQuery(dpuDevice.getBngEndsz())
-                ._10ANCPConfQuery("1")
-                ._11RunSQLQuery("1")
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
+    oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
+            ._01EmsNbiNameQuery("MA5600T")
+            ._02EndszQuery(dpuDevice.getOltEndsz())
+            ._03SlotNumbersQuery("3,4,5,19")
+            ._06KLSIdQuery("12377812")
+            ._07CompositePartyIDQuery("10001")
+            ._08UplinkEndszQuery(dpuDevice.getBngEndsz())
+            ._10ANCPConfQuery("1")
+            ._11RunSQLQuery("1")
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
 
-    @AfterClass
-    public void cleanUp() {
+  @AfterClass
+  public void cleanUp() {
 
-        WireMockFactory.get().resetToDefaultMappings();
+    WireMockFactory.get().resetToDefaultMappings();
 
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
+    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
 
-    @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
-    @TmsLink("DIGIHUB-53694") // Jira Id for this test in Xray
-    @Description("Perform manual commissioning for not discovered MA5800 device as DTAG user")
-    public void createDpu() throws InterruptedException {
+  @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
+  @TmsLink("DIGIHUB-53694") // Jira Id for this test in Xray
+  @Description("Perform manual commissioning for not discovered MA5800 device as DTAG user")
+  public void createDpu() throws InterruptedException {
 
-        OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    OsrTestContext context = OsrTestContext.get();
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
+    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
 
-        String endSz = dpuDevice.getEndsz();
-        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
-        oltSearchPage.validateUrl();
+    String endSz = dpuDevice.getEndsz();
+    OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    oltSearchPage.validateUrl();
 
-        oltSearchPage.searchNotDiscoveredByEndSz(endSz);
-        Thread.sleep(1000);
-        DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
+    oltSearchPage.searchNotDiscoveredByEndSz(endSz);
+    Thread.sleep(1000);
+    DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
 
-        dpuCreatePage.validateUrl();
-        dpuCreatePage.startDpuCreation(dpuDevice);
-        Thread.sleep(1000);
+    dpuCreatePage.validateUrl();
+    dpuCreatePage.startDpuCreation(dpuDevice);
+    Thread.sleep(1000);
 
-        dpuCreatePage.openDpuInfoPage();
+    dpuCreatePage.openDpuInfoPage();
 
-        Thread.sleep(100);
-        // internal test
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "deviceList.size is wrong");
-        Device patchDevice = deviceList.get(0);
-        log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());  // 71520003000100
-        Assert.assertEquals(dpuDevice.getFiberOnLocationId(), patchDevice.getFiberOnLocationId(), "FiberOnLocationId missmatch");
+    Thread.sleep(100);
+    // internal test
+    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(deviceList.size(), 1L, "deviceList.size is wrong");
+    Device patchDevice = deviceList.get(0);
+    log.info("FiberOnLocationId = {}", patchDevice.getFiberOnLocationId());  // 71520003000100
+    Assert.assertEquals(dpuDevice.getFiberOnLocationId(), patchDevice.getFiberOnLocationId(), "FiberOnLocationId missmatch");
 
-        DpuInfoPage dpuInfoPage = new DpuInfoPage();
-        dpuInfoPage.validateUrl();
-        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    DpuInfoPage dpuInfoPage = new DpuInfoPage();
+    dpuInfoPage.validateUrl();
+    Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
-        // for team level test only
-        log.info("+++ set lifeCycleState");
-        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
-                .idPath(patchDevice.getId())
-                .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
-                        .from("string")
-                        .path("/lifeCycleState")
-                        .value("INSTALLING")))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        // ----
+    // for team level test only
+    log.info("+++ set lifeCycleState");
+    oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
+            .idPath(patchDevice.getId())
+            .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
+                    .from("string")
+                    .path("/lifeCycleState")
+                    .value("INSTALLING")))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    // ----
 
-        dpuInfoPage.startDpuCommissioning();
-        //businessKey = dpuInfoPage.getBusinessKey();
-        //Assert.assertNotNull(businessKey);
-        //Assert.assertFalse(businessKey.isEmpty());
-        Thread.sleep(1000);
+    dpuInfoPage.startDpuCommissioning();
+    //businessKey = dpuInfoPage.getBusinessKey();
+    //Assert.assertNotNull(businessKey);
+    //Assert.assertFalse(businessKey.isEmpty());
+    Thread.sleep(1000);
 
-        dpuInfoPage.openDpuConfiguraionTab();
-        Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
+    dpuInfoPage.openDpuConfiguraionTab();
+    Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
 
-        Thread.sleep(1000);
+    Thread.sleep(1000);
 
-        dpuInfoPage.openDpuAccessLinesTab();
-        dpuInfoPage.openDpuPortsTab();
+    dpuInfoPage.openDpuAccessLinesTab();
+    dpuInfoPage.openDpuPortsTab();
 
-        //DIGIHUB-79622
-        dpuInfoPage.openDpuEditPage();
-        DpuEditPage dpuEditPage = new DpuEditPage();
-        dpuEditPage.validateUrl();
-        dpuEditPage.SetDpuState();
-        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
-        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    //DIGIHUB-79622
+    dpuInfoPage.openDpuEditPage();
+    DpuEditPage dpuEditPage = new DpuEditPage();
+    dpuEditPage.validateUrl();
+    dpuEditPage.SetDpuState();
+    Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
 
 
-        deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
-        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
-        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
-        Device deviceAfterCommissioning = deviceList.get(0);
+    deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
+            .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
+    Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
+    Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
+    Device deviceAfterCommissioning = deviceList.get(0);
 
-        Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
-        Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
+    Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+    Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
-    }
+  }
 }
