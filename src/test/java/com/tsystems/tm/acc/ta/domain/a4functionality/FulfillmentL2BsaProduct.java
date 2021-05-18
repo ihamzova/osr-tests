@@ -77,8 +77,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpL2BsaData,negData);
-        //weil activeQosClasses nicht mehr im a4-RI
-        //a4Inventory.createNetworkServiceProfileL2Bsa(nspL2BsaData, tpL2BsaData);
+        a4Inventory.createNetworkServiceProfileL2Bsa(nspL2BsaData, tpL2BsaData);
     }
 
     @AfterMethod
@@ -137,8 +136,8 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
 
+        */
 
-         */
     }
 
 }
