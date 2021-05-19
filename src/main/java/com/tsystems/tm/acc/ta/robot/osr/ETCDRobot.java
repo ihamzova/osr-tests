@@ -30,7 +30,7 @@ public class ETCDRobot {
         if (KubernetesContext.Companion.get().getUseOpenshift()) {
             checkEtcdValuesWithPortForwarding(key, values);
         } else {
-            checkEtcdValuesWithIngress(key, values);
+            checkEtcdValuesWithRest(key, values);
         }
     }
 
