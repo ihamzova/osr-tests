@@ -7,11 +7,8 @@ import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4N
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 */
-import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4CarrierManagementRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+// import com.tsystems.tm.acc.ta.data.osr.models.*;
+
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -19,23 +16,12 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-//import com.tsystems.tm.a4.queuedispatcher;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-//import org.springframework.jms.annotation.EnableJms;
-//import org.springframework.jms.core.JmsTemplate;
-
-//import com.tsystems.tm.a4.resourceorderorchestrator.queue;
-//import javax.jms.JMSException;
-//import org.springframework.jms.core.MessageCreator;
-//import com.tsystems.tm.a4.queuedispatcher.queue.QueueConfiguration;
-import io.qameta.allure.*;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
 
 
 public class A4ResourceOrderTest {
@@ -43,19 +29,14 @@ public class A4ResourceOrderTest {
     // test simulate Merlin
     // test send a request (resource order) from Merlin to Berlinium and get a callback
 
-    private final OsrTestContext osrTestContext = OsrTestContext.get();
-
-    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
-    private final A4CarrierManagementRobot a4CarrierManagement = new A4CarrierManagementRobot();
 
     private final A4ResourceOrderRobot a4ResourceOrderRobot = new A4ResourceOrderRobot();
-    private A4NetworkElementGroup negData;
-    private A4NetworkElement neData;
-    private A4NetworkElementPort nepData;
+   // private A4NetworkElementGroup negData;
+   // private A4NetworkElement neData;
+   // private A4NetworkElementPort nepData;
 
     private ResourceOrderCreate ro;
     private String corId;
-
 
 
 // before, test data
@@ -84,11 +65,9 @@ public class A4ResourceOrderTest {
         //a4Inventory.createTerminationPoint(tpPonData, nepData);
         //a4Inventory.createTerminationPoint(tpL2BsaData,negData);
 
-
  */
         ro = new ResourceOrderCreate();
-       // ro.setAtBaseType("test");           // wofür?
-       // corId = UUID.randomUUID().toString();
+        corId = UUID.randomUUID().toString();
 
     }
 
@@ -109,35 +88,32 @@ public class A4ResourceOrderTest {
 
         // create a ro with link with NSP of unknown a10nsp
 
-        //System.out.println("+++ RO noch leer: "+ro);
-
         List<ResourceOrderItem> orderItemList = new ArrayList();
         ResourceOrderItem orderItem = new ResourceOrderItem();
 
+        ro.setAtBaseType("test");
+        ro.setDescription("description of resource order");
+        ro.setName("name of ro");
+        ro.setStartDate(OffsetDateTime.parse("2021-05-22T13:08:56.206+02:00"));
+
         orderItem.setAction(OrderItemActionType.ADD);
+        orderItem.setId("itemId01");
+        orderItem.setState(ResourceOrderItemStateType.valueOf("PENDING"));
+
         orderItemList.add(orderItem);
         ro.setOrderItem(orderItemList);
-       // System.out.println("+++ RO mit add-Item: " + ro);
+        System.out.println("+++ RO mit add-Item: " + ro);
 
-        // send to queue, with QueueProducer? (qp.sendToResourceOrderOrchestrator(ro, corId, "http://localhost");)   eher nicht
-        // Eingangsrequest über: <Umgebung>/reqcb/resource-order-resource-inventory/v1/resourceOrder
 
-      //  public static final String ENDPOINT = Umgebung + "/reqcb/resource-order-resource-inventory/v1/resourceOrder";
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(corId, ro);
 
-        corId = "0815";
 
-      a4ResourceOrderRobot.sendPostResourceOrder(corId, ro);   // ResourceOrder oder A4ResourceOrder?
+        // receive callback
 
 
 
 
-
-
-
-
-
-
-        // receive a callback
     }
 
 
