@@ -74,6 +74,7 @@ public class OltDetailsPage {
     public static final By DELETE_CARD_BUTTON_CONFIRM_LOCATOR = byQaData("card_delete_perform");
 
     public static final By START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_2");
+    public static final By START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_1");
 
 
     @Step("Validate Url")
@@ -187,8 +188,23 @@ public class OltDetailsPage {
             if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
                 $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).click();
                 $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
+            } else {
+                $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+                $(START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
+                $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+                $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
             }
         }
+        return this;
+    }
+
+    @Step("Access lines provisioning from Device")
+
+    public OltDetailsPage startAccessLinesProvisioningFromDevice(Integer timeout) {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+        $(START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
+        $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
+        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
         return this;
     }
 
@@ -247,6 +263,8 @@ public class OltDetailsPage {
         $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
         return this;
     }
+
+
 
     @Step("Get EndSz")
     public String getEndsz() {
