@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoBrowserFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.api.DpuCommissioningApi;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
@@ -33,10 +34,11 @@ public class DpuCommissioningRobot {
     public String id;
 
    // private  final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning","VfynslyzImAD3LKW");
+   private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning", RhssoHelper.getSecretOfGigabitHub("dpu-commissioning"));
 
     @Step("Start dpuCommissioning")
     public UUID startProcess(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
@@ -56,7 +58,7 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuCommissioning error code 500")
     public UUID startProcess500(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
@@ -75,7 +77,7 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuCommissioning")
     public DpuCommissioningResponse startCommissioningProcess(String endsz, UUID traceId) {
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
@@ -90,7 +92,7 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuDecommissioning")
     public DpuCommissioningResponse startDecommissioningProcess(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
 
@@ -105,7 +107,7 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuDecommissioning 500")
     public void startDecommissioningProcess500(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
 
@@ -120,7 +122,7 @@ public class DpuCommissioningRobot {
 
     @Step("Start restore process")
     public void startRestoreProcess(String id){
-        dpuCommissioningClient = new DpuCommissioningClient();
+        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
         dpuCommissioningClient.getClient().dpuCommissioning().restoreProcess()
                 .processIdPath(id)
                 .xBusinessContextHeader("cef0cbf3-6458-4f13-a418-ee4d7e7505dd")
