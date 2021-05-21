@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoBrowserFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.api.DpuCommissioningApi;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
@@ -33,7 +34,7 @@ public class DpuCommissioningRobot {
     public String id;
 
    // private  final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning","VfynslyzImAD3LKW");
-   private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning", "kTgrBM9HdIOdPaxB");
+   private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning", RhssoHelper.getSecretOfGigabitHub("dpu-commissioning"));
 
     @Step("Start dpuCommissioning")
     public UUID startProcess(String endsz) {
