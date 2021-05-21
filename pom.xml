@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>1537.0</version>
+    <version>1545.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.96</osr.models.version>
+        <osr.models.version>0.0.97</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
         <!--oc.domain.name>priv.cl01.gigadev.telekom.de</oc.domain.name>
         <oc.project.name>gigabit-tm-berlinium-03</oc.project.name-->

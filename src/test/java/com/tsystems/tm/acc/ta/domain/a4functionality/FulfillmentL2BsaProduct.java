@@ -11,7 +11,8 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_13_0.client.model.LineIdDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdDto;
 import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -77,8 +78,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpL2BsaData,negData);
-        //weil activeQosClasses nicht mehr im a4-RI
-        //a4Inventory.createNetworkServiceProfileL2Bsa(nspL2BsaData, tpL2BsaData);
+        a4Inventory.createNetworkServiceProfileL2Bsa(nspL2BsaData, tpL2BsaData);
     }
 
     @AfterMethod
@@ -114,7 +114,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         accessLineRi.checkLineIdsCount(port);
         Assert.assertEquals(lineIdAccessLine,lineIdNspFtthAccess);
 
-        /*
+
         //Activation L2BSA Product
         a4CarrierManagement.sendPostForAllocateL2BsaNsp(lineIdAccessLine,"Autotest-Carrier", 10000, 30000);
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
@@ -131,14 +131,14 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
 
         // Deactivation L2BSA product
         a4CarrierManagement.sendPostForReleaseL2BsaNsp(nspL2BsaData.getUuid());
+        NetworkServiceProfileL2BsaDto releasedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
 
         // check L2BSA product - deactivation
-        Assert.assertNull(allocatedL2BsaNSP.getLineId());
-        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
-        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
+        Assert.assertNull(releasedL2BsaNSP.getLineId());
+        Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
+        Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
 
 
-         */
     }
 
 }
