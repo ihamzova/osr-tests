@@ -60,7 +60,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     final String A4_NE_INSTALLING_OLT_01 = "a4NetworkElementInstallingOlt01";
     final String A4_NE_INSTALLING_SPINE_01 = "a4NetworkElementInstallingSpine01";
-    final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor01";
+    final String A4_NE_OPERATING_BOR_02 = "a4NetworkElementOperatingBor02";
     final String A4_NE_PLANNING_LEAFSWITCH_01 = "a4NetworkElementPlanningLeafSwitch01";
     final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
 
@@ -120,7 +120,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         a4NetworkElements.put(A4_NE_INSTALLING_SPINE_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
-        a4NetworkElements.put(A4_NE_OPERATING_BOR_01, osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_OPERATING_BOR_02, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
 
         a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01, osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -148,12 +148,12 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         a4NetworkElements.forEach((k, networkElement) ->
                 a4ResourceInventoryRobot.createNetworkElement(networkElement, a4NetworkElementGroup));
 
-        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "MonitoringInstallingTest"))
-                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01), a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
-                .addPslMock(equipmentDataA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01))
+                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_02), a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
+                .addPslMock(equipmentDataA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02))
                 .addNemoMock()
                 .build();
 
@@ -294,9 +294,9 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         final String ztpi = "test-ztpi" + getRandomDigits(4);
 
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
-        a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
-        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
+        a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getFsz());
+        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getCategory());
         a4MobileUiRobot.checkPlanning();
         a4MobileUiRobot.checkOperating();
         a4MobileUiRobot.clickSearchButton();
@@ -310,12 +310,12 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         // back on search page
         a4MobileUiRobot.checkInstalling();
-        assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz());
-        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(0));
-        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(1));
-        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(2));
-        assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
-        assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
+        assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
+        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(0));
+        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(1));
+        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(2));
+        assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getFsz());
+        assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getCategory());
         assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
         assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
 
@@ -325,7 +325,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         // Check ZTPI value in search result table
         assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
 
-        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), equipmentDataA);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid(), equipmentDataA);
         //a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
 
         // Problem bei Nachtlauf, expected [1] but found [0]
