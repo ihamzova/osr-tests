@@ -110,6 +110,8 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     public void init() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
+        System.out.println("+++ User: "+loginData.getLogin());
+        System.out.println("+++ PW:   "+loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -335,7 +337,8 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
 
         // Problem bei Nachtlauf, Expected exactly 1 requests matching the following pattern but received 2
-        a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortA.getUuid());
+        a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortB.getUuid());
+        sleepForSeconds(60); // zum Check der DB, wieder löschen
     }
 
 }
