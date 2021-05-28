@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,62 @@ public class AccessLinesManagementPage {
     SelenideElement neSubscriberProfileTitle = $x("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
     SelenideElement nlDefaultProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
     SelenideElement nlSubscriberProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+    SelenideElement editButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
+    SelenideElement saveAndReconfigureButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
+    SelenideElement addProfile = $x("//*[@class='am-icon icon--add-profile']");
+    SelenideElement clearOntSerialNumber = $x("//*[@class='am-icon icon--reset']");
+    SelenideElement dropDownTriggerStateNEprofile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-1 pi pi-chevron-down']");
+    SelenideElement dropDownTriggerStateSubProfile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-4 pi pi-chevron-down']");
+    SelenideElement dropDownTriggerOntState = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-5 pi pi-chevron-down']");
+    SelenideElement dropDownTriggerStatus = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-3 pi pi-chevron-down']");
+
+
+    SelenideElement inactiveState = $x("//*[@id='INACTIVE']");
+    SelenideElement activeState = $x("//*[@id='ACTIVE']");
+    SelenideElement onlineOntState = $x("//*[@id='ONLINE']");
+    SelenideElement assignedStatus = $x("//*[@id='ASSIGNED']");
+
 
     ElementsCollection neDefaultProfileStateInput = $$(NE_DEFAULT_PROFILE_STATE_INPUT);
     ElementsCollection nlDefaultProfileStateInput = $$(NL_DEFAULT_PROFILE_STATE_INPUT);
     ElementsCollection neSubscriberProfileStateInput = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT);
     ElementsCollection nlSubscriberProfileStateInput = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT);
+
+    @Step("Return on first window")
+    public void returnOnWindowWithListOfLines(){
+        Selenide.switchTo().window(0);
+        Selenide.refresh();
+    }
+
+    @Step("Click edit button")
+    public void clickEditButton(){
+        editButton.click();
+    }
+
+    @Step("Click save and reconfigure button")
+    public void clickSaveAndReconfigureButton(){
+        saveAndReconfigureButton.click();
+
+    }
+
+    @Step("Add subscriber profile")
+    public void  addSubscriberProfile()  {
+        addProfile.click();
+        //clearOntSerialNumber.click();
+        //Selenide.$x("//*[@class='ng-dirty ng-valid ng-touched']").sendKeys("3132333456789101");
+        dropDownTriggerStateSubProfile.click();
+        activeState.click();
+        dropDownTriggerOntState.click();
+        onlineOntState.click();
+        dropDownTriggerStatus.click();
+        assignedStatus.click();
+    }
+
+    @Step("Change default profile")
+    public void  changeDefaultProfile()  {
+        dropDownTriggerStateNEprofile.click();
+        inactiveState.click();
+    }
 
     public String getPageTitle() {
         return TITLE;
