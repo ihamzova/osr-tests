@@ -1,14 +1,17 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 /*
-import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 */
-// import com.tsystems.tm.acc.ta.data.osr.models.*;
 
+import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -26,13 +29,13 @@ import java.util.UUID;
 
 public class A4ResourceOrderTest {
 
-    // test simulate Merlin
     // test send a request (resource order) from Merlin to Berlinium and get a callback
 
-
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceOrderRobot a4ResourceOrderRobot = new A4ResourceOrderRobot();
-   // private A4NetworkElementGroup negData;
-   // private A4NetworkElement neData;
+    private A4NetworkElementGroup negData;
+    private A4NetworkElement neData;
    // private A4NetworkElementPort nepData;
 
     private ResourceOrderCreate ro;
@@ -43,11 +46,12 @@ public class A4ResourceOrderTest {
 
     @BeforeClass
     public void init() {
-/*
+
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
+                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);       // wie muss unsere NEG aussehen?
         neData = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
+                .get(A4NetworkElementCase.defaultNetworkElement);               // wie muss unser NE aussehen?
+  /*
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
 
@@ -58,9 +62,10 @@ public class A4ResourceOrderTest {
     }
     @BeforeMethod
     public void setup() {
-/*
+
         // what do we need in db?
-        a4Inventory.createNetworkElement(neData, negData);
+        a4ResourceInventory.createNetworkElementGroup(negData);
+/*
         a4Inventory.createNetworkElementPort(nepData, neData);
         //a4Inventory.createTerminationPoint(tpPonData, nepData);
         //a4Inventory.createTerminationPoint(tpL2BsaData,negData);
@@ -68,16 +73,13 @@ public class A4ResourceOrderTest {
  */
         ro = new ResourceOrderCreate();
         corId = UUID.randomUUID().toString();
-
     }
 
 // after, clean
     @AfterMethod
     public void cleanup() {
-        //    a4Inventory.deleteA4TestDataRecursively(negData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);
 }
-
-
 
 // tests
 
@@ -86,14 +88,14 @@ public class A4ResourceOrderTest {
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() {
 
-        // create a ro with link with NSP of unknown a10nsp
+        // create a ro with link with NSP of unknown a10nsp; --> not yet realized
 
         List<ResourceOrderItem> orderItemList = new ArrayList();
         ResourceOrderItem orderItem = new ResourceOrderItem();
 
         ro.setAtBaseType("test");
         ro.setDescription("description of resource order");
-        ro.setName("name of ro");
+        ro.setName("name of resource order");
         ro.setStartDate(OffsetDateTime.parse("2021-05-22T13:08:56.206+02:00"));
 
         orderItem.setAction(OrderItemActionType.ADD);

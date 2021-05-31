@@ -6,12 +6,12 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>1545.0</version>
+    <version>1593.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.8</version>
     </parent>
 
     <properties>
