@@ -100,30 +100,30 @@ public class OltDeCommissioningRobot {
               .endSzQuery(oltEndSz).slotNumberQuery(slot).executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
-//    List<AccessLineDto> ftthAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
-//            .body(new SearchAccessLineDto().endSz(olt.getEndsz()))
-//            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().collect(Collectors.toList());
-//
-//    List<HomeIdDto> homeIds = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
-//            .body(new SearchHomeIdDto().endSz(olt.getEndsz()))
-//            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().collect(Collectors.toList());
-//
-//    List<LineIdDto> lineIds = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
-//            .body(new SearchLineIdDto().endSz(olt.getEndsz()))
-//            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().collect(Collectors.toList());
-//
-//    List<BackhaulIdDto> backhaulIds = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
-//            .body(new SearchBackhaulIdDto().endSz(olt.getEndsz()))
-//            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().collect(Collectors.toList());
-//
-//    assertEquals(ftthAccessLines.size(), 0, "There are AccessLines left");
-//    assertEquals(homeIds.size(), 0, "There are HomeIds left");
-//    assertEquals(lineIds.size(), 0, "There are LineIds left");
-//    assertEquals(backhaulIds.size(), 0, "There are BackhaulIds left");
+    List<AccessLineDto> ftthAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
+            .body(new SearchAccessLineDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList());
+
+    List<HomeIdDto> homeIds = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
+            .body(new SearchHomeIdDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList());
+
+    List<LineIdDto> lineIds = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
+            .body(new SearchLineIdDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList());
+
+    List<BackhaulIdDto> backhaulIds = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
+            .body(new SearchBackhaulIdDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList());
+
+    assertEquals(ftthAccessLines.size(), 0, "There are AccessLines left");
+    assertEquals(homeIds.size(), 0, "There are HomeIds left");
+    assertEquals(lineIds.size(), 0, "There are LineIds left");
+    assertEquals(backhaulIds.size(), 0, "There are BackhaulIds left");
   }
 
 }

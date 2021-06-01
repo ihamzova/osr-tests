@@ -140,59 +140,59 @@ public class OltCommissioningRobot {
       Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "Uplink port state after commissioning is not in operating state");
     }
 
-//    List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
-//            .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
-//    long wgLinesCount = wgAccessLines.size();
-//
-//    Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
-//
-//    boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
-//            .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
-//            .flatMap(List::stream).map(Port::getLifeCycleState).allMatch(Port.LifeCycleStateEnum.OPERATING::equals);
-//
-//    Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
-//
-//    List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
-//            .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
-//
-//    Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT);
-//
-//    Assert.assertTrue(anpTagsList.contains(128));
-//
-//    List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
-//            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-//
-//    Assert.assertEquals(uplinksList.size(), 1);
-//
-//    UplinkDTO uplink = uplinksList.get(0);
-//
-//    Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE);
-//
-//    Assert.assertEquals(uplink.getAncpSessions().size(), 1);
-//
-//    Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
-//
-//    long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
-//            .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdStatus.FREE)).count();
-//
-//    Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
-//
-//    long backhaulIdCount = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
-//            .body(new SearchBackhaulIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-//            .stream().filter(backhaulIdDto -> BackhaulStatus.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
-//
-//    Assert.assertEquals(backhaulIdCount, portsCount);
-//
-//    List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
-//            .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-//
-//    long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.FREE)).count();
-//    long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.USED)).count();
-//
-//    Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
-//    Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
+    List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
+            .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
+    long wgLinesCount = wgAccessLines.size();
+
+    Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
+
+    boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
+            .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
+            .flatMap(List::stream).map(Port::getLifeCycleState).allMatch(Port.LifeCycleStateEnum.OPERATING::equals);
+
+    Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
+
+    List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
+            .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
+
+    Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT);
+
+    Assert.assertTrue(anpTagsList.contains(128));
+
+    List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    Assert.assertEquals(uplinksList.size(), 1);
+
+    UplinkDTO uplink = uplinksList.get(0);
+
+    Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE);
+
+    Assert.assertEquals(uplink.getAncpSessions().size(), 1);
+
+    Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+
+    long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
+            .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdStatus.FREE)).count();
+
+    Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
+
+    long backhaulIdCount = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
+            .body(new SearchBackhaulIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().filter(backhaulIdDto -> BackhaulStatus.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
+
+    Assert.assertEquals(backhaulIdCount, portsCount);
+
+    List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
+            .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.FREE)).count();
+    long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.USED)).count();
+
+    Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
+    Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
   }
 
   @Step("Restore OSR Database state")
