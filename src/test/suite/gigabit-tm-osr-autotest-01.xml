@@ -8,7 +8,7 @@
     </test>
     <test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
         <classes>
-            <!--class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/-->
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.AdtranOltCommissioningDecommissioning"/>
         </classes>
     </test>
