@@ -8,11 +8,11 @@
     </test>
     <test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/>
+            <!--class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/-->
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.AdtranOltCommissioningDecommissioning"/>
         </classes>
     </test>
-    <test thread-count="1" name="A4 functionality">
+    <!--test thread-count="1" name="A4 functionality">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreation"/>
@@ -28,5 +28,5 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
         </classes>
-    </test>
+    </test-->
 </suite>
