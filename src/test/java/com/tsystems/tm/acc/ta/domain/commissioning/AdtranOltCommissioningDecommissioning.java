@@ -38,7 +38,6 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
 })
 
 public class AdtranOltCommissioningDecommissioning extends GigabitTest {
-  private static final String START_PON_SLOT = "1"; //pon slot from SealMapper
 
   private OsrTestContext context = OsrTestContext.get();
   private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -86,26 +85,26 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
   }
 
-  @Test(description = "Olt-Commissioning (device : SDX 6320-16) automatically case")
+  @Test(description = "Adtran Olt-Commissioning (device : SDX 6320-16) automatically case")
   @TmsLink("DIGIHUB-xxxx")
   @Description("Olt-Commissioning (SDX 6320-16) automatically case")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-  public void automaticallyOltCommissioning() {
+  public void automaticallyAdtranOltCommissioning() {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
     oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
   }
 
-  @Test(dependsOnMethods = "automaticallyOltCommissioning", description = "Olt De-Commissioning (device : SDX 6320-16) automatically case")
+  @Test(dependsOnMethods = "automaticallyAdtranOltCommissioning", description = "Adtran Olt De-Commissioning (device : SDX 6320-16) automatically case")
   @TmsLink("DIGIHUB-xxxx")
   @Description("Olt-Decommissioning (SDX 6320-16) automatically case")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-  public void automaticallyOltDeCommissioning() throws InterruptedException {
+  public void automaticallyAdtranOltDeCommissioning() throws InterruptedException {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    oltDeCommissioningRobot.startOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
-    oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, START_PON_SLOT);
+    oltDeCommissioningRobot.startAdtranOltDecommissioningAfterAutoCommissioning(oltDeviceAutomatic);
+    oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceAutomatic, null);
     accessLineRiRobot.checkPhysicalResourceRefAfterAutoOltDecommissioning(oltDeviceAutomatic);
   }
 
@@ -113,22 +112,22 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-xxxx")
   @Description("Olt-Commissioning (SDX 6320-16) manually case")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-  public void manuallyOltCommissioning() {
+  public void manuallyAdtranOltCommissioning() {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
     oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
   }
 
-  @Test(dependsOnMethods = "manuallyOltCommissioning", description = "Olt-Decommissioning (device : SDX 6320-16) manually case")
+  @Test(dependsOnMethods = "manuallyAdtranOltCommissioning", description = "Olt-Decommissioning (device : SDX 6320-16) manually case")
   @TmsLink("DIGIHUB-xxxx")
   @Description("Olt-Decommissioning (SDX 6320-16) manually case")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-  public void manuallyOltDeCommissioning() throws InterruptedException {
+  public void manuallyAdtranOltDeCommissioning() throws InterruptedException {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    oltDeCommissioningRobot.startOltDecommissioningAfterManualCommissioning(oltDeviceManual);
-    oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceManual, START_PON_SLOT);
+    oltDeCommissioningRobot.startAdtranOltDecommissioningAfterAutoCommissioning(oltDeviceManual);
+    oltDeCommissioningRobot.checkOltDeCommissioningResult(oltDeviceManual,null);
     accessLineRiRobot.checkPhysicalResourceRefAfterManualOltDecommissioning(oltDeviceManual);
   }
 }
