@@ -212,8 +212,8 @@ public class OltDetailsPage {
   @Step("Check GPON Ports LifeCycleState on UI")
   public OltDetailsPage checkGponPortLifeCycleState(OltDevice oltDevice, String portLifeCycleState) {
     $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    if ($(ponPortLifeCycleStateLocatorEmptySlot).exists()) {
-      for (int port = 0; port < oltDevice.getNumberOfPonPorts(); ++port) {
+    if ($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, "1"))).exists()) {
+      for (int port = 1; port < oltDevice.getNumberOfPonPorts(); ++port) {
         Assert.assertContains($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, port))).getText(), portLifeCycleState);
       }
     } else {
