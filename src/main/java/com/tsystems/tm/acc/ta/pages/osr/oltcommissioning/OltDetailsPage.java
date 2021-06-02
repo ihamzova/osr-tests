@@ -189,11 +189,6 @@ public class OltDetailsPage {
       if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
         $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).click();
         $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
-      } else {
-        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
-        $(START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
-        $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
-        $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
       }
     }
     return this;

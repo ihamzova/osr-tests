@@ -28,6 +28,7 @@ public class OltCommissioningRobot {
   private static final Integer HTTP_CODE_OK_200 = 200;
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
+  private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
   private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 32;
   private static final Integer LINE_ID_POOL_PER_PORT = 32;
@@ -68,7 +69,7 @@ public class OltCommissioningRobot {
     oltDiscoveryPage.validateUrl();
     int successfullyDiscoveriesBeforeStart = oltDiscoveryPage.getSuccessfullyDiscoveriesCount();
     oltDiscoveryPage = oltDiscoveryPage.makeOltDiscovery();
-    Assert.assertEquals(oltDiscoveryPage.getSuccessfullyDiscoveriesCount(), successfullyDiscoveriesBeforeStart + 1,"Discovery result mismatch");
+    Assert.assertEquals(oltDiscoveryPage.getSuccessfullyDiscoveriesCount(), successfullyDiscoveriesBeforeStart + 1, "Discovery result mismatch");
     oltDiscoveryPage = oltDiscoveryPage.saveDiscoveryResults();
 
     oltSearchPage = oltDiscoveryPage.openOltSearchPage();
@@ -92,7 +93,12 @@ public class OltCommissioningRobot {
     oltDetailsPage.openPortView(olt.getOltSlot());
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "Ethernet Port LifeCycleState after ANCP configuration is not in operating state");
 
-    oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+    //check AL Provisioning from device for adtran or from card for huawei
+    if (olt.getHersteller().equals("ADTRAN")) {
+      oltDetailsPage.startAccessLinesProvisioningFromDevice(TIMEOUT_FOR_ADTRAN_PROVISIONING);
+    } else {
+      oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+    }
 
     oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
   }
@@ -162,32 +168,32 @@ public class OltCommissioningRobot {
 
     Assert.assertEquals(anpTagsList.size(), portsCount * accessLinesPerPort, "anpTagsList size mismatch");
 
-    Assert.assertTrue(anpTagsList.contains(128));
+    Assert.assertTrue(anpTagsList.contains(128), "anpTagsList contains mismatch");
 
     List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-    Assert.assertEquals(uplinksList.size(), 1);
+    Assert.assertEquals(uplinksList.size(), 1, "There is no uplink");
 
     UplinkDTO uplink = uplinksList.get(0);
 
-    Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE);
+    Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE, "IpStatus is not active");
 
-    Assert.assertEquals(uplink.getAncpSessions().size(), 1);
+    Assert.assertEquals(uplink.getAncpSessions().size(), 1, "There are no AncpSessions");
 
-    Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+    Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCPSession is not active");
 
     long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
             .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
             .stream().filter(homeIdDto -> homeIdDto.getStatus().equals(HomeIdStatus.FREE)).count();
 
-    Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT);
+    Assert.assertEquals(homeIdCount, portsCount * HOME_ID_POOL_PER_PORT, "HomeIdCount mismatch");
 
     long backhaulIdCount = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
             .body(new SearchBackhaulIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
             .stream().filter(backhaulIdDto -> BackhaulStatus.CONFIGURED.equals(backhaulIdDto.getStatus())).count();
 
-    Assert.assertEquals(backhaulIdCount, portsCount);
+    Assert.assertEquals(backhaulIdCount, portsCount, "backhaulIdCount mismatched with portsCount");
 
     List<LineIdDto> lineIdDtos = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
             .body(new SearchLineIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -195,8 +201,8 @@ public class OltCommissioningRobot {
     long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.FREE)).count();
     long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.USED)).count();
 
-    Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
-    Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2);
+    Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2, "FreeLineIdCount mismatch");
+    Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2, "UsedLineIdCount mismatch");
   }
 
   @Step("Restore OSR Database state")
