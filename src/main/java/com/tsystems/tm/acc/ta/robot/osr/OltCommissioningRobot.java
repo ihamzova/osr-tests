@@ -145,7 +145,7 @@ public class OltCommissioningRobot {
             .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
     long wgLinesCount = wgAccessLines.size();
 
-    Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT);
+    Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT, "wgLinesCount mismatch");
 
     boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
             .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
@@ -156,7 +156,7 @@ public class OltCommissioningRobot {
     List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
             .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
 
-    Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT);
+    Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT, "anpTagsList size mismatch");
 
     Assert.assertTrue(anpTagsList.contains(128));
 
