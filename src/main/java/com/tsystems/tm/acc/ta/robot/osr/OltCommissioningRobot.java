@@ -50,9 +50,9 @@ public class OltCommissioningRobot {
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
-    Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after Commissioning mismatch");
     oltDetailsPage.openPortView(olt.getOltSlot());
-    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+    Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after Commissioning mismatch");
     oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
   }
 
@@ -67,7 +67,7 @@ public class OltCommissioningRobot {
     oltDiscoveryPage.validateUrl();
     int successfullyDiscoveriesBeforeStart = oltDiscoveryPage.getSuccessfullyDiscoveriesCount();
     oltDiscoveryPage = oltDiscoveryPage.makeOltDiscovery();
-    Assert.assertEquals(oltDiscoveryPage.getSuccessfullyDiscoveriesCount(), successfullyDiscoveriesBeforeStart + 1);
+    Assert.assertEquals(oltDiscoveryPage.getSuccessfullyDiscoveriesCount(), successfullyDiscoveriesBeforeStart + 1,"Discovery result mismatch");
     oltDiscoveryPage = oltDiscoveryPage.saveDiscoveryResults();
 
     oltSearchPage = oltDiscoveryPage.openOltSearchPage();
@@ -104,13 +104,13 @@ public class OltCommissioningRobot {
 
     List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
             .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(deviceList.size(), 1L);
-    Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz);
+    Assert.assertEquals(deviceList.size(), 1L, "Device is not present");
+    Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.OLT, "Device type is not OLT");
+    Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz, "Device EndSz mismatch");
     Device deviceAfterCommissioning = deviceList.get(0);
 
     if (deviceList.get(0).getEquipmentHolders().isEmpty()) {
-      Assert.assertEquals(deviceList.get(0).getPorts(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts());
+      Assert.assertEquals(deviceList.get(0).getPorts().size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
       portsCount = olt.getNumberOfPonPorts();
     } else {
       Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
@@ -136,7 +136,7 @@ public class OltCommissioningRobot {
               .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
               .flatMap(card -> card.getPorts().stream())
               .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
-      Assert.assertTrue(uplinkPort.isPresent());
+      Assert.assertTrue(uplinkPort.isPresent(), "Uplink is not found");
       Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "Uplink port state after commissioning is not in operating state");
     }
 

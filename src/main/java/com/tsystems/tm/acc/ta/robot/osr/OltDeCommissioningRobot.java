@@ -39,7 +39,7 @@ public class OltDeCommissioningRobot {
     oltDetailsPage.startAccessLinesDeProvisioningFromCard(TIMEOUT_FOR_CARD_DEPROVISIONING);
     oltDetailsPage.deconfigureAncpSession();
     oltDetailsPage.deleteUplinkConfiguration();
-    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Device LifeCycleState after manual DeCommissioning mismatch");
     oltDetailsPage.deleteGponCard();
     Thread.sleep(WAIT_TIME_FOR_CARD_DELETION);
     oltDetailsPage.deleteDevice();
@@ -59,7 +59,7 @@ public class OltDeCommissioningRobot {
     oltDetailsPage.startAccessLinesDeProvisioningFromDevice(TIMEOUT_FOR_CARD_DEPROVISIONING);
     oltDetailsPage.deconfigureAncpSession();
     oltDetailsPage.deleteUplinkConfiguration();
-    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Device LifeCycleState after auto DeCommissioning mismatch");
     oltDetailsPage.deleteGponCard();
     Thread.sleep(WAIT_TIME_FOR_CARD_DELETION);
     oltDetailsPage.deleteDevice();
@@ -79,7 +79,7 @@ public class OltDeCommissioningRobot {
     oltDetailsPage.startAccessLinesDeProvisioningFromDevice(TIMEOUT_FOR_CARD_DEPROVISIONING);
     oltDetailsPage.deconfigureAncpSession();
     oltDetailsPage.deleteUplinkConfiguration();
-    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+    assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Adtran Device LifeCycleState after auto DeCommissioning mismatch");
     oltDetailsPage.deleteDevice();
     DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
     deleteDevicePage.validateUrl();
