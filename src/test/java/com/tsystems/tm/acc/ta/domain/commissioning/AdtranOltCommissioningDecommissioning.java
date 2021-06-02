@@ -81,8 +81,6 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     oltCommissioningRobot.restoreOsrDbState();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
-    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-    setCredentials(loginData.getLogin(), loginData.getPassword());
   }
 
   @Test(description = "Adtran Olt-Commissioning (device : SDX 6320-16) automatically case")

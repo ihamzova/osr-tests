@@ -28,7 +28,8 @@ public class OltCommissioningRobot {
   private static final Integer HTTP_CODE_OK_200 = 200;
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
-  private static final Integer ACCESS_LINE_PER_PORT = 16;
+  private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
+  private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 32;
   private static final Integer LINE_ID_POOL_PER_PORT = 32;
   private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
@@ -101,6 +102,7 @@ public class OltCommissioningRobot {
   public void checkOltCommissioningResult(OltDevice olt) {
     String oltEndSz = olt.getEndsz();
     long portsCount;
+    long accessLinesPerPort = ACCESS_LINE_PER_PORT_MA5600;
 
     List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
             .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -109,9 +111,11 @@ public class OltCommissioningRobot {
     Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz, "Device EndSz mismatch");
     Device deviceAfterCommissioning = deviceList.get(0);
 
+
     if (deviceList.get(0).getEquipmentHolders().isEmpty()) {
       Assert.assertEquals(deviceList.get(0).getPorts().size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
       portsCount = olt.getNumberOfPonPorts();
+      accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
     } else {
       Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
               .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
@@ -145,7 +149,7 @@ public class OltCommissioningRobot {
             .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
     long wgLinesCount = wgAccessLines.size();
 
-    Assert.assertEquals(wgLinesCount, portsCount * ACCESS_LINE_PER_PORT, "wgLinesCount mismatch");
+    Assert.assertEquals(wgLinesCount, portsCount * accessLinesPerPort, "wgLinesCount mismatch");
 
     boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
             .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
@@ -156,7 +160,7 @@ public class OltCommissioningRobot {
     List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
             .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
 
-    Assert.assertEquals(anpTagsList.size(), portsCount * ACCESS_LINE_PER_PORT, "anpTagsList size mismatch");
+    Assert.assertEquals(anpTagsList.size(), portsCount * accessLinesPerPort, "anpTagsList size mismatch");
 
     Assert.assertTrue(anpTagsList.contains(128));
 
