@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static org.testng.Assert.assertEquals;
 
 public class A4ResourceInventoryRobot {
@@ -373,6 +372,15 @@ public class A4ResourceInventoryRobot {
                 .findNetworkElementLink()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Check that Network Element Link doesn't exists in Inventory")
+    public NetworkElementLinkDto checkNetworkElementLinkIsDeleted(String uuid) {
+        return a4ResourceInventory
+                .networkElementLinks()
+                .findNetworkElementLink()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
     @Step("Check that existing Network Element has been enriched with data from PSL")

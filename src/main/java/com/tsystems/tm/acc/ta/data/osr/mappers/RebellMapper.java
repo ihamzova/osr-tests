@@ -6,19 +6,34 @@ import com.tsystems.tm.acc.tests.osr.rebell.client.model.EndSz;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.Endpoint;
 import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RebellMapper {
 
     public List<Ueweg> getUewegList(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
+        List<Ueweg> ueWegeList = new ArrayList<>();
+        ueWegeList.add(getUeWeg(uewegData, neA, neB));
+
+        return ueWegeList;
+    }
+
+    public List<Ueweg> getUewegListTwoEntries(UewegData uewegDataA, UewegData uewegDataB, A4NetworkElement neA, A4NetworkElement neB) {
+        List<Ueweg> ueWegeList = new ArrayList<>();
+        ueWegeList.add(getUeWeg(uewegDataA, neA, neB));
+        ueWegeList.add(getUeWeg(uewegDataB, neA, neB));
+
+        return ueWegeList;
+    }
+
+    private Ueweg getUeWeg(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
         String endSzA = neA.getVpsz() + "/" + neA.getFsz();
         endSzA = endSzA.replace("/", "_");
 
         String endSzB = neB.getVpsz() + "/" + neB.getFsz();
         endSzB = endSzB.replace("/", "_");
 
-        return Collections.singletonList(new Ueweg()
+        return new Ueweg()
                 .id(1)
                 .lsz("LSZ")
                 .lszErg("LszErg")
@@ -51,7 +66,7 @@ public class RebellMapper {
                                 .akz("ignored")
                                 .fsz("ignored")
                                 .nkz("ignored")
-                                .vkz("ignored"))));
+                                .vkz("ignored")));
     }
 
 }
