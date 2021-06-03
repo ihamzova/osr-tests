@@ -85,6 +85,28 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
         checkAccessLinesManagementStates(accessLinesManagementPage, "ACTIVE", "NULL",
                 "ACTIVE", "NULL");
+
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-69055")
+    @Description("Save and Reconfigure")
+    public void saveAndReconfigureTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
+        accessLineSearchPage.setPageSize(100);
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.clickEditButton();
+        accessLinesManagementPage.addSubscriberProfile();
+        accessLinesManagementPage.changeDefaultProfile();
+        accessLinesManagementPage.clickSaveAndReconfigureButton();
+        accessLinesManagementPage.returnOnWindowWithListOfLines();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
+        AccessLinesManagementPage accessLinesManagementPageAssert = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        checkAccessLinesManagementStates(accessLinesManagementPageAssert, "INACTIVE", "ACTIVE",
+                "ACTIVE", "NULL");
+
     }
 
     @Test
