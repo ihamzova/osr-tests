@@ -26,7 +26,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 public class OltCommissioningRobot {
 
   private static final Integer HTTP_CODE_OK_200 = 200;
-  private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 30 * 60_000;
+  private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
