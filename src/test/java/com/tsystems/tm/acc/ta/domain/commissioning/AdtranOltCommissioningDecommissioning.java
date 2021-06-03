@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
@@ -47,6 +48,7 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   private OltDevice oltDeviceAutomatic;
 
   private WireMockMappingsContext mappingsContext;
+  private WireMockMappingsContext mappingsContextPonInv;
 
   @BeforeClass
   public void init() {
@@ -69,12 +71,27 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     mappingsContext.publish()
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
+
+    mappingsContextPonInv = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get())
+            .addPonInventoryMock(oltDeviceManual)
+            .addPonInventoryMock(oltDeviceAutomatic)
+            .build();
+
+    mappingsContextPonInv.publish()
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
+
   }
 
   @AfterClass
   public void teardown() {
     mappingsContext.close();
     mappingsContext
+            .eventsHook(saveEventsToDefaultDir())
+            .eventsHook(attachEventsToAllureReport());
+
+    mappingsContextPonInv.close();
+    mappingsContextPonInv
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
 
