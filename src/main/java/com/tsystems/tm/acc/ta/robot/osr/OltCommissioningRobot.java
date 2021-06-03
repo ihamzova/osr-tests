@@ -109,6 +109,7 @@ public class OltCommissioningRobot {
     String oltEndSz = olt.getEndsz();
     long portsCount;
     long accessLinesPerPort = ACCESS_LINE_PER_PORT_MA5600;
+    long expectedFreeLineIdCount = LINE_ID_POOL_PER_PORT / 2;
 
     List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
             .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -117,11 +118,12 @@ public class OltCommissioningRobot {
     Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz, "Device EndSz mismatch");
     Device deviceAfterCommissioning = deviceList.get(0);
 
-
     if (deviceList.get(0).getEquipmentHolders().isEmpty()) {
       Assert.assertEquals(deviceList.get(0).getPorts().size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
       portsCount = olt.getNumberOfPonPorts();
+      //for ADTRAN device provisioning (strategy 32 on demand)
       accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
+      expectedFreeLineIdCount = 0;
     } else {
       Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
               .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
@@ -201,7 +203,8 @@ public class OltCommissioningRobot {
     long freeLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.FREE)).count();
     long usedLineIdCount = lineIdDtos.stream().filter(lineIdDto -> lineIdDto.getStatus().equals(LineIdStatus.USED)).count();
 
-    Assert.assertEquals(freeLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2, "FreeLineIdCount mismatch");
+
+    Assert.assertEquals(freeLineIdCount, portsCount * expectedFreeLineIdCount, "FreeLineIdCount mismatch");
     Assert.assertEquals(usedLineIdCount, portsCount * LINE_ID_POOL_PER_PORT / 2, "UsedLineIdCount mismatch");
   }
 
