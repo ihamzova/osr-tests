@@ -66,8 +66,8 @@ public class ETCDRobot {
                             .filter(Objects::nonNull)
                             .map(event -> event.message)
                             .collect(Collectors.toList());
-
-                    assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
+                    values.forEach(value-> assertThat(value).matches(v -> events.stream().anyMatch(e -> e.contains(v))));
+                    //assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
                 });
     }
 
