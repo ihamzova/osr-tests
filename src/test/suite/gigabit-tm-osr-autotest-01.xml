@@ -6,9 +6,14 @@
             <class name="com.tsystems.tm.acc.ta.domain.PreTest"/>
         </classes>
     </test>
-    <test name="Olt-Commissioning cases (for MA5600T device)" thread-count="2" parallel="methods">
+    <test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/>
+        </classes>
+    </test>
+    <test name="Adtran-Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.AdtranOltCommissioningDecommissioning"/>
         </classes>
     </test>
     <test thread-count="1" name="A4 functionality">

@@ -82,8 +82,6 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         oltCommissioningRobot.restoreOsrDbState();
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
