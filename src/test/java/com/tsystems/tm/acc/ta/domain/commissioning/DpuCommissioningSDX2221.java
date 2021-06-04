@@ -22,6 +22,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
@@ -89,32 +91,31 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
 
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
-
-        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(),
-                Arrays.asList(
-                        "EXECUTED Successfuly [Read DPU device data]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
-                        "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                        "EXECUTED Successfuly [Read OltPonPort Data]",
-                        "EXECUTED Successfuly [Read OltUpLinkPortData]",
-                        "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Read BackhaulId]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
-                        "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][call]",
-                        "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
-                        "EXECUTED Successfuly [Read ANCP Info]",
-                        "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][call]",
-                        "EXECUTED Successfuly [Configure DPU at OLT][callback]",
-                        "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
-                        "EXECUTED Successfuly [Configure DPU Ems][call]",
-                        "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                        "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                        "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
+        List<String> values = Arrays.asList(
+                "EXECUTED Successfuly [Read DPU device data]",
+                "EXECUTED Successfuly [update LifecycleStatus of DPU to INSTALLING]",
+                "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
+                "EXECUTED Successfuly [Read OltPonPort Data]",
+                "EXECUTED Successfuly [Read OltUpLinkPortData]",
+                "EXECUTED Successfuly [Get Unique OnuId for DPU]",
+                "EXECUTED Successfuly [Read BackhaulId]",
+                "EXECUTED Successfuly [Read BackhaulId]",
+                "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
+                "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
+                "EXECUTED Successfuly [Configure ANCP on BNG][call]",
+                "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
+                "EXECUTED Successfuly [Read ANCP Info]",
+                "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
+                "EXECUTED Successfuly [Configure DPU at OLT][call]",
+                "EXECUTED Successfuly [Configure DPU at OLT][callback]",
+                "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
+                "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
+                "EXECUTED Successfuly [Configure DPU Ems][call]",
+                "EXECUTED Successfuly [Configure DPU Ems][callback]",
+                "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
+                "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
+                "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]");
+        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(), Collections.emptyList());
 
     }
 }
