@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import org.testng.annotations.AfterMethod;
@@ -15,7 +16,7 @@ import org.testng.annotations.Test;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
-public class A4RebellSyncTest {
+public class A4RebellSyncTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
@@ -31,7 +32,6 @@ public class A4RebellSyncTest {
     private A4NetworkElementPort nep4Data;
     private A4NetworkElementLink nel1Data;
     private UewegData uewegDataA;
-    private UewegData uewegDataB;
 
     @BeforeClass
     public void init() {
@@ -101,7 +101,7 @@ public class A4RebellSyncTest {
         // GIVEN / ARRANGE
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);// !!XX
-        uewegDataB = osrTestContext.getData().getUewegDataDataProvider()
+        UewegData uewegDataB = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);// !!XX
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "!!XX"))
                 .addRebellMockTwoEntries(uewegDataA, uewegDataB, ne1Data, ne2Data) // !!XX
