@@ -101,8 +101,8 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   }
 
   @Test(description = "Adtran Olt-Commissioning (device : SDX 6320-16) automatically case")
-  @TmsLink("DIGIHUB-xxxx")
-  @Description("Olt-Commissioning (SDX 6320-16) automatically case")
+  @TmsLink("DIGIHUB-109052")
+  @Description("Automatically Commissioning SDX 6320 16 for DTAG user")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
   public void automaticallyAdtranOltCommissioning() {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
@@ -112,8 +112,8 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   }
 
   @Test(dependsOnMethods = "automaticallyAdtranOltCommissioning", description = "Adtran Olt De-Commissioning (device : SDX 6320-16) automatically case")
-  @TmsLink("DIGIHUB-xxxx")
-  @Description("Olt-Decommissioning (SDX 6320-16) automatically case")
+  @TmsLink("DIGIHUB-109057")
+  @Description("DeCommissioning SDX 6320 16 for DTAG user after auto commissioning")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
   public void automaticallyAdtranOltDeCommissioning() throws InterruptedException {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
@@ -124,8 +124,8 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   }
 
   @Test(description = "Olt-Commissioning (device : SDX 6320-16) manually case")
-  @TmsLink("DIGIHUB-xxxx")
-  @Description("Olt-Commissioning (SDX 6320-16) manually case")
+  @TmsLink("DIGIHUB-109056")
+  @Description("Manual Commissioning SDX 6320 16 for DTAG user")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
   public void manuallyAdtranOltCommissioning() {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
@@ -135,8 +135,8 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioning", description = "Olt-Decommissioning (device : SDX 6320-16) manually case")
-  @TmsLink("DIGIHUB-xxxx")
-  @Description("Olt-Decommissioning (SDX 6320-16) manually case")
+  @TmsLink("DIGIHUB-109059")
+  @Description("DeCommissioning SDX 6320 16 for DTAG user after manually commissioning")
   @Owner("DL-T-Magic.Mercury@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
   public void manuallyAdtranOltDeCommissioning() throws InterruptedException {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
