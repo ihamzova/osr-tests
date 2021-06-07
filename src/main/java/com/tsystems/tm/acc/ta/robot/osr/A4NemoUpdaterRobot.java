@@ -1,8 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4NemoUpdaterClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.model.UpdateNemoTask;
@@ -20,12 +23,18 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 
 @Slf4j
 public class A4NemoUpdaterRobot {
 
-    private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient().getClient();
+    private static final AuthTokenProvider authTokenProvider =
+            new RhssoClientFlowAuthTokenProvider(A4_NEMO_UPDATER_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_NEMO_UPDATER_MS));
+
+    private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient(authTokenProvider).getClient();
 
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
 

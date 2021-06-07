@@ -1,8 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
@@ -17,11 +20,16 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
 
 public class A4ResourceInventoryRobot {
 
-    private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient().getClient();
+    private static final AuthTokenProvider authTokenProvider =
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_MS));
+
+    private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient(authTokenProvider).getClient();
 
     @Step("Create new Network Element Group in A4 resource inventory")
     public void createNetworkElementGroup(A4NetworkElementGroup negData) {
