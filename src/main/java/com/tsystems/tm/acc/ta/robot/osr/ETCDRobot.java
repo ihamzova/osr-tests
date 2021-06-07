@@ -66,8 +66,10 @@ public class ETCDRobot {
                             .filter(Objects::nonNull)
                             .map(event -> event.message)
                             .collect(Collectors.toList());
-
-                    assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
+                    values.forEach(value-> assertThat(value)
+                            .matches(v -> events.stream().anyMatch(e -> e.contains(v)),
+                                    "Should be one of: " + String.join(",", events)));
+                    //assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
                 });
     }
 
@@ -90,8 +92,10 @@ public class ETCDRobot {
                                 .filter(Objects::nonNull)
                                 .map(event -> event.message)
                                 .collect(Collectors.toList());
-
-                        assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
+                        values.forEach(value-> assertThat(value)
+                                .matches(v -> events.stream().anyMatch(e -> e.contains(v)),
+                                        "Should be one of: " + String.join(",", events)));
+                        //assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
                     });
         }
     }

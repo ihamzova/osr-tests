@@ -108,10 +108,11 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
-        System.out.println("+++ User: "+loginData.getLogin());
-        System.out.println("+++ PW:   "+loginData.getPassword());
+      //  System.out.println("+++ User: "+loginData.getLogin());
+      //  System.out.println("+++ PW:   "+loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -123,7 +124,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementInstallingSpine01));
 
         a4NetworkElements.put(A4_NE_OPERATING_BOR_02, osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementOperatingBor01));
+                .get(A4NetworkElementCase.networkElementOperatingBor02));
 
         a4NetworkElements.put(A4_NE_PLANNING_LEAFSWITCH_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01));
@@ -324,21 +325,27 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         sleepForSeconds(5);
 
-        // Check ZTPI value in search result table
+        // Check ZTP-ID value in search result table
         assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
 
-        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid(), equipmentDataA);
-        //a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
+        System.out.println("+++ checkNetworkElementIsUpdatedWithPslData: ");
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
+                .getUuid(), equipmentDataA);  // Fehlermeldung: expected [40318601] but found [], hat sich am psl-mapper etwas geändert?
+        System.out.println("+++ checkLogicalResourceRequestToNemoWiremock: ");
+       // a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid(), "PUT", 2);
 
         // Problem bei Nachtlauf, expected [1] but found [0]
         System.out.println("+++ uewegData: "+uewegData);
         System.out.println("+++ NEP A: "+a4NetworkElementPortA.getUuid());
         System.out.println("+++ NEP B: "+a4NetworkElementPortB.getUuid());
+        System.out.println("+++ checkNetworkElementLinkConnectedToNePortExists: ");
         a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
 
         // Problem bei Nachtlauf, Expected exactly 1 requests matching the following pattern but received 2
+        // or: expected [1] but found [0]
+        System.out.println("+++ checkNetworkElementLinkPutRequestToNemoWiremock: ");
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortB.getUuid());
-        sleepForSeconds(60); // zum Check der DB, wieder löschen
+        //sleepForSeconds(60); // Check der DB, wieder löschen
     }
 
 }

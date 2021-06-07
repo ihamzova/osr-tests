@@ -8,6 +8,8 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.util.Set;
+
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -29,24 +31,28 @@ public class AccessLinesManagementPage {
     SelenideElement nlSubscriberProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
     SelenideElement editButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
     SelenideElement saveAndReconfigureButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
+    SelenideElement ontAbmeldungButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
+
     SelenideElement addProfile = $x("//*[@class='am-icon icon--add-profile']");
-    SelenideElement clearOntSerialNumber = $x("//*[@class='am-icon icon--reset']");
     SelenideElement dropDownTriggerStateNEprofile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-1 pi pi-chevron-down']");
     SelenideElement dropDownTriggerStateSubProfile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-4 pi pi-chevron-down']");
     SelenideElement dropDownTriggerOntState = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-5 pi pi-chevron-down']");
-    SelenideElement dropDownTriggerStatus = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-3 pi pi-chevron-down']");
-
+    SelenideElement dropDownTriggerStatus = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-3 pi pi-chevron-down']");//
+    SelenideElement dropDownTriggerStatusToWG = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-10 pi pi-chevron-down']");
 
     SelenideElement inactiveState = $x("//*[@id='INACTIVE']");
     SelenideElement activeState = $x("//*[@id='ACTIVE']");
     SelenideElement onlineOntState = $x("//*[@id='ONLINE']");
     SelenideElement assignedStatus = $x("//*[@id='ASSIGNED']");
+    SelenideElement walledGardenStatus = $x("//*[@id='WALLED_GARDEN']");
+    SelenideElement bestatigenData = $x("//*[@qa-data='am-deregistration-proceed']");
 
 
     ElementsCollection neDefaultProfileStateInput = $$(NE_DEFAULT_PROFILE_STATE_INPUT);
     ElementsCollection nlDefaultProfileStateInput = $$(NL_DEFAULT_PROFILE_STATE_INPUT);
     ElementsCollection neSubscriberProfileStateInput = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT);
     ElementsCollection nlSubscriberProfileStateInput = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT);
+
 
     @Step("Return on first window")
     public void returnOnWindowWithListOfLines(){
@@ -59,23 +65,39 @@ public class AccessLinesManagementPage {
         editButton.click();
     }
 
+    @Step("Click ONT Abmeldung Button")
+    public void clickONTAbmeldungButton(){
+        ontAbmeldungButton.click();
+    }
+
+    @Step("Click Bestätigen Button")
+    public void clickBestätigenButton() throws InterruptedException {
+        bestatigenData.click();
+        Thread.sleep(5000);
+
+
+    }
+
     @Step("Click save and reconfigure button")
     public void clickSaveAndReconfigureButton(){
         saveAndReconfigureButton.click();
-
     }
 
     @Step("Add subscriber profile")
     public void  addSubscriberProfile()  {
         addProfile.click();
-        //clearOntSerialNumber.click();
-        //Selenide.$x("//*[@class='ng-dirty ng-valid ng-touched']").sendKeys("3132333456789101");
         dropDownTriggerStateSubProfile.click();
         activeState.click();
         dropDownTriggerOntState.click();
         onlineOntState.click();
         dropDownTriggerStatus.click();
         assignedStatus.click();
+
+    }
+
+    public  void changeStatusOnWalledGarden(){
+        dropDownTriggerStatusToWG.click();
+        walledGardenStatus.click();
     }
 
     @Step("Change default profile")

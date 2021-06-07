@@ -89,9 +89,9 @@ public class AccessLinesSearchTest extends GigabitTest {
     }
 
     @Test
-    @TmsLink("DIGIHUB-69055")
-    @Description("Save and Reconfigure")
-    public void saveAndReconfigureTest() {
+    @TmsLink("DIGIHUB-81428")
+    @Description("Save and Reconfigure Subscriber_NE_Profile")
+    public void saveAndReconfigureTest() throws InterruptedException {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
@@ -105,6 +105,30 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
         AccessLinesManagementPage accessLinesManagementPageAssert = accessLineSearchPage.clickMagnifyingGlassForLine(0);
         checkAccessLinesManagementStates(accessLinesManagementPageAssert, "INACTIVE", "ACTIVE",
+                "ACTIVE", "NULL");
+
+    }
+
+    @Test(dependsOnMethods="saveAndReconfigureTest")
+    @TmsLink("DIGIHUB-96235")
+    @Description("Save and Reconfigure to Walled_Garden status")
+    public void saveAndReconfigureToWalledGardenTest() throws InterruptedException {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
+        accessLineSearchPage.setPageSize(100);
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        Thread.sleep(3000);
+        accessLinesManagementPage.clickEditButton();
+        accessLinesManagementPage.clickONTAbmeldungButton();
+        accessLinesManagementPage.clickBestätigenButton();
+        accessLinesManagementPage.clickEditButton();
+        accessLinesManagementPage.changeStatusOnWalledGarden();
+        accessLinesManagementPage.clickSaveAndReconfigureButton();
+        accessLinesManagementPage.returnOnWindowWithListOfLines();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
+        AccessLinesManagementPage accessLinesManagementPageSecondAssert = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        checkAccessLinesManagementStates(accessLinesManagementPageSecondAssert, "ACTIVE", "NULL",
                 "ACTIVE", "NULL");
 
     }

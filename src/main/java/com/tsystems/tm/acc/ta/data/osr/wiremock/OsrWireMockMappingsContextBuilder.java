@@ -58,6 +58,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
+    public OsrWireMockMappingsContextBuilder addMerlinMock() {
+        context.add(new MerlinStub().postMerlinCallbackResponce201());
+        return this;
+    }
+
     public OsrWireMockMappingsContextBuilder addNemoMock500() {
         context.add(new NemoStub().deleteNemoUpdate500());
         return this;

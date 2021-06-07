@@ -17,6 +17,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4SupportPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4CarrierManagementTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4RebellSyncTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceOrderTest"/>
         </classes>
     </test>
 </suite>
