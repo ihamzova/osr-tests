@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4CarrierManagementClient;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.model.AllocateL2BsaNspTask;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.model.ReleaseL2BsaNspTask;
@@ -14,7 +17,9 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 @Slf4j
 public class A4CarrierManagementRobot {
 
-    private final ApiClient a4CarrierManagement = new A4CarrierManagementClient().getClient();
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("a4-carrier-management", RhssoHelper.getSecretOfGigabitHub("a4-carrier-management"));
+
+    private final ApiClient a4CarrierManagement = new A4CarrierManagementClient(authTokenProvider).getClient();
 
     @Step("send POST for allocateL2BsaNspTask")
     public void sendPostForAllocateL2BsaNsp
