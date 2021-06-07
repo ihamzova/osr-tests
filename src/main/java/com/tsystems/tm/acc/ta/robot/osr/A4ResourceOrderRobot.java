@@ -24,6 +24,7 @@ public class A4ResourceOrderRobot {
                 .resourceOrder()
                 .createResourceOrder()
                 .xCallbackCorrelationIdHeader(corId)
+                .xCallbackUrlHeader("https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/test_url")
                 .body(resourceOrderCreate)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
