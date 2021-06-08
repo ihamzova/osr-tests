@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.team.upiter.lineid;
 
 import com.tsystems.tm.acc.data.upiter.models.lineidbatch.LineIdBatchCase;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.PoolLineId;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.SingleLineId;
 import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
@@ -27,10 +30,11 @@ public class LineIdTest extends GigabitTest {
   private LineIdGeneratorClient lineidGeneratorClient;
   private LineIdBatch lineIdBatch;
   private UpiterTestContext context = UpiterTestContext.get();
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("line-id-generator", RhssoHelper.getSecretOfGigabitHub("line-id-generator"));
 
   @BeforeClass
   public void init() {
-    lineidGeneratorClient = new LineIdGeneratorClient();
+    lineidGeneratorClient = new LineIdGeneratorClient(authTokenProvider);
     lineIdBatch = context.getData().getLineIdBatchDataProvider().get(LineIdBatchCase.lineIdBatch);
   }
 

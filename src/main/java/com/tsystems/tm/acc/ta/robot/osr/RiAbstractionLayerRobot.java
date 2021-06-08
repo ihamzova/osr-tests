@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.RiAbstractionLayerClient;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.model.Device;
 import io.qameta.allure.Step;
 
@@ -11,7 +14,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 
 public class RiAbstractionLayerRobot {
-  private RiAbstractionLayerClient riAbstractionLayerClient = new RiAbstractionLayerClient();
+  private RiAbstractionLayerClient riAbstractionLayerClient = new RiAbstractionLayerClient(authTokenProvider);
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ri-abstraction-layer", RhssoHelper.getSecretOfGigabitHub("ri-abstraction-layer"));
 
   @Step("Get Device by EndSz")
   public Device getDeviceByEndsz(String endSz) {
