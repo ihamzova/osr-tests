@@ -1,8 +1,12 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
+import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.GsonObjectMapper;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.JSON;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -26,6 +30,16 @@ public class A4NemoUpdaterClient implements Resetable {
                         .addFilter(new ResponseLoggingFilter())
                         .addHeader("Content-Type", "application/json")
                         .setBaseUri(new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri())));
+    }
+
+    public A4NemoUpdaterClient(AuthTokenProvider authTokenProvider){
+        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
+                () -> RequestSpecBuilders.getDefaultWithAuth(
+                        GsonObjectMapper.gson(),
+                        new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri(),
+                        new BearerHeaderAuthTokenInjector(authTokenProvider)
+                )
+        ));
     }
 
     public static JSON json() {

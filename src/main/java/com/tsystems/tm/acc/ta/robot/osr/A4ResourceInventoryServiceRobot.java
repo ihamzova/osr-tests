@@ -1,8 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
@@ -15,10 +18,15 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
 public class A4ResourceInventoryServiceRobot {
 
-    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient().getClient();
+    private static final AuthTokenProvider authTokenProvider =
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
+
+    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient(authTokenProvider).getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
@@ -147,7 +155,7 @@ public class A4ResourceInventoryServiceRobot {
 
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
-        Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
+        Assert.assertEquals(logicalResourceList.get(0).getAtType(), "NetworkElementGroup", "Entity type is the same");
     }
 
     @Step("Check Logical Resource representation has expected characteristic and value")

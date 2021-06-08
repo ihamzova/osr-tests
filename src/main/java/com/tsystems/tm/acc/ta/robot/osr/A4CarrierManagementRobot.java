@@ -13,11 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
 
 @Slf4j
 public class A4CarrierManagementRobot {
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("a4-carrier-management", RhssoHelper.getSecretOfGigabitHub("a4-carrier-management"));
+    private static final AuthTokenProvider authTokenProvider =
+            new RhssoClientFlowAuthTokenProvider(A4_CARRIER_MANAGEMENT_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_CARRIER_MANAGEMENT_MS));
 
     private final ApiClient a4CarrierManagement = new A4CarrierManagementClient(authTokenProvider).getClient();
 
