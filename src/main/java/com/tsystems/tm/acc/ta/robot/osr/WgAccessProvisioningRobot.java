@@ -1,11 +1,14 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.LogConverter;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.log.ContainsExpecter;
@@ -43,9 +46,11 @@ public class WgAccessProvisioningRobot {
   private static final Integer LATENCY_FOR_PORT_PROVISIONING = 320_000;
   private static String CORRELATION_ID = UUID.randomUUID().toString();
   private ServiceLogExpectSince logExpect;
-  private WgAccessProvisioningClient wgAccessProvisioningClient = new WgAccessProvisioningClient();
+  private WgAccessProvisioningClient wgAccessProvisioningClient = new WgAccessProvisioningClient(authTokenProvider);
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
   @Step("Start port provisioning")
   public void startPortProvisioning(PortProvisioning port) {

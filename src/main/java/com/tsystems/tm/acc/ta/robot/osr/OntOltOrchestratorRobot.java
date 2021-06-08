@@ -2,10 +2,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OntOltOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
@@ -37,7 +40,8 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class OntOltOrchestratorRobot {
     private static String CORRELATION_ID;
-    private OntOltOrchestratorClient ontOltOrchestratorClient = new OntOltOrchestratorClient();
+    private OntOltOrchestratorClient ontOltOrchestratorClient = new OntOltOrchestratorClient(authTokenProvider);
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ont-olt-orchestrator", RhssoHelper.getSecretOfGigabitHub("ont-olt-orchestrator"));
 
     @Step("Reserving new access line by port and homeId")
     public String reserveAccessLineByPortAndHomeId(PortAndHomeIdDto portAndHomeIdDto) {
