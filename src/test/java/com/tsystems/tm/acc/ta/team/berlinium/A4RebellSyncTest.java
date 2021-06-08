@@ -26,16 +26,15 @@ public class A4RebellSyncTest extends GigabitTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4InventoryImporterRobot a4Importer = new A4InventoryImporterRobot();
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync")).build();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement ne1Data;
     private A4NetworkElement ne2Data;
     private A4NetworkElementPort nep1Data;
     private A4NetworkElementPort nep2Data;
-    private A4NetworkElementPort nep3Data;
-    private A4NetworkElementPort nep4Data;
     private A4NetworkElementLink nel1Data;
+    private A4NetworkElementLink nel2Data;
     private UewegData uewegDataA;
 
     @BeforeClass
@@ -43,19 +42,17 @@ public class A4RebellSyncTest extends GigabitTest {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         ne1Data = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementOperatingBor02);// !!XX
+                .get(A4NetworkElementCase.networkElementOperatingBor02);
         ne2Data = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementRetiringPodServer01);// !!XX
+                .get(A4NetworkElementCase.networkElementRetiringPodServer01);
         nep1Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);// !!XX
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
         nep2Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);// !!XX
-        nep3Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);// !!XX
-        nep4Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);// !!XX
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nel1Data = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);// !!XX
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        nel2Data = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -68,9 +65,6 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.createNetworkElement(ne2Data, negData);
         a4Inventory.createNetworkElementPort(nep1Data, ne1Data);
         a4Inventory.createNetworkElementPort(nep2Data, ne2Data);
-        a4Inventory.createNetworkElementPort(nep3Data, ne1Data);
-        a4Inventory.createNetworkElementPort(nep4Data, ne2Data);
-//        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data);
     }
 
     @AfterMethod
@@ -84,26 +78,23 @@ public class A4RebellSyncTest extends GigabitTest {
     }
 
     @Test
-    public void testRebelSyncNoDifference() {
+    public void testRebelSyncLinkCreated() {
         // GIVEN / ARRANGE
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
                 .addRebellMock(uewegDataA, ne1Data, ne2Data)
-                .build();
-        mappingsContext.publish();
+                .build().publish();
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        // number of NELs is unchanged
         a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegDataA, nep1Data.getUuid(), nep2Data.getUuid());
-//        a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
     }
 
     @Test
-    public void testRebelSyncNoDifference_existingNel() {
+    public void testRebelSyncLinkAlreadyExists() {
         // GIVEN / ARRANGE
         a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data);
 
@@ -111,75 +102,43 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
                 .addRebellMock(uewegDataA, ne1Data, ne2Data)
-                .build();
-        mappingsContext.publish();
+                .build().publish();
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        // number of NELs is unchanged
         a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegDataA, nep1Data.getUuid(), nep2Data.getUuid());
         a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
     }
 
     @Test
-    public void testRebelSyncRebellMoreLinks() {
-        // GIVEN / ARRANGE
-        uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);// !!XX
-        UewegData uewegDataB = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);// !!XX
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMockTwoEntries(uewegDataA, uewegDataB, ne1Data, ne2Data) // !!XX
-                .build();
-        mappingsContext.publish();
-
-        // WHEN / ACT
-        a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
-
-        // THEN / ASSERT
-        // NELs still exist, plus 1 more NEL has been created
-        a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
-        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegDataA, nep3Data.getUuid(), nep4Data.getUuid()); // !!XX
-    }
-
-    @Test
     public void testRebelSyncRebellFewerLinksWhichIsPlanning() {
         // GIVEN / ARRANGE
-        // Set LC status of NEL = PLANNING
+        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMockEmpty(ne1Data) // !!XX
-                .build();
-        mappingsContext.publish();
+                .addRebellMockEmpty(ne1Data)
+                .build().publish();
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        // 1 NEL has been deleted
         a4Inventory.checkNetworkElementLinkIsDeleted(nel1Data.getUuid());
     }
 
     @Test
     public void testRebelSyncRebellFewerLinksWhichIsNotPlanning() {
         // GIVEN / ARRANGE
-        // Set LC status of NEL != PLANNING
-
-        A4NetworkElementLink nel2Data;
-        nel2Data = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);// !!XX
-
+        a4Inventory.createNetworkElementLink(nel2Data, nep1Data, nep2Data, ne1Data, ne2Data);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMockEmpty(ne1Data) // !!XX
-                .build();
-        mappingsContext.publish();
+                .addRebellMockEmpty(ne1Data)
+                .build().publish();
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        // NEL which is not in REBELL response still exists
         a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
     }
 
