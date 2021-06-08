@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
 

@@ -1,9 +1,13 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
+import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.GsonObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -26,6 +30,16 @@ public class A4RebellSyncClient implements Resetable {
                         .addFilter(new ResponseLoggingFilter())
                         .addHeader("Content-Type", "application/json")
                         .setBaseUri(new OCUrlBuilder(A4_INVENTORY_IMPORTER_MS).buildUri())));
+    }
+
+    public A4RebellSyncClient(AuthTokenProvider authTokenProvider){
+        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
+                () -> RequestSpecBuilders.getDefaultWithAuth(
+                        GsonObjectMapper.gson(),
+                        new OCUrlBuilder(A4_INVENTORY_IMPORTER_MS).buildUri(),
+                        new BearerHeaderAuthTokenInjector(authTokenProvider)
+                )
+        ));
     }
 
     public static JSON json() {
