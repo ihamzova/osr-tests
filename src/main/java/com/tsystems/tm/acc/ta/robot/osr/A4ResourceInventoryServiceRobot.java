@@ -155,7 +155,7 @@ public class A4ResourceInventoryServiceRobot {
 
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
-        Assert.assertEquals(logicalResourceList.get(0).getType(), "NetworkElementGroup", "Entity type is the same");
+        Assert.assertEquals(logicalResourceList.get(0).getAtType(), "NetworkElementGroup", "Entity type is the same");
     }
 
     @Step("Check Logical Resource representation has expected characteristic and value")
