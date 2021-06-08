@@ -4,10 +4,10 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NE
   vpsz: "49/1197/0"
   fsz: "7KC1"
-  klsId: "1234567"
+  klsId: "17056514" # "1234567" // !!XX
   category: "BOR"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
   type: "A4-BOR-v1"
-  plannedMatNr: ""
+  plannedMatNr: "40318601" # "" // !!XX
   planningDeviceName: "dmst.bor.2"
