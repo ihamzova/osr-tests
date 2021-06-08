@@ -57,9 +57,6 @@ public class A4RebellSyncTest extends GigabitTest {
         nel1Data = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);// !!XX
 
-        // "lbz": "LSZ/Order Number-49/1197/0/7KC1-49/1198/0/7KD1",
-        nel1Data.setLbz("LSZ/Order Number-" + ne1Data.getFsz() + "/" + ne1Data.getFsz() + "/" + ne2Data.getFsz() + "/" + ne2Data.getFsz());
-
         // Ensure that no old test data is in the way
         cleanup();
     }
@@ -90,9 +87,9 @@ public class A4RebellSyncTest extends GigabitTest {
     public void testRebelSyncNoDifference() {
         // GIVEN / ARRANGE
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);// !!XX
+                .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMock(uewegDataA, ne1Data, ne2Data) // !!XX
+                .addRebellMock(uewegDataA, ne1Data, ne2Data)
                 .build();
         mappingsContext.publish();
 
@@ -111,9 +108,9 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data);
 
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);// !!XX
+                .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMock(uewegDataA, ne1Data, ne2Data) // !!XX
+                .addRebellMock(uewegDataA, ne1Data, ne2Data)
                 .build();
         mappingsContext.publish();
 

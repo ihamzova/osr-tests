@@ -77,13 +77,13 @@ public class A4ResourceInventoryMapper {
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
         final String lsz = "LSZ";
-        final String orderNumber = "1";
+        final String orderNumber = "Order Number";
 
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
         if (nelData.getLbz().isEmpty())
-            nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "/" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
+            nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
 
         if (nelData.getUeWegId().isEmpty())
             nelData.setUeWegId("NEL-ueWegId-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
