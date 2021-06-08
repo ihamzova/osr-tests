@@ -108,8 +108,7 @@ public class A4RebellSyncTest extends GigabitTest {
     @Test
     public void testRebelSyncNoDifference_existingNel() {
         // GIVEN / ARRANGE
-        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data);
-
+        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data);
 
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);// !!XX
