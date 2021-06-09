@@ -49,7 +49,7 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     }
 
     public OsrWireMockMappingsContextBuilder addMerlinMock() {
-        context.add(new MerlinStub().postMerlinCallbackResponce201());
+        context.add(new MerlinStub().postMerlinCallbackResponce202());
         return this;
     }
 
