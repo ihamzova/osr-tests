@@ -61,6 +61,7 @@ public class A4ResourceOrderTest {
 
     private ResourceOrderCreate ro;
     private String corId;
+    private String reqUrl = "https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/test_url";
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
@@ -105,8 +106,8 @@ public class A4ResourceOrderTest {
         ro = new ResourceOrderCreate();
         corId = UUID.randomUUID().toString();
 
-        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
-
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory
+                .get(), "NewTpFromNemoWithPreprovisioningTest"))
                 .addMerlinMock()
                 .build();
         wiremock.publish()
@@ -155,27 +156,33 @@ public class A4ResourceOrderTest {
 
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
 
 
-
-        // receive callback
+        // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
 
-
-        // Mock test
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
-               //         exactly(count),
                         newRequestPattern(
                                 RequestMethod.fromString("POST"),
                                 urlPathEqualTo( "/test_url" )));
 
 
-        LoggedRequest erg = ergList.get(0);
-        String body = Arrays.toString(erg.getBody());
+        //LoggedRequest erg = ergList.get(0);
+        //String body = Arrays.toString(erg.getBody());
+        //System.out.println("+++ body: "+body); // liefert Zahlenwerte
 
-        System.out.println("+++ body: "+body);
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        System.out.println("+++  ");
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
 
         System.out.println("+++ fertig! ");
     }

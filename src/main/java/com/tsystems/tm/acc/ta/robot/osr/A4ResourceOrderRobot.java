@@ -15,21 +15,18 @@ public class A4ResourceOrderRobot {
       private final ApiClient a4ResourceOrder = new A4ResourceOrderClient().getClient();
 
     @Step("Send POST for A10nsp Resource Order")
-    public void sendPostResourceOrder(String corId, ResourceOrderCreate resourceOrderCreate) {
+    public void sendPostResourceOrder(String reqUrl, String corId, ResourceOrderCreate resourceOrderCreate) {
 
-        System.out.println("+++ übergebene Order: "+resourceOrderCreate);
+        System.out.println("+++ reqUrl: "+reqUrl);
         System.out.println("+++ corId: "+corId);
+        System.out.println("+++ übergebene Order: "+resourceOrderCreate);
 
         a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
                 .xCallbackCorrelationIdHeader(corId)
-                .xCallbackUrlHeader("https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/test_url")
+                .xCallbackUrlHeader(reqUrl)
                 .body(resourceOrderCreate)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-
-
     }
-
-
 }
