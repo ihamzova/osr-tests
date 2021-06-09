@@ -139,7 +139,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
+        a4Inventory.getExistingNetworkElementLink(nel2Data.getUuid());
     }
 
 }

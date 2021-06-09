@@ -21,14 +21,7 @@ public class RebellStub extends AbstractStubMapping {
                 .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
     }
 
-    public MappingBuilder getUewegTwoEntries(UewegData uewegDataA, UewegData uewegDataB, A4NetworkElement neA, A4NetworkElement neB) {
-        return get(urlPathEqualTo(REBELL_UEWEG_URL))
-                .withName("getUewegTwoEntries")
-                .willReturn(aDefaultResponseWithBody(serialize(new RebellMapper().getUewegListTwoEntries(uewegDataA, uewegDataB, neA, neB)), HTTP_CODE_OK_200))
-                .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
-    }
-
-    public MappingBuilder getUewegEmpty(A4NetworkElement neA) { // !!XX
+    public MappingBuilder getUewegEmpty(A4NetworkElement neA) {
         return get(urlPathEqualTo(REBELL_UEWEG_URL))
                 .withName("getUewegEmpty")
                 .willReturn(aDefaultResponseWithBody(serialize("[]"), HTTP_CODE_OK_200))
