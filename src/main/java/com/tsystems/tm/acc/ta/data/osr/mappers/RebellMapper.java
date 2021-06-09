@@ -18,12 +18,8 @@ public class RebellMapper {
         return ueWegeList;
     }
 
-    public List<Ueweg> getUewegListTwoEntries(UewegData uewegDataA, UewegData uewegDataB, A4NetworkElement neA, A4NetworkElement neB) {
-        List<Ueweg> ueWegeList = new ArrayList<>();
-        ueWegeList.add(getUeWeg(uewegDataA, neA, neB));
-        ueWegeList.add(getUeWeg(uewegDataB, neA, neB));
-
-        return ueWegeList;
+    public List<Ueweg> getUewegListEmpty() {
+        return new ArrayList<>();
     }
 
     private Ueweg getUeWeg(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
