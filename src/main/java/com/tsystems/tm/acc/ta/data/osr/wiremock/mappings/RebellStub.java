@@ -21,6 +21,13 @@ public class RebellStub extends AbstractStubMapping {
                 .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
     }
 
+    public MappingBuilder getUewegEmpty(A4NetworkElement neA) {
+        return get(urlPathEqualTo(REBELL_UEWEG_URL))
+                .withName("getUewegEmpty")
+                .willReturn(aDefaultResponseWithBody(serialize("[]"), HTTP_CODE_OK_200))
+                .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
+    }
+
     private String serialize(Object obj) {
         JSON json = new JSON();
         json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());

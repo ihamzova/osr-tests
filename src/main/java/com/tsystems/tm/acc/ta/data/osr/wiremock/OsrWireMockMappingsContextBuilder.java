@@ -21,6 +21,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
+    public OsrWireMockMappingsContextBuilder addRebellMockEmpty(A4NetworkElement neA) {
+        context.add(new RebellStub().getUewegEmpty(neA));
+        return this;
+    }
+
     public OsrWireMockMappingsContextBuilder addPslMock(EquipmentData equipmentData, A4NetworkElement networkElement) {
         context.add(new PslStub().postReadEquipment202(equipmentData, networkElement));
         return this;

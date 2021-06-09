@@ -63,11 +63,27 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
+        A4NetworkElement neDataA = new A4NetworkElement();
+        A4NetworkElement neDataB = new A4NetworkElement();
+
+        neDataA.setVpsz(UUID.randomUUID().toString().substring(0, 4));
+        neDataA.setFsz(UUID.randomUUID().toString().substring(0, 4));
+
+        neDataB.setVpsz(UUID.randomUUID().toString().substring(0, 4));
+        neDataB.setFsz(UUID.randomUUID().toString().substring(0, 4));
+
+        return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB);
+    }
+
+    public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
+        final String lsz = "LSZ";
+        final String orderNumber = "Order Number";
+
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
         if (nelData.getLbz().isEmpty())
-            nelData.setLbz("NEL-lbz-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+            nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
 
         if (nelData.getUeWegId().isEmpty())
             nelData.setUeWegId("NEL-ueWegId-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
@@ -79,10 +95,10 @@ public class A4ResourceInventoryMapper {
                 .description("NEL for integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
-                .lsz("123")
+                .lsz(lsz)
                 .lifecycleState(nelData.getLifecycleState())
                 .operationalState(nelData.getOperationalState())
-                .orderNumber("1")
+                .orderNumber(orderNumber)
                 .pluralId("2")
                 .ueWegId(nelData.getUeWegId())
                 .lbz(nelData.getLbz());
@@ -102,7 +118,7 @@ public class A4ResourceInventoryMapper {
                 .uuid(nepData.getUuid())
                 .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
-                .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz() ))
+                .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz()))
                 .logicalLabel(nepData.getFunctionalPortLabel())
                 .portNumber(getPortNumberByFunctionalPortLabel(nepData.getFunctionalPortLabel()))
                 .accessNetworkOperator("NetOp")
@@ -135,10 +151,10 @@ public class A4ResourceInventoryMapper {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
-        if(nspData.getLineId().isEmpty())
+        if (nspData.getLineId().isEmpty())
             nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
-        if(nspData.getOntSerialNumber().isEmpty())
+        if (nspData.getOntSerialNumber().isEmpty())
             nspData.setOntSerialNumber("ONTSERIALNUMBER-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
         return new NetworkServiceProfileFtthAccessDto()

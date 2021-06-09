@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
 
@@ -383,6 +382,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Check that Network Element Link doesn't exists in Inventory")
+    public NetworkElementLinkDto checkNetworkElementLinkIsDeleted(String uuid) {
+        return a4ResourceInventory
+                .networkElementLinks()
+                .findNetworkElementLink()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
     @Step("Check that existing Network Element has been enriched with data from PSL")
     public void checkNetworkElementIsUpdatedWithPslData(String networkElementUuid, EquipmentData equipmentData) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(networkElementUuid);
@@ -616,6 +624,18 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Create new NetworkElementLink in A4 resource inventory")
+    public void createNetworkElementLink(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
+        NetworkElementLinkDto nelDto = new A4ResourceInventoryMapper()
+                .getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB);
+
+        a4ResourceInventory
+                .networkElementLinks()
+                .createOrUpdateNetworkElementLink()
+                .body(nelDto)
+                .uuidPath(nelData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
     @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
     public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {

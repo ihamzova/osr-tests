@@ -34,7 +34,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryServiceRobot a4ResourceInventoryService = new A4ResourceInventoryServiceRobot();
-    private final WgA4PreProvisioningRobot a4PreProvisioning = new WgA4PreProvisioningRobot();
+    private final WgA4PreProvisioningWiremockRobot a4PreProvisioning = new WgA4PreProvisioningWiremockRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
