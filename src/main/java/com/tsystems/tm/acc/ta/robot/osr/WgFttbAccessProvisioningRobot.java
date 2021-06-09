@@ -1,7 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.WgFttbAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +20,8 @@ import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT
 public class WgFttbAccessProvisioningRobot {
 
     private static final UUID uuid = UUID.randomUUID();
-    private WgFttbAccessProvisioningClient wgFttbAccessProvisioningClient = new WgFttbAccessProvisioningClient();
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-fttb-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-fttb-access-provisioning"));
+    private WgFttbAccessProvisioningClient wgFttbAccessProvisioningClient = new WgFttbAccessProvisioningClient(authTokenProvider);
 
     @Step("Start FTTB preprovisioning process for a device")
     public void startWgFttbAccessProvisioningForDevice(String dpuEndSz) {

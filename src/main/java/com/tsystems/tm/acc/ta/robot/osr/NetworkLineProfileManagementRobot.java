@@ -2,8 +2,11 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.NetworkLineProfileManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.AsyncResponseNotification;
@@ -29,7 +32,9 @@ import static org.testng.Assert.assertTrue;
 public class NetworkLineProfileManagementRobot {
 
     private static String CORRELATION_ID;
-    private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient();
+    private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider );
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("network-line-profile-management", RhssoHelper.getSecretOfGigabitHub("network-line-profile-management"));
+
 
     @Step("Creates or delete a new subscriber-networkline-profile for a OLT_BNG")
     public void updateSubscriberNetworklineProfile(ResourceOrder resourceOrder, AccessLine accessLine){

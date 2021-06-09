@@ -21,7 +21,7 @@ import static org.testng.Assert.assertEquals;
 public class OltDeCommissioningRobot {
   private static final Integer HTTP_CODE_OK_200 = 200;
   private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
-  private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 20 * 60_000;
+  private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 40 * 60_000;
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
