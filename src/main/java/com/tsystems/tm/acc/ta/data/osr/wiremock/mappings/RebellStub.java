@@ -24,7 +24,7 @@ public class RebellStub extends AbstractStubMapping {
     public MappingBuilder getUewegEmpty(A4NetworkElement neA) {
         return get(urlPathEqualTo(REBELL_UEWEG_URL))
                 .withName("getUewegEmpty")
-                .willReturn(aDefaultResponseWithBody(serialize("[]"), HTTP_CODE_OK_200))
+                .willReturn(aDefaultResponseWithBody(serialize(new RebellMapper().getUewegListEmpty()), HTTP_CODE_OK_200))
                 .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
     }
 
