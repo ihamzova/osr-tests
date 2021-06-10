@@ -96,13 +96,12 @@ public class A4RebellSyncTest extends GigabitTest {
     @Test
     public void testRebelSyncLinkAlreadyExists() {
         // GIVEN / ARRANGE
-        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data);
-
         uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
                 .addRebellMock(uewegDataA, ne1Data, ne2Data)
                 .build().publish();
+        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data, uewegDataA);
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
