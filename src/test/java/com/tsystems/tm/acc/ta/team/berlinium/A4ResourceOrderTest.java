@@ -30,17 +30,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
@@ -66,6 +60,12 @@ public class A4ResourceOrderTest {
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
 
+    List<ResourceOrderItem> orderItemList = new ArrayList<>();
+    List<Characteristic> resourceCharacteristicList = new ArrayList<>();
+    ResourceOrderItem orderItem1 = new ResourceOrderItem();
+    ResourceRefOrValue resource = new ResourceRefOrValue();
+    Characteristic rv = new Characteristic();
+    Characteristic cbr = new Characteristic();
 
 // before, test data
 
@@ -107,15 +107,13 @@ public class A4ResourceOrderTest {
         corId = UUID.randomUUID().toString();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory
-                .get(), "NewTpFromNemoWithPreprovisioningTest"))
+                //.get(), "NewTpFromNemoWithPreprovisioningTest"))
+                .get(), "A4ResourceOrderTest"))
                 .addMerlinMock()
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
-
-
-
     }
 
 // after, clean
@@ -137,22 +135,33 @@ public class A4ResourceOrderTest {
 
         // create a ro with link with NSP of unknown a10nsp; --> not yet realized
 
-        List<ResourceOrderItem> orderItemList = new ArrayList();
-        //ArrayList orderItemList = new ArrayList();
-        ResourceOrderItem orderItem = new ResourceOrderItem();
+        rv.setName("RAHMEN_VERTRAGS_NR");
+        rv.setValue("1122334455");
+        cbr.setName("CARRIER_BSA_REFERENCE");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
 
-        ro.setAtBaseType("test");
-        ro.setDescription("description of resource order");
-        ro.setName("resource order by Heiko");
-        ro.setStartDate(OffsetDateTime.parse("2021-05-22T13:08:56.206+02:00"));
+        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
 
-        orderItem.setAction(OrderItemActionType.ADD);
-        orderItem.setId("itemId01");
-        orderItem.setState(ResourceOrderItemStateType.valueOf("PENDING"));
 
-        orderItemList.add(orderItem);
+        orderItem1.setAction(OrderItemActionType.ADD);
+        //orderItem1.setId("itemId01");
+        orderItem1.setResource(resource);
+        //orderItem1.setState(ResourceOrderItemStateType.valueOf("PENDING"));
+        orderItemList.add(orderItem1);
+
+        //resource.addResourceCharacteristicItem(rv); // doppelt zu oben
+        //System.out.println("+++ resource: "+resource);
+
+        //ro.setAtBaseType("test");
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        //ro.setStartDate(OffsetDateTime.parse("2021-05-22T13:08:56.206+02:00"));
         ro.setOrderItem(orderItemList);
-        System.out.println("+++ RO mit add-Item: " + ro);
+        //System.out.println("+++ RO: " + ro);
 
 
         // send to queue
@@ -177,12 +186,16 @@ public class A4ResourceOrderTest {
         System.out.println("+++ ");
         System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
 
+
         boolean rejectTrue = ergList.toString().contains("rejected");
         boolean completeTrue = ergList.toString().contains("completed");
         System.out.println("+++  ");
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
+
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
 
         System.out.println("+++ fertig! ");
     }
