@@ -135,9 +135,9 @@ public class A4ResourceOrderTest {
 
         // create a ro with link with NSP of unknown a10nsp; --> not yet realized
 
-        rv.setName("RAHMEN_VERTRAGS_NR");
+        rv.setName("RahmenvertragsNr");
         rv.setValue("1122334455");
-        cbr.setName("CARRIER_BSA_REFERENCE");
+        cbr.setName("Subscription.keyA");
         cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
         resourceCharacteristicList.add(rv);
         resourceCharacteristicList.add(cbr);
