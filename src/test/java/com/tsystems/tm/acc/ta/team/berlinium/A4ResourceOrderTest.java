@@ -53,7 +53,7 @@ public class A4ResourceOrderTest {
     private A4NetworkElementPort nepData2;
     private A4NetworkElementLink nelData;
 
-    private ResourceOrderCreate ro;
+    private ResourceOrder ro;
     private String corId;
     private String reqUrl = "https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/test_url";
 
@@ -103,7 +103,7 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2);
 
-        ro = new ResourceOrderCreate();
+        ro = new ResourceOrder();
         corId = UUID.randomUUID().toString();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory
@@ -135,9 +135,9 @@ public class A4ResourceOrderTest {
 
         // create a ro with link with NSP of unknown a10nsp; --> not yet realized
 
-        rv.setName("RAHMEN_VERTRAGS_NR");
+        rv.setName("RahmenvertragsNr");
         rv.setValue("1122334455");
-        cbr.setName("CARRIER_BSA_REFERENCE");
+        cbr.setName("Subscription.keyA");
         cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
         resourceCharacteristicList.add(rv);
         resourceCharacteristicList.add(cbr);
