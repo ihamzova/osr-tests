@@ -2,11 +2,13 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
@@ -30,6 +32,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
@@ -42,7 +45,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient();
+    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
   }
 
   @Test(description = "DIGIHUB-96866 Manual commissioning and decommissioning for not discovered MA5800 device as DTAG user")

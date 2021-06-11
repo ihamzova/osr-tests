@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j

@@ -2,12 +2,14 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
@@ -31,22 +33,19 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 
 @Slf4j
 public class DpuDeviceCommissioningProcess extends GigabitTest {
 
-  private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
-  private static final String OLT_EMS_CONFIGURATION_STATE_LOCATOR = "active";
-  private static final String DPU_EMS_CONFIGURATION_STATE_LOCATOR = "active";
   private OltResourceInventoryClient oltResourceInventoryClient;
   private DpuDevice dpuDevice;
-  private String businessKey;
   private WireMockMappingsContext mappingsContext;
 
   @BeforeClass
   public void init() {
 
-    oltResourceInventoryClient = new OltResourceInventoryClient();
+    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
     dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);

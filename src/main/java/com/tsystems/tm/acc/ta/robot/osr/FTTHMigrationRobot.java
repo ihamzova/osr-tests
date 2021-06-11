@@ -2,7 +2,9 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AncpConfigurationClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -10,6 +12,7 @@ import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.*;
@@ -31,6 +34,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -42,9 +47,11 @@ public class FTTHMigrationRobot {
     static final String DISCOVRY_CALLBACK_PATH = "/autotestCbDiscoveryStart/";
     static final Long MA5600_PORTS_PER_GPON_CARD = 8L;
 
-    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
-    private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient();
-    private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient();
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
+
+    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
+    private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient(authTokenProvider);
+    private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProvider);
 
 
     @Step("Start device {oltDevice} discovery ")
@@ -52,7 +59,7 @@ public class FTTHMigrationRobot {
 
         log.info("deviceDiscoveryStartDiscoveryTask for endSz = {} uuid = {}", oltDevice.getEndsz(), uuid);
 
-        String xCallbackUrl = new OCUrlBuilder(MercuryConstants.WIREMOCK_MS_NAME)
+        String xCallbackUrl = new OCUrlBuilder(WIREMOCK_MS_NAME)
                 .withEndpoint("/autotestCbDiscoveryStart/")
                 .build()
                 .toString();

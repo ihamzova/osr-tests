@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
@@ -9,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
@@ -34,6 +36,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
@@ -50,7 +53,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient();
+    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
     oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
@@ -97,7 +100,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   @Test(description = "DIGIHUB-104216 Manual commissioning for not discovered SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-104216") // Jira Id for this test in Xray
   @Description("Perform manual commissioning and decommissioning for not discovered SDX 6320-16 device as DTAG user on team environment")
-  public void manuallyAdtranOltCommissioningDTAG() throws InterruptedException {
+  public void manuallyAdtranOltCommissioningDTAG() {
 
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
@@ -179,13 +182,13 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
   /**
    * check ethernet port state
    *
-   * @param device
-   * @param detailsPage
+   * @param device device
+   * @param detailsPage details
    */
   public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
     for (int port = 1; port <= device.getNumberOfEthernetPorts(); ++port) {
-      log.info("checkPortState() Port={}, PortLifeCycleState ={}", detailsPage.getPortLifeCycleState(null, Integer.toString(port)));
+      log.info("checkPortState() Port={}, PortLifeCycleState ={}", detailsPage.getPortLifeCycleState(null, Integer.toString(port)), detailsPage.getPortLifeCycleState(null, Integer.toString(port)));
       if (device.getOltPort().equals((Integer.toString(port)))) {
         Assert.assertEquals(detailsPage.getPortLifeCycleState(null, device.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
       } else {
