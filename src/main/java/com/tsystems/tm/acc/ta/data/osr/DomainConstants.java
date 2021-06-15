@@ -23,6 +23,7 @@ public interface DomainConstants {
     String OLT_DISCOVERY_MS = "olt-discovery";
     String ANCP_CONFIGURATION_MS = "ancp-configuration";
     String OLT_SCHEDULER_MS = "olt-scheduler";
+    String OLT_COMMISSIONING_MS = "olt-commissioning";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
     String A10NSP_INVENTORY_MS = "a10nsp-inventory";
     String OLT_BFF_PROXY_MS = "olt-bff-proxy";

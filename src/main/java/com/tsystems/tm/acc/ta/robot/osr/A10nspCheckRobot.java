@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
@@ -20,6 +19,7 @@ import org.testng.Assert;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A10NSP_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_SCHEDULER_MS;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static org.testng.Assert.*;
@@ -36,11 +36,11 @@ public class A10nspCheckRobot {
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
     private static final AuthTokenProvider authTokenProviderForA10nsp = new RhssoClientFlowAuthTokenProvider(OLT_SCHEDULER_MS, RhssoHelper.getSecretOfGigabitHub(OLT_SCHEDULER_MS));
+    private static final AuthTokenProvider authTokenProviderForAlri = new RhssoClientFlowAuthTokenProvider(A10NSP_INVENTORY_MS, RhssoHelper.getSecretOfGigabitHub(A10NSP_INVENTORY_MS));
 
     private A10nspInventoryClient a10nspInventoryClient = new A10nspInventoryClient(authTokenProviderForA10nsp);
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
-    private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
-    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
+    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderForAlri);
 
     @Step("Check if a carrierConnection is found for a given LineId")
     public void checkLineIdTestFound(A10nspCheckData checkLineIdA10nsp) {
