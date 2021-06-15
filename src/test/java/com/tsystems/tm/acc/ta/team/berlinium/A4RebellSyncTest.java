@@ -35,7 +35,7 @@ public class A4RebellSyncTest extends GigabitTest {
     private A4NetworkElementPort nep2Data;
     private A4NetworkElementLink nel1Data;
     private A4NetworkElementLink nel2Data;
-    private UewegData uewegDataA;
+    private UewegData uewegData;
 
     @BeforeClass
     public void init() {
@@ -80,34 +80,34 @@ public class A4RebellSyncTest extends GigabitTest {
     @Test
     public void testRebelSyncLinkCreated() {
         // GIVEN / ARRANGE
-        uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMock(uewegDataA, ne1Data, ne2Data)
+                .addRebellMock(uewegData, ne1Data, ne2Data)
                 .build().publish();
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegDataA, nep1Data.getUuid(), nep2Data.getUuid());
+        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
     }
 
     @Test
     public void testRebelSyncLinkAlreadyExists() {
         // GIVEN / ARRANGE
-        uewegDataA = osrTestContext.getData().getUewegDataDataProvider()
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "RebellSync"))
-                .addRebellMock(uewegDataA, ne1Data, ne2Data)
+                .addRebellMock(uewegData, ne1Data, ne2Data)
                 .build().publish();
-        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data, uewegDataA);
+        a4Inventory.createNetworkElementLink(nel1Data, nep1Data, nep2Data, ne1Data, ne2Data, uewegData);
 
         // WHEN / ACT
         a4Importer.doRebellSync(ne1Data.getVpsz(), ne1Data.getFsz());
 
         // THEN / ASSERT
-        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegDataA, nep1Data.getUuid(), nep2Data.getUuid());
+        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
         a4Inventory.getExistingNetworkElementLink(nel1Data.getUuid());
     }
 
