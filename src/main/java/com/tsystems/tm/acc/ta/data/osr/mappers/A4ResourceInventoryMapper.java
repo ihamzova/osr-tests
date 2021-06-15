@@ -65,6 +65,7 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB) {
         A4NetworkElement neDataA = new A4NetworkElement();
         A4NetworkElement neDataB = new A4NetworkElement();
+        UewegData uewegData = new UewegData();
 
         neDataA.setVpsz(UUID.randomUUID().toString().substring(0, 4));
         neDataA.setFsz(UUID.randomUUID().toString().substring(0, 4));
@@ -72,10 +73,20 @@ public class A4ResourceInventoryMapper {
         neDataB.setVpsz(UUID.randomUUID().toString().substring(0, 4));
         neDataB.setFsz(UUID.randomUUID().toString().substring(0, 4));
 
-        return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB);
+        uewegData.setUewegId(nelData.getUeWegId());
+
+        return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
+        UewegData uewegData = new UewegData();
+
+        uewegData.setUewegId(nelData.getUeWegId());
+
+        return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
+    }
+
+    public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
         final String lsz = "LSZ";
         final String orderNumber = "Order Number";
 
@@ -85,13 +96,12 @@ public class A4ResourceInventoryMapper {
         if (nelData.getLbz().isEmpty())
             nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
 
-        if (nelData.getUeWegId().isEmpty())
-            nelData.setUeWegId("NEL-ueWegId-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
-
         return new NetworkElementLinkDto()
                 .uuid(nelData.getUuid())
                 .networkElementPortAUuid(nepDataA.getUuid())
+                .endszA(neDataA.getVpsz() + "/" + neDataA.getFsz())
                 .networkElementPortBUuid(nepDataB.getUuid())
+                .endszB(neDataB.getVpsz() + "/" + neDataB.getFsz())
                 .description("NEL for integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
@@ -100,7 +110,7 @@ public class A4ResourceInventoryMapper {
                 .operationalState(nelData.getOperationalState())
                 .orderNumber(orderNumber)
                 .pluralId("2")
-                .ueWegId(nelData.getUeWegId())
+                .ueWegId(uewegData.getUewegId())
                 .lbz(nelData.getLbz());
     }
 

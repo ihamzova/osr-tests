@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrderCreate;
+import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -24,7 +24,7 @@ public class A4ResourceOrderRobot {
       private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProvider).getClient();
 
     @Step("Send POST for A10nsp Resource Order")
-    public void sendPostResourceOrder(String reqUrl, String corId, ResourceOrderCreate resourceOrderCreate) {
+    public void sendPostResourceOrder(String reqUrl, String corId, ResourceOrder resourceOrderCreate) {
 
         System.out.println("+++ reqUrl: "+reqUrl);
         System.out.println("+++ corId: "+corId);
