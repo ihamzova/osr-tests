@@ -22,8 +22,10 @@ public interface DomainConstants {
     String OLT_RESOURCE_INVENTORY_MS = "olt-resource-inventory";
     String OLT_DISCOVERY_MS = "olt-discovery";
     String ANCP_CONFIGURATION_MS = "ancp-configuration";
+    String OLT_SCHEDULER_MS = "olt-scheduler";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
     String A10NSP_INVENTORY_MS = "a10nsp-inventory";
+    String OLT_BFF_PROXY_MS = "olt-bff-proxy";
     String A4_RESOURCE_INVENTORY_BFF_PROXY_MS = "a4-resource-inventory-bff-proxy";
     String A4_RESOURCE_INVENTORY_UI_MS = "a4-resource-inventory-ui";
     String A4_RESOURCE_INVENTORY_SERVICE_MS = "a4-resource-inventory-service";
