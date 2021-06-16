@@ -8,7 +8,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.NemoStatusUpdateTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryServiceV4Test"/>
-            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileMonitoringPageTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.InbetriebnahmeTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4MobileNeSearchPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceInventoryBrowserTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4InventarSuchePageTest"/>

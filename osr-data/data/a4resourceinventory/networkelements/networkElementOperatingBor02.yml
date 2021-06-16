@@ -2,12 +2,12 @@ name: networkElementOperatingBor02
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement
 values:
   uuid: "" # if blank: field will be filled with returned uuid of created NE
-  vpsz: "49/1197/0"
+  vpsz: "49/${randomLong, 1000, 9999}/0"
   fsz: "7KC1"
-  klsId: "17056514" # "1234567" // !!XX
+  klsId: "17056514" # "1234567"
   category: "BOR"
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
   type: "A4-BOR-v1"
-  plannedMatNr: "40318601" # "" // !!XX
+  plannedMatNr: "40318601" # ""
   planningDeviceName: "dmst.bor.2"
