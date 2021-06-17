@@ -118,6 +118,7 @@ public class OntCommissioning extends GigabitTest {
         assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
         assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
         assertEquals(subscriberNEProfile.getOntState(), OntState.UNKNOWN);
+
     }
 
     @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration"})
