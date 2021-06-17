@@ -119,7 +119,6 @@ public class InbetriebnahmeTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test NE Inbetriebnahme process (by entering ZTPIdent)")
     public void testNeInstallation() {
-
         final String ztpi = "test-ztpi" + getRandomDigits(4);
 
         // GIVEN
@@ -138,8 +137,6 @@ public class InbetriebnahmeTest extends GigabitTest {
         assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getVpsz(), "/").get(2));
         assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getFsz());
         assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getCategory());
-//        assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
-//        assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
 
         // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         sleepForSeconds(5);
@@ -171,16 +168,13 @@ public class InbetriebnahmeTest extends GigabitTest {
         // or: expected [1] but found [0]
         System.out.println("+++ checkNetworkElementLinkPutRequestToNemoWiremock: ");
         // a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortB.getUuid());
-
-
-        //sleepForSeconds(60); // Check der DB, wieder löschen
     }
 
     @Test
-    @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com")
+    @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile Monitoring page of NE for which Inbetriebnahme was done")
-    public void testMonitoring() throws InterruptedException {
+    public void testNeMonitoring() throws InterruptedException {
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
 
         // GIVEN
@@ -192,32 +186,10 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUiRobot.clickMonitoringButton();
 
         // THEN
-        a4MobileUiRobot.checkMonitoring(a4NeFilteredMap);
-
-        List<String> toBeRemoved = new ArrayList<>();
+        a4MobileUiRobot.checkMonitoring(a4NeFilteredMap, equipmentData);
 
         // remove all entries
-
         a4MobileUiRobot.removeNetworkElementFromMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-
-//        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
-//            a4MobileUiRobot.clickRemoveButton();
-//            try {
-//
-//                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
-//                WebDriverWait wait = new WebDriverWait(driver, 5000);
-//                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-//                driver.switchTo().alert();
-//                alert.accept();
-//            } catch (NoAlertPresentException e) {
-//                System.out.println("EXCEPTION " + e.getCause());
-//            }
-//            toBeRemoved.add(k);
-//
-//        });
-//
-//        toBeRemoved.forEach(a4NeFilteredMap::remove);
-
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
 

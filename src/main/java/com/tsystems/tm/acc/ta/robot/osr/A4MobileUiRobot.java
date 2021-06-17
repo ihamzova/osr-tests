@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
@@ -205,7 +206,7 @@ public class A4MobileUiRobot {
 
     //monitoring-page
     @Step("check Monitoring")
-    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) throws InterruptedException {
+    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) throws InterruptedException {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
@@ -221,12 +222,10 @@ public class A4MobileUiRobot {
             assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
             assertTrue(concat.contains(a4NetworkElement.getType()), a4NetworkElement.getType());
             assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
-            assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()), a4NetworkElement.getPlannedMatNr());
+            // Check for planned mat number has to be done with psl wiremock equip data, because A4NetworkElement doesn't have this property
+            assertTrue(concat.contains(equipmentData.getSubmt()), equipmentData.getSubmt());
             assertTrue(concat.contains(a4NetworkElement.getOperationalState()), a4NetworkElement.getOperationalState());
         });
-        log.info("+++" + concat.toString());
-
-        a4NeFilteredList.forEach((k, v) -> log.info("+++" + v.getCategory()));
 
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
