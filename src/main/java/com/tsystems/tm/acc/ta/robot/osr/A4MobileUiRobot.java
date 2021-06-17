@@ -2,15 +2,22 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +34,45 @@ public class A4MobileUiRobot {
     public void openNetworkElementMobileSearchPage() {
         A4MobileNeSearchPage
                 .login();
+    }
+
+    public void searchForNetworkElement(A4NetworkElement neData) {
+        openNetworkElementMobileSearchPage();
+        enterVpsz(neData.getVpsz());
+        enterFsz(neData.getFsz());
+        enterCategory(neData.getCategory());
+        clickSearchButton();
+    }
+
+    public void doInbetriebnahme(String ztpIdent) {
+        checkRadioButton("1");
+        clickInbetriebnahmeButton();
+        enterZtpIdent(ztpIdent);
+        clickFinishButton();
+    }
+
+    public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
+        a4NeFilteredMap.put(identifier, neData);
+        List<String> toBeRemoved = new ArrayList<>();
+
+        // remove all entries
+        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
+            clickRemoveButton();
+            try {
+
+                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriverWait wait = new WebDriverWait(driver, 5000);
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert();
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("EXCEPTION " + e.getCause());
+            }
+            toBeRemoved.add(k);
+
+        });
+
+        toBeRemoved.forEach(a4NeFilteredMap::remove);
     }
 
     public String[] getSplittedVpszValues(String vpszUnsplitted) {
