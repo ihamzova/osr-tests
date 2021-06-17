@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
+import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
@@ -15,6 +16,7 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import io.qameta.allure.Description;
+import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -22,6 +24,8 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
@@ -40,8 +44,11 @@ public class OntCommissioning extends GigabitTest {
     private AccessLine accessLine;
     private BusinessInformation postprovisioningStart;
     private BusinessInformation postprovisioningEnd;
-    private Ont ontSerialNumber;
+    private  Ont ontSerialNumber;
+
+
     private UpiterTestContext context = UpiterTestContext.get();
+
 
     @BeforeClass
     public void init() throws InterruptedException {
@@ -146,5 +153,54 @@ public class OntCommissioning extends GigabitTest {
                 accessLine.getHomeId());
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
                 ProfileState.ACTIVE);
+    }
+
+    @Test(description = "Decommissions NE Profile from home with 2 lines")
+    @TmsLink("DIGIHUB-42230")
+    @Description("Decommissions NE Profile from home with 2 lines")
+    @Owner("DL_T-Magic.U-Piter@t-systems.com")
+    public void decommissionsNEProfileFromHomeWithTwoLines(){
+        OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine1);
+        accessLine.setHomeId("0037W5M");
+        PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
+                .vpSz(accessLine.getOltDevice().getVpsz())
+                .fachSz(accessLine.getOltDevice().getFsz())
+                .slotNumber(accessLine.getSlotNumber())
+                .portNumber(accessLine.getPortNumber())
+                .homeId(accessLine.getHomeId());
+        System.out.println("ТЕСТ");
+        System.out.println(accessLine.getHomeId());
+        System.out.println(accessLine.getPortNumber());
+        System.out.println(accessLine.getSlotNumber());
+        System.out.println(accessLine.getOltDevice().getVpsz());
+        System.out.println(accessLine.getOltDevice().getFsz());
+        String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
+        accessLine.setLineId(lineId);
+        System.out.println(lineId);
+        ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumberV2);
+        ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
+        ontOltOrchestratorRobot.updateOntState(accessLine);
+        ontOltOrchestratorRobot.decommissionOnt(accessLine);
+        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine2);
+        System.out.println(accessLine.getHomeId());
+        System.out.println("ТЕСТ");
+        System.out.println(accessLine.getPortNumber());
+        System.out.println(accessLine.getSlotNumber());
+        System.out.println(accessLine.getOltDevice().getVpsz());
+        System.out.println(accessLine.getOltDevice().getFsz());
+        accessLine.setLineId(accessLine.getLineId());
+        System.out.println(accessLine.getLineId());
+        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
+        assertNull(subscriberNEProfile);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
+                AccessLineStatus.WALLED_GARDEN);
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
+                accessLine.getHomeId());
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
+                ProfileState.ACTIVE);
+
+
+
     }
 }

@@ -1,0 +1,24 @@
+name: OntRegistrationAccessLine1
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  slotNumber: "3"
+  portNumber: "1"
+  lineId: "DEU.DTAG.SQA3322830"
+  homeId: "0037W5M"
+---
+name: OntSerialNumberV2
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1234123412341234"
+  newSerialNumber: "9876987698769876"
+---
+name: OntRegistrationAccessLine2
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  slotNumber: "3"
+  portNumber: "1"
+  lineId: "DEU.DTAG.SQA1665380"
+  homeId: "0037W5M"
+
