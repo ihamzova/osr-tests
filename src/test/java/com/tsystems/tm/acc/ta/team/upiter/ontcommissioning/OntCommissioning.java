@@ -126,7 +126,6 @@ public class OntCommissioning extends GigabitTest {
     public void ontTest() {
         //test Ont
         ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
-
         //update Ont state
         ontOltOrchestratorRobot.updateOntState(accessLine);
         SubscriberNeProfileDto subscriberNEProfile2 = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
