@@ -162,7 +162,6 @@ public class OntCommissioning extends GigabitTest {
     public void decommissionsNEProfileFromHomeWithTwoLines(){
         OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine1);
-        accessLine.setHomeId("0037W5M");
         PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
                 .vpSz(accessLine.getOltDevice().getVpsz())
                 .fachSz(accessLine.getOltDevice().getFsz())
@@ -174,7 +173,14 @@ public class OntCommissioning extends GigabitTest {
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumberV2);
         ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
         ontOltOrchestratorRobot.updateOntState(accessLine);
+        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
+        assertNotNull(subscriberNEProfile);
         ontOltOrchestratorRobot.decommissionOnt(accessLine);
+
+        assertNotNull(accessLineRiRobot.getLineIdStateByLineId(accessLine.getLineId()));
+        assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
+        assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
+
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine2);
         accessLine.setLineId(accessLine.getLineId());
         assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
