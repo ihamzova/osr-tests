@@ -18,14 +18,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static org.testng.Assert.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class A4MobileUiRobot {
@@ -50,6 +50,17 @@ public class A4MobileUiRobot {
         clickInbetriebnahmeButton();
         enterZtpIdent(ztpIdent);
         clickFinishButton();
+    }
+
+    public void checkSearchResultPageAfterInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
+        checkInstalling();
+        assertEquals(readVpsz(), ne.getVpsz());
+        assertEquals(readAkz(), stringSplit(ne.getVpsz(), "/").get(0));
+        assertEquals(readOnkz(), stringSplit(ne.getVpsz(), "/").get(1));
+        assertEquals(readVkz(), stringSplit(ne.getVpsz(), "/").get(2));
+        assertEquals(readFsz(), ne.getFsz());
+        assertEquals(readCategory(), ne.getCategory());
+        assertEquals(readZtpIdent(), ztpIdent);
     }
 
     public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
@@ -206,7 +217,7 @@ public class A4MobileUiRobot {
 
     //monitoring-page
     @Step("check Monitoring")
-    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) throws InterruptedException {
+    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
