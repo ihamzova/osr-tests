@@ -169,36 +169,17 @@ public class OntCommissioning extends GigabitTest {
                 .slotNumber(accessLine.getSlotNumber())
                 .portNumber(accessLine.getPortNumber())
                 .homeId(accessLine.getHomeId());
-        System.out.println("ТЕСТ");
-        System.out.println(accessLine.getHomeId());
-        System.out.println(accessLine.getPortNumber());
-        System.out.println(accessLine.getSlotNumber());
-        System.out.println(accessLine.getOltDevice().getVpsz());
-        System.out.println(accessLine.getOltDevice().getFsz());
         String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
         accessLine.setLineId(lineId);
-        System.out.println(lineId);
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumberV2);
         ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
         ontOltOrchestratorRobot.updateOntState(accessLine);
         ontOltOrchestratorRobot.decommissionOnt(accessLine);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine2);
-        System.out.println(accessLine.getHomeId());
-        System.out.println("ТЕСТ");
-        System.out.println(accessLine.getPortNumber());
-        System.out.println(accessLine.getSlotNumber());
-        System.out.println(accessLine.getOltDevice().getVpsz());
-        System.out.println(accessLine.getOltDevice().getFsz());
         accessLine.setLineId(accessLine.getLineId());
-        System.out.println(accessLine.getLineId());
-        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-        assertNull(subscriberNEProfile);
         assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
-                AccessLineStatus.WALLED_GARDEN);
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
-                accessLine.getHomeId());
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
-                ProfileState.ACTIVE);
+                AccessLineStatus.ASSIGNED);
+
 
 
 
