@@ -39,11 +39,14 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 @Slf4j
 public class InbetriebnahmeTest extends GigabitTest {
 
+    private final String wiremockScenarioName = "InbetriebnahmeTest";
+
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
     private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "InbetriebnahmeTest")).build();
+    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(
+            new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName)).build();
 
     private A4NetworkElementGroup neg;
     private A4NetworkElementPort nepA;
@@ -52,8 +55,8 @@ public class InbetriebnahmeTest extends GigabitTest {
     private EquipmentData equipmentData;
     private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
 
-    final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor02";
-    final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
+    private final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor02";
+    private final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
 
     @BeforeClass()
     public void init() {
@@ -63,17 +66,14 @@ public class InbetriebnahmeTest extends GigabitTest {
 
         neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-
         a4NetworkElements.put(A4_NE_OPERATING_BOR_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
         a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
-
         nepA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
         nepB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
-
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
         equipmentData = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
@@ -89,9 +89,11 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4ResourceInventoryRobot.createNetworkElementPort(nepA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4ResourceInventoryRobot.createNetworkElementPort(nepB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
 
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "InbetriebnahmeTest"))
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
                 .addPslMock(equipmentData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01))
-                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01), a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
+                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01),
+                        a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
                 .addNemoMock()
                 .build().publish();
     }
@@ -123,8 +125,10 @@ public class InbetriebnahmeTest extends GigabitTest {
         sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01)
                 .getUuid(), equipmentData);
-        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
-        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, nepA.getUuid(), nepB.getUuid());
+        a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(
+                a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
+        a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, nepA.getUuid(),
+                nepB.getUuid());
         a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(nepA.getUuid());
     }
 
@@ -136,7 +140,6 @@ public class InbetriebnahmeTest extends GigabitTest {
         // GIVEN
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-
         a4MobileUiRobot.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4MobileUiRobot.doInbetriebnahme("ztp");
 
@@ -144,8 +147,9 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUiRobot.clickMonitoringButton();
 
         // THEN
-        a4MobileUiRobot.checkMonitoring(a4NeFilteredMap, equipmentData);
-        a4MobileUiRobot.removeNetworkElementFromMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUiRobot.checkMonitoringList(a4NeFilteredMap, equipmentData);
+        a4MobileUiRobot.removeNetworkElementFromMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01,
+                a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4MobileUiRobot.checkEmptyMonitoringList(a4NeFilteredMap);
     }
 
