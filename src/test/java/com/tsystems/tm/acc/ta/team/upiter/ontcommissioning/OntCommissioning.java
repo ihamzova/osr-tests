@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
@@ -42,9 +41,12 @@ public class OntCommissioning extends GigabitTest {
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
     private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     private AccessLine accessLine;
+    private AccessLine accessLineForDeprovisioningNew;
+    private AccessLine accessLineForDeprovisioningOld;
     private BusinessInformation postprovisioningStart;
     private BusinessInformation postprovisioningEnd;
-    private  Ont ontSerialNumber;
+    private Ont ontSerialNumber;
+    private Ont ontSerialNumberForDeprovisioning;
 
 
     private UpiterTestContext context = UpiterTestContext.get();
@@ -55,6 +57,9 @@ public class OntCommissioning extends GigabitTest {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
         accessLineRiRobot.fillDatabaseForOltCommissioning();
+        accessLineForDeprovisioningNew = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine1);
+        accessLineForDeprovisioningOld = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine2);
+        ontSerialNumberForDeprovisioning = context.getData().getOntDataProvider().get(OntCase.ForDeprovisioningOntSerialNumber);
     }
 
     @AfterClass
@@ -155,39 +160,29 @@ public class OntCommissioning extends GigabitTest {
                 ProfileState.ACTIVE);
     }
 
-    @Test(description = "Decommissions NE Profile from home with 2 lines")
+    @Test()
     @TmsLink("DIGIHUB-42230")
-    @Description("Decommissions NE Profile from home with 2 lines")
+    @Description("Deprovisioning of the 33d AccessLine after termination")
     @Owner("DL_T-Magic.U-Piter@t-systems.com")
     public void decommissionsNEProfileFromHomeWithTwoLines(){
-        OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
-        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine1);
         PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-                .vpSz(accessLine.getOltDevice().getVpsz())
-                .fachSz(accessLine.getOltDevice().getFsz())
-                .slotNumber(accessLine.getSlotNumber())
-                .portNumber(accessLine.getPortNumber())
-                .homeId(accessLine.getHomeId());
+                .vpSz(accessLineForDeprovisioningNew.getOltDevice().getVpsz())
+                .fachSz(accessLineForDeprovisioningNew.getOltDevice().getFsz())
+                .slotNumber(accessLineForDeprovisioningNew.getSlotNumber())
+                .portNumber(accessLineForDeprovisioningNew.getPortNumber())
+                .homeId(accessLineForDeprovisioningNew.getHomeId());
         String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-        accessLine.setLineId(lineId);
-        ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumberV2);
-        ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
-        ontOltOrchestratorRobot.updateOntState(accessLine);
-        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
+        accessLineForDeprovisioningNew.setLineId(lineId);
+        ontOltOrchestratorRobot.registerOnt(accessLineForDeprovisioningNew, ontSerialNumberForDeprovisioning);
+        ontOltOrchestratorRobot.updateOntState(accessLineForDeprovisioningNew);
+        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningNew.getLineId());
         assertNotNull(subscriberNEProfile);
-        ontOltOrchestratorRobot.decommissionOnt(accessLine);
-
-        assertNotNull(accessLineRiRobot.getLineIdStateByLineId(accessLine.getLineId()));
-        assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
+        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
+        assertNotNull(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()));
+        assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumberForDeprovisioning.getSerialNumber());
         assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
-
-        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine2);
-        accessLine.setLineId(accessLine.getLineId());
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
+        accessLineForDeprovisioningOld.setLineId(accessLineForDeprovisioningOld.getLineId());
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
                 AccessLineStatus.ASSIGNED);
-
-
-
-
     }
 }
