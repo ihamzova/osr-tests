@@ -47,10 +47,7 @@ public class OntCommissioning extends GigabitTest {
   private BusinessInformation postprovisioningEnd;
   private Ont ontSerialNumber;
   private Ont ontSerialNumberForDeprovisioning;
-
-
   private UpiterTestContext context = UpiterTestContext.get();
-
 
   @BeforeClass
   public void init() throws InterruptedException {
@@ -62,6 +59,9 @@ public class OntCommissioning extends GigabitTest {
     accessLineForDeprovisioningTrue = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningTrue);
     accessLineForDeprovisioningFalse = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningFalse);
     ontSerialNumberForDeprovisioning = context.getData().getOntDataProvider().get(OntCase.ForDeprovisioningOntSerialNumber);
+    accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
+    postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
+    postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
   }
 
   @AfterClass
@@ -73,14 +73,10 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-71918")
   @Description("ONT Access Line Reservation by HomeID")
   public void accessLineReservationByPortAndHomeId() {
-    accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
-    postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
-    postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
     //wgAccessProvisioningRobot.startWgAccessProvisioningLog();
     //Precondition port commissioning
     //Get 1 HomeId from pool
     accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
-
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLine.getOltDevice().getVpsz())
@@ -151,8 +147,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("ONT Decommissioning, rollback to reservation = empty")
   public void ontDecommissioningTest() {
     ontOltOrchestratorRobot.decommissionOnt(accessLine);
-    SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-    assertNull(subscriberNEProfile);
+    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()));
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
@@ -166,8 +161,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("ONT Decommissioning, rollback to reservation = true")
   public void ontDecommissioningWithRollbackTrueTest() {
     ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDeprovisioningTrue, true);
-    SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningTrue.getLineId());
-    assertNull(subscriberNEProfile);
+    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningTrue.getLineId()));
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningTrue.getLineId()),
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningTrue.getLineId()).get(0).getHomeId(),
@@ -181,8 +175,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("ONT Decommissioning, rollback to reservation = false")
   public void ontDecommissioningWithRollbackFalseTest() {
     ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDeprovisioningFalse, false);
-    SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningFalse.getLineId());
-    assertNull(subscriberNEProfile);
+    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningFalse.getLineId()));
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningFalse.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningFalse.getLineId()).get(0).getHomeId(),
