@@ -20,7 +20,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
     public static final String DPU_DEVICE_URL = "/resource-order-resource-inventory/v1/device";
     public static final String DPU_PORT_URL = "/resource-order-resource-inventory/v1/port";
     public static final String GET_DPU_PON_CONNECTION_URL = "/resource-order-resource-inventory/v1/dpu/dpuPonConnection";
-    public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz";
+    public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v5/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz";
     public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v1/ancp/session/endsz";
     public static final String DPU_AT_OLT_CONF_URL = "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration";
     public static final String DPU_EMS_CONFIGURATION_URL = "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration";
