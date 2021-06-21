@@ -119,6 +119,7 @@ public class A4NelInstallationTest extends GigabitTest {
 
             // WHEN
             a4MobileUiRobot.startNelInstallation();
+            a4NelInstallationUiRobot.checkPlanningFilter();
             a4NelInstallationUiRobot.doNelInstallation();
 
             // THEN
