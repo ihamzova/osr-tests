@@ -43,7 +43,7 @@ public class A4NelInstallationUiRobot {
 
     @Step("Check error message not found")
     public String notFoundMsg() {
-        return $(A4NelInstallationPage.getERROR_LOCATOR()).val();
+        return $(A4NelInstallationPage.getERROR_LOCATOR()).getText();
     }
 
     @Step("Conten not found msg")

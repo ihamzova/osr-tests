@@ -137,6 +137,7 @@ public class A4NelInstallationTest extends GigabitTest {
 
             // WHEN
             a4MobileUiRobot.startNelInstallation();
+            sleepForSeconds(3);
             a4NelInstallationUiRobot.checkNotFound();
 
         }

@@ -33,7 +33,7 @@ public class A4NelInstallationPage {
     public static final By START_INSTALL_BTN = byId("StartInstallBtn");
 
     @Getter
-    public static final By ERROR_LOCATOR = byXpath("/html/body/app-root/div/app-portal/div/app-inbetriebnahme-nel/div/div[3]/div/p");
+    public static final By ERROR_LOCATOR = By.id("notFoundMsg");
 
     @Step("Validate page")
     public void validate() {
