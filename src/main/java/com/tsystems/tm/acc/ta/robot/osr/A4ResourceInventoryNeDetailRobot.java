@@ -1,8 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryBrowserPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -73,21 +71,15 @@ public class A4ResourceInventoryNeDetailRobot {
         return $(A4ResourceInventoryNeDetailPage.getNE_LastUpdateTime_FIELD_LOCATOR()).val();
     }
 
-
-
-
     @Step("Open UI, log in")
     public void openRiNeDetailPage(){
         A4ResourceInventoryNeDetailPage.login();     // warum wird hier die Klasse verwendet?
     }
 
     public ElementsCollection getNelElementsCollection() {
-        ElementsCollection elementsCollection = $(A4ResourceInventoryNeDetailPage.getNEL_SEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
         // waitForTableToFullyLoad(elementsCollection.size());
-        return elementsCollection;
+        return $(A4ResourceInventoryNeDetailPage.getNEL_SEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
     }
-
-
 
 }

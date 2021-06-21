@@ -21,6 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class A4ResourceInventoryRobot {
 
@@ -383,8 +384,8 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that Network Element Link doesn't exists in Inventory")
-    public NetworkElementLinkDto checkNetworkElementLinkIsDeleted(String uuid) {
-        return a4ResourceInventory
+    public void checkNetworkElementLinkIsDeleted(String uuid) {
+        a4ResourceInventory
                 .networkElementLinks()
                 .findNetworkElementLink()
                 .uuidPath(uuid)
@@ -447,6 +448,8 @@ public class A4ResourceInventoryRobot {
         a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
             networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
                     (a4ImportCsvLine.getNeVpsz(), a4ImportCsvLine.getNeFsz()));
+
+            assertNotNull(networkElementDtoUnderTest);
 
             networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
                     (networkElementDtoUnderTest.get().getUuid()));

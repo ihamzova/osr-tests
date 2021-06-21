@@ -8,16 +8,13 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElement
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNelDetailPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNepDetailPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryNeDetailRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import io.qameta.allure.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,17 +28,19 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
+@Epic("OS&R")
+@Feature("Tests for A4 UI Inventory Browser UI")
+@TmsLink("DIGIHUB-xxxxx")
 public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4InventarSuchePage a4InventarSuchePage = new A4InventarSuchePage();
     private final A4ResourceInventoryNeDetailRobot a4ResourceInventoryNeDetailRobot = new A4ResourceInventoryNeDetailRobot();
     private final A4ResourceInventoryNeDetailPage a4ResourceInventoryNeDetailPage = new A4ResourceInventoryNeDetailPage();
     private final A4ResourceInventoryNelDetailPage a4ResourceInventoryNelDetailPage = new A4ResourceInventoryNelDetailPage();
@@ -54,13 +53,10 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     private A4NetworkElementPort nepDataB;
     private A4NetworkElementLink nelData;
 
-    @Epic("OS&R")
-    @Feature("Tests for A4 UI Inventory Browser UI")
-    @TmsLink("DIGIHUB-xxxxx")
     @BeforeClass()
     public void init() {
-       // Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-       // setCredentials(loginData.getLogin(), loginData.getPassword());
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -81,9 +77,6 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neDataA, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
@@ -101,65 +94,38 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPage() throws InterruptedException {
+    public void testA4NeDetailPage() {
         // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
-        // Execute steps which should lead to the actual page under test
-        a4InventarSucheRobot.openInventarSuchePage();
-        a4InventarSucheRobot.clickNetworkElement();
-        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.clickNeSearchButton();
+        // WHEN
+        a4InventarSucheRobot.searchForNetworkElement(neDataA);
+        a4InventarSucheRobot.getNeElementsCollection().get(0).click(); // Click first row in search result table
+        sleepForSeconds(10); // Wait 10 seconds (UI slow currently)
 
-        // Click first row in search result table
-        a4InventarSucheRobot.getNeElementsCollection().get(0).click();
-
-        // Wait 10 seconds (UI slow currently)
-        try {
-            final long SLEEP_TIMER = 10;
-            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // THEN
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         // Expect table data to be correct
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
         assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
-
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPageAndClickOppositeNe() throws InterruptedException {
-
+    public void testA4NeDetailPageAndClickOppositeNe() {
+        // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
-        // Execute steps which should lead to the actual page under test
-        a4InventarSucheRobot.openInventarSuchePage();
-        a4InventarSucheRobot.clickNetworkElement();
-        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.clickNeSearchButton();
-
-        //Thread.sleep(1000);
-
-        // Click first row in search result table
+        // WHEN
+        a4InventarSucheRobot.searchForNetworkElement(neDataA);
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+        sleepForSeconds(10);
 
-        // Wait 10 seconds (UI slow currently)
-        try {
-            final long SLEEP_TIMER = 10;
-            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // THEN
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         a4ResourceInventoryNeDetailPage.validate();
@@ -184,36 +150,22 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(7).click();
         // check uuid
         assertEquals(a4ResourceInventoryNeDetailRobot.readNeUuid(), neDataB.getUuid());
-
     }
-
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPageAndClickNepButton() throws InterruptedException {
-
+    public void testA4NeDetailPageAndClickNepButton() {
+        // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
-        // Execute steps which should lead to the actual page under test
-        a4InventarSucheRobot.openInventarSuchePage();
-        a4InventarSucheRobot.clickNetworkElement();
-        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.clickNeSearchButton();
-
-        // Click first row in search result table
+        // WHEN
+        a4InventarSucheRobot.searchForNetworkElement(neDataA);
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+        sleepForSeconds(10);
 
-        // Wait 10 seconds (UI slow currently)
-        try {
-            final long SLEEP_TIMER = 10;
-            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // THEN
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         a4ResourceInventoryNeDetailPage.validate();
@@ -238,36 +190,22 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(0).click();
         // check
         a4ResourceInventoryNepDetailPage.validate();
-       // Thread.sleep(2000);
     }
-
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPageAndClickNelButton() throws InterruptedException {
-
+    public void testA4NeDetailPageAndClickNelButton() {
+        // GIVEN
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData();
 
-        // Execute steps which should lead to the actual page under test
-        a4InventarSucheRobot.openInventarSuchePage();
-        a4InventarSucheRobot.clickNetworkElement();
-        a4InventarSucheRobot.enterNeAkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeOnkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.enterNeVkzByVpsz(neDataA.getVpsz());
-        a4InventarSucheRobot.clickNeSearchButton();
-
-        // Click first row in search result table
+        // WHEN
+        a4InventarSucheRobot.searchForNetworkElement(neDataA);
         a4InventarSucheRobot.getNeElementsCollection().get(0).click();
+        sleepForSeconds(10);
 
-        // Wait 10 seconds (UI slow currently)
-        try {
-            final long SLEEP_TIMER = 10;
-            TimeUnit.SECONDS.sleep(SLEEP_TIMER);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // THEN
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         a4ResourceInventoryNeDetailPage.validate();
@@ -292,14 +230,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventoryNeDetailRobot.getNelElementsCollection().get(3).click();
         // check
         a4ResourceInventoryNelDetailPage.validate();
-       // Thread.sleep(2000);
     }
-
-
-
-
-
-
 
     // helper
     private List<NetworkElementDetails> generateExpectedData() {

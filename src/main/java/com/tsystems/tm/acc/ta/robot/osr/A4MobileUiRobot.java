@@ -45,13 +45,6 @@ public class A4MobileUiRobot {
         clickSearchButton();
     }
 
-    public void doInbetriebnahme(String ztpIdent) {
-        checkRadioButton("1");
-        clickInbetriebnahmeButton();
-        enterZtpIdent(ztpIdent);
-        clickFinishButton();
-    }
-
     public void checkSearchResultPageAfterInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
         checkInstalling();
         assertEquals(readVpsz(), ne.getVpsz());
@@ -61,30 +54,6 @@ public class A4MobileUiRobot {
         assertEquals(readFsz(), ne.getFsz());
         assertEquals(readCategory(), ne.getCategory());
         assertEquals(readZtpIdent(), ztpIdent);
-    }
-
-    public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
-        a4NeFilteredMap.put(identifier, neData);
-        List<String> toBeRemoved = new ArrayList<>();
-
-        // remove all entries
-        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
-            clickRemoveButton();
-            try {
-
-                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
-                WebDriverWait wait = new WebDriverWait(driver, 5000);
-                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                driver.switchTo().alert();
-                alert.accept();
-            } catch (NoAlertPresentException e) {
-                System.out.println("EXCEPTION " + e.getCause());
-            }
-            toBeRemoved.add(k);
-
-        });
-
-        toBeRemoved.forEach(a4NeFilteredMap::remove);
     }
 
     public String[] getSplittedVpszValues(String vpszUnsplitted) {
@@ -205,17 +174,22 @@ public class A4MobileUiRobot {
         $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
     }
 
+    public void doInbetriebnahme(String ztpIdent) {
+        checkRadioButton("1");
+        clickInbetriebnahmeButton();
+        enterZtpIdent(ztpIdent);
+        clickFinishButton();
+    }
+
 
     //monitoring-page
     @Step("check empty Monitoring")
     public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
         $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        //assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
         assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Keine NetworkElements gefunden");
         assertEquals(a4NeFilteredList.size(), 0);
     }
 
-    //monitoring-page
     @Step("check Monitoring")
     public void checkMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) {
         //check if rows of tables are there, before proceeding
@@ -241,6 +215,30 @@ public class A4MobileUiRobot {
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
         assertEquals(concat.size() / 6, a4NeFilteredList.size());
+    }
+
+    public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
+        a4NeFilteredMap.put(identifier, neData);
+        List<String> toBeRemoved = new ArrayList<>();
+
+        // remove all entries
+        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
+            clickRemoveButton();
+            try {
+
+                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriverWait wait = new WebDriverWait(driver, 5000);
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert();
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("EXCEPTION " + e.getCause());
+            }
+            toBeRemoved.add(k);
+
+        });
+
+        toBeRemoved.forEach(a4NeFilteredMap::remove);
     }
 
 

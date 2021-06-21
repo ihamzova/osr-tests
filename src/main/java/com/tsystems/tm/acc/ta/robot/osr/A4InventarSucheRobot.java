@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
 import io.qameta.allure.Step;
@@ -19,16 +20,14 @@ public class A4InventarSucheRobot {
     }
 
     public ElementsCollection getNegElementsCollection() {
-        ElementsCollection elementsCollection = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
         // waitForTableToFullyLoad(elementsCollection.size());
-        return elementsCollection;
+        return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
     }
     public ElementsCollection getNeElementsCollection() {
-        ElementsCollection elementsCollection = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
         // waitForTableToFullyLoad(elementsCollection.size());
-        return elementsCollection;
+        return $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
     }
 
 
@@ -140,6 +139,16 @@ public class A4InventarSucheRobot {
     public void openInventarSuchePage(){
         A4InventarSuchePage
                 .login();
+    }
+
+    @Step("Search for network element")
+    public void searchForNetworkElement(A4NetworkElement neData) {
+        openInventarSuchePage();
+        clickNetworkElement();
+        enterNeAkzByVpsz(neData.getVpsz());
+        enterNeOnkzByVpsz(neData.getVpsz());
+        enterNeVkzByVpsz(neData.getVpsz());
+        clickNeSearchButton();
     }
 
 }
