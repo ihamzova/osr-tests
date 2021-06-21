@@ -51,6 +51,9 @@ public class A4NelInstallationUiRobot {
         Assert.assertTrue(notFoundMsg().contains("Keine NetworkElementLinks zu diesem NetworkElement gefunden!"));
     }
 
-
+    @Step("click planning filter")
+    public void checkPlanningFilter() {
+        $(A4NelInstallationPage.getPLANNING_FILTER_LOCATOR()).click();
+    }
 
 }
