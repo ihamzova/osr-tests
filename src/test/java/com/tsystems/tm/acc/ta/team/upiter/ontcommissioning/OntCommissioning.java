@@ -119,19 +119,19 @@ public class OntCommissioning extends GigabitTest {
         ontOltOrchestratorRobot.updateOntState(accessLineForDeprovisioningNew);
         SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningNew.getLineId());
         assertNotNull(subscriberNEProfile);
-        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningNew.getLineId()).isEmpty(),
                 true);
-        assertNotNull(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()));
+        assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()),
+                LineIdStatus.FREE);
+        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
         assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumberForDeprovisioning.getSerialNumber());
         assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
-        accessLineForDeprovisioningOld.setLineId(accessLineForDeprovisioningOld.getLineId());
         assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
                 AccessLineStatus.ASSIGNED);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getSubscriberNetworkLineProfile().getState(),
                 ProfileState.ACTIVE);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
-                "0037W5M");
+                accessLineForDeprovisioningOld.getHomeId());
 
     }
 
