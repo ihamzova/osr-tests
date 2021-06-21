@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4NelInstallationPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Alert;
@@ -50,6 +51,11 @@ public class A4MobileUiRobot {
         clickInbetriebnahmeButton();
         enterZtpIdent(ztpIdent);
         clickFinishButton();
+    }
+
+    public void startNelInstallation() {
+        checkRadioButton("1");
+        clickNelInstallationButton();
     }
 
     public void checkSearchResultPageAfterInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
@@ -181,6 +187,11 @@ public class A4MobileUiRobot {
     @Step("Click inbetriebnahme button")
     public void clickInbetriebnahmeButton() {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
+    }
+
+    @Step("Click nel installation button")
+    public void clickNelInstallationButton() {
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
     }
 
     @Step("Click Monitoring Button")
