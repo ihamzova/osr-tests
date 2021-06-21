@@ -124,9 +124,9 @@ public class InbetriebnahmeTest extends GigabitTest {
         sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         a4ResourceInventory.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01)
                 .getUuid(), equipmentData);
+        a4ResourceInventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nepA.getUuid(), nepB.getUuid());
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(
                 a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
-        a4ResourceInventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nepA.getUuid(), nepB.getUuid());
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepA.getUuid());
     }
 
