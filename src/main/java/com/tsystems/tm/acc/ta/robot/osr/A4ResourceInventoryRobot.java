@@ -706,4 +706,12 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Check if NEL is in state INSTALLING")
+    public void checkNetworkElementLinkInStateInstalling(String uuidNep) {
+        List<NetworkElementLinkDto> nelList = getNetworkElementLinksByNePort(uuidNep);
+        Assert.assertEquals(nelList.size(), 1);
+
+        Assert.assertEquals(nelList.get(0).getLifecycleState(), "INSTALLING");
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.data.upiter;
 
+import com.tsystems.tm.acc.ta.data.osr.models.Ont;
+
 public interface UpiterConstants {
     String LINE_ID_GENERATOR_MS = "line-id-generator";
     String HOME_ID_MANAGEMENT_MS = "home-id-management";

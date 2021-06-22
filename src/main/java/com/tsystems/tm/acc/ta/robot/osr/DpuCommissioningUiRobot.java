@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DPU_COMMISSIONING_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class DpuCommissioningUiRobot {
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
     private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(DPU_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(DPU_COMMISSIONING_MS));
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
@@ -67,7 +68,7 @@ public class DpuCommissioningUiRobot {
         Assert.assertFalse(businessKey.isEmpty());
 
         Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Device LifeCycleState after com. mismatch");
-        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Port LifeCycleState after com. mismatch");
+
 
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
