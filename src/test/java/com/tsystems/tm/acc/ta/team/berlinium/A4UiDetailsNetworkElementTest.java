@@ -7,9 +7,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElement
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryNeDetailRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterClass;
@@ -18,14 +16,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 @Epic("OS&R")
-@Feature("Tests for A4 UI Inventory Browser UI")
+@Feature("Test detail-view for found NEs in UI")
 @TmsLink("DIGIHUB-xxxxx")
 public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
-    private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
+    private final A4InventarSucheRobot a4InventarSuche = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4ResourceInventoryNeDetailRobot a4ResourceInventoryNeDetailRobot = new A4ResourceInventoryNeDetailRobot();
+    private final A4ResourceInventoryNeDetailsRobot a4ResourceInventoryNeDetails = new A4ResourceInventoryNeDetailsRobot();
+    private final A4ResourceInventoryNepDetailsRobot a4ResourceInventoryNepDetails = new A4ResourceInventoryNepDetailsRobot();
+    private final A4ResourceInventoryNelDetailsRobot a4ResourceInventoryNelDetails = new A4ResourceInventoryNelDetailsRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neDataA;
@@ -77,53 +77,53 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @Description("Test for Network Element Detail page")
     public void testA4NeDetailPage() {
         // WHEN
-        a4InventarSucheRobot.searchForNetworkElement(neDataA);
-        a4InventarSucheRobot.clickFirstRowInSearchResultTable();
+        a4InventarSuche.searchForNetworkElement(neDataA);
+        a4InventarSuche.clickFirstRowInSearchResultTable();
 
         // THEN
-        a4ResourceInventoryNeDetailRobot.checkNeDetailsAndTableContents(neDataA, nepDataA, nelData, neDataB);
+        a4ResourceInventoryNeDetails.checkNeDetailsAndTableContents(neDataA, nepDataA, nelData, neDataB);
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
-    @Description("Test for Network Element Detail page")
+    @Description("Test if link for NE Gegenstelle works")
     public void testA4NeDetailPageAndClickOppositeNe() {
         // WHEN
-        a4InventarSucheRobot.searchForNetworkElement(neDataA);
-        a4InventarSucheRobot.clickFirstRowInSearchResultTable();
-        a4ResourceInventoryNeDetailRobot.clickGegenStelleIcon();
+        a4InventarSuche.searchForNetworkElement(neDataA);
+        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4ResourceInventoryNeDetails.clickGegenStelleIcon();
 
         // THEN
-        a4ResourceInventoryNeDetailRobot.checkLandedOnCorrectNeDetailsPage(neDataB);
+        a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataB);
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
-    @Description("Test for Network Element Detail page")
+    @Description("Test if link for NEP details works")
     public void testA4NeDetailPageAndClickNepButton() {
         // WHEN
-        a4InventarSucheRobot.searchForNetworkElement(neDataA);
-        a4InventarSucheRobot.clickFirstRowInSearchResultTable();
-        a4ResourceInventoryNeDetailRobot.clickNepIcon();
+        a4InventarSuche.searchForNetworkElement(neDataA);
+        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4ResourceInventoryNeDetails.clickNepIcon();
 
         // THEN
-        a4ResourceInventoryNeDetailRobot.checkLandedOnCorrectNepDetailsPage();
+        a4ResourceInventoryNepDetails.checkLandedOnCorrectNepDetailsPage(nepDataA);
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
-    @Description("Test for Network Element Detail page")
+    @Description("Test if link for NEL details works")
     public void testA4NeDetailPageAndClickNelButton() {
         // WHEN
-        a4InventarSucheRobot.searchForNetworkElement(neDataA);
-        a4InventarSucheRobot.clickFirstRowInSearchResultTable();
-        a4ResourceInventoryNeDetailRobot.clickNelIcon();
+        a4InventarSuche.searchForNetworkElement(neDataA);
+        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4ResourceInventoryNeDetails.clickNelIcon();
 
         // THEN
-        a4ResourceInventoryNeDetailRobot.checkLandedOnCorrectNelDetailsPage();
+        a4ResourceInventoryNelDetails.checkLandedOnCorrectNelDetailsPage(nelData);
     }
 
 }

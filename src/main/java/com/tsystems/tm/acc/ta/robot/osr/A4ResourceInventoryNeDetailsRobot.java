@@ -4,9 +4,8 @@ import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNelDetailPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNepDetailPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailsPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNepDetailsPage;
 import io.qameta.allure.Step;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,89 +23,89 @@ import static com.codeborne.selenide.Selenide.$;
 import static org.testng.Assert.assertEquals;
 
 @Slf4j
-public class A4ResourceInventoryNeDetailRobot {
+public class A4ResourceInventoryNeDetailsRobot {
 
     @Step("Read uuid ne")
     public String readNeUuid() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_UUID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_UUID_FIELD_LOCATOR()).val();
     }
 
     @Step("Read vpsz ne")
     public String readNeVpsz() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_VPSZ_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_VPSZ_FIELD_LOCATOR()).val();
     }
 
     @Step("Read fsz ne")
     public String readNeFsz() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_FSZ_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_FSZ_FIELD_LOCATOR()).val();
     }
 
     @Step("Read category ne")
     public String readNeCategory() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_CATEGORY_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_CATEGORY_FIELD_LOCATOR()).val();
     }
 
     @Step("Read type ne")
     public String readNeType() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_TYPE_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_TYPE_FIELD_LOCATOR()).val();
     }
 
     @Step("Read PD Name ne")
     public String readNePlanningDeviceName() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_PlanningDeviceName_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_PlanningDeviceName_FIELD_LOCATOR()).val();
     }
 
     @Step("Read kls-id ne")
     public String readNeKlsId() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_KLSID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_KLSID_FIELD_LOCATOR()).val();
     }
 
     @Step("Read ztp ident ne")
     public String readNeZtpid() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_ZTPID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_ZTPID_FIELD_LOCATOR()).val();
     }
 
     @Step("Read ops ne")
     public String readNeOps() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_OPS_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_OPS_FIELD_LOCATOR()).val();
     }
 
     @Step("Read lcs ne")
     public String readNeLcs() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_LCS_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_LCS_FIELD_LOCATOR()).val();
     }
 
     @Step("Read creation time ne")
     public String readNeCreationTime() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_CreationTime_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_CreationTime_FIELD_LOCATOR()).val();
     }
 
     @Step("Read last update time ne")
     public String readNeLastUpdateTime() {
-        return $(A4ResourceInventoryNeDetailPage.getNE_LastUpdateTime_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.getNE_LastUpdateTime_FIELD_LOCATOR()).val();
     }
 
     @Step("Open UI, log in")
     public void openRiNeDetailPage(){
-        A4ResourceInventoryNeDetailPage.login();     // warum wird hier die Klasse verwendet?
+        A4ResourceInventoryNeDetailsPage.login();     // warum wird hier die Klasse verwendet?
     }
 
     public ElementsCollection getNelElementsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
-        return $(A4ResourceInventoryNeDetailPage.getNEL_SEARCH_RESULT_TABLE_LOCATOR())
+        return $(A4ResourceInventoryNeDetailsPage.getNEL_SEARCH_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
     }
 
     @Step("Check details and table for network element")
     public void checkNeDetailsAndTableContents(A4NetworkElement neDataA, A4NetworkElementPort nepDataA, A4NetworkElementLink nelData, A4NetworkElement neDataB) {
         final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
-        final A4ResourceInventoryNeDetailPage a4ResourceInventoryNeDetailPage = new A4ResourceInventoryNeDetailPage();
+        final A4ResourceInventoryNeDetailsPage a4ResourceInventoryNeDetailsPage = new A4ResourceInventoryNeDetailsPage();
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData(nepDataA, nelData, neDataB);
 
 //        sleepForSeconds(10);
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
-        a4ResourceInventoryNeDetailPage.validate();
+        a4ResourceInventoryNeDetailsPage.validate();
 
         // check ne-block
         assertEquals(readNeUuid(), neDataA.getUuid());
@@ -166,17 +165,8 @@ public class A4ResourceInventoryNeDetailRobot {
     }
 
     public void checkLandedOnCorrectNeDetailsPage(A4NetworkElement neDataB) {
-        assertEquals(readNeUuid(), neDataB.getUuid());
-    }
-
-    public void checkLandedOnCorrectNepDetailsPage() {
-        final A4ResourceInventoryNepDetailPage a4ResourceInventoryNepDetailPage = new A4ResourceInventoryNepDetailPage();
-        a4ResourceInventoryNepDetailPage.validate();
-    }
-
-    public void checkLandedOnCorrectNelDetailsPage() {
-        final A4ResourceInventoryNelDetailPage a4ResourceInventoryNelDetailPage = new A4ResourceInventoryNelDetailPage();
-        a4ResourceInventoryNelDetailPage.validate();
+        final A4ResourceInventoryNeDetailsPage a4ResourceInventoryNeDetailsPage = new A4ResourceInventoryNeDetailsPage();
+        a4ResourceInventoryNeDetailsPage.validate(neDataB.getUuid());
     }
 
     // helper
