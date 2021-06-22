@@ -17,6 +17,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -46,19 +48,7 @@ public class A4MobileUiRobot {
         clickSearchButton();
     }
 
-    public void doInbetriebnahme(String ztpIdent) {
-        checkRadioButton("1");
-        clickInbetriebnahmeButton();
-        enterZtpIdent(ztpIdent);
-        clickFinishButton();
-    }
-
-    public void startNelInstallation() {
-        checkRadioButton("1");
-        clickNelInstallationButton();
-    }
-
-    public void checkSearchResultPageAfterInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
+    public void checkSearchResultPageAfterNeInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
         checkInstalling();
         assertEquals(readVpsz(), ne.getVpsz());
         assertEquals(readAkz(), stringSplit(ne.getVpsz(), "/").get(0));
@@ -192,11 +182,63 @@ public class A4MobileUiRobot {
         $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
     }
 
-    public void doInbetriebnahme(String ztpIdent) {
+    public void doNeInbetriebnahme(String ztpIdent) {
         checkRadioButton("1");
         clickInbetriebnahmeButton();
         enterZtpIdent(ztpIdent);
         clickFinishButton();
+    }
+
+    public void doNelInstallation() {
+        checkCheckbox("1");
+        clickButtonAndConfirm();
+    }
+
+    public void startNelInstallation() {
+        checkRadioButton("1");
+        clickNelInstallationButton();
+    }
+
+    public void doNelInbetriebnahme() {
+        startNelInstallation();
+        checkPlanningFilter();
+        doNelInstallation();
+        sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
+    }
+
+    @Step("Check radioButton")
+    public void checkCheckbox(String index) {
+        $(A4NelInstallationPage.getCHECKBOX_LOCATOR()).click();
+    }
+
+    @Step("Click button")
+    public void clickButtonAndConfirm() {
+        $(A4NelInstallationPage.getSTART_INSTALL_BTN()).click();
+
+        try {
+            WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+            WebDriverWait wait = new WebDriverWait(driver, 5000);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert();
+            alert.accept();
+        } catch (NoAlertPresentException e) {
+            System.out.println("EXCEPTION " + e.getCause());
+        }
+    }
+
+    @Step("Check error message not found")
+    public String notFoundMsg() {
+        return $(A4NelInstallationPage.getERROR_LOCATOR()).getText();
+    }
+
+    @Step("Conten not found msg")
+    public void checkNotFound() {
+        Assert.assertTrue(notFoundMsg().contains("Keine NetworkElementLinks zu diesem NetworkElement gefunden!"));
+    }
+
+    @Step("click planning filter")
+    public void checkPlanningFilter() {
+        $(A4NelInstallationPage.getPLANNING_FILTER_LOCATOR()).click();
     }
 
 

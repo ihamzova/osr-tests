@@ -15,9 +15,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import io.qameta.allure.Description;
-import io.qameta.allure.Owner;
-import io.qameta.allure.TmsLink;
+import io.qameta.allure.*;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -37,6 +35,9 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 @ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
 @ServiceLog(A4_INVENTORY_IMPORTER_MS)*/
 @Slf4j
+@Epic("OS&R")
+@Feature("Test Inbetriebnahme for NEs and NELs, including monitoring")
+@TmsLink("DIGIHUB-xxxxx")
 public class InbetriebnahmeTest extends GigabitTest {
 
     private final String wiremockScenarioName = "InbetriebnahmeTest";
@@ -57,6 +58,7 @@ public class InbetriebnahmeTest extends GigabitTest {
 
     private final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor02";
     private final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
+    private final String A4_NE_B = "a4NetworkElementB";
 
     @BeforeClass()
     public void init() {
@@ -70,6 +72,8 @@ public class InbetriebnahmeTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
         a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
+        a4NetworkElements.put(A4_NE_B, osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementB));
         nepA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
         nepB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -117,10 +121,10 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
 
         // WHEN
-        a4MobileUi.doInbetriebnahme(ztpi);
+        a4MobileUi.doNeInbetriebnahme(ztpi);
 
         // THEN
-        a4MobileUi.checkSearchResultPageAfterInbetriebnahme(a4NetworkElements.get(A4_NE_OPERATING_BOR_01), ztpi);
+        a4MobileUi.checkSearchResultPageAfterNeInbetriebnahme(a4NetworkElements.get(A4_NE_OPERATING_BOR_01), ztpi);
         sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
         a4ResourceInventory.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01)
                 .getUuid(), equipmentData);
@@ -139,7 +143,7 @@ public class InbetriebnahmeTest extends GigabitTest {
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-        a4MobileUi.doInbetriebnahme("ztp");
+        a4MobileUi.doNeInbetriebnahme("ztp");
 
         // WHEN
         a4MobileUi.clickMonitoringButton();
@@ -149,6 +153,40 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.removeNetworkElementFromMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01,
                 a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
         a4MobileUi.checkEmptyMonitoringList(a4NeFilteredMap);
+    }
+
+    @Test
+    @Owner("Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test NEL Inbetriebnahme process")
+    public void testNelInstallation() {
+        // GIVEN
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+
+        // WHEN
+        a4MobileUi.doNelInbetriebnahme();
+
+        // THEN
+        a4ResourceInventory.checkNetworkElementLinkInStateInstalling(nepB.getUuid());
+        // TODO: Fix me! How to do correct check? (How to reset wiremock counter between tests?)
+//        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepB.getUuid());
+//        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nepB.getUuid(), "PUT", 4);
+    }
+
+    @Test
+    @Owner("Thea.John@telekom.de")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test NEL Monitoring page when no suitable NEL available")
+    public void testNelInstallationNoNel() {
+        // GIVEN
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_B));
+
+        // WHEN
+        a4MobileUi.startNelInstallation();
+        sleepForSeconds(3);
+
+        // THEN
+        a4MobileUi.checkNotFound();
     }
 
 }
