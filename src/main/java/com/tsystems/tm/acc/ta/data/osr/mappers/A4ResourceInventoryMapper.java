@@ -94,7 +94,6 @@ public class A4ResourceInventoryMapper {
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
-//        if (nelData.getLbz().isEmpty())
         nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
 
         return new NetworkElementLinkDto()
