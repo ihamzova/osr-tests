@@ -119,11 +119,11 @@ public class OntCommissioning extends GigabitTest {
         ontOltOrchestratorRobot.updateOntState(accessLineForDeprovisioningNew);
         SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningNew.getLineId());
         assertNotNull(subscriberNEProfile);
+        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningNew.getLineId()).isEmpty(),
                 true);
         assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()),
                 LineIdStatus.FREE);
-        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
         assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumberForDeprovisioning.getSerialNumber());
         assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
         assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
