@@ -132,7 +132,6 @@ public class OntCommissioning extends GigabitTest {
                 ProfileState.ACTIVE);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
                 accessLineForDeprovisioningOld.getHomeId());
-
     }
 
 
