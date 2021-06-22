@@ -32,6 +32,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import static org.testng.Assert.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
@@ -142,31 +143,20 @@ public class A4ResourceOrderTest {
         resourceCharacteristicList.add(rv);
         resourceCharacteristicList.add(cbr);
 
-        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1");
         resource.setResourceCharacteristic(resourceCharacteristicList);
 
-
         orderItem1.setAction(OrderItemActionType.ADD);
-        //orderItem1.setId("itemId01");
         orderItem1.setResource(resource);
-        //orderItem1.setState(ResourceOrderItemStateType.valueOf("PENDING"));
         orderItemList.add(orderItem1);
 
-        //resource.addResourceCharacteristicItem(rv); // doppelt zu oben
-        //System.out.println("+++ resource: "+resource);
-
-        //ro.setAtBaseType("test");
         ro.setExternalId("merlin_id_0815");
         ro.setDescription("resource order of osr-tests");
         ro.setName("resource order name");
-        //ro.setStartDate(OffsetDateTime.parse("2021-05-22T13:08:56.206+02:00"));
         ro.setOrderItem(orderItemList);
-        //System.out.println("+++ RO: " + ro);
-
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
-
 
         // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
@@ -177,25 +167,334 @@ public class A4ResourceOrderTest {
                                 RequestMethod.fromString("POST"),
                                 urlPathEqualTo( "/test_url" )));
 
-
-        //LoggedRequest erg = ergList.get(0);
-        //String body = Arrays.toString(erg.getBody());
-        //System.out.println("+++ body: "+body); // liefert Zahlenwerte
-
         System.out.println(" ");
         System.out.println("+++ ");
         System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
 
-
         boolean rejectTrue = ergList.toString().contains("rejected");
         boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+
         System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
 
+        assertTrue(noSwitchTrue);
+
+    }
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("Post to Mercury is impossible")
+    public void testNoPostToMercury() throws InterruptedException {
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehlermeldung 409
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
+
+        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.ADD);
+        orderItem1.setResource(resource);
+        orderItemList.add(orderItem1);
+
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        ro.setOrderItem(orderItemList);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean noMercuryPostTrue = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+noMercuryPostTrue);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
         //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(noMercuryPostTrue);
+        System.out.println("+++ fertig! ");
+    }
+
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("rebell-link for resource order from Merlin is unknown")
+    public void testUnknownNel() throws InterruptedException {
+
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
+
+        resource.setName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.ADD);
+        orderItem1.setResource(resource);
+        orderItemList.add(orderItem1);
+
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        ro.setOrderItem(orderItemList);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(noNELTrue);
+
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add-case: Callback of Add-RO is completed")
+    public void testAddLink() throws InterruptedException {
+        // send a add request
+        // receive a callback
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
+
+        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.ADD);
+        orderItem1.setResource(resource);
+        orderItemList.add(orderItem1);
+
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        ro.setOrderItem(orderItemList);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(completeTrue);
+
+
+    }
+
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("Delete is not implemented")
+    public void testDeleteNotImplemented() throws InterruptedException {
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
+
+        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.DELETE);
+        orderItem1.setResource(resource);
+        orderItemList.add(orderItem1);
+
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        ro.setOrderItem(orderItemList);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(notAddCaseTrue);
+
+        System.out.println("+++ fertig! ");
+    }
+
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("Delete is not implemented")
+    public void testModifyNotImplemented() throws InterruptedException {
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        resourceCharacteristicList.add(rv);
+        resourceCharacteristicList.add(cbr);
+
+        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.MODIFY);
+        orderItem1.setResource(resource);
+        orderItemList.add(orderItem1);
+
+        ro.setExternalId("merlin_id_0815");
+        ro.setDescription("resource order of osr-tests");
+        ro.setName("resource order name");
+        ro.setOrderItem(orderItemList);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(notAddCaseTrue);
 
         System.out.println("+++ fertig! ");
     }
@@ -204,33 +503,6 @@ public class A4ResourceOrderTest {
 
 
 
-
-
-
-
-
-
-
-
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("rebell-link for resource order from Merlin is unknown")
-    public void testUnknownNel() {
-        //
-
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: NSP of a10nsp changed from PLANNING to INSTALLING")
-    public void testAddLink() {
-        // send a request with link with NSP of a10nsp lcs-state 'planning'
-        // receive a callback
-
-
-
-    }
 
     // functions comes later:
     /*

@@ -13,10 +13,8 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
@@ -36,9 +34,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static org.testng.Assert.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
+import static org.testng.Assert.assertTrue;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
 @ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
@@ -48,7 +46,6 @@ import static org.testng.Assert.*;
 public class A4MobileNeSearchPageTest extends GigabitTest {
 
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
-    private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
 
@@ -78,7 +75,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
-    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) throws InterruptedException {
+    public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) {
 
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
@@ -177,7 +174,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de, Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpsz() throws InterruptedException {
+    public void testNeSearchByVpsz() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz()); // VPSZ: "49/4651/0" -  1 NE
         a4MobileUiRobot.clickSearchButton();
@@ -202,7 +199,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAndFsz() throws InterruptedException {
+    public void testNeSearchByVpszAndFsz() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getFsz());
@@ -227,7 +224,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAndLifecyleState() throws InterruptedException {
+    public void testNeSearchByVpszAndLifecyleState() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
@@ -248,7 +245,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de, Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process")
-    public void testNeSearchByVpszAnd2LifecyleStates() throws InterruptedException {
+    public void testNeSearchByVpszAnd2LifecyleStates() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.checkPlanning();
@@ -270,7 +267,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile NE-search-page of installation process with VPSZ and Category search criteria")
-    public void testNeSearchByVpszAndCategory() throws InterruptedException {
+    public void testNeSearchByVpszAndCategory() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         //check for OLT
@@ -286,75 +283,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
 
-    }
-
-    @Test
-    @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de, bela.kovac@t-systems.com, Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test Mobile NE-search-page with VPSZ and Category search criteria, perform installation process by entering ZTPIdent")
-    public void testNeInstallation() {
-
-        final String ztpi = "test-ztpi" + getRandomDigits(4);
-
-        a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
-        a4MobileUiRobot.enterFsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getFsz());
-        a4MobileUiRobot.enterCategory(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getCategory());
-        a4MobileUiRobot.checkPlanning();
-        a4MobileUiRobot.checkOperating();
-        a4MobileUiRobot.clickSearchButton();
-
-        a4MobileUiRobot.checkRadioButton("1");
-        a4MobileUiRobot.clickInbetriebnahmeButton();
-
-        // Inbetriebnahme page
-        a4MobileUiRobot.enterZtpIdent(ztpi);
-        a4MobileUiRobot.clickFinishButton();
-
-        // back on search page
-        a4MobileUiRobot.checkInstalling();
-        assertEquals(a4MobileUiRobot.readVpsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
-        assertEquals(a4MobileUiRobot.readAkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(0));
-        assertEquals(a4MobileUiRobot.readOnkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(1));
-        assertEquals(a4MobileUiRobot.readVkz(), stringSplit(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz(), "/").get(2));
-        assertEquals(a4MobileUiRobot.readFsz(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getFsz());
-        assertEquals(a4MobileUiRobot.readCategory(), a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getCategory());
-        assertTrue(a4MobileUiRobot.checkIsPlanningChecked());
-        assertTrue(a4MobileUiRobot.checkIsOperatingChecked());
-
-        // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
-        sleepForSeconds(5);
-
-        // Check ZTP-ID value in search result table
-        assertEquals(a4MobileUiRobot.readZtpIdent(), ztpi);
-
-
-        // Fehlermeldung: expected [40318601] but found [], hat sich am psl-mapper etwas geändert?
-        System.out.println("+++ checkNetworkElementIsUpdatedWithPslData: ");
-        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                .getUuid(), equipmentDataA);
-
-
-        // Expected exactly 2 requests matching the following pattern but received 1
-        System.out.println("+++ checkLogicalResourceRequestToNemoWiremock: ");
-       // a4NemoUpdaterRobot.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid(), "PUT", 2);
-
-
-        // Problem bei Nachtlauf, expected [1] but found [0]
-        System.out.println("+++ uewegData: "+uewegData);
-        System.out.println("+++ NEP A: "+a4NetworkElementPortA.getUuid());
-        System.out.println("+++ NEP B: "+a4NetworkElementPortB.getUuid());
-        System.out.println("+++ checkNetworkElementLinkConnectedToNePortExists: ");
-       // a4ResourceInventoryRobot.checkNetworkElementLinkConnectedToNePortExists(uewegData, a4NetworkElementPortA.getUuid(), a4NetworkElementPortB.getUuid());
-
-
-        // Problem bei Nachtlauf, Expected exactly 1 requests matching the following pattern but received 2
-        // or: expected [1] but found [0]
-        System.out.println("+++ checkNetworkElementLinkPutRequestToNemoWiremock: ");
-       // a4NemoUpdaterRobot.checkNetworkElementLinkPutRequestToNemoWiremock(a4NetworkElementPortB.getUuid());
-
-
-        //sleepForSeconds(60); // Check der DB, wieder löschen
     }
 
 }

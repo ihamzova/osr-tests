@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot.getPortNumberByFunctionalPortLabel;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceInventoryMapper {
 
@@ -18,7 +19,7 @@ public class A4ResourceInventoryMapper {
             neData.setUuid(UUID.randomUUID().toString());
 
         if (neData.getFsz().isEmpty())
-            neData.setFsz(UUID.randomUUID().toString().substring(0, 4)); // satisfy unique constraints
+            neData.setFsz(getRandomDigits(4)); // satisfy unique constraints
 
         return new NetworkElementDto()
                 .uuid(neData.getUuid())
@@ -47,7 +48,7 @@ public class A4ResourceInventoryMapper {
             negData.setUuid(UUID.randomUUID().toString());
 
         if (negData.getName().equals(""))
-            negData.setName("NEG-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+            negData.setName("NEG-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkElementGroupDto()
                 .uuid(negData.getUuid())
@@ -67,11 +68,11 @@ public class A4ResourceInventoryMapper {
         A4NetworkElement neDataB = new A4NetworkElement();
         UewegData uewegData = new UewegData();
 
-        neDataA.setVpsz(UUID.randomUUID().toString().substring(0, 4));
-        neDataA.setFsz(UUID.randomUUID().toString().substring(0, 4));
+        neDataA.setVpsz(getRandomDigits(4));
+        neDataA.setFsz(getRandomDigits(4));
 
-        neDataB.setVpsz(UUID.randomUUID().toString().substring(0, 4));
-        neDataB.setFsz(UUID.randomUUID().toString().substring(0, 4));
+        neDataB.setVpsz(getRandomDigits(4));
+        neDataB.setFsz(getRandomDigits(4));
 
         uewegData.setUewegId(nelData.getUeWegId());
 
@@ -93,8 +94,8 @@ public class A4ResourceInventoryMapper {
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
-        if (nelData.getLbz().isEmpty())
-            nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
+//        if (nelData.getLbz().isEmpty())
+        nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
 
         return new NetworkElementLinkDto()
                 .uuid(nelData.getUuid())
@@ -119,7 +120,7 @@ public class A4ResourceInventoryMapper {
             nepData.setUuid(UUID.randomUUID().toString());
 
         if (nepData.getFunctionalPortLabel().isEmpty())
-            nepData.setFunctionalPortLabel("GPON_" + UUID.randomUUID().toString().substring(0, 4));
+            nepData.setFunctionalPortLabel("GPON_" + getRandomDigits(4));
 
         if (nepData.getType().isEmpty())
             nepData.setType("GPON");
@@ -165,7 +166,7 @@ public class A4ResourceInventoryMapper {
             nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
         if (nspData.getOntSerialNumber().isEmpty())
-            nspData.setOntSerialNumber("ONTSERIALNUMBER-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+            nspData.setOntSerialNumber("ONTSERIALNUMBER-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkServiceProfileFtthAccessDto()
                 .uuid(nspData.getUuid())

@@ -62,6 +62,9 @@ public class A4MobileNeSearchPage {
     public static final By INBETRIEBNAHME_NE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement starten')]");
 
     @Getter
+    public static final By INBETRIEBNAHME_NEL_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Inbetriebnahme NetworkElement-Link starten')]");
+
+    @Getter
     public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
 
     @Getter

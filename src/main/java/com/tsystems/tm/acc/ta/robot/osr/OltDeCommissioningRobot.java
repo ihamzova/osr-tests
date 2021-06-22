@@ -1,9 +1,12 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -11,11 +14,13 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.clie
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import io.qameta.allure.Step;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
 import static org.testng.Assert.assertEquals;
 
 public class OltDeCommissioningRobot {
@@ -26,8 +31,10 @@ public class OltDeCommissioningRobot {
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+
+  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
+  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
 
   @Step("Start olt decommissioning process after manual commissioning")
   public void startOltDecommissioningAfterManualCommissioning(OltDevice olt) throws InterruptedException {
@@ -100,25 +107,21 @@ public class OltDeCommissioningRobot {
               .endSzQuery(oltEndSz).slotNumberQuery(slot).executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
-    List<AccessLineDto> ftthAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
+    List<AccessLineDto> ftthAccessLines = new ArrayList<>(accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
             .body(new SearchAccessLineDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList());
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
-    List<HomeIdDto> homeIds = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
+    List<HomeIdDto> homeIds = new ArrayList<>(accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
             .body(new SearchHomeIdDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList());
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
-    List<LineIdDto> lineIds = accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
+    List<LineIdDto> lineIds = new ArrayList<>(accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
             .body(new SearchLineIdDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList());
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
-    List<BackhaulIdDto> backhaulIds = accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
+    List<BackhaulIdDto> backhaulIds = new ArrayList<>(accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
             .body(new SearchBackhaulIdDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList());
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
     assertEquals(ftthAccessLines.size(), 0, "There are AccessLines left");
     assertEquals(homeIds.size(), 0, "There are HomeIds left");
