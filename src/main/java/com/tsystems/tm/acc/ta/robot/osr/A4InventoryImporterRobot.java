@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4RebellSyncClient;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.model.SyncRebellLinks;
@@ -22,10 +23,10 @@ public class A4InventoryImporterRobot {
     private final ApiClient a4RebellSync = new A4RebellSyncClient(authTokenProvider).getClient();
 
     @Step("Sync all NELs for NE (identified by VPSZ & FSZ) with Links from REBELL")
-    public void doRebellSync(String vpsz, String fsz) {
+    public void doRebellSync(A4NetworkElement neData) {
         SyncRebellLinks srl = new SyncRebellLinks();
-        srl.setVpsz(vpsz);
-        srl.setFsz(fsz);
+        srl.setVpsz(neData.getVpsz());
+        srl.setFsz(neData.getFsz());
 
         a4RebellSync
                 .syncRebellLinks()

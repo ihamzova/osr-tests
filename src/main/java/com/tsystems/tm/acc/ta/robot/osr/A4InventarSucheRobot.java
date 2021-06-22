@@ -151,4 +151,8 @@ public class A4InventarSucheRobot {
         clickNeSearchButton();
     }
 
+    public void clickFirstRowInSearchResultTable() {
+        getNeElementsCollection().get(0).click();
+    }
+
 }
