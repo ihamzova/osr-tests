@@ -555,9 +555,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     // 3_OLT_RI_GET_EthernetLink.json
     public MorpeusWireMockMappingsContextBuilder addGetEthLinkStub(OltDevice olt, Dpu dpu, boolean success) {
         if (success) {
-            context.add(new OltResourceInventoryStub().getEthernetLink200(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getEthernetLink200(olt));
         } else {
-            context.add(new OltResourceInventoryStub().getEthernetLink400(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getEthernetLink400(olt));
         }
         return this;
     }

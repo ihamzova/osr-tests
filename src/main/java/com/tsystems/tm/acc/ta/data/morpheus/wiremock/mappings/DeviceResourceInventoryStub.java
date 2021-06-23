@@ -17,6 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 public class DeviceResourceInventoryStub extends AbstractStubMapping {
 
     public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v5/ancpSession";
+    public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v5/uplink";
 
     public MappingBuilder getDpuAncpSession200(Dpu dpu){
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
@@ -58,6 +59,27 @@ public class DeviceResourceInventoryStub extends AbstractStubMapping {
                 ))
                 .withName("getOltAncpSession400")
                 .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(olt.getEndsz()));
+    }
+
+    public MappingBuilder getEthernetLink200(OltDevice oltDevice) {
+        return get(urlPathEqualTo(GET_ETHERNET_LINK_URL))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Arrays.asList(new DeviceResourceInventoryMapper().uplink(oltDevice))),
+                        200
+                ))
+                .atPriority(0)
+                .withName("getEthernetLink200")
+                .withQueryParam("portsEquipmentBusinessRef.endSz", equalTo(oltDevice.getVpsz() + "/" + oltDevice.getFsz()));
+    }
+
+
+    public MappingBuilder getEthernetLink400(OltDevice oltDevice) {
+        return get(urlPathEqualTo(GET_ETHERNET_LINK_URL))
+                .willReturn(aDefaultResponseWithBody(null,
+                        400
+                ))
+                .withName("getEthernetLink400")
+                .withQueryParam("portsEquipmentBusinessRef.endSz", equalTo(oltDevice.getVpsz() + "/" + oltDevice.getFsz()));
     }
 
 
