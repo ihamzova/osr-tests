@@ -10,3 +10,38 @@ template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:
   serialNumber: "1234123412341234"
   newSerialNumber: "9876987698769876"
+---
+name: ForDeprovisioningOntRegistrationAccessLine1
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  slotNumber: "3"
+  portNumber: "1"
+  lineId: "DEU.DTAG.SQA3322830"
+  homeId: "0037W5M"
+---
+name: ForDeprovisioningOntSerialNumber
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1234123412341234"
+---
+name: ForDeprovisioningOntRegistrationAccessLine2
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_30_179_76H1"
+  slotNumber: "3"
+  portNumber: "1"
+  lineId: "DEU.DTAG.SQA1665380"
+  homeId: "0037W5M"
+---
+name: ForDeprovisioningTrue
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA4643677"
+  homeId: "0037WCC"
+---
+name: ForDeprovisioningFalse
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA4935632"
+  homeId: "0037WQN"
