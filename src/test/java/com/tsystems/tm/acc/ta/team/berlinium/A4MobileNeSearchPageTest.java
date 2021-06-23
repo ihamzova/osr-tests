@@ -6,17 +6,15 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.osr.models.equipmentdata.EquipmentDataCase;
-import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -34,8 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 import static org.testng.Assert.assertTrue;
 
 /*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
@@ -61,12 +57,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     final String A4_NE_PLANNING_LEAFSWITCH_01 = "a4NetworkElementPlanningLeafSwitch01";
     final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
 
-    private UewegData uewegData;
-    private EquipmentData equipmentDataA;
-
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
-
-
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
         //add 1 to number of elements because of table header
@@ -76,7 +66,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     }
 
     public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) {
-
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
@@ -100,7 +89,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         });
 
         a4NeFilteredList.forEach((k, v) -> log.info("+++ Category: " + v.getCategory()));
-
     }
 
     @BeforeClass()
@@ -108,8 +96,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
                 .get(CredentialsCase.RHSSOA4InventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
-      //  System.out.println("+++ User: "+loginData.getLogin());
-      //  System.out.println("+++ PW:   "+loginData.getPassword());
 
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -134,10 +120,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         a4NetworkElementPortB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
-        uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
-        equipmentDataA = osrTestContext.getData().getEquipmentDataDataProvider()
-                .get(EquipmentDataCase.equipment_MatNr_40318601);
-
         cleanUp();
     }
 
@@ -150,23 +132,10 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4ResourceInventoryRobot.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
-
-        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "MonitoringInstallingTest"))
-                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_02), a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
-                .addPslMock(equipmentDataA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02))
-                .addNemoMock()
-                .build();
-
-        mappingsContext.publish();
     }
 
     @AfterClass
     public void cleanUp() {
-        mappingsContext.close();
-        mappingsContext
-                .eventsHook(saveEventsToDefaultDir())
-                .eventsHook(attachEventsToAllureReport());
-
         a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
     }
 
@@ -192,7 +161,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
-
     }
 
     @Test
@@ -282,7 +250,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
-
     }
 
 }

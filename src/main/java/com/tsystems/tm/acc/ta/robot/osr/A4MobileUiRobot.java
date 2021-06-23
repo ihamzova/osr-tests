@@ -2,22 +2,33 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4NelInstallationPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static org.testng.Assert.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class A4MobileUiRobot {
@@ -27,6 +38,25 @@ public class A4MobileUiRobot {
     public void openNetworkElementMobileSearchPage() {
         A4MobileNeSearchPage
                 .login();
+    }
+
+    public void searchForNetworkElement(A4NetworkElement neData) {
+        openNetworkElementMobileSearchPage();
+        enterVpsz(neData.getVpsz());
+        enterFsz(neData.getFsz());
+        enterCategory(neData.getCategory());
+        clickSearchButton();
+    }
+
+    public void checkSearchResultPageAfterNeInbetriebnahme(A4NetworkElement ne, String ztpIdent) {
+        checkInstalling();
+        assertEquals(readVpsz(), ne.getVpsz());
+        assertEquals(readAkz(), stringSplit(ne.getVpsz(), "/").get(0));
+        assertEquals(readOnkz(), stringSplit(ne.getVpsz(), "/").get(1));
+        assertEquals(readVkz(), stringSplit(ne.getVpsz(), "/").get(2));
+        assertEquals(readFsz(), ne.getFsz());
+        assertEquals(readCategory(), ne.getCategory());
+        assertEquals(readZtpIdent(), ztpIdent);
     }
 
     public String[] getSplittedVpszValues(String vpszUnsplitted) {
@@ -125,6 +155,11 @@ public class A4MobileUiRobot {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
     }
 
+    @Step("Click nel installation button")
+    public void clickNelInstallationButton() {
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
+    }
+
     @Step("Click Monitoring Button")
     public void clickMonitoringButton() {
         $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();
@@ -147,19 +182,76 @@ public class A4MobileUiRobot {
         $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
     }
 
+    public void doNeInbetriebnahme(String ztpIdent) {
+        checkRadioButton("1");
+        clickInbetriebnahmeButton();
+        enterZtpIdent(ztpIdent);
+        clickFinishButton();
+    }
+
+    public void doNelInstallation() {
+        checkCheckbox("1");
+        clickButtonAndConfirm();
+    }
+
+    public void startNelInstallation() {
+        checkRadioButton("1");
+        clickNelInstallationButton();
+    }
+
+    public void doNelInbetriebnahme() {
+        startNelInstallation();
+        checkPlanningFilter();
+        doNelInstallation();
+        sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
+    }
+
+    @Step("Check radioButton")
+    public void checkCheckbox(String index) {
+        $(A4NelInstallationPage.getCHECKBOX_LOCATOR()).click();
+    }
+
+    @Step("Click button")
+    public void clickButtonAndConfirm() {
+        $(A4NelInstallationPage.getSTART_INSTALL_BTN()).click();
+
+        try {
+            WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+            WebDriverWait wait = new WebDriverWait(driver, 5000);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert();
+            alert.accept();
+        } catch (NoAlertPresentException e) {
+            System.out.println("EXCEPTION " + e.getCause());
+        }
+    }
+
+    @Step("Check error message not found")
+    public String notFoundMsg() {
+        return $(A4NelInstallationPage.getERROR_LOCATOR()).getText();
+    }
+
+    @Step("Conten not found msg")
+    public void checkNotFound() {
+        Assert.assertTrue(notFoundMsg().contains("Keine NetworkElementLinks zu diesem NetworkElement gefunden!"));
+    }
+
+    @Step("click planning filter")
+    public void checkPlanningFilter() {
+        $(A4NelInstallationPage.getPLANNING_FILTER_LOCATOR()).click();
+    }
+
 
     //monitoring-page
     @Step("check empty Monitoring")
     public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
         $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        //assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste ist leer.");
         assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Keine NetworkElements gefunden");
         assertEquals(a4NeFilteredList.size(), 0);
     }
 
-    //monitoring-page
     @Step("check Monitoring")
-    public void checkMonitoring(Map<String, A4NetworkElement> a4NeFilteredList) throws InterruptedException {
+    public void checkMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
@@ -175,26 +267,46 @@ public class A4MobileUiRobot {
             assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
             assertTrue(concat.contains(a4NetworkElement.getType()), a4NetworkElement.getType());
             assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
-            assertTrue(concat.contains(a4NetworkElement.getPlannedMatNr()), a4NetworkElement.getPlannedMatNr());
+            // Check for planned mat number has to be done with psl wiremock equip data, because A4NetworkElement doesn't have this property
+            assertTrue(concat.contains(equipmentData.getSubmt()), equipmentData.getSubmt());
             assertTrue(concat.contains(a4NetworkElement.getOperationalState()), a4NetworkElement.getOperationalState());
         });
-        log.info("+++" + concat.toString());
-
-        a4NeFilteredList.forEach((k, v) -> log.info("+++" + v.getCategory()));
 
         //check if table has only as many rows as expected by test data set
         //table has 6 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
         assertEquals(concat.size() / 6, a4NeFilteredList.size());
-
     }
+
+    public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
+        a4NeFilteredMap.put(identifier, neData);
+        List<String> toBeRemoved = new ArrayList<>();
+
+        // remove all entries
+        a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
+            clickRemoveButton();
+            try {
+
+                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+                WebDriverWait wait = new WebDriverWait(driver, 5000);
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert();
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                System.out.println("EXCEPTION " + e.getCause());
+            }
+            toBeRemoved.add(k);
+
+        });
+
+        toBeRemoved.forEach(a4NeFilteredMap::remove);
+    }
+
 
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
-
         //add 1 to number of elements because of table header
-       // numberOfElements++;
+        // numberOfElements++;
 
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
-
     }
 }

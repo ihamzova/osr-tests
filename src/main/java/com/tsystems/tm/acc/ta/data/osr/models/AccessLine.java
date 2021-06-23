@@ -22,4 +22,8 @@ public class AccessLine {
     private String dpuPortType;
     private int limit;
     private String dpuEndSz;
+
+
+
+
 }
