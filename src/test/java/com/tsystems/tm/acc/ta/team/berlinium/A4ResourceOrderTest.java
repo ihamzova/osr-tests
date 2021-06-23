@@ -12,22 +12,19 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
+import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.Characteristic;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 
 import java.util.*;
@@ -53,6 +50,10 @@ public class A4ResourceOrderTest {
     private A4NetworkElementPort nepData1;
     private A4NetworkElementPort nepData2;
     private A4NetworkElementLink nelData;
+    private A4NetworkServiceProfileA10Nsp nspA10Data1;
+    private A4NetworkServiceProfileA10Nsp nspA10Data2;
+    private A4TerminationPoint tpData1;
+    private A4TerminationPoint tpData2;
 
     private ResourceOrder ro;
     private String corId;
@@ -62,11 +63,34 @@ public class A4ResourceOrderTest {
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
 
     List<ResourceOrderItem> orderItemList = new ArrayList<>();
+    List<ResourceOrderItem> orderItemList2 = new ArrayList<>();
     List<Characteristic> resourceCharacteristicList = new ArrayList<>();
+    List<Characteristic> resourceCharacteristicList2 = new ArrayList<>();
     ResourceOrderItem orderItem1 = new ResourceOrderItem();
+    ResourceOrderItem orderItem2 = new ResourceOrderItem();
     ResourceRefOrValue resource = new ResourceRefOrValue();
+    ResourceRefOrValue resource2 = new ResourceRefOrValue();
     Characteristic rv = new Characteristic();
+    Characteristic rv2= new Characteristic();
     Characteristic cbr = new Characteristic();
+    Characteristic cbr2 = new Characteristic();
+    Characteristic vuep = new Characteristic();
+    Characteristic vuep2 = new Characteristic();
+    Characteristic lacp = new Characteristic();
+    Characteristic lacp2 = new Characteristic();
+    Characteristic mtu = new Characteristic();
+    Characteristic mtu2 = new Characteristic();
+    Characteristic characteristicVLANrange = new Characteristic();
+    Characteristic characteristicVLANrange2 = new Characteristic();
+    VlanRange vlanRange = new VlanRange();
+    VlanRange vlanRange2 = new VlanRange();
+    List<VlanRange> vlanRanges = new ArrayList<>();
+    VlanRangeList vlanRangeList = new VlanRangeList();
+    VlanRangeList vlanRangeList2 = new VlanRangeList();
+    Characteristic characteristicQos = new Characteristic();
+    QosList qosList = new QosList();
+    List<QosClass> qosClasses = new ArrayList<>();
+    QosClass qosClass1 = new QosClass();
 
 // before, test data
 
@@ -85,6 +109,14 @@ public class A4ResourceOrderTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+        nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+        tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -103,8 +135,12 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2);
+        a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
+        a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
 
-        ro = new ResourceOrder();
+
         corId = UUID.randomUUID().toString();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory
@@ -121,42 +157,118 @@ public class A4ResourceOrderTest {
     @AfterMethod
     public void cleanup() {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
+
+
+
         wiremock.close();
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 }
 
+// common
+    public List<Characteristic> buildResourceCharacteristicList (){
+        ArrayList<Characteristic> resourceCharacteristicList_local = new ArrayList<>();
+
+        rv.setName("RahmenvertragsNr");
+        rv.setValue("1122334455");
+        rv.setValueType("valueTypeRv");
+        cbr.setName("Subscription.keyA");
+        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
+        cbr.setValueType("valueTypeCbr");
+        vuep.setName("VUEP_Public_Referenz-Nr.");
+        vuep.setValue("A1000851");
+        vuep.setValueType("valueTypeVuep");
+        mtu.setName("MTU-Size");
+        mtu.setValue("1590");
+        mtu.setValueType("valueTypeMtu");
+        lacp.setName("LACP_aktiv");
+        lacp.setValue("true");
+        lacp.setValueType("valueTypeLacp");
+
+        vlanRange.setVlanRangeLower("0");
+        vlanRange.setVlanRangeUpper("4094");
+        vlanRanges.add(vlanRange);
+        //vlanRangeList.setVlanRanges(vlanRanges);
+        characteristicVLANrange.setName("VLAN_Range");
+        characteristicVLANrange.setValue(vlanRange);
+        characteristicVLANrange.setValueType("Object");
+
+        qosClass1.setQosClass("1");
+        qosClass1.setQospBit("0");
+        qosClass1.setQosBandwidthDown("100");
+        qosClasses.add(qosClass1);
+        QosClass qosClass2 = new QosClass();
+        qosClass2.setQosClass("2");
+        qosClass2.setQospBit("1");
+        qosClass2.setQosBandwidthDown("200");
+        qosClasses.add(qosClass2);
+        qosList.setQosClasses(qosClasses);
+        characteristicQos.setName("QoS_List");  // alt: "QosList"
+        characteristicQos.setValue(qosList);
+        characteristicQos.setValueType("Object");
+
+        resourceCharacteristicList_local.add(characteristicQos);
+        resourceCharacteristicList_local.add(vuep);
+        resourceCharacteristicList_local.add(rv);
+        resourceCharacteristicList_local.add(mtu);
+        resourceCharacteristicList_local.add(lacp);
+        resourceCharacteristicList_local.add(characteristicVLANrange);
+        resourceCharacteristicList_local.add(cbr);
+        return resourceCharacteristicList_local;
+    }
+    public ResourceOrder buildResourceOrder (){
+
+        ResourceOrder ro_local = new ResourceOrder();
+
+        List<Characteristic> resourceCharacteristicList = buildResourceCharacteristicList();
+
+       //resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
+        //resource.setName(nelData.getLbz());
+        //
+        resource.setName("935/100211-49/30/150/7KCA-49/30/150/7KCB");
+        resource.setResourceCharacteristic(resourceCharacteristicList);
+
+        orderItem1.setAction(OrderItemActionType.ADD);
+        orderItem1.setResource(resource);
+        orderItem1.setId("orderItemId");
+        orderItemList.add(orderItem1);
+
+        ro_local.setExternalId("merlin_id_0815");
+        ro_local.setDescription("resource order of osr-tests");
+        ro_local.setName("resource order name");
+        ro_local.setOrderItem(orderItemList);
+
+        return ro_local;
+    }
+
 // tests
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("test ro")
+    public void testRo() throws InterruptedException {
+
+        new ResourceOrder();
+        ResourceOrder ro_0;
+        ro_0 = buildResourceOrder();
+        System.out.println(ro_0);
+       // TimeUnit.SECONDS.sleep(15);   // Auswertung der DB
+    }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() throws InterruptedException {
 
-        // create a ro with link with NSP of unknown a10nsp; --> not yet realized
+        new ResourceOrder();
+        ResourceOrder ro_1;
+        ro_1 = buildResourceOrder();
+        resource.setName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1"); // unknown Switch
 
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.ADD);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_1);
 
         // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
@@ -176,49 +288,32 @@ public class A4ResourceOrderTest {
         boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
         boolean noNELTrue = ergList.toString().contains("Links are not present");
         boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
 
         System.out.println("+++  ");
         System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
         System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ keinen Link gefunden: "+noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: "+noSwitchTrue);
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-
         assertTrue(noSwitchTrue);
-
     }
-
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Post to Mercury is impossible")
     public void testNoPostToMercury() throws InterruptedException {
 
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehlermeldung 409
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.ADD);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
+        new ResourceOrder();
+        ResourceOrder ro_2;
+        ro_2 = buildResourceOrder();
+        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehler 409
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_2);
 
         // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
@@ -248,38 +343,20 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //TimeUnit.SECONDS.sleep(10);   // Auswertung der DB
 
         assertTrue(noMercuryPostTrue);
-        System.out.println("+++ fertig! ");
     }
 
-
-
+@Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testUnknownNel() throws InterruptedException {
 
-
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.ADD);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
+        resource.setName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA");  // Link is unknown
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
@@ -315,34 +392,15 @@ public class A4ResourceOrderTest {
         //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
 
         assertTrue(noNELTrue);
-
     }
-
+@Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: Callback of Add-RO is completed")
-    public void testAddLink() throws InterruptedException {
-        // send a add request
-        // receive a callback
+    @Description("add-case: send RO with -add- and get Callback with -completed-")
+    public void testAddItem() throws InterruptedException {
 
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.ADD);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
@@ -358,18 +416,17 @@ public class A4ResourceOrderTest {
 
         System.out.println(" ");
         System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+        System.out.println("+++ empfangener Callback: "+ergList);
 
         boolean rejectTrue = ergList.toString().contains("rejected");
         boolean completeTrue = ergList.toString().contains("completed");
         boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
         boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
 
         System.out.println("+++  ");
         System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ Modify, Delete oder Prozessfehler enthalten: "+notAddCaseTrue);
         System.out.println("+++ kein Link gefunden: "+noNELTrue);
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
@@ -378,35 +435,227 @@ public class A4ResourceOrderTest {
         //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
 
         assertTrue(completeTrue);
-
-
     }
 
+@Ignore
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add-case: send RO with -add- 2 items and get Callback with -completed-")
+    public void test2AddItems() throws InterruptedException {
+
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
+
+        rv2.setName("RahmenvertragsNr");
+        rv2.setValue("1122334456");
+        rv2.setValueType("valueTypeRv2");
+        cbr2.setName("Subscription.keyA");
+        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
+        cbr2.setValueType("valueTypeCbr2");
+        resourceCharacteristicList2.add(rv2);
+        resourceCharacteristicList2.add(cbr2);
+
+        vuep2.setName("VUEP_Public_Referenz-Nr.");
+        vuep2.setValue("A1000852");
+        vuep2.setValueType("valueTypeVuep2");
+        mtu2.setName("MTU-Size");
+        mtu2.setValue("1500");
+        mtu2.setValueType("valueTypeMtu2");
+        lacp2.setName("LACP_aktiv");
+        lacp2.setValue("true");
+        lacp2.setValueType("valueTypeLacp2");
+
+        vlanRange2.setVlanRangeLower("0");
+        vlanRange2.setVlanRangeUpper("4094");
+        characteristicVLANrange2.setName("VLAN_Range");
+        characteristicVLANrange2.setValue(vlanRange2);
+        characteristicVLANrange2.setValueType("valueTypeVlan2");
+
+        resourceCharacteristicList2.add(vuep2);
+        resourceCharacteristicList2.add(mtu2);
+        resourceCharacteristicList2.add(lacp2);
+        resourceCharacteristicList2.add(characteristicVLANrange2);
+
+        resource2.setName("4L2/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item
+        resource2.setResourceCharacteristic(resourceCharacteristicList2);
+
+        orderItem2.setAction(OrderItemActionType.ADD);
+        orderItem2.setResource(resource2);
+        orderItem2.setId("orderItemId");
+        orderItemList.add(orderItem2);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ Modify, Delete oder Prozessfehler enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(completeTrue);
+    }
+@Ignore
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
+    public void testAdd2LinksOneIsUnknown() throws InterruptedException {
+
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
+
+        rv2.setName("RahmenvertragsNr");
+        rv2.setValue("1122334456");
+        rv2.setValueType("valueTypeRv");
+        cbr2.setName("Subscription.keyA");
+        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
+        cbr2.setValueType("valueTypeCbr");
+        resourceCharacteristicList2.add(rv2);
+        resourceCharacteristicList2.add(cbr2);
+
+        resource2.setName("4L3/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item, Link falsch
+        resource2.setResourceCharacteristic(resourceCharacteristicList2);
+
+        orderItem2.setAction(OrderItemActionType.ADD);
+        orderItem2.setResource(resource2);
+        orderItem2.setId("orderItemId");
+        orderItemList.add(orderItem2);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ Delete oder Modify enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(rejectTrue);
+    }
+@Ignore
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add/delete-case: send RO with -add- and -delete- items and get Callback with -rejected-")
+    public void testAddItemAndDeleteItem() throws InterruptedException {
+
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
 
 
+        rv2.setName("RahmenvertragsNr");
+        rv2.setValue("1122334456");
+        rv2.setValueType("valueTypeRv");
+        cbr2.setName("Subscription.keyA");
+        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
+        cbr2.setValueType("valueTypeCbr");
+        resourceCharacteristicList2.add(rv2);
+        resourceCharacteristicList2.add(cbr2);
+
+        resource2.setName("4L2/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item
+        resource2.setResourceCharacteristic(resourceCharacteristicList2);
+
+        orderItem2.setAction(OrderItemActionType.DELETE);
+        orderItem2.setResource(resource2);
+        orderItem2.setId("orderItemId");
+        orderItemList.add(orderItem2);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+
+        // receive callback with Mock
+        TimeUnit.SECONDS.sleep(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+        boolean AddCaseTrue = ergList.toString().contains("add");
+        boolean DeleteCaseTrue = ergList.toString().contains("delete");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ Delete oder Modify enthalten: "+notAddCaseTrue);
+        System.out.println("+++ kein Link gefunden: "+noNELTrue);
+        System.out.println("+++ Add gefunden: "+AddCaseTrue);
+        System.out.println("+++ Delete gefunden: "+DeleteCaseTrue);
+
+
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+
+        assertTrue(rejectTrue);
+    }
+@Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Delete is not implemented")
     public void testDeleteNotImplemented() throws InterruptedException {
 
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.DELETE);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
+        orderItem1.setAction(OrderItemActionType.DELETE);   // not implemented
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
@@ -422,7 +671,7 @@ public class A4ResourceOrderTest {
 
         System.out.println(" ");
         System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+        System.out.println("+++ empfangener Callback: "+ergList);
 
         boolean rejectTrue = ergList.toString().contains("rejected");
         boolean completeTrue = ergList.toString().contains("completed");
@@ -431,40 +680,22 @@ public class A4ResourceOrderTest {
 
         System.out.println("+++  ");
         System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ Delete enthalten: "+notAddCaseTrue);
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
         assertTrue(notAddCaseTrue);
-
-        System.out.println("+++ fertig! ");
     }
-
-
+@Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("Delete is not implemented")
+    @Description("Modify is not implemented")
     public void testModifyNotImplemented() throws InterruptedException {
 
-        rv.setName("RahmenvertragsNr");
-        rv.setValue("1122334455");
-        cbr.setName("Subscription.keyA");
-        cbr.setValue("f26bd5de-2150-47c7-8235-a688438973a4");
-        resourceCharacteristicList.add(rv);
-        resourceCharacteristicList.add(cbr);
-
-        resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
-        resource.setResourceCharacteristic(resourceCharacteristicList);
-
-        orderItem1.setAction(OrderItemActionType.MODIFY);
-        orderItem1.setResource(resource);
-        orderItemList.add(orderItem1);
-
-        ro.setExternalId("merlin_id_0815");
-        ro.setDescription("resource order of osr-tests");
-        ro.setName("resource order name");
-        ro.setOrderItem(orderItemList);
+        ro = new ResourceOrder();
+        ro = buildResourceOrder();
+        orderItem1.setAction(OrderItemActionType.MODIFY);    // not implemented
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
@@ -480,7 +711,7 @@ public class A4ResourceOrderTest {
 
         System.out.println(" ");
         System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+        System.out.println("+++ empfangener Callback: "+ergList);
 
         boolean rejectTrue = ergList.toString().contains("rejected");
         boolean completeTrue = ergList.toString().contains("completed");
@@ -489,14 +720,13 @@ public class A4ResourceOrderTest {
 
         System.out.println("+++  ");
         System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ Modify enthalten: "+notAddCaseTrue);
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        assertTrue(notAddCaseTrue);
 
-        System.out.println("+++ fertig! ");
+        assertTrue(notAddCaseTrue);
     }
 
 
