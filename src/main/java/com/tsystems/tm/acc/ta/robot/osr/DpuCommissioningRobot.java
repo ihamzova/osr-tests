@@ -33,6 +33,10 @@ public class DpuCommissioningRobot {
     public String businessKey;
     public String id;
 
+    public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v5/ancpSession";
+    public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v5/uplink";
+    public static final String ASSIGN_ONU_ID_TASK_URL = "/resource-order-resource-inventory/v1/assignOnuIdTask";
+
    // private  final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning","VfynslyzImAD3LKW");
    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("dpu-commissioning", RhssoHelper.getSecretOfGigabitHub("dpu-commissioning"));
 
@@ -157,25 +161,25 @@ public class DpuCommissioningRobot {
     @Step
     public void checkGetEthernetLinkCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlPathEqualTo(GET_ETHERNET_LINK_URL));
     }
 
     @Step
     public void checkGetEthernetLinkNotCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz?oltEndSz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlPathEqualTo(GET_ETHERNET_LINK_URL));
     }
 
     @Step
     public void checkPostOnuIdCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/assignOnuIdTask"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(consumers, urlPathEqualTo(ASSIGN_ONU_ID_TASK_URL));
     }
 
     @Step
     public void checkPostOnuIdNotCalled(List<Consumer<RequestPatternBuilder>> consumers) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo("/resource-order-resource-inventory/v1/assignOnuIdTask"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(consumers, urlPathEqualTo(ASSIGN_ONU_ID_TASK_URL));
     }
 
     @Step
@@ -217,25 +221,25 @@ public class DpuCommissioningRobot {
     @Step
     public void checkGetDpuAncpSessionCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo(GET_DPU_ANCP_SESSION_URL + "?accessNodeEquipmentBusinessRef.endSz=" + dpuEndsz));
     }
 
     @Step
     public void checkGetDpuAncpSessionNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + dpuEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL + "?accessNodeEquipmentBusinessRef.endSz=" + dpuEndsz));
     }
 
     @Step
     public void checkGetOltAncpSessionCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo(GET_DPU_ANCP_SESSION_URL + "?accessNodeEquipmentBusinessRef.endSz=" + oltEndsz));
     }
 
     @Step
     public void checkGetOltAncpSessionNotCalled(String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v1/ancp/session/endsz?endsz=" + oltEndsz));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL + "?accessNodeEquipmentBusinessRef.endSz=" + oltEndsz));
     }
 
     @Step

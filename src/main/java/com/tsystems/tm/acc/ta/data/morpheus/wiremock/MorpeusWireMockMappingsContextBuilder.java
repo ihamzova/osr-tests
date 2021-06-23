@@ -555,9 +555,9 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     // 3_OLT_RI_GET_EthernetLink.json
     public MorpeusWireMockMappingsContextBuilder addGetEthLinkStub(OltDevice olt, Dpu dpu, boolean success) {
         if (success) {
-            context.add(new OltResourceInventoryStub().getEthernetLink200(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getEthernetLink200(olt));
         } else {
-            context.add(new OltResourceInventoryStub().getEthernetLink400(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getEthernetLink400(olt));
         }
         return this;
     }
@@ -613,16 +613,16 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     // 8_OLT_RI_GET_DPUAncpSession.json
     public MorpeusWireMockMappingsContextBuilder addGetDPUAncpStub(OltDevice olt, Dpu dpu, boolean success) {
         if (success) {
-            context.add(new OltResourceInventoryStub().getDpuAncpSession200(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getDpuAncpSession200(dpu));
         } else {
-            context.add(new OltResourceInventoryStub().getDpuAncpSession400(olt, dpu));
+            context.add(new DeviceResourceInventoryStub().getDpuAncpSession400(dpu));
         }
         return this;
     }
 
     // 8_OLT_RI_GET_OLTAncpSession.json
     public MorpeusWireMockMappingsContextBuilder addGetOLTAncpStub(OltDevice olt, Dpu dpu) {
-        context.add(new OltResourceInventoryStub().getOltAncpSession200(olt, dpu));
+        context.add(new DeviceResourceInventoryStub().getOltAncpSession200(olt));
         return this;
     }
 
