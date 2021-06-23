@@ -29,6 +29,8 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -61,36 +63,6 @@ public class A4ResourceOrderTest {
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
-
-    List<ResourceOrderItem> orderItemList = new ArrayList<>();
-    List<ResourceOrderItem> orderItemList2 = new ArrayList<>();
-    List<Characteristic> resourceCharacteristicList = new ArrayList<>();
-    List<Characteristic> resourceCharacteristicList2 = new ArrayList<>();
-    ResourceOrderItem orderItem1 = new ResourceOrderItem();
-    ResourceOrderItem orderItem2 = new ResourceOrderItem();
-    ResourceRefOrValue resource = new ResourceRefOrValue();
-    ResourceRefOrValue resource2 = new ResourceRefOrValue();
-    Characteristic rv = new Characteristic();
-    Characteristic rv2= new Characteristic();
-    Characteristic cbr = new Characteristic();
-    Characteristic cbr2 = new Characteristic();
-    Characteristic vuep = new Characteristic();
-    Characteristic vuep2 = new Characteristic();
-    Characteristic lacp = new Characteristic();
-    Characteristic lacp2 = new Characteristic();
-    Characteristic mtu = new Characteristic();
-    Characteristic mtu2 = new Characteristic();
-    Characteristic characteristicVLANrange = new Characteristic();
-    Characteristic characteristicVLANrange2 = new Characteristic();
-    VlanRange vlanRange = new VlanRange();
-    VlanRange vlanRange2 = new VlanRange();
-    List<VlanRange> vlanRanges = new ArrayList<>();
-    VlanRangeList vlanRangeList = new VlanRangeList();
-    VlanRangeList vlanRangeList2 = new VlanRangeList();
-    Characteristic characteristicQos = new Characteristic();
-    QosList qosList = new QosList();
-    List<QosClass> qosClasses = new ArrayList<>();
-    QosClass qosClass1 = new QosClass();
 
 // before, test data
 
@@ -168,6 +140,26 @@ public class A4ResourceOrderTest {
 
 // common
     public List<Characteristic> buildResourceCharacteristicList (){
+
+
+
+        Characteristic rv = new Characteristic();
+        Characteristic cbr = new Characteristic();
+        Characteristic vuep = new Characteristic();
+        Characteristic lacp = new Characteristic();
+        Characteristic mtu = new Characteristic();
+        Characteristic characteristicVLANrange = new Characteristic();
+        VlanRange vlanRange = new VlanRange();
+        List<VlanRange> vlanRanges = new ArrayList<>();
+        Characteristic characteristicQos = new Characteristic();
+        QosList qosList = new QosList();
+        List<QosClass> qosClasses = new ArrayList<>();
+        QosClass qosClass1 = new QosClass();
+
+
+
+
+
         ArrayList<Characteristic> resourceCharacteristicList_local = new ArrayList<>();
 
         rv.setName("RahmenvertragsNr");
@@ -219,6 +211,13 @@ public class A4ResourceOrderTest {
     }
     public ResourceOrder buildResourceOrder (){
 
+
+        List<ResourceOrderItem> orderItemList = new ArrayList<>();
+        ResourceOrderItem orderItem1 = new ResourceOrderItem();
+        ResourceRefOrValue resource = new ResourceRefOrValue();
+
+
+
         ResourceOrder ro_local = new ResourceOrder();
 
         List<Characteristic> resourceCharacteristicList = buildResourceCharacteristicList();
@@ -244,16 +243,25 @@ public class A4ResourceOrderTest {
 
 // tests
 
+    public void setResourceName(String name, ResourceOrder ro) {
+        List<ResourceOrderItem> roiList = ro.getOrderItem();
+        for (ResourceOrderItem resourceOrderItem : roiList) {
+            if (resourceOrderItem.getId().equals("orderItemId")) {
+                resourceOrderItem.getResource().setName(name);
+                break;
+            }
+        }
+    }
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("test ro")
-    public void testRo() throws InterruptedException {
+    public void testRo() {
 
-        new ResourceOrder();
-        ResourceOrder ro_0;
-        ro_0 = buildResourceOrder();
+        ResourceOrder ro_0 = buildResourceOrder();
+
         System.out.println(ro_0);
-       // TimeUnit.SECONDS.sleep(15);   // Auswertung der DB
+//        sleepForSeconds(15);
     }
 
     @Test
@@ -261,10 +269,10 @@ public class A4ResourceOrderTest {
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() throws InterruptedException {
 
-        new ResourceOrder();
-        ResourceOrder ro_1;
-        ro_1 = buildResourceOrder();
-        resource.setName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1"); // unknown Switch
+        ResourceOrder ro_1 = buildResourceOrder();
+
+        setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
+
 
 
         // send to queue
@@ -302,15 +310,46 @@ public class A4ResourceOrderTest {
         assertTrue(noSwitchTrue);
     }
 
+
+
+    public void setCbrValue(String value, ResourceOrder ro) {
+        List<ResourceOrderItem> roiList = ro.getOrderItem();
+
+        for (ResourceOrderItem resourceOrderItem : roiList) {
+            if (resourceOrderItem.getId().equals("orderItemId")) {
+                System.out.println("!!XX ORDER ITEM FOUND!!");
+                List<Characteristic> rcList = resourceOrderItem.getResource().getResourceCharacteristic();
+
+                System.out.println("!!XX RECHAR LIST SIZE: " + rcList.size());
+
+                for(Characteristic characteristic : rcList) {
+                    System.out.println("!!XX SEARCHING RECHAR LIST ENTRY: " + characteristic.getName());
+
+                    if(characteristic.getName().equals("Subscription.keyA")) {
+                        System.out.println("!!XX CHARACTERISTIC FOUND!!");
+                        characteristic.setValue(value);
+                        break;
+                    }
+
+                }
+
+                break;
+            }
+        }
+    }
+
+
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Post to Mercury is impossible")
     public void testNoPostToMercury() throws InterruptedException {
 
-        new ResourceOrder();
-        ResourceOrder ro_2;
-        ro_2 = buildResourceOrder();
-        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehler 409
+
+        ResourceOrder ro_2 = buildResourceOrder();
+
+//        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehler 409
+        setCbrValue("f26bd5de/2150/47c7/8235/a688438973a4", ro_2); // erzeugt Mercury-Fehler 409
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_2);
@@ -348,6 +387,9 @@ public class A4ResourceOrderTest {
         assertTrue(noMercuryPostTrue);
     }
 
+
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -393,6 +435,10 @@ public class A4ResourceOrderTest {
 
         assertTrue(noNELTrue);
     }
+
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -437,6 +483,9 @@ public class A4ResourceOrderTest {
         assertTrue(completeTrue);
     }
 
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -518,6 +567,9 @@ public class A4ResourceOrderTest {
 
         assertTrue(completeTrue);
     }
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -578,6 +630,10 @@ public class A4ResourceOrderTest {
 
         assertTrue(rejectTrue);
     }
+
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -647,6 +703,10 @@ public class A4ResourceOrderTest {
 
         assertTrue(rejectTrue);
     }
+
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -687,6 +747,10 @@ public class A4ResourceOrderTest {
 
         assertTrue(notAddCaseTrue);
     }
+
+     */
+
+    /*
 @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
