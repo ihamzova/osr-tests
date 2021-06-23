@@ -178,8 +178,8 @@ public class A4ResourceOrderTest {
         lacp.setValue("true");
         lacp.setValueType("valueTypeLacp");
 
-        vlanRange.setVlanRangeLower("0");
-        vlanRange.setVlanRangeUpper("4094");
+        vlanRange.setVlanRangeLower("2");
+        vlanRange.setVlanRangeUpper("3999");
         vlanRanges.add(vlanRange);
         //vlanRangeList.setVlanRanges(vlanRanges);
         characteristicVLANrange.setName("VLAN_Range");
@@ -188,12 +188,12 @@ public class A4ResourceOrderTest {
 
         qosClass1.setQosClass("1");
         qosClass1.setQospBit("0");
-        qosClass1.setQosBandwidthDown("100");
+        qosClass1.setQosBandwidthDown("110");
         qosClasses.add(qosClass1);
         QosClass qosClass2 = new QosClass();
         qosClass2.setQosClass("2");
         qosClass2.setQospBit("1");
-        qosClass2.setQosBandwidthDown("200");
+        qosClass2.setQosBandwidthDown("220");
         qosClasses.add(qosClass2);
         qosList.setQosClasses(qosClasses);
         characteristicQos.setName("QoS_List");  // alt: "QosList"
@@ -389,19 +389,17 @@ public class A4ResourceOrderTest {
 
 
 
-    /*
-@Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testUnknownNel() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
-        resource.setName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA");  // Link is unknown
+        ResourceOrder ro_3 = buildResourceOrder();
+
+        setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", ro_3); // Link is unknown
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_3);
 
         // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
@@ -436,20 +434,19 @@ public class A4ResourceOrderTest {
         assertTrue(noNELTrue);
     }
 
-     */
 
-    /*
-@Ignore
+
+
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- and get Callback with -completed-")
     public void testAddItem() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+         ResourceOrder ro_4 = buildResourceOrder();
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_4);
 
         // receive callback with Mock
         TimeUnit.SECONDS.sleep(5);
@@ -483,7 +480,7 @@ public class A4ResourceOrderTest {
         assertTrue(completeTrue);
     }
 
-     */
+
 
     /*
 @Ignore
@@ -492,8 +489,9 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with -add- 2 items and get Callback with -completed-")
     public void test2AddItems() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+    ResourceOrder ro_5 = buildResourceOrder();
+
+
 
         rv2.setName("RahmenvertragsNr");
         rv2.setValue("1122334456");
@@ -576,8 +574,7 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
     public void testAdd2LinksOneIsUnknown() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+       ResourceOrder ro_6 = buildResourceOrder();
 
         rv2.setName("RahmenvertragsNr");
         rv2.setValue("1122334456");
@@ -640,8 +637,7 @@ public class A4ResourceOrderTest {
     @Description("add/delete-case: send RO with -add- and -delete- items and get Callback with -rejected-")
     public void testAddItemAndDeleteItem() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+     ResourceOrder ro_7 = buildResourceOrder();
 
 
         rv2.setName("RahmenvertragsNr");
@@ -713,8 +709,7 @@ public class A4ResourceOrderTest {
     @Description("Delete is not implemented")
     public void testDeleteNotImplemented() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+      ResourceOrder ro_8 = buildResourceOrder();
         orderItem1.setAction(OrderItemActionType.DELETE);   // not implemented
 
         // send to queue
@@ -757,8 +752,7 @@ public class A4ResourceOrderTest {
     @Description("Modify is not implemented")
     public void testModifyNotImplemented() throws InterruptedException {
 
-        ro = new ResourceOrder();
-        ro = buildResourceOrder();
+       ResourceOrder ro_9 = buildResourceOrder();
         orderItem1.setAction(OrderItemActionType.MODIFY);    // not implemented
 
         // send to queue
