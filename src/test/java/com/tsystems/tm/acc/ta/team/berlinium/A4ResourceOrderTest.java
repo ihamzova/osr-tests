@@ -30,6 +30,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.*;
 
@@ -106,7 +107,7 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElement(neData2, negData);
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2);
+        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
@@ -243,15 +244,6 @@ public class A4ResourceOrderTest {
 
 // tests
 
-    public void setResourceName(String name, ResourceOrder ro) {
-        List<ResourceOrderItem> roiList = ro.getOrderItem();
-        for (ResourceOrderItem resourceOrderItem : roiList) {
-            if (resourceOrderItem.getId().equals("orderItemId")) {
-                resourceOrderItem.getResource().setName(name);
-                break;
-            }
-        }
-    }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -273,7 +265,10 @@ public class A4ResourceOrderTest {
 
         setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
 
+//        setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
 
+
+        String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_1);
@@ -312,32 +307,40 @@ public class A4ResourceOrderTest {
 
 
 
-    public void setCbrValue(String value, ResourceOrder ro) {
+
+    public void setResourceName(String name, ResourceOrder ro) {
+        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);
+        roi.getResource().setName(name);
+    }
+
+    public void setCharacteristicValue(String name, String value, ResourceOrder ro) {
+        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);
+        Characteristic c = getCharacteristic(name, roi);
+        c.setValue(value);
+    }
+
+    public Characteristic getCharacteristic(String name, ResourceOrderItem roi) {
+        List<Characteristic> rcList = roi.getResource().getResourceCharacteristic();
+
+        for(Characteristic characteristic : rcList) {
+            if(characteristic.getName().equals(name)) {
+                return characteristic;
+            }
+        }
+
+        return null;
+    }
+
+    public ResourceOrderItem getResourceOrderItemOrderItemId(ResourceOrder ro) {
         List<ResourceOrderItem> roiList = ro.getOrderItem();
 
         for (ResourceOrderItem resourceOrderItem : roiList) {
-            if (resourceOrderItem.getId().equals("orderItemId")) {
-                System.out.println("!!XX ORDER ITEM FOUND!!");
-                List<Characteristic> rcList = resourceOrderItem.getResource().getResourceCharacteristic();
-
-                System.out.println("!!XX RECHAR LIST SIZE: " + rcList.size());
-
-                for(Characteristic characteristic : rcList) {
-                    System.out.println("!!XX SEARCHING RECHAR LIST ENTRY: " + characteristic.getName());
-
-                    if(characteristic.getName().equals("Subscription.keyA")) {
-                        System.out.println("!!XX CHARACTERISTIC FOUND!!");
-                        characteristic.setValue(value);
-                        break;
-                    }
-
-                }
-
-                break;
-            }
+            if (resourceOrderItem.getId().equals("orderItemId"))
+                return resourceOrderItem;
         }
-    }
 
+        return null;
+    }
 
 
     @Test
@@ -348,8 +351,7 @@ public class A4ResourceOrderTest {
 
         ResourceOrder ro_2 = buildResourceOrder();
 
-//        cbr.setValue("f26bd5de/2150/47c7/8235/a688438973a4");  // erzeugt Mercury-Fehler 409
-        setCbrValue("f26bd5de/2150/47c7/8235/a688438973a4", ro_2); // erzeugt Mercury-Fehler 409
+        setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", ro_2); // erzeugt Mercury-Fehler 409
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_2);

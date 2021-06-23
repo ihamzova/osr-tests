@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot.getPortNumberByFunctionalPortLabel;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceInventoryMapper {
@@ -88,14 +89,14 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
-        final String lsz = "LSZ";
-        final String orderNumber = "Order Number";
+        final String lsz = "4N4";
+        final String orderNumber = "1004";
 
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
 //        if (nelData.getLbz().isEmpty())
-        nelData.setLbz(lsz + "/" + orderNumber + "-" + neDataA.getVpsz() + "/" + neDataA.getFsz() + "-" + neDataB.getVpsz() + "/" + neDataB.getFsz()); // LBZ is unique constraint!
+        nelData.setLbz(lsz + "/" + orderNumber + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
 
         return new NetworkElementLinkDto()
                 .uuid(nelData.getUuid())
