@@ -77,11 +77,13 @@ public class A4ResourceOrderTest {
         nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementA10NspSwitch01);
+                .get(A4NetworkElementCase.defaultNetworkElement);
+
         nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+
         nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
         nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
@@ -90,6 +92,9 @@ public class A4ResourceOrderTest {
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
         tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+
+        System.out.println("+++ neData1 : "+neData1);
+        System.out.println("+++ neData2 : "+neData2);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -107,7 +112,7 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElement(neData2, negData);
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2);
+        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2); // LBZ etwa: 4N4/1004-49/2986/0/7KCA-49/2986/0/7KCA
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
@@ -142,8 +147,6 @@ public class A4ResourceOrderTest {
 // common
     public List<Characteristic> buildResourceCharacteristicList (){
 
-
-
         Characteristic rv = new Characteristic();
         Characteristic cbr = new Characteristic();
         Characteristic vuep = new Characteristic();
@@ -156,10 +159,6 @@ public class A4ResourceOrderTest {
         QosList qosList = new QosList();
         List<QosClass> qosClasses = new ArrayList<>();
         QosClass qosClass1 = new QosClass();
-
-
-
-
 
         ArrayList<Characteristic> resourceCharacteristicList_local = new ArrayList<>();
 
@@ -217,16 +216,14 @@ public class A4ResourceOrderTest {
         ResourceOrderItem orderItem1 = new ResourceOrderItem();
         ResourceRefOrValue resource = new ResourceRefOrValue();
 
-
-
         ResourceOrder ro_local = new ResourceOrder();
 
         List<Characteristic> resourceCharacteristicList = buildResourceCharacteristicList();
 
        //resource.setName("4N1/10001-49/30/125/7KCB-49/30/125/7KCA");
-        //resource.setName(nelData.getLbz());
-        //
-        resource.setName("935/100211-49/30/150/7KCA-49/30/150/7KCB");
+       // resource.setName("935/100211-49/30/150/7KCA-49/30/150/7KCB");
+        System.out.println("+++ nelData.getLbz(): "+nelData.getLbz());
+        resource.setName(nelData.getLbz());
         resource.setResourceCharacteristic(resourceCharacteristicList);
 
         orderItem1.setAction(OrderItemActionType.ADD);
@@ -249,11 +246,13 @@ public class A4ResourceOrderTest {
     @Owner("heiko.schwanke@t-systems.com")
     @Description("test ro")
     public void testRo() {
-
+       // neData2.setFsz("7KCB"); tut nicht
         ResourceOrder ro_0 = buildResourceOrder();
 
-        System.out.println(ro_0);
-//        sleepForSeconds(15);
+
+        System.out.println("+++ ro: "+ro_0);
+        System.out.println("+++ nelData/LBZ: "+nelData.getLbz());  // nelData.getLbz()
+        sleepForSeconds(15);
     }
 
     @Test
@@ -267,8 +266,8 @@ public class A4ResourceOrderTest {
 
 //        setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
 
+   //     String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
 
-        String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_1);
