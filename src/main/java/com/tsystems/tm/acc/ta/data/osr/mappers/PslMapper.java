@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
+
 public class PslMapper {
 
     //HUAWEI MA5600
@@ -172,7 +174,7 @@ public class PslMapper {
                                 .heqnr("0056")
                                 .submt(equipmentData.getSubmt())
                                 .eqart("G")
-                                .endsz(networkElement.getVpsz() + "/" + networkElement.getFsz())
+                                .endsz(getEndsz(networkElement))
                                 .serge("21023533106TG4900198")
                                 .anzEbenen("1")
                                 .adrId(equipmentData.getKlsId())

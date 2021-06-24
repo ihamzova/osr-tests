@@ -9,6 +9,10 @@ import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.nelLsz;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.nelOrderNumber;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
+
 public class RebellMapper {
 
     public List<Ueweg> getUewegList(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
@@ -23,17 +27,14 @@ public class RebellMapper {
     }
 
     private Ueweg getUeWeg(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
-        String endSzA = neA.getVpsz() + "/" + neA.getFsz();
-        endSzA = endSzA.replace("/", "_");
-
-        String endSzB = neB.getVpsz() + "/" + neB.getFsz();
-        endSzB = endSzB.replace("/", "_");
+        String endSzA = getEndsz(neA).replace("/", "_");
+        String endSzB = getEndsz(neB).replace("/", "_");
 
         return new Ueweg()
                 .id(1)
-                .lsz("LSZ")
+                .lsz(nelLsz)
                 .lszErg("LszErg")
-                .ordNr("Order Number")
+                .ordNr(nelOrderNumber)
                 .pluralId("Plural ID")
                 .status("ignored")
                 .uewegId(uewegData.getUewegId())

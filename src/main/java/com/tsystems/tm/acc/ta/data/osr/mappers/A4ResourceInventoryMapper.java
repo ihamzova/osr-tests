@@ -15,6 +15,9 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceInventoryMapper {
 
+    final public static String nelLsz = "4N4";
+    final public static String nelOrderNumber = "1004";
+
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
             neData.setUuid(UUID.randomUUID().toString());
@@ -89,13 +92,10 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
-        final String lsz = "4N4";
-        final String orderNumber = "1004";
-
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
-        nelData.setLbz(lsz + "/" + orderNumber + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
+        nelData.setLbz(nelLsz + "/" + nelOrderNumber + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
 
         return new NetworkElementLinkDto()
                 .uuid(nelData.getUuid())
@@ -106,10 +106,10 @@ public class A4ResourceInventoryMapper {
                 .description("NEL for integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
-                .lsz(lsz)
+                .lsz(nelLsz)
                 .lifecycleState(nelData.getLifecycleState())
                 .operationalState(nelData.getOperationalState())
-                .orderNumber(orderNumber)
+                .orderNumber(nelOrderNumber)
                 .pluralId("2")
                 .ueWegId(uewegData.getUewegId())
                 .lbz(nelData.getLbz());
