@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.utils;
 
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -26,5 +28,9 @@ public class MiscUtils {
                 .limit(numberOfDigits)
                 .mapToObj(Integer::toString)
                 .collect(Collectors.joining());
+    }
+
+    public static String getEndsz(A4NetworkElement neData) {
+        return neData.getVpsz() + "/" + neData.getFsz();
     }
 }
