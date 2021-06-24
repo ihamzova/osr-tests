@@ -1,10 +1,4 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
-/*
-import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
-import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
-*/
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
@@ -21,23 +15,21 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.Characteristic;
+import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.OrderItemActionType;
+import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import org.testng.annotations.*;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static org.testng.Assert.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static org.testng.Assert.assertTrue;
 
 public class A4ResourceOrderTest {
 
@@ -110,8 +102,7 @@ public class A4ResourceOrderTest {
         // a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
         //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
-
-        ro = buildResourceOrder();
+        ro = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
         corId = UUID.randomUUID().toString();
 
@@ -133,137 +124,12 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
-
-    // TODO: Move test data generation in resource order mapper class
-
-    public ResourceOrder buildResourceOrder() {
-        return new ResourceOrder()
-                .externalId("merlin_id_0815")
-                .description("resource order of osr-tests")
-                .name("resource order name")
-                .orderItem(buildOrderItem());
-    }
-
-    public List<Characteristic> buildResourceCharacteristicList() {
-        List<Characteristic> cList = new ArrayList<>();
-
-        addCharacteristic("RahmenvertragsNr", "1122334455", "valueTypeRv", cList);
-        addCharacteristic("Subscription.keyA", "f26bd5de-2150-47c7-8235-a688438973a4", "valueTypeCbr", cList);
-        addCharacteristic("VUEP_Public_Referenz-Nr.", "A1000851", "valueTypeVuep", cList);
-        addCharacteristic("MTU-Size", "1590", "valueTypeMtu", cList);
-        addCharacteristic("LACP_aktiv", "true", "valueTypeLacp", cList);
-        addCharacteristic("VLAN_Range", buildVlanRange(), "Object", cList);
-        addCharacteristic("QoS_List", buildQosList(), "Object", cList);
-
-        return cList;
-    }
-
-    private VlanRange buildVlanRange() {
-        return new VlanRange()
-                .vlanRangeLower("2")
-                .vlanRangeUpper("3999");
-    }
-
-    private QosList buildQosList() {
-        List<QosClass> qosClasses = new ArrayList<>();
-
-        addQosClass("1", "0", "110", qosClasses);
-        addQosClass("2", "1", "220", qosClasses);
-
-        return new QosList().qosClasses(qosClasses);
-    }
-
-    private List<ResourceOrderItem> buildOrderItem() {
-        List<ResourceOrderItem> orderItemList = new ArrayList<>();
-
-        ResourceRefOrValue resource = new ResourceRefOrValue()
-                .name(nelData.getLbz())
-                .resourceCharacteristic(buildResourceCharacteristicList());
-
-        ResourceOrderItem orderItem = new ResourceOrderItem()
-                .action(OrderItemActionType.ADD)
-                .resource(resource)
-                .id("orderItemId");
-
-        orderItemList.add(orderItem);
-
-        return orderItemList;
-    }
-
-    private void addCharacteristic(String name, Object value, String valueType, List<Characteristic> cList) {
-        cList.add(new Characteristic()
-                .name(name)
-                .value(value)
-                .valueType(valueType)
-        );
-    }
-
-    private void addQosClass(String className, String pBit, String bwDown, List<QosClass> qosClassList) {
-        qosClassList.add(new QosClass()
-                .qosClass(className)
-                .qospBit(pBit)
-                .qosBandwidthDown(bwDown)
-        );
-    }
-
-
-
-
-    // TODO: Move below utility methods into resource order robot class
-
-    public void setResourceName(String name, ResourceOrder ro) {
-        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);
-        Objects.requireNonNull(roi.getResource()).setName(name);
-    }
-
-    public void setOrderItemAction(OrderItemActionType action, String orderItemId, ResourceOrder ro) {
-        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);  // bisher nur ein Item genutzt
-        roi.setAction(action);
-    }
-
-    public void setCharacteristicValue(String name, String value, ResourceOrder ro) {
-        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);
-        Characteristic c = getCharacteristic(name, roi);
-        c.setValue(value);
-    }
-
-    public Characteristic getCharacteristic(String name, ResourceOrderItem roi) {
-        List<Characteristic> rcList = Objects.requireNonNull(roi.getResource()).getResourceCharacteristic();
-
-        if (rcList != null) {
-            for (Characteristic characteristic : rcList) {
-                if (characteristic.getName().equals(name)) {
-                    return characteristic;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public ResourceOrderItem getResourceOrderItemOrderItemId(ResourceOrder ro) {
-        List<ResourceOrderItem> roiList = ro.getOrderItem();
-
-        if (roiList != null) {
-            for (ResourceOrderItem resourceOrderItem : roiList) {
-                if (resourceOrderItem.getId().equals("orderItemId"))
-                    return resourceOrderItem;
-            }
-        }
-
-        return null;
-    }
-
-
-// tests
-
     @Ignore
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("test ro")
     public void testRo() {
-
-        ResourceOrder ro_0 = buildResourceOrder();
+        ResourceOrder ro_0 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
         System.out.println("+++ ro: " + ro_0);
         System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());  // nelData.getLbz()
@@ -274,10 +140,9 @@ public class A4ResourceOrderTest {
     @Owner("heiko.schwanke@t-systems.com")
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() {
+        ResourceOrder ro_1 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
-        ResourceOrder ro_1 = buildResourceOrder();
-
-        setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
+        a4ResourceOrderRobot.setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
 
         // setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
 
@@ -319,16 +184,13 @@ public class A4ResourceOrderTest {
         assertTrue(noSwitchTrue);
     }
 
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Post to Mercury is impossible")
     public void testNoPostToMercury() throws InterruptedException {
+        ResourceOrder ro_2 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
-
-        ResourceOrder ro_2 = buildResourceOrder();
-
-        setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", ro_2); // erzeugt Mercury-Fehler 409
+        a4ResourceOrderRobot.setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", ro_2); // erzeugt Mercury-Fehler 409
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_2);
@@ -366,15 +228,13 @@ public class A4ResourceOrderTest {
         assertTrue(noMercuryPostTrue);
     }
 
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testUnknownNel() {
+        ResourceOrder ro_3 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
-        ResourceOrder ro_3 = buildResourceOrder();
-
-        setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", ro_3); // Link is unknown
+        a4ResourceOrderRobot.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", ro_3); // Link is unknown
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_3);
@@ -412,13 +272,11 @@ public class A4ResourceOrderTest {
         assertTrue(noNELTrue);
     }
 
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- and get Callback with -completed-")
     public void testAddItem() {
-
-        ResourceOrder ro_4 = buildResourceOrder();
+        ResourceOrder ro_4 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_4);
@@ -454,9 +312,6 @@ public class A4ResourceOrderTest {
 
         assertTrue(completeTrue);
     }
-
-
-
 
 /*
     @Test
@@ -673,17 +528,14 @@ public class A4ResourceOrderTest {
 
         assertTrue(rejectTrue);
     }
-
      */
-
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Delete is not implemented")
     public void testDeleteNotImplemented() {
-
-        ResourceOrder ro_8 = buildResourceOrder();
-        setOrderItemAction(OrderItemActionType.DELETE, "orderItemId", ro_8); // delete is not implemented
+        ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        a4ResourceOrderRobot.setOrderItemAction(OrderItemActionType.DELETE, "orderItemId", ro_8); // delete is not implemented
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
@@ -716,14 +568,12 @@ public class A4ResourceOrderTest {
         assertTrue(notAddCaseTrue);
     }
 
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Modify is not implemented")
     public void testModifyNotImplemented() {
-
-        ResourceOrder ro_9 = buildResourceOrder();
-        setOrderItemAction(OrderItemActionType.MODIFY, "orderItemId", ro_9);// not implemented
+        ResourceOrder ro_9 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        a4ResourceOrderRobot.setOrderItemAction(OrderItemActionType.MODIFY, "orderItemId", ro_9);// not implemented
 
 
         // send to queue
@@ -756,7 +606,6 @@ public class A4ResourceOrderTest {
 
         assertTrue(notAddCaseTrue);
     }
-
 
     // functions comes later:
     /*
