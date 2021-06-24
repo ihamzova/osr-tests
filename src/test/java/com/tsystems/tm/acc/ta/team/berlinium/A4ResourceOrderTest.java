@@ -78,12 +78,10 @@ public class A4ResourceOrderTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
-
         nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-
+                .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
         nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
@@ -93,8 +91,7 @@ public class A4ResourceOrderTest {
         tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
-        System.out.println("+++ neData1 : "+neData1);
-        System.out.println("+++ neData2 : "+neData2);
+
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -112,11 +109,11 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElement(neData2, negData);
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2); // LBZ etwa: 4N4/1004-49/2986/0/7KCA-49/2986/0/7KCA
+        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
-        a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
+       // a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
+        //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
 
 
         corId = UUID.randomUUID().toString();
@@ -136,8 +133,6 @@ public class A4ResourceOrderTest {
     public void cleanup() {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-
-
         wiremock.close();
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
@@ -145,6 +140,9 @@ public class A4ResourceOrderTest {
 }
 
 // common
+
+
+
     public List<Characteristic> buildResourceCharacteristicList (){
 
         Characteristic rv = new Characteristic();
@@ -239,77 +237,15 @@ public class A4ResourceOrderTest {
         return ro_local;
     }
 
-// tests
-
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("test ro")
-    public void testRo() {
-       // neData2.setFsz("7KCB"); tut nicht
-        ResourceOrder ro_0 = buildResourceOrder();
-
-
-        System.out.println("+++ ro: "+ro_0);
-        System.out.println("+++ nelData/LBZ: "+nelData.getLbz());  // nelData.getLbz()
-        sleepForSeconds(15);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("a10-switch in resource order from Merlin is unknown")
-    public void testUnknownSwitch() throws InterruptedException {
-
-        ResourceOrder ro_1 = buildResourceOrder();
-
-        setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
-
-//        setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
-
-   //     String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
-
-
-        // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_1);
-
-        // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
-
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo( "/test_url" )));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
-        System.out.println("+++ keinen Link gefunden: "+noNELTrue);
-        System.out.println("+++ keinen A10-Switch gefunden: "+noSwitchTrue);
-        System.out.println("+++ completed: "+completeTrue);
-        System.out.println("+++ rejected: "+rejectTrue);
-        System.out.println("+++  ");
-
-        assertTrue(noSwitchTrue);
-    }
-
-
-
 
     public void setResourceName(String name, ResourceOrder ro) {
         ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);
         roi.getResource().setName(name);
+    }
+
+    public void setOrderItemAction (OrderItemActionType action, String orderItemId, ResourceOrder ro){
+        ResourceOrderItem roi = getResourceOrderItemOrderItemId(ro);  // bisher nur ein Item genutzt
+        roi.setAction(action);
     }
 
     public void setCharacteristicValue(String name, String value, ResourceOrder ro) {
@@ -339,6 +275,74 @@ public class A4ResourceOrderTest {
         }
 
         return null;
+    }
+
+
+
+
+
+// tests
+
+    @Ignore
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("test ro")
+    public void testRo() {
+
+        ResourceOrder ro_0 = buildResourceOrder();
+
+        System.out.println("+++ ro: "+ro_0);
+        System.out.println("+++ nelData/LBZ in DB: "+nelData.getLbz());  // nelData.getLbz()
+        //sleepForSeconds(60);
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("a10-switch in resource order from Merlin is unknown")
+    public void testUnknownSwitch()  {
+
+        ResourceOrder ro_1 = buildResourceOrder();
+
+        setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", ro_1); // unknown Switch
+
+        // setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
+
+        // String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
+
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_1);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo( "/test_url" )));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: "+ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: "+notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: "+noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: "+noSwitchTrue);
+        System.out.println("+++ completed: "+completeTrue);
+        System.out.println("+++ rejected: "+rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(noSwitchTrue);
     }
 
 
@@ -383,7 +387,7 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(10);   // Auswertung der DB
+        //sleepForSeconds(5);    // Auswertung der DB
 
         assertTrue(noMercuryPostTrue);
     }
@@ -393,7 +397,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("rebell-link for resource order from Merlin is unknown")
-    public void testUnknownNel() throws InterruptedException {
+    public void testUnknownNel()  {
 
         ResourceOrder ro_3 = buildResourceOrder();
 
@@ -403,7 +407,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_3);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -430,19 +434,16 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //sleepForSeconds(5);    // Auswertung der DB
 
         assertTrue(noNELTrue);
     }
 
 
-
-
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- and get Callback with -completed-")
-    public void testAddItem() throws InterruptedException {
+    public void testAddItem()  {
 
          ResourceOrder ro_4 = buildResourceOrder();
 
@@ -450,7 +451,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_4);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -476,22 +477,21 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //sleepForSeconds(60);   // Auswertung der DB
 
         assertTrue(completeTrue);
     }
 
 
 
-    /*
-@Ignore
+
+/*
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- 2 items and get Callback with -completed-")
-    public void test2AddItems() throws InterruptedException {
+    public void test2AddItems()  {
 
     ResourceOrder ro_5 = buildResourceOrder();
-
 
 
         rv2.setName("RahmenvertragsNr");
@@ -536,7 +536,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -562,7 +562,7 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //sleepForSeconds(5);    // Auswertung der DB
 
         assertTrue(completeTrue);
     }
@@ -573,7 +573,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
-    public void testAdd2LinksOneIsUnknown() throws InterruptedException {
+    public void testAdd2LinksOneIsUnknown()  {
 
        ResourceOrder ro_6 = buildResourceOrder();
 
@@ -598,7 +598,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -624,7 +624,7 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //sleepForSeconds(5);    // Auswertung der DB
 
         assertTrue(rejectTrue);
     }
@@ -636,7 +636,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add/delete-case: send RO with -add- and -delete- items and get Callback with -rejected-")
-    public void testAddItemAndDeleteItem() throws InterruptedException {
+    public void testAddItemAndDeleteItem() {
 
      ResourceOrder ro_7 = buildResourceOrder();
 
@@ -662,7 +662,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -696,28 +696,28 @@ public class A4ResourceOrderTest {
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
 
-        //TimeUnit.SECONDS.sleep(25);   // Auswertung der DB
+        //sleepForSeconds(5);    // Auswertung der DB
 
         assertTrue(rejectTrue);
     }
 
      */
 
-    /*
-@Ignore
+
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Delete is not implemented")
-    public void testDeleteNotImplemented() throws InterruptedException {
+    public void testDeleteNotImplemented()  {
 
-      ResourceOrder ro_8 = buildResourceOrder();
-        orderItem1.setAction(OrderItemActionType.DELETE);   // not implemented
+        ResourceOrder ro_8 = buildResourceOrder();
+        setOrderItemAction (OrderItemActionType.DELETE, "orderItemId", ro_8); // delete is not implemented
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -744,23 +744,22 @@ public class A4ResourceOrderTest {
         assertTrue(notAddCaseTrue);
     }
 
-     */
 
-    /*
-@Ignore
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Modify is not implemented")
-    public void testModifyNotImplemented() throws InterruptedException {
+    public void testModifyNotImplemented()  {
 
        ResourceOrder ro_9 = buildResourceOrder();
-        orderItem1.setAction(OrderItemActionType.MODIFY);    // not implemented
+        setOrderItemAction (OrderItemActionType.MODIFY, "orderItemId", ro_9);// not implemented
+
 
         // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_9);
 
         // receive callback with Mock
-        TimeUnit.SECONDS.sleep(5);
+        sleepForSeconds(5);
 
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -783,7 +782,6 @@ public class A4ResourceOrderTest {
         System.out.println("+++ completed: "+completeTrue);
         System.out.println("+++ rejected: "+rejectTrue);
         System.out.println("+++  ");
-
 
         assertTrue(notAddCaseTrue);
     }

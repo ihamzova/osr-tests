@@ -174,7 +174,7 @@ public class A4ResourceInventoryNeDetailsRobot {
         NetworkElementDetails neDetailsLine1 = new NetworkElementDetails();
         neDetailsLine1.setLogicalLabel(nepDataA.getFunctionalPortLabel());
         neDetailsLine1.setPhysicalLabel("10ge 0/1");
-        neDetailsLine1.setLsz("LSZ");
+        neDetailsLine1.setLsz("4N4"); // old: LSZ
         neDetailsLine1.setUewegeId(nelData.getUeWegId());
         neDetailsLine1.setLbz(nelData.getLbz());
         neDetailsLine1.setGegenstelleCategory(neDataB.getCategory());
