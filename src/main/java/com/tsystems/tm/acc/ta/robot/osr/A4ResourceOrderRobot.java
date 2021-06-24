@@ -21,7 +21,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_QUEUE_DISPATCHER_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
 @Slf4j
 public class A4ResourceOrderRobot {
