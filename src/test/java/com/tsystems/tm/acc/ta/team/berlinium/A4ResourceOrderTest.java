@@ -124,10 +124,10 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
-    @Ignore
+    /*
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("test ro")
+    @Description("test Aufbau der ro")
     public void testRo() {
         ResourceOrder ro_0 = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
@@ -135,6 +135,8 @@ public class A4ResourceOrderTest {
         System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());  // nelData.getLbz()
         //sleepForSeconds(60);
     }
+
+     */
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
