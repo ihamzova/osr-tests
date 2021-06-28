@@ -5,9 +5,11 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.PslMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.helpers.mercury.JsonToXmlConverter;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
@@ -15,6 +17,7 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
 public class PslStub extends AbstractStubMapping {
 
     public static final String READ_EQUIPMENT_URL = "/v1/psl/read-equipment";
+    public static final String READ_EQUIPMENT_XML_URL = "/de.telekom.digioss.architecture.DigiOSS/Default/SI_ReadEquipmentRequestOut/pp";
     public static final String READ_EQUIPMENT_3SCALE_URL = "/resource-order-resource-inventory/v1/psl/read-equipment/";
     public static final String READ_EQUIPMENT_UNIVERSAL_URL = String.format("(%s|%s)/?", READ_EQUIPMENT_URL, READ_EQUIPMENT_3SCALE_URL);
 
@@ -25,6 +28,19 @@ public class PslStub extends AbstractStubMapping {
                 .atPriority(1)
                 .withRequestBody(matchingJsonPath("$.requestData.requestEquipment[0].endsz", equalTo(oltDevice.getEndsz())))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new PslMapper().getReadEquipmentResponseHolder(oltDevice))));
+    }
+
+    public MappingBuilder postReadEquipmentXml202(OltDevice oltDevice) throws Exception {
+        return post(urlPathMatching(READ_EQUIPMENT_XML_URL))
+                .atPriority(1)
+                .withRequestBody(matchingXPath("//data/MT_EQDATA_REQ/EQUI/SORTIERFELD/text()", equalTo(oltDevice.getEndsz())))
+                .withName("postReadEquipmentXml202_" + oltDevice.getEndsz().replace("/", "_"))
+                .willReturn(aDefaultResponseWithBody("", HTTP_CODE_ACCEPTED_202))
+                .withPostServeAction(
+                        WebhookPostServeAction.NAME,
+                        aDefaultWebhookWithBody(
+                                JsonToXmlConverter
+                                        .convertPslJsonToXml(null, serialize(new PslMapper().getReadEquipmentResponseHolder(oltDevice)))));
     }
 
     public MappingBuilder postReadEquipment202(EquipmentData equipmentData, A4NetworkElement networkElement) {
