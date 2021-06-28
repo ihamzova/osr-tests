@@ -29,12 +29,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
-import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -54,15 +52,17 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         OsrTestContext context = OsrTestContext.get();
         //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
-        Random rnd = new Random();
-        char c = (char) ('B' + rnd.nextInt(25));
-        oltDevice.setFsz("76H" + c);
+
+        //Random rnd = new Random();
+        //char c = (char) ('B' + rnd.nextInt(25));
+        //oltDevice.setFsz("76H" + c);
         //oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
-        //oltDevice.setFsz("76HC");
+        oltDevice.setFsz("76HN");
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
                 .addPslMock(oltDevice)
+                .addPslMockXML(oltDevice)
                 .build();
 
         mappingsContext.publish()
@@ -138,6 +138,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
 
+        Thread.sleep(10000);
     }
 
     /**
