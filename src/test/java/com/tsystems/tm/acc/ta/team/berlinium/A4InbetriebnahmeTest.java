@@ -39,9 +39,9 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 @Epic("OS&R")
 @Feature("Test Inbetriebnahme for NEs and NELs, including monitoring")
 @TmsLink("DIGIHUB-xxxxx")
-public class InbetriebnahmeTest extends GigabitTest {
+public class A4InbetriebnahmeTest extends GigabitTest {
 
-    private final String wiremockScenarioName = "InbetriebnahmeTest";
+    private final String wiremockScenarioName = "A4InbetriebnahmeTest";
 
     private final A4MobileUiRobot a4MobileUi = new A4MobileUiRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
@@ -58,8 +58,8 @@ public class InbetriebnahmeTest extends GigabitTest {
     private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
     private final Map<String, A4NetworkElementLink> a4NetworkElementLinks = new HashMap<>();
 
-    private final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor02";
-    private final String A4_NE_OPERATING_BOR_01_LINK1 = "a4NetworkElementOperatingBor02Link";
+    private final String A4_NE_OPERATING_BOR_02 = "a4NetworkElementOperatingBor02";
+    private final String A4_NE_OPERATING_BOR_02_LINK1 = "a4NetworkElementOperatingBor02Link";
     private final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
     private final String A4_NE_B = "a4NetworkElementB";
 
@@ -71,7 +71,7 @@ public class InbetriebnahmeTest extends GigabitTest {
 
         neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        a4NetworkElements.put(A4_NE_OPERATING_BOR_01, osrTestContext.getData().getA4NetworkElementDataProvider()
+        a4NetworkElements.put(A4_NE_OPERATING_BOR_02, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementOperatingBor01));
         a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
@@ -85,7 +85,7 @@ public class InbetriebnahmeTest extends GigabitTest {
         equipmentData = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
 
-        a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_01_LINK1, osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_02_LINK1, osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling));
 
         cleanUp(); // Make sure no old test data is in the way
@@ -95,13 +95,13 @@ public class InbetriebnahmeTest extends GigabitTest {
     public void setup() {
         a4ResourceInventory.createNetworkElementGroup(neg);
         a4NetworkElements.forEach((k, networkElement) -> a4ResourceInventory.createNetworkElement(networkElement, neg));
-        a4ResourceInventory.createNetworkElementPort(nepA, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4ResourceInventory.createNetworkElementPort(nepA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4ResourceInventory.createNetworkElementPort(nepB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
-                .addPslMock(equipmentData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01))
-                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_01),
+                .addPslMock(equipmentData, a4NetworkElements.get(A4_NE_OPERATING_BOR_02))
+                .addRebellMock(uewegData, a4NetworkElements.get(A4_NE_OPERATING_BOR_02),
                         a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01))
                 .addNemoMock()
                 .build().publish();
@@ -124,19 +124,19 @@ public class InbetriebnahmeTest extends GigabitTest {
     public void testNeInstallation() {
         // GIVEN
         final String ztpi = "test-ztpi" + getRandomDigits(4);
-        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
 
         // WHEN
         a4MobileUi.doNeInbetriebnahme(ztpi);
 
         // THEN
-        a4MobileUi.checkSearchResultPageAfterNeInbetriebnahme(a4NetworkElements.get(A4_NE_OPERATING_BOR_01), ztpi);
+        a4MobileUi.checkSearchResultPageAfterNeInbetriebnahme(a4NetworkElements.get(A4_NE_OPERATING_BOR_02), ztpi);
         sleepForSeconds(5); // Give logic some time to do requests to PSL, REBELL and A4 resource inventory
-        a4ResourceInventory.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_01)
+        a4ResourceInventory.checkNetworkElementIsUpdatedWithPslData(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                 .getUuid(), equipmentData);
         a4ResourceInventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nepA.getUuid(), nepB.getUuid());
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(
-                a4NetworkElements.get(A4_NE_OPERATING_BOR_01).getUuid(), "PUT", 2);
+                a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid(), "PUT", 2);
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepA.getUuid());
     }
 
@@ -147,8 +147,8 @@ public class InbetriebnahmeTest extends GigabitTest {
     public void testNeMonitoring() {
         // GIVEN
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
-        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4MobileUi.doNeInbetriebnahme("ztp");
 
         // WHEN
@@ -156,9 +156,32 @@ public class InbetriebnahmeTest extends GigabitTest {
 
         // THEN
         a4MobileUi.checkNEMonitoringList(a4NeFilteredMap, equipmentData);
-        a4MobileUi.removeNetworkElementFromNEMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01,
-                a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUi.removeNetworkElementFromNEMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_02,
+                a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
+    }
+
+    @Test
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile Monitoring page of NEL for which Inbetriebnahme was done")
+    public void testNelMonitoring() {
+        // GIVEN
+        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
+        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.doNelInbetriebnahme();;
+        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
+        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_02_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
+
+        // WHEN
+        a4MobileUi.clickMonitoringButton();
+        // THEN
+        a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
+        a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
+                a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
+        a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
+
     }
 
     @Test
@@ -167,7 +190,7 @@ public class InbetriebnahmeTest extends GigabitTest {
     @Description("Test NEL Inbetriebnahme process")
     public void testNelInstallation() {
         // GIVEN
-        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
 
         // WHEN
         a4MobileUi.doNelInbetriebnahme();

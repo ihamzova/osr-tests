@@ -28,9 +28,6 @@ public class A4MobileMonitoringPage {
     public static final By EMPTY_NEL_LIST_MESSAGE_LOCATOR = By.id("ErrorMessageNEL");
 
     @Getter
-    public static final By DELETE_NE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
-
-    @Getter
     public static final By DELETE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
 
 }

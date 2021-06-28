@@ -180,7 +180,8 @@ public class A4MobileUiRobot {
 
     @Step("Remove NE Monitoring Item")
     public void clickRemoveFromNEListButton() {
-        $(A4MobileMonitoringPage.getDELETE_NE_BUTTON_LOCATOR()).click();
+        //$(A4MobileMonitoringPage.getDELETE_NE_BUTTON_LOCATOR()).click();
+        $(A4MobileMonitoringPage.getSEARCH_NE_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
     }
 
     @Step("Remove NEL Monitoring Item")
