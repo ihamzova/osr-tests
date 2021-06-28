@@ -161,33 +161,6 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
     }
 
-
-
-    @Test
-    @Owner("juergen.mayer@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test Mobile Monitoring page of NEL for which Inbetriebnahme was done")
-    public void testNelMonitoring() {
-        // GIVEN
-        /*
-        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
-        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-        a4MobileUi.doNelInbetriebnahme();;
-        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
-        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_01_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_01_LINK1));
-
-        // WHEN
-        a4MobileUi.clickMonitoringButton();
-        // THEN
-        a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
-        a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_01_LINK1,
-                a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_01_LINK1));
-        a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
-*/
-    }
-
-
     @Test
     @Owner("Thea.John@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")

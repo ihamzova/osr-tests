@@ -3,6 +3,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import static com.codeborne.selenide.Selectors.by;
 import static com.codeborne.selenide.Selectors.byXpath;
 
 
@@ -30,6 +31,6 @@ public class A4MobileMonitoringPage {
     public static final By DELETE_NE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
 
     @Getter
-    public static final By DELETE_NEL_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
+    public static final By DELETE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
 
 }
