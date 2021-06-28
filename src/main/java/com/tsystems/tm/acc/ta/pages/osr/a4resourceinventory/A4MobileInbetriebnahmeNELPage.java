@@ -7,7 +7,7 @@ import org.openqa.selenium.By;
 import static com.codeborne.selenide.Selectors.byId;
 
 @Slf4j
-public class A4NelInstallationPage {
+public class A4MobileInbetriebnahmeNELPage {
 
     @Getter
     public static final By CHECKBOX_LOCATOR = byId("checkboxAuswahl");

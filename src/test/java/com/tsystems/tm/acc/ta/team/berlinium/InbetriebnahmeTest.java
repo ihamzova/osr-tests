@@ -149,11 +149,15 @@ public class InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.clickMonitoringButton();
 
         // THEN
-        a4MobileUi.checkMonitoringList(a4NeFilteredMap, equipmentData);
-        a4MobileUi.removeNetworkElementFromMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01,
+        a4MobileUi.checkNEMonitoringList(a4NeFilteredMap, equipmentData);
+        a4MobileUi.removeNetworkElementFromNEMonitoringList(a4NeFilteredMap, A4_NE_OPERATING_BOR_01,
                 a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
-        a4MobileUi.checkEmptyMonitoringList(a4NeFilteredMap);
+        a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
     }
+
+
+
+
 
     @Test
     @Owner("Thea.John@telekom.de")
