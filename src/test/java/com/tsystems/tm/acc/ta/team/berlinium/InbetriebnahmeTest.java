@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.equipmentdata.EquipmentDataCase;
@@ -55,8 +56,10 @@ public class InbetriebnahmeTest extends GigabitTest {
     private UewegData uewegData;
     private EquipmentData equipmentData;
     private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
+    private final Map<String, A4NetworkElementLink> a4NetworkElementLinks = new HashMap<>();
 
     private final String A4_NE_OPERATING_BOR_01 = "a4NetworkElementOperatingBor02";
+    private final String A4_NE_OPERATING_BOR_01_LINK1 = "a4NetworkElementOperatingBor02Link";
     private final String A4_NE_RETIRING_PODSERVER_01 = "a4NetworkElementRetiringPodServer01";
     private final String A4_NE_B = "a4NetworkElementB";
 
@@ -81,6 +84,9 @@ public class InbetriebnahmeTest extends GigabitTest {
         uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
         equipmentData = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
+
+        a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_01_LINK1, osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling));
 
         cleanUp(); // Make sure no old test data is in the way
     }
@@ -156,7 +162,28 @@ public class InbetriebnahmeTest extends GigabitTest {
     }
 
 
+    @Test
+    @Owner("juergen.mayer@t-systems.com")
+    @TmsLink("DIGIHUB-xxxxx")
+    @Description("Test Mobile Monitoring page of NE for which Inbetriebnahme was done")
+    public void testNelMonitoring() {
+        // GIVEN
+        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
+        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_01, a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_01));
+        a4MobileUi.doNelInbetriebnahme();;
+        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
+        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_01_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_01_LINK1));
 
+        // WHEN
+        a4MobileUi.clickMonitoringButton();
+        // THEN
+        a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
+        a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_01_LINK1,
+                a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_01_LINK1));
+        a4MobileUi.checkEmptyNeMonitoringList(a4NeFilteredMap);
+
+    }
 
 
     @Test

@@ -151,12 +151,12 @@ public class A4MobileUiRobot {
         $(A4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();
     }
 
-    @Step("Click inbetriebnahme button")
+    @Step("Click NE inbetriebnahme button")
     public void clickInbetriebnahmeButton() {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
     }
 
-    @Step("Click nel installation button")
+    @Step("Click NEL installation button")
     public void clickNelInstallationButton() {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
     }
@@ -350,9 +350,8 @@ public class A4MobileUiRobot {
 
         // remove all entries
         a4NELFilteredMap.forEach((k, a4NetworkElementLink) -> {
-            clickRemoveFromNEListButton();
+            clickRemoveFromNELListButton();
             try {
-
                 WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
                 WebDriverWait wait = new WebDriverWait(driver, 5000);
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
