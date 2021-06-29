@@ -179,7 +179,9 @@ public class A4MobileUiRobot {
 
     @Step("Remove Monitoring Item")
     public void clickRemoveButton() {
-        $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+        // $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+        $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+
     }
 
     public void doNeInbetriebnahme(String ztpIdent) {
