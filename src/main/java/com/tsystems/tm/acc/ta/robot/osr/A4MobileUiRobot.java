@@ -327,7 +327,7 @@ public class A4MobileUiRobot {
 
         // remove all entries
         a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
-            clickRemoveFromNEListButton();
+            clickRemoveButton();
             try {
 
                 WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);

@@ -3,7 +3,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Selectors.by;
 import static com.codeborne.selenide.Selectors.byXpath;
 
 
@@ -21,6 +20,7 @@ public class A4MobileMonitoringPage {
 
     @Getter
     //public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.xpath("//div[@id='MessageNoNetworkElementsInMonitoringList']");
+    public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.id("MessageNoNetworkElementsInMonitoringList");
     public static final By EMPTY_NE_LIST_MESSAGE_LOCATOR = By.id("MessageNoNetworkElementsInMonitoringList");
 
     @Getter
