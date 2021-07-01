@@ -26,6 +26,8 @@ public class A4MobileMonitoringPage {
     //public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.xpath("//div[@id='MessageNoNetworkElementLinksInMonitoringList']");
     public static final By EMPTY_NEL_LIST_MESSAGE_LOCATOR = By.id("MessageNoNetworkElementLinksInMonitoringList");
 
+    // this Locator is used for both delete buttons (in NE and NEL monitoring) after locating the table
+    // e.g. $(A4MobileMonitoringPage.getSEARCH_NEL_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR())
     @Getter
     public static final By DELETE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
 
