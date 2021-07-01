@@ -21,11 +21,11 @@ public class A4MobileMonitoringPage {
 
     @Getter
     //public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.xpath("//div[@id='MessageNoNetworkElementsInMonitoringList']");
-    public static final By EMPTY_NE_LIST_MESSAGE_LOCATOR = By.id("ErrorMessageNE");
+    public static final By EMPTY_NE_LIST_MESSAGE_LOCATOR = By.id("MessageNoNetworkElementsInMonitoringList");
 
     @Getter
     //public static final By EMPTY_LIST_MESSAGE_LOCATOR = By.xpath("//div[@id='MessageNoNetworkElementLinksInMonitoringList']");
-    public static final By EMPTY_NEL_LIST_MESSAGE_LOCATOR = By.id("ErrorMessageNEL");
+    public static final By EMPTY_NEL_LIST_MESSAGE_LOCATOR = By.id("MessageNoNetworkElementLinksInMonitoringList");
 
     @Getter
     public static final By DELETE_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'X')]");
