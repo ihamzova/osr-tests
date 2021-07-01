@@ -167,15 +167,17 @@ public class A4InbetriebnahmeTest extends GigabitTest {
     @Description("Test Mobile Monitoring page of NEL for which Inbetriebnahme was done")
     public void testNelMonitoring() {
         // GIVEN
-        /*Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
+        /*
+        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
 
-        a4MobileUi.doNelInbetriebnahme();;*/
+        */
         Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
         a4NelFilteredMap.put(A4_NE_OPERATING_BOR_02_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
         // WHEN
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.doNelInbetriebnahme();
         a4MobileUi.clickMonitoringButton();
         // THEN
         a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
