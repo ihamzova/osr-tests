@@ -139,7 +139,7 @@ public class OltProvisioning5600 extends GigabitTest {
 
     Assert.assertNotNull(deviceBeforeProvisioning);
     Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5600T");
-    Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 8);
+    Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
     Thread.sleep(LATENCY_FOR_DEVICE_PROVISIONING);
@@ -147,8 +147,8 @@ public class OltProvisioning5600 extends GigabitTest {
     Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
 
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
-            deviceAfterProvisioning.getEquipmentHolders().get(2).getSlotNumber(),
-            deviceAfterProvisioning.getEquipmentHolders().get(2).getCard().getPorts().get(0).getPortNumber(), portEmpty);
+            deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
+            deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmpty);
     accessLineRiRobot.checkProvisioningResults(port);
   }
 }
