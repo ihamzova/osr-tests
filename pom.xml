@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.103</osr.models.version>
+        <osr.models.version>0.0.104</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
         <!--oc.domain.name>priv.cl01.gigadev.telekom.de</oc.domain.name>
         <oc.project.name>gigabit-tm-berlinium-03</oc.project.name-->
