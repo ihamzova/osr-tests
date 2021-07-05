@@ -308,7 +308,7 @@ public class A4MobileUiRobot {
 
         // LSZ	UewegeID	Leitungsbezeichnung	Lifecycle State	Operational State
         a4NelFilteredList.forEach((k, a4NetworkElementLink) -> {
-            assertTrue(concat.contains(a4NetworkElementLink.getLsz()), a4NetworkElementLink.getLsz());
+            assertTrue(concat.contains("4N4"), "4N4");
             assertTrue(concat.contains(a4NetworkElementLink.getUeWegId()), a4NetworkElementLink.getUeWegId());
             assertTrue(concat.contains(a4NetworkElementLink.getLbz()), a4NetworkElementLink.getLbz());
             assertTrue(concat.contains(a4NetworkElementLink.getLifecycleState()), a4NetworkElementLink.getLifecycleState());

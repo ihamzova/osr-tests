@@ -4,6 +4,5 @@ values:
   uuid: "" # if blank: field will be filled with returned uuid of created NEL
   ueWegId: "" # don't set! Filled automatically; you can do .getUeWegId()
   lbz: "" # don't set! Filled automatically; you can do .getLbz()
-  lsz: "" # don't set! Filled automatically; you can do .getLsz()
   operationalState: "NOT_WORKING"
   lifecycleState: "OPERATING"
