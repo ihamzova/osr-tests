@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElemen
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
@@ -33,6 +34,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     private A4NetworkElementPort nepDataA;
     private A4NetworkElementPort nepDataB;
     private A4NetworkElementLink nelData;
+    private UewegData uewegData;
 
     @BeforeClass()
     public void init() {
@@ -51,6 +53,8 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
 
         // Ensure that no old test data is in the way
         cleanUp();
@@ -63,7 +67,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
         a4ResourceInventory.createNetworkElement(neDataB, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
-        nelData.setUeWegId("UewegId-123");
+        nelData.setUeWegId(uewegData.getUewegId());
         a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
 
