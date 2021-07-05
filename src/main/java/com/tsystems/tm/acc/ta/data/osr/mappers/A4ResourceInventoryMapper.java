@@ -86,7 +86,11 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
         UewegData uewegData = new UewegData();
 
-        uewegData.setUewegId(nelData.getUeWegId());
+        if(nelData.getUeWegId().isEmpty()){
+            uewegData.setUewegId(UUID.randomUUID().toString());
+        }else {
+            uewegData.setUewegId(nelData.getUeWegId());
+        }
 
         return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
     }
@@ -94,6 +98,10 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
+
+        if(uewegData.getUewegId().isEmpty()){
+            uewegData.setUewegId(UUID.randomUUID().toString());
+        }
 
         nelData.setLbz(nelLsz + "/" + nelOrderNumber + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
 
