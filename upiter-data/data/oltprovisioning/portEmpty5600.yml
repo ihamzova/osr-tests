@@ -1,8 +1,8 @@
 name: portEmpty5600
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  endSz: "49/30/179/76H1"
-  slotNumber: "5"
+  endSz: "49/30/179/76H3"
+  slotNumber: "3"
   portNumber: "0"
   homeIdPool: 32
   lineIdPool: 32

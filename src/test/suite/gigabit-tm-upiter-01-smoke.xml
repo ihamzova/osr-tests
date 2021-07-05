@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="U-Piter test suite" verbose="1" data-provider-thread-count="1">
-    <test thread-count="1" name="Deprovisioning tests">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.deprovisioning.DeprovisioningTest"/>
-        </classes>
-    </test>
+<suite name="U-Piter smoke test suite" verbose="1" data-provider-thread-count="1">
     <test thread-count="1" name="Access Lines search UI Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.accesslinesearch.AccessLinesSearchTest"/>
-        </classes>
-    </test>
-    <test thread-count="1" name="Process search UI Tests">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.processmanagement.ProcessesSearchTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.accesslinesearch.AccessLinesSearchTest">
+                <methods>
+                    <include name="searchAccessLinesByEndSzTest"/>
+                </methods>
+            </class>
         </classes>
     </test>
     <test thread-count="1" name="Ont commissioning Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.DGFaccessLineReservation"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.A4OntCommissioning"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning">
+                <methods>
+                    <include name="accessLineReservationByPortAndHomeId"/>
+                    <include name="ontRegistration"/>
+                    <include name="ontTest"/>
+                    <include name="ontDecommissioningWithRollbackFalseTest"/>
+                </methods>
+            </class>
         </classes>
     </test>
-    <test thread-count="1" name="FTTH Postprovisioning(for 5600 device) Backend Tests">
+    <test thread-count="1" name="FTTH Provisioning(for 5600) Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.postprovisioning.Postprovisioning"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600">
+                <methods>
+                    <include name="portProvisioningEmpty"/>
+                </methods>
+            </class>
         </classes>
     </test>
-    <!--<test thread-count="1" name="HomeId, LineId Backend Tests">
+    <test thread-count="1" name="WG A4 PreProvisioning Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.a4provisioning.WgA4Provisioning">
+                <methods>
+                    <include name="a4PortProvisioning"/>
+                </methods>
+            </class>
         </classes>
-    </test>-->
+    </test>
     <test thread-count="1" name="FTTB Provisioning Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning">
+                <methods>
+                    <include name="fttbDeviceProvisioningTest"/>
+                </methods>
+            </class>
         </classes>
     </test>
-    <test thread-count="1" name="FTTB Deprovisioning Backend Tests">
+    <test thread-count="1" name="Ral Test">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest">
+                <methods>
+                    <include name="getDeviceByEndSz"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test thread-count="1" name="Search AccessLines For Assurance Test">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.assurance.SearchAccessLinesForAssurance">
+                <methods>
+                    <include name="searchByOltEndSZ"/>
+                </methods>
+            </class>
         </classes>
     </test>
 </suite>

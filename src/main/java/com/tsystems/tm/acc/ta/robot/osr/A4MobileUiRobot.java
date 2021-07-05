@@ -179,7 +179,9 @@ public class A4MobileUiRobot {
 
     @Step("Remove Monitoring Item")
     public void clickRemoveButton() {
-        $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+        // $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+        $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+
     }
 
     public void doNeInbetriebnahme(String ztpIdent) {
@@ -246,7 +248,7 @@ public class A4MobileUiRobot {
     @Step("check empty Monitoring")
     public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
         $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Keine NetworkElements gefunden");
+        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste für NetworkElements ist leer.");
         assertEquals(a4NeFilteredList.size(), 0);
     }
 
