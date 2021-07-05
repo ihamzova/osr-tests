@@ -63,6 +63,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
         a4ResourceInventory.createNetworkElement(neDataB, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
+        nelData.setUeWegId("UewegId-123");
         a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
     }
 
