@@ -71,7 +71,6 @@ public class OltProvisioning5600 extends GigabitTest {
   public void portProvisioningEmpty() {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
-
     wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
     accessLineRiRobot.checkProvisioningResults(portEmpty);
   }
@@ -82,7 +81,6 @@ public class OltProvisioning5600 extends GigabitTest {
   public void portProvisioningPartly() {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningPartly);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 8);
-
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
     accessLineRiRobot.checkProvisioningResults(portProvisioningPartly);
   }
@@ -93,7 +91,6 @@ public class OltProvisioning5600 extends GigabitTest {
   public void portProvisioningFully() {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningFully);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
-
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
     accessLineRiRobot.checkProvisioningResults(portProvisioningFully);
   }
@@ -113,7 +110,7 @@ public class OltProvisioning5600 extends GigabitTest {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
     wgAccessProvisioningRobot.startCardProvisioning(portEmpty);
     Assert.assertNotNull(cardBeforeProvisioning);
-    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
+    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
     accessLineRiRobot.checkProvisioningResults(portEmpty);
   }
@@ -125,18 +122,16 @@ public class OltProvisioning5600 extends GigabitTest {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
     wgAccessProvisioningRobot.startCardProvisioningV2(portEmpty);
     Assert.assertNotNull(cardBeforeProvisioning);
-    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 1);
+    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
     accessLineRiRobot.checkProvisioningResults(portEmpty);
   }
-
 
   @Test
   @TmsLink("DIGIHUB-29667")
   @Description("Device provisioning case")
   public void deviceProvisioning() throws InterruptedException {
     Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
-
     Assert.assertNotNull(deviceBeforeProvisioning);
     Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5600T");
     Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
@@ -145,7 +140,6 @@ public class OltProvisioning5600 extends GigabitTest {
     Thread.sleep(LATENCY_FOR_DEVICE_PROVISIONING);
 
     Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
-
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmpty);
