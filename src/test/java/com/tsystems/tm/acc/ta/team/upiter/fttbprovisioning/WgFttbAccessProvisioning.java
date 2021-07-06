@@ -41,10 +41,10 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         accessLineRiRobot.fillDatabaseForDpuPreprovisioning();
     }
 
-    @AfterMethod
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
+//    @AfterMethod
+//    public void clearData() {
+//        accessLineRiRobot.clearDatabase();
+//    }
 
     @BeforeClass
     public void init() {
