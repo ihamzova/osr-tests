@@ -13,10 +13,7 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.cli
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.List;
 
@@ -32,9 +29,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 })
 public class OltProvisioning5600 extends GigabitTest {
 
-  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 100_000;
-  private static final Integer LATENCY_FOR_DEVICE_PROVISIONING = 15 * LATENCY_FOR_PORT_PROVISIONING;
-
   private AccessLineRiRobot accessLineRiRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private PortProvisioning portEmpty;
@@ -46,11 +40,11 @@ public class OltProvisioning5600 extends GigabitTest {
   @BeforeMethod
   public void prepareData() throws InterruptedException {
     accessLineRiRobot.clearDatabase();
-    Thread.sleep(1000);
+    Thread.sleep(3000);
     accessLineRiRobot.fillDatabaseForOltCommissioning();
   }
 
-  @AfterMethod
+  @AfterClass
   public void clearData() {
     accessLineRiRobot.clearDatabase();
   }
@@ -120,25 +114,23 @@ public class OltProvisioning5600 extends GigabitTest {
   @Description("Card provisioning case with 1 card")
   public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
+    Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
     wgAccessProvisioningRobot.startCardProvisioningV2(portEmpty);
     Assert.assertNotNull(cardBeforeProvisioning);
     Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
-    Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
     accessLineRiRobot.checkProvisioningResults(portEmpty);
   }
 
   @Test
   @TmsLink("DIGIHUB-29667")
   @Description("Device provisioning case")
-  public void deviceProvisioning() throws InterruptedException {
+  public void deviceProvisioning() {
     Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
     Assert.assertNotNull(deviceBeforeProvisioning);
     Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5600T");
     Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
-    Thread.sleep(LATENCY_FOR_DEVICE_PROVISIONING);
-
     Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),

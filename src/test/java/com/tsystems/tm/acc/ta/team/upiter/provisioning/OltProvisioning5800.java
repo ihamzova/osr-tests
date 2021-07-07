@@ -34,8 +34,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 })
 public class OltProvisioning5800 extends GigabitTest {
 
-  private static final Integer LATENCY = 2 * 60_000;
-
   private AccessLineRiRobot accessLineRiRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private WgAccessProvisioningClient wgAccessProvisioningClient;
@@ -82,7 +80,7 @@ public class OltProvisioning5800 extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-30870")
   @Description("Card Provisioning with 1 port")
-  public void cardProvisioning() throws InterruptedException {
+  public void cardProvisioning() {
 
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV1);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV1.getEndSz(),
@@ -94,14 +92,13 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioning(portEmptyV1);
-    Thread.sleep(LATENCY);
     accessLineRiRobot.checkProvisioningResults(port);
   }
 
   @Test
   @TmsLink("DIGIHUB-83085")
   @Description("Card Provisioning with 1 card")
-  public void oneCardProvisioning() throws InterruptedException {
+  public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV2);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV2.getEndSz(),
             portEmptyV2.getSlotNumber(),
@@ -111,7 +108,6 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioningV2(portEmptyV2);
-    Thread.sleep(LATENCY);
     accessLineRiRobot.checkProvisioningResults(port);
   }
 
@@ -119,7 +115,7 @@ public class OltProvisioning5800 extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-30824")
   @Description("Device Provisioning with 1 card and 1 port")
-  public void deviceProvisioning() throws InterruptedException {
+  public void deviceProvisioning() {
 
     Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyV1);
 
@@ -133,8 +129,6 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyV1);
-    Thread.sleep(LATENCY);
-
     accessLineRiRobot.checkProvisioningResults(port);
   }
 }
