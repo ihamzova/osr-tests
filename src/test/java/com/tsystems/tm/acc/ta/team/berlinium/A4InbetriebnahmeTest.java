@@ -85,8 +85,8 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         equipmentData = osrTestContext.getData().getEquipmentDataDataProvider()
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
 
-        A4NetworkElementLink a4Link = osrTestContext.getData().getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
-        a4Link.setUeWegId("125906, 598516");
+        A4NetworkElementLink a4Link = osrTestContext.getData().getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        //a4Link.setUeWegId("125906, 598516");
         a4Link.setLbz("4N4/1004-49/1125/0/7KC1-49/2516/0/7KD1");
         a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_02_LINK1, a4Link);
 
@@ -99,6 +99,8 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4NetworkElements.forEach((k, networkElement) -> a4ResourceInventory.createNetworkElement(networkElement, neg));
         a4ResourceInventory.createNetworkElementPort(nepA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4ResourceInventory.createNetworkElementPort(nepB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
+        a4NetworkElementLinks.forEach((i, networkElementLink) -> a4ResourceInventory
+                .createNetworkElementLink(networkElementLink, nepA, nepB));
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
                 .addPslMock(equipmentData, a4NetworkElements.get(A4_NE_OPERATING_BOR_02))
@@ -181,6 +183,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
 
         // WHEN
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.clickZeigeNelZuNeButton();
         a4MobileUi.doNelInbetriebnahme();
         a4MobileUi.clickMonitoringButton();
         // THEN

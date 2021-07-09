@@ -156,6 +156,10 @@ public class A4MobileUiRobot {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
     }
 
+    @Step("Click Zeige Nel zu Ne button")
+    public void clickZeigeNelZuNeButton() { $(A4MobileNeSearchPage.getZEIGE_NEL_ZU_NE_BUTTON_LOCATOR()).click(); }
+
+
     @Step("Click NEL installation button")
     public void clickNelInstallationButton() {
         $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
