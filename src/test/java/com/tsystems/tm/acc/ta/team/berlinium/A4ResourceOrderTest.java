@@ -124,19 +124,20 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
-    /*
+/*
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("test Aufbau der ro")
     public void testRo() {
         ResourceOrder ro_0 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        a4ResourceOrderRobot.setCharacteristicValue("VLAN_Range", null, ro_0);
 
         System.out.println("+++ ro: " + ro_0);
         System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());  // nelData.getLbz()
         //sleepForSeconds(60);
     }
+*/
 
-     */
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -184,6 +185,179 @@ public class A4ResourceOrderTest {
         System.out.println("+++  ");
 
         assertTrue(noSwitchTrue);
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro without vlan-range values")
+    public void testRoWithoutVlanRangeValues() {
+        ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        // values = null
+
+
+
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(completeTrue);
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro without vlan-range")
+    public void testRoWithoutVlanRange() {
+        ResourceOrder ro_5 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+
+        // wird aktuell vom Dispatcher zurückgewiesen - Fehler
+        //a4ResourceOrderRobot.setCharacteristicValue("VLAN_Range", null, ro_5);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_5);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(completeTrue);
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro with empty vlan-range")
+    public void testRoWithEmptyVlanRange() {
+        ResourceOrder ro_6 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        a4ResourceOrderRobot.setCharacteristicValue("VLAN_Range", "", ro_6);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_6);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(completeTrue);
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro without characteristic vlan-range")
+    public void testRoWithoutVlanRangeCharacteristic() {
+        ResourceOrder ro_7 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        ro_7 = a4ResourceOrderRobot.removeCharacteristic("VLAN_Range", ro_7);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_7);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(completeTrue);
     }
 
     @Test
