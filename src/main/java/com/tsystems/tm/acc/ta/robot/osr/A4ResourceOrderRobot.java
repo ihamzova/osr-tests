@@ -29,16 +29,16 @@ public class A4ResourceOrderRobot {
             new RhssoClientFlowAuthTokenProvider(A4_QUEUE_DISPATCHER_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_QUEUE_DISPATCHER_MS));
 
-      private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProvider).getClient();
+    private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProvider).getClient();
 
-      private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
+    private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
 
     @Step("Send POST for A10nsp Resource Order")
     public void sendPostResourceOrder(String reqUrl, String corId, ResourceOrder resourceOrderCreate) {
 
-        System.out.println("+++ reqUrl: "+reqUrl);
-        System.out.println("+++ corId: "+corId);
-        System.out.println("+++ übergebene Order: "+resourceOrderCreate);
+        System.out.println("+++ reqUrl: " + reqUrl);
+        System.out.println("+++ corId: " + corId);
+        System.out.println("+++ übergebene Order: " + resourceOrderCreate);
 
         a4ResourceOrder
                 .resourceOrder()
@@ -83,6 +83,22 @@ public class A4ResourceOrderRobot {
         return null;
     }
 
+    public ResourceOrder removeCharacteristic(String chName, ResourceOrder ro) {
+        List<Characteristic> characteristicList = Objects
+                .requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0)
+                .getResource()).getResourceCharacteristic();
+
+        assert characteristicList != null;
+        int index = 0;//characteristicList.size();
+
+        for (int i = 0; i < characteristicList.size(); i++) {
+            if (characteristicList.get(i).getName().equals(chName)) { index = i; }
+        }
+        if (index < characteristicList.size())
+            characteristicList.remove(index);
+        return ro;
+    }
+
     public ResourceOrderItem getResourceOrderItemOrderItemId(ResourceOrder ro) {
         List<ResourceOrderItem> roiList = ro.getOrderItem();
 
@@ -92,8 +108,6 @@ public class A4ResourceOrderRobot {
                     return resourceOrderItem;
             }
         }
-
         return null;
     }
-
 }
