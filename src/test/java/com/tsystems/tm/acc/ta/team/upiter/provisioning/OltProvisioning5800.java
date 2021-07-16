@@ -15,10 +15,7 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.cli
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.List;
 
@@ -61,7 +58,7 @@ public class OltProvisioning5800 extends GigabitTest {
     accessLineRiRobot.clearDatabase();
   }
 
-  @AfterMethod
+  @AfterClass
   public void clearData() {
     accessLineRiRobot.clearDatabase();
   }
@@ -74,7 +71,7 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
     wgAccessProvisioningRobot.startPortProvisioning(portEmptyV1);
-    accessLineRiRobot.checkProvisioningResults(portEmptyV1);
+    accessLineRiRobot.checkFtthPortParameters(portEmptyV1);
   }
 
   @Test
@@ -92,11 +89,11 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioning(portEmptyV1);
-    accessLineRiRobot.checkProvisioningResults(port);
+    accessLineRiRobot.checkFtthPortParameters(port);
   }
 
   @Test
-  @TmsLink("DIGIHUB-83085")
+  @TmsLink("DIGIHUB-113901")
   @Description("Card Provisioning with 1 card")
   public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV2);
@@ -108,7 +105,7 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioningV2(portEmptyV2);
-    accessLineRiRobot.checkProvisioningResults(port);
+    accessLineRiRobot.checkFtthPortParameters(port);
   }
 
 
@@ -129,6 +126,6 @@ public class OltProvisioning5800 extends GigabitTest {
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyV1);
-    accessLineRiRobot.checkProvisioningResults(port);
+    accessLineRiRobot.checkFtthPortParameters(port);
   }
 }

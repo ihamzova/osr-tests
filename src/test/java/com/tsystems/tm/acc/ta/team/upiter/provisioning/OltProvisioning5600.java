@@ -66,7 +66,7 @@ public class OltProvisioning5600 extends GigabitTest {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
     wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
-    accessLineRiRobot.checkProvisioningResults(portEmpty);
+    accessLineRiRobot.checkFtthPortParameters(portEmpty);
   }
 
   @Test
@@ -76,7 +76,7 @@ public class OltProvisioning5600 extends GigabitTest {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningPartly);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), 8);
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
-    accessLineRiRobot.checkProvisioningResults(portProvisioningPartly);
+    accessLineRiRobot.checkFtthPortParameters(portProvisioningPartly);
   }
 
   @Test
@@ -86,7 +86,7 @@ public class OltProvisioning5600 extends GigabitTest {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningFully);
     Assert.assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
-    accessLineRiRobot.checkProvisioningResults(portProvisioningFully);
+    accessLineRiRobot.checkFtthPortParameters(portProvisioningFully);
   }
 
   @Test
@@ -94,7 +94,7 @@ public class OltProvisioning5600 extends GigabitTest {
   @Description("Port provisioning case when port has InActive Lines")
   public void portProvisioningWithInactiveLines() {
     wgAccessProvisioningRobot.startPortProvisioning(portWithInActiveLines);
-    accessLineRiRobot.checkProvisioningResults(portWithInActiveLines);
+    accessLineRiRobot.checkFtthPortParameters(portWithInActiveLines);
   }
 
   @Test
@@ -106,11 +106,11 @@ public class OltProvisioning5600 extends GigabitTest {
     Assert.assertNotNull(cardBeforeProvisioning);
     Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
     Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(portEmpty).size(), 0);
-    accessLineRiRobot.checkProvisioningResults(portEmpty);
+    accessLineRiRobot.checkFtthPortParameters(portEmpty);
   }
 
   @Test
-  @TmsLink("DIGIHUB-83085")
+  @TmsLink("DIGIHUB-113901")
   @Description("Card provisioning case with 1 card")
   public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmpty);
@@ -118,7 +118,7 @@ public class OltProvisioning5600 extends GigabitTest {
     wgAccessProvisioningRobot.startCardProvisioningV2(portEmpty);
     Assert.assertNotNull(cardBeforeProvisioning);
     Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
-    accessLineRiRobot.checkProvisioningResults(portEmpty);
+    accessLineRiRobot.checkFtthPortParameters(portEmpty);
   }
 
   @Test
@@ -135,6 +135,6 @@ public class OltProvisioning5600 extends GigabitTest {
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmpty.getEndSz(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmpty);
-    accessLineRiRobot.checkProvisioningResults(port);
+    accessLineRiRobot.checkFtthPortParameters(port);
   }
 }

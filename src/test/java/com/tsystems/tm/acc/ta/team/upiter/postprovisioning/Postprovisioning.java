@@ -57,13 +57,13 @@ public class Postprovisioning extends GigabitTest {
 
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(12, portFor16_24Case); //12 assigned lines
 
         //1 trigger postprovisioning
         wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor16_24Case, getHomeIdFromAccessLine(accessLine));
 
-        accessLineRiRobot.checkPortParametersForLines(portFor16_24Case);
+        accessLineRiRobot.checkFtthPortParameters(portFor16_24Case);
         accessLineRiRobot.checkPortParametersForAssignedLines(portFor16_24Case);
     }
 
@@ -77,13 +77,13 @@ public class Postprovisioning extends GigabitTest {
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.assignAccessLines16_24_32);
 
         //precondition
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(7, portFor24_32Case); //13 + 7 assigned access lines
 
         //1 to trigger postprovisioning
         wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor24_32Case, getHomeIdFromAccessLine(accessLine));
 
-        accessLineRiRobot.checkPortParametersForLines(portFor24_32Case);
+        accessLineRiRobot.checkFtthPortParameters(portFor24_32Case);
         accessLineRiRobot.checkPortParametersForAssignedLines(portFor24_32Case);
     }
 
@@ -96,13 +96,13 @@ public class Postprovisioning extends GigabitTest {
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.assignAccessLines16_24_32_onDemand);
 
         //precondition
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(11, portForPostProvisioningPrecondition);  //create 32 assigned lines
 
         wgAccessProvisioningRobot.startPostprovisioning(portForOnDemand); //33 wg line creation
 
-        accessLineRiRobot.checkProvisioningResults(portForOnDemand);
-        accessLineRiRobot.checkPortParametersForLines(portForOnDemand);
+        accessLineRiRobot.checkFtthPortParameters(portForOnDemand);
+        accessLineRiRobot.checkFtthPortParameters(portForOnDemand);
         accessLineRiRobot.checkPortParametersForAssignedLines(portForOnDemand);
     }
 

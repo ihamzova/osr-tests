@@ -4,27 +4,24 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
+import static org.testng.Assert.assertEquals;
 
 @ServiceLog({
         WG_ACCESS_PROVISIONING_MS,
@@ -40,7 +37,8 @@ public class OltProvisioningAdtran extends GigabitTest {
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private WgAccessProvisioningClient wgAccessProvisioningClient;
     private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
-    private PortProvisioning portEmpty;
+    private PortProvisioning portEmptyAdtran;
+    private PortProvisioning portDeprovisioningAdtran;
     private PortProvisioning portDeprovisioningForDpu;
     private UpiterTestContext context = UpiterTestContext.get();
 
@@ -50,20 +48,18 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
-        portEmpty = context.getData()
-                .getPortProvisioningDataProvider()
-                .get(PortProvisioningCase.portEmptyAdtran);
-        portDeprovisioningForDpu = context.getData()
-                .getPortProvisioningDataProvider()
-                .get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
-    }
-
-    @BeforeMethod
-    public void prepareData() {
+        portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmptyAdtran);
+        portDeprovisioningAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningAdtran);
+        portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
         accessLineRiRobot.clearDatabase();
     }
 
-    @AfterMethod
+//    @BeforeMethod
+//    public void prepareData() {
+//        accessLineRiRobot.clearDatabase();
+//    }
+
+    @AfterClass
     public void clearData() {
         accessLineRiRobot.clearDatabase();
     }
@@ -72,76 +68,57 @@ public class OltProvisioningAdtran extends GigabitTest {
     @TmsLink("DIGIHUB-30877")
     @Description("Port Provisioning with 32 WG Lines on SDX 6320")
     public void portProvisioning() {
-        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmpty);
+        List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmptyAdtran);
         Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
-        wgAccessProvisioningRobot.startPortProvisioning(portEmpty);
-        accessLineRiRobot.checkProvisioningResults(portEmpty);
+        wgAccessProvisioningRobot.startPortProvisioning(portEmptyAdtran);
+        accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
+        accessLineRiRobot.checkIdPools(portEmptyAdtran);
+        accessLineRiRobot.checkPhysicalResourceRefCount(portEmptyAdtran, 1, 1);
     }
 
-    @Test
+    @Test (priority = 2)
     @TmsLink("DIGIHUB-30824")
     @Description("Device Provisioning SDX 6320")
     public void deviceProvisioning() {
-        Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmpty);
+        Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyAdtran);
         Assert.assertNotNull(deviceBeforeProvisioning);
         Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        Assert.assertEquals(getPonPorts().size(), 1);
-        wgAccessProvisioningRobot.startDeviceProvisioning(portEmpty);
-        accessLineRiRobot.checkProvisioningResults(portEmpty);
-        //checkDevicePostConditions(portEmpty);
+        Assert.assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
+        wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
+        accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
+        accessLineRiRobot.checkIdPools(portEmptyAdtran);
+        accessLineRiRobot.checkPhysicalResourceRefCount(portEmptyAdtran, 1, 1);
     }
 
-    @Test
+    @Test(dependsOnMethods = "portProvisioning", priority = 1)
     @TmsLink("DIGIHUB-36495")
-    @Description("Port deprovisioning SDX 6320")
+    @Description("Port deprovisioning SDX 6320, deprovisionigForDpu = na (= false)")
     public void portDeprovisioningTest() {
-        checkPreconditions(portDeprovisioningForDpu);
-        wgAccessProvisioningRobot.startPortDeprovisioningForDpuAdtran(portDeprovisioningForDpu);
-
-        checkPostConditions(portDeprovisioningForDpu);
+        accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningAdtran);
+        wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran);
+        accessLineRiRobot.checkFtthPortParameters(portDeprovisioningAdtran);
+        accessLineRiRobot.checkIdPools(portDeprovisioningAdtran);
+        accessLineRiRobot.checkPhysicalResourceRefCount(portDeprovisioningAdtran, 0, 1);
+        accessLineRiRobot.clearDatabase();
     }
 
-    private PortProvisioning getPortProvisioning(PortProvisioning portProvisioning, String portNumber) {
-        PortProvisioning port = new PortProvisioning();
-        port.setEndSz(portProvisioning.getEndSz());
-        port.setPortNumber(portNumber);
-        port.setLineIdPool(portProvisioning.getLineIdPool());
-        port.setHomeIdPool(portProvisioning.getHomeIdPool());
-        port.setDefaultNEProfilesActive(portProvisioning.getDefaultNEProfilesActive());
-        port.setDefaultNetworkLineProfilesActive(portProvisioning.getDefaultNetworkLineProfilesActive());
-        port.setAccessLinesWG(portProvisioning.getAccessLinesWG());
-        return port;
-    }
+    @Test(dependsOnMethods = "deviceProvisioning", priority = 3)
+    @TmsLink("DIGIHUB-36495")
+    @Description("Port deprovisioning SDX 6320, deprovisionigForDpu = true")
+    public void portDeprovisioningForDpuTrueTest() {
+        accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningForDpu);
+        wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprovisioningForDpu, true);
+        accessLineRiRobot.checkFtthPortParameters(portDeprovisioningForDpu);
+        accessLineRiRobot.checkIdPools(portDeprovisioningForDpu);
+        accessLineRiRobot.checkPhysicalResourceRefCount(portDeprovisioningForDpu, 1, 1);
 
-    private List<Port> getPonPorts() {
-        return wgAccessProvisioningRobot.getDevice(portEmpty).getPorts().stream()
-                .filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString()))
-                .collect(Collectors.toList());
-    }
-
-    private void checkPreconditions(PortProvisioning port) {
-        accessLineRiRobot.prepareTestDataToDeprovisioning(port);
-        accessLineRiRobot.checkDecommissioningPreconditions(port);
-    }
-
-    private void checkPostConditions(PortProvisioning port) {
-        accessLineRiRobot.checkPortParametersForLines(port);
-        accessLineRiRobot.getPhysicalResourceRef(port);
-        accessLineRiRobot.getBackHaulId(port);
-    }
-
-    private void checkDevicePostConditions(PortProvisioning port) {
-        List<String> portNumbers = getPonPorts()
-                .stream()
-                .map(Port::getPortNumber)
-                .collect(Collectors.toList()); //list of ponPort numbers
-
-        List<PortProvisioning> portProvisioningList = portNumbers
-                .stream()
-                .map(portNumber -> getPortProvisioning(port, portNumber))
-                .collect(Collectors.toList()); //list of portProvisioning numbers
-
-        portProvisioningList.forEach(portAfterProvisioning -> accessLineRiRobot.checkProvisioningResults(portAfterProvisioning));
+        List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprovisioningForDpu);
+        List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprovisioningForDpu);
+        long countHomeIDsFree = homeIds.stream().filter(HomeId -> HomeId.getStatus().getValue().equals(HomeIdLogicalStatus.FREE.getValue())).count();
+        long countLineIDsFree = lineIds.stream().filter(LineId -> LineId.getStatus().getValue().equals(LineIdStatus.FREE.getValue())).count();
+        assertEquals(accessLineRiRobot.getBackHaulId(portDeprovisioningForDpu).get(0).getStatus(), BackhaulStatus.CONFIGURED);
+        assertEquals(countHomeIDsFree, portDeprovisioningForDpu.getHomeIdPool().intValue());
+        assertEquals(countLineIDsFree, portDeprovisioningForDpu.getLineIdPool().intValue());
     }
 }

@@ -4,6 +4,23 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "0"
+  homeIdPool: 0
+  lineIdPool: 0
+  backhaulId: 0
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
+  accessLinesCount: 0
+---
+name: portDeprovisioningForDpu
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 0
   defaultNEProfilesActive: 0
   defaultNetworkLineProfilesActive: 0
