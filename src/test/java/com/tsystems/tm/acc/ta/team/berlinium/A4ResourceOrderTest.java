@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
@@ -17,11 +18,14 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.OrderItemActionType;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
+import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import org.testng.annotations.*;
 
+
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -47,11 +51,8 @@ public class A4ResourceOrderTest {
     private A4NetworkElementPort nepData2;
     private A4NetworkElementLink nelData;
     private A4NetworkServiceProfileA10Nsp nspA10Data1;
-    private A4NetworkServiceProfileA10Nsp nspA10Data2;
     private A4TerminationPoint tpData1;
-    private A4TerminationPoint tpData2;
 
-    private ResourceOrder ro;
     private String corId;
     private final String reqUrl = "https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/test_url";
 
@@ -74,11 +75,7 @@ public class A4ResourceOrderTest {
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
         tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
-        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
         // Ensure that no old test data is in the way
@@ -99,10 +96,7 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
-        // a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-        //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
-        ro = a4ResourceOrderRobot.buildResourceOrder(nelData);
 
         corId = UUID.randomUUID().toString();
 
@@ -124,19 +118,38 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
+/*    ObjectMapper om = new ObjectMapper();
+
+    public VlanRange mappVlanRangeValue(Object qosValue) throws IOException {
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String json;
+        json = om.writeValueAsString(qosValue);
+        return om.readValue(json, VlanRange.class);
+    }*/
 /*
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("test Aufbau der ro")
-    public void testRo() {
+    public void testRo() throws IOException {
         ResourceOrder ro_0 = a4ResourceOrderRobot.buildResourceOrder(nelData);
-        a4ResourceOrderRobot.setCharacteristicValue("VLAN_Range", null, ro_0);
 
-        System.out.println("+++ ro: " + ro_0);
-        System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());  // nelData.getLbz()
+        System.out.println("+++ vlan aus ro: " + ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5));
+
+        VlanRange vlanRange2 = mappVlanRangeValue(ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5).getValue());
+
+        System.out.println("+++ vlanRange aus mapp : "+vlanRange2);
+
+        VlanRange vlanRange3 = new VlanRange();
+        vlanRange3.setVlanRangeLower("x");
+        vlanRange3.setVlanRangeUpper("y");
+        ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5).setValue(vlanRange3);
+
+        System.out.println("+++ vlan aus ro: " + ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5));
+       // System.out.println("+++ ro: " + ro_0);
+       // System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());
         //sleepForSeconds(60);
-    }
-*/
+    }*/
+
 
 
     @Test
@@ -189,13 +202,13 @@ public class A4ResourceOrderTest {
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro without vlan-range values")
-    public void testRoWithoutVlanRangeValues() {
+    @Description("ro without vlan-range values (=null)")
+    public void testRoWithoutVlanRangeValues()  {
         ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
-        // values = null
-
-
-
+        VlanRange vlanRange = new VlanRange();
+        vlanRange.setVlanRangeLower(null);  // values = null, no change in db; ok
+        vlanRange.setVlanRangeUpper(null);
+        Objects.requireNonNull(ro_8.getOrderItem().get(0).getResource()).getResourceCharacteristic().get(5).setValue(vlanRange);
 
         // send to queue
         a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
@@ -231,6 +244,141 @@ public class A4ResourceOrderTest {
 
         assertTrue(completeTrue);
     }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro with empty vlan-range values")
+    public void testRoWithEmptyVlanRangeValues()  {
+        ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        VlanRange vlanRange = new VlanRange();
+        vlanRange.setVlanRangeLower("");  // values empty, no change in db; ok
+        vlanRange.setVlanRangeUpper("");
+        Objects.requireNonNull(ro_8.getOrderItem().get(0).getResource()).getResourceCharacteristic().get(5).setValue(vlanRange);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(completeTrue);
+    }
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro with one empty and one valid vlan-range value")
+    public void testRoWithEmptyAndValidVlanRangeValues()  {
+        ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        VlanRange vlanRange = new VlanRange();
+        vlanRange.setVlanRangeLower("3");
+        vlanRange.setVlanRangeUpper("");
+        Objects.requireNonNull(ro_8.getOrderItem().get(0).getResource()).getResourceCharacteristic().get(5).setValue(vlanRange);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean processError = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ Verarbeitungsfehler: " + processError);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(rejectTrue);
+    }
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro with one null and one valid vlan-range value")
+    public void testRoWithNullAndValidVlanRangeValues()  {
+        ResourceOrder ro_8 = a4ResourceOrderRobot.buildResourceOrder(nelData);
+        VlanRange vlanRange = new VlanRange();
+        vlanRange.setVlanRangeLower(null);
+        vlanRange.setVlanRangeUpper("4012");
+        Objects.requireNonNull(ro_8.getOrderItem().get(0).getResource()).getResourceCharacteristic().get(5).setValue(vlanRange);
+
+        // send to queue
+        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro_8);
+
+        // receive callback with Mock
+        sleepForSeconds(5);
+
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo("/test_url")));
+
+        System.out.println(" ");
+        System.out.println("+++ ");
+        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
+
+        boolean rejectTrue = ergList.toString().contains("rejected");
+        boolean completeTrue = ergList.toString().contains("completed");
+        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
+        boolean noNELTrue = ergList.toString().contains("Links are not present");
+        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
+        boolean processError = ergList.toString().contains("not be processed");
+
+        System.out.println("+++  ");
+        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
+        System.out.println("+++ Verarbeitungsfehler: " + processError);
+        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
+        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
+        System.out.println("+++ completed: " + completeTrue);
+        System.out.println("+++ rejected: " + rejectTrue);
+        System.out.println("+++  ");
+
+        assertTrue(rejectTrue);
+    }
+
+
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
