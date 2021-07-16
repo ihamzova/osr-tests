@@ -17,6 +17,7 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.DeviceDto;
@@ -40,6 +41,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
+import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
@@ -99,6 +101,17 @@ public class WgAccessProvisioningRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
+  @Step("Start port deprovisioning with deprovisioningForDpu flag")
+  public void startPortDeprovisioningForDpu(PortProvisioning port, boolean deprovisioningForDpu) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+            .body(new PortDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber()))
+            .deprovisioningForDpuQuery(deprovisioningForDpu)
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+  }
+
   @Step("Start card deprovisioning")
   public void startCardDeprovisioning(PortProvisioning port) {
     wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning()
@@ -122,17 +135,6 @@ public class WgAccessProvisioningRobot {
     wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning()
             .body(new DeviceDto()
                     .endSz(port.getEndSz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-  }
-
-  @Step("Start port deprovisioning for DPU Adtran OLT")
-  public void startPortDeprovisioningForDpuAdtran(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess()
-            .startPortDeprovisioning()
-            .deprovisioningForDpuQuery(true)
-            .body(new PortDto()
-                    .endSz(port.getEndSz())
-                    .portNumber(port.getPortNumber()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
@@ -206,6 +208,13 @@ public class WgAccessProvisioningRobot {
     } catch (Throwable e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
+  }
+
+  @Step("Get PON Ports")
+  public List<Port> getPonPorts(PortProvisioning port) {
+    return getDevice(port).getPorts().stream()
+            .filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString()))
+            .collect(Collectors.toList());
   }
 
   @Step("Check card before provisioning")
