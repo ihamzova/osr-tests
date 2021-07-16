@@ -4,32 +4,26 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.address.AddressCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Address;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @ServiceLog({
         ACCESS_MANAGEMENT_SUPPORT_UI_MS,
@@ -39,7 +33,6 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 public class AccessLinesSearchTest extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
-    private AccessLineResourceInventoryClient alResourceInventory;
     private UpiterTestContext context = UpiterTestContext.get();
     private AccessLine accessLinesByEndSz;
     private AccessLine accessLineByHomeId;
@@ -50,7 +43,6 @@ public class AccessLinesSearchTest extends GigabitTest {
     @BeforeClass
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
-        alResourceInventory = new AccessLineResourceInventoryClient();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
         accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
         accessLineByLineId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByLineId);
@@ -58,7 +50,9 @@ public class AccessLinesSearchTest extends GigabitTest {
         ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.linesByOnt);
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
         setCredentials(loginData.getLogin(), loginData.getPassword());
-        prepareData();
+        accessLineRiRobot.clearDatabase();
+        Thread.sleep(1000);
+        accessLineRiRobot.fillDatabaseForOltCommissioning();
     }
 
     @AfterClass
@@ -75,62 +69,14 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
                 .clickSearchButton();
 
-        checkTableHeaders(accessLineSearchPage.getTableHeaders());
-        checkTableMessagePattern(accessLineSearchPage.getTableMessage());
-        checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+        accessLineSearchPage.checkTableHeaders(accessLineSearchPage.getTableHeaders());
+        accessLineSearchPage.checkTableMessagePattern(accessLineSearchPage.getTableMessage());
+        accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
         accessLineSearchPage.setWalledGardenStatus().searchAccessLinesByPortAddress(accessLinesByEndSz);
-
-        checkBasicInformation(accessLineSearchPage);
-
+        accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-        checkAccessLinesManagementStates(accessLinesManagementPage, "ACTIVE", "NULL",
+        accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "ACTIVE", "NULL");
-
-    }
-
-    @Test
-    @TmsLink("DIGIHUB-81428")
-    @Description("Save and Reconfigure Subscriber_NE_Profile")
-    public void saveAndReconfigureTest() throws InterruptedException {
-        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-        accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        accessLineSearchPage.setPageSize(100);
-        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-        accessLinesManagementPage.clickEditButton();
-        accessLinesManagementPage.addSubscriberProfile();
-        accessLinesManagementPage.changeDefaultProfile();
-        accessLinesManagementPage.clickSaveAndReconfigureButton();
-        accessLinesManagementPage.returnOnWindowWithListOfLines();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        AccessLinesManagementPage accessLinesManagementPageAssert = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-        checkAccessLinesManagementStates(accessLinesManagementPageAssert, "INACTIVE", "ACTIVE",
-                "ACTIVE", "NULL");
-
-    }
-
-    @Test(dependsOnMethods="saveAndReconfigureTest")
-    @TmsLink("DIGIHUB-96235")
-    @Description("Save and Reconfigure to Walled_Garden status")
-    public void saveAndReconfigureToWalledGardenTest() throws InterruptedException {
-        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-        accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        accessLineSearchPage.setPageSize(100);
-        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-        Thread.sleep(3000);
-        accessLinesManagementPage.clickEditButton();
-        accessLinesManagementPage.clickONTAbmeldungButton();
-        accessLinesManagementPage.clickBestätigenButton();
-        accessLinesManagementPage.clickEditButton();
-        accessLinesManagementPage.changeStatusOnWalledGarden();
-        accessLinesManagementPage.clickSaveAndReconfigureButton();
-        accessLinesManagementPage.returnOnWindowWithListOfLines();
-        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        AccessLinesManagementPage accessLinesManagementPageSecondAssert = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-        checkAccessLinesManagementStates(accessLinesManagementPageSecondAssert, "ACTIVE", "NULL",
-                "ACTIVE", "NULL");
-
     }
 
     @Test
@@ -140,9 +86,8 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-
         accessLineSearchPage.setPageSize(100);
-        checkSortOfTable(accessLineSearchPage.getTableLines());
+        accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getTableLines());
     }
 
     @Test
@@ -151,13 +96,10 @@ public class AccessLinesSearchTest extends GigabitTest {
     public void searchAccessLinesByHomeIdTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByHomeID(accessLineByHomeId).clickSearchButton();
-
-        checkBasicInformation(accessLineSearchPage);
-
+        accessLineSearchPage.searchAccessLinesByHomeID(accessLineByHomeId.getHomeId()).clickSearchButton();
+        accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-
-        checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
                 "INACTIVE","ACTIVE");
     }
 
@@ -167,15 +109,11 @@ public class AccessLinesSearchTest extends GigabitTest {
     public void searchAccessLinesByLineIdTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchAccessLinesByLineID(accessLineByLineId).clickSearchButton();
-
-        checkBasicInformation(accessLineSearchPage);
-
+        accessLineSearchPage.searchAccessLinesByLineID(accessLineByLineId.getLineId()).clickSearchButton();
+        accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-
-        checkAccessLinesManagementStates(accessLinesManagementPage, "ACTIVE", "NULL",
+        accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "NULL", "NULL");
-
     }
 
     @Test
@@ -185,12 +123,9 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByKlsId(addressWithKlsId.getKlsId()).clickSearchButton();
-
-        checkBasicInformation(accessLineSearchPage);
-
+        accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(1);
-
-        checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
                 "INACTIVE", "ACTIVE");
     }
 
@@ -201,12 +136,9 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByOntSn(ontSerialNumber.getSerialNumber()).clickSearchButton();
-
-        checkBasicInformation(accessLineSearchPage);
-
+        accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-
-        checkAccessLinesManagementStates(accessLinesManagementPage, "INACTIVE", "ACTIVE",
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
                 "INACTIVE", "ACTIVE");
     }
 
@@ -219,69 +151,60 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
                             .setWalledGardenStatus()
                             .setInactiveStatus();
-
-        checkBasicInformation(accessLineSearchPage);
-
-        Assert.assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
-
-        accessLineSearchPage.sortAccessLinesByStatus();
-
-        accessLineSearchPage.setPageSize(10);
-
-        Assert.assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
-
+        accessLineSearchPage.checkBasicInformation();
+        assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
+        accessLineSearchPage.sortAccessLinesByStatus()
+                .setPageSize(10);
+        assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-
-        checkAccessLinesManagementStates(accessLinesManagementPage, "ACTIVE", "NULL",
+        accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "NULL", "NULL");
     }
 
-    private void checkBasicInformation(AccessLineSearchPage accessLineSearchPage) {
-        checkTableHeaders(accessLineSearchPage.getTableHeaders());
-        checkTableMessagePattern(accessLineSearchPage.getTableMessage());
-        checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+    @Test
+    @TmsLink("DIGIHUB-81428")
+    @Description("Add subscriber_ne_profile and Save and Reconfigure")
+    public void addSubscriberNeProfileTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
+                .setWalledGardenStatus()
+                .clickMagnifyingGlassForLine(0);
+        String lineId = accessLinesManagementPage.getLineId();
+        accessLinesManagementPage.clickEditButton()
+                .addSubscriberNeProfile()
+                .changeDefaultProfileStateToInactive()
+                .clickSaveAndReconfigureButton()
+                .closeCurrentTab();
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .searchAccessLinesByLineID(lineId)
+                .clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
+                "ACTIVE", "NULL");
     }
 
-    private void checkTableHeaders(List<String> tableHeaders) {
-        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
-        Assert.assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
-                supposedHeaders.toArray());
-    }
-
-    private void checkTableMessagePattern(String tableMessage) {
-        String supposedPattern = "\\d+ Access Lines? wurden? gefunden";
-        Assert.assertTrue(Pattern.matches(supposedPattern, tableMessage));
-    }
-
-    private void checkPaginationSizes(List<String> paginatorSizes) {
-        List<String> supposedSizes = Arrays.asList("10", "20", "50", "100");
-        Assert.assertEqualsNoOrder(paginatorSizes.toArray(), supposedSizes.toArray());
-    }
-
-    private void checkSortOfTable(List<AccessLineViewDto> tableRows) {
-        List<AccessLineViewDto> supposedOrder = new ArrayList<>(tableRows);
-        supposedOrder.sort((row1, row2) -> {
-            if (row1.getSlotNumber().equals(row2.getSlotNumber())) {
-                return row1.getPortNumber().compareTo(row2.getPortNumber());
-            } else {
-                return row1.getSlotNumber().compareTo(
-                        row2.getSlotNumber());
-            }
-        });
-        Assert.assertEquals(tableRows, supposedOrder);
-    }
-
-    private void checkAccessLinesManagementStates(AccessLinesManagementPage page, String neExpectedDefaultProfileState,
-                                                  String neExpectedSubscriberProfileState, String nlExpectedDefaultProfileState,
-                                                  String nlExpectedSubscriberProfileState) {
-        Assert.assertTrue(page.getNEDefaultProfileState().contains(neExpectedDefaultProfileState));
-        Assert.assertTrue(page.getNESubscriberProfileState().contains(neExpectedSubscriberProfileState));
-        Assert.assertTrue(page.getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
-        Assert.assertTrue(page.getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
-    }
-
-    private void prepareData() throws InterruptedException {
-        accessLineRiRobot.clearDatabase();
-        accessLineRiRobot.fillDatabaseForOltCommissioning();
+    @Test()
+    @TmsLink("DIGIHUB-96235")
+    @Description("ONT Abmeldung, AccessLine is set to Walled_Garden")
+    public void ontAbmeldungTest() {
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).setAssignedStatus();
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        String lineId = accessLinesManagementPage.getLineId();
+        accessLinesManagementPage.clickEditButton()
+                .clickOntAbmeldungButton()
+                .clickBestätigenButton()
+                .clickEditButton()
+                .changeAccessLineStatusToWalledGarden()
+                .clickSaveAndReconfigureButton()
+                .closeCurrentTab();
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .searchAccessLinesByLineID(lineId)
+                .clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
+                "ACTIVE", "NULL");
     }
 }

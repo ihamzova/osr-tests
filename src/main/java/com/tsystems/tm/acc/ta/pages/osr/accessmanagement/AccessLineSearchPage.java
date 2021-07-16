@@ -12,13 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class AccessLineSearchPage {
@@ -34,6 +39,7 @@ public class AccessLineSearchPage {
     private static final By PAGINATOR_DROPDOWN = By.tagName("p-dropdown");
     private static final By WALLED_GARDEN_STATUS = byQaData("ucc-walled-garden-filter-label");
     private static final By INACTIVE_STATUS = byQaData("ucc-inactive-filter-label");
+    private static final By ASSIGNED_SEAL_CONFIGURED_STATUS = byQaData("ucc-assigned-seal-filter-label");
     private static final By HOMEID_TAB = byQaData("sc-home-id-tab-a");
     private static final By HOMEID_INPUT = byQaData("hic-home-id-input");
     private static final By SEARCH_BUTTON = byQaData("search-button");
@@ -74,26 +80,60 @@ public class AccessLineSearchPage {
         return this;
     }
 
-    @Step ("Click search button")
-    public AccessLineSearchPage clickSearchButton() {
-        $(SEARCH_BUTTON).click();
-        $(SEARCH_BUTTON).find(By.tagName("i")).shouldNot(Condition.cssClass("spinner"));
-        return this;
-    }
-
     @Step ("Search Access lines by HomeID")
-    public AccessLineSearchPage searchAccessLinesByHomeID (AccessLine accessLine) {
+    public AccessLineSearchPage searchAccessLinesByHomeID (String homeId) {
         $(HOMEID_TAB).click();
         $(HOMEID_INPUT).click();
-        $(HOMEID_INPUT).val(accessLine.getHomeId());
+        $(HOMEID_INPUT).val(homeId);
         return this;
     }
 
     @Step ("Search Access lines by LineID")
-    public AccessLineSearchPage searchAccessLinesByLineID (AccessLine accessLine) {
+    public AccessLineSearchPage searchAccessLinesByLineID (String lineId) {
         $(LINEID_TAB).click();
         $(LINEID_INPUT).click();
-        $(LINEID_INPUT).val(accessLine.getLineId());
+        $(LINEID_INPUT).val(lineId);
+        return this;
+    }
+
+    @Step ("Search Access lines by ONT S/N")
+    public AccessLineSearchPage searchAccessLinesByOntSn (String klsId) {
+        $(ONTSN_TAB).click();
+        $(ONTSN_INPUT).click();
+        $(ONTSN_INPUT).val(klsId);
+        return this;
+    }
+
+    @Step ("Search Access lines by KLS ID")
+    public AccessLineSearchPage searchAccessLinesByKlsId (String klsId) {
+        $(KLSID_TAB).click();
+        $(KLSID_INPUT).click();
+        $(KLSID_INPUT).val(klsId);
+        return this;
+    }
+
+    @Step("Set Walled_Garden status")
+    public AccessLineSearchPage setWalledGardenStatus() {
+        $(WALLED_GARDEN_STATUS).click();
+        return this;
+    }
+
+    @Step("Set Walled_Garden status")
+    public AccessLineSearchPage setAssignedStatus() {
+        $(ASSIGNED_SEAL_CONFIGURED_STATUS).click();
+        return this;
+    }
+
+    @Step("Set Inactive status")
+    public AccessLineSearchPage setInactiveStatus() {
+        $(INACTIVE_STATUS).click();
+        return this;
+    }
+
+    @Step ("Click search button")
+    public AccessLineSearchPage clickSearchButton() {
+        $(SEARCH_BUTTON).click();
+        $(SEARCH_BUTTON).find(By.tagName("i")).shouldNot(Condition.cssClass("spinner"));
         return this;
     }
 
@@ -126,6 +166,11 @@ public class AccessLineSearchPage {
                 .collect(Collectors.toList());
     }
 
+    @Step("Get table rows")
+    public List<SelenideElement> getTableRows() {
+        return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
+    }
+
     @Step("Get paginator's sizes")
     public List<String> getPaginatorSizes() {
         $(P_SEARCH_TABLE).find(PAGINATOR_DROPDOWN).click();
@@ -134,13 +179,6 @@ public class AccessLineSearchPage {
                 .stream()
                 .map(SelenideElement::text)
                 .collect(Collectors.toList());
-    }
-
-    @Step("Click magnifying glass to Access Lines Management Page")
-    public AccessLinesManagementPage clickMagnifyingGlassForLine(int rowNumber) {
-        getTableRows().get(rowNumber).find(By.tagName("i")).click();
-        switchTo().window(1);
-        return new AccessLinesManagementPage();
     }
 
     @Step("Set page size of paginator")
@@ -154,32 +192,11 @@ public class AccessLineSearchPage {
         return this;
     }
 
-    @Step("Set walled garden status")
-    public AccessLineSearchPage setWalledGardenStatus() {
-        $(WALLED_GARDEN_STATUS).click();
-        return this;
-    }
-
-    @Step("Set INACTIVE status")
-    public AccessLineSearchPage setInactiveStatus() {
-        $(INACTIVE_STATUS).click();
-        return this;
-    }
-
-    @Step ("Search Access lines by KLS ID")
-    public AccessLineSearchPage searchAccessLinesByKlsId (String klsId) {
-        $(KLSID_TAB).click();
-        $(KLSID_INPUT).click();
-        $(KLSID_INPUT).val(klsId);
-        return this;
-    }
-
-    @Step ("Search Access lines by ONT S/N")
-    public AccessLineSearchPage searchAccessLinesByOntSn (String klsId) {
-        $(ONTSN_TAB).click();
-        $(ONTSN_INPUT).click();
-        $(ONTSN_INPUT).val(klsId);
-        return this;
+    @Step("Click magnifying glass to Access Lines Management Page")
+    public AccessLinesManagementPage clickMagnifyingGlassForLine(int rowNumber) {
+        getTableRows().get(rowNumber).find(By.tagName("i")).click();
+        switchTo().window(1);
+        return new AccessLinesManagementPage();
     }
 
     @Step ("Sort lines by status")
@@ -196,7 +213,43 @@ public class AccessLineSearchPage {
         return $(SORT_BY_STATUS).$("i").isDisplayed();
     }
 
-    public List<SelenideElement> getTableRows() {
-        return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
+    @Step("Check basic information")
+    public void checkBasicInformation() {
+        checkTableHeaders(getTableHeaders());
+        checkTableMessagePattern(getTableMessage());
+        checkPaginationSizes(getPaginatorSizes());
+    }
+
+    @Step("Check table headers")
+    public void checkTableHeaders(List<String> tableHeaders) {
+        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
+        assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
+                supposedHeaders.toArray());
+    }
+
+    @Step("Check table message")
+    public void checkTableMessagePattern(String tableMessage) {
+        String supposedPattern = "\\d+ Access Lines? wurden? gefunden";
+        assertTrue(Pattern.matches(supposedPattern, tableMessage));
+    }
+
+    @Step("Check pagination sizes")
+    public void checkPaginationSizes(List<String> paginatorSizes) {
+        List<String> supposedSizes = Arrays.asList("10", "20", "50", "100");
+        assertEqualsNoOrder(paginatorSizes.toArray(), supposedSizes.toArray());
+    }
+
+    @Step("Check table sorting")
+    public void checkSortOfTable(List<AccessLineViewDto> tableRows) {
+        List<AccessLineViewDto> supposedOrder = new ArrayList<>(tableRows);
+        supposedOrder.sort((row1, row2) -> {
+            if (row1.getSlotNumber().equals(row2.getSlotNumber())) {
+                return row1.getPortNumber().compareTo(row2.getPortNumber());
+            } else {
+                return row1.getSlotNumber().compareTo(
+                        row2.getSlotNumber());
+            }
+        });
+        assertEquals(tableRows, supposedOrder);
     }
 }

@@ -3,24 +3,29 @@ package com.tsystems.tm.acc.ta.team.upiter.ontcommissioning;
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.businessinformation.BusinessInformationCase;
 import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
-import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNull;
 
@@ -37,7 +42,6 @@ public class OntCommissioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
-    private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     private AccessLine accessLine;
     private AccessLine accessLineForDeprovisioningNew;
     private AccessLine accessLineForDeprovisioningOld;
@@ -46,7 +50,7 @@ public class OntCommissioning extends GigabitTest {
     private BusinessInformation postprovisioningStart;
     private BusinessInformation postprovisioningEnd;
     private Ont ontSerialNumber;
-    private Ont ontSerialNumberForDeprovisioning;
+    private PortProvisioning port;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
@@ -54,11 +58,11 @@ public class OntCommissioning extends GigabitTest {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
         accessLineRiRobot.fillDatabaseForOltCommissioning();
+        port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.PortFor33LineCase);
         accessLineForDeprovisioningNew = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine1);
         accessLineForDeprovisioningOld = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine2);
         accessLineForDeprovisioningTrue = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningTrue);
         accessLineForDeprovisioningFalse = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningFalse);
-        ontSerialNumberForDeprovisioning = context.getData().getOntDataProvider().get(OntCase.ForDeprovisioningOntSerialNumber);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
         postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
         postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
@@ -101,39 +105,6 @@ public class OntCommissioning extends GigabitTest {
         List<BusinessInformation> businessInformationLogCollector = wgAccessProvisioningRobot.getBusinessInformation();
         Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList), "Business information is not found");*/
     }
-
-    @Test()
-    @TmsLink("DIGIHUB-42230")
-    @Description("Deprovisioning of the 33d AccessLine after termination")
-    @Owner("DL_T-Magic.U-Piter@t-systems.com")
-    public void decommissionsNEProfileFromHomeWithTwoLines() {
-        PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-                .vpSz(accessLineForDeprovisioningNew.getOltDevice().getVpsz())
-                .fachSz(accessLineForDeprovisioningNew.getOltDevice().getFsz())
-                .slotNumber(accessLineForDeprovisioningNew.getSlotNumber())
-                .portNumber(accessLineForDeprovisioningNew.getPortNumber())
-                .homeId(accessLineForDeprovisioningNew.getHomeId());
-        String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-        accessLineForDeprovisioningNew.setLineId(lineId);
-        ontOltOrchestratorRobot.registerOnt(accessLineForDeprovisioningNew, ontSerialNumberForDeprovisioning);
-        ontOltOrchestratorRobot.updateOntState(accessLineForDeprovisioningNew);
-        SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningNew.getLineId());
-        assertNotNull(subscriberNEProfile);
-        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningNew.getLineId()).isEmpty(),
-                true);
-        assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()),
-                LineIdStatus.FREE);
-        assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumberForDeprovisioning.getSerialNumber());
-        assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
-                AccessLineStatus.ASSIGNED);
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getSubscriberNetworkLineProfile().getState(),
-                ProfileState.ACTIVE);
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
-                accessLineForDeprovisioningOld.getHomeId());
-    }
-
 
   @Test(dependsOnMethods = "accessLineReservationByPortAndHomeId")
   @TmsLink("DIGIHUB-47257")
@@ -216,5 +187,24 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningFalse.getLineId()).get(0).getDefaultNeProfile().getState(),
             ProfileState.ACTIVE);
   }
+
+    @Test()
+    @TmsLink("DIGIHUB-42230")
+    @Description("Deprovisioning of the 33d AccessLine after termination")
+    @Owner("DL_T-Magic.U-Piter@t-systems.com")
+    public void ontDecommissioning33LineTest() {
+        ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningNew.getLineId()).isEmpty(),
+                true);
+        assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
+                lineIdDto.getLineId().equals(accessLineForDeprovisioningNew.getLineId())).filter(lineIdDto ->
+                lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
+        assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()),
+                LineIdStatus.FREE);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
+                AccessLineStatus.ASSIGNED);
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
+                accessLineForDeprovisioningOld.getHomeId());
+    }
 }
 

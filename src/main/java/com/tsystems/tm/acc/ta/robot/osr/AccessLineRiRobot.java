@@ -388,7 +388,6 @@ public class AccessLineRiRobot {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     return onuIdDtos;
-
   }
 
   @Step("Get homeID from pool by port")
@@ -463,7 +462,6 @@ public class AccessLineRiRobot {
     return accessLineResourceInventory
             .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
   }
 
   @Step("Get AccessLine entities by oltEndSz, slot, port")
