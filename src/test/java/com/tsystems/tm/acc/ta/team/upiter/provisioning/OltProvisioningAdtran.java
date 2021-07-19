@@ -48,7 +48,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
         wgAccessProvisioningClient = new WgAccessProvisioningClient();
-        portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portEmptyAdtran);
+        portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceAdtran);
         portDeprovisioningAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningAdtran);
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
         accessLineRiRobot.clearDatabase();

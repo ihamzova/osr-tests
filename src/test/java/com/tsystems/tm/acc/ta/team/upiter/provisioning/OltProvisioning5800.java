@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
@@ -12,14 +11,19 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 
 @ServiceLog({
         WG_ACCESS_PROVISIONING_MS,
@@ -35,8 +39,10 @@ public class OltProvisioning5800 extends GigabitTest {
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private WgAccessProvisioningClient wgAccessProvisioningClient;
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
-  private PortProvisioning portEmptyV1;
-  private PortProvisioning portEmptyV2;
+  private PortProvisioning device5800;
+  private PortProvisioning card5800v1;
+  private PortProvisioning card5800v2;
+  private PortProvisioning port5800;
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeClass
@@ -45,12 +51,10 @@ public class OltProvisioning5800 extends GigabitTest {
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
     wgAccessProvisioningClient = new WgAccessProvisioningClient();
-    portEmptyV1 = context.getData()
-            .getPortProvisioningDataProvider()
-            .get(PortProvisioningCase.portEmpty5800v1);
-    portEmptyV2 = context.getData()
-            .getPortProvisioningDataProvider()
-            .get(PortProvisioningCase.portEmpty5800v2);
+    device5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5800);
+    card5800v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v1);
+    card5800v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v2);
+    port5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5800);
   }
 
   @BeforeMethod
@@ -67,65 +71,65 @@ public class OltProvisioning5800 extends GigabitTest {
   @TmsLink("DIGIHUB-30877")
   @Description("Port Provisioning with 32 WG Lines")
   public void portProvisioning() {
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmptyV1);
-    Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(port5800);
+    assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
-    wgAccessProvisioningRobot.startPortProvisioning(portEmptyV1);
-    accessLineRiRobot.checkFtthPortParameters(portEmptyV1);
+    wgAccessProvisioningRobot.startPortProvisioning(port5800);
+    accessLineRiRobot.checkFtthPortParameters(port5800);
   }
 
-  @Test
+  @Test(priority = 1)
   @TmsLink("DIGIHUB-30870")
   @Description("Card Provisioning with 1 port")
   public void cardProvisioning() {
 
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV1);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV1.getEndSz(),
-            portEmptyV1.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmptyV1);
+    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5800v1);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5800v1.getEndSz(),
+            card5800v1.getSlotNumber(),
+            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5800v1);
 
-    Assert.assertNotNull(cardBeforeProvisioning);
-    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
-    Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
+    assertNotNull(cardBeforeProvisioning);
+    assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioning(portEmptyV1);
+    wgAccessProvisioningRobot.startCardProvisioning(card5800v1);
     accessLineRiRobot.checkFtthPortParameters(port);
   }
 
-  @Test
+  @Test(priority = 1)
   @TmsLink("DIGIHUB-113901")
   @Description("Card Provisioning with 1 card")
   public void oneCardProvisioning() {
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(portEmptyV2);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV2.getEndSz(),
-            portEmptyV2.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), portEmptyV2);
+    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5800v2);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5800v2.getEndSz(),
+            card5800v2.getSlotNumber(),
+            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5800v2);
 
-    Assert.assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
-    Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
+    assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioningV2(portEmptyV2);
+    wgAccessProvisioningRobot.startCardProvisioningV2(card5800v2);
     accessLineRiRobot.checkFtthPortParameters(port);
   }
 
 
-  @Test
+  @Test(priority = 1)
   @TmsLink("DIGIHUB-30824")
   @Description("Device Provisioning with 1 card and 1 port")
   public void deviceProvisioning() {
 
-    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyV1);
+    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(device5800);
 
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(portEmptyV1.getEndSz(),
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5800.getEndSz(),
             deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
-            deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), portEmptyV1);
+            deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5800);
 
-    Assert.assertNotNull(deviceBeforeProvisioning);
-    Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
-    Assert.assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
-    Assert.assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
+    assertNotNull(deviceBeforeProvisioning);
+    assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
+    assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyV1);
+    wgAccessProvisioningRobot.startDeviceProvisioning(device5800);
     accessLineRiRobot.checkFtthPortParameters(port);
   }
 }
