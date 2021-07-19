@@ -1,11 +1,11 @@
-name: portFullyOccupied
+name: deviceAdtran
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  endSz: "49/30/179/76H1"
-  slotNumber: "3"
-  portNumber: "2"
+  endSz: "49/911/1100/76H5"
+  portNumber: "1"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
