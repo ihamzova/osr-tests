@@ -90,9 +90,9 @@ public class A4ResourceOrderRobot {
         Objects.requireNonNull(roi.getResource()).setName(name);
     }
 
-    public void setCharacteristicValue(String name, Object value, String orderItemId, ResourceOrder ro) {
+    public void setCharacteristicValue(String characteristicName, Object value, String orderItemId, ResourceOrder ro) {
         ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, ro);
-        Characteristic c = getCharacteristic(name, roi);
+        Characteristic c = getCharacteristic(characteristicName, roi);
         c.setValue(value);
     }
 

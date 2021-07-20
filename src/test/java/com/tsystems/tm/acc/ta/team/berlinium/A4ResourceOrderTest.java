@@ -44,7 +44,7 @@ public class A4ResourceOrderTest {
 
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final A4ResourceOrderRobot a4ResourceOrderRobot = new A4ResourceOrderRobot();
+    private final A4ResourceOrderRobot a4ResourceOrder = new A4ResourceOrderRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData1;
@@ -99,7 +99,7 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
-        ro = a4ResourceOrderRobot.buildResourceOrder();
+        ro = a4ResourceOrder.buildResourceOrder();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
                 .addMerlinMock()
@@ -157,14 +157,14 @@ public class A4ResourceOrderTest {
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrderRobot.setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", DEFAULT_ORDER_ITEM_ID, ro); // unknown Switch
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", DEFAULT_ORDER_ITEM_ID, ro); // unknown Switch
 
         // setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
         // String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
@@ -202,19 +202,19 @@ public class A4ResourceOrderTest {
     @Description("ro without vlan-range values (=null)")
     public void testRoWithoutVlanRangeValues() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower(null)  // values = null, no change in db; ok
                 .vlanRangeUpper(null);
-        a4ResourceOrderRobot.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -222,19 +222,19 @@ public class A4ResourceOrderTest {
     @Description("ro with empty vlan-range values")
     public void testRoWithEmptyVlanRangeValues() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower("")  // values empty, no change in db; ok
                 .vlanRangeUpper("");
-        a4ResourceOrderRobot.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -242,19 +242,19 @@ public class A4ResourceOrderTest {
     @Description("ro with one empty and one valid vlan-range value")
     public void testRoWithEmptyAndValidVlanRangeValues() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower("3")
                 .vlanRangeUpper("");
-        a4ResourceOrderRobot.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsRejected();
-        a4ResourceOrderRobot.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -262,19 +262,19 @@ public class A4ResourceOrderTest {
     @Description("ro with one null and one valid vlan-range value")
     public void testRoWithNullAndValidVlanRangeValues() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower(null)
                 .vlanRangeUpper("4012");
-        a4ResourceOrderRobot.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsRejected();
-        a4ResourceOrderRobot.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -282,18 +282,16 @@ public class A4ResourceOrderTest {
     @Description("ro without vlan-range")
     public void testRoWithoutVlanRange() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-
-        // wird aktuell vom Dispatcher zurückgewiesen - Fehler
-        //a4ResourceOrderRobot.setCharacteristicValue("VLAN_Range", null, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.setCharacteristicValue("VLAN_Range", null, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -301,16 +299,16 @@ public class A4ResourceOrderTest {
     @Description("ro with empty vlan-range")
     public void testRoWithEmptyVlanRange() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrderRobot.setCharacteristicValue(VLAN_RANGE, "", DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, "", DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -318,16 +316,16 @@ public class A4ResourceOrderTest {
     @Description("ro without characteristic vlan-range")
     public void testRoWithoutVlanRangeCharacteristic() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrderRobot.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -335,11 +333,11 @@ public class A4ResourceOrderTest {
     @Description("Post to Mercury is impossible")
     public void testNoPostToMercury() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrderRobot.setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
@@ -378,11 +376,11 @@ public class A4ResourceOrderTest {
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testUnknownNel() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrderRobot.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", DEFAULT_ORDER_ITEM_ID, ro); // Link is unknown
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", DEFAULT_ORDER_ITEM_ID, ro); // Link is unknown
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
@@ -421,15 +419,15 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with -add- and get Callback with -completed-")
     public void testAddItem() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
-        a4ResourceOrderRobot.checkResourceOrderIsCompleted();
-        a4ResourceOrderRobot.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
 /*
@@ -652,10 +650,10 @@ public class A4ResourceOrderTest {
     @Description("Delete is not implemented")
     public void testDeleteNotImplemented() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN
@@ -689,10 +687,10 @@ public class A4ResourceOrderTest {
     @Description("Modify is not implemented")
     public void testModifyNotImplemented() {
         // GIVEN
-        a4ResourceOrderRobot.addOrderItemModify(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemModify(DEFAULT_ORDER_ITEM_ID, nelData, ro);
 
         // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
 
         // THEN

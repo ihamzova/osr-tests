@@ -14,7 +14,7 @@ public class A4ResourceOrderMapper {
 
     public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
-                .externalId("merlin_id_0815")
+                .externalId("merlin_id_" + getRandomDigits(4))
                 .description("resource order of osr-tests")
                 .name("resource order name");
     }
