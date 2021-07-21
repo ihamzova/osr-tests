@@ -214,7 +214,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -234,7 +234,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -254,7 +254,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -274,7 +274,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkResourceOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -283,7 +283,7 @@ public class A4ResourceOrderTest {
     public void testRoWithoutVlanRange() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrder.setCharacteristicValue("VLAN_Range", null, DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, null, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -291,7 +291,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -308,7 +308,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -325,7 +325,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -427,7 +427,7 @@ public class A4ResourceOrderTest {
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkResourceOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
 /*

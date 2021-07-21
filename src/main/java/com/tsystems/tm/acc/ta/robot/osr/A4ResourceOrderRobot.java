@@ -1,7 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
@@ -132,8 +134,6 @@ public class A4ResourceOrderRobot {
     }
 
     private ResourceOrder getResourceOrderFromCallback() {
-        final ObjectMapper objectMapper = new ObjectMapper();
-
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
                         newRequestPattern(
@@ -142,8 +142,23 @@ public class A4ResourceOrderRobot {
 
         String response = ergList.get(0).getBodyAsString();
 
+        return getResourceOrderObjectFromJsonString(response);
+    }
+
+    private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        // action property in json is e.g. "add". Needs to be mapped to enum ADD("add")
+        objectMapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
+
+        // some @... properties like e.g. @BaseType cannot be mapped (to atBaseType). Don't fail, isn't tested here
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // date-time comes in unix milliseconds. Need to be mapped to OffsetDateTime
+        objectMapper.registerModule(new JavaTimeModule());
+
         try {
-            return objectMapper.readValue(response, ResourceOrder.class);
+            return objectMapper.readValue(jsonString, ResourceOrder.class);
         } catch (JsonProcessingException e) {
             fail(e.getMessage());
         }
@@ -167,11 +182,11 @@ public class A4ResourceOrderRobot {
             fail("No callback resource order to check");
     }
 
-    public void checkResourceOrderItemIsCompleted(String orderItemId) {
+    public void checkOrderItemIsCompleted(String orderItemId) {
         checkResourceOrderItemHasState(orderItemId, ResourceOrderItemStateType.COMPLETED);
     }
 
-    public void checkResourceOrderItemIsRejected(String orderItemId) {
+    public void checkOrderItemIsRejected(String orderItemId) {
         checkResourceOrderItemHasState(orderItemId, ResourceOrderItemStateType.REJECTED);
     }
 
