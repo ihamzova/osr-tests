@@ -94,9 +94,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE Gegenstelle works")
     public void testA4NeDetailPageAndClickOppositeNe() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickGegenStelleIcon();
 
         // THEN
@@ -108,9 +110,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEP details works")
     public void testA4NeDetailPageAndClickNepButton() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickNepIcon();
 
         // THEN
@@ -122,9 +126,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEL details works")
     public void testA4NeDetailPageAndClickNelButton() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickNelIcon();
 
         // THEN
