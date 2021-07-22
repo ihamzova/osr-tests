@@ -15,7 +15,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -73,13 +72,12 @@ public class A4SupportPageTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - Unblock Queue")
     public void testUnblockQueue() throws IOException, InterruptedException {
-        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
 
         String count0 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq at start: "+count0);
-        // check DLQ (DLQ soll hier leer sein)
-        a4ResilienceRobot.removeAllMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
 
+        // check DLQ is empty
+        a4ResilienceRobot.removeAllMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         String count1 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq after remove: "+count1);
 
@@ -91,25 +89,26 @@ public class A4SupportPageTest extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        // write things in queue
+        // write error500 in normal-queue
         a4NemoUpdater.triggerAsyncNemoUpdate(uuids);
 
         // check DLQ
-        String count2 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
-        System.out.println("+++ entries in dlq after 500: "+count2);
+       // String count2 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
+       // System.out.println("+++ entries in dlq after 500: "+count2);
 
         // click unblock
         a4SupportPageRobot.openSupportPage();
-        a4SupportPageRobot.clickCleanNemoQueueButton();
-        a4SupportPageRobot.clickCleanNemoQueueButtonConfirm();
+        a4SupportPageRobot.clickUnblockNemoQueueButton();
+        a4SupportPageRobot.clickMoveMessageToDlqConfirm();
+        TimeUnit.SECONDS.sleep(5);
+        a4SupportPageRobot.checkCleanNemoQueueMsg(); // check of UI-Message
+        System.out.println("+++ check of UI-Message done ");
 
-        TimeUnit.SECONDS.sleep(28);
+        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 10000);
 
-        a4SupportPageRobot.checkCleanNemoQueueMsg(); // Prüfung der UI-Meldung
-
-        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
         // check DLQ+1
-        a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", (Integer.parseInt(count2) + 1));
+       // a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", (Integer.parseInt(count2) + 1));
 
         String count4 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq should be one more: "+count4);
@@ -206,6 +205,7 @@ public class A4SupportPageTest extends GigabitTest {
 
         // write things in normal queue
         a4NemoUpdater.triggerAsyncNemoUpdate(uuids);
+        TimeUnit.SECONDS.sleep(10);
 
         // check DLQ+1
         String count2 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
