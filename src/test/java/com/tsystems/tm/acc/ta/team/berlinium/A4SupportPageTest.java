@@ -100,10 +100,12 @@ public class A4SupportPageTest extends GigabitTest {
         a4SupportPageRobot.openSupportPage();
         a4SupportPageRobot.clickUnblockNemoQueueButton();
         a4SupportPageRobot.clickMoveMessageToDlqConfirm();
+        TimeUnit.SECONDS.sleep(5);
         a4SupportPageRobot.checkCleanNemoQueueMsg(); // check of UI-Message
+        System.out.println("+++ check of UI-Message done ");
 
         final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
-        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 10000);
 
         // check DLQ+1
        // a4ResilienceRobot.checkMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo", (Integer.parseInt(count2) + 1));
@@ -203,6 +205,7 @@ public class A4SupportPageTest extends GigabitTest {
 
         // write things in normal queue
         a4NemoUpdater.triggerAsyncNemoUpdate(uuids);
+        TimeUnit.SECONDS.sleep(10);
 
         // check DLQ+1
         String count2 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
