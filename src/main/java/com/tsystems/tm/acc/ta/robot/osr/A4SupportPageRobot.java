@@ -38,12 +38,12 @@ public class A4SupportPageRobot {
     }
 
     @Step("Click clean nemo queue button")
-    public void clickCleanNemoQueueButton() {
+    public void clickUnblockNemoQueueButton() {
         $(a4SupportPage.getA4_SUPPORT_UI_CLEAN_NEMO_QUEUE_BUTTON_LOCATOR()).click();
     }
 
     @Step("Click clean nemo queue button - confirm")
-    public void clickCleanNemoQueueButtonConfirm() {
+    public void clickMoveMessageToDlqConfirm() {
         $(a4SupportUnblockPage.getA4_SUPPORT_UI_CLEAN_NEMO_QUEUE_BUTTON_LOCATOR()).click();
     }
 

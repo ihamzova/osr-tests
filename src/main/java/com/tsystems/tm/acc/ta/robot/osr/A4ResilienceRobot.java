@@ -36,7 +36,7 @@ public class A4ResilienceRobot {
     public long getRedeliveryDelayNemoUpdater() throws IOException {
 
         URI uri = new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri();
-        String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
+        String url = uri.toString() + "/actuator/env/redeliveryDelay"; // redeliveryDelay
 
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url);
