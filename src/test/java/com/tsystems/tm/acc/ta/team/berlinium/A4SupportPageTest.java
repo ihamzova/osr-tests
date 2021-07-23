@@ -71,10 +71,15 @@ public class A4SupportPageTest extends GigabitTest {
     @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - Unblock Queue")
-    public void testUnblockQueue() throws IOException, InterruptedException {
+    public void test1UnblockQueue() throws IOException, InterruptedException {
 
+        // other ms work also in the same queue, this is sometimes reason of errors in test
+        // 500-messages in normal-queue sometimes doesn't come to dlq, you must manual unblock the normal-queue
+        System.out.println("+++ entries in normal-queue at start: "+a4ResilienceRobot
+                .countMessagesInQueueNemoUpdater("jms.queue.UpdateNemo"));
         String count0 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq at start: "+count0);
+
 
         // check DLQ is empty
         a4ResilienceRobot.removeAllMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
@@ -112,6 +117,8 @@ public class A4SupportPageTest extends GigabitTest {
 
         String count4 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq should be one more: "+count4);
+        System.out.println("+++ entries in normal-queue at end: "+a4ResilienceRobot
+                .countMessagesInQueueNemoUpdater("jms.queue.UpdateNemo"));
         assertEquals(Integer.parseInt(count4), Integer.parseInt(count1) + 1);
 
         //AFTER
@@ -122,7 +129,7 @@ public class A4SupportPageTest extends GigabitTest {
     @Owner("Thea.John@telekom.de, heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - Empty DLQ")
-    public void testEmptyDlq() throws IOException, InterruptedException {
+    public void test2EmptyDlq() throws IOException, InterruptedException {
 
         String count0 = a4ResilienceRobot.countMessagesInQueueNemoUpdater("jms.dead-letter-queue.UpdateNemo");
         System.out.println("+++ entries in dlq at start: "+count0);
@@ -187,7 +194,7 @@ public class A4SupportPageTest extends GigabitTest {
     @Owner("Karin.Penne@telekom.de")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Support Page - List Queue")
-    public void testListQueue() throws IOException, InterruptedException {
+    public void test3ListQueue() throws IOException, InterruptedException {
 
         // Test: Anzahl auf UI entspricht Anzahl in DLQ
 
