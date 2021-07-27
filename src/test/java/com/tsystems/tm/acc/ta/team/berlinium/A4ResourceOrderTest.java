@@ -740,4 +740,24 @@ public class A4ResourceOrderTest {
     }
     */
 
+    @Test
+    @Owner("bela.kovac@t-systems.com")
+    @Description("DIGIHUB-115133 Resource order has two order items with same resource.name (LBZ)")
+    public void testRoWithDuplicateLbzInRoi() {
+        // GIVEN
+        final String roiId2 = "roiId2";
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(roiId2, nelData, ro); // uses same nelData, therefore same LBZ mapped to resource.name
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(5);
+
+        // THEN
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsRejected(roiId2);
+    }
+
 }
+
