@@ -116,14 +116,15 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
 
 
         //Activation L2BSA Product
-        a4CarrierManagement.sendPostForAllocateL2BsaNsp(lineIdAccessLine,"Autotest-Carrier", 10000, 30000);
+        a4CarrierManagement.sendPostForAllocateL2BsaNsp(lineIdAccessLine,"Autotest-Carrier",
+                10000, 30000, "Dienstvertrag");
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
 
         // check L2BSA product - activation
         Assert.assertEquals(allocatedL2BsaNSP.getLineId(),lineIdAccessLine);
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "30000");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "10000");
-
+        Assert.assertEquals(allocatedL2BsaNSP.getL2CcId(), "Dienstvertrag");
 
         // Change L2BSA product (ServiceBandwidth)
         // check L2BSA product - change
@@ -137,8 +138,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         Assert.assertNull(releasedL2BsaNSP.getLineId());
         Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
         Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
-
-
+        Assert.assertNull(allocatedL2BsaNSP.getL2CcId());
     }
 
 }

@@ -98,12 +98,14 @@ public class A4CarrierManagementTest extends GigabitTest {
         // THEN / Assert
 
         a4CarrierManagement.sendPostForAllocateL2BsaNsp
-                ("Autotest-LineId","Autotest-Carrier", 100, 1000);
+                ("Autotest-LineId","Autotest-Carrier", 100, 1000,
+                        "Dienstvertrag");
 
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         Assert.assertEquals(allocatedL2BsaNSP.getLineId(),"Autotest-LineId");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "1000");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "100");
+        Assert.assertEquals(allocatedL2BsaNSP.getL2CcId(), "Dienstvertrag");
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
@@ -114,7 +116,8 @@ public class A4CarrierManagementTest extends GigabitTest {
         // THEN / Assert
 
         a4CarrierManagement.sendPostForAllocateL2BsaNspBadRequest
-                ("Wrong-LineId","Autotest-Carrier", 100, 1000);
+                ("Wrong-LineId","Autotest-Carrier", 100, 1000,
+                        "Dienstvertrag");
     }
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
@@ -125,7 +128,8 @@ public class A4CarrierManagementTest extends GigabitTest {
         // THEN / Assert
 
         a4CarrierManagement.sendPostForAllocateL2BsaNspNotFound
-                ("Autotest-LineId","Wrong-Carrier", 100, 1000);
+                ("Autotest-LineId","Wrong-Carrier", 100, 1000,
+                        "Dienstvertrag");
     }
 
     @Test(description = "DIGIHUB-89266 ReleaseL2BsaNspTask")
@@ -140,6 +144,7 @@ public class A4CarrierManagementTest extends GigabitTest {
         Assert.assertNull(allocatedL2BsaNSP.getLineId());
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
+        Assert.assertNull(allocatedL2BsaNSP.getL2CcId());
     }
 
     @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
