@@ -26,13 +26,13 @@ public class A4CarrierManagementRobot {
 
     @Step("send POST for allocateL2BsaNspTask")
     public void sendPostForAllocateL2BsaNsp
-            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown) {
+            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown, String l2CcId) {
         AllocateL2BsaNspTask allocateL2BsaNspTask = new AllocateL2BsaNspTask();
         allocateL2BsaNspTask.setLineId(lineId);
         allocateL2BsaNspTask.setCarrierBsaReference(carrierBsaReference);
         allocateL2BsaNspTask.setDataRateDown(dataRateDown);
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
-
+        allocateL2BsaNspTask.setL2CcId(l2CcId);
         a4CarrierManagement
                 .allocateL2BsaNspTask()
                 .allocateL2BsaNspTask()
@@ -42,13 +42,13 @@ public class A4CarrierManagementRobot {
     }
     @Step("send POST for allocateL2BsaNspTask and not found free L2Bsa-NSP")
     public void sendPostForAllocateL2BsaNspNotFound
-            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown) {
+            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown, String l2CcId) {
         AllocateL2BsaNspTask allocateL2BsaNspTask = new AllocateL2BsaNspTask();
         allocateL2BsaNspTask.setLineId(lineId);
         allocateL2BsaNspTask.setCarrierBsaReference(carrierBsaReference);
         allocateL2BsaNspTask.setDataRateDown(dataRateDown);
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
-
+        allocateL2BsaNspTask.setL2CcId(l2CcId);
         a4CarrierManagement
                 .allocateL2BsaNspTask()
                 .allocateL2BsaNspTask()
@@ -58,12 +58,13 @@ public class A4CarrierManagementRobot {
     }
     @Step("send POST for allocateL2BsaNspTask and not found free L2Bsa-NSP")
     public void sendPostForAllocateL2BsaNspBadRequest
-            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown) {
+            (String lineId, String carrierBsaReference, int dataRateUp, int dataRateDown, String l2CcId) {
         AllocateL2BsaNspTask allocateL2BsaNspTask = new AllocateL2BsaNspTask();
         allocateL2BsaNspTask.setLineId(lineId);
         allocateL2BsaNspTask.setCarrierBsaReference(carrierBsaReference);
         allocateL2BsaNspTask.setDataRateDown(dataRateDown);
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
+        allocateL2BsaNspTask.setL2CcId(l2CcId);
 
         a4CarrierManagement
                 .allocateL2BsaNspTask()
