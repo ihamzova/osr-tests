@@ -19,16 +19,13 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.R
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VLAN_RANGE;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot.cbPath;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
@@ -49,9 +46,12 @@ public class A4ResourceOrderTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData1;
     private A4NetworkElement neData2;
+    private A4NetworkElement neData3;
     private A4NetworkElementPort nepData1;
     private A4NetworkElementPort nepData2;
-    private A4NetworkElementLink nelData;
+    private A4NetworkElementPort nepData3;
+    private A4NetworkElementLink nelData1;
+    private A4NetworkElementLink nelData2;
     private A4NetworkServiceProfileA10Nsp nspA10Data1;
     private A4TerminationPoint tpData1;
 
@@ -64,16 +64,27 @@ public class A4ResourceOrderTest {
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
+
         neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementA10NspSwitch01);
         nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+
         neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
         nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
-        nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+
+        neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementB);
+        nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+
+        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
+        nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+
         nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
         tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
@@ -93,9 +104,12 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neData1, negData);
         a4ResourceInventory.createNetworkElement(neData2, negData);
+        a4ResourceInventory.createNetworkElement(neData3, negData);
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepData1, nepData2, neData1, neData2);
+        a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
+        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2);
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
@@ -157,7 +171,7 @@ public class A4ResourceOrderTest {
     @Description("a10-switch in resource order from Merlin is unknown")
     public void testUnknownSwitch() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", DEFAULT_ORDER_ITEM_ID, ro); // unknown Switch
 
         // setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
@@ -202,7 +216,7 @@ public class A4ResourceOrderTest {
     @Description("ro without vlan-range values (=null)")
     public void testRoWithoutVlanRangeValues() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower(null)  // values = null, no change in db; ok
                 .vlanRangeUpper(null);
@@ -222,7 +236,7 @@ public class A4ResourceOrderTest {
     @Description("ro with empty vlan-range values")
     public void testRoWithEmptyVlanRangeValues() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower("")  // values empty, no change in db; ok
                 .vlanRangeUpper("");
@@ -242,7 +256,7 @@ public class A4ResourceOrderTest {
     @Description("ro with one empty and one valid vlan-range value")
     public void testRoWithEmptyAndValidVlanRangeValues() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower("3")
                 .vlanRangeUpper("");
@@ -262,7 +276,7 @@ public class A4ResourceOrderTest {
     @Description("ro with one null and one valid vlan-range value")
     public void testRoWithNullAndValidVlanRangeValues() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         VlanRange vlanRange = new VlanRange()
                 .vlanRangeLower(null)
                 .vlanRangeUpper("4012");
@@ -301,7 +315,7 @@ public class A4ResourceOrderTest {
     @Description("ro with empty vlan-range")
     public void testRoWithEmptyVlanRange() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, "", DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
@@ -318,7 +332,7 @@ public class A4ResourceOrderTest {
     @Description("ro without characteristic vlan-range")
     public void testRoWithoutVlanRangeCharacteristic() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
@@ -335,7 +349,7 @@ public class A4ResourceOrderTest {
     @Description("Post to Mercury is impossible")
     public void testNoPostToMercury() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
 
         // WHEN
@@ -378,7 +392,7 @@ public class A4ResourceOrderTest {
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testUnknownNel() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", DEFAULT_ORDER_ITEM_ID, ro); // Link is unknown
 
         // WHEN
@@ -421,7 +435,7 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with -add- and get Callback with -completed-")
     public void testAddItem() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -652,7 +666,7 @@ public class A4ResourceOrderTest {
     @Description("Delete is not implemented")
     public void testDeleteNotImplemented() {
         // GIVEN
-        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -689,7 +703,7 @@ public class A4ResourceOrderTest {
     @Description("Modify is not implemented")
     public void testModifyNotImplemented() {
         // GIVEN
-        a4ResourceOrder.addOrderItemModify(DEFAULT_ORDER_ITEM_ID, nelData, ro);
+        a4ResourceOrder.addOrderItemModify(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -746,8 +760,8 @@ public class A4ResourceOrderTest {
     public void testRoWithDuplicateLbzInRoi() {
         // GIVEN
         final String roiId2 = "roiId2";
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        a4ResourceOrder.addOrderItemAdd(roiId2, nelData, ro); // uses same nelData, therefore same LBZ mapped to resource.name
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.addOrderItemAdd(roiId2, nelData1, ro); // uses same nelData, therefore same LBZ mapped to resource.name
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -759,5 +773,52 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkOrderItemIsRejected(roiId2);
     }
 
-}
+    @Test
+    @Owner("bela.kovac@t-systems.com")
+    @Description("DIGIHUB-115139 Resource order has two order items without same resource.name (LBZ)")
+    public void testRoWithoutDuplicateLbzInRoi() {
+        // GIVEN
+        final String roiId2 = "roiId2";
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.addOrderItemAdd(roiId2, nelData2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
 
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(5);
+
+        // THEN
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(roiId2);
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+    }
+
+    @DataProvider(name = "characteristicNames")
+    public static Object[] characteristicNames() {
+        return new Object[]{
+                RAHMEN_VERTRAGS_NR,
+                CARRIER_BSA_REFERENCE,
+                VUEP_PUBLIC_REFERENZ_NR,
+                LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV,
+                MTU_SIZE,
+                VLAN_RANGE,
+                QOS_LIST};
+    }
+
+    @Test(dataProvider = "characteristicNames")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("DIGIHUB-112658 Resource order: Characteristic in order item has value empty string \"\"")
+    public void testRoWithCharacteristicWithEmtpyString(String cName) {
+        // GIVEN
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.setCharacteristicValue(cName, "", DEFAULT_ORDER_ITEM_ID, ro);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(5);
+
+        // THEN
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+    }
+
+}
