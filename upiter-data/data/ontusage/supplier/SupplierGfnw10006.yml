@@ -1,0 +1,7 @@
+name: SupplierGfnw10006
+template: com.tsystems.tm.acc.ta.data.osr.models.Supplier
+values:
+  supplierName: "Leonard Weiss fuer JV"
+  creditorId: "101010"
+  atomicOrganizationId: "10006"
+  acid: "47100"

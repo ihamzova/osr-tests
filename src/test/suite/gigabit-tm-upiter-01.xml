@@ -73,4 +73,9 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.subscribernetworkline.SubscriberNetworklineProfile"/>
         </classes>
     </test>
+    <test thread-count="1" name="ONT Usage Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontusage.OntUsageTest"/>
+        </classes>
+    </test>
 </suite>
