@@ -138,7 +138,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         Assert.assertNull(releasedL2BsaNSP.getLineId());
         Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
         Assert.assertEquals(releasedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
-        Assert.assertNull(allocatedL2BsaNSP.getL2CcId());
+        Assert.assertNull(releasedL2BsaNSP.getL2CcId());
     }
 
 }
