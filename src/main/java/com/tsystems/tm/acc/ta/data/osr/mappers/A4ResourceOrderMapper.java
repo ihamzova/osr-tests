@@ -10,7 +10,13 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceOrderMapper {
 
-    public final static String VLAN_RANGE = "VLAN_Range";
+    public static final String RAHMEN_VERTRAGS_NR = "RahmenvertragsNr";
+    public static final String CARRIER_BSA_REFERENCE = "Subscription.keyA";
+    public static final String VUEP_PUBLIC_REFERENZ_NR = "VUEP_Public_Referenz-Nr.";
+    public static final String LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV = "LACP_aktiv";
+    public static final String MTU_SIZE = "MTU-Size";
+    public static final String VLAN_RANGE = "VLAN_Range";
+    public static final String QOS_LIST = "QoS_List";
 
     public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
@@ -22,13 +28,13 @@ public class A4ResourceOrderMapper {
     public List<Characteristic> buildResourceCharacteristicList() {
         List<Characteristic> cList = new ArrayList<>();
 
-        addCharacteristic("RahmenvertragsNr", getRandomDigits(8), "valueTypeRv", cList);
-        addCharacteristic("Subscription.keyA", UUID.randomUUID().toString(), "valueTypeCbr", cList);
-        addCharacteristic("VUEP_Public_Referenz-Nr.", "A1000851", "valueTypeVuep", cList);
-        addCharacteristic("MTU-Size", "1590", "valueTypeMtu", cList);
-        addCharacteristic("LACP_aktiv", "true", "valueTypeLacp", cList);
+        addCharacteristic(RAHMEN_VERTRAGS_NR, getRandomDigits(8), "valueTypeRv", cList);
+        addCharacteristic(CARRIER_BSA_REFERENCE, UUID.randomUUID().toString(), "valueTypeCbr", cList);
+        addCharacteristic(VUEP_PUBLIC_REFERENZ_NR, "A1000851", "valueTypeVuep", cList);
+        addCharacteristic(LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV, "true", "valueTypeLacp", cList);
+        addCharacteristic(MTU_SIZE, "1590", "valueTypeMtu", cList);
         addCharacteristic(VLAN_RANGE, buildVlanRange(), "Object", cList);
-        addCharacteristic("QoS_List", buildQosList(), "Object", cList);
+        addCharacteristic(QOS_LIST, buildQosList(), "Object", cList);
 
         return cList;
     }
