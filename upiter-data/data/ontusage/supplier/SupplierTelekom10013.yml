@@ -1,0 +1,7 @@
+name: SupplierTelekom10013
+template: com.tsystems.tm.acc.ta.data.osr.models.Supplier
+values:
+  supplierName: "Leonard Weiss fuer DTAG"
+  creditorId: "101016"
+  atomicOrganizationId: "10013"
+  acid: "47100"

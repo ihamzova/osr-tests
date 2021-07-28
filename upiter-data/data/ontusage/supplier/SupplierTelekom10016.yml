@@ -1,0 +1,7 @@
+name: SupplierTelekom10016
+template: com.tsystems.tm.acc.ta.data.osr.models.Supplier
+values:
+  supplierName: "Rheinland Supplier"
+  creditorId: "101017"
+  atomicOrganizationId: "10016"
+  acid: "47100"

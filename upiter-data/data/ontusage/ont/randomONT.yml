@@ -1,0 +1,5 @@
+name: randomONT
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "willBeReplaced"
+  #serialNumber: "TEST1A2${randomLong, 10000, 99999}"
