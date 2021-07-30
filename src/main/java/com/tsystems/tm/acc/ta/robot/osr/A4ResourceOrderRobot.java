@@ -9,10 +9,12 @@ import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
+import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 import io.qameta.allure.Step;
@@ -27,7 +29,8 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_QUEUE_DISPATCHER_MS;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -37,11 +40,18 @@ public class A4ResourceOrderRobot {
     public final static String cbPath = "/test_url";
     private final String cbUrl = "https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de" + cbPath; // Wiremock for merlin MS // TODO dynamically get env name
 
-    private static final AuthTokenProvider authTokenProvider =
+    private static final AuthTokenProvider authTokenProviderDispatcher =
             new RhssoClientFlowAuthTokenProvider(A4_QUEUE_DISPATCHER_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_QUEUE_DISPATCHER_MS));
 
-    private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProvider).getClient();
+    private static final AuthTokenProvider authTokenProviderOrchestrator =
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS));
+
+
+    private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProviderDispatcher).getClient();
+    private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
+            new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
 
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
 
@@ -200,4 +210,21 @@ public class A4ResourceOrderRobot {
             fail("No callback resource order to check");
     }
 
+    public ResourceOrderDto getResourceOrderFromDb(String id) {
+        return a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .getResourceOrder()
+                .uuidPath(id)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .getBody()
+                .as(ResourceOrderDto.class);
+    }
+
+    public void getResourceOrderFromDbAndCheckIfCompleted(String id) {
+        ResourceOrderDto ro = getResourceOrderFromDb(id);
+
+        assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
+        if(ro.getOrderItem() != null || !ro.getOrderItem().isEmpty())
+            assertEquals(ResourceOrderItemStateType.COMPLETED.toString(), ro.getOrderItem().get(0).getState());
+    }
 }
