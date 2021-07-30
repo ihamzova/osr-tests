@@ -16,7 +16,8 @@ public class A4ResourceOrderMapper {
         return new ResourceOrder()
                 .externalId("merlin_id_" + getRandomDigits(4))
                 .description("resource order of osr-tests")
-                .name("resource order name");
+                .name("resource order name")
+                .id(UUID.randomUUID().toString());
     }
 
     public List<Characteristic> buildResourceCharacteristicList() {

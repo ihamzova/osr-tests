@@ -430,6 +430,7 @@ public class A4ResourceOrderTest {
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
     }
 
 /*
