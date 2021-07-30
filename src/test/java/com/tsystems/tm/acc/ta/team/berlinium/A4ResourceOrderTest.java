@@ -15,10 +15,12 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
+import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.util.List;
@@ -442,6 +444,10 @@ public class A4ResourceOrderTest {
         sleepForSeconds(5);
 
         // THEN
+        List<NetworkServiceProfileA10NspDto> networkServiceProfileA10NspDtos
+                = a4ResourceInventory.getNetworkServiceProfilesA10NspByTerminationPoint(tpData1.getUuid());
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = networkServiceProfileA10NspDtos.get(0);
+
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
