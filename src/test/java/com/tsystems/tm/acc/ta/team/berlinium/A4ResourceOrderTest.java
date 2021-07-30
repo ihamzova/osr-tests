@@ -444,9 +444,9 @@ public class A4ResourceOrderTest {
         sleepForSeconds(5);
 
         // THEN
-        List<NetworkServiceProfileA10NspDto> networkServiceProfileA10NspDtos
-                = a4ResourceInventory.getNetworkServiceProfilesA10NspByTerminationPoint(tpData1.getUuid());
-        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = networkServiceProfileA10NspDtos.get(0);
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto =
+                a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
+        Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
