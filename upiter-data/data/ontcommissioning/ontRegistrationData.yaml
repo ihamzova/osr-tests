@@ -5,11 +5,22 @@ values:
   slotNumber: "3"
   portNumber: "0"
 ---
+name: AccessLineAnbieterwechsel
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA2880866"
+---
 name: OntSerialNumber
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:
   serialNumber: "1234123412341234"
   newSerialNumber: "9876987698769876"
+---
+name: OntDefaultSerialNumber
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1111111111193045"
+  newSerialNumber:  "DEFAULT"
 ---
 name: PortFor33LineCase
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
