@@ -224,7 +224,6 @@ public class A4ResourceInventoryMapper {
                 .minActiveLagLinks("1")
                 .qosMode("TOLERANT")
                 .carrierBsaReference("CarrierBsaReference")
-                .routingInstanceId(nspData.getRoutingInstanceId())
                 .numberOfAssociatedNsps(nspData.getNumberOfAssociatedNsps())
                 .itAccountingKey(UNDEFINED)
                 .lacpMode(UNDEFINED)
