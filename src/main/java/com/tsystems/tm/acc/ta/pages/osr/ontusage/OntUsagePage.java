@@ -27,6 +27,10 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     public static final By SUBMIT_BUTTON = byXpath("//*[contains(text(),'Anlegen')]");
     public static final By USERNAME_INPUT = byXpath("//input[@id='idmNameOfEmployee']");
     public static final By MENU_ICON = byXpath("//button[@title='Benutzermenü']");
+    public static final By CONFIRM_BUTTON = byXpath("//span[contains(text(), 'Ja')]");
+    public static final By ERRORMESSAGE = byXpath("//div[contains(@class,'notification')]/*[contains(text(),'Löschen in dem Status nicht möglich!')]");
+    public static final By LOGIN_BUTTON = byId("kc-login");
+    public static final By LOGOUT_BUTTON = byXpath("//button[@title='Ausloggen']");
 
     @Step("Validate Url")
     public OntUsagePage validate() {
@@ -77,13 +81,11 @@ public class OntUsagePage implements SupplierCockpitUiPage{
         By ONT_CELL = byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]");
         if (assertWillFail){
             sleep(1000); //this is needed because the error message pops up asyncronously
-            By ERRORMESSAGE = byXpath("//div[contains(@class,'notification')]/*[contains(text(),'Löschen in dem Status nicht möglich!')]");
             if (!$(ERRORMESSAGE).isDisplayed()){
                 throw new Assert.AssertionFailedException();
             }
             $(ONT_CELL).shouldBe(Condition.visible);
         } else {
-            By CONFIRM_BUTTON = byXpath("//button[contains(@class, 'ui-confirmdialog-acceptbutton')]");
             $(CONFIRM_BUTTON).waitUntil(Condition.visible, 2000).click();
             $(ONT_CELL).waitUntil(Condition.disappears, 4000);
         }
@@ -93,9 +95,7 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     @Step("Logout from Supplier UI")
     public void logout(){
         $(MENU_ICON).click();
-        By LOGOUT_BUTTON = byXpath("//button[@title='Ausloggen']");
         $(LOGOUT_BUTTON).waitUntil(Condition.visible, 1000).click();
-        By LOGIN_BUTTON = byId("kc-login");
         $(LOGIN_BUTTON).waitUntil(Condition.visible, 2000); //check that logout was successful
 
     }
