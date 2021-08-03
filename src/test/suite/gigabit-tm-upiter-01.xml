@@ -3,7 +3,7 @@
 <suite name="U-Piter test suites" verbose="1" data-provider-thread-count="1">
     <test thread-count="1" name="Deprovisioning tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.deprovisioning.DeprovisioningTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthdeprovisioning.DeprovisioningTest"/>
         </classes>
     </test>
     <test thread-count="1" name="Access Lines search UI Tests">
@@ -27,9 +27,9 @@
     </test>
     <test thread-count="1" name="FTTH Provisioning(for 5600 and 5800 devices) Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5800"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioningAdtran"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5600"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5800"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioningAdtran"/>
         </classes>
     </test>
     <test thread-count="1" name="FTTH Postprovisioning(for 5600 device) Backend Tests">
@@ -53,11 +53,11 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
         </classes>
     </test>
-    <test thread-count="1" name="FTTB Deprovisioning Backend Tests">
-        <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>
-        </classes>
-    </test>
+<!--    <test thread-count="1" name="FTTB Deprovisioning Backend Tests">-->
+<!--        <classes>-->
+<!--            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>-->
+<!--        </classes>-->
+<!--    </test>-->
     <test thread-count="1" name="Ral Test">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest"/>

@@ -24,7 +24,7 @@
     </test>
     <test thread-count="1" name="FTTH Provisioning(for 5600) Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600">
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5600">
                 <methods>
                     <include name="portProvisioningEmpty"/>
                 </methods>
@@ -44,7 +44,7 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning">
                 <methods>
-                    <include name="fttbDeviceProvisioningTest"/>
+                    <include name="fttbDeviceProvisioningTwistedPairTest"/>
                 </methods>
             </class>
         </classes>

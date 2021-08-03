@@ -5,12 +5,13 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.AssurancePortDtoV2.PorttypeEnum.GFAST;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.ETHERNET;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
 import static org.testng.Assert.assertEquals;
@@ -39,7 +41,11 @@ public class AccessLineRiRobot {
 
   @Step("Clear Al RI db")
   public void clearDatabase() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    accessLineResourceInventoryFillDbClient
+            .getClient()
+            .fillDatabase()
+            .deleteDatabase()
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Fill database with test data as a part of OLT Commissioning process emulation")
@@ -61,8 +67,14 @@ public class AccessLineRiRobot {
   }
 
   @Step("Fill database with test data as a part of DPU Preprovisioning process emulation")
-  public void fillDatabaseForDpuPreprovisioning() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForDpuPreprovisioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  public void fillDatabaseForDpuPreprovisioning(DpuDevice dpuDevice, PortProvisioning oltDevice) {
+    accessLineResourceInventoryFillDbClient.
+            getClient()
+            .fillDatabase()
+            .fillDatabaseForDpuPreprovisioning()
+            .DPU_END_SZQuery(dpuDevice.getEndsz())
+            .OLT_END_SZQuery(oltDevice.getEndSz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Check results after (de)provisioning: AccessLines, default ne profiles, default nl profiles")
@@ -105,8 +117,8 @@ public class AccessLineRiRobot {
     checkBackhaulIdCount(port);
   }
 
-  @Step("Check PhysicalResourceRefs")
-  public void checkPhysicalResourceRefCount(PortProvisioning port, int expectedPonPortsCount, int expectedEthernetPortsCount) {
+  @Step("Check PhysicalResourceRefs for FTTH")
+  public void checkPhysicalResourceRefCountFtth(PortProvisioning port, int expectedPonPortsCount, int expectedEthernetPortsCount) {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
       timeoutBlock.setTimeoutInterval(5000);
@@ -119,6 +131,21 @@ public class AccessLineRiRobot {
     assertEquals(getPonPorts(port).size(), expectedPonPortsCount);
     assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
   }
+
+//  @Step("Check PhysicalResourceRefs for FTTB")
+//  public void checkPhysicalResourceRefCountFttb(PortProvisioning port, int expectedGfastPortsCount, int expectedEthernetPortsCount) {
+//    try {
+//      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+//      timeoutBlock.setTimeoutInterval(5000);
+//      Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(port).size() == expectedEthernetPortsCount;
+//      timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
+//    } catch (Throwable e) {
+//      //catch the exception here . Which is block didn't execute within the time limit
+//    }
+//
+//    assertEquals(getGfastPorts(port).size(), expectedPonPortsCount);
+//    assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
+//  }
 
   @Step("Check assigned access lines count of port template")
   public void checkPortParametersForAssignedLines(PortProvisioning port) {
@@ -287,6 +314,40 @@ public class AccessLineRiRobot {
     assertEquals(getBackHaulId(port).size(), port.getBackhaulId().intValue(), "Backhauld count is incorrect");
   }
 
+  @Step("Check accessTransmissionMedium parameters")
+  public void checkAccessTransmissionMedium(DpuDevice dpuDevice, PortProvisioning port, int numberOfAccessLinesForProvisioning) {
+    List<AccessLineDto> accessLines = getAccessLinesByPort(port);
+    long bandwidthProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
+            .filter(Objects::nonNull).filter(fttbNeProfile -> Objects.requireNonNull(fttbNeProfile.getBandwidthProfile())
+                    .equals(dpuDevice.getBandwidthProfile()))
+            .count();
+    long dpuLineSpectrumProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
+            .filter(Objects::nonNull).filter(fttbNeProfile -> Objects.requireNonNull(fttbNeProfile.getDpuLineSpectrumProfile())
+                    .equals(dpuDevice.getDpuLineSpectrumProfile()))
+            .count();
+
+    long gfastInterfaceProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
+            .filter(Objects::nonNull).filter(fttbNeProfileDto -> Objects.requireNonNull(fttbNeProfileDto.getGfastInterfaceProfile())
+                    .equals(dpuDevice.getGfastInterfaceProfile()))
+            .count();
+
+    long accessTypes = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
+            .filter(Objects::nonNull).filter(defaultNetworkLineProfileDto -> Objects.requireNonNull(defaultNetworkLineProfileDto.getAccessType())
+                    .equals(dpuDevice.getAccessType()))
+            .count();
+
+    long accessTransmissionMedia = getGfastPorts(dpuDevice).stream().map(ReferenceDto::getAccessTransmissionMedium)
+            .filter(accessTransmissionMedium -> accessTransmissionMedium.getValue()
+                    .equals(dpuDevice.getAccessTransmissionMedium()))
+            .count();
+
+    assertEquals(bandwidthProfiles, numberOfAccessLinesForProvisioning);
+    assertEquals(dpuLineSpectrumProfiles, numberOfAccessLinesForProvisioning);
+    assertEquals(gfastInterfaceProfiles, numberOfAccessLinesForProvisioning);
+    assertEquals(accessTypes, numberOfAccessLinesForProvisioning);
+    assertEquals(accessTransmissionMedia, numberOfAccessLinesForProvisioning);
+  }
+
   @Step("Get Pon Ports")
   public List<ReferenceDto> getPonPorts(PortProvisioning port) {
     List<ReferenceDto> ponPorts = accessLineResourceInventory
@@ -310,6 +371,16 @@ public class AccessLineRiRobot {
     return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(ETHERNET.toString())).collect(Collectors.toList());
   }
 
+  @Step ("Get Gfast Ports")
+  public List<ReferenceDto> getGfastPorts (DpuDevice dpuDevice) {
+    List<ReferenceDto> gfastPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+            .searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto()
+                    .endSz(dpuDevice.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return gfastPorts.stream().filter(gfastPort -> gfastPort.getPortType().getValue().equals(GFAST.toString())).collect(Collectors.toList());
+  }
+
   @Step("Get BackhaulId by Port")
   public List<BackhaulIdDto> getBackHaulId(PortProvisioning port) {
     List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
@@ -324,7 +395,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get list of AccessLines on the specified port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
     return accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
@@ -346,7 +417,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get LineID Pool by Port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
     return accessLineResourceInventory.lineIdController().searchLineIds().body(
             new SearchLineIdDto()
                     .endSz(port.getEndSz())
@@ -398,7 +469,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get homeID state")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.HomeIdStatus getHomeIdStateByHomeId(String homeId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.HomeIdStatus getHomeIdStateByHomeId(String homeId) {
     List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdController()
             .searchHomeIds()
             .body(new SearchHomeIdDto()
@@ -409,7 +480,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get access line state by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineStatus getAccessLineStateByLineId(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus getAccessLineStateByLineId(String lineId) {
     List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
@@ -420,7 +491,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get lineId state by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdStatus getLineIdStateByLineId(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.LineIdStatus getLineIdStateByLineId(String lineId) {
     List<LineIdDto> lineIdPool = accessLineResourceInventory.lineIdController()
             .searchLineIds()
             .body(new SearchLineIdDto().lineId(lineId))
@@ -430,7 +501,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get subscriber NE profile by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
     List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
@@ -453,14 +524,14 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AccessLine entities by LineId for CA")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
     return accessLineResourceInventory
             .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Get AccessLine entities by oltEndSz, slot, port for CA")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
     return accessLineResourceInventory
             .accessLineControllerExternal()
             .listAccessLine()
@@ -472,7 +543,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AccessLine entities by dpuEndSz, port for CA")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
     return accessLineResourceInventory
             .accessLineControllerExternal()
             .listAccessLine()

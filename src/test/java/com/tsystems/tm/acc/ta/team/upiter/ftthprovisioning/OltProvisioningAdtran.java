@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.provisioning;
+package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -74,7 +74,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot.startPortProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkIdPools(portEmptyAdtran);
-        accessLineRiRobot.checkPhysicalResourceRefCount(portEmptyAdtran, 1, 1);
+        accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }
 
     @Test (priority = 2)
@@ -88,7 +88,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkIdPools(portEmptyAdtran);
-        accessLineRiRobot.checkPhysicalResourceRefCount(portEmptyAdtran, 1, 1);
+        accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }
 
     @Test(dependsOnMethods = "portProvisioning", priority = 1)
@@ -99,7 +99,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningAdtran);
         accessLineRiRobot.checkIdPools(portDeprovisioningAdtran);
-        accessLineRiRobot.checkPhysicalResourceRefCount(portDeprovisioningAdtran, 0, 1);
+        accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningAdtran, 0, 1);
         accessLineRiRobot.clearDatabase();
     }
 
@@ -111,7 +111,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprovisioningForDpu, true);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningForDpu);
         accessLineRiRobot.checkIdPools(portDeprovisioningForDpu);
-        accessLineRiRobot.checkPhysicalResourceRefCount(portDeprovisioningForDpu, 1, 1);
+        accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningForDpu, 1, 1);
 
         List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprovisioningForDpu);
         List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprovisioningForDpu);
