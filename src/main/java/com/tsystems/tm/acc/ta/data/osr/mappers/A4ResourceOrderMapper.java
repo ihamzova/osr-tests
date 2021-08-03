@@ -67,7 +67,7 @@ public class A4ResourceOrderMapper {
         qosClassList.add(new QosClass()
                 .qosClass(className)
                 .qospBit(pBit)
-                .qosBandwidthDown(bwDown)
+                .qosBandwidth(bwDown)
         );
     }
 
