@@ -4,8 +4,8 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.invoker.JSON;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.invoker.GsonObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
@@ -13,7 +13,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 

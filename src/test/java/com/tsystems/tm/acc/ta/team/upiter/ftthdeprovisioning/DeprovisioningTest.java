@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.deprovisioning;
+package com.tsystems.tm.acc.ta.team.upiter.ftthdeprovisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
@@ -6,7 +6,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -67,7 +67,7 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startPortDeprovisioning(portDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkIdPools(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDepr, 0, 1);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
   @Test
@@ -78,7 +78,7 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDepr, false);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkIdPools(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDepr, 0, 1);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
   @Test
@@ -89,7 +89,7 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprForDpu, true);
     accessLineRiRobot.checkFtthPortParameters(portDeprForDpu);
     accessLineRiRobot.checkIdPools(portDeprForDpu);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDeprForDpu, 1, 1);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprForDpu, 1, 1);
 
     List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprForDpu);
     List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprForDpu);
@@ -109,7 +109,7 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkIdPools(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDepr, 0, 1);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
   @Test
@@ -121,7 +121,7 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startCardDeprovisioningV2(cardDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkIdPools(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDepr, 0, 1);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
   @Test
@@ -133,6 +133,6 @@ public class DeprovisioningTest extends GigabitTest {
     wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkIdPools(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCount(portDepr, 0, 0);
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 0);
   }
 }

@@ -24,6 +24,11 @@ public class DpuDevice {
     private String ponConnectionWe;
     private String ponConnectionGe;
     private String portNumber;
+    private String accessTransmissionMedium;
+    private String dpuLineSpectrumProfile;
+    private String bandwidthProfile;
+    private String accessType;
+    private String gfastInterfaceProfile;
 
     @Override
     public String toString() {
