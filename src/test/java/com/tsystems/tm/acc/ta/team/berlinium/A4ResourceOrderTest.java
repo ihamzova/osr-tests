@@ -108,8 +108,8 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
-        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3);
+        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
