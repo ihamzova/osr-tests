@@ -68,7 +68,7 @@ public class A4ResourceOrderTest {
         neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementA10NspSwitch01);
         nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
 
         neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
@@ -91,9 +91,9 @@ public class A4ResourceOrderTest {
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
         uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);
+                .get(UewegDataCase.uewegA);
         uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.defaultUeweg);
+                .get(UewegDataCase.uewegB);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -109,15 +109,15 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
         a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData2, neData3, uewegData2);
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
         ro = a4ResourceOrder.buildResourceOrder();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
-                .addMerlinMock().addRebellMock(uewegData1, neData1, neData2)
-                .addMerlinMock().addRebellMock(uewegData2, neData2, neData3)
+                .addMerlinMock()
+                .addRebellMockMultiple(uewegData1, neData1, neData2, uewegData2, neData3)
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -600,7 +600,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        //sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -638,8 +638,7 @@ public class A4ResourceOrderTest {
     @DataProvider(name = "characteristicNamesEmptyList")
     public static Object[] characteristicNamesEmptyList() {
         return new Object[]{
-                VLAN_RANGE,
-                QOS_LIST};
+                VLAN_RANGE};
     }
 
     @Test(dataProvider = "characteristicNamesEmptyList")

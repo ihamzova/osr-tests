@@ -6,6 +6,9 @@ import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBuilder {
 
     public OsrWireMockMappingsContextBuilder(ExtendedWireMock wireMock) {
@@ -18,6 +21,17 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
     public OsrWireMockMappingsContextBuilder addRebellMock(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
         context.add(new RebellStub().getUeweg200(uewegData, neA, neB));
+        return this;
+    }
+
+    public OsrWireMockMappingsContextBuilder addRebellMockMultiple(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB, UewegData uewegData2, A4NetworkElement neB2) {
+        List<UewegData> ueWegeList = new ArrayList<>();
+        ueWegeList.add(uewegData);
+        ueWegeList.add(uewegData2);
+        List<A4NetworkElement> a4NetworkElements = new ArrayList<>();
+        a4NetworkElements.add(neB);
+        a4NetworkElements.add(neB2);
+        context.add(new RebellStub().getUewegMultiple200(ueWegeList, neA, a4NetworkElements));
         return this;
     }
 
