@@ -1,13 +1,12 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -23,16 +22,12 @@ import io.qameta.allure.Owner;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
-import static com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot.cbPath;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static org.testng.Assert.assertTrue;
 
 public class A4ResourceOrderTest {
 
@@ -40,6 +35,7 @@ public class A4ResourceOrderTest {
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String wiremockScenarioName = "A4ResourceOrderTest";
+    private final int sleepTimer = 10;
 
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -56,6 +52,8 @@ public class A4ResourceOrderTest {
     private A4NetworkElementLink nelData2;
     private A4NetworkServiceProfileA10Nsp nspA10Data1;
     private A4TerminationPoint tpData1;
+    private UewegData uewegData1;
+    private UewegData uewegData2;
 
     private ResourceOrder ro;
 
@@ -70,7 +68,7 @@ public class A4ResourceOrderTest {
         neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementA10NspSwitch01);
         nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
 
         neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
@@ -92,17 +90,17 @@ public class A4ResourceOrderTest {
         tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
+        uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.uewegA);
+        uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.uewegB);
+
         // Ensure that no old test data is in the way
         cleanup();
     }
 
     @BeforeMethod
     public void setup() {
-        // what do we need in db?
-        // NEG (lcs planning, ops not_working) with NE - ok
-        // NE with endsz: see next line, category: A10NSP_SWITCH - ok
-        // NEL with lbz: example: 4N1/10001-49/30/125/7KCB-49/30/125/7KCA
-        // NEP at NEs, up to 16
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neData1, negData);
         a4ResourceInventory.createNetworkElement(neData2, negData);
@@ -110,8 +108,8 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
-        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2);
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3);
+        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
@@ -119,6 +117,7 @@ public class A4ResourceOrderTest {
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
                 .addMerlinMock()
+                .addRebellMockMultiple(uewegData1, neData1, neData2, uewegData2, neData3)
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -135,84 +134,6 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
     }
 
-/*    ObjectMapper om = new ObjectMapper();
-
-    public VlanRange mappVlanRangeValue(Object qosValue) throws IOException {
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String json;
-        json = om.writeValueAsString(qosValue);
-        return om.readValue(json, VlanRange.class);
-    }*/
-
-/*
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("test Aufbau der ro")
-    public void testRo() throws IOException {
-        ResourceOrder ro_0 = a4ResourceOrderRobot.buildResourceOrder(nelData);
-
-        System.out.println("+++ vlan aus ro: " + ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5));
-
-        VlanRange vlanRange2 = mappVlanRangeValue(ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5).getValue());
-
-        System.out.println("+++ vlanRange aus mapp : "+vlanRange2);
-
-        VlanRange vlanRange3 = new VlanRange();
-        vlanRange3.setVlanRangeLower("x");
-        vlanRange3.setVlanRangeUpper("y");
-        ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5).setValue(vlanRange3);
-
-        System.out.println("+++ vlan aus ro: " + ro_0.getOrderItem().get(0).getResource().getResourceCharacteristic().get(5));
-       // System.out.println("+++ ro: " + ro_0);
-       // System.out.println("+++ nelData/LBZ in DB: " + nelData.getLbz());
-        //sleepForSeconds(60);
-    }*/
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("a10-switch in resource order from Merlin is unknown")
-    public void testUnknownSwitch() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        a4ResourceOrder.setResourceName("4N4/1004-49/30/11/7KH0-49/30/12/7KE1", DEFAULT_ORDER_ITEM_ID, ro); // unknown Switch
-
-        // setResourceName(nelData.getLbz(), ro_1); HINT HINT :)
-        // String passenderWert = "123/456-" + getEndsz(neData1) + "-" + getEndsz(neData2);
-
-        // WHEN
-        a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
-
-        // THEN
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean noSwitchTrue = ergList.toString().contains("no A10nsp switch found");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
-        System.out.println("+++ keinen Link gefunden: " + noNELTrue);
-        System.out.println("+++ keinen A10-Switch gefunden: " + noSwitchTrue);
-        System.out.println("+++ completed: " + completeTrue);
-        System.out.println("+++ rejected: " + rejectTrue);
-        System.out.println("+++  ");
-
-        assertTrue(noSwitchTrue);
-    }
-
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("ro without vlan-range values (=null)")
@@ -220,17 +141,17 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         VlanRange vlanRange = new VlanRange()
-                .vlanRangeLower(null)  // values = null, no change in db; ok
+                .vlanRangeLower(null)
                 .vlanRangeUpper(null);
         a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -246,11 +167,11 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -266,7 +187,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -286,39 +207,20 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
-/*
+
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("ro without vlan-range")
     public void testRoWithoutVlanRange() {
         // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, ro);
-        // wird aktuell vom Dispatcher zurückgewiesen - Fehler oder nicht?
-        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, null, DEFAULT_ORDER_ITEM_ID, ro);
-
-        // WHEN
-        a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
-
-        // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-
-    }*/
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro with empty vlan-range")
-    public void testRoWithEmptyVlanRange() {
-        // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, "", DEFAULT_ORDER_ITEM_ID, ro);
+        a4ResourceOrder.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
@@ -339,7 +241,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -352,41 +254,15 @@ public class A4ResourceOrderTest {
     public void testNoPostToMercury() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        a4ResourceOrder.setCharacteristicValue("Subscription.keyA", "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
+        a4ResourceOrder.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean noMercuryPostTrue = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: " + noMercuryPostTrue);
-        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: " + noNELTrue);
-        System.out.println("+++ completed: " + completeTrue);
-        System.out.println("+++ rejected: " + rejectTrue);
-        System.out.println("+++  ");
-
-        //sleepForSeconds(5);    // Auswertung der DB
-
-        assertTrue(noMercuryPostTrue);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -399,37 +275,11 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: " + ergList);  // liefert den gesamten Callback-Request
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
-        System.out.println("+++ kein Add enthalten: " + notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: " + noNELTrue);
-        System.out.println("+++ completed: " + completeTrue);
-        System.out.println("+++ rejected: " + rejectTrue);
-        System.out.println("+++  ");
-
-        //sleepForSeconds(5);    // Auswertung der DB
-
-        assertTrue(noNELTrue);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -441,7 +291,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto =
@@ -677,32 +527,11 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: " + ergList);
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
-        System.out.println("+++ Delete enthalten: " + notAddCaseTrue);
-        System.out.println("+++ completed: " + completeTrue);
-        System.out.println("+++ rejected: " + rejectTrue);
-        System.out.println("+++  ");
-
-        assertTrue(notAddCaseTrue);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -714,32 +543,11 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: " + ergList);
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");  // modify or delete
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: " + mercuryPostFalse);
-        System.out.println("+++ Modify enthalten: " + notAddCaseTrue);
-        System.out.println("+++ completed: " + completeTrue);
-        System.out.println("+++ rejected: " + rejectTrue);
-        System.out.println("+++  ");
-
-        assertTrue(notAddCaseTrue);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     // functions comes later:
@@ -772,7 +580,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -788,10 +596,11 @@ public class A4ResourceOrderTest {
         final String roiId2 = "roiId2";
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(roiId2, nelData2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
+        // TODO rebell wiremock needs to be enhanced to return 2nd ueweg?
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        //sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -799,19 +608,17 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkResourceOrderIsCompleted();
     }
 
-    @DataProvider(name = "characteristicNames")
-    public static Object[] characteristicNames() {
+    @DataProvider(name = "characteristicNamesEmptyString")
+    public static Object[] characteristicNamesEmptyString() {
         return new Object[]{
                 RAHMEN_VERTRAGS_NR,
                 CARRIER_BSA_REFERENCE,
                 VUEP_PUBLIC_REFERENZ_NR,
                 LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV,
-                MTU_SIZE,
-                VLAN_RANGE,
-                QOS_LIST};
+                MTU_SIZE};
     }
 
-    @Test(dataProvider = "characteristicNames")
+    @Test(dataProvider = "characteristicNamesEmptyString")
     @Owner("bela.kovac@t-systems.com")
     @Description("DIGIHUB-112658 Resource order: Characteristic in order item has value empty string \"\"")
     public void testRoWithCharacteristicWithEmtpyString(String cName) {
@@ -821,7 +628,30 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(sleepTimer);
+
+        // THEN
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+    }
+
+    @DataProvider(name = "characteristicNamesEmptyList")
+    public static Object[] characteristicNamesEmptyList() {
+        return new Object[]{
+                VLAN_RANGE};
+    }
+
+    @Test(dataProvider = "characteristicNamesEmptyList")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("DIGIHUB-112658 Resource order: Characteristic in order item has value empty list []")
+    public void testRoWithCharacteristicWithEmtpyList(String cName) {
+        // GIVEN
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.setCharacteristicValue(cName, new ArrayList<>(), DEFAULT_ORDER_ITEM_ID, ro);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(sleepTimer);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);

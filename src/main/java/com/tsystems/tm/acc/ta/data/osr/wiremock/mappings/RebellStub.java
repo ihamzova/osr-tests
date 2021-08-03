@@ -7,6 +7,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.rebell.client.invoker.JSON;
 
+import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 
@@ -18,6 +20,13 @@ public class RebellStub extends AbstractStubMapping {
         return get(urlPathEqualTo(REBELL_UEWEG_URL))
                 .withName("getUeweg200")
                 .willReturn(aDefaultResponseWithBody(serialize(new RebellMapper().getUewegList(uewegData, neA, neB)), HTTP_CODE_OK_200))
+                .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
+    }
+
+    public MappingBuilder getUewegMultiple200(List<UewegData> uewegData, A4NetworkElement neA, List<A4NetworkElement> neB) {
+        return get(urlPathEqualTo(REBELL_UEWEG_URL))
+                .withName("getUeweg200")
+                .willReturn(aDefaultResponseWithBody(serialize(new RebellMapper().getUewegListMultiple(uewegData, neA, neB)), HTTP_CODE_OK_200))
                 .withQueryParam("endsz", equalTo((neA.getVpsz() + "/" + neA.getFsz()).replace("/", "_")));
     }
 

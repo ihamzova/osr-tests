@@ -224,7 +224,7 @@ public class A4ResourceOrderRobot {
         ResourceOrderDto ro = getResourceOrderFromDb(id);
 
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
-        if(ro.getOrderItem() != null || !ro.getOrderItem().isEmpty())
+        if(ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
             assertEquals(ResourceOrderItemStateType.COMPLETED.toString(), ro.getOrderItem().get(0).getState());
     }
 }

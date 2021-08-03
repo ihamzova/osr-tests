@@ -22,6 +22,14 @@ public class RebellMapper {
         return ueWegeList;
     }
 
+    public List<Ueweg> getUewegListMultiple(List<UewegData> uewegData, A4NetworkElement neA, List<A4NetworkElement> neB) {
+        List<Ueweg> ueWegeList = new ArrayList<>();
+        for(int i = 0; i < uewegData.size(); i++){
+            ueWegeList.add(getUeWeg(uewegData.get(i), neA, neB.get(i)));
+        }
+        return ueWegeList;
+    }
+
     public List<Ueweg> getUewegListEmpty() {
         return new ArrayList<>();
     }
