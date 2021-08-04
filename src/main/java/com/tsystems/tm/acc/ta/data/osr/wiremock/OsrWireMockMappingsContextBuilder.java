@@ -24,14 +24,14 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
-    public OsrWireMockMappingsContextBuilder addRebellMockMultiple(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB, UewegData uewegData2, A4NetworkElement neB2) {
+    public OsrWireMockMappingsContextBuilder addRebellMock(A4NetworkElement neA, UewegData uewegData, A4NetworkElement neB, UewegData uewegData2, A4NetworkElement neB2) {
         List<UewegData> ueWegeList = new ArrayList<>();
         ueWegeList.add(uewegData);
         ueWegeList.add(uewegData2);
         List<A4NetworkElement> a4NetworkElements = new ArrayList<>();
         a4NetworkElements.add(neB);
         a4NetworkElements.add(neB2);
-        context.add(new RebellStub().getUewegMultiple200(ueWegeList, neA, a4NetworkElements));
+        context.add(new RebellStub().getUewegMultiple200(neA, ueWegeList, a4NetworkElements));
         return this;
     }
 

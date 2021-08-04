@@ -117,7 +117,7 @@ public class A4ResourceOrderTest {
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
                 .addMerlinMock()
-                .addRebellMockMultiple(uewegData1, neData1, neData2, uewegData2, neData3)
+                .addRebellMock(neData1, uewegData1, neData2, uewegData2, neData3)
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -596,7 +596,6 @@ public class A4ResourceOrderTest {
         final String roiId2 = "roiId2";
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(roiId2, nelData2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
-        // TODO rebell wiremock needs to be enhanced to return 2nd ueweg?
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
