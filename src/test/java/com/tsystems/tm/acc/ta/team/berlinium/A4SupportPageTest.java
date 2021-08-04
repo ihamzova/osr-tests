@@ -40,6 +40,7 @@ public class A4SupportPageTest extends GigabitTest {
     private final A4SupportPageRobot a4SupportPageRobot = new A4SupportPageRobot();
     private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
     List<String> uuids = new ArrayList();
+    long REDELIVERY_DELAY;
 
     @BeforeMethod()
     public void doLogin() {
@@ -48,7 +49,12 @@ public class A4SupportPageTest extends GigabitTest {
     }
 
     @BeforeClass()
-    public void init() {
+    public void init() throws IOException, InterruptedException {
+        REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
+        // make sure sendNextMessageToDeadLetterQueue is not set to true
+        // this way the following message will catch true and then we can start test cases on a clean env
+        a4NemoUpdater.triggerAsyncNemoUpdate(uuids);
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY);
 
         cleanUp();
     }
@@ -109,7 +115,6 @@ public class A4SupportPageTest extends GigabitTest {
         a4SupportPageRobot.checkCleanNemoQueueMsg(); // check of UI-Message
         System.out.println("+++ check of UI-Message done ");
 
-        final long REDELIVERY_DELAY = a4Resilience.getRedeliveryDelayNemoUpdater();
         TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 10000);
 
         // check DLQ+1
