@@ -39,110 +39,95 @@ import static org.testng.AssertJUnit.assertNull;
 })
 public class A4OntCommissioning extends GigabitTest {
 
-    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
-    private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
-    private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
-    private PortProvisioning a4port;
-    private AccessLine accessLine;
-    private Ont ontSerialNumber;
-    private TpRefDto tfRef;
-    private UpiterTestContext context = UpiterTestContext.get();
+  private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+  private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+  private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
+  private PortProvisioning a4port;
+  private AccessLine accessLine;
+  private Ont ontSerialNumber;
+  private TpRefDto tfRef;
+  private UpiterTestContext context = UpiterTestContext.get();
 
-    @AfterClass
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
+  @AfterClass
+  public void clearData() {
+    accessLineRiRobot.clearDatabase();
+  }
 
-    @BeforeClass
-    public void loadContext() {
-        a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForReservation);
-        accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4ontAccessLine);
-        ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.A4ontSerialNumber);
-        tfRef = new TpRefDto().endSz(accessLine.getOltDevice().getEndsz())
-                .slotNumber(accessLine.getSlotNumber())
-                .portNumber(accessLine.getPortNumber())
-                .klsId(ontSerialNumber.getKlsId())
-                .tpRef(UUID.randomUUID().toString())
-                .partyId((long) accessLine.getPartyId());
-    }
+  @BeforeClass
+  public void loadContext() {
+    a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForReservation);
+    accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4ontAccessLine);
+    ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.A4ontSerialNumber);
+    tfRef = new TpRefDto().endSz(accessLine.getOltDevice().getEndsz())
+            .slotNumber(accessLine.getSlotNumber())
+            .portNumber(accessLine.getPortNumber())
+            .klsId(ontSerialNumber.getKlsId())
+            .tpRef(UUID.randomUUID().toString())
+            .partyId((long) accessLine.getPartyId());
+  }
 
-    @Test
-    @TmsLink("DIGIHUB-58640")
-    @Description("A4 Register ONT resource")
-    public void a4ontRegistration() {
-        //Precondition A4 preprovisioning
-        wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
-        accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
+  @Test
+  @TmsLink("DIGIHUB-58640")
+  @Description("A4 Register ONT resource")
+  public void a4ontRegistration() {
+    wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
+    accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
+    accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+    PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
+            .vpSz(accessLine.getOltDevice().getVpsz())
+            .fachSz(accessLine.getOltDevice().getFsz())
+            .slotNumber(accessLine.getSlotNumber())
+            .portNumber(accessLine.getPortNumber())
+            .homeId(accessLine.getHomeId());
+    String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
+    accessLine.setLineId(lineId);
+    Assert.assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.ASSIGNED.toString());
+    Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "Serial number is not null");
+    ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.ASSIGNED.toString());
+    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
 
-        //Get 1 HomeId from pool
-        accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+  @Test(dependsOnMethods = {"a4ontRegistration"})
+  @TmsLink("DIGIHUB-58673")
+  @Description("A4 ONT Connectivity test")
+  public void a4ontTest() {
+    ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
+    ontOltOrchestratorRobot.updateOntState(accessLine);
+    Assert.assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
+    Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
 
-        //Start access line reservation
-        PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-                .vpSz(accessLine.getOltDevice().getVpsz())
-                .fachSz(accessLine.getOltDevice().getFsz())
-                .slotNumber(accessLine.getSlotNumber())
-                .portNumber(accessLine.getPortNumber())
-                .homeId(accessLine.getHomeId());
-        String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-        accessLine.setLineId(lineId);
+  @Test(dependsOnMethods = {"a4ontTest"})
+  @TmsLink("DIGIHUB-58725")
+  @Description("A4 ONT Change test")
+  public void a4ontChangeTest() {
+    Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
+    Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
 
-        //Check that access line became assigned
-        Assert.assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.ASSIGNED);
-        Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "Serial number is not null");
+  @Test(dependsOnMethods = {"a4ontTest"})
+  @TmsLink("DIGIHUB-58674")
+  @Description("A4 Postprovisioning test(negative)")
+  public void a4PostprovisioningTest() {
+    PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
+            .vpSz(accessLine.getOltDevice().getVpsz())
+            .fachSz(accessLine.getOltDevice().getFsz())
+            .slotNumber(accessLine.getSlotNumber())
+            .portNumber(accessLine.getPortNumber())
+            .homeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+    String response = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
+    assertEquals(response, "Walled Garden access line not found");
+  }
 
-        //Register ONT
-        ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
-
-        //Check that access line became assigned
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.ASSIGNED.toString());
-        assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-}
-
-    @Test(dependsOnMethods = {"a4ontRegistration"})
-    @TmsLink("DIGIHUB-58673")
-    @Description("A4 ONT Connectivity test")
-    public void a4ontTest() {
-        ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
-        //save HomeId in accessLine
-        ontOltOrchestratorRobot.updateOntState(accessLine);
-        Assert.assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
-        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-
-    }
-
-    @Test(dependsOnMethods = {"a4ontTest"})
-    @TmsLink("DIGIHUB-58725")
-    @Description("A4 ONT Change test")
-    public void a4ontChangeTest(){
-        //check serial number is stored
-        Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-        //change Ont
-        ontOltOrchestratorRobot.changeOntSerialNumber(accessLine,ontSerialNumber.getNewSerialNumber());
-        Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-    }
-
-    @Test(dependsOnMethods = {"a4ontTest"})
-    @TmsLink("DIGIHUB-58674")
-    @Description("A4 Postprovisioning test(negative)")
-    public void a4PostprovisioningTest() {
-        //Start access line registration
-        PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-                .vpSz(accessLine.getOltDevice().getVpsz())
-                .fachSz(accessLine.getOltDevice().getFsz())
-                .slotNumber(accessLine.getSlotNumber())
-                .portNumber(accessLine.getPortNumber())
-                .homeId(accessLineRiRobot.getHomeIdByPort(accessLine));
-        String response = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-        assertEquals(response,"Walled Garden access line not found");
-    }
-    @Test(dependsOnMethods = {"a4ontChangeTest"})
-    @TmsLink("DIGIHUB-59626")
-    @Description("Decommissioning case A4")
-    public void a4Decommissioning() {
-        ontOltOrchestratorRobot.decommissionOnt(accessLine);
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
-        assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),accessLine.getHomeId());
-    }
+  @Test(dependsOnMethods = {"a4ontChangeTest"})
+  @TmsLink("DIGIHUB-59626")
+  @Description("Decommissioning case A4")
+  public void a4Decommissioning() {
+    ontOltOrchestratorRobot.decommissionOnt(accessLine);
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.WALLED_GARDEN.toString());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(), accessLine.getHomeId());
+  }
 }
