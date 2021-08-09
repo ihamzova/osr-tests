@@ -146,7 +146,22 @@ public class NemoStatusUpdateTest {
         nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates
+                (nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+    }
+
+    @Test(description = "DIGIHUB-75778 NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
+    @Owner("Swetlana.Okonetschnikow@telekom.de")
+    @Description("NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
+    public void testNemoStatusAndPortRefPatchForNspFtth() {
+        // WHEN
+        nemo.sendStatusAndPortRefUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData,
+                OPERATIONAL_STATE_WORKING, nepDataA);
+
+        // THEN
+        a4ResourceInventoryRobot
+                .checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStatesAndPortRef(nspFtthData,
+                        OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING, nepDataA);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (A10NSP)")

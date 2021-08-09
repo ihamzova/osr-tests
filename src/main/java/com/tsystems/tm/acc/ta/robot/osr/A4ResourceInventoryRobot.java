@@ -479,6 +479,19 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+
+    }
+
+    @Step("Check that lifecycle state, operational state and port reference have been updated for network service profile (FTTH Access)")
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStatesAndPortRef
+            (A4NetworkServiceProfileFtthAccess nspFtthData, String expectedNewOperationalState,
+             String expectedNewLifecycleState, A4NetworkElementPort nepData) {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto =
+                getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
+
+        assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOltPortOntLastRegisteredOn(), nepData.getUuid());
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network service profile (A10NSP)")

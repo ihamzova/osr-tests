@@ -17,7 +17,8 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
 public class A4ResourceInventoryServiceRobot {
@@ -84,6 +85,21 @@ public class A4ResourceInventoryServiceRobot {
     public void sendStatusUpdateForNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData, String newOperationalState) {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspFtthData.getUuid())
+                .body(nepLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Send new operational state and Port Reference for Network Service Profile (FTTH Access)")
+    public void sendStatusAndPortRefUpdateForNetworkServiceProfileFtthAccess
+            (A4NetworkServiceProfileFtthAccess nspFtthData,
+             A4TerminationPoint tpData, String newOperationalState, A4NetworkElementPort nepData) {
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState, nepData);
 
         a4ResourceInventoryService
                 .logicalResource()
