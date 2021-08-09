@@ -155,7 +155,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         //   and uses new port mapping (81 -> 8001)
 
         String queue = "jms.queue.a10NspTP";
-        String dlq = "jms.dead-letter-queue.a10NspTP";
+        String dlq = "jms.dlq.a10NspTP";
         //BEFORE
             // change kong route so wiremock is used for TerminationPoint, because that is the first request for preprovisioning
         a4Resilience.changeRouteToWiremock(routeName);
