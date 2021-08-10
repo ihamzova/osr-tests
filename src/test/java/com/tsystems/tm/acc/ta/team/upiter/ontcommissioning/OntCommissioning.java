@@ -13,12 +13,12 @@ import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntStateDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -44,6 +44,7 @@ public class OntCommissioning extends GigabitTest {
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   private AccessLine accessLine;
+  private AccessLine accessLineForOntState;
   private AccessLine accessLineAnbieterwechsel;
   private AccessLine accessLineForDeprovisioningNew;
   private AccessLine accessLineForDeprovisioningOld;
@@ -67,8 +68,9 @@ public class OntCommissioning extends GigabitTest {
     accessLineForDeprovisioningTrue = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningTrue);
     accessLineForDeprovisioningFalse = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningFalse);
     accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
+    accessLineForOntState = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntGetStateAccessLine);
     accessLineAnbieterwechsel = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineAnbieterwechsel);
-    defaultSerialNumber =context.getData().getOntDataProvider().get(OntCase.OntDefaultSerialNumber);
+    defaultSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntDefaultSerialNumber);
     postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
     postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
   }
@@ -82,11 +84,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-71918")
   @Description("ONT Access Line Reservation by HomeID")
   public void accessLineReservationByPortAndHomeId() {
-    //wgAccessProvisioningRobot.startWgAccessProvisioningLog();
-    //Precondition port commissioning
-    //Get 1 HomeId from pool
     accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
-    //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLine.getOltDevice().getVpsz())
             .fachSz(accessLine.getOltDevice().getFsz())
@@ -141,24 +139,6 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber(),
             ontSerialNumber.getNewSerialNumber());
   }
-
-  @Test
-  @TmsLink("DIGIHUB-63811")
-  @Description("ONT Change,newSerialNumber = DEFAULT")
-  public void ontDefaultChangeTest() {
-    assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntSerialNumber());
-    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntState(), OntState.ONLINE);
-    ontOltOrchestratorRobot.changeOntSerialNumber(accessLineAnbieterwechsel, defaultSerialNumber.getNewSerialNumber());
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineAnbieterwechsel.getLineId()), AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getState(), ProfileState.INACTIVE);
-    assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntSerialNumber());
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineAnbieterwechsel.getLineId()).get(0).getDefaultNeProfile().getState(),
-            ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntState(), OntState.UNKNOWN);
-    assertEquals(accessLineRiRobot.getSubscriberNLProfile(accessLineAnbieterwechsel.getLineId()).getState(), ProfileState.ACTIVE);
-
-  }
-
 
   @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration", "ontTest", "ontChangeTest"})
   @TmsLink("DIGIHUB-53292")
@@ -219,6 +199,31 @@ public class OntCommissioning extends GigabitTest {
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
             accessLineForDeprovisioningOld.getHomeId());
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-63811")
+  @Description("ONT Change,newSerialNumber = DEFAULT")
+  public void ontDefaultChangeTest() {
+    assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntSerialNumber());
+    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntState(), OntState.ONLINE);
+    ontOltOrchestratorRobot.changeOntSerialNumber(accessLineAnbieterwechsel, defaultSerialNumber.getNewSerialNumber());
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineAnbieterwechsel.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getState(), ProfileState.INACTIVE);
+    assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntSerialNumber());
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineAnbieterwechsel.getLineId()).get(0).getDefaultNeProfile().getState(),
+            ProfileState.ACTIVE);
+    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntState(), OntState.UNKNOWN);
+    assertEquals(accessLineRiRobot.getSubscriberNLProfile(accessLineAnbieterwechsel.getLineId()).getState(), ProfileState.ACTIVE);
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-53284")
+  @Description("Get ONT State by LineID")
+  public void getOntStateByLineID() {
+    OntStateDto ontState = ontOltOrchestratorRobot.getOntState(accessLineForOntState);
+    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForOntState.getLineId()).getOntState().toString(), ontState.getOntState());
+    assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForOntState.getLineId()).getOntSerialNumber(), ontState.getSerialNumber());
   }
 }
 

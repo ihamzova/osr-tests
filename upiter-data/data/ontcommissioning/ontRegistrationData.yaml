@@ -10,6 +10,11 @@ template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA2880866"
 ---
+name: OntGetStateAccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA1190685"
+---
 name: OntSerialNumber
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:

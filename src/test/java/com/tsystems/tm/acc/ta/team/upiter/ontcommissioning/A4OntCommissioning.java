@@ -130,4 +130,6 @@ public class A4OntCommissioning extends GigabitTest {
     assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(), accessLine.getHomeId());
   }
+
+
 }

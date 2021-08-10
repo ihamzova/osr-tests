@@ -12,10 +12,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntResourceV2Dto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.api.CallbackControllerV2Api;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.*;
@@ -153,6 +150,17 @@ public class OntOltOrchestratorRobot {
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
+  @Step("Gets ONT state by LineID")
+  public OntStateDto getOntState(AccessLine accessLine) {
+    return ontOltOrchestratorClient
+            .getClient()
+            .ontOltOrchestratorSyncV2()
+            .getOntStateV2()
+            .lineIdPath(accessLine.getLineId())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .as(OntStateDto.class);
+  }
+
   @Step("Reserving new access line by homeId")
   public String reserveAccessLineTask(HomeIdDto homeIdDto) {
     CORRELATION_ID = UUID.randomUUID().toString();
@@ -180,7 +188,6 @@ public class OntOltOrchestratorRobot {
     } else
       return result.getError().getMessage();
   }
-
 
   @Step("Change ONT serial number")
   public void changeOntSerialNumber(AccessLine accessLine, String newSerialNumber) {
