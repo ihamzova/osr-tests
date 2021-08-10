@@ -13,10 +13,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Owner;
+import io.qameta.allure.*;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -92,7 +89,7 @@ public class A4CarrierManagementTest extends GigabitTest {
 
     @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask")
     @Owner("anita.junge@t-systems.com")
-    //@TmsLink("DIGIHUB-XXXXX")
+    @TmsLink("DIGIHUB-111721")
     @Description("allocate one free L2BSA NSP for a dedicated AccessLine so that L2BSA products can be produced")
     public void testAllocateL2BsaNsp() {
         // THEN / Assert
