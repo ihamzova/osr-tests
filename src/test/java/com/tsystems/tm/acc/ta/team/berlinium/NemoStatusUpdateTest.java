@@ -18,10 +18,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRelationship;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Owner;
+import io.qameta.allure.*;
 import org.testng.annotations.*;
 
 import java.time.OffsetDateTime;
@@ -152,6 +149,7 @@ public class NemoStatusUpdateTest {
 
     @Test(description = "DIGIHUB-75778 NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
     @Owner("Swetlana.Okonetschnikow@telekom.de")
+    @TmsLink("DIGIHUB-116417")
     @Description("NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
     public void testNemoStatusAndPortRefPatchForNspFtth() {
         // WHEN
