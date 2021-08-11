@@ -186,6 +186,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.clickZeigeNelZuNeButton();
         a4MobileUi.doNelInbetriebnahme();
         a4MobileUi.clickMonitoringButton();
+
         // THEN
 
         a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
