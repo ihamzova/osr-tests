@@ -196,6 +196,19 @@ public class A4ResourceInventoryServiceV4Robot {
         assertTrue(nspList.size() >= minimalExpectedCount);
     }
 
+    public void checkResourceRelationshipsByNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData) {
+        NspFtthAccess nspFtthAccess = getNetworkServiceProfileFtthAccessV4ByUuid(nspData.getUuid());
+        List<ResourceRelationship> rrl = nspFtthAccess.getResourceRelationship();
+
+        assertEquals(rrl.size(), 2);
+
+        ResourceRelationship resourceRelationshipTp = rrl.get(0);
+        assertEquals(nspFtthAccess.getTerminationPointUuid(), resourceRelationshipTp.getResource().getId());
+
+        ResourceRelationship resourceRelationshipNep = nspFtthAccess.getResourceRelationship().get(1);
+        assertEquals(nspData.getOltPortOntLastRegisteredOn(), resourceRelationshipNep.getResource().getId());
+    }
+
     public void checkIfNetworkServiceProfileFtthAccessExistsByOntSerialNumber(A4NetworkServiceProfileFtthAccess nspData) {
         List<String> nspV4UuidList = getNetworkServiceProfilesFtthAccessV4ByOntSerialNumber(nspData.getOntSerialNumber())
                 .stream()

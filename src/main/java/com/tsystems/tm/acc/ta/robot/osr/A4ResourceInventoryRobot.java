@@ -679,6 +679,21 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
+    public void createNetworkServiceProfileFtthAccessWithPortReference(A4NetworkServiceProfileFtthAccess nspData,
+                                                                       A4TerminationPoint tpData,
+                                                                       A4NetworkElementPort nepData) {
+        NetworkServiceProfileFtthAccessDto nspDto = new A4ResourceInventoryMapper()
+                .getNetworkServiceProfileFtthAccessDto(nspData, tpData, nepData);
+
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new NetworkServiceProfileA10NSP in A4 resource inventory")
     public void createNetworkServiceProfileA10Nsp(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
         NetworkServiceProfileA10NspDto nspDto = new A4ResourceInventoryMapper()

@@ -192,6 +192,37 @@ public class A4ResourceInventoryMapper {
                 .creationTime(OffsetDateTime.now());
     }
 
+    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessDto(
+            A4NetworkServiceProfileFtthAccess nspData,
+            A4TerminationPoint tpData,
+            A4NetworkElementPort nepData) {
+
+        if (nspData.getUuid().isEmpty())
+            nspData.setUuid(UUID.randomUUID().toString());
+
+        if (nspData.getLineId().isEmpty())
+            nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
+
+        if (nspData.getOntSerialNumber().isEmpty())
+            nspData.setOntSerialNumber("ONTSERIALNUMBER-" + getRandomDigits(6)); // satisfy unique constraints
+
+        return new NetworkServiceProfileFtthAccessDto()
+                .uuid(nspData.getUuid())
+                .href("HREF?")
+                .ontSerialNumber(nspData.getOntSerialNumber())
+                .lineId(nspData.getLineId())
+                .specificationVersion("3")
+                .virtualServiceProvider("ein Virtual Service Provider")
+                .administrativeMode("ACTIVATED")
+                .operationalState(nspData.getOperationalState())
+                .lifecycleState(nspData.getLifecycleState())
+                .terminationPointFtthAccessUuid(tpData.getUuid())
+                .oltPortOntLastRegisteredOn(nepData.getUuid())
+                .lastUpdateTime(OffsetDateTime.now())
+                .description("NSP FTTH Access created during osr-test integration test")
+                .creationTime(OffsetDateTime.now());
+    }
+
     public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspDto(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
