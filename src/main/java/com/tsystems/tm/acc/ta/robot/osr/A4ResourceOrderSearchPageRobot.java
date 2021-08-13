@@ -1,8 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 
+import com.codeborne.selenide.ElementsCollection;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceOrderSearchPage;
 import io.qameta.allure.Step;
+import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -24,6 +27,18 @@ public class A4ResourceOrderSearchPageRobot {
         $(A4ResourceOrderSearchPage.getRO_SEARCH_BUTTON_LOCATOR()).click();
     }
 
+
+    public ElementsCollection getRoElementsCollection() {
+        // waitForTableToFullyLoad(elementsCollection.size());
+        try {
+            Thread.sleep(2000);
+            return $(A4ResourceOrderSearchPage.getRO_SEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 

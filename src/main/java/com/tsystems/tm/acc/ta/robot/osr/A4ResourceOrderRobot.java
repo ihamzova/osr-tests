@@ -220,6 +220,14 @@ public class A4ResourceOrderRobot {
                 .as(ResourceOrderDto.class);
     }
 
+    public List<ResourceOrderDto> getResourceOrderListByVuepFromDb(String vuep) {
+        return a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .listResourceOrders()
+                .vuepPublicReferenceNrQuery(vuep)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     public void getResourceOrderFromDbAndCheckIfCompleted(String id) {
         ResourceOrderDto ro = getResourceOrderFromDb(id);
 
