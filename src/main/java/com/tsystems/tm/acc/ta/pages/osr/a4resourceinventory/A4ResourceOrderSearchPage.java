@@ -29,6 +29,8 @@ public class A4ResourceOrderSearchPage {
     @Getter
     public static final By RO_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
 
+    @Getter
+    public static final By RO_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");
 
     // common
     @Step("Validate page")
