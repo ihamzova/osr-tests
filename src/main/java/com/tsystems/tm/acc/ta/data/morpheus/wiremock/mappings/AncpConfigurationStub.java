@@ -11,7 +11,7 @@ import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class AncpConfigurationStub extends AbstractStubMapping {
-    public static final String ANCP_CONFIGURATION_URL = "/resource-order-resource-inventory/v2/ancp/configuration";
+    public static final String ANCP_CONFIGURATION_URL = "/api/ancpConfiguration/v2/ancp";
 
     public MappingBuilder postCreateAncpConfiguration202(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
