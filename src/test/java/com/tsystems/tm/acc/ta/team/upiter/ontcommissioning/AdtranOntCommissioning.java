@@ -4,16 +4,18 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -70,7 +72,7 @@ public class AdtranOntCommissioning extends GigabitTest {
     AccessLineStatus lineIdState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
     //Check that access line became assigned
-    Assert.assertEquals(AccessLineStatus.ASSIGNED, lineIdState);
+    assertEquals(AccessLineStatus.ASSIGNED, lineIdState);
   }
 
   @Test(dependsOnMethods = "adtranOntReservation")
@@ -83,9 +85,9 @@ public class AdtranOntCommissioning extends GigabitTest {
     //Check subscriberNEProfile
     SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
     assertNotNull(subscriberNEProfile);
-    Assert.assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
-    Assert.assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
-    Assert.assertEquals(subscriberNEProfile.getOntState(), OntState.UNKNOWN);
+    assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
+    assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
+    assertEquals(subscriberNEProfile.getOntState(), OntState.UNKNOWN);
   }
 
   @Test(dependsOnMethods = {"adtranOntRegistration"})
@@ -107,9 +109,9 @@ public class AdtranOntCommissioning extends GigabitTest {
   @Description("Adtran Change ONT serial number")
   public void adtranOntChange() {
     //check SN
-    Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
+    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
     ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
-    Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
+    assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
 
   }
 

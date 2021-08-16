@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.AttenuationMeasurementsDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -24,9 +25,10 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNull;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.AssertJUnit.*;
 
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
@@ -44,6 +46,7 @@ public class A4OntCommissioning extends GigabitTest {
   private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
   private PortProvisioning a4port;
   private AccessLine accessLine;
+  private AccessLine accessLineForAttenuationMeasurement;
   private Ont ontSerialNumber;
   private TpRefDto tfRef;
   private UpiterTestContext context = UpiterTestContext.get();
@@ -54,9 +57,13 @@ public class A4OntCommissioning extends GigabitTest {
   }
 
   @BeforeClass
-  public void loadContext() {
+  public void init() throws InterruptedException {
+    accessLineRiRobot.clearDatabase();
+    Thread.sleep(1000);
+    accessLineRiRobot.fillDatabaseForOltCommissioning();
     a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForReservation);
     accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4ontAccessLine);
+    accessLineForAttenuationMeasurement = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4AccessLineForAttenuationMeasurement);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.A4ontSerialNumber);
     tfRef = new TpRefDto().endSz(accessLine.getOltDevice().getEndsz())
             .slotNumber(accessLine.getSlotNumber())
@@ -69,7 +76,7 @@ public class A4OntCommissioning extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-58640")
   @Description("A4 Register ONT resource")
-  public void a4ontRegistration() {
+  public void a4ontRegistrationTest() {
     wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
     accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
     accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
@@ -88,23 +95,23 @@ public class A4OntCommissioning extends GigabitTest {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"a4ontRegistration"})
+  @Test(dependsOnMethods = {"a4ontRegistrationTest"})
   @TmsLink("DIGIHUB-58673")
   @Description("A4 ONT Connectivity test")
   public void a4ontTest() {
     ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
     ontOltOrchestratorRobot.updateOntState(accessLine);
-    Assert.assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
-    Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
+    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
   @Test(dependsOnMethods = {"a4ontTest"})
   @TmsLink("DIGIHUB-58725")
   @Description("A4 ONT Change test")
   public void a4ontChangeTest() {
-    Assert.assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
-    Assert.assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
   @Test(dependsOnMethods = {"a4ontTest"})
@@ -124,12 +131,23 @@ public class A4OntCommissioning extends GigabitTest {
   @Test(dependsOnMethods = {"a4ontChangeTest"})
   @TmsLink("DIGIHUB-59626")
   @Description("Decommissioning case A4")
-  public void a4Decommissioning() {
+  public void a4DecommissioningTest() {
     ontOltOrchestratorRobot.decommissionOnt(accessLine);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.WALLED_GARDEN.toString());
     assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(), accessLine.getHomeId());
   }
 
-
+  @Test()
+  @TmsLink("DIGIHUB-116326")
+  @Description("Get attenuation measurement for an A4 AccessLine")
+  public void ontAttenuationMeasurementTest() {
+    AttenuationMeasurementsDto attenuationMeasurementsCallback = ontOltOrchestratorRobot.getOntAttenuationMeasurement(accessLineForAttenuationMeasurement);
+    assertNotNull(attenuationMeasurementsCallback.getError());
+    assertFalse(attenuationMeasurementsCallback.getSuccess());
+    assertNull(attenuationMeasurementsCallback.getResponse());
+    assertEquals(attenuationMeasurementsCallback.getError().getMessage(), "A4 is not supported");
+    assertEquals(attenuationMeasurementsCallback.getError().getStatus(), HTTP_CODE_BAD_REQUEST_400);
+    assertEquals(attenuationMeasurementsCallback.getError().getCode(), "06544000");
+  }
 }
