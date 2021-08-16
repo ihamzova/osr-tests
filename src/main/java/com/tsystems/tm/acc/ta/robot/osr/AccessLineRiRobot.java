@@ -5,9 +5,7 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.invoker.ApiClient;
@@ -28,8 +26,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.AssurancePortDtoV2.PorttypeEnum.GFAST;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.ETHERNET;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
   private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
@@ -89,24 +86,11 @@ public class AccessLineRiRobot {
     }
 
     List<AccessLineDto> accessLinesAfterProvisioning = getAccessLinesByPort(port);
-    long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-            .filter(Objects::nonNull).filter(defaultNeProfile -> Objects.requireNonNull(defaultNeProfile.getState()).getValue()
-                    .equals(STATUS_ACTIVE))
-            .count();
-
-    long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(Objects::nonNull).filter(defaultNetworkLineProfile -> Objects.requireNonNull(defaultNetworkLineProfile
-                    .getState()).getValue()
-                    .equals(STATUS_ACTIVE))
-            .count();
-
     long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
             .filter(accessLine -> Objects.requireNonNull(accessLine.getStatus()).getValue()
                     .equals(STATUS_WALLED_GARDEN))
             .count();
 
-    assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue());
-    assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue());
     assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
   }
 
@@ -176,7 +160,6 @@ public class AccessLineRiRobot {
     AccessLineDto accessLine = accessLines.get(0);
 
     assertEquals(accessLine.getStatus(), AccessLineStatus.WALLED_GARDEN, "AccessLine status");
-    assertEquals(accessLine.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
     assertEquals(accessLine.getNetworkServiceProfileReference().getTpRef(), tpRefUuid);
     assertNotNull(accessLine.getReference(), "Reference");
@@ -200,15 +183,6 @@ public class AccessLineRiRobot {
     List<AccessLineDto> accessLines = getAccessLinesByPort(port);
     assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
 
-    long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(fttbNeProfile -> fttbNeProfile != null && ProfileState.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
-
-    long countFttbNeMosaicActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(fttbNeProfile -> fttbNeProfile != null && ProfileState.ACTIVE.equals(fttbNeProfile.getStateMosaic())).count();
-
-    long countDefaultNetworkLineProfilesActive = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && ProfileState.ACTIVE.equals(defaultNetworkLineProfile.getState())).count();
-
     long countAccessLinesWG = accessLines.stream()
             .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
@@ -218,16 +192,42 @@ public class AccessLineRiRobot {
     List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
             map(OnuAccessIdDto::getOnuAccessId).sorted().collect(Collectors.toList());
 
-    assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
-            "FTTB NE Profiles (Olt State) count is incorrect");
-    assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning,
-            "FTTB NE Profiles (Mosaic State) count is incorrect");
-    assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning,
-            "Default NetworkLine Profile count is incorrect");
     assertEquals(countAccessLinesWG, numberOfAccessLinesForProvisioning,
             "WG AccessLines count is incorrect");
     assertEquals(onuAccessIds, expectedOnuIdsList,
             "OnuAccessIds are incorrect");
+  }
+
+  @Step("Check Default NE Profiles")
+  public void checkDefaultNeProfiles (PortProvisioning port, DefaultNeProfile expectedDefaultNeProfile, int numberOfAccessLinesForProvisioning) {
+    List<DefaultNeProfileDto> actualDefaultNeProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getDefaultNeProfile).collect(Collectors.toList());
+    assertEquals(actualDefaultNeProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NE Profiles count is incorrect");
+    List<DefaultNeProfile> actualDefaultNeProfiles =
+            actualDefaultNeProfileDtos.stream().map(AccessLineRiRobot::mapToDefaultNeProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNeProfiles.stream().allMatch(defaultNeProfile -> defaultNeProfile.equals(expectedDefaultNeProfile)),
+            "Default NE Profiles are incorrect");
+  }
+
+  @Step("Check Default NetworkLine Profiles")
+  public void checkDefaultNetworkLineProfiles(PortProvisioning port, DefaultNetworkLineProfile expectedDefaultNLineProfile, int numberOfAccessLinesForProvisioning) {
+    List<DefaultNetworkLineProfileDto> actualDefaultNLProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getDefaultNetworkLineProfile).collect(Collectors.toList());
+    assertEquals(actualDefaultNLProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NetworkLine Profiles count is incorrect");
+    List<DefaultNetworkLineProfile> actualDefaultNLProfiles =
+            actualDefaultNLProfileDtos.stream().map(AccessLineRiRobot::mapToNLProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
+            "Default NetworkLine Profiles are incorrect");
+  }
+
+  @Step("Check FTTB NE Profiles")
+  public void checkFttbNeProfiles(PortProvisioning port, FttbNeProfile expectedFttbNeProfile, int numberOfAccessLinesForProvisioning) {
+    List<FttbNeProfileDto> actualFttbNeProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getFttbNeProfile).collect(Collectors.toList());
+    assertEquals(actualFttbNeProfileDtos.size(), numberOfAccessLinesForProvisioning, "FTTB NE Profiles count is incorrect");
+    List<FttbNeProfile> actualFttbNeProfiles =
+            actualFttbNeProfileDtos.stream().map(AccessLineRiRobot::mapToFttbNeProfile).collect(Collectors.toList());
+    assertTrue(actualFttbNeProfiles.stream().allMatch(fttbNeProfile -> fttbNeProfile.equals(expectedFttbNeProfile)), "FTTB NE Profiles are incorrect");
   }
 
   @Step("Remove lines with id > 1008, change some port refs")
@@ -315,36 +315,11 @@ public class AccessLineRiRobot {
   }
 
   @Step("Check accessTransmissionMedium parameters")
-  public void checkAccessTransmissionMedium(DpuDevice dpuDevice, PortProvisioning port, int numberOfAccessLinesForProvisioning) {
-    List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-    long bandwidthProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(Objects::nonNull).filter(fttbNeProfile -> Objects.requireNonNull(fttbNeProfile.getBandwidthProfile())
-                    .equals(dpuDevice.getBandwidthProfile()))
-            .count();
-    long dpuLineSpectrumProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(Objects::nonNull).filter(fttbNeProfile -> Objects.requireNonNull(fttbNeProfile.getDpuLineSpectrumProfile())
-                    .equals(dpuDevice.getDpuLineSpectrumProfile()))
-            .count();
-
-    long gfastInterfaceProfiles = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(Objects::nonNull).filter(fttbNeProfileDto -> Objects.requireNonNull(fttbNeProfileDto.getGfastInterfaceProfile())
-                    .equals(dpuDevice.getGfastInterfaceProfile()))
-            .count();
-
-    long accessTypes = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(Objects::nonNull).filter(defaultNetworkLineProfileDto -> Objects.requireNonNull(defaultNetworkLineProfileDto.getAccessType())
-                    .equals(dpuDevice.getAccessType()))
-            .count();
-
+  public void checkAccessTransmissionMedium(DpuDevice dpuDevice, int numberOfAccessLinesForProvisioning) {
     long accessTransmissionMedia = getGfastPorts(dpuDevice).stream().map(ReferenceDto::getAccessTransmissionMedium)
             .filter(accessTransmissionMedium -> accessTransmissionMedium.getValue()
                     .equals(dpuDevice.getAccessTransmissionMedium()))
             .count();
-
-    assertEquals(bandwidthProfiles, numberOfAccessLinesForProvisioning);
-    assertEquals(dpuLineSpectrumProfiles, numberOfAccessLinesForProvisioning);
-    assertEquals(gfastInterfaceProfiles, numberOfAccessLinesForProvisioning);
-    assertEquals(accessTypes, numberOfAccessLinesForProvisioning);
     assertEquals(accessTransmissionMedia, numberOfAccessLinesForProvisioning);
   }
 
@@ -550,6 +525,37 @@ public class AccessLineRiRobot {
             .portReferencesDpuDownlinkPortReferenceEndSZQuery(dpuEndSz)
             .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {
+    DefaultNeProfile defaultNeProfileList = new DefaultNeProfile();
+    defaultNeProfileList.setProfileName(defaultNeProfile.getProfileName());
+    defaultNeProfileList.setState(defaultNeProfile.getState().toString());
+    return defaultNeProfileList;
+  }
+
+  private static DefaultNetworkLineProfile mapToNLProfile(DefaultNetworkLineProfileDto defaultNlProfile) {
+    DefaultNetworkLineProfile defaultNlProfileList = new DefaultNetworkLineProfile();
+    defaultNlProfileList.setAccessType(defaultNlProfile.getAccessType());
+    defaultNlProfileList.setMinDownBandwidth(defaultNlProfile.getMinDownBandwidth());
+    defaultNlProfileList.setMinUpBandwidth(defaultNlProfile.getMinUpBandwidth());
+    defaultNlProfileList.setGuaranteedDownBandwidth(defaultNlProfile.getGuaranteedDownBandwidth());
+    defaultNlProfileList.setGuaranteedUpBandwidth(defaultNlProfile.getGuaranteedUpBandwidth());
+    defaultNlProfileList.setMaxDownBandwidth(defaultNlProfile.getMaxDownBandwidth());
+    defaultNlProfileList.setMaxUpBandwidth(defaultNlProfile.getMaxUpBandwidth());
+    defaultNlProfileList.setState(defaultNlProfile.getState().toString());
+    return defaultNlProfileList;
+  }
+
+  private static FttbNeProfile mapToFttbNeProfile(FttbNeProfileDto fttbNeProfile) {
+    FttbNeProfile fttbNeProfileList = new FttbNeProfile();
+    fttbNeProfileList.setGfastInterfaceProfile(fttbNeProfile.getGfastInterfaceProfile());
+    fttbNeProfileList.setDpuLineSpectrumProfile(fttbNeProfile.getDpuLineSpectrumProfile());
+    fttbNeProfileList.setNumberOfGemPorts(fttbNeProfile.getNumberOfGemPorts());
+    fttbNeProfileList.setBandwidthProfile(fttbNeProfile.getBandwidthProfile());
+    fttbNeProfileList.setStateMosaic(fttbNeProfile.getStateMosaic().toString());
+    fttbNeProfileList.setStateOlt(fttbNeProfile.getStateOlt().toString());
+    return fttbNeProfileList;
   }
 
 

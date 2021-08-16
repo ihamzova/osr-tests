@@ -1,6 +1,10 @@
 package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.defaultneprofile.DefaultNeProfileCase;
+import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
@@ -42,6 +46,8 @@ public class OltProvisioning5600 extends GigabitTest {
   private PortProvisioning portProvisioningPartly;
   private PortProvisioning portProvisioningFully;
   private PortProvisioning portWithInActiveLines;
+  private DefaultNeProfile defaultNeProfile;
+  private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeMethod
@@ -67,6 +73,8 @@ public class OltProvisioning5600 extends GigabitTest {
     portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
     portProvisioningFully = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);
     portWithInActiveLines = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);
+    defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
+    defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
   }
 
   @Test
@@ -77,6 +85,8 @@ public class OltProvisioning5600 extends GigabitTest {
     assertEquals(accessLinesBeforeProvisioning.size(), 0);
     wgAccessProvisioningRobot.startPortProvisioning(port5600);
     accessLineRiRobot.checkFtthPortParameters(port5600);
+    accessLineRiRobot.checkDefaultNeProfiles(port5600, defaultNeProfile, port5600.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600, defaultNetworkLineProfile, port5600.getAccessLinesCount());
   }
 
   @Test
@@ -87,6 +97,8 @@ public class OltProvisioning5600 extends GigabitTest {
     assertEquals(accessLinesBeforeProvisioning.size(), 8);
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
     accessLineRiRobot.checkFtthPortParameters(portProvisioningPartly);
+    accessLineRiRobot.checkDefaultNeProfiles(portProvisioningPartly, defaultNeProfile, portProvisioningPartly.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portProvisioningPartly, defaultNetworkLineProfile, portProvisioningPartly.getAccessLinesCount());
   }
 
   @Test
@@ -97,6 +109,8 @@ public class OltProvisioning5600 extends GigabitTest {
     assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
     wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
     accessLineRiRobot.checkFtthPortParameters(portProvisioningFully);
+    accessLineRiRobot.checkDefaultNeProfiles(portProvisioningFully, defaultNeProfile, portProvisioningFully.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portProvisioningFully, defaultNetworkLineProfile, portProvisioningFully.getAccessLinesCount());
   }
 
   @Test
@@ -105,6 +119,8 @@ public class OltProvisioning5600 extends GigabitTest {
   public void portProvisioningWithInactiveLines() {
     wgAccessProvisioningRobot.startPortProvisioning(portWithInActiveLines);
     accessLineRiRobot.checkFtthPortParameters(portWithInActiveLines);
+    accessLineRiRobot.checkDefaultNeProfiles(portWithInActiveLines, defaultNeProfile, portWithInActiveLines.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portWithInActiveLines, defaultNetworkLineProfile, portWithInActiveLines.getAccessLinesCount());
   }
 
   @Test(priority = 1)
@@ -117,6 +133,8 @@ public class OltProvisioning5600 extends GigabitTest {
     assertEquals(cardBeforeProvisioning.getPorts().size(), 8);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v1).size(), 0);
     accessLineRiRobot.checkFtthPortParameters(card5600v1);
+    accessLineRiRobot.checkDefaultNeProfiles(card5600v1, defaultNeProfile, card5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v1, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
   }
 
   @Test(priority = 1)
@@ -129,6 +147,8 @@ public class OltProvisioning5600 extends GigabitTest {
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
     accessLineRiRobot.checkFtthPortParameters(card5600v2);
+    accessLineRiRobot.checkDefaultNeProfiles(card5600v2, defaultNeProfile, card5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v2, defaultNetworkLineProfile, card5600v2.getAccessLinesCount());
   }
 
   @Test(priority = 1)
@@ -146,5 +166,7 @@ public class OltProvisioning5600 extends GigabitTest {
             deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5600);
     accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(device5600, defaultNeProfile, device5600.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(device5600, defaultNetworkLineProfile, device5600.getAccessLinesCount());
   }
 }

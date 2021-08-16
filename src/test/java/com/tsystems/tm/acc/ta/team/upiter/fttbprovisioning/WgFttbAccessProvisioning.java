@@ -1,8 +1,12 @@
 package com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.upiter.models.fttbneprofile.FttbNeProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.FttbNeProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgFttbAccessProvisioningRobot;
@@ -33,6 +37,10 @@ public class WgFttbAccessProvisioning extends GigabitTest {
     private PortProvisioning oltDeviceFttbProvisioningCoax;
     private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
     private DpuDevice dpuDeviceFttbProvisioningCoax;
+    private FttbNeProfile fttbNeProfileTp;
+    private FttbNeProfile fttbNeProfileCoax;
+    private DefaultNetworkLineProfile defaultNlProfileFttbTp;
+    private DefaultNetworkLineProfile defaultNlProfileFttbCoax;
     private int numberOfAccessLinesForProvisioningTP;
     private int numberOfAccessLinesForProvisioningCoax;
 
@@ -47,6 +55,10 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
         oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
         oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
+        defaultNlProfileFttbTp = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbTP);
+        defaultNlProfileFttbCoax = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
+        fttbNeProfileTp = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileTwistedPair);
+        fttbNeProfileCoax = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileCoax);
         numberOfAccessLinesForProvisioningTP = dpuDeviceFttbProvisioningTwistedPair.getNumberOfAccessLines();
         if (numberOfAccessLinesForProvisioningTP > 16) {
             numberOfAccessLinesForProvisioningTP = 16;
@@ -70,7 +82,9 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningTwistedPair);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningTwistedPair.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioningTwistedPair, numberOfAccessLinesForProvisioningTP);
-        accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningTwistedPair, oltDeviceFttbProvisioningTwistedPair, numberOfAccessLinesForProvisioningTP);
+        accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningTwistedPair, numberOfAccessLinesForProvisioningTP);
+        accessLineRiRobot.checkDefaultNetworkLineProfiles(oltDeviceFttbProvisioningTwistedPair, defaultNlProfileFttbTp, numberOfAccessLinesForProvisioningTP);
+        accessLineRiRobot.checkFttbNeProfiles(oltDeviceFttbProvisioningTwistedPair, fttbNeProfileTp, numberOfAccessLinesForProvisioningTP);
     }
 
     @Test(dependsOnMethods = "fttbDeviceProvisioningTwistedPairTest", priority = 1)
@@ -90,7 +104,9 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningCoax.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioningCoax);
-        accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningCoax, oltDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioningCoax);
+        accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioningCoax);
+        accessLineRiRobot.checkDefaultNetworkLineProfiles(oltDeviceFttbProvisioningCoax, defaultNlProfileFttbCoax, numberOfAccessLinesForProvisioningCoax);
+        accessLineRiRobot.checkFttbNeProfiles(oltDeviceFttbProvisioningCoax, fttbNeProfileCoax, numberOfAccessLinesForProvisioningCoax);
     }
 
     @Test(dependsOnMethods = "fttbDeviceProvisioningCoaxTest", priority = 2)
