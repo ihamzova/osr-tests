@@ -1,8 +1,12 @@
 package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.defaultneprofile.DefaultNeProfileCase;
+import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
@@ -40,6 +44,8 @@ public class OltProvisioningAdtran extends GigabitTest {
     private PortProvisioning portEmptyAdtran;
     private PortProvisioning portDeprovisioningAdtran;
     private PortProvisioning portDeprovisioningForDpu;
+    private DefaultNeProfile defaultNeProfile;
+    private DefaultNetworkLineProfile defaultNetworkLineProfile;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
@@ -51,6 +57,8 @@ public class OltProvisioningAdtran extends GigabitTest {
         portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceAdtran);
         portDeprovisioningAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningAdtran);
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
+        defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
+        defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
         accessLineRiRobot.clearDatabase();
     }
 
@@ -73,6 +81,8 @@ public class OltProvisioningAdtran extends GigabitTest {
 
         wgAccessProvisioningRobot.startPortProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
+        accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());
+        accessLineRiRobot.checkDefaultNetworkLineProfiles(portEmptyAdtran, defaultNetworkLineProfile, portEmptyAdtran.getAccessLinesCount());
         accessLineRiRobot.checkIdPools(portEmptyAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }
@@ -87,6 +97,8 @@ public class OltProvisioningAdtran extends GigabitTest {
         Assert.assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
+        accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());
+        accessLineRiRobot.checkDefaultNetworkLineProfiles(portEmptyAdtran, defaultNetworkLineProfile, portEmptyAdtran.getAccessLinesCount());
         accessLineRiRobot.checkIdPools(portEmptyAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }

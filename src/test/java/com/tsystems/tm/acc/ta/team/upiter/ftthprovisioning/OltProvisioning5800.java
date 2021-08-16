@@ -1,8 +1,12 @@
 package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 
+import com.tsystems.tm.acc.data.upiter.models.defaultneprofile.DefaultNeProfileCase;
+import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
@@ -43,6 +47,8 @@ public class OltProvisioning5800 extends GigabitTest {
   private PortProvisioning card5800v1;
   private PortProvisioning card5800v2;
   private PortProvisioning port5800;
+  private DefaultNeProfile defaultNeProfile;
+  private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeClass
@@ -55,6 +61,8 @@ public class OltProvisioning5800 extends GigabitTest {
     card5800v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v1);
     card5800v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v2);
     port5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5800);
+    defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
+    defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
   }
 
   @BeforeMethod
@@ -76,6 +84,8 @@ public class OltProvisioning5800 extends GigabitTest {
 
     wgAccessProvisioningRobot.startPortProvisioning(port5800);
     accessLineRiRobot.checkFtthPortParameters(port5800);
+    accessLineRiRobot.checkDefaultNeProfiles(port5800, defaultNeProfile, port5800.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port5800, defaultNetworkLineProfile, port5800.getAccessLinesCount());
   }
 
   @Test(priority = 1)
@@ -94,6 +104,8 @@ public class OltProvisioning5800 extends GigabitTest {
 
     wgAccessProvisioningRobot.startCardProvisioning(card5800v1);
     accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v1.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v1.getAccessLinesCount());
   }
 
   @Test(priority = 1)
@@ -110,6 +122,8 @@ public class OltProvisioning5800 extends GigabitTest {
 
     wgAccessProvisioningRobot.startCardProvisioningV2(card5800v2);
     accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v2.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v2.getAccessLinesCount());
   }
 
 
@@ -131,5 +145,7 @@ public class OltProvisioning5800 extends GigabitTest {
 
     wgAccessProvisioningRobot.startDeviceProvisioning(device5800);
     accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, device5800.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, device5800.getAccessLinesCount());
   }
 }

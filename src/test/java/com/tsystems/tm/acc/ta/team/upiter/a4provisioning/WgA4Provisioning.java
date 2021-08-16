@@ -1,12 +1,16 @@
 package com.tsystems.tm.acc.ta.team.upiter.a4provisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
+import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -17,9 +21,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.GATEWAY_ROUTE_MS;
 
 @ServiceLog({WG_A4_PROVISIONING_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
@@ -35,6 +37,7 @@ public class WgA4Provisioning extends GigabitTest {
     private OltDevice a4OltDevice;
     private PortProvisioning a4Port;
     private A4TerminationPoint a4TerminationPoint;
+    private DefaultNetworkLineProfile defaultNetworkLineProfile;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeMethod
@@ -54,6 +57,7 @@ public class WgA4Provisioning extends GigabitTest {
         a4OltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.A4OltDevice);
         a4Port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForProvisioning);
         a4TerminationPoint = context.getData().getA4TerminationPointDataProvider().get(A4TerminationPointCase.A4TerminationPoint);
+        defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
     }
 
     @Test
@@ -71,6 +75,7 @@ public class WgA4Provisioning extends GigabitTest {
         );
 
         accessLineRiRobot.checkA4LineParameters(a4Port, a4TerminationPoint.getUuid());
+        accessLineRiRobot.checkDefaultNetworkLineProfiles(a4Port, defaultNetworkLineProfile, 1);
         accessLineRiRobot.checkHomeIdsCount(a4Port);
         accessLineRiRobot.checkLineIdsCount(a4Port);
     }
