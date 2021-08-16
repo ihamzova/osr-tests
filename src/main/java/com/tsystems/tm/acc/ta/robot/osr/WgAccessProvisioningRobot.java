@@ -18,7 +18,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.clie
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.PortDto;

@@ -14,5 +14,4 @@ public class Ont {
     private String assignedEmployee;
     private String klsId;
     private String newSerialNumber;
-
 }

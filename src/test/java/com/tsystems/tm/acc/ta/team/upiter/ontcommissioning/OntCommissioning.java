@@ -13,8 +13,10 @@ import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.OntStateDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntConnectivityInfoDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntStateDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultEmsEventDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -23,10 +25,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNull;
 
@@ -52,8 +56,10 @@ public class OntCommissioning extends GigabitTest {
   private AccessLine accessLineForDeprovisioningFalse;
   private BusinessInformation postprovisioningStart;
   private BusinessInformation postprovisioningEnd;
+  private AccessLine accessLineForPonDetection;
   private Ont ontSerialNumber;
   private Ont defaultSerialNumber;
+  private Ont ontForPonDetection;
   private PortProvisioning port;
   private UpiterTestContext context = UpiterTestContext.get();
 
@@ -73,6 +79,8 @@ public class OntCommissioning extends GigabitTest {
     defaultSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntDefaultSerialNumber);
     postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
     postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
+    accessLineForPonDetection = context.getData().getAccessLineDataProvider().get(AccessLineCase.EndSzForOntDetection);
+    ontForPonDetection = context.getData().getOntDataProvider().get(OntCase.SerialNumberForOntDetection);
   }
 
   @AfterClass
@@ -83,7 +91,7 @@ public class OntCommissioning extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-71918")
   @Description("ONT Access Line Reservation by HomeID")
-  public void accessLineReservationByPortAndHomeId() {
+  public void accessLineReservationByPortAndHomeIdTest() {
     accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLine.getOltDevice().getVpsz())
@@ -108,7 +116,7 @@ public class OntCommissioning extends GigabitTest {
   @Test(dependsOnMethods = "accessLineReservationByPortAndHomeId")
   @TmsLink("DIGIHUB-47257")
   @Description("Register ONT resource")
-  public void ontRegistration() {
+  public void ontRegistrationTest() {
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumber);
     ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
     SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
@@ -220,10 +228,24 @@ public class OntCommissioning extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-53284")
   @Description("Get ONT State by LineID")
-  public void getOntStateByLineID() {
+  public void getOntStateByLineIdTest() {
     OntStateDto ontState = ontOltOrchestratorRobot.getOntState(accessLineForOntState);
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForOntState.getLineId()).getOntState().toString(), ontState.getOntState());
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForOntState.getLineId()).getOntSerialNumber(), ontState.getSerialNumber());
   }
-}
 
+  @Test
+  @TmsLink("DIGIHUB-109220")
+  @Description("Ont Detection")
+  public void getOntInformationTest() {
+    OperationResultEmsEventDto OperationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+            .endSz(accessLineForPonDetection.getEndSz())
+            .serialNumber(ontForPonDetection.getSerialNumber())
+            .timestamp(OffsetDateTime.now()));
+    assertTrue(OperationResultEmsEventCallback.getSuccess());
+    assertNull(OperationResultEmsEventCallback.getError());
+    assertEquals(OperationResultEmsEventCallback.getResponse().getSerialNumber(), ontForPonDetection.getSerialNumber());
+    assertEquals(OperationResultEmsEventCallback.getResponse().getEventMessage(), "LastEvent");
+    assertNotNull((OperationResultEmsEventCallback.getResponse().getTimestamp()));
+  }
+}

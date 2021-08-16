@@ -15,11 +15,21 @@ template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA1190685"
 ---
+name: EndSzForOntDetection
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  endSz: "49/30/179/76H1"
+---
 name: OntSerialNumber
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:
   serialNumber: "1234123412341234"
   newSerialNumber: "9876987698769876"
+---
+name: SerialNumberForOntDetection
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1111111111106203"
 ---
 name: OntDefaultSerialNumber
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
