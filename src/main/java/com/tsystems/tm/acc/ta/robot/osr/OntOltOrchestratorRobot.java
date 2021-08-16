@@ -14,13 +14,9 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.CommissioningResult;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.DecommissioningResultV2;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.OntChangeResultV2;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.ReserveLineByHomeIdResultV2;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.testng.Assert;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,8 +28,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class OntOltOrchestratorRobot {
@@ -98,12 +93,34 @@ public class OntOltOrchestratorRobot {
     CommissioningResult result = new JSON()
             .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), CommissioningResult.class);
     assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
-    Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
+    assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
 
     if (result.isSuccess() && result.getResponse() != null) {
       result.getResponse().getLineId();
     } else
       result.getError().getMessage();
+  }
+
+  @Step("Get Ont Attenuation Measurement from SEAL")
+  public AttenuationMeasurementsDto getOntAttenuationMeasurement(AccessLine accessLine) {
+      CORRELATION_ID = UUID.randomUUID().toString();
+      ontOltOrchestratorClient
+              .getClient()
+              .ontOltOrchestratorV2()
+              .getAttenuationMeasurements()
+              .lineIdPath(accessLine.getLineId())
+              .xCallbackCorrelationIdHeader(CORRELATION_ID)
+              .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                      .withEndpoint(CONSUMER_ENDPOINT)
+                      .build()
+                      .toString())
+              .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                      .withEndpoint(CONSUMER_ENDPOINT)
+                      .build()
+                      .toString())
+              .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+      log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
+    return new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), AttenuationMeasurementsDto.class);
   }
 
   @Step("Send request to test ONT state")
@@ -125,18 +142,6 @@ public class OntOltOrchestratorRobot {
             .lineIdPath(lineId)
             .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
-  }
-
-  @Step("Check callback in Wiremock")
-  public List<LoggedRequest> getCallbackWiremock(String uuid) {
-    List<LoggedRequest> requests = WireMockFactory.get().retrieve(
-            exactly(1),
-            newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
-                    .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
-            30_000);
-    log.info("Callback: " + requests);
-    assertTrue(requests.size() >= 1, "Callback is found");
-    return requests;
   }
 
   @Step("Updates ONT state and associates access line with homeId")
@@ -237,7 +242,7 @@ public class OntOltOrchestratorRobot {
             .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), OntChangeResultV2.class);
     assertNotNull(result.getResponse().getLineId(), "Cannot get lineId from callback");
     assertNotNull(result.getResponse().getSerialNumber(), "Cannot get SerialNumber from callback");
-    Assert.assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
+    assertEquals(accessLine.getLineId(), result.getResponse().getLineId(), "Ont wasn't registered");
   }
 
   @Step("Decommission Ont")
@@ -289,5 +294,17 @@ public class OntOltOrchestratorRobot {
     DecommissioningResultV2 result = new JSON()
             .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), DecommissioningResultV2.class);
     assertTrue(result.isSuccess(), "ONT failed to be decommissioned");
+  }
+
+  @Step("Check callback in Wiremock")
+  public List<LoggedRequest> getCallbackWiremock(String uuid) {
+    List<LoggedRequest> requests = WireMockFactory.get().retrieve(
+            exactly(1),
+            newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
+                    .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
+            30_000);
+    log.info("Callback: " + requests);
+    assertTrue(requests.size() >= 1, "Callback is found");
+    return requests;
   }
 }

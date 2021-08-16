@@ -14,7 +14,6 @@ values:
   numberOfPonSlots: 1
   numberOfEthernetSlots: 1
   matNumber: 40247069
-
 ---
 name: A4PortForReservation
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -43,3 +42,8 @@ values:
   serialNumber: "A434123412341234"
   klsId: "123456"
   newSerialNumber: "B434123412341234"
+---
+name: A4AccessLineForAttenuationMeasurement
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA537202"

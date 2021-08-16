@@ -5,6 +5,12 @@ values:
   slotNumber: "3"
   portNumber: "0"
 ---
+name: OntSerialNumber
+template: com.tsystems.tm.acc.ta.data.osr.models.Ont
+values:
+  serialNumber: "1234123412341234"
+  newSerialNumber: "9876987698769876"
+---
 name: AccessLineAnbieterwechsel
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
@@ -20,12 +26,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   endSz: "49/30/179/76H1"
 ---
-name: OntSerialNumber
-template: com.tsystems.tm.acc.ta.data.osr.models.Ont
-values:
-  serialNumber: "1234123412341234"
-  newSerialNumber: "9876987698769876"
----
 name: SerialNumberForOntDetection
 template: com.tsystems.tm.acc.ta.data.osr.models.Ont
 values:
@@ -37,6 +37,11 @@ values:
   serialNumber: "1111111111193045"
   newSerialNumber:  "DEFAULT"
 ---
+name: AccessLineForAttenuationMeasurement
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.SQA3805515"
+---
 name: PortFor33LineCase
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
@@ -44,25 +49,25 @@ values:
   slotNumber: "3"
   portNumber: "1"
 ---
-name: ForDeprovisioningOntRegistrationAccessLine1
+name: ForDecommissioning33LineCaseAccessLine1
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA8823841"
   homeId: "0037F3H"
 ---
-name: ForDeprovisioningOntRegistrationAccessLine2
+name: ForDecommissioning33LineCaseAccessLine2
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.DQA8823841"
   homeId: "0037F3H"
 ---
-name: ForDeprovisioningTrue
+name: ForDecommissioingRollbackTrue
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA4643677"
   homeId: "0037WCC"
 ---
-name: ForDeprovisioningFalse
+name: ForDecommissioingRollbackFalse
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA4935632"

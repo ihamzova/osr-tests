@@ -73,7 +73,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     }
 
     @Test
-    @TmsLink("DIGIHUB-30877")
+    @TmsLink("DIGIHUB-95613")
     @Description("Port Provisioning with 32 WG Lines on SDX 6320")
     public void portProvisioning() {
         List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmptyAdtran);
@@ -88,7 +88,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     }
 
     @Test (priority = 2)
-    @TmsLink("DIGIHUB-30824")
+    @TmsLink("DIGIHUB-116582")
     @Description("Device Provisioning SDX 6320")
     public void deviceProvisioning() {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyAdtran);
@@ -104,7 +104,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     }
 
     @Test(dependsOnMethods = "portProvisioning", priority = 1)
-    @TmsLink("DIGIHUB-36495")
+    @TmsLink("DIGIHUB-116583")
     @Description("Port deprovisioning SDX 6320, deprovisionigForDpu = na (= false)")
     public void portDeprovisioningTest() {
         accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningAdtran);
@@ -116,7 +116,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     }
 
     @Test(dependsOnMethods = "deviceProvisioning", priority = 3)
-    @TmsLink("DIGIHUB-36495")
+    @TmsLink("DIGIHUB-116584")
     @Description("Port deprovisioning SDX 6320, deprovisionigForDpu = true")
     public void portDeprovisioningForDpuTrueTest() {
         accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningForDpu);

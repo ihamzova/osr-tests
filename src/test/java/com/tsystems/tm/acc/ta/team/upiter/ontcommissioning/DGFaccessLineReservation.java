@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.businessinformation.BusinessInformationCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
@@ -14,6 +13,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.HomeIdStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.LineIdStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -22,6 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertEquals;
 
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
@@ -77,14 +78,14 @@ public class DGFaccessLineReservation extends GigabitTest {
         LineIdStatus lineIdState = accessLineRiRobot.getLineIdStateByLineId(lineId);
 
         //Check that homeId and LineId change state
-        Assert.assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
-        Assert.assertEquals(lineIdState, LineIdStatus.USED);
+        assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
+        assertEquals(lineIdState, LineIdStatus.USED);
 
         //Get Access line state
         AccessLineStatus accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
         //Check that access line became assigned
-        Assert.assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
+        assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
 
 /*        //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();

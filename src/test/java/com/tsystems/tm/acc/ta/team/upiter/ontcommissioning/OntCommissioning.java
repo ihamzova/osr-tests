@@ -12,11 +12,9 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.OntState;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntConnectivityInfoDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntStateDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultEmsEventDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -50,10 +48,11 @@ public class OntCommissioning extends GigabitTest {
   private AccessLine accessLine;
   private AccessLine accessLineForOntState;
   private AccessLine accessLineAnbieterwechsel;
-  private AccessLine accessLineForDeprovisioningNew;
-  private AccessLine accessLineForDeprovisioningOld;
-  private AccessLine accessLineForDeprovisioningTrue;
-  private AccessLine accessLineForDeprovisioningFalse;
+  private AccessLine accessLineFor33LineCaseNew;
+  private AccessLine accessLineFor33LineCaseOld;
+  private AccessLine accessLineForDecommissioningRollbackTrue;
+  private AccessLine accessLineForDecommissioningRollbackFalse;
+  private AccessLine accessLineForAttenuationMeasurement;
   private BusinessInformation postprovisioningStart;
   private BusinessInformation postprovisioningEnd;
   private AccessLine accessLineForPonDetection;
@@ -69,13 +68,14 @@ public class OntCommissioning extends GigabitTest {
     Thread.sleep(1000);
     accessLineRiRobot.fillDatabaseForOltCommissioning();
     port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.PortFor33LineCase);
-    accessLineForDeprovisioningNew = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine1);
-    accessLineForDeprovisioningOld = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningOntRegistrationAccessLine2);
-    accessLineForDeprovisioningTrue = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningTrue);
-    accessLineForDeprovisioningFalse = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDeprovisioningFalse);
     accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntRegistrationAccessLine);
+    accessLineFor33LineCaseNew = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDecommissioning33LineCaseAccessLine1);
+    accessLineFor33LineCaseOld = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDecommissioning33LineCaseAccessLine2);
+    accessLineForDecommissioningRollbackTrue = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDecommissioingRollbackTrue);
+    accessLineForDecommissioningRollbackFalse = context.getData().getAccessLineDataProvider().get(AccessLineCase.ForDecommissioingRollbackFalse);
     accessLineForOntState = context.getData().getAccessLineDataProvider().get(AccessLineCase.OntGetStateAccessLine);
     accessLineAnbieterwechsel = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineAnbieterwechsel);
+    accessLineForAttenuationMeasurement = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForAttenuationMeasurement);
     defaultSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntDefaultSerialNumber);
     postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
     postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
@@ -113,7 +113,7 @@ public class OntCommissioning extends GigabitTest {
         Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList), "Business information is not found");*/
   }
 
-  @Test(dependsOnMethods = "accessLineReservationByPortAndHomeId")
+  @Test(dependsOnMethods = "accessLineReservationByPortAndHomeIdTest")
   @TmsLink("DIGIHUB-47257")
   @Description("Register ONT resource")
   public void ontRegistrationTest() {
@@ -126,7 +126,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(subscriberNEProfile.getOntState(), OntState.UNKNOWN);
   }
 
-  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration"})
+  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeIdTest", "ontRegistrationTest"})
   @TmsLink("DIGIHUB-33938")
   @Description("ONT Connectivity test")
   public void ontTest() {
@@ -137,7 +137,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(subscriberNEProfile2.getOntState(), OntState.ONLINE);
   }
 
-  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration", "ontTest"})
+  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeIdTest", "ontRegistrationTest", "ontTest"})
   @TmsLink("DIGIHUB-53891")
   @Description("ONT Change")
   public void ontChangeTest() {
@@ -148,7 +148,7 @@ public class OntCommissioning extends GigabitTest {
             ontSerialNumber.getNewSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeId", "ontRegistration", "ontTest", "ontChangeTest"})
+  @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeIdTest", "ontRegistrationTest", "ontTest", "ontChangeTest"})
   @TmsLink("DIGIHUB-53292")
   @Description("ONT Decommissioning, rollback to reservation = empty")
   public void ontDecommissioningTest() {
@@ -166,13 +166,13 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-38181")
   @Description("ONT Decommissioning, rollback to reservation = true")
   public void ontDecommissioningWithRollbackTrueTest() {
-    ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDeprovisioningTrue, true);
-    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningTrue.getLineId()));
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningTrue.getLineId()),
+    ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDecommissioningRollbackTrue, true);
+    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDecommissioningRollbackTrue.getLineId()));
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDecommissioningRollbackTrue.getLineId()),
             AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningTrue.getLineId()).get(0).getHomeId(),
-            accessLineForDeprovisioningTrue.getHomeId());
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningTrue.getLineId()).get(0).getDefaultNeProfile().getState(),
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDecommissioningRollbackTrue.getLineId()).get(0).getHomeId(),
+            accessLineForDecommissioningRollbackTrue.getHomeId());
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDecommissioningRollbackTrue.getLineId()).get(0).getDefaultNeProfile().getState(),
             ProfileState.ACTIVE);
   }
 
@@ -180,13 +180,13 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-38182")
   @Description("ONT Decommissioning, rollback to reservation = false")
   public void ontDecommissioningWithRollbackFalseTest() {
-    ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDeprovisioningFalse, false);
-    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDeprovisioningFalse.getLineId()));
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningFalse.getLineId()),
+    ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDecommissioningRollbackFalse, false);
+    assertNull(accessLineRiRobot.getSubscriberNEProfile(accessLineForDecommissioningRollbackFalse.getLineId()));
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDecommissioningRollbackFalse.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningFalse.getLineId()).get(0).getHomeId(),
-            accessLineForDeprovisioningFalse.getHomeId());
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningFalse.getLineId()).get(0).getDefaultNeProfile().getState(),
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDecommissioningRollbackFalse.getLineId()).get(0).getHomeId(),
+            accessLineForDecommissioningRollbackFalse.getHomeId());
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDecommissioningRollbackFalse.getLineId()).get(0).getDefaultNeProfile().getState(),
             ProfileState.ACTIVE);
   }
 
@@ -195,18 +195,18 @@ public class OntCommissioning extends GigabitTest {
   @Description("Deprovisioning of the 33d AccessLine after termination")
   @Owner("DL_T-Magic.U-Piter@t-systems.com")
   public void ontDecommissioning33LineTest() {
-    ontOltOrchestratorRobot.decommissionOnt(accessLineForDeprovisioningNew);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningNew.getLineId()).isEmpty(),
+    ontOltOrchestratorRobot.decommissionOnt(accessLineFor33LineCaseNew);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(),
             true);
     assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
-            lineIdDto.getLineId().equals(accessLineForDeprovisioningNew.getLineId())).filter(lineIdDto ->
+            lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())).filter(lineIdDto ->
             lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
-    assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineForDeprovisioningNew.getLineId()),
+    assertEquals(accessLineRiRobot.getLineIdStateByLineId(accessLineFor33LineCaseNew.getLineId()),
             LineIdStatus.FREE);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineForDeprovisioningOld.getLineId()),
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
             AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineForDeprovisioningOld.getLineId()).get(0).getHomeId(),
-            accessLineForDeprovisioningOld.getHomeId());
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
+            accessLineFor33LineCaseOld.getHomeId());
   }
 
   @Test
@@ -247,5 +247,19 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(OperationResultEmsEventCallback.getResponse().getSerialNumber(), ontForPonDetection.getSerialNumber());
     assertEquals(OperationResultEmsEventCallback.getResponse().getEventMessage(), "LastEvent");
     assertNotNull((OperationResultEmsEventCallback.getResponse().getTimestamp()));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-116324")
+  @Description("Get attenuation measurement for an FTTH AccessLine")
+  public void ontAttenuationMeasurementTest() {
+    AttenuationMeasurementsDto attenuationMeasurementsCallback = ontOltOrchestratorRobot.getOntAttenuationMeasurement(accessLineForAttenuationMeasurement);
+    assertTrue(attenuationMeasurementsCallback.getSuccess());
+    assertNull(attenuationMeasurementsCallback.getError());
+    assertEquals(attenuationMeasurementsCallback.getResponse().getOntState(), EmsMeasurementsDto.OntStateEnum.ONLINE);
+    assertNotNull(attenuationMeasurementsCallback.getResponse().getReceivedPowerAtOltFromRequestedOnu());
+    assertNotNull(attenuationMeasurementsCallback.getResponse().getReceivedPowerOnu());
+    assertNotNull(attenuationMeasurementsCallback.getResponse().getTransmittedPowerAtOltToAllOnus());
+    assertNotNull(attenuationMeasurementsCallback.getResponse().getTransmittedPowerOnu());
   }
 }
