@@ -91,7 +91,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);
@@ -133,7 +133,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkFirstPatchValues);
             dpuCommissioningRobot.checkPatchPortNotCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
         }
@@ -159,7 +159,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             Thread.sleep(4000);
 
-            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigNotCalled(dpuSealAtEMSCheckValuesDpu);
         }
     }
@@ -572,7 +572,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkDeleteDeviceDeprovisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
             dpuCommissioningRobot.checkPostSEALDpuEmsDEConfigCalled(dpuSealAtEMSCheckValuesDpu);

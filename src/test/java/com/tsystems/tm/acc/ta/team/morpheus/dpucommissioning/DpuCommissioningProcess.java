@@ -678,7 +678,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
     }
 
-    @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
+    @Test(description = "Domain level test. Positive case. DPU-commisioning without errors", enabled = false)
     @Description("Positive case. DPU-commissioning without errors")
     public void dpuCommissioningPositiveDomain() throws InterruptedException {
         OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
