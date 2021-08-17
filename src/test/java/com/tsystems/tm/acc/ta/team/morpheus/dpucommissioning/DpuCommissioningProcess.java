@@ -117,7 +117,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -128,7 +128,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkPostDpuEmsConfigCalled(dpuEmsCheckValuesPost);
             dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
-            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz().replace("/", "%2F"));
         }
     }
 
@@ -170,7 +170,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -231,7 +231,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -442,7 +442,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     .publishedHook(attachStubsToAllureReport());
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz());
         }
     }
@@ -505,7 +505,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     .publishedHook(attachStubsToAllureReport());
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz().replace("/", "%2F"));
         }
     }
@@ -577,7 +577,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             Thread.sleep(4000);
-            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
