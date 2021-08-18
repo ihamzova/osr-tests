@@ -87,7 +87,7 @@ public void getWorkorder (long woid){
     }
 
     @Step("Returns a dpu response determined by given fiberOnLocationId.")
-    public void getDpuByFolId(String folId, String dpuEndsz, String serialNumber){
+    public void getDpuByFolId(String folId, String dpuEndsz, String serialNumber, String deviceName, String shortName){
         mobileDpuBffClient = new MobileDpuBffClient();
         DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
                 .fiberOnLocationIdPath(folId)
@@ -97,6 +97,8 @@ public void getWorkorder (long woid){
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
         Assert.assertEquals(dpuResponse.getLifeCycleState(), DpuResponse.LifeCycleStateEnum.OPERATING);
         Assert.assertEquals(dpuResponse.getAccessTransmissionMedium(), DpuResponse.AccessTransmissionMediumEnum.COAX);
+        Assert.assertEquals(dpuResponse.getDeviceName(), deviceName);
+        Assert.assertEquals(dpuResponse.getShortName(), shortName);
     }
 
     @Step("Returns a dpu response determined by given fiberOnLocationId. Negative case, error code 404")
