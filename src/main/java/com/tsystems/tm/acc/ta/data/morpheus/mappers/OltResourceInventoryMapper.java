@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.*;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -156,7 +156,8 @@ public class OltResourceInventoryMapper {
                 .compositePartyId(0L)
                 .equipmentHolders(getEquipmentHolders())
                 .ports(Collections.singletonList(getPortMobileDpuBff()))
-                .fiberOnLocationId("1111222233334444555");
+                .fiberOnLocationId("1111222233334444555")
+                .accessTransmissionMedium(Device.AccessTransmissionMediumEnum.COAX);
     }
 
     public Port getPortMobileDpuBff() {
