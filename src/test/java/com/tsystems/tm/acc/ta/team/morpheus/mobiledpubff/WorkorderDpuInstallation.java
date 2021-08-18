@@ -159,7 +159,9 @@ public void init(){
                     .publishedHook(savePublishedToDefaultDir())
                     .publishedHook(attachStubsToAllureReport());
 
-            mobileDpuBffRobot.getDpuByFolId(folId, dpuEndsz, serialNumber);
+            String shortName = "SDX2221-04 TP-AC-M-FTTB ETSI";
+            String deviceName = "4 PORT G.FAST FTTB ONU, TWISTED PAIR, AC POWER, WITH MELT";
+            mobileDpuBffRobot.getDpuByFolId(folId, dpuEndsz, serialNumber, deviceName, shortName);
         }
     }
 
