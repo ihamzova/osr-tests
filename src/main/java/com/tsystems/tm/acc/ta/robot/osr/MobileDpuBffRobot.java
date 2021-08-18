@@ -96,6 +96,7 @@ public void getWorkorder (long woid){
         Assert.assertEquals(dpuResponse.getEndSZ(), dpuEndsz);
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
         Assert.assertEquals(dpuResponse.getLifeCycleState(), DpuResponse.LifeCycleStateEnum.OPERATING);
+        Assert.assertEquals(dpuResponse.getAccessTransmissionMedium(), DpuResponse.AccessTransmissionMediumEnum.COAX);
     }
 
     @Step("Returns a dpu response determined by given fiberOnLocationId. Negative case, error code 404")
