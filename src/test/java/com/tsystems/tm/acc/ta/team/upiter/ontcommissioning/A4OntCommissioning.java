@@ -146,8 +146,8 @@ public class A4OntCommissioning extends GigabitTest {
     assertNotNull(attenuationMeasurementsCallback.getError());
     assertFalse(attenuationMeasurementsCallback.getSuccess());
     assertNull(attenuationMeasurementsCallback.getResponse());
-    assertEquals(attenuationMeasurementsCallback.getError().getMessage(), "A4 is not supported");
-    assertEquals(attenuationMeasurementsCallback.getError().getStatus(), HTTP_CODE_BAD_REQUEST_400);
-    assertEquals(attenuationMeasurementsCallback.getError().getCode(), "06544000");
+    assertEquals("Measurement is not supported for access 4.0 platform", attenuationMeasurementsCallback.getError().getMessage());
+    assertEquals(HTTP_CODE_BAD_REQUEST_400, attenuationMeasurementsCallback.getError().getStatus());
+    assertEquals("3", attenuationMeasurementsCallback.getError().getCode());
   }
 }
