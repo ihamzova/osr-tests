@@ -141,7 +141,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.enterRoVuep("A1000858"); // A1000851 560 Stück, A1000852 4 Stück,
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
 
-        TimeUnit.SECONDS.sleep(7);  // wait for result
+        TimeUnit.SECONDS.sleep(12);  // wait for result
 
         // read ui
         ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
