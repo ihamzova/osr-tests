@@ -13,10 +13,7 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.concurrent.TimeUnit;
 
 @Epic("OS&R")
 @Feature("Test detail-view for found NEs in UI")
@@ -60,29 +57,15 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // Ensure that no old test data is in the way
         cleanUp();
-    }
 
-    @BeforeMethod
-    public void setup() {
+        // Test cases only do read requests, therefore it's ok to crete them only once at beginning
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neDataA, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
         a4ResourceInventory.createNetworkElement(neDataB, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
-
-        // "924713, 289182"    - ist das ok? seit 6-2020 im Code (uewege.yaml), aber erst seit 7-2021 genutzt
         nelData.setUeWegId(uewegData.getUewegId());
-
-        System.out.println("+++ negDataA: "+negData);
-        System.out.println("+++ neDataA: "+neDataA);
-        System.out.println("+++ neDataB: "+neDataB);
-        System.out.println("+++ nepDataA: "+nepDataA);
-        System.out.println("+++ nepDataB: "+nepDataB);
-        System.out.println("+++ nelData: "+nelData);
-
-        //a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
         a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
-
     }
 
     @AfterClass
@@ -94,21 +77,20 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPage() throws InterruptedException {
+    public void testA4NeDetailPage() {
         // WHEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
 
         // THEN
         a4ResourceInventoryNeDetails.checkNeDetailsAndTableContents(neDataA, nepDataA, nelData, neDataB);
-        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE Gegenstelle works")
-    public void testA4NeDetailPageAndClickOppositeNe() throws InterruptedException {
+    public void testA4NeDetailPageAndClickOppositeNe() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -118,7 +100,6 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataB);
-        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
 
     }
 
@@ -126,7 +107,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEP details works")
-    public void testA4NeDetailPageAndClickNepButton() throws InterruptedException {
+    public void testA4NeDetailPageAndClickNepButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -136,14 +117,13 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNepDetails.checkLandedOnCorrectNepDetailsPage(nepDataA);
-        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEL details works")
-    public void testA4NeDetailPageAndClickNelButton() throws InterruptedException {
+    public void testA4NeDetailPageAndClickNelButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -153,7 +133,6 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNelDetails.checkLandedOnCorrectNelDetailsPage(nelData);
-        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
 }
