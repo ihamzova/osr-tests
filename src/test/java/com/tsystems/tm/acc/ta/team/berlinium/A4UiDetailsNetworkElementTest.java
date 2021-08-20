@@ -16,6 +16,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.TimeUnit;
+
 @Epic("OS&R")
 @Feature("Test detail-view for found NEs in UI")
 @TmsLink("DIGIHUB-xxxxx")
@@ -67,33 +69,46 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
         a4ResourceInventory.createNetworkElement(neDataB, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
+
+        // "924713, 289182"    - ist das ok? seit 6-2020 im Code (uewege.yaml), aber erst seit 7-2021 genutzt
         nelData.setUeWegId(uewegData.getUewegId());
-        a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
+
+        System.out.println("+++ negDataA: "+negData);
+        System.out.println("+++ neDataA: "+neDataA);
+        System.out.println("+++ neDataB: "+neDataB);
+        System.out.println("+++ nepDataA: "+nepDataA);
+        System.out.println("+++ nepDataB: "+nepDataB);
+        System.out.println("+++ nelData: "+nelData);
+
+        //a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
+        a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
+
     }
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);  // nel wird hier nicht gelöscht?
     }
 
     @Test
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Detail page")
-    public void testA4NeDetailPage() {
+    public void testA4NeDetailPage() throws InterruptedException {
         // WHEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
 
         // THEN
         a4ResourceInventoryNeDetails.checkNeDetailsAndTableContents(neDataA, nepDataA, nelData, neDataB);
+        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE Gegenstelle works")
-    public void testA4NeDetailPageAndClickOppositeNe() {
+    public void testA4NeDetailPageAndClickOppositeNe() throws InterruptedException {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -103,13 +118,15 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataB);
+        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
+
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEP details works")
-    public void testA4NeDetailPageAndClickNepButton() {
+    public void testA4NeDetailPageAndClickNepButton() throws InterruptedException {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -119,13 +136,14 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNepDetails.checkLandedOnCorrectNepDetailsPage(nepDataA);
+        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
     @Test
     @Owner("heiko.schwanke@t-systems.com, bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEL details works")
-    public void testA4NeDetailPageAndClickNelButton() {
+    public void testA4NeDetailPageAndClickNelButton() throws InterruptedException {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
@@ -135,6 +153,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
         // THEN
         a4ResourceInventoryNelDetails.checkLandedOnCorrectNelDetailsPage(nelData);
+        a4ResourceInventory.deleteNetworkElementLink(nelData.getUuid()); // nel wird in afterclass nicht gelöscht?
     }
 
 }
