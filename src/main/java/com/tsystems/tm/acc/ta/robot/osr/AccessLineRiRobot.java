@@ -230,6 +230,15 @@ public class AccessLineRiRobot {
     assertTrue(actualFttbNeProfiles.stream().allMatch(fttbNeProfile -> fttbNeProfile.equals(expectedFttbNeProfile)), "FTTB NE Profiles are incorrect");
   }
 
+  public void checkL2bsaNspReference(PortProvisioning port, L2BsaNspReference expectedL2bsaNspReference) {
+    List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
+    assertEquals(actualL2bsaNspReferenceDtos.size(), 1, "L2bsaNspReferences count is incorrect");
+    List<L2BsaNspReference> actualL2bsaNspReferences =
+            actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
+    assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
+  }
+
   @Step("Remove lines with id > 1008, change some port refs")
   public void prepareTestDataToDeprovisioning(PortProvisioning port) {
     // delete extra lines
@@ -556,6 +565,15 @@ public class AccessLineRiRobot {
     fttbNeProfileList.setStateMosaic(fttbNeProfile.getStateMosaic().toString());
     fttbNeProfileList.setStateOlt(fttbNeProfile.getStateOlt().toString());
     return fttbNeProfileList;
+  }
+
+  private static L2BsaNspReference mapToL2BsaNspReference(L2BsaNspReferenceDto l2BsaNspReference) {
+    L2BsaNspReference l2BsaNspReferenceList = new L2BsaNspReference();
+    l2BsaNspReferenceList.setL2ccid(l2BsaNspReference.getL2ccid());
+    l2BsaNspReferenceList.setCarrierBsaReference(l2BsaNspReference.getCarrierBsaReference());
+    l2BsaNspReferenceList.setDownBandwidth(l2BsaNspReference.getDownBandwidth());
+    l2BsaNspReferenceList.setUpBandwidth(l2BsaNspReference.getUpBandwidth());
+    return l2BsaNspReferenceList;
   }
 
 

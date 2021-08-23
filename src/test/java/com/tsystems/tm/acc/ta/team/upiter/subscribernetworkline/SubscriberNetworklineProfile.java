@@ -4,12 +4,15 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.networklineprofiledata.NetworkLineProfileDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.SubscriberNetworkLineProfileDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
@@ -53,7 +56,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void createSubscriberNetworkLineProfileRetail() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.NetworkLineProfileModifySuccess);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLP);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         Assert.assertEquals(accessLineRiRobot.getSubscriberNLProfile(accessLine.getLineId()).getState(), ProfileState.ACTIVE);
         Assert.assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
     }
@@ -64,7 +67,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void deleteSubscriberNetworkLineProfileRetail() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileDeleteSuccess);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLP);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         Assert.assertNull(accessLineDto.getSubscriberNetworkLineProfile());
         Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
@@ -76,7 +79,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void createSubscriberNetworkLineProfileWS() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileModifySuccessWS);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLPWS);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         SubscriberNetworkLineProfileDto subscriberNetworkLineProfile = accessLineRiRobot.getSubscriberNLProfile(accessLine.getLineId());
         Assert.assertEquals(subscriberNetworkLineProfile.getDownBandwidth().intValue(),123000);
         Assert.assertEquals(subscriberNetworkLineProfile.getUpBandwidth().intValue(),123000);
@@ -90,7 +93,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void deleteSubscriberNetworkLineProfileWS() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileDeleteSuccessWS);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLPWS);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         Assert.assertNull(accessLineDto.getSubscriberNetworkLineProfile());
         Assert.assertEquals(accessLineDto.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
@@ -102,7 +105,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void createSubscriberNetworkLineProfileWB() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileAddSuccess);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLPWB);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesByLineId(this.accessLine.getLineId()).get(0);
         Assert.assertNotNull(accessLineDto.getSubscriberNetworkLineProfile(),
                 "There is no Subscriber networkline profile");
@@ -117,7 +120,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     public void deleteSubscriberNetworkLineProfileWB() {
         subscriberProfile = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.networkLineProfileDeleteSuccessWB);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.accesslineForSubscriberNLPWB);
-        networkLineProfileManagementRobot.updateSubscriberNetworklineProfile(subscriberProfile.getResourceOrder(), accessLine);
+        networkLineProfileManagementRobot.createResourceOrderRequest(subscriberProfile.getResourceOrder(), accessLine);
         Assert.assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).isEmpty(), "WB Access line is not deleted");
     }
 }
