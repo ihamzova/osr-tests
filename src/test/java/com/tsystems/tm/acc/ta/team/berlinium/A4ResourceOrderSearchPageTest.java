@@ -139,19 +139,32 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     public void testRoSearchByVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.enterRoVuep("A1000858"); // A1000851 560 Stück, A1000852 4 Stück,
+
+        a4ResourceOrderSearchPageRobot.selectCompleted();
+        //a4ResourceOrderSearchPageRobot.selectInProgress();
+        //a4ResourceOrderSearchPageRobot.selectRejected();
+
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
+
+
 
         TimeUnit.SECONDS.sleep(12);  // wait for result
 
         // read ui
         ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
         System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
+        System.out.println("+++ Tabelle in UI : "+elementsCollection);
 
         // get ROs from DB
         List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb("A1000858");
         System.out.println("+++ number of ROs in DB : "+allRoList.size());
 
         assertEquals(elementsCollection.size()/6,allRoList.size());
+
+        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable(); // er klickt nicht
+        TimeUnit.SECONDS.sleep(5);  // wait for looking
+
+
 
     }
 
