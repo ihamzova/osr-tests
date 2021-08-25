@@ -14,7 +14,10 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.*;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.CommissioningResult;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.DecommissioningResultV2;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.OntChangeResultV2;
+import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.model.ReserveLineByHomeIdResultV2;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +37,7 @@ import static org.testng.Assert.*;
 public class OntOltOrchestratorRobot {
   private static String CORRELATION_ID;
   private OntOltOrchestratorClient ontOltOrchestratorClient = new OntOltOrchestratorClient(authTokenProvider);
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ont-olt-orchestrator", RhssoHelper.getSecretOfGigabitHub("ont-olt-orchestrator"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
   @Step("Reserving new access line by port and homeId")
   public String reserveAccessLineByPortAndHomeId(PortAndHomeIdDto portAndHomeIdDto) {

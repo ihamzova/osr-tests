@@ -20,7 +20,7 @@ import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT
 public class WgFttbAccessProvisioningRobot {
 
     private static final UUID uuid = UUID.randomUUID();
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-fttb-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-fttb-access-provisioning"));
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
     private WgFttbAccessProvisioningClient wgFttbAccessProvisioningClient = new WgFttbAccessProvisioningClient(authTokenProvider);
 
     @Step("Start FTTB preprovisioning process for a device")

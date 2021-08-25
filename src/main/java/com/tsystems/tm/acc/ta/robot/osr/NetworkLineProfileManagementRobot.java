@@ -33,7 +33,7 @@ public class NetworkLineProfileManagementRobot {
 
     private static String CORRELATION_ID;
     private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider );
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("network-line-profile-management", RhssoHelper.getSecretOfGigabitHub("network-line-profile-management"));
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
 
     @Step("Performs actions with subscriberNetworklineProfile or l2SsaNspReference")

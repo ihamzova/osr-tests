@@ -15,7 +15,7 @@ public class WgA4PreProvisioningRobot {
     private static final Integer HTTP_CODE_CREATED_201 = 201;
 
     private ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient(authTokenProvider).getClient();
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-a4-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-a4-provisioning"));
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
     @Step("Start preprovisioning process")
     public void startPreProvisioning(TpRefDto tpRefDto) {

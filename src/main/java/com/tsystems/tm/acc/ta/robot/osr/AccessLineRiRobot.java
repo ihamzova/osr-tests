@@ -32,8 +32,12 @@ public class AccessLineRiRobot {
   private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
 
   private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
+  private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("access-line-resource-inventory", RhssoHelper.getSecretOfGigabitHub("access-line-resource-inventory"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider
+          ("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
+  private static final AuthTokenProvider authTokenProviderCa = new RhssoClientFlowAuthTokenProvider
+          ("ca-integration", RhssoHelper.getSecretOfGigabitHub("ca-integration"));
 
 
   @Step("Clear Al RI db")
@@ -509,14 +513,14 @@ public class AccessLineRiRobot {
 
   @Step("Get AccessLine entities by LineId for CA")
   public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
-    return accessLineResourceInventory
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Get AccessLine entities by oltEndSz, slot, port for CA")
   public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
-    return accessLineResourceInventory
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal()
             .listAccessLine()
             .limitQuery(limit)
@@ -528,7 +532,7 @@ public class AccessLineRiRobot {
 
   @Step("Get AccessLine entities by dpuEndSz, port for CA")
   public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
-    return accessLineResourceInventory
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal()
             .listAccessLine()
             .portReferencesDpuDownlinkPortReferenceEndSZQuery(dpuEndSz)
