@@ -2,8 +2,6 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 
 import com.codeborne.selenide.ElementsCollection;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceOrderSearchPage;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
@@ -12,13 +10,11 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class A4ResourceOrderSearchPageRobot {
 
-
     @Step("Open UI, log in, and goTo RO-Search-page")
     public void openRoSearchPage(){
         A4ResourceOrderSearchPage
                 .login();
     }
-
 
     @Step("Enter vuep")
     public void enterRoVuep(String value) { $(A4ResourceOrderSearchPage.getRO_VUEP_NUMBER_FIELD_LOCATOR()).val(value); }
@@ -46,7 +42,7 @@ public class A4ResourceOrderSearchPageRobot {
 
 
     public void clickFirstRowInSearchResultTable() {
-        getRoElementsCollection().get(0).click();
+        getRoElementsCollection().get(2).click();
     }
 
 
@@ -61,8 +57,5 @@ public class A4ResourceOrderSearchPageRobot {
             return null;
         }
     }
-
-
-
 
 }
