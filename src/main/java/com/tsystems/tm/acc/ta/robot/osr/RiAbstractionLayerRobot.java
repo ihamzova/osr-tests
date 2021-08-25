@@ -15,7 +15,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200
 
 public class RiAbstractionLayerRobot {
   private RiAbstractionLayerClient riAbstractionLayerClient = new RiAbstractionLayerClient(authTokenProvider);
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ri-abstraction-layer", RhssoHelper.getSecretOfGigabitHub("ri-abstraction-layer"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
   @Step("Get Device by EndSz")
   public Device getDeviceByEndsz(String endSz) {

@@ -52,7 +52,7 @@ public class WgAccessProvisioningRobot {
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
   @Step("Start port provisioning")
   public void startPortProvisioning(PortProvisioning port) {

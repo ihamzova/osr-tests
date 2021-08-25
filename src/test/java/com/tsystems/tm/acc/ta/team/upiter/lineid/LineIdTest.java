@@ -3,14 +3,14 @@ package com.tsystems.tm.acc.ta.team.upiter.lineid;
 import com.tsystems.tm.acc.data.upiter.models.lineidbatch.LineIdBatchCase;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.PoolLineId;
-import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.SingleLineId;
 import com.tsystems.tm.acc.ta.api.osr.LineIdGeneratorClient;
 import com.tsystems.tm.acc.ta.data.osr.models.LineIdBatch;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
+import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.PoolLineId;
+import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.SingleLineId;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -30,7 +30,7 @@ public class LineIdTest extends GigabitTest {
   private LineIdGeneratorClient lineidGeneratorClient;
   private LineIdBatch lineIdBatch;
   private UpiterTestContext context = UpiterTestContext.get();
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("line-id-generator", RhssoHelper.getSecretOfGigabitHub("line-id-generator"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
   @BeforeClass
   public void init() {
