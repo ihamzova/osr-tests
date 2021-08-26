@@ -24,7 +24,7 @@ public class A4ResourceOrderSearchPage {
 
 
     @Getter
-    public static final By RO_VUEP_NUMBER_FIELD_LOCATOR = By.id("vuepPublicReferenceNumber");
+    public static final By RO_VUEP_NUMBER_FIELD_LOCATOR = By.id("vuep");
 
     @Getter
     public static final By RO_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
@@ -40,13 +40,13 @@ public class A4ResourceOrderSearchPage {
 
 
     @Getter
-    public static final By RO_CHECKBOX_IN_PROGRESS = By.id("stateInProgress");
+    public static final By RO_CHECKBOX_IN_PROGRESS = By.id("orderStateINPROGRESS");
 
     @Getter
-    public static final By RO_CHECKBOX_COMPLETED = By.id("stateCompleted");
+    public static final By RO_CHECKBOX_COMPLETED = By.id("orderStateCOMPLETED");
 
     @Getter
-    public static final By RO_CHECKBOX_REJECTED = By.id("stateRejected");
+    public static final By RO_CHECKBOX_REJECTED = By.id("orderStateREJECTED");
 
 
     // common
