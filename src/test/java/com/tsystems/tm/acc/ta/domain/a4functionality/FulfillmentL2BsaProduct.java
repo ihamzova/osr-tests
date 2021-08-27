@@ -47,9 +47,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
-    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final AccessLineRiRobot accessLineRi = new AccessLineRiRobot();
-    private final A4CarrierManagementRobot a4CarrierManagement = new A4CarrierManagementRobot();
     private final NetworkLineProfileManagementRobot networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();
 
     private A4NetworkElementGroup negData;
@@ -136,16 +134,15 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
                 .add(calId);
     }
 
-    @AfterClass
+    //@AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
         a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
-    @Test(description = "DIGIHUB-100848 fulfillment - L2BSA Product")
+    @Test(description = "Start with preprovisioning FTTH AccessLine and then perform activation of an A4 L2BSA Product")
     @Owner("DL-Berlinium@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Start with preprovisioning FTTH AccessLine and then perform activation of an L2BSA Product.")
+    @TmsLink("DIGIHUB-117817")
     public void l2BsaProductActivationTest() {
         // WHEN / Action
         // check that preconditions are ok
@@ -164,7 +161,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         assertEquals(allocatedL2BsaNSP.getLineId(), accessLine.getLineId());
         assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), expectedL2BsaNspReferenceActivation.getDownBandwidth().toString());
         assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), expectedL2BsaNspReferenceActivation.getUpBandwidth().toString());
-        //assertEquals(allocatedL2BsaNSP.getL2CcId(), expectedL2BsaNspReferenceActivation.getL2ccid());
+        assertEquals(allocatedL2BsaNSP.getL2CcId(), expectedL2BsaNspReferenceActivation.getL2ccid());
 
         AccessLineDto actualAccessLine = accessLineRi.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         assertEquals(actualAccessLine.getStatus(), AccessLineStatus.ASSIGNED);
@@ -173,10 +170,9 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         accessLineRi.checkL2bsaNspReference(port, expectedL2BsaNspReferenceActivation);
     }
 
-    @Test(description = "DIGIHUB-100848 fulfillment - L2BSA Product", dependsOnMethods = "l2BsaProductActivationTest")
+    @Test(description = "A4 L2BSA Product Modification", dependsOnMethods = "l2BsaProductActivationTest")
     @Owner("DL-Berlinium@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Change of an L2BSA Product.")
+    @TmsLink("DIGIHUB-117816")
     public void l2BsaProductModificationTest() {
         // Change L2BSA product (ServiceBandwidth)
         // start L2BSA product - change
@@ -188,7 +184,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         assertEquals(allocatedL2BsaNSP.getLineId(), accessLine.getLineId());
         assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), expectedL2BsaNspReferenceModification.getDownBandwidth().toString());
         assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), expectedL2BsaNspReferenceModification.getUpBandwidth().toString());
-        // assertEquals(allocatedL2BsaNSP.getL2CcId(), expectedL2BsaNspReference.getL2ccid());
+        assertEquals(allocatedL2BsaNSP.getL2CcId(), expectedL2BsaNspReferenceModification.getL2ccid());
 
         AccessLineDto actualAccessLine = accessLineRi.getAccessLinesByLineId(accessLine.getLineId()).get(0);
         assertEquals(actualAccessLine.getStatus(), AccessLineStatus.ASSIGNED);
@@ -197,10 +193,9 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         accessLineRi.checkL2bsaNspReference(port, expectedL2BsaNspReferenceModification);
     }
 
-    @Test(description = "DIGIHUB-100848 fulfillment - L2BSA Product", dependsOnMethods = "l2BsaProductModificationTest")
+    @Test(description = "A4 L2BSA Product Deactivation", dependsOnMethods = "l2BsaProductModificationTest")
     @Owner("DL-Berlinium@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Deactivation of an L2BSA Product.")
+    @TmsLink("DIGIHUB-117815")
     public void l2BsaProductDeactivationTest() {
 
         // Deactivation L2BSA product
@@ -216,6 +211,6 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         assertEquals(actualAccessLine.getStatus(), AccessLineStatus.ASSIGNED);
         assertNull(actualAccessLine.getL2BsaNspReference());
         assertNotNull(actualAccessLine.getNetworkServiceProfileReference());
-        //accessLineRi.checkDefaultNetworkLineProfiles(port, expectedDefaultNetworklineProfile, 1);
+        accessLineRi.checkDefaultNetworkLineProfiles(port, expectedDefaultNetworklineProfile, 1);
     }
 }
