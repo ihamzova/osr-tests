@@ -234,7 +234,7 @@ public class A4ResourceOrderRobot {
 
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
         if(ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
-            assertEquals(ResourceOrderItemStateType.COMPLETED.toString(), ro.getOrderItem().get(0).getState());
+            assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
 }

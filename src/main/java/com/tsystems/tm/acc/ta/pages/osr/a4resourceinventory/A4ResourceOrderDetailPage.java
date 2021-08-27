@@ -20,11 +20,28 @@ public class A4ResourceOrderDetailPage {
     public static final By RO_VUEP_FIELD_LOCATOR = By.id("vuepPublicReferenceNumber");
 
     @Getter
+    public static final By RO_EXT_ORDER_ID_FIELD_LOCATOR = By.id("externalOrderId");
+
+    @Getter
+    public static final By RO_CBR_FIELD_LOCATOR = By.id("carrierBsaReferenz");
+
+    @Getter
+    public static final By RO_RVNR_FIELD_LOCATOR = By.id("rahmenvertragsnummer");
+
+    @Getter
+    public static final By RO_START_DATE_FIELD_LOCATOR = By.id("startDate");
+
+    @Getter
+    public static final By RO_COMPLETION_DATE_FIELD_LOCATOR = By.id("completionDate");
+
+    @Getter
+    public static final By RO_ORDER_DATE_FIELD_LOCATOR = By.id("orderDate");
+
+    @Getter
+    public static final By RO_STATUS_FIELD_LOCATOR = By.id("status");
+
+    @Getter
     public static final By ROI_TABLE_LOCATOR = By.id("roItemTable");
-
-
-
-
 
 
 }
