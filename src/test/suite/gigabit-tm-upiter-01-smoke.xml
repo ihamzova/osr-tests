@@ -14,8 +14,8 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning">
                 <methods>
-                    <include name="accessLineReservationByPortAndHomeId"/>
-                    <include name="ontRegistration"/>
+                    <include name="accessLineReservationByPortAndHomeIdTest"/>
+                    <include name="ontRegistrationTest"/>
                     <include name="ontTest"/>
                     <include name="ontDecommissioningWithRollbackFalseTest"/>
                 </methods>
