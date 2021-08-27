@@ -173,8 +173,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // THEN
             // check if message is still waiting in queue
-        a4Resilience.checkMessagesInQueue(queue, "1");
-        String old = a4Resilience.countMessagesInQueue(dlq);
+        a4Resilience.checkMessagesInQueue(queue, 1);
+        int old = a4Resilience.countMessagesInQueue(dlq);
 
         //AFTER
             // change route back over kong to a4-resource-inventory
@@ -183,7 +183,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
             // wait time of redelivery and check if message it out of queue and
         long sleepTime = a4Resilience.getRedeliveryDelayCarrierManagement();
         TimeUnit.MILLISECONDS.sleep(sleepTime);
-        a4Resilience.checkMessagesInQueue(queue, "0");
+        a4Resilience.checkMessagesInQueue(queue, 0);
         a4Resilience.checkMessagesInQueue(dlq, old);
     }
 
