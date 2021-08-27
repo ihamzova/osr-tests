@@ -156,18 +156,7 @@ public class A4ResilienceRobot {
 
     @Step("countMessagesInQueue")
     public int countMessagesInQueue(String queue) throws IOException {
-        // Activate this when using AMQ
-        String url = new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
-                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"
-                + queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22"
-                + queue + "%22/countMessages()";
-
-        // Activate this when using AMQ-HA
-//        String url = new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
-//                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=!%22"
-//                + A4_QUEUE_DISPATCHER_QUEUE + "!%22,component=addresses,address=!%22"
-//                + queue + "!%22,subcomponent=queues,routing-type=!%22anycast!%22,queue=!%22"
-//                + queue + "!%22/countMessages()";
+        String url = getQueueUrl(queue) + "countMessages()";
 
         Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
@@ -181,24 +170,28 @@ public class A4ResilienceRobot {
 
     @Step("removeAllMessagesInQueue")
     public void removeAllMessagesInQueue(String queue) {
-        // Activate this when using AMQ
-        String url = new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
-                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"
-                + queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22"
-                + queue + "%22/removeAllMessages()";
-
-        // Activate this when using AMQ-HA
-//        String url = new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
-//                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=!%22"
-//                + A4_QUEUE_DISPATCHER_QUEUE + "!%22,component=addresses,address=!%22"
-//                + queue + "!%22,subcomponent=queues,routing-type=!%22anycast!%22,queue=!%22"
-//                + queue + "!%22/removeAllMessages()";
+        String url = getQueueUrl(queue) + "removeAllMessages()";
 
         Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
+    }
+
+    private String getQueueUrl(String queue) {
+        // Activate this when using AMQ
+        return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
+                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"
+                + queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22"
+                + queue + "%22/";
+
+        // Activate this when using AMQ-HA
+//        return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
+//                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=!%22"
+//                + A4_QUEUE_DISPATCHER_QUEUE + "!%22,component=addresses,address=!%22"
+//                + queue + "!%22,subcomponent=queues,routing-type=!%22anycast!%22,queue=!%22"
+//                + queue + "!%22/";
     }
 
 }
