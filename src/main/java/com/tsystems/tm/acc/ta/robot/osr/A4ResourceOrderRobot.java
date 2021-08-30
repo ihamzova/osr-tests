@@ -13,6 +13,7 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
@@ -38,7 +39,7 @@ import static org.testng.Assert.fail;
 public class A4ResourceOrderRobot {
 
     public final static String cbPath = "/test_url";
-    private final String cbUrl = "https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de" + cbPath; // Wiremock for merlin MS // TODO dynamically get env name
+    private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
             new RhssoClientFlowAuthTokenProvider(A4_QUEUE_DISPATCHER_MS,
@@ -233,6 +234,7 @@ public class A4ResourceOrderRobot {
 
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
         if(ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
-            assertEquals(ResourceOrderItemStateType.COMPLETED.toString(), ro.getOrderItem().get(0).getState());
+            assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
+
 }
