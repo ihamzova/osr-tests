@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderDetailPageRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderSearchPageRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import io.qameta.allure.Description;
@@ -30,8 +31,11 @@ import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 public class A4ResourceOrderSearchPageTest extends GigabitTest {
@@ -120,17 +124,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
-        // a4ResourceOrderRobot.sendPostResourceOrder(ro);  //wegen case-sensitive erstmal kein Datenmüll mehr
+        //a4ResourceOrderRobot.sendPostResourceOrder(ro); // case-sensitive problem
         sleepForSeconds(10);
-
     }
 
-    @BeforeMethod
-    public void setup() {
-        //Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        //setCredentials(loginData.getLogin(), loginData.getPassword());
-
-    }
 
     @AfterClass
     public void cleanUp() {
@@ -143,42 +140,49 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, all checkboxes without vuep")
     public void testRoSearchAllCheckboxesWithoutVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-       // a4ResourceOrderSearchPageRobot.enterRoVuep(vuep); // A1000851 560 Stück, A1000852 4 Stück,
 
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
 
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-
         TimeUnit.SECONDS.sleep(15);  // wait for result
 
         // read ui
-        ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
-        System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
-        //System.out.println("+++ Tabelle in UI : "+elementsCollection);
+        ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
+        System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
         List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
         System.out.println("+++ number of ROs in DB : "+allRoList.size());
 
-       // assertEquals(elementsCollection.size()/6,allRoList.size()); // case-sensitive ok?
+        // sort
+        List<ResourceOrderDto> sortedRoList;
+        sortedRoList = allRoList
+                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .collect(Collectors.toList());
+
+        //assertEquals(roCollection.size()/6, sortedRoList.size());
+        assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
+        //  assertEquals(roCollection.get(4).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date is null in db
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
-        TimeUnit.SECONDS.sleep(5);  // wait for looking
-        System.out.println("+++++++++++++++++++++++++++ ");
-        System.out.println("+++ VUEP in Detail-Page : "+a4ResourceOrderDetailPageRobot.readVuep());
-        System.out.println("+++ CBR in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCarrierBsaReferenz());
-        System.out.println("+++ C-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCompletionDate());
-        System.out.println("+++ ex-id in Detail-Page : "+a4ResourceOrderDetailPageRobot.readExternalOrderId());
-        System.out.println("+++ O-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readOrderDate());
-        System.out.println("+++ RV-Nr in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRahmenvertragsnummer());
-        System.out.println("+++ RO-ID in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRoId());
-        System.out.println("+++ S-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStartDate());
-        System.out.println("+++ Status in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStatus());
-        System.out.println("+++ Inhalt ROI-Tabelle : "+a4ResourceOrderDetailPageRobot.getRoiElementsCollection());
-        System.out.println("+++++++++++++++++++++++++++ ");
+        ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+        TimeUnit.SECONDS.sleep(2);  // wait for looking
+
+        // detail-page head
+        assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
+        assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
+        assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
+
+        // detail-page table
+        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
+        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
 
     }
 
@@ -189,42 +193,44 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, no checkbox without vuep")
     public void testRoSearchNoCheckboxWithoutVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        // a4ResourceOrderSearchPageRobot.enterRoVuep(vuep); // A1000851 560 Stück, A1000852 4 Stück,
-
-        //a4ResourceOrderSearchPageRobot.selectCompleted();
-        //a4ResourceOrderSearchPageRobot.selectInProgress();
-        //a4ResourceOrderSearchPageRobot.selectRejected();
-
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-
         TimeUnit.SECONDS.sleep(15);  // wait for result
 
         // read ui
-        ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
-        System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
-        //System.out.println("+++ Tabelle in UI : "+elementsCollection);
+        ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
+        System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
         List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
         System.out.println("+++ number of ROs in DB : "+allRoList.size());
 
-        // assertEquals(elementsCollection.size()/6,allRoList.size()); // case-sensitive ok?
+        // sort
+        List<ResourceOrderDto> sortedRoList;
+        sortedRoList = allRoList
+                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .collect(Collectors.toList());
+
+      //assertEquals(roCollection.size()/6, sortedRoList.size());
+        assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
+      //  assertEquals(roCollection.get(4).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date is null in db
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
-        TimeUnit.SECONDS.sleep(5);  // wait for looking
-        System.out.println("+++++++++++++++++++++++++++ ");
-        System.out.println("+++ VUEP in Detail-Page : "+a4ResourceOrderDetailPageRobot.readVuep());
-        System.out.println("+++ CBR in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCarrierBsaReferenz());
-        System.out.println("+++ C-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCompletionDate());
-        System.out.println("+++ ex-id in Detail-Page : "+a4ResourceOrderDetailPageRobot.readExternalOrderId());
-        System.out.println("+++ O-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readOrderDate());
-        System.out.println("+++ RV-Nr in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRahmenvertragsnummer());
-        System.out.println("+++ RO-ID in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRoId());
-        System.out.println("+++ S-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStartDate());
-        System.out.println("+++ Status in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStatus());
-        System.out.println("+++ Inhalt ROI-Tabelle : "+a4ResourceOrderDetailPageRobot.getRoiElementsCollection());
-        System.out.println("+++++++++++++++++++++++++++ ");
+        ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+        TimeUnit.SECONDS.sleep(2);  // wait for looking
+
+        // detail-page head
+        assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
+        assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
+        assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
+
+        // detail-page table
+        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
+        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
 
     }
 
@@ -234,41 +240,46 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, no checkbox with vuep")
     public void testRoSearchNoCheckboxWithVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep); // A1000851 560 Stück, A1000852 4 Stück,
-
-        //a4ResourceOrderSearchPageRobot.selectCompleted();
-        //a4ResourceOrderSearchPageRobot.selectInProgress();
-        //a4ResourceOrderSearchPageRobot.selectRejected();
-
+        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-
         TimeUnit.SECONDS.sleep(15);  // wait for result
 
         // read ui
-        ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
-        System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
-        //System.out.println("+++ Tabelle in UI : "+elementsCollection);
+        ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
+        System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep); // "" or vuep
+        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
         System.out.println("+++ number of ROs in DB : "+allRoList.size());
 
-        // assertEquals(elementsCollection.size()/6,allRoList.size()); // case-sensitive ok?
+        // sort
+        List<ResourceOrderDto> sortedRoList;
+        sortedRoList = allRoList
+                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .collect(Collectors.toList());
+        System.out.println("+++ Größe sortierte Dto-Liste: "+sortedRoList.size());
+
+       // assertEquals(roCollection.size()/6, sortedRoList.size());
+        assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(4).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
-        TimeUnit.SECONDS.sleep(5);  // wait for looking
-        System.out.println("+++++++++++++++++++++++++++ ");
-        System.out.println("+++ VUEP in Detail-Page : "+a4ResourceOrderDetailPageRobot.readVuep());
-        System.out.println("+++ CBR in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCarrierBsaReferenz());
-        System.out.println("+++ C-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCompletionDate());
-        System.out.println("+++ ex-id in Detail-Page : "+a4ResourceOrderDetailPageRobot.readExternalOrderId());
-        System.out.println("+++ O-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readOrderDate());
-        System.out.println("+++ RV-Nr in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRahmenvertragsnummer());
-        System.out.println("+++ RO-ID in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRoId());
-        System.out.println("+++ S-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStartDate());
-        System.out.println("+++ Status in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStatus());
-        System.out.println("+++ Inhalt ROI-Tabelle : "+a4ResourceOrderDetailPageRobot.getRoiElementsCollection());
-        System.out.println("+++++++++++++++++++++++++++ ");
+        ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
+        TimeUnit.SECONDS.sleep(2);  // wait for looking
+
+        // detail-page head
+        assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
+        assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
+        assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
+
+        // detail-page table
+        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
+        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+
     }
 
     @Test
@@ -277,41 +288,51 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, completed with vuep")
     public void testRoSearchCompletedWithVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep); // A1000851 560 Stück, A1000852 4 Stück,
-
+        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.selectCompleted();
-        //a4ResourceOrderSearchPageRobot.selectInProgress();
-        //a4ResourceOrderSearchPageRobot.selectRejected();
-
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-
         TimeUnit.SECONDS.sleep(15);  // wait for result
 
         // read ui
-        ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
-        System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
-        //System.out.println("+++ Tabelle in UI : "+elementsCollection);
+        ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
 
-        // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep); // "" or vuep
-        System.out.println("+++ number of ROs in DB : "+allRoList.size());
+        // get ROs from DB, filter completed
+        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
 
-        // assertEquals(elementsCollection.size()/6,allRoList.size()); // case-sensitive ok?
+        List<ResourceOrderDto> filteredRoList;
+        filteredRoList = allRoList
+                .stream()
+                .filter(group -> group.getState().equals("COMPLETED") )
+                .collect(Collectors.toList());
+
+        // sort
+        List<ResourceOrderDto> sortedRoList;
+                sortedRoList = filteredRoList
+                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .collect(Collectors.toList());
+
+        // search-page
+        assertEquals(roCollection.size()/6, filteredRoList.size());
+        assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(4).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
-        TimeUnit.SECONDS.sleep(5);  // wait for looking
-        System.out.println("+++++++++++++++++++++++++++ ");
-        System.out.println("+++ VUEP in Detail-Page : "+a4ResourceOrderDetailPageRobot.readVuep());
-        System.out.println("+++ CBR in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCarrierBsaReferenz());
-        System.out.println("+++ C-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCompletionDate());
-        System.out.println("+++ ex-id in Detail-Page : "+a4ResourceOrderDetailPageRobot.readExternalOrderId());
-        System.out.println("+++ O-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readOrderDate());
-        System.out.println("+++ RV-Nr in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRahmenvertragsnummer());
-        System.out.println("+++ RO-ID in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRoId());
-        System.out.println("+++ S-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStartDate());
-        System.out.println("+++ Status in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStatus());
-        System.out.println("+++ Inhalt ROI-Tabelle : "+a4ResourceOrderDetailPageRobot.getRoiElementsCollection());
-        System.out.println("+++++++++++++++++++++++++++ ");
+        ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
+        TimeUnit.SECONDS.sleep(2);  // wait for looking
+
+        // detail-page head
+        assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
+        assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
+        assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
+
+        // detail-page table
+        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
+        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+
     }
 
 
@@ -321,52 +342,57 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, rejected and inprogress with vuep")
     public void testRoSearchRejectedInprogressWithVuep() throws InterruptedException {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep); // A1000851 560 Stück, A1000852 4 Stück,
-
-        //a4ResourceOrderSearchPageRobot.selectCompleted();
+        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
-
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-
         TimeUnit.SECONDS.sleep(15);  // wait for result
 
         // read ui
-        ElementsCollection elementsCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
-        System.out.println("+++ number of ROs in UI : "+elementsCollection.size()/6);     // 6 Felder pro Eintrag
-        //System.out.println("+++ Tabelle in UI : "+elementsCollection);
+        ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
+        System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep); // "" or vuep
-        System.out.println("+++ number of ROs in DB : "+allRoList.size());
+        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
 
-        // assertEquals(elementsCollection.size()/6,allRoList.size()); // case-sensitive ok?
+        List<ResourceOrderDto> filteredRoList;
+        filteredRoList = allRoList
+                .stream()
+                .filter(group -> group.getState().equals("INPROGRESS") || group.getState().equals("REJECTED"))
+                .collect(Collectors.toList());
+
+        // sort
+        List<ResourceOrderDto> sortedRoList;
+        sortedRoList = filteredRoList
+                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .collect(Collectors.toList());
+
+        System.out.println("+++ number of ROs in sortierter Liste : "+sortedRoList.size());
+
+        // search-page
+        assertEquals(roCollection.size()/6, sortedRoList.size());
+        assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(4).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
-        TimeUnit.SECONDS.sleep(5);  // wait for looking
-        System.out.println("+++++++++++++++++++++++++++ ");
-        System.out.println("+++ VUEP in Detail-Page : "+a4ResourceOrderDetailPageRobot.readVuep());
-        System.out.println("+++ CBR in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCarrierBsaReferenz());
-        System.out.println("+++ C-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readCompletionDate());
-        System.out.println("+++ ex-id in Detail-Page : "+a4ResourceOrderDetailPageRobot.readExternalOrderId());
-        System.out.println("+++ O-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readOrderDate());
-        System.out.println("+++ RV-Nr in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRahmenvertragsnummer());
-        System.out.println("+++ RO-ID in Detail-Page : "+a4ResourceOrderDetailPageRobot.readRoId());
-        System.out.println("+++ S-Date in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStartDate());
-        System.out.println("+++ Status in Detail-Page : "+a4ResourceOrderDetailPageRobot.readStatus());
-        System.out.println("+++ Inhalt ROI-Tabelle : "+a4ResourceOrderDetailPageRobot.getRoiElementsCollection());
-        System.out.println("+++++++++++++++++++++++++++ ");
+        ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
+        TimeUnit.SECONDS.sleep(2);  // wait for looking
+
+        // detail-page head
+        assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
+        assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
+        assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
+
+        // detail-page table
+        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
+        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+
+
     }
-
-    /*
-    mögliche Tests:
-    - alle Checkboxen ohne vuep     - ok
-    - keine Checkbox ohne vuep      - ok
-    - keine Checkbox mit vuep       - ok
-    - nur completed mit einer vuep  - ok
-    - rejected und inprogress mit einer vuep   - ok
-     */
-
 
 
 }
