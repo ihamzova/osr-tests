@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
+import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -12,23 +13,22 @@ import org.openqa.selenium.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byClassName;
 import static com.codeborne.selenide.Selenide.*;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_FAILED;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_GESTARTET;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
-import static org.testng.Assert.assertEqualsNoOrder;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class ProcessSearchPage {
 
   WebDriver driver;
+  private static final Integer LATENCY_FOR_PROVISIONING_TO_FAIL = 120_000;
 
   private static final String APP = "access-process-management-ui";
   private static final String ENDPOINT = "/search";
@@ -209,13 +209,20 @@ public class ProcessSearchPage {
   }
 
   @Step("Check main process")
-  public void checkMainProcess(Process actualProcess, Process expectedProcess) {
-    assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
+  public void checkMainProcess(Process actualProcess, Process expectedProcess, String expectedDate) {
+    String actualDate = parseDataFromUi();
+
+    //assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
     assertTrue(actualProcess.getEndSz().equals(expectedProcess.getEndSz()));
     assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()));
     assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()));
     assertTrue(actualProcess.getLineId().equals(expectedProcess.getLineId()));
-    assertTrue(actualProcess.getState().equals(STATUS_FAILED));
+    assertTrue(actualDate.equals(expectedDate));
+  }
+
+  @Step("Check process status")
+  public void checkProcessStatus(String actualStatus, String expectedStatus) {
+    assertEquals(actualStatus, expectedStatus);
   }
 
   @Step("Check subprocesses")
@@ -228,17 +235,6 @@ public class ProcessSearchPage {
     $(CONFIRMATION_DIALOG).should(visible);
     $(CONFIRMATION_DIALOG_MESSAGE).shouldHave(text("Prozess wurde neugestartet. Sie werden zu einem neuen Tab mit der Prozesssuche weitergeleitet"));
     $(OK_IN_CONFIRMATION_DIALOG).shouldBe(enabled);
-  }
-
-  @Step("Check process after restoration")
-  public void checkRestoredProcess(Process restoredProcess, Process initialProcess) {
-    assertTrue(restoredProcess.getProcessName().equals(initialProcess.getProcessName()));
-    assertTrue(restoredProcess.getEndSz().equals(initialProcess.getEndSz()));
-    assertTrue(restoredProcess.getSlotNumber().equals(initialProcess.getSlotNumber()));
-    assertTrue(restoredProcess.getPortNumber().equals(initialProcess.getPortNumber()));
-    assertTrue(restoredProcess.getLineId().equals(initialProcess.getLineId()));
-    assertTrue(restoredProcess.getStartTime().equals(initialProcess.getStartTime()));
-    //assertTrue(restoredProcess.getState().equals(STATUS_GESTARTET));
   }
 
   public void safeJavaScriptClick(SelenideElement element) throws Exception {
@@ -260,4 +256,69 @@ public class ProcessSearchPage {
     }
   }
 
+  public void waitUntilNeededStatus(String expectedStatus) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PROVISIONING_TO_FAIL); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkProvisioning = () -> {
+        Boolean result = false;
+        try {
+          result = clickSearchButton()
+                  .sortTableByStartTimeDescending()
+                  .getInfoForMainProcesses().get(0).getState().equals(expectedStatus);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return result;
+      };
+      timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+  }
+
+  public String parseDataFromUi() {
+    String startTime = getInfoForMainProcesses().get(0).getStartTime().split(",", 2)[0];
+    String month = startTime.substring(0, startTime.indexOf(" "));
+    String dayOfMonth = startTime.substring(startTime.indexOf(" ") + 1);
+    switch (month) {
+      case ("Jan."):
+        month = "01";
+        break;
+      case ("Feb."):
+        month = "02";
+        break;
+      case ("März"):
+        month = "03";
+        break;
+      case ("Apr."):
+        month = "04";
+        break;
+      case ("Mai"):
+        month = "05";
+        break;
+      case ("Juni"):
+        month = "06";
+        break;
+      case ("Juli"):
+        month = "07";
+        break;
+      case ("Aug."):
+        month = "08";
+        break;
+      case ("Sept."):
+        month = "09";
+        break;
+      case ("Okt."):
+        month = "10";
+        break;
+      case ("Nov."):
+        month = "11";
+        break;
+      case ("Dez."):
+        month = "12";
+        break;
+    }
+    return dayOfMonth + " " + month;
+  }
 }
