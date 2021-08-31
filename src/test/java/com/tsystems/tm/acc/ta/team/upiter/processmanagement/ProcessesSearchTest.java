@@ -4,17 +4,21 @@ import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.process.ProcessCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.pages.osr.accessprocessmanagement.ProcessSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_FAILED;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_RUNNING;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 
 @ServiceLog({
@@ -24,19 +28,19 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 })
 public class ProcessesSearchTest extends GigabitTest {
 
-  private static final Integer LATENCY_FOR_PROVISIONING_TO_FAIL = 120_000;
   WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
   private UpiterTestContext context = UpiterTestContext.get();
   private Process process;
   private String processUuid;
+  private String today;
 
   @BeforeClass
-  public void init() throws InterruptedException {
+  public void init() {
     process = context.getData().getProcessDataProvider().get(ProcessCase.processesData);
     processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(process).toString();
-    Thread.sleep(LATENCY_FOR_PROVISIONING_TO_FAIL);
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
+    today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
   }
 
   @Test
@@ -46,17 +50,23 @@ public class ProcessesSearchTest extends GigabitTest {
     ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
     processSearchPage.validateUrl();
     processSearchPage.searchProcessesByDevice(process)
-            .clickSearchButton();
+            .clickSearchButton()
+            .sortTableByStartTimeDescending();
+
+    Process runningProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.checkMainProcess(runningProcess, process, today);
+    processSearchPage.checkProcessStatus(runningProcess.getState(), STATUS_RUNNING);
 
     processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
     processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
-
-    processSearchPage.sortTableByStartTimeDescending();
-    Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkMainProcess(foundProcess, process);
-
     processSearchPage.clickOpenSubprocessesButton(0);
     processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
+
+    processSearchPage.waitUntilNeededStatus(STATUS_FAILED);
+
+    Process failedProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.checkMainProcess(failedProcess, process, today);
+    processSearchPage.checkProcessStatus(failedProcess.getState(), STATUS_FAILED);
   }
 
   @Test
@@ -72,7 +82,8 @@ public class ProcessesSearchTest extends GigabitTest {
     processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
     processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
     Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkMainProcess(foundProcess, process);
+    processSearchPage.checkMainProcess(foundProcess, process, today);
+    processSearchPage.checkProcessStatus(foundProcess.getState(), STATUS_FAILED);
     processSearchPage.clickOpenSubprocessesButton(0);
     processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
   }
@@ -83,7 +94,8 @@ public class ProcessesSearchTest extends GigabitTest {
   public void restoreProcessTest() throws Exception {
     ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
     processSearchPage.validateUrl();
-    processSearchPage.searchProcessesByProcessId(processUuid).clickSearchButton();
+    processSearchPage.searchProcessesByProcessId(processUuid)
+            .clickSearchButton();
 
     Process initialProcess = processSearchPage.getInfoForMainProcesses().get(0);
 
@@ -92,6 +104,7 @@ public class ProcessesSearchTest extends GigabitTest {
     processSearchPage.clickOkInConfirmationDialog();
 
     Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkRestoredProcess(restoredProcess, initialProcess);
+    processSearchPage.checkMainProcess(restoredProcess, initialProcess, today);
+    processSearchPage.checkProcessStatus(restoredProcess.getState(), STATUS_RUNNING);
   }
 }

@@ -1,0 +1,8 @@
+name: searchProcessByEndSz
+template: com.tsystems.tm.acc.ta.data.osr.models.Process
+values:
+  processName: "DeviceDeprovisioning"
+  endSz: "49/8571/0/76HD"
+  slotNumber: ""
+  portNumber: ""
+  lineId: ""

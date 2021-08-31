@@ -11,6 +11,7 @@ public class CommonTestData {
     public static final String STATUS_ACTIVE = "ACTIVE";
     public static final String STATUS_INACTIVE = "INACTIVE";
     public static final String STATUS_WALLED_GARDEN = "WALLED_GARDEN";
-    public static final String STATUS_GESTARTET = "RUNNING";
+    public static final String STATUS_RUNNING = "RUNNING";
+    public static final String STATUS_FINISHED = "FINISHED";
     public static final String STATUS_FAILED = "FAILED";
 }
