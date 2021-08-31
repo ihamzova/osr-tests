@@ -157,26 +157,26 @@ public class A4ResilienceRobot {
     @Step("countMessagesInQueue")
     public int countMessagesInQueue(String queue) throws IOException {
         String url = getQueueUrl(queue) + "countMessages()";
+        String responseAsString = sendRequestToQueueAndGetResponse(url);
 
-        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
-        WebTarget resource = client.target(url);
-        Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
-        Response response = request.get();
-        String responseAsString = response.readEntity(String.class);
         CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
-        assertEquals(response.getStatus(), HttpStatus.SC_OK);
         return Integer.parseInt(cm.getValue());
     }
 
     @Step("removeAllMessagesInQueue")
     public void removeAllMessagesInQueue(String queue) {
         String url = getQueueUrl(queue) + "removeAllMessages()";
+        sendRequestToQueueAndGetResponse(url);
+    }
 
+    private String sendRequestToQueueAndGetResponse(String url) {
         Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
+
+        return response.readEntity(String.class);
     }
 
     private String getQueueUrl(String queue) {
