@@ -33,4 +33,9 @@
             <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
         </classes>
     </test>
+    <test thread-count="1" name="Access Process Management UI">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.accessprocessmanagement.AccessProcessManagementUi"/>
+        </classes>
+    </test>
 </suite>
