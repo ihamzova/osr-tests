@@ -16,7 +16,6 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderDetailPageRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderSearchPageRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import io.qameta.allure.Description;
@@ -24,7 +23,6 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP_PUBLIC_REFERENZ_NR;
@@ -34,6 +32,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -49,20 +48,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private final String vuep = "A1000858";
 
     private A4NetworkElementGroup negData;
-    private A4NetworkElement neData1;
-    private A4NetworkElement neData2;
-    private A4NetworkElement neData3;
-    private A4NetworkElementPort nepData1;
-    private A4NetworkElementPort nepData2;
-    private A4NetworkElementPort nepData3;
-    private A4NetworkElementLink nelData1;
-    private A4NetworkElementLink nelData2;
-    private A4NetworkServiceProfileA10Nsp nspA10Data1;
-    private A4TerminationPoint tpData1;
-    private UewegData uewegData1;
-    private UewegData uewegData2;
-
-    private ResourceOrder ro;
 
 
     @BeforeClass()
@@ -73,34 +58,34 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
 
-        neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        A4NetworkElement neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementA10NspSwitch01);
-        nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        A4NetworkElementPort nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
 
-        neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        A4NetworkElement neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
-        nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        A4NetworkElementPort nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
 
-        neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        A4NetworkElement neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementB);
-        nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        A4NetworkElementPort nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
-        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        A4NetworkElementLink nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
-        nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        A4NetworkElementLink nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
-        nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+        A4NetworkServiceProfileA10Nsp nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
+        A4TerminationPoint tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
 
-        uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
+        UewegData uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.uewegA);
-        uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
+        UewegData uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.uewegB);
 
         cleanUp();
@@ -118,7 +103,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
-        ro = a4ResourceOrderRobot.buildResourceOrder();
+        ResourceOrder ro = a4ResourceOrderRobot.buildResourceOrder();
 
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro);
@@ -138,7 +123,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
     @Description("test RO search page of A4 browser, all checkboxes without vuep")
-    public void testRoSearchAllCheckboxesWithoutVuep() throws InterruptedException {
+    public void testRoSearchAllCheckboxesWithoutVuep() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
 
         a4ResourceOrderSearchPageRobot.selectCompleted();
@@ -146,7 +131,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.selectRejected();
 
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        TimeUnit.SECONDS.sleep(15);  // wait for result
+        sleepForSeconds(15);// wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
@@ -169,8 +154,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
-
-        TimeUnit.SECONDS.sleep(2);  // wait for looking
+        sleepForSeconds(2);// wait for looking
 
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
@@ -178,14 +162,13 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
 
         // detail-page table
-        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
-        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+        assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
 
     }
-
 
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
@@ -226,11 +209,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
 
         // detail-page table
-        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
-        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+        assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
 
     }
 
@@ -274,11 +257,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
 
         // detail-page table
-        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
-        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+        assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
 
     }
 
@@ -295,6 +278,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
+        System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB, filter completed
         List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
@@ -302,7 +286,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         List<ResourceOrderDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
-                .filter(group -> group.getState().equals("COMPLETED") )
+                .filter(group -> Objects.equals(group.getState(), "COMPLETED"))
                 .collect(Collectors.toList());
 
         // sort
@@ -310,6 +294,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 sortedRoList = filteredRoList
                 .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
                 .collect(Collectors.toList());
+        System.out.println("+++ number of filtered ROs in DB : "+sortedRoList.size()/6);
 
         // search-page
         assertEquals(roCollection.size()/6, filteredRoList.size());
@@ -326,15 +311,15 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
 
+
         // detail-page table
-        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
-        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+        assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
 
     }
-
 
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
@@ -358,7 +343,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         List<ResourceOrderDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
-                .filter(group -> group.getState().equals("INPROGRESS") || group.getState().equals("REJECTED"))
+                .filter(group -> Objects.equals(group.getState(), "INPROGRESS") || group.getState().equals("REJECTED"))
                 .collect(Collectors.toList());
 
         // sort
@@ -367,7 +352,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
                 .collect(Collectors.toList());
 
-        System.out.println("+++ number of ROs in sortierter Liste : "+sortedRoList.size());
+        System.out.println("+++ number of filtered ROs in DB : "+sortedRoList.size());
 
         // search-page
         assertEquals(roCollection.size()/6, sortedRoList.size());
@@ -385,11 +370,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), sortedRoList.get(0).getState());
 
         // detail-page table
-        assertEquals(roiCollection.size()/8, sortedRoList.get(0).getOrderItem().size());
-        assertEquals(roiCollection.get(0).innerText(), sortedRoList.get(0).getOrderItem().get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), sortedRoList.get(0).getOrderItem().get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), sortedRoList.get(0).getOrderItem().get(0).getResource().getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), sortedRoList.get(0).getOrderItem().get(0).getState());
+        assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
 
 
     }
