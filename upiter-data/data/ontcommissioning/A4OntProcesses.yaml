@@ -47,3 +47,9 @@ name: A4AccessLineForAttenuationMeasurement
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA537202"
+---
+name: PortDetectedInA4
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH3"
+  portNumber: "1"
