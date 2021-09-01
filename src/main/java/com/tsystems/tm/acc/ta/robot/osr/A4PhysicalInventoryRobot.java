@@ -14,8 +14,7 @@ import org.testng.Assert;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_PHYSICAL_INVENTORY_MS;
 
 public class A4PhysicalInventoryRobot {
@@ -54,5 +53,15 @@ public class A4PhysicalInventoryRobot {
                 .deletePhysicalResource()
                 .idPath(eqData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Delete Equipment from Physical Inventory - not found")
+    public void deleteEquipmentNotFound(A4Equipment eqData) {
+
+        a4PhysicalInventory
+                .physicalResource()
+                .deletePhysicalResource()
+                .idPath(eqData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 }
