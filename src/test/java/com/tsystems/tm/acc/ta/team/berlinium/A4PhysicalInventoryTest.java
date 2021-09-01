@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 
 @Epic("OS&R domain")
 @Feature("Save Physical Resources in a4-physical-inventory")
-@TmsLink("DIGIHUB-118755")
+@TmsLink("DIGIHUB-118755, DIGIHUB-118795")
 public class A4PhysicalInventoryTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -34,7 +34,6 @@ public class A4PhysicalInventoryTest extends GigabitTest {
 
     @AfterMethod
     public void cleanup() {
-        a4PhysicalInventory.deleteEquipment(eqData);
     }
 
     @Test(description = "DIGIHUB-37858 Create equipment in physical inventory ")
@@ -43,6 +42,14 @@ public class A4PhysicalInventoryTest extends GigabitTest {
     @Description("Create new equipment in physical inventory")
     public void testCreateEquipment() {
         a4PhysicalInventory.createEquipment(eqData);
+        a4PhysicalInventory.deleteEquipment(eqData);
     }
 
+    @Test(description = "DIGIHUB-112143 Delete equipment in physical inventory - not found")
+    @Owner("Swetlana.Okonetschnikow@telekom.de")
+    @TmsLink("DIGIHUB-118795")
+    @Description("Delete Equipment in physical inventory - not Found")
+    public void testDeleteEquipmentNotFound() {
+        a4PhysicalInventory.deleteEquipmentNotFound(eqData);
+    }
 }
