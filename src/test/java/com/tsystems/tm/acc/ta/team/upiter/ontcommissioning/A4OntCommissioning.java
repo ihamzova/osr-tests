@@ -13,6 +13,8 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.AttenuationMeasurementsDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntConnectivityInfoDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultEmsEventDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -23,10 +25,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.*;
 
@@ -46,6 +50,7 @@ public class A4OntCommissioning extends GigabitTest {
   private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
   private PortProvisioning a4port;
   private AccessLine accessLine;
+  private PortProvisioning portDetectedInA4;
   private AccessLine accessLineForAttenuationMeasurement;
   private Ont ontSerialNumber;
   private TpRefDto tfRef;
@@ -63,6 +68,7 @@ public class A4OntCommissioning extends GigabitTest {
     accessLineRiRobot.fillDatabaseForOltCommissioning();
     a4port = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.A4PortForReservation);
     accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4ontAccessLine);
+    portDetectedInA4 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.PortDetectedInA4);
     accessLineForAttenuationMeasurement = context.getData().getAccessLineDataProvider().get(AccessLineCase.A4AccessLineForAttenuationMeasurement);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.A4ontSerialNumber);
     tfRef = new TpRefDto().endSz(accessLine.getOltDevice().getEndsz())
@@ -88,10 +94,10 @@ public class A4OntCommissioning extends GigabitTest {
             .homeId(accessLine.getHomeId());
     String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
     accessLine.setLineId(lineId);
-    Assert.assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.ASSIGNED.toString());
-    Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "Serial number is not null");
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.ASSIGNED);
+    Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(),
+            "Serial number is not null");
     ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.ASSIGNED.toString());
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
@@ -105,13 +111,33 @@ public class A4OntCommissioning extends GigabitTest {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"a4ontTest"})
+  @Test(dependsOnMethods = {"a4ontRegistrationTest", "a4ontTest"})
   @TmsLink("DIGIHUB-58725")
   @Description("A4 ONT Change test")
   public void a4ontChangeTest() {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
     assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
+
+  @Test(dependsOnMethods = {"a4ontRegistrationTest", "a4ontTest", "a4ontChangeTest"})
+  @TmsLink("DIGIHUB-117787")
+  @Description("ONT Pon Detection for A4, NSP is found in A4RI")
+  public void onePonDetectTest() {
+      OffsetDateTime timestamp = OffsetDateTime.now();
+      OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+            .endSz(accessLine.getOltDevice().getEndsz())
+            .serialNumber(ontSerialNumber.getNewSerialNumber())
+            .timestamp(timestamp));
+    assertTrue(operationResultEmsEventCallback.getSuccess());
+    assertNull(operationResultEmsEventCallback.getError());
+    assertEquals(operationResultEmsEventCallback.getResponse().getEndSz(), portDetectedInA4.getEndSz());
+    assertNull(operationResultEmsEventCallback.getResponse().getSlotNumber());
+    assertEquals(operationResultEmsEventCallback.getResponse().getPortNumber(), portDetectedInA4.getPortNumber());
+    assertEquals(operationResultEmsEventCallback.getResponse().getSerialNumber(), ontSerialNumber.getNewSerialNumber());
+    assertNotEquals(operationResultEmsEventCallback.getResponse().getTimestamp(), timestamp);
+    assertNull(operationResultEmsEventCallback.getResponse().getOnuId());
+    assertNull(operationResultEmsEventCallback.getResponse().getEventMessage());
   }
 
   @Test(dependsOnMethods = {"a4ontTest"})
@@ -138,7 +164,7 @@ public class A4OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(), accessLine.getHomeId());
   }
 
-  @Test()
+  @Test
   @TmsLink("DIGIHUB-116326")
   @Description("Get attenuation measurement for an A4 AccessLine")
   public void ontAttenuationMeasurementTest() {

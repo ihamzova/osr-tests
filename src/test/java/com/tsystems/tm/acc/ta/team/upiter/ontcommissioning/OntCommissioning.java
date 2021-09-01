@@ -80,6 +80,7 @@ public class OntCommissioning extends GigabitTest {
     postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
     postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
     accessLineForPonDetection = context.getData().getAccessLineDataProvider().get(AccessLineCase.EndSzForOntDetection);
+    accessLineForPonDetection = context.getData().getAccessLineDataProvider().get(AccessLineCase.EndSzForOntDetection);
     ontForPonDetection = context.getData().getOntDataProvider().get(OntCase.SerialNumberForOntDetection);
   }
 
@@ -238,15 +239,15 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-109220")
   @Description("Ont Detection")
   public void getOntInformationTest() {
-    OperationResultEmsEventDto OperationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
             .endSz(accessLineForPonDetection.getEndSz())
             .serialNumber(ontForPonDetection.getSerialNumber())
             .timestamp(OffsetDateTime.now()));
-    assertTrue(OperationResultEmsEventCallback.getSuccess());
-    assertNull(OperationResultEmsEventCallback.getError());
-    assertEquals(OperationResultEmsEventCallback.getResponse().getSerialNumber(), ontForPonDetection.getSerialNumber());
-    assertEquals(OperationResultEmsEventCallback.getResponse().getEventMessage(), "LastEvent");
-    assertNotNull((OperationResultEmsEventCallback.getResponse().getTimestamp()));
+    assertTrue(operationResultEmsEventCallback.getSuccess());
+    assertNull(operationResultEmsEventCallback.getError());
+    assertEquals(operationResultEmsEventCallback.getResponse().getSerialNumber(), ontForPonDetection.getSerialNumber());
+    assertEquals(operationResultEmsEventCallback.getResponse().getEventMessage(), "LastEvent");
+    assertNotNull((operationResultEmsEventCallback.getResponse().getTimestamp()));
   }
 
   @Test
