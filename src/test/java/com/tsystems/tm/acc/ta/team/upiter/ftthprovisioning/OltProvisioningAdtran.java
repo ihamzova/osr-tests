@@ -26,6 +26,7 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 
 @ServiceLog({
         WG_ACCESS_PROVISIONING_MS,
@@ -62,11 +63,6 @@ public class OltProvisioningAdtran extends GigabitTest {
         accessLineRiRobot.clearDatabase();
     }
 
-//    @BeforeMethod
-//    public void prepareData() {
-//        accessLineRiRobot.clearDatabase();
-//    }
-
     @AfterClass
     public void clearData() {
         accessLineRiRobot.clearDatabase();
@@ -83,7 +79,6 @@ public class OltProvisioningAdtran extends GigabitTest {
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());
         accessLineRiRobot.checkDefaultNetworkLineProfiles(portEmptyAdtran, defaultNetworkLineProfile, portEmptyAdtran.getAccessLinesCount());
-        accessLineRiRobot.checkIdPools(portEmptyAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }
 
@@ -92,14 +87,13 @@ public class OltProvisioningAdtran extends GigabitTest {
     @Description("Device Provisioning SDX 6320")
     public void deviceProvisioning() {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyAdtran);
-        Assert.assertNotNull(deviceBeforeProvisioning);
-        Assert.assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        Assert.assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
+        assertNotNull(deviceBeforeProvisioning);
+        assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
+        assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());
         accessLineRiRobot.checkDefaultNetworkLineProfiles(portEmptyAdtran, defaultNetworkLineProfile, portEmptyAdtran.getAccessLinesCount());
-        accessLineRiRobot.checkIdPools(portEmptyAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portEmptyAdtran, 1, 1);
     }
 
@@ -110,7 +104,6 @@ public class OltProvisioningAdtran extends GigabitTest {
         accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningAdtran);
         wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningAdtran);
-        accessLineRiRobot.checkIdPools(portDeprovisioningAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningAdtran, 0, 1);
         accessLineRiRobot.clearDatabase();
     }
@@ -122,7 +115,6 @@ public class OltProvisioningAdtran extends GigabitTest {
         accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningForDpu);
         wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprovisioningForDpu, true);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningForDpu);
-        accessLineRiRobot.checkIdPools(portDeprovisioningForDpu);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningForDpu, 1, 1);
 
         List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprovisioningForDpu);

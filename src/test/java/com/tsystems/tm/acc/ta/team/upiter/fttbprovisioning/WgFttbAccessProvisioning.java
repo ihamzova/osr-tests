@@ -85,6 +85,12 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningTwistedPair, numberOfAccessLinesForProvisioningTP);
         accessLineRiRobot.checkDefaultNetworkLineProfiles(oltDeviceFttbProvisioningTwistedPair, defaultNlProfileFttbTp, numberOfAccessLinesForProvisioningTP);
         accessLineRiRobot.checkFttbNeProfiles(oltDeviceFttbProvisioningTwistedPair, fttbNeProfileTp, numberOfAccessLinesForProvisioningTP);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDeviceFttbProvisioningTwistedPair,
+                oltDeviceFttbProvisioningTwistedPair,
+                numberOfAccessLinesForProvisioningTP,
+                1, 1);
+        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningTwistedPair);
+        accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningTwistedPair);
     }
 
     @Test(dependsOnMethods = "fttbDeviceProvisioningTwistedPairTest", priority = 1)
@@ -93,6 +99,12 @@ public class WgFttbAccessProvisioning extends GigabitTest {
     public void fttbDeviceDeprovisioningTwistedPairTest() {
         wgFttbAccessProvisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbProvisioningTwistedPair.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioningTwistedPair, 0);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDeviceFttbProvisioningTwistedPair,
+                oltDeviceFttbProvisioningTwistedPair,
+                0,
+                1, 1);
+        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningTwistedPair);
+        accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningTwistedPair);
     }
 
     @Test(priority = 2)
@@ -107,6 +119,12 @@ public class WgFttbAccessProvisioning extends GigabitTest {
         accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioningCoax);
         accessLineRiRobot.checkDefaultNetworkLineProfiles(oltDeviceFttbProvisioningCoax, defaultNlProfileFttbCoax, numberOfAccessLinesForProvisioningCoax);
         accessLineRiRobot.checkFttbNeProfiles(oltDeviceFttbProvisioningCoax, fttbNeProfileCoax, numberOfAccessLinesForProvisioningCoax);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDeviceFttbProvisioningCoax,
+                oltDeviceFttbProvisioningCoax,
+                numberOfAccessLinesForProvisioningCoax,
+                1, 1);
+        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
+        accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningCoax);
     }
 
     @Test(dependsOnMethods = "fttbDeviceProvisioningCoaxTest", priority = 2)
@@ -115,5 +133,11 @@ public class WgFttbAccessProvisioning extends GigabitTest {
     public void fttbDeviceDeprovisioningCoaxTest() {
         wgFttbAccessProvisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbProvisioningCoax.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioningCoax, 0);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDeviceFttbProvisioningCoax,
+                oltDeviceFttbProvisioningCoax,
+                0,
+                1, 1);
+        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
+        accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningCoax);
     }
 }

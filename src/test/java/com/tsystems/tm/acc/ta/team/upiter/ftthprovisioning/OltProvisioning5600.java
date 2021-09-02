@@ -18,7 +18,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -43,18 +42,13 @@ public class OltProvisioning5600 extends GigabitTest {
   private PortProvisioning card5600v1;
   private PortProvisioning card5600v2;
   private PortProvisioning port5600;
-  private PortProvisioning portProvisioningPartly;
-  private PortProvisioning portProvisioningFully;
-  private PortProvisioning portWithInActiveLines;
   private DefaultNeProfile defaultNeProfile;
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
 
-  @BeforeMethod
-  public void prepareData() throws InterruptedException {
+  @BeforeClass
+  public void prepareData() {
     accessLineRiRobot.clearDatabase();
-    Thread.sleep(3000);
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
   }
 
   @AfterClass
@@ -70,57 +64,21 @@ public class OltProvisioning5600 extends GigabitTest {
     card5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v1);
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
     port5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
-    portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
-    portProvisioningFully = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);
-    portWithInActiveLines = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
   }
 
   @Test
   @TmsLink("DIGIHUB-29664")
-  @Description("Port provisioning case when port completely free")
-  public void portProvisioningEmpty() {
+  @Description("Port provisioning case when port is completely free")
+  public void portProvisioning() {
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(port5600);
     assertEquals(accessLinesBeforeProvisioning.size(), 0);
     wgAccessProvisioningRobot.startPortProvisioning(port5600);
     accessLineRiRobot.checkFtthPortParameters(port5600);
     accessLineRiRobot.checkDefaultNeProfiles(port5600, defaultNeProfile, port5600.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600, defaultNetworkLineProfile, port5600.getAccessLinesCount());
-  }
-
-  @Test
-  @TmsLink("DIGIHUB-32288")
-  @Description("Port provisioning case when port partly occupied")
-  public void portProvisioningPartly() {
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningPartly);
-    assertEquals(accessLinesBeforeProvisioning.size(), 8);
-    wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
-    accessLineRiRobot.checkFtthPortParameters(portProvisioningPartly);
-    accessLineRiRobot.checkDefaultNeProfiles(portProvisioningPartly, defaultNeProfile, portProvisioningPartly.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(portProvisioningPartly, defaultNetworkLineProfile, portProvisioningPartly.getAccessLinesCount());
-  }
-
-  @Test
-  @TmsLink("DIGIHUB-40631")
-  @Description("Port provisioning case when port completely occupied")
-  public void portProvisioningFully() {
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningFully);
-    assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
-    wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
-    accessLineRiRobot.checkFtthPortParameters(portProvisioningFully);
-    accessLineRiRobot.checkDefaultNeProfiles(portProvisioningFully, defaultNeProfile, portProvisioningFully.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(portProvisioningFully, defaultNetworkLineProfile, portProvisioningFully.getAccessLinesCount());
-  }
-
-  @Test
-  @TmsLink("DIGIHUB-32026")
-  @Description("Port provisioning case when port has InActive Lines")
-  public void portProvisioningWithInactiveLines() {
-    wgAccessProvisioningRobot.startPortProvisioning(portWithInActiveLines);
-    accessLineRiRobot.checkFtthPortParameters(portWithInActiveLines);
-    accessLineRiRobot.checkDefaultNeProfiles(portWithInActiveLines, defaultNeProfile, portWithInActiveLines.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(portWithInActiveLines, defaultNetworkLineProfile, portWithInActiveLines.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600, 1, 1);
   }
 
   @Test(priority = 1)
@@ -135,6 +93,7 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkFtthPortParameters(card5600v1);
     accessLineRiRobot.checkDefaultNeProfiles(card5600v1, defaultNeProfile, card5600v1.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v1, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(card5600v1, 1, 1);
   }
 
   @Test(priority = 1)
@@ -149,6 +108,7 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkFtthPortParameters(card5600v2);
     accessLineRiRobot.checkDefaultNeProfiles(card5600v2, defaultNeProfile, card5600v2.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v2, defaultNetworkLineProfile, card5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(card5600v2, 1, 1);
   }
 
   @Test(priority = 1)
@@ -165,8 +125,11 @@ public class OltProvisioning5600 extends GigabitTest {
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
             deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5600);
+    System.out.println("port = " + port);
+    System.out.println("device5600 = " + device5600);
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(device5600, defaultNeProfile, device5600.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(device5600, defaultNetworkLineProfile, device5600.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(device5600, 1, 1);
   }
 }

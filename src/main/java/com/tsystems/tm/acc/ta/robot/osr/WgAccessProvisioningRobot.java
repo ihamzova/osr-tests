@@ -246,6 +246,7 @@ public class WgAccessProvisioningRobot {
     portBeforeProvisioning.setPortNumber(portNumber);
     portBeforeProvisioning.setLineIdPool(port.getLineIdPool());
     portBeforeProvisioning.setHomeIdPool(port.getHomeIdPool());
+    portBeforeProvisioning.setBackhaulId(port.getBackhaulId());
     portBeforeProvisioning.setDefaultNEProfilesActive(port.getDefaultNEProfilesActive());
     portBeforeProvisioning.setDefaultNetworkLineProfilesActive(port.getDefaultNetworkLineProfilesActive());
     portBeforeProvisioning.setAccessLinesWG(port.getAccessLinesWG());
