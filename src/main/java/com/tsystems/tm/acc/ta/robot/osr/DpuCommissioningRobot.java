@@ -209,13 +209,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPostConfigAncpCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/api/ancpConfiguration/v2/ancp?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
     public void checkPostConfigAncpNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/api/ancpConfiguration/v2/ancp?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
@@ -454,13 +454,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkDeleteAncpConfigCalled() {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isDeleteRequestCalled(urlEqualTo("/api/ancpConfiguration/v2/ancp/99990"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
     }
 
     @Step
     public void checkDeleteAncpConfigNotCalled() {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isDeleteRequestNotCalled(urlEqualTo("/api/ancpConfiguration/v2/ancp/99990"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
     }
 
     @Step
