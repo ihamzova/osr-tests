@@ -23,9 +23,8 @@ import java.util.stream.IntStream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
-import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_2_0.client.model.AssurancePortDtoV2.PorttypeEnum.GFAST;
-import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.ETHERNET;
-import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.BackhaulStatus.CONFIGURED;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.PortType.*;
 import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
@@ -45,7 +44,7 @@ public class AccessLineRiRobot {
     accessLineResourceInventoryFillDbClient
             .getClient()
             .fillDatabase()
-            .deleteDatabase()
+            .truncateDatabase()
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
@@ -96,6 +95,7 @@ public class AccessLineRiRobot {
             .count();
 
     assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
+    checkIdPools(port);
   }
 
   @Step("Check pools")
@@ -120,20 +120,32 @@ public class AccessLineRiRobot {
     assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
   }
 
-//  @Step("Check PhysicalResourceRefs for FTTB")
-//  public void checkPhysicalResourceRefCountFttb(PortProvisioning port, int expectedGfastPortsCount, int expectedEthernetPortsCount) {
-//    try {
-//      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-//      timeoutBlock.setTimeoutInterval(5000);
-//      Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(port).size() == expectedEthernetPortsCount;
-//      timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
-//    } catch (Throwable e) {
-//      //catch the exception here . Which is block didn't execute within the time limit
-//    }
-//
-//    assertEquals(getGfastPorts(port).size(), expectedPonPortsCount);
-//    assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
-//  }
+  @Step("Check PhysicalResourceRefs for A4")
+  public void checkPhysicalResourceRefCountA4(PortProvisioning port, int expectedGponPortsCount) {
+    assertEquals(getGponPorts(port).size(), expectedGponPortsCount);
+    assertEquals(getPonPorts(port).size(), 0);
+    assertEquals(getEthernetPorts(port).size(), 0);
+  }
+
+  @Step("Check PhysicalResourceRefs for FTTB")
+  public void checkPhysicalResourceRefCountFttb(DpuDevice dpuDevice,
+                                                PortProvisioning oltPort,
+                                                int expectedGfastPortsCount,
+                                                int expectedEthernetPortsCount,
+                                                int expectedPonPortsCount) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(oltPort).size() == expectedEthernetPortsCount;
+      timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getGfastPorts(dpuDevice).size(), expectedGfastPortsCount);
+    assertEquals(getEthernetPorts(oltPort).size(), expectedEthernetPortsCount);
+    assertEquals(getPonPorts(oltPort).size(), expectedPonPortsCount);
+  }
 
   @Step("Check assigned access lines count of port template")
   public void checkPortParametersForAssignedLines(PortProvisioning port) {
@@ -170,7 +182,7 @@ public class AccessLineRiRobot {
     assertEquals(accessLine.getReference().getEndSz(), port.getEndSz());
     assertEquals(accessLine.getReference().getSlotNumber(), port.getSlotNumber());
     assertEquals(accessLine.getReference().getPortNumber(), port.getPortNumber());
-    assertEquals(accessLine.getReference().getPortType(), PortType.GPON);
+    assertEquals(accessLine.getReference().getPortType(), GPON);
     assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
   }
 
@@ -234,6 +246,7 @@ public class AccessLineRiRobot {
     assertTrue(actualFttbNeProfiles.stream().allMatch(fttbNeProfile -> fttbNeProfile.equals(expectedFttbNeProfile)), "FTTB NE Profiles are incorrect");
   }
 
+  @Step("Check L2BSA NSP Reference")
   public void checkL2bsaNspReference(PortProvisioning port, L2BsaNspReference expectedL2bsaNspReference) {
     List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByPort(port)
             .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
@@ -324,7 +337,8 @@ public class AccessLineRiRobot {
 
   @Step("Check BackhaulId count per port")
   public void checkBackhaulIdCount(PortProvisioning port) {
-    assertEquals(getBackHaulId(port).size(), port.getBackhaulId().intValue(), "Backhauld count is incorrect");
+    assertEquals(getBackHaulId(port).stream().filter(backhaulId -> backhaulId.getStatus().getValue().equals(CONFIGURED.toString())).collect(Collectors.toList()).size(),
+            port.getBackhaulId().intValue(), "Backhauld count is incorrect");
   }
 
   @Step("Check accessTransmissionMedium parameters")
@@ -367,6 +381,16 @@ public class AccessLineRiRobot {
                     .endSz(dpuDevice.getEndsz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     return gfastPorts.stream().filter(gfastPort -> gfastPort.getPortType().getValue().equals(GFAST.toString())).collect(Collectors.toList());
+  }
+
+  @Step ("Get Gpon Ports")
+  public List<ReferenceDto> getGponPorts (PortProvisioning port) {
+    List<ReferenceDto> gpontPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+            .searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto()
+                    .endSz(port.getEndSz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return gpontPorts.stream().filter(gponPort -> gponPort.getPortType().getValue().equals(GPON.toString())).collect(Collectors.toList());
   }
 
   @Step("Get BackhaulId by Port")

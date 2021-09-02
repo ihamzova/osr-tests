@@ -7,10 +7,6 @@ values:
   ponConnectionWe: "8"
   ponConnectionGe: "4"
   accessTransmissionMedium: "TWISTED_PAIR"
-  dpuLineSpectrumProfile: "17a"
-  bandwidthProfile: "500M"
-  accessType: "Gfast"
-  gfastInterfaceProfile: "PV_FF_Gfast_500M_17a"
 ---
 name: oltDeviceForFttbProvisioningTwistedPair
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -18,7 +14,9 @@ values:
   endSz: "49/89/8000/76H2"
   slotNumber: "1"
   portNumber: "0"
+  homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
 ---
 name: dpuDeviceForFttbProvisioningCoax
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
@@ -28,10 +26,6 @@ values:
   ponConnectionWe: "8"
   ponConnectionGe: "4"
   accessTransmissionMedium: "COAX"
-  dpuLineSpectrumProfile: "Coax"
-  bandwidthProfile: "1000M"
-  accessType: "GfastCX"
-  gfastInterfaceProfile: "PV_FF_Gfast_1000M_Coax"
 ---
 name: oltDeviceForFttbProvisioningCoax
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -39,4 +33,6 @@ values:
   endSz: "49/911/1100/76H1"
   slotNumber: "1"
   portNumber: "0"
+  homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1

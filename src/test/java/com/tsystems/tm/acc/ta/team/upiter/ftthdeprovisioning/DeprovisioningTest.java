@@ -66,7 +66,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(portDepr);
     wgAccessProvisioningRobot.startPortDeprovisioning(portDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -77,7 +76,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(portDepr);
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDepr, false);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -88,7 +86,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(portDeprForDpu);
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprForDpu, true);
     accessLineRiRobot.checkFtthPortParameters(portDeprForDpu);
-    accessLineRiRobot.checkIdPools(portDeprForDpu);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprForDpu, 1, 1);
 
     List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprForDpu);
@@ -108,7 +105,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
     wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -120,7 +116,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
     wgAccessProvisioningRobot.startCardDeprovisioningV2(cardDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -132,7 +127,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
     wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 0);
   }
 }

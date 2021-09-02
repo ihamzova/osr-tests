@@ -20,7 +20,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -65,7 +64,7 @@ public class OltProvisioning5800 extends GigabitTest {
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
   }
 
-  @BeforeMethod
+  @BeforeClass
   public void prepareData() {
     accessLineRiRobot.clearDatabase();
   }

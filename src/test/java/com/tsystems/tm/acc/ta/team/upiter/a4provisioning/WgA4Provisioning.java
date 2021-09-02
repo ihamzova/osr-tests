@@ -78,5 +78,6 @@ public class WgA4Provisioning extends GigabitTest {
         accessLineRiRobot.checkDefaultNetworkLineProfiles(a4Port, defaultNetworkLineProfile, 1);
         accessLineRiRobot.checkHomeIdsCount(a4Port);
         accessLineRiRobot.checkLineIdsCount(a4Port);
+        accessLineRiRobot.checkPhysicalResourceRefCountA4(a4Port, 1);
     }
 }
