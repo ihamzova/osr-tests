@@ -70,6 +70,18 @@ public class DpuPlanningRobot {
         return dpuPlanningClient.getClient().dpuDemand().createDpuDemand().body(dpuDemandCreateRequestData).executeAs(validatedWith(shouldBeCode(201)));
     }
 
+    @Step ("Delete DPU Demand and check successful Response")
+    public void deleteDpuDemandSuccessResponse (DpuDemand dpuDemandToDelete) {
+        dpuPlanningClient.getClient().dpuDemand().deleteDpuDemand()
+                .idPath(dpuDemandToDelete.getId()).execute(validatedWith(shouldBeCode(204)));
+    }
+
+    @Step ("Delete DPU Demand and check error Response")
+    public void deleteDpuDemandErrorResponse (DpuDemand dpuDemandToDelete) {
+        dpuPlanningClient.getClient().dpuDemand().deleteDpuDemand()
+                .idPath(dpuDemandToDelete.getId()).execute(validatedWith(shouldBeCode(404)));
+    }
+
     @Step("Modify DPU Demand by replace: one parameter updated")
     public void patchDpuDemandModifyOneParameter(DpuDemand dpuDemandToModify, String path, String value, JsonPatchOperation.OpEnum operation)  {
         dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
@@ -157,5 +169,12 @@ public class DpuPlanningRobot {
         dpuPlanningClient.getClient().dpuDemand().retrieveDpuDemand()
                 .idPath(dpuDemandToRead.getId())
                 .executeAs(validatedWith(shouldBeCode(200)));
+    }
+
+    @Step ("Read DPU Demand by id: demand not found")
+    public void readDpuDemandByIdErrorResponse (DpuDemand dpuDemandToRead) {
+        dpuPlanningClient.getClient().dpuDemand().retrieveDpuDemand()
+                .idPath(dpuDemandToRead.getId())
+                .executeAs(validatedWith(shouldBeCode(404)));
     }
 }
