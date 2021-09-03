@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byClassName;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -43,6 +44,10 @@ public class ProcessSearchPage {
   private static final By FINISHED_STATUS = byQaData("sc-finished-input");
   private static final By FAILED_STATUS = byQaData("sc-failed-input");
   private static final By DELETED_STATUS = byQaData("sc-deleted-input");
+
+  private static final By LAST_3_HOURS_FILTER = byXpath("//*[@for='last3hours']");
+  private static final By LAST_DAY_FILTER = byXpath("//*[@for='lastday']");
+  private static final By LAST_WEEK_FILTER = byXpath("//*[@for='lastweek']");
 
   private static final By SORT_BY_START_TIME = byQaData("tc-starttimesort-th");
   private static final By SORT_BY_END_TIME = byQaData("tc-endtimesort-th");
@@ -123,11 +128,27 @@ public class ProcessSearchPage {
     return this;
   }
 
-  @Step("Sort table by starttime, descending")
-  public ProcessSearchPage sortTableByStartTimeDescending() {
+  @Step("Filter by last three hours")
+  public ProcessSearchPage filterByThreeHours() {
+    $(LAST_3_HOURS_FILTER).click();
+    return this;
+  }
+
+  @Step("Filter by last day")
+  public ProcessSearchPage filterByLastDay() {
+    $(LAST_DAY_FILTER).click();
+    return this;
+  }
+
+  @Step("Filter by last week")
+  public ProcessSearchPage filterByLastWeek() {
+    $(LAST_WEEK_FILTER).click();
+    return this;
+  }
+
+  public ProcessSearchPage sortByStartTimeAscending() {
     $(SORT_BY_START_TIME).click();
-    $(SORT_BY_START_TIME).click();
-    $(SEARCH_TABLE).shouldBe(visible);
+    $(TABLE_MESSAGE).shouldBe(visible);
     return this;
   }
 
@@ -210,9 +231,9 @@ public class ProcessSearchPage {
 
   @Step("Check main process")
   public void checkMainProcess(Process actualProcess, Process expectedProcess, String expectedDate) {
-    String actualDate = parseDataFromUi();
+    String actualDate = parseStartDateFromUi(actualProcess);
 
-    //assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
+    assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
     assertTrue(actualProcess.getEndSz().equals(expectedProcess.getEndSz()));
     assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()));
     assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()));
@@ -264,7 +285,6 @@ public class ProcessSearchPage {
         Boolean result = false;
         try {
           result = clickSearchButton()
-                  .sortTableByStartTimeDescending()
                   .getInfoForMainProcesses().get(0).getState().equals(expectedStatus);
         } catch (Exception e) {
           e.printStackTrace();
@@ -277,8 +297,10 @@ public class ProcessSearchPage {
     }
   }
 
-  public String parseDataFromUi() {
-    String startTime = getInfoForMainProcesses().get(0).getStartTime().split(",", 2)[0];
+  public String parseStartDateFromUi(Process process) {
+    String startTime = process
+            .getStartTime()
+            .split(",", 2)[0];
     String month = startTime.substring(0, startTime.indexOf(" "));
     String dayOfMonth = startTime.substring(startTime.indexOf(" ") + 1);
     switch (month) {
@@ -321,4 +343,42 @@ public class ProcessSearchPage {
     }
     return dayOfMonth + " " + month;
   }
+
+  public String parseStartTimeFromUI(Process process) {
+    String startTime = process
+            .getStartTime()
+            .split(",", 2)[1].substring(1);
+    String startHour = startTime.split(":")[0];
+    return startHour;
+  }
+
+  public boolean compareDates(String lastFoundDate, String expectedDate) {
+    int actualDay = Integer.parseInt(lastFoundDate.substring(0, lastFoundDate.indexOf(" ")));
+    int actualMonth = Integer.parseInt(lastFoundDate.substring(lastFoundDate.indexOf(" ") + 1));
+
+    int expectedDay = Integer.parseInt(expectedDate.substring(0, expectedDate.indexOf(" ")));
+    int expectedMonth = Integer.parseInt(expectedDate.substring(expectedDate.indexOf(" ") + 1));
+
+    if (actualDay > expectedDay) {
+      return true;
+    } else {
+      if (actualMonth > expectedMonth) {
+        return true;
+      }
+      else {
+        return actualMonth == 1 && expectedMonth == 12;
+      }
+    }
+  }
+
+  public boolean compareTime(Process process, String lastFoundTime, String expectedHour, String today) {
+    int actualTime = Integer.parseInt(lastFoundTime);
+    int expectedTime = Integer.parseInt(expectedHour);
+    if (actualTime >= expectedTime) {
+      return true;
+    } else {
+      parseStartDateFromUi(process);
+      return (compareDates(parseStartDateFromUi(process), today));
+      }
+    }
 }

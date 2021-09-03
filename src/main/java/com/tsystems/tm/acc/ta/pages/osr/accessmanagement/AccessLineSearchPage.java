@@ -51,7 +51,6 @@ public class AccessLineSearchPage {
     private static final By ONTSN_INPUT = byQaData("hic-ont-sn-input");
     private static final By SORT_BY_STATUS = byQaData("sc-status-sort-header-td");
 
-
     @Step("Open Access-line-Search page")
     public static AccessLineSearchPage openPage() {
         URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
