@@ -205,16 +205,17 @@ public class A4InbetriebnahmeTest extends GigabitTest {
     @Description("Test NEL Inbetriebnahme process")
     public void testNelInstallation() {
         // GIVEN
-       // a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
 
         // WHEN
-     //   a4MobileUi.doNelInbetriebnahme();
+        a4MobileUi.doNelInbetriebnahme();
 
         // THEN
      //   a4ResourceInventory.checkNetworkElementLinkInStateInstalling(nepB.getUuid());
         // TODO: Fix me! How to do correct check? (How to reset wiremock counter between tests?)
 //        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepB.getUuid());
 //        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nepB.getUuid(), "PUT", 4);
+        cleanUp();
     }
 
     @Test
