@@ -7,6 +7,7 @@ import static com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperatio
 
 public class CommonTestData {
     public static final String DPU_PLANNING = "dpu-planning";
+    public static final String DPU_PLANNING_PUBSUB_TOPIC = "resource-order-resource-inventory/v1/dpuPlanningEvents";
 
     public static final String DPU_ENDSZ_PATH = "/dpuEndSz";
     public static final String DPU_STATE_PATH = "/state";
