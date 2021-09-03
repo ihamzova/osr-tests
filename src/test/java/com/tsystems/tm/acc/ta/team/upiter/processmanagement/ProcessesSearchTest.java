@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_FAILED;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_RUNNING;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertTrue;
 
 @ServiceLog({
         ACCESS_PROCESS_MANAGEMENT_UI,
@@ -33,6 +34,9 @@ public class ProcessesSearchTest extends GigabitTest {
   private Process process;
   private String processUuid;
   private String today;
+  private String dayAgo;
+  private String weekAgo;
+  private String threeHoursAgo;
 
   @BeforeClass
   public void init() {
@@ -41,6 +45,9 @@ public class ProcessesSearchTest extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
+    dayAgo = OffsetDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd MM"));
+    weekAgo = OffsetDateTime.now().minusDays(8).format(DateTimeFormatter.ofPattern("dd MM"));
+    threeHoursAgo = OffsetDateTime.now().minusHours(3).format(DateTimeFormatter.ofPattern("HH"));
   }
 
   @Test
@@ -50,8 +57,7 @@ public class ProcessesSearchTest extends GigabitTest {
     ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
     processSearchPage.validateUrl();
     processSearchPage.searchProcessesByDevice(process)
-            .clickSearchButton()
-            .sortTableByStartTimeDescending();
+            .clickSearchButton();
 
     Process runningProcess = processSearchPage.getInfoForMainProcesses().get(0);
     processSearchPage.checkMainProcess(runningProcess, process, today);
@@ -106,5 +112,45 @@ public class ProcessesSearchTest extends GigabitTest {
     Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
     processSearchPage.checkMainProcess(restoredProcess, initialProcess, today);
     processSearchPage.checkProcessStatus(restoredProcess.getState(), STATUS_RUNNING);
+  }
+
+  @Test(priority = 1)
+  @TmsLink("DIGIHUB-119127")
+  @Description("Search processes only by last 3 hours filter")
+  public void filterByLastThreeHoursTest() {
+    ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
+    processSearchPage.validateUrl();
+    processSearchPage.filterByThreeHours()
+            .clickSearchButton()
+            .sortByStartTimeAscending();
+    Process oldestProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    String oldestHour = processSearchPage.parseStartTimeFromUI(oldestProcess);
+    assertTrue(processSearchPage.compareTime(oldestProcess, oldestHour, threeHoursAgo, today));
+  }
+
+  @Test(priority = 1)
+  @TmsLink("DIGIHUB-119128")
+  @Description("Search processes only by last day filter")
+  public void filterByLastDayTest() {
+    ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
+    processSearchPage.validateUrl();
+    processSearchPage.filterByLastDay()
+            .clickSearchButton()
+            .sortByStartTimeAscending();
+    String oldestDate = processSearchPage.parseStartDateFromUi(processSearchPage.getInfoForMainProcesses().get(0));
+    assertTrue(processSearchPage.compareDates(oldestDate, dayAgo));
+  }
+
+  @Test(priority = 1)
+  @TmsLink("DIGIHUB-119129")
+  @Description("Search processes only by last week filter")
+  public void filterByLastWeekTest() {
+    ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
+    processSearchPage.validateUrl();
+    processSearchPage.filterByLastWeek()
+            .clickSearchButton()
+            .sortByStartTimeAscending();
+    String oldestDate = processSearchPage.parseStartDateFromUi(processSearchPage.getInfoForMainProcesses().get(0));
+    assertTrue(processSearchPage.compareDates(oldestDate, weekAgo));
   }
 }

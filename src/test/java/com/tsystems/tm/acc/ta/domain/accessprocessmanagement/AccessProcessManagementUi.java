@@ -51,7 +51,6 @@ public class AccessProcessManagementUi extends GigabitTest {
         processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
         processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
 
-        processSearchPage.sortTableByStartTimeDescending();
         Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
         processSearchPage.checkMainProcess(foundProcess, process, today);
 

@@ -1,12 +1,12 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 import static org.testng.Assert.assertTrue;
@@ -28,19 +28,19 @@ public class AccessLinesManagementPage {
     private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
     private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
 
-    private SelenideElement lineId = $x("//*[@class='am-primary-text']");
-    private SelenideElement neDefaultProfileTitle = $x("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
-    private SelenideElement neSubscriberProfileTitle = $x("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
-    private SelenideElement nlDefaultProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
-    private SelenideElement nlSubscriberProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+    private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
+    private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
+    private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
+    private static final By NL_DEFAULT_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
+    private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
 
-    private SelenideElement inactiveState = $x("//*[@id='INACTIVE']");
-    private SelenideElement activeState = $x("//*[@id='ACTIVE']");
-    private SelenideElement onlineOntState = $x("//*[@id='ONLINE']");
-    private SelenideElement assignedStatus = $x("//*[@id='ASSIGNED']");
-    private SelenideElement walledGardenStatus = $x("//*[@id='WALLED_GARDEN']");
+    private static final By INACTIVE_STATE = byXpath("//*[@id='INACTIVE']");
+    private static final By ACTIVE_STATE = byXpath("//*[@id='ACTIVE']");
+    private static final By ONLINE_ONT_STATE = byXpath("//*[@id='ONLINE']");
+    private static final By ASSIGNED_STATUS = byXpath("//*[@id='ASSIGNED']");
+    private static final By WALLED_GARDEN_STATUS = byXpath("//*[@id='WALLED_GARDEN']");
 
-    private SelenideElement notification = $x("//h2[@role = 'alert']");
+    private static final By NOTIFICATION = byXpath("//h2[@role = 'alert']");
 
     @Step("Return on first window")
     public AccessLineSearchPage returnToAccessLinesSearchPage(){
@@ -57,7 +57,7 @@ public class AccessLinesManagementPage {
     @Step("Click Save and Reconfigure button")
     public AccessLinesManagementPage clickSaveAndReconfigureButton(){
         $(SAVE_AND_RECONFIGURE_BUTTON).click();
-        notification.shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
         return this;
     }
 
@@ -70,7 +70,7 @@ public class AccessLinesManagementPage {
     @Step("Click Bestätigen Button")
     public AccessLinesManagementPage clickBestätigenButton()  {
         $(BESTAETIGEN_BUTTON).click();
-        notification.shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
         return this;
     }
 
@@ -78,25 +78,25 @@ public class AccessLinesManagementPage {
     public AccessLinesManagementPage addSubscriberNeProfile()  {
         $(ADD_SUBSCRIBER_NE_PROFILE_BUTTON).click();
         $(NE_SUBSCRIBER_PROFILE_STATE_INPUT).click();
-        activeState.click();
+        $(ACTIVE_STATE).click();
         $(NE_SUBSCRIBER_ONT_STATE_INPUT).click();
-        onlineOntState.click();
+        $(ONLINE_ONT_STATE).click();
         $(ACCESS_LINE_STATUS_DROPDOWN).click();
-        assignedStatus.click();
+        $(ASSIGNED_STATUS).click();
         return this;
     }
 
     @Step("Change AccessLine status to WALLED_GARDEN")
     public AccessLinesManagementPage changeAccessLineStatusToWalledGarden(){
         $(ACCESS_LINE_STATUS_DROPDOWN).click();
-        walledGardenStatus.click();
+        $(WALLED_GARDEN_STATUS).click();
         return this;
     }
 
     @Step("Change Default NE Profile State to Inactive")
     public AccessLinesManagementPage changeDefaultProfileStateToInactive()  {
         $(NE_DEFAULT_PROFILE_STATE_INPUT).click();
-        inactiveState.click();
+        $(INACTIVE_STATE).click();
         return this;
     }
 
@@ -107,13 +107,13 @@ public class AccessLinesManagementPage {
 
     @Step("Get LineID")
     public String getLineId() {
-        return lineId.getText();
+        return $(LINE_ID).getText();
     }
 
     @Step("Get Default NE Profile state")
     public String getNeDefaultProfileState() {
         String result = "NULL";
-        neDefaultProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
+        $(NE_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
         if ($$(NE_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
             result = $$(NE_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
         }
@@ -123,7 +123,7 @@ public class AccessLinesManagementPage {
     @Step("Get Default NL Profile state")
     public String getNLDefaultProfileState() {
         String result = "NULL";
-        nlDefaultProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
+        $(NL_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
         if ($$(NL_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
             result = $$(NL_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
         }
@@ -133,7 +133,7 @@ public class AccessLinesManagementPage {
     @Step("Get Subscriber NE Profile state")
     public String getNeSubscriberProfileState() {
         String result = "NULL";
-        neSubscriberProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
+        $(NE_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
         if ($$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
             result = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
         }
@@ -143,7 +143,7 @@ public class AccessLinesManagementPage {
     @Step("Get Subscriber NL Profile state")
     public String getNLSubscriberProfileState() {
         String result = "NULL";
-        nlSubscriberProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
+        $(NL_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
         if ($$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
             result = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
         }
