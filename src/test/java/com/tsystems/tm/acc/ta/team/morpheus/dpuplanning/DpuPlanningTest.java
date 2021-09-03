@@ -10,7 +10,10 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
+
 import static com.tsystems.tm.acc.ta.data.morpheus.CommonTestData.*;
 
 @Epic("Morpheus")
@@ -25,8 +28,20 @@ public class DpuPlanningTest extends GigabitTest {
     private static final String CREATE_DPU_DEMAND_INVALID_FORMAT = "/team/morpheus/dpuPlanning/createDpuDemandInvalidFormat.json";
 
     DataBundle dataBundle = new DataBundle();
+    private com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandAfterProcess;
 
-    @Test (priority = 1)
+    @BeforeGroups("dpu_demand_created")
+    public void init() {
+        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
+    }
+
+    @AfterGroups (value = "dpu_demand_deleted", enabled = false)
+    public void cleanup() {
+        dpuPlanningRobot.deleteDpuDemandSuccessResponse(dpuDemandAfterProcess);
+    }
+
+    @Test(priority = 1, groups = "dpu_demand_deleted")
     @TmsLink("DIGIHUB-117098")
     @Description("[Positive] Create DPU Demand: only mandatory body parameters are filled")
     public void createDpuDemandOnlyMandatory() {
@@ -35,7 +50,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemandAndValidateSuccessResponse(dpuDemandRequestData, dpuDemandExpectedData);
     }
 
-    @Test (priority = 2)
+    @Test(priority = 2, groups = "dpu_demand_deleted")
     @TmsLink("DIGIHUB-117103")
     @Description("[Positive] Create DPU Demand: all body parameters are filled, mandatory and optional")
     public void createDpuDemandAllParameters() {
@@ -44,7 +59,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemandAndValidateSuccessResponse(dpuDemandRequestData, dpuDemandExpectedData);
     }
 
-    @Test (priority = 3)
+    @Test(priority = 3)
     @TmsLink("DIGIHUB-117105")
     @Description("[Negative] Create DPU Demand: Mandatory parameter is missing")
     public void createDpuDemandMandatoryParameterMissing() {
@@ -52,7 +67,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemandAndValidateErrorResponse(dpuDemandRequestData);
     }
 
-    @Test (priority = 4)
+    @Test(priority = 4)
     @TmsLink("DIGIHUB-117106")
     @Description("[Negative] Create DPU Demand: Invalid format of request parameter")
     public void createDpuDemandInvalidFormat() {
@@ -60,257 +75,217 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemandAndValidateErrorResponse(dpuDemandRequestData);
     }
 
-    @Test (priority = 5)
+    @Test(priority = 5, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118638")
     @Description("[Positive] Modify DPU Demand: dpuEndSz and state are modified separately by replace operation")
     public void modifyEndszAndStateSeparatelyByReplace() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, REPLACE_OPERATION);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 6)
+    @Test(priority = 6, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-11864")
     @Description("[Positive] Modify DPU Demand: dpuEndSz and state are modified separately by add operation")
     public void modifyEndszAndStateSeparatelyByAdd() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, ADD_OPERATION);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
     }
 
-    @Test (priority = 7)
+    @Test(priority = 7, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118643")
     @Description("[Positive] Modify DPU Demand: dpuEndSz and state are modified together by replace operation")
     public void modifyEndszAndStateTogetherByReplace() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandToModify, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 8)
+    @Test(priority = 8, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118642")
     @Description("[Positive] Modify DPU Demand: dpuEndSz and state are modified together by add operation")
     public void modifyEndszAndStateTogetherByAdd() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandToModify, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
     }
 
-    @Test (priority = 9)
+    @Test(priority = 9, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118650")
     @Description("[Positive] Modify DPU Demand: workorderId is modified by replace operation")
     public void modifyWoIdByReplace() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_WO_ID_PATH, DPU_WO_ID_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_WO_ID_PATH, DPU_WO_ID_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 10)
+    @Test(priority = 10, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: dpuAccessTechnology")
     public void modifyDpuAccessTechnology() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_TECHNOLOGY_PATH, DPU_TECHNOLOGY_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_TECHNOLOGY_PATH, DPU_TECHNOLOGY_VALUE, ADD_OPERATION);
     }
 
-    @Test (priority = 11)
+    @Test(priority = 11, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: dpuInstallationInstruction")
     public void modifyDpuInstallationInstruction() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_INSTALLATION_INSTRUCTION_PATH, DPU_NSTALLATION_INSTRUCTION_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_INSTALLATION_INSTRUCTION_PATH, DPU_NSTALLATION_INSTRUCTION_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 12)
+    @Test(priority = 12, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: dpuLocation")
     public void modifyDpuLocation() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_LOCATION_PATH, DPU_LOCATION_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_LOCATION_PATH, DPU_LOCATION_VALUE, ADD_OPERATION);
     }
 
-    @Test (priority = 13)
+    @Test(priority = 13, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: fiberOnLocationId")
     public void modifyFiberOnLocationId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_FOL_ID_PATH, DPU_FOL_ID_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_FOL_ID_PATH, DPU_FOL_ID_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 14)
+    @Test(priority = 14, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: klsId")
     public void modifyKlsId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_KLS_ID_PATH, DPU_KLS_ID_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_KLS_ID_PATH, DPU_KLS_ID_VALUE, ADD_OPERATION);
     }
 
-    @Test (priority = 15)
+    @Test(priority = 15, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Positive] Modify DPU Demand: numberOfNeededDpuPorts")
     public void modifyNumberOfNeededDpuPorts() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_PORT_NUMBER_PATH, DPU_PORT_NUMBER_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_PORT_NUMBER_PATH, DPU_PORT_NUMBER_VALUE, REPLACE_OPERATION);
     }
 
-    @Test (priority = 16)
+    @Test(priority = 16, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete id")
     public void modifyId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_ID_PATH, null, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_ID_PATH, null, REMOVE_OPERATION);
     }
 
-    @Test (priority = 17)
+    @Test(priority = 17, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete href")
     public void modifyHref() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandToModify, DPU_HREF_PATH, null, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_HREF_PATH, null, REMOVE_OPERATION);
     }
 
-    @Test (priority = 18)
+    @Test(priority = 18, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: creationDate")
     public void modifyCreationDate() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_CREATION_DATE_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_CREATION_DATE_PATH, null, REMOVE_OPERATION);
     }
 
-    @Test (priority = 19)
+    @Test(priority = 19, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: modificationDate")
     public void modifyModificationDate() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_MODIFICATION_DATE_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_MODIFICATION_DATE_PATH, null, REMOVE_OPERATION);
     }
 
-    @Test (priority = 20)
+    @Test(priority = 20, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete dpuAccessTechnology")
     public void deleteDpuAccessTechnology() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_TECHNOLOGY_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_TECHNOLOGY_PATH, REMOVE_OPERATION);
     }
 
-    @Test (priority = 21)
+    @Test(priority = 21, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete fiberOnLocationId")
     public void deleteFiberOnLocationId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_FOL_ID_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_FOL_ID_PATH, REMOVE_OPERATION);
     }
 
-    @Test (priority = 22)
+    @Test(priority = 22, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete klsId")
     public void deleteKlsId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_KLS_ID_PATH, REMOVE_OPERATION);
+       dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_KLS_ID_PATH, REMOVE_OPERATION);
     }
 
-    @Test (priority = 23)
+    @Test(priority = 23, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete numberOfNeededDpuPorts")
     public void deleteNumberOfNeededDpuPorts() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_PORT_NUMBER_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_PORT_NUMBER_PATH, REMOVE_OPERATION);
     }
 
-    @Test (priority = 24)
+    @Test(priority = 24, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete state")
     public void deleteState() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToModify = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandToModify, DPU_STATE_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_STATE_PATH, REMOVE_OPERATION);
     }
 
-    @Test (priority = 25)
+    @Test(priority = 25, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117814")
     @Description("[Positive] Read DPU Demand by fiberOnLocationId")
     public void readDpuDemandByFolId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByFolIdAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByFolIdAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 26)
+    @Test(priority = 26, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117821")
     @Description("[Positive] Read DPU Demand by dpuEndSz")
     public void readDpuDemandByEndsz() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByEndszAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByEndszAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 27)
+    @Test(priority = 27, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117830")
     @Description("[Positive] Read DPU Demand by dpuAccessTechnology")
     public void readDpuDemandByDpuAccessTechnology() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByDpuAccessTechnologyAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByDpuAccessTechnologyAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 28)
+    @Test(priority = 28, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117831")
     @Description("[Positive] Read DPU Demand by klsId")
     public void readDpuDemandByKlsId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByKlsIdAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByKlsIdAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 29)
+    @Test(priority = 29, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117832")
     @Description("[Positive] Read DPU Demand by numberOfNeededDpuPorts")
     public void readDpuDemandByNumberOfNeededDpuPorts() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByNumberOfNeededDpuPortsAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByNumberOfNeededDpuPortsAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 30)
+    @Test(priority = 30, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117833")
     @Description("[Positive] Read DPU Demand by state")
     public void readDpuDemandByState() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByStateAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByStateAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 31)
+    @Test(priority = 31, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117834")
     @Description("[Positive] Read DPU Demand by workorderId")
     public void readDpuDemandByWorkorderId() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByWorkorderIdAndValidateResponse(dpuDemandToRead);
+        dpuPlanningRobot.readDpuDemandByWorkorderIdAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test (priority = 32)
+    @Test(priority = 32, groups = {"dpu_demand_created", "dpu_demand_deleted"})
     @TmsLink("DIGIHUB-117828")
     @Description("[Positive] Read DPU Demand by id")
     public void readDpuDemandById() {
-        DpuDemandCreate dpuDemandCreateRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
-        com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand dpuDemandToRead = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
-        dpuPlanningRobot.readDpuDemandByIdAndValidateResponse(dpuDemandToRead);
+       dpuPlanningRobot.readDpuDemandByIdAndValidateResponse(dpuDemandAfterProcess);
+    }
+
+    @Test(priority = 33, groups = {"dpu_demand_created"}, enabled = false)
+    @TmsLink("DIGIHUB-119030")
+    @Description("[Positive] Delete DPU Demand")
+    public void deleteDpuDemand() {
+        dpuPlanningRobot.deleteDpuDemandSuccessResponse(dpuDemandAfterProcess);
+        dpuPlanningRobot.readDpuDemandByIdErrorResponse(dpuDemandAfterProcess);
+    }
+
+    @Test(priority = 34, groups = {"dpu_demand_created"}, enabled = false)
+    @TmsLink("DIGIHUB-119031")
+    @Description("[Negative] Delete DPU Demand: demand not found")
+    public void deleteDpuDemandNotFound() {
+        dpuPlanningRobot.deleteDpuDemandSuccessResponse(dpuDemandAfterProcess);
+        dpuPlanningRobot.deleteDpuDemandErrorResponse(dpuDemandAfterProcess);
     }
 }

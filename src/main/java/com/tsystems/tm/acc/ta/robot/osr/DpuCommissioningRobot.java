@@ -460,7 +460,7 @@ public class DpuCommissioningRobot {
     @Step
     public void checkDeleteAncpConfigNotCalled() {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
     }
 
     @Step
