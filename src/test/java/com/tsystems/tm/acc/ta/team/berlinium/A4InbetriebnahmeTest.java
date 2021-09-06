@@ -211,7 +211,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.doNelInbetriebnahme();
 
         // THEN
-     //   a4ResourceInventory.checkNetworkElementLinkInStateInstalling(nepB.getUuid());
+        a4ResourceInventory.checkNetworkElementLinkInStateInstalling(nepB.getUuid());
         // TODO: Fix me! How to do correct check? (How to reset wiremock counter between tests?)
 //        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepB.getUuid());
 //        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nepB.getUuid(), "PUT", 4);
