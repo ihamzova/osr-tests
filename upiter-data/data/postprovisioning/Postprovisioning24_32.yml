@@ -6,6 +6,7 @@ values:
   portNumber: "4"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16
   defaultNetworkLineProfilesActive: 16
@@ -19,6 +20,7 @@ values:
   portNumber: "4"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 11
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
