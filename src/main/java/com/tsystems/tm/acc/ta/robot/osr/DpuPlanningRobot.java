@@ -21,6 +21,7 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.morpheus.CommonTestData.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 
 public class DpuPlanningRobot {
@@ -200,6 +201,10 @@ public class DpuPlanningRobot {
         helper.getTokenProvider().revokeToken();
 
         List<String> notifications = helper.getNotifications(DPU_PLANNING_PUBSUB_TOPIC);
-        assertEquals(notifications.size(), expectedSize);
+        notifications.forEach(notification -> assertThat(notification)
+                .hasSize(expectedSize)
+                .contains("\"eventType\":\"DpuPlanningCompletedEvent\"")
+                .contains(dpuDemandToRead.getFiberOnLocationId())
+                .contains("\"eventTopic\":\"dpuPlanningEvents\""));
         }
 }
