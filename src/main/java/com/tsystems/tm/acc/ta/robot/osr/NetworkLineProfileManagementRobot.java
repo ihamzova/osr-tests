@@ -58,7 +58,7 @@ public class NetworkLineProfileManagementRobot {
 
         AsyncResponseNotification notification = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), AsyncResponseNotification.class);
-        assertNotNull(notification.getResponse(), "Cannot get callback");
+       assertNotNull(notification.getResponse(), "Cannot get callback");
         assertEquals(notification.getResponse()
                 .getEvent().getResourceOrder()
                 .getResourceOrderItems().get(0)
@@ -76,7 +76,7 @@ public class NetworkLineProfileManagementRobot {
                 exactly(1),
                 newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
-                30_000);
+                400_000);
         log.info("Callback: " + requests);
         assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
