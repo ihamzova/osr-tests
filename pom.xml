@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>1885.0</version>
+    <version>1886.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
