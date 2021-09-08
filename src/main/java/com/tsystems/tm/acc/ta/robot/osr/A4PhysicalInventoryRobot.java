@@ -25,6 +25,7 @@ public class A4PhysicalInventoryRobot {
                     RhssoHelper.getSecretOfGigabitHub(A4_PHYSICAL_INVENTORY_MS));
 
     private final ApiClient a4PhysicalInventory = new A4PhysicalInventoryClient(authTokenProvider).getClient();
+    private static final String ENTITY_TYP_MESSAGE = "Entity type is the same";
 
     @Step("Create Equipment represented as Physical Resource")
     public PhysicalResource createEquipment(A4Equipment eqData) {
@@ -63,8 +64,8 @@ public class A4PhysicalInventoryRobot {
     public void checkEquipmentCreated(A4Equipment eqData) {
         PhysicalResource physicalResource = createEquipment(eqData);
         Assert.assertEquals(physicalResource.getId(), eqData.getUuid(), "UUID is the same");
-        Assert.assertEquals(physicalResource.getAtBaseType(), "PhysicalResource", "Entity type is the same");
-        Assert.assertEquals(physicalResource.getAtType(), "Equipment", "Entity type is the same");
+        Assert.assertEquals(physicalResource.getAtBaseType(), "PhysicalResource", ENTITY_TYP_MESSAGE);
+        Assert.assertEquals(physicalResource.getAtType(), "Equipment", ENTITY_TYP_MESSAGE);
         Assert.assertEquals(physicalResource.getResourceRelationship().size(), 2, "ResourceRelationship is the same");
         Assert.assertEquals(physicalResource.getCharacteristic().size(), 12, "Characteristics list is the same");
     }
@@ -83,8 +84,8 @@ public class A4PhysicalInventoryRobot {
                     .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
         Assert.assertEquals(physicalResourceHolder.getId(), hoData.getUuid(), "UUID is the same");
-        Assert.assertEquals(physicalResourceHolder.getAtBaseType(), "PhysicalResource", "Entity type is the same");
-        Assert.assertEquals(physicalResourceHolder.getAtType(), "Holder", "Entity type is the same");
+        Assert.assertEquals(physicalResourceHolder.getAtBaseType(), "PhysicalResource", ENTITY_TYP_MESSAGE);
+        Assert.assertEquals(physicalResourceHolder.getAtType(), "Holder", ENTITY_TYP_MESSAGE);
         Assert.assertEquals(physicalResourceHolder.getResourceRelationship().size(), 1, "ResourceRelationship is the same");
         Assert.assertEquals(physicalResourceHolder.getCharacteristic().size(), 4, "Characteristics list is the same");
 
