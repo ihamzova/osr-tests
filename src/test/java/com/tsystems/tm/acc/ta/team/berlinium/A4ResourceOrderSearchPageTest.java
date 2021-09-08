@@ -30,7 +30,9 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +50,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private final String vuep = "A1000858";
 
     private A4NetworkElementGroup negData;
+    private ResourceOrder ro;
 
 
     @BeforeClass()
@@ -103,7 +106,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
-        ResourceOrder ro = a4ResourceOrderRobot.buildResourceOrder();
+        ro = a4ResourceOrderRobot.buildResourceOrder();
 
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro);
@@ -117,6 +120,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @AfterClass
     public void cleanUp() {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        //a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }
 
     @Test
@@ -129,9 +133,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
-
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(8);// wait for result
+        sleepForSeconds(20);// wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
@@ -177,7 +180,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     public void testRoSearchNoCheckboxWithoutVuep()  {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(8);  // wait for result
+        sleepForSeconds(20);  // wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();

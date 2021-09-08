@@ -15,7 +15,11 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 import io.qameta.allure.Step;
@@ -237,4 +241,25 @@ public class A4ResourceOrderRobot {
             assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
-}
+
+    @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
+    public void deleteA4TestDataRecursively(ResourceOrder ro) {
+        deleteA4TestDataRecursively(ro.getId());
+    }
+
+
+    private void deleteA4TestDataRecursively(String roUuid){
+        /*
+        return
+                a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                        .deleteResourceOrder()
+                .uuidPath(roUuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .getBody()
+                .as(ResourceOrderDto.class);
+
+
+         */
+    }
+ }
