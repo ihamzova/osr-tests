@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.*;
 
@@ -135,7 +134,7 @@ public class A4OntCommissioning extends GigabitTest {
     assertNull(operationResultEmsEventCallback.getResponse().getSlotNumber());
     assertEquals(operationResultEmsEventCallback.getResponse().getPortNumber(), portDetectedInA4.getPortNumber());
     assertEquals(operationResultEmsEventCallback.getResponse().getSerialNumber(), ontSerialNumber.getNewSerialNumber());
-    assertNotEquals(operationResultEmsEventCallback.getResponse().getTimestamp(), timestamp);
+    assertNull(operationResultEmsEventCallback.getResponse().getTimestamp());
     assertNull(operationResultEmsEventCallback.getResponse().getOnuId());
     assertNull(operationResultEmsEventCallback.getResponse().getEventMessage());
   }
