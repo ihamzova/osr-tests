@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4Equipment;
+import com.tsystems.tm.acc.ta.data.osr.models.A4Holder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.PhysicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
@@ -23,7 +24,7 @@ public class A4PhysicalInventoryMapper {
                         .value(eqData.getManufacturer()))
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("installedPartNumber")
-                        .value(eqData.getManufacturer()))
+                        .value(eqData.getInstalledPartNumber()))
                 .addCharacteristicItem(new ResourceCharacteristic()
                         .name("manufactureDate")
                         .value(eqData.getManufactureDate()))
@@ -62,6 +63,32 @@ public class A4PhysicalInventoryMapper {
                         .resourceRef(new ResourceRef()
                                 .id(eqData.getHolderUuid())
                                 .type("Holder")));
+    }
+
+    // Create PhysicalResourceUpdate representation of holder
+    public PhysicalResourceUpdate getPhysicalResourceUpdateHolder(A4Holder hoData, String uuidEquipment) {
+        if (hoData.getUuid().isEmpty())
+            hoData.setUuid(UUID.randomUUID().toString());
+
+        return generateGenericPhysicalResourceUpdate()
+                .atType("Holder")
+                .description(hoData.getDescription())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("label")
+                        .value(hoData.getLabel()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("type")
+                        .value(hoData.getType()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("creationTime")
+                        .value(hoData.getCreationTime()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lastUpdateTime")
+                        .value(hoData.getLastUpdateTime()))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(uuidEquipment)
+                                .type("Equipment")));
     }
 
     private PhysicalResourceUpdate generateGenericPhysicalResourceUpdate() {
