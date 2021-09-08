@@ -156,12 +156,16 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         String queue = "jms.queue.a10NspTP";
         String dlq = "jms.dlq.a10NspTP";
+        a4Resilience.removeAllMessagesInQueue(dlq);
         //BEFORE
+        a4ResourceInventory.createTerminationPoint(tpA10Data, nepData);
             // change kong route so wiremock is used for TerminationPoint, because that is the first request for preprovisioning
         a4Resilience.changeRouteToWiremock(routeName);
             // make wiremock return 500 for findTerminationPoint
+            //and return 201 for put TerminationPoint
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
                 .addA4ResourceInventoryMock500()
+                .addA4ResourceInventoryMock201()
                 .build();
         wiremock.publish();
 

@@ -87,4 +87,9 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
+    public OsrWireMockMappingsContextBuilder addA4ResourceInventoryMock201() {
+        context.add(new A4ResourceInventoryStub().putTPWith201());
+        return this;
+    }
+
 }

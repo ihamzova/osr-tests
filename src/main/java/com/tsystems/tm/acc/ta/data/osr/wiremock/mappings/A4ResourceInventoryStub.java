@@ -9,9 +9,16 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 public class A4ResourceInventoryStub extends AbstractStubMapping {
 
     public MappingBuilder getTPWith500() {
-        return put(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+        return get(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
                 .withName("getTP500")
                 .willReturn(aDefaultResponseWithBody("", HTTP_CODE_INTERNAL_SERVER_ERROR_500))
+                .atPriority(1);
+    }
+
+    public MappingBuilder putTPWith201() {
+        return put(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+                .withName("putTP201")
+                .willReturn(aDefaultResponseWithBody("{{{request.body}}}", HTTP_CODE_CREATED_201))
                 .atPriority(1);
     }
 
