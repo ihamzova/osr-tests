@@ -51,7 +51,7 @@ public class A4ResilienceRobot {
     public long getRedeliveryDelayCarrierManagement() throws IOException {
 
         String url = new GigabitUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri()
-                + "/actuator/env/queue.redelivery-delay";
+                + "/actuator/env/queue.redeliveryDelay";
 
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url);
