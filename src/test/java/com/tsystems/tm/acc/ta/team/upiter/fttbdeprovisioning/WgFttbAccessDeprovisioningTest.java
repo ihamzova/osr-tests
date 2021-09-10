@@ -29,41 +29,41 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 })
 public class WgFttbAccessDeprovisioningTest extends GigabitTest {
 
-    private WgFttbAccessProvisioningRobot wgFttbAccessDeprovisioningRobot;
-    private AccessLineRiRobot accessLineRiRobot;
-    private DpuDevice dpuDeviceFttbDeprovisioning;
-    private PortProvisioning oltDeviceForFttbDeprovisioning;
+  private WgFttbAccessProvisioningRobot wgFttbAccessDeprovisioningRobot;
+  private AccessLineRiRobot accessLineRiRobot;
+  private DpuDevice dpuDeviceFttbDeprovisioning;
+  private PortProvisioning oltDeviceForFttbDeprovisioning;
 
-    @BeforeMethod
-    public void prepareData() throws InterruptedException {
-        accessLineRiRobot.clearDatabase();
-        Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioning();
-        accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
-        Thread.sleep(1000);
-    }
+  @BeforeMethod
+  public void prepareData() throws InterruptedException {
+    accessLineRiRobot.clearDatabase();
+    Thread.sleep(1000);
+    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
+    Thread.sleep(1000);
+  }
 
-    @AfterMethod
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
+  @AfterMethod
+  public void clearData() {
+    accessLineRiRobot.clearDatabase();
+  }
 
-    @BeforeClass
-    public void init() {
-        wgFttbAccessDeprovisioningRobot = new WgFttbAccessProvisioningRobot();
-        accessLineRiRobot = new AccessLineRiRobot();
+  @BeforeClass
+  public void init() {
+    wgFttbAccessDeprovisioningRobot = new WgFttbAccessProvisioningRobot();
+    accessLineRiRobot = new AccessLineRiRobot();
 
-        UpiterTestContext context = UpiterTestContext.get();
-        dpuDeviceFttbDeprovisioning = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbDeprovisioning);
-        oltDeviceForFttbDeprovisioning = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbDeprovisioning);
-    }
+    UpiterTestContext context = UpiterTestContext.get();
+    dpuDeviceFttbDeprovisioning = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbDeprovisioning);
+    oltDeviceForFttbDeprovisioning = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbDeprovisioning);
+  }
 
-    @Test
-    @TmsLink("DIGIHUB-77785")
-    @Description("FTTB Deprovisioning for a Device")
-    public void fttbDeviceDeprovisioningTest() {
-        accessLineRiRobot.checkLineIdsCount(oltDeviceForFttbDeprovisioning);
-        wgFttbAccessDeprovisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbDeprovisioning.getEndsz());
-        accessLineRiRobot.checkFttbLineParameters(oltDeviceForFttbDeprovisioning, 0);
-    }
+  @Test
+  @TmsLink("DIGIHUB-77785")
+  @Description("FTTB Deprovisioning for a Device")
+  public void fttbDeviceDeprovisioningTest() {
+    accessLineRiRobot.checkLineIdsCount(oltDeviceForFttbDeprovisioning);
+    wgFttbAccessDeprovisioningRobot.startWgFttbAccessDeprovisioningForDevice(dpuDeviceFttbDeprovisioning.getEndsz());
+    accessLineRiRobot.checkFttbLineParameters(oltDeviceForFttbDeprovisioning, 0);
+  }
 }
