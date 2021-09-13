@@ -119,8 +119,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-        if (ro!=null)
-            System.out.println("RO ID: " + ro.getId());
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }
