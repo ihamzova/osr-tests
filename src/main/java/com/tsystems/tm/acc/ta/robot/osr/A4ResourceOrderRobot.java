@@ -15,11 +15,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 import io.qameta.allure.Step;
@@ -41,7 +37,7 @@ import static org.testng.Assert.fail;
 @Slf4j
 public class A4ResourceOrderRobot {
 
-    public final static String cbPath = "/test_url";
+    public static final  String cbPath = "/test_url";
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
@@ -243,7 +239,8 @@ public class A4ResourceOrderRobot {
 
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
     public void deleteA4TestDataRecursively(ResourceOrder ro) {
-        deleteA4TestDataRecursively(ro.getId());
+        if (ro!=null)
+            deleteA4TestDataRecursively(ro.getId());
     }
 
 
@@ -253,47 +250,11 @@ public class A4ResourceOrderRobot {
                 .resourceOrder()
                 .deleteResourceOrder()
                 .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+
     }
 
     private void deleteA4TestDataRecursively(String roUuid){
-        deleteResourceOrder(roUuid);
-/*
-
-        List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
-
-        negList.forEach(neg -> {
-            List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
-
-            neList.forEach(ne -> {
-                List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
-
-                nepList.forEach(nep -> {
-                    deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-                    deleteTerminationPointsAndNspsConnectedToNepOrNeg(nep.getUuid());
-                    deleteNetworkElementPort(nep.getUuid());
-                });
-
-                deleteNetworkElement(ne.getUuid());
-            });
-
-            deleteTerminationPointsAndNspsConnectedToNepOrNeg(neg.getUuid());
-            deleteNetworkElementGroup(neg.getUuid());
-        });
-        
- */
-
-
-/*
-                a4ResourceOrderOrchestratorClient
-                .resourceOrder()
-                        .deleteResourceOrder()
-                .uuidPath(roUuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                .getBody()
-                .as(ResourceOrderDto.class);
-
-
-         */
+        deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
  }

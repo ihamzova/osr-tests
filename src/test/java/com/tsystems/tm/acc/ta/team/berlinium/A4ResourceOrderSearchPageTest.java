@@ -119,7 +119,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-
+        if (ro!=null)
+            System.out.println("RO ID: " + ro.getId());
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }
@@ -135,7 +136,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(20);// wait for result ... increasing the time is just a workaround
+        sleepForSeconds(10);// wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
@@ -181,7 +182,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     public void testRoSearchNoCheckboxWithoutVuep()  {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(20);  // wait for result ... increasing the time is just a workaround
+        sleepForSeconds(10);  // wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
