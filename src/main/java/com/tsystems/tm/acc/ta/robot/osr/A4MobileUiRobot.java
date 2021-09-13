@@ -23,6 +23,7 @@ import org.testng.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -300,28 +301,33 @@ public class A4MobileUiRobot {
 
 
     @Step("check NEL Monitoring")
-    public void checkNELMonitoringList(Map<String, A4NetworkElementLink> a4NelFilteredList) {
+    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
         //check if rows of tables are there, before proceeding
-        waitForTableToFullyLoad(a4NelFilteredList.size());
+        waitForTableToFullyLoad(a4NeFilteredList.size());
 
         ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_NEL_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
-        List<String> concat = new ArrayList<>();
+        List<String> monitoringZeile = new ArrayList<>();
 
-        elementsCollection.forEach(k -> concat.add(k.getText()));
+        elementsCollection.forEach(k -> monitoringZeile.add(k.getText()));
 
-        // LSZ	UewegeID	Leitungsbezeichnung	Lifecycle State	Operational State
-        a4NelFilteredList.forEach((k, a4NetworkElementLink) -> {
-            assertTrue(concat.contains("4N4"), "4N4");
-            assertTrue(concat.contains(a4NetworkElementLink.getUeWegId()), a4NetworkElementLink.getUeWegId());
-            assertTrue(concat.contains(a4NetworkElementLink.getLbz()), a4NetworkElementLink.getLbz());
-            assertTrue(concat.contains(a4NetworkElementLink.getLifecycleState()), a4NetworkElementLink.getLifecycleState());
-            assertTrue(concat.contains(a4NetworkElementLink.getOperationalState()), a4NetworkElementLink.getOperationalState());
+        String monitoringZeileString = monitoringZeile.stream().map(e -> e.toString()).reduce("",String::concat);
+        System.out.println("monitoringStream:" + monitoringZeileString);
+
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+            assertTrue(monitoringZeile.contains("4N4"), "4N4");
+        //  NEL has to be in LifecycleState: INSTALLING
+            assertTrue(monitoringZeile.contains("INSTALLING"));
+        //  NEL has to be in OperationalState: NOT_WORKING
+            assertTrue(monitoringZeile.contains("NOT_WORKING"));
+        // lbz from NEL in Monitoring List must contain: vpsz and fsz from NE
+           assertTrue(monitoringZeileString.contains(a4NetworkElement.getVpsz()));
+           assertTrue(monitoringZeileString.contains(a4NetworkElement.getFsz()));
         });
 
         //check if table has only as many rows as expected by test data set
         //table has 5 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
-        assertEquals(concat.size() / 5, a4NelFilteredList.size());
+        assertEquals(monitoringZeile.size() / 5, a4NeFilteredList.size());
     }
 
 

@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
@@ -164,20 +166,13 @@ public class A4InbetriebnahmeTest extends GigabitTest {
     }
 
     @Test
-    @Owner("juergen.mayer@t-systems.com")
+    @Owner("juergen.mayer@t-systems.com, anita.junge@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
     @Description("Test Mobile Monitoring page of NEL for which Inbetriebnahme was done")
     public void testNelMonitoring() {
-        a4NetworkElementLinks.forEach((i, networkElementLink) -> a4ResourceInventory
-                .createNetworkElementLink(networkElementLink, nepA, nepB));
-
         // GIVEN
-
         Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
         a4NeFilteredMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
-
-        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
-        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_02_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
         // WHEN
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
@@ -190,8 +185,8 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.clickMonitoringButton();
 
         // THEN
+        a4MobileUi.checkNELMonitoringList(a4NeFilteredMap);
 
-        //a4MobileUi.checkNELMonitoringList(a4NelFilteredMap);
         //a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
         //        a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
