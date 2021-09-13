@@ -247,18 +247,17 @@ public class A4ResourceOrderRobot {
     }
 
 
-    @Step("Delete existing Network Element Group from A4 resource inventory")
+    @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
-        /*
         a4ResourceOrderOrchestratorClient
-                .get()
-                .deleteNetworkElementGroup()
+                .resourceOrder()
+                .deleteResourceOrder()
                 .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-         */
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     private void deleteA4TestDataRecursively(String roUuid){
+        deleteResourceOrder(roUuid);
 /*
 
         List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);

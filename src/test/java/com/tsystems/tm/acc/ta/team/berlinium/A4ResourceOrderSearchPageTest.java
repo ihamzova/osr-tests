@@ -119,7 +119,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
+
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }
 
     @Test
