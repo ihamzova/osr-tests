@@ -33,8 +33,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
@@ -248,9 +247,45 @@ public class A4ResourceOrderRobot {
     }
 
 
-    private void deleteA4TestDataRecursively(String roUuid){
+    @Step("Delete existing Network Element Group from A4 resource inventory")
+    public void deleteResourceOrder(String uuid) {
         /*
-        return
+        a4ResourceOrderOrchestratorClient
+                .get()
+                .deleteNetworkElementGroup()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+         */
+    }
+
+    private void deleteA4TestDataRecursively(String roUuid){
+/*
+
+        List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
+
+        negList.forEach(neg -> {
+            List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
+
+            neList.forEach(ne -> {
+                List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+
+                nepList.forEach(nep -> {
+                    deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
+                    deleteTerminationPointsAndNspsConnectedToNepOrNeg(nep.getUuid());
+                    deleteNetworkElementPort(nep.getUuid());
+                });
+
+                deleteNetworkElement(ne.getUuid());
+            });
+
+            deleteTerminationPointsAndNspsConnectedToNepOrNeg(neg.getUuid());
+            deleteNetworkElementGroup(neg.getUuid());
+        });
+        
+ */
+
+
+/*
                 a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                         .deleteResourceOrder()
