@@ -7,7 +7,7 @@ import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.invoker.GsonObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;

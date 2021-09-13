@@ -102,7 +102,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     @Description("Port deprovisioning SDX 6320, deprovisionigForDpu = na (= false)")
     public void portDeprovisioningTest() {
         accessLineRiRobot.checkDecommissioningPreconditions(portDeprovisioningAdtran);
-        wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran);
+        wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran,true);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningAdtran, 0, 1);
         accessLineRiRobot.clearDatabase();

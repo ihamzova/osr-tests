@@ -30,7 +30,6 @@ public class A4ResourceOrderSearchPage {
     public static final By RO_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
 
 
-
     @Getter
     public static final By RO_SEARCH_RESULT_TABLE_LOCATOR = By.id("ResourceOrderTable");
 

@@ -147,8 +147,8 @@ public class SubscriberNetworklineProfile extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-117879")
-  @Description("NetworkLine Profile creation: A4 case with L2bsa Activation")
-  public void createA4NetworkLineProfile() {
+  @Description("A4 case with L2bsa Activation")
+  public void createA4L2bsa() {
     networkLineProfileManagementRobot.createResourceOrderRequest(A4networkLineProfileActivation.getResourceOrder(), A4accessLine);
     assertNull(accessLineRiRobot.getAccessLinesByLineId(A4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile());
     assertNull(accessLineRiRobot.getAccessLinesByLineId(A4accessLine.getLineId()).get(0).getSubscriberNetworkLineProfile());
@@ -156,20 +156,20 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(A4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
   }
 
-  @Test(dependsOnMethods = {"createA4NetworkLineProfile"})
+  @Test(dependsOnMethods = {"createA4L2bsa"})
   @TmsLink("DIGIHUB-117880")
-  @Description("NetworkLine Profile modification: A4 case with L2bsa")
-  public void changeA4NetworkLineProfile() {
+  @Description("A4 case with L2bsa Modification")
+  public void changeA4L2bsa() {
     networkLineProfileManagementRobot.createResourceOrderRequest(A4networkLineProfileModification.getResourceOrder(), A4accessLine);
     accessLineRiRobot.checkL2bsaNspReference(a4Port, expectedL2BsaNspReferenceModification);
     assertNull(accessLineRiRobot.getAccessLinesByLineId(A4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile());
     assertNull(accessLineRiRobot.getAccessLinesByLineId(A4accessLine.getLineId()).get(0).getSubscriberNetworkLineProfile());
   }
 
-  @Test(dependsOnMethods = {"createA4NetworkLineProfile", "changeA4NetworkLineProfile"})
+  @Test(dependsOnMethods = {"createA4L2bsa", "changeA4L2bsa"})
   @TmsLink("DIGIHUB-117886")
-  @Description("NetworkLine Profile deletion: A4 case with L2bsa")
-  public void deleteA4NetworkLineProfile() {
+  @Description("A4 case with L2bsa Deletion")
+  public void deleteA4L2bsa() {
     networkLineProfileManagementRobot.createResourceOrderRequest(A4networkLineProfileDeactivation.getResourceOrder(), A4accessLine);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(A4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(A4accessLine.getLineId()), AccessLineStatus.ASSIGNED);

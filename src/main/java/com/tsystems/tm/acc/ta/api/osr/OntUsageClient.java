@@ -4,7 +4,7 @@ import com.tsystems.tm.acc.ta.api.*;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.invoker.GsonObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 

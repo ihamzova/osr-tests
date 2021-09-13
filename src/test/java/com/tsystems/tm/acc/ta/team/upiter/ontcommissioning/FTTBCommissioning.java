@@ -77,7 +77,7 @@ public class FTTBCommissioning extends GigabitTest {
             AccessLineStatus.ASSIGNED);
     assertEquals(actualStateMosaic, ProfileState.ACTIVE);
     assertEquals(actualStateOlt, ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getDpuReference().getPortType(),PortType.GFAST);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
   }
 
   @Test(dependsOnMethods = {"FTTBLineReservationTwistedPair"})
@@ -87,7 +87,7 @@ public class FTTBCommissioning extends GigabitTest {
     ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic(),ProfileState.ACTIVE);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId(),
             accessLineTwistedPair.getHomeId());
   }
@@ -116,7 +116,7 @@ public class FTTBCommissioning extends GigabitTest {
             AccessLineStatus.ASSIGNED);
     assertEquals(actualStateMosaic, ProfileState.ACTIVE);
     assertEquals(actualStateOlt, ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getDpuReference().getPortType(),PortType.GFAST);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
   }
 
   @Test(dependsOnMethods = {"FTTBLineReservationCoax"})
@@ -126,7 +126,7 @@ public class FTTBCommissioning extends GigabitTest {
     ontOltOrchestratorRobot.decommissionOnt(accessLineCoax);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic(),ProfileState.ACTIVE);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId(),
             accessLineCoax.getHomeId());
   }
