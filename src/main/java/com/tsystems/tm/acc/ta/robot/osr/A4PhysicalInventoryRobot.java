@@ -13,6 +13,8 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
+import java.util.UUID;
+
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
@@ -107,7 +109,8 @@ public class A4PhysicalInventoryRobot {
 
     @Step("Delete Holder from Physical Inventory - not found")
     public void deleteHolderNotFound(A4Holder hoData) {
-
+        if (hoData.getUuid().isEmpty())
+            hoData.setUuid(UUID.randomUUID().toString());
         a4PhysicalInventory
                 .physicalResource()
                 .deletePhysicalResource()
