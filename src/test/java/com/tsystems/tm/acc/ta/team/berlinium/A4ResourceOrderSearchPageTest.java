@@ -48,6 +48,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String vuep = "A1000858";
+    private final int SleeperInSec = 20; // workaround while performance problems
 
     private A4NetworkElementGroup negData;
     private ResourceOrder ro;
@@ -134,7 +135,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(10);// wait for result
+        sleepForSeconds(SleeperInSec);// wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
@@ -180,7 +181,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     public void testRoSearchNoCheckboxWithoutVuep()  {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(10);  // wait for result
+        sleepForSeconds(SleeperInSec);  // wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
