@@ -36,7 +36,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateRequestData);
     }
 
-    @AfterGroups (value = "dpu_demand_deleted", enabled = false)
+    @AfterGroups(value = "dpu_demand_deleted", enabled = false)
     public void cleanup() {
         dpuPlanningRobot.deleteDpuDemandSuccessResponse(dpuDemandAfterProcess);
     }
@@ -200,7 +200,7 @@ public class DpuPlanningTest extends GigabitTest {
     @TmsLink("DIGIHUB-118645")
     @Description("[Negative] Modify DPU Demand: delete klsId")
     public void deleteKlsId() {
-       dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_KLS_ID_PATH, REMOVE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandBadRequest(dpuDemandAfterProcess, DPU_KLS_ID_PATH, REMOVE_OPERATION);
     }
 
     @Test(priority = 23, groups = {"dpu_demand_created", "dpu_demand_deleted"})
@@ -270,10 +270,10 @@ public class DpuPlanningTest extends GigabitTest {
     @TmsLink("DIGIHUB-117828")
     @Description("[Positive] Read DPU Demand by id")
     public void readDpuDemandById() {
-       dpuPlanningRobot.readDpuDemandByIdAndValidateResponse(dpuDemandAfterProcess);
+        dpuPlanningRobot.readDpuDemandByIdAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test(priority = 33, groups = {"dpu_demand_created"}, enabled = false)
+    @Test(priority = 33, groups = {"dpu_demand_created"})
     @TmsLink("DIGIHUB-119030")
     @Description("[Positive] Delete DPU Demand")
     public void deleteDpuDemand() {
@@ -281,11 +281,109 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.readDpuDemandByIdErrorResponse(dpuDemandAfterProcess);
     }
 
-    @Test(priority = 34, groups = {"dpu_demand_created"}, enabled = false)
+    @Test(priority = 34, groups = {"dpu_demand_created"})
     @TmsLink("DIGIHUB-119031")
     @Description("[Negative] Delete DPU Demand: demand not found")
     public void deleteDpuDemandNotFound() {
         dpuPlanningRobot.deleteDpuDemandSuccessResponse(dpuDemandAfterProcess);
         dpuPlanningRobot.deleteDpuDemandErrorResponse(dpuDemandAfterProcess);
+    }
+
+    @Test(priority = 35, groups = {"dpu_demand_deleted"}, enabled = false)
+    @TmsLink("DIGIHUB-118647")
+    @Description("[Positive] DpuPlanningCompletedEvent is published if fiberOnLocationId has other DPU Demands and all are completed")
+    public void publishCompletedEventOtherDemandsCompleted() {
+        dpuPlanningRobot.registerForNotifications();
+
+        //Precondition: Create two demands, first completed, second open
+        DpuDemandCreate dpuDemandCreateFirstDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
+        dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateFirstDemand);
+        DpuDemandCreate dpuDemandCreateSecondDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateSecondDemand);
+
+        //Modify state and dpuEndsz of second demand
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, REPLACE_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
+
+        //Check published notifications after second demand is completed
+        dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 1);
+    }
+
+    @Test(priority = 36, groups = {"dpu_demand_deleted"}, enabled = false)
+    @TmsLink("DIGIHUB-118651")
+    @Description("[Negative] DpuPlanningCompletedEvent isn't published if fiberOnLocationId has not completed DPU Demands")
+    public void publishCompletedEventOtherDemandsNotCompleted() {
+        dpuPlanningRobot.registerForNotifications();
+
+        //Precondition: Create two demands, both not completed
+        DpuDemandCreate dpuDemandCreateFirstDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateFirstDemand);
+        DpuDemandCreate dpuDemandCreateSecondDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateSecondDemand);
+
+        //Modify state and dpuEndsz of second demand
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, ADD_OPERATION);
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
+
+        //Check published notifications after second demand is completed
+        dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 0);
+    }
+
+    @Test(priority = 37, groups = {"dpu_demand_deleted"}, enabled = false)
+    @TmsLink("DIGIHUB-118652")
+    @Description("[Positive] DpuPlanningCompletedEvent is published if fiberOnLocationId doesn't have other DPU Demands")
+    public void publishCompletedEventOneDemandCompleted() {
+        dpuPlanningRobot.registerForNotifications();
+
+        //Precondition: Create one open demand
+        DpuDemandCreate dpuDemandCreateDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateDemand);
+
+        //Modify state and dpuEndsz of created demand
+        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, ADD_OPERATION);
+
+        //Check published notifications after second demand is completed
+        dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 1);
+    }
+
+    @Test(priority = 38, groups = {"dpu_demand_deleted"}, enabled = false)
+    @TmsLink("DIGIHUB-118655")
+    @Description("[Negative] DpuPlanningCompletedEvent isn't published if other parameters are modified")
+    public void publishCompletedEventOtherParametersModified() {
+        dpuPlanningRobot.registerForNotifications();
+
+        //Precondition: Create one completed demand
+        DpuDemandCreate dpuDemandCreateDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ALL_PARAMS);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateDemand);
+
+        //Modify workorderId
+        dpuPlanningRobot.patchDpuDemandModifyOneParameter(dpuDemandAfterProcess, DPU_WO_ID_PATH, DPU_WO_ID_VALUE, REPLACE_OPERATION);
+
+        //Check published notifications after second demand is completed
+        dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 0);
+    }
+
+    @Test(priority = 39, groups = {"dpu_demand_deleted"}, enabled = false)
+    @TmsLink("DIGIHUB-118656")
+    @Description("[Positive] DpuPlanningCompletedEvent is published when new DPU Demand is created after all other are completed")
+    public void publishCompletedEventForNewDpuDemand() {
+        dpuPlanningRobot.registerForNotifications();
+
+        //Precondition: Create one open demand
+        DpuDemandCreate dpuDemandCreateFirstDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateFirstDemand);
+
+        //Modify dpuEndSz and state for first demand
+        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
+
+        //Create second demand
+        DpuDemandCreate dpuDemandCreateSecondDemand = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND_ONLY_MANDATORY);
+        dpuDemandAfterProcess = dpuPlanningRobot.createDpuDemandForModification(dpuDemandCreateSecondDemand);
+
+        //Modify dpuEndSz and state for second demand
+        dpuPlanningRobot.patchDpuDemandModifyTwoParameters(dpuDemandAfterProcess, DPU_ENDSZ_PATH, DPU_ENDSZ_VALUE, DPU_STATE_PATH, DPU_STATE_VALUE, REPLACE_OPERATION);
+
+        //Check published notifications after second demand is completed
+        dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 2);
     }
 }
