@@ -273,7 +273,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.readDpuDemandByIdAndValidateResponse(dpuDemandAfterProcess);
     }
 
-    @Test(priority = 33, groups = {"dpu_demand_created"}, enabled = false)
+    @Test(priority = 33, groups = {"dpu_demand_created"})
     @TmsLink("DIGIHUB-119030")
     @Description("[Positive] Delete DPU Demand")
     public void deleteDpuDemand() {
@@ -281,7 +281,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.readDpuDemandByIdErrorResponse(dpuDemandAfterProcess);
     }
 
-    @Test(priority = 34, groups = {"dpu_demand_created"}, enabled = false)
+    @Test(priority = 34, groups = {"dpu_demand_created"})
     @TmsLink("DIGIHUB-119031")
     @Description("[Negative] Delete DPU Demand: demand not found")
     public void deleteDpuDemandNotFound() {
@@ -289,7 +289,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.deleteDpuDemandErrorResponse(dpuDemandAfterProcess);
     }
 
-    @Test(priority = 35, groups = {"dpu_demand_deleted"})
+    @Test(priority = 35, groups = {"dpu_demand_deleted"}, enabled = false)
     @TmsLink("DIGIHUB-118647")
     @Description("[Positive] DpuPlanningCompletedEvent is published if fiberOnLocationId has other DPU Demands and all are completed")
     public void publishCompletedEventOtherDemandsCompleted() {
@@ -309,7 +309,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 1);
     }
 
-    @Test(priority = 36, groups = {"dpu_demand_deleted"})
+    @Test(priority = 36, groups = {"dpu_demand_deleted"}, enabled = false)
     @TmsLink("DIGIHUB-118651")
     @Description("[Negative] DpuPlanningCompletedEvent isn't published if fiberOnLocationId has not completed DPU Demands")
     public void publishCompletedEventOtherDemandsNotCompleted() {
@@ -329,7 +329,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 0);
     }
 
-    @Test(priority = 37, groups = {"dpu_demand_deleted"})
+    @Test(priority = 37, groups = {"dpu_demand_deleted"}, enabled = false)
     @TmsLink("DIGIHUB-118652")
     @Description("[Positive] DpuPlanningCompletedEvent is published if fiberOnLocationId doesn't have other DPU Demands")
     public void publishCompletedEventOneDemandCompleted() {
@@ -346,7 +346,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 1);
     }
 
-    @Test(priority = 38, groups = {"dpu_demand_deleted"})
+    @Test(priority = 38, groups = {"dpu_demand_deleted"}, enabled = false)
     @TmsLink("DIGIHUB-118655")
     @Description("[Negative] DpuPlanningCompletedEvent isn't published if other parameters are modified")
     public void publishCompletedEventOtherParametersModified() {
@@ -363,7 +363,7 @@ public class DpuPlanningTest extends GigabitTest {
         dpuPlanningRobot.validateDpuPlanningCompletedEvent(dpuDemandAfterProcess, 0);
     }
 
-    @Test(priority = 39, groups = {"dpu_demand_deleted"})
+    @Test(priority = 39, groups = {"dpu_demand_deleted"}, enabled = false)
     @TmsLink("DIGIHUB-118656")
     @Description("[Positive] DpuPlanningCompletedEvent is published when new DPU Demand is created after all other are completed")
     public void publishCompletedEventForNewDpuDemand() {

@@ -201,10 +201,10 @@ public class DpuPlanningRobot {
         helper.getTokenProvider().revokeToken();
 
         List<String> notifications = helper.getNotifications(DPU_PLANNING_PUBSUB_TOPIC);
-        notifications.forEach(notification -> assertThat(notification)
-                .hasSize(expectedSize)
-                .contains("\"eventType\":\"DpuPlanningCompletedEvent\"")
-                .contains(dpuDemandToRead.getFiberOnLocationId())
-                .contains("\"eventTopic\":\"dpuPlanningEvents\""));
+        assertEquals(notifications.size(), expectedSize);
+        if (expectedSize > 0) {
+            notifications.forEach(notification -> assertThat(notification)
+                    .contains(dpuDemandToRead.getFiberOnLocationId()));
         }
+    }
 }
