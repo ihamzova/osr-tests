@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -26,8 +27,8 @@ import static org.testng.Assert.assertNotNull;
 public class A4ResourceInventoryRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_NEMO_UPDATER_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_NEMO_UPDATER_MS));
 
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient(authTokenProvider).getClient();
 
