@@ -301,47 +301,51 @@ public class ProcessSearchPage {
     String startTime = process
             .getStartTime()
             .split(",", 2)[0];
-    String month = startTime.substring(0, startTime.indexOf(" "));
-    String dayOfMonth = startTime.substring(startTime.indexOf(" ") + 1);
-    switch (month) {
-      case ("Jan."):
-        month = "01";
-        break;
-      case ("Feb."):
-        month = "02";
-        break;
-      case ("März"):
-        month = "03";
-        break;
-      case ("Apr."):
-        month = "04";
-        break;
-      case ("Mai"):
-        month = "05";
-        break;
-      case ("Juni"):
-        month = "06";
-        break;
-      case ("Juli"):
-        month = "07";
-        break;
-      case ("Aug."):
-        month = "08";
-        break;
-      case ("Sept."):
-        month = "09";
-        break;
-      case ("Okt."):
-        month = "10";
-        break;
-      case ("Nov."):
-        month = "11";
-        break;
-      case ("Dez."):
-        month = "12";
-        break;
+    if (startTime.indexOf(" ") > 0) {
+      String month = startTime.substring(0, startTime.indexOf(" "));
+      String dayOfMonth = startTime.substring(startTime.indexOf(" ") + 1);
+      switch (month) {
+        case ("Jan."):
+          month = "01";
+          break;
+        case ("Feb."):
+          month = "02";
+          break;
+        case ("März"):
+          month = "03";
+          break;
+        case ("Apr."):
+          month = "04";
+          break;
+        case ("Mai"):
+          month = "05";
+          break;
+        case ("Juni"):
+          month = "06";
+          break;
+        case ("Juli"):
+          month = "07";
+          break;
+        case ("Aug."):
+          month = "08";
+          break;
+        case ("Sept."):
+          month = "09";
+          break;
+        case ("Okt."):
+          month = "10";
+          break;
+        case ("Nov."):
+          month = "11";
+          break;
+        case ("Dez."):
+          month = "12";
+          break;
+      }
+      return dayOfMonth + " " + month;
+    } else {
+      return  startTime.substring(0, 5).replace('.', ' ');
     }
-    return dayOfMonth + " " + month;
   }
 
   public String parseStartTimeFromUI(Process process) {
