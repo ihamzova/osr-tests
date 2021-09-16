@@ -18,13 +18,13 @@ import java.util.UUID;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_PHYSICAL_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
 
 public class A4PhysicalInventoryRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_PHYSICAL_INVENTORY_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_PHYSICAL_INVENTORY_MS));
+            new RhssoClientFlowAuthTokenProvider(NEMO_CLIENT,
+                    RhssoHelper.getSecretOfGigabitHub(NEMO_CLIENT));
 
     private final ApiClient a4PhysicalInventory = new A4PhysicalInventoryClient(authTokenProvider).getClient();
     private static final String ENTITY_TYP_MESSAGE = "Entity type is the same";

@@ -37,6 +37,7 @@ public interface DomainConstants {
     String A4_CARRIER_MANAGEMENT_MS = "a4-carrier-management";
     String A4_QUEUE_DISPATCHER_MS = "a4-queue-dispatcher";
     String NEMO_CLIENT = "nemo-client";
+    String CA_INTEGRATION = "ca-integration";
 
     // Activate this when using AMQ
     String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";

@@ -12,13 +12,13 @@ import io.qameta.allure.Step;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_ORDER_ORCHESTRATOR_MS;
 
 public class A4InventoryImporterRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_INVENTORY_IMPORTER_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_INVENTORY_IMPORTER_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS));
 
     private final ApiClient a4RebellSync = new A4RebellSyncClient(authTokenProvider).getClient();
 
