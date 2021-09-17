@@ -3,3 +3,4 @@ template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile
 values:
   profileName: "RFS_AL_GPON"
   state: "ACTIVE"
+  ancpPartitionId: 2

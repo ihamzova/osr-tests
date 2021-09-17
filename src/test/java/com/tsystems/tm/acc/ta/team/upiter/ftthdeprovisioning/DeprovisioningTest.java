@@ -124,7 +124,7 @@ public class DeprovisioningTest extends GigabitTest {
   public void deviceDeprovisioningTest() {
     accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr, false);
+    wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr, true);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 0);
   }

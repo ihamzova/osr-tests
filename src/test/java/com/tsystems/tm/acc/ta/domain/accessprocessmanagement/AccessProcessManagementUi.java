@@ -21,7 +21,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 @ServiceLog({
         ACCESS_PROCESS_MANAGEMENT_UI,
         ACCESS_PROCESS_MANAGEMENT_BFF,
-        ACCESS_PROCESS_MANAGEMENT
+        OSR_PROCESS_LOG
 })
 
 public class AccessProcessManagementUi extends GigabitTest {

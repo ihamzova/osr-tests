@@ -25,7 +25,7 @@ import static org.testng.Assert.assertTrue;
 @ServiceLog({
         ACCESS_PROCESS_MANAGEMENT_UI,
         ACCESS_PROCESS_MANAGEMENT_BFF,
-        ACCESS_PROCESS_MANAGEMENT
+        OSR_PROCESS_LOG
 })
 public class ProcessesSearchTest extends GigabitTest {
 
@@ -89,7 +89,7 @@ public class ProcessesSearchTest extends GigabitTest {
     processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
     Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
     processSearchPage.checkMainProcess(foundProcess, process, today);
-    processSearchPage.checkProcessStatus(foundProcess.getState(), STATUS_FAILED);
+    processSearchPage.waitUntilNeededStatus(STATUS_FAILED);
     processSearchPage.clickOpenSubprocessesButton(0);
     processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
   }

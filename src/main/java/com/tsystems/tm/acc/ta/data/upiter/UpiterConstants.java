@@ -20,7 +20,7 @@ public interface UpiterConstants {
     String WG_FTTB_ACCESS_PROVISIONING_MS = "wg-fttb-access-provisioning";
     String ACCESS_PROCESS_MANAGEMENT_UI = "access-process-management-ui";
     String ACCESS_PROCESS_MANAGEMENT_BFF = "access-process-management-bff";
-    String ACCESS_PROCESS_MANAGEMENT = "access-process-management";
+    String OSR_PROCESS_LOG = "osr-process-log";
     String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
     String RI_ABSTRACTION_LAYER_MS ="ri-abstraction-layer";
