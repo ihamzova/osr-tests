@@ -568,6 +568,7 @@ public class AccessLineRiRobot {
     DefaultNeProfile defaultNeProfileList = new DefaultNeProfile();
     defaultNeProfileList.setProfileName(defaultNeProfile.getProfileName());
     defaultNeProfileList.setState(defaultNeProfile.getState().toString());
+    defaultNeProfileList.setAncpPartitionId(defaultNeProfile.getAncpPartitionId());
     return defaultNeProfileList;
   }
 
