@@ -45,8 +45,8 @@ public class A4ResourceOrderRobot {
                     RhssoHelper.getSecretOfGigabitHub(A4_QUEUE_DISPATCHER_MS));
 
     private static final AuthTokenProvider authTokenProviderOrchestrator =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
 
 
     private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProviderDispatcher).getClient();
