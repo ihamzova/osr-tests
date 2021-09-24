@@ -6,6 +6,7 @@ values:
   portNumber: "0"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
@@ -18,6 +19,7 @@ values:
   slotNumber: "1"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
@@ -30,6 +32,7 @@ values:
   slotNumber: "1"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32
@@ -41,6 +44,7 @@ values:
   endSz: "49/911/1100/76H4"
   homeIdPool: 32
   lineIdPool: 32
+  backhaulId: 1
   accessLinesWG: 32
   defaultNEProfilesActive: 32
   defaultNetworkLineProfilesActive: 32

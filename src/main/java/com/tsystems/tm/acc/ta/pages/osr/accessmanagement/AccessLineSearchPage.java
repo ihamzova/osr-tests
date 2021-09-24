@@ -51,7 +51,6 @@ public class AccessLineSearchPage {
     private static final By ONTSN_INPUT = byQaData("hic-ont-sn-input");
     private static final By SORT_BY_STATUS = byQaData("sc-status-sort-header-td");
 
-
     @Step("Open Access-line-Search page")
     public static AccessLineSearchPage openPage() {
         URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
@@ -160,7 +159,7 @@ public class AccessLineSearchPage {
                     accessLineInfo.setPortNumber(tds.get(3).getText());
                     accessLineInfo.setLineId(tds.get(4).getText());
                     accessLineInfo.setHomeId(tds.get(5).getText());
-                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(13).getText()));
+                    accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(14).getText()));
                     return accessLineInfo;
                 })
                 .collect(Collectors.toList());
@@ -222,7 +221,7 @@ public class AccessLineSearchPage {
 
     @Step("Check table headers")
     public void checkTableHeaders(List<String> tableHeaders) {
-        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
+        List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "ONU ID", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
         assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
                 supposedHeaders.toArray());
     }

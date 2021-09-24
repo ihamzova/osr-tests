@@ -28,6 +28,7 @@
     <test thread-count="1" name="FTTH Provisioning(for 5600 and 5800 devices) Backend Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5600"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5600SpecialCases"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5800"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioningAdtran"/>
         </classes>

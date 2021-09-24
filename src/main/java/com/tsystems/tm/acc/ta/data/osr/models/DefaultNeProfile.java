@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class DefaultNeProfile {
     private String profileName;
     private String state;
+    private Integer ancpPartitionId;
+
 }

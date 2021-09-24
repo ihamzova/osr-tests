@@ -29,8 +29,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
@@ -38,16 +37,16 @@ import static org.testng.Assert.fail;
 @Slf4j
 public class A4ResourceOrderRobot {
 
-    public final static String cbPath = "/test_url";
+    public static final  String cbPath = "/test_url";
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
-            new RhssoClientFlowAuthTokenProvider(A4_QUEUE_DISPATCHER_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_QUEUE_DISPATCHER_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
 
     private static final AuthTokenProvider authTokenProviderOrchestrator =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
 
 
     private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProviderDispatcher).getClient();
@@ -237,4 +236,25 @@ public class A4ResourceOrderRobot {
             assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
-}
+
+    @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
+    public void deleteA4TestDataRecursively(ResourceOrder ro) {
+        if (ro!=null)
+            deleteA4TestDataRecursively(ro.getId());
+    }
+
+
+    @Step("Delete existing Resource Order from A4 resource order")
+    public void deleteResourceOrder(String uuid) {
+        a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .deleteResourceOrder()
+                .uuidPath(uuid)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+
+    }
+
+    private void deleteA4TestDataRecursively(String roUuid){
+        deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
+    }
+ }

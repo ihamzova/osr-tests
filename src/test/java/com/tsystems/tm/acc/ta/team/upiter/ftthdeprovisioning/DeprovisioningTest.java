@@ -64,9 +64,8 @@ public class DeprovisioningTest extends GigabitTest {
   @Description("Port deprovisioning case, deprovisioningForDpu = na ( = false)")
   public void portDeprovisioningTest() {
     accessLineRiRobot.checkDecommissioningPreconditions(portDepr);
-    wgAccessProvisioningRobot.startPortDeprovisioning(portDepr);
+    wgAccessProvisioningRobot.startPortDeprovisioning(portDepr, true);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -77,7 +76,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(portDepr);
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDepr, false);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -88,9 +86,7 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkDecommissioningPreconditions(portDeprForDpu);
     wgAccessProvisioningRobot.startPortDeprovisioningForDpu(portDeprForDpu, true);
     accessLineRiRobot.checkFtthPortParameters(portDeprForDpu);
-    accessLineRiRobot.checkIdPools(portDeprForDpu);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprForDpu, 1, 1);
-
     List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprForDpu);
     List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprForDpu);
     long countHomeIDsFree = homeIds.stream().filter(HomeId -> HomeId.getStatus().getValue().equals(HomeIdLogicalStatus.FREE.getValue())).count();
@@ -106,9 +102,8 @@ public class DeprovisioningTest extends GigabitTest {
   public void cardDeprovisioningTest() {
     accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr);
+    wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr, true);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -118,9 +113,8 @@ public class DeprovisioningTest extends GigabitTest {
   public void oneCardDeprovisioningTest() {
     accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startCardDeprovisioningV2(cardDepr);
+    wgAccessProvisioningRobot.startCardDeprovisioningV2(cardDepr, false);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
@@ -130,9 +124,8 @@ public class DeprovisioningTest extends GigabitTest {
   public void deviceDeprovisioningTest() {
     accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
     accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr);
+    wgAccessProvisioningRobot.startDeviceDeprovisioning(deviceDepr, true);
     accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkIdPools(portDepr);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 0);
   }
 }

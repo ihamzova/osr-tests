@@ -116,7 +116,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // after a little time it is trying to redeliver to wiremock it should answer with 201...
 
-        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 15000);
 
         // ... and create nsp
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
@@ -156,12 +156,17 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         String queue = "jms.queue.a10NspTP";
         String dlq = "jms.dlq.a10NspTP";
+        a4Resilience.removeAllMessagesInQueue(dlq);
+        a4Resilience.removeAllMessagesInQueue(queue);
         //BEFORE
+        a4ResourceInventory.createTerminationPoint(tpA10Data, nepData);
             // change kong route so wiremock is used for TerminationPoint, because that is the first request for preprovisioning
         a4Resilience.changeRouteToWiremock(routeName);
             // make wiremock return 500 for findTerminationPoint
+            //and return 201 for put TerminationPoint
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
                 .addA4ResourceInventoryMock500()
+                .addA4ResourceInventoryMock201()
                 .build();
         wiremock.publish();
 
@@ -183,6 +188,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
             // wait time of redelivery and check if message it out of queue and
         long sleepTime = a4Resilience.getRedeliveryDelayCarrierManagement();
         TimeUnit.MILLISECONDS.sleep(sleepTime);
+
         a4Resilience.checkMessagesInQueue(queue, 0);
         a4Resilience.checkMessagesInQueue(dlq, old);
     }

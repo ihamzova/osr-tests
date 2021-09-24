@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.GsonObjectMapper;
@@ -29,14 +30,14 @@ public class A4ResourceInventoryClient implements Resetable {
                         .addFilter(new RequestLoggingFilter())
                         .addFilter(new ResponseLoggingFilter())
                         .addHeader("Content-Type", "application/json")
-                        .setBaseUri(new OCUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri())));
+                        .setBaseUri(new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri())));
     }
 
     public A4ResourceInventoryClient(AuthTokenProvider authTokenProvider){
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
                 () -> RequestSpecBuilders.getDefaultWithAuth(
                         GsonObjectMapper.gson(),
-                        new OCUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri(),
+                        new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri(),
                         new BearerHeaderAuthTokenInjector(authTokenProvider)
                 )
         ));

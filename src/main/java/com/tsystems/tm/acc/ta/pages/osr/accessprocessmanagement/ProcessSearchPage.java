@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
+import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -12,23 +13,23 @@ import org.openqa.selenium.*;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byClassName;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_FAILED;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_GESTARTET;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
-import static org.testng.Assert.assertEqualsNoOrder;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class ProcessSearchPage {
 
   WebDriver driver;
+  private static final Integer LATENCY_FOR_PROVISIONING_TO_FAIL = 120_000;
 
   private static final String APP = "access-process-management-ui";
   private static final String ENDPOINT = "/search";
@@ -43,6 +44,10 @@ public class ProcessSearchPage {
   private static final By FINISHED_STATUS = byQaData("sc-finished-input");
   private static final By FAILED_STATUS = byQaData("sc-failed-input");
   private static final By DELETED_STATUS = byQaData("sc-deleted-input");
+
+  private static final By LAST_3_HOURS_FILTER = byXpath("//*[@for='last3hours']");
+  private static final By LAST_DAY_FILTER = byXpath("//*[@for='lastday']");
+  private static final By LAST_WEEK_FILTER = byXpath("//*[@for='lastweek']");
 
   private static final By SORT_BY_START_TIME = byQaData("tc-starttimesort-th");
   private static final By SORT_BY_END_TIME = byQaData("tc-endtimesort-th");
@@ -123,11 +128,27 @@ public class ProcessSearchPage {
     return this;
   }
 
-  @Step("Sort table by starttime, descending")
-  public ProcessSearchPage sortTableByStartTimeDescending() {
+  @Step("Filter by last three hours")
+  public ProcessSearchPage filterByThreeHours() {
+    $(LAST_3_HOURS_FILTER).click();
+    return this;
+  }
+
+  @Step("Filter by last day")
+  public ProcessSearchPage filterByLastDay() {
+    $(LAST_DAY_FILTER).click();
+    return this;
+  }
+
+  @Step("Filter by last week")
+  public ProcessSearchPage filterByLastWeek() {
+    $(LAST_WEEK_FILTER).click();
+    return this;
+  }
+
+  public ProcessSearchPage sortByStartTimeAscending() {
     $(SORT_BY_START_TIME).click();
-    $(SORT_BY_START_TIME).click();
-    $(SEARCH_TABLE).shouldBe(visible);
+    $(TABLE_MESSAGE).shouldBe(visible);
     return this;
   }
 
@@ -209,13 +230,20 @@ public class ProcessSearchPage {
   }
 
   @Step("Check main process")
-  public void checkMainProcess(Process actualProcess, Process expectedProcess) {
+  public void checkMainProcess(Process actualProcess, Process expectedProcess, String expectedDate) {
+    String actualDate = parseStartDateFromUi(actualProcess);
+
     assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
     assertTrue(actualProcess.getEndSz().equals(expectedProcess.getEndSz()));
     assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()));
     assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()));
     assertTrue(actualProcess.getLineId().equals(expectedProcess.getLineId()));
-    assertTrue(actualProcess.getState().equals(STATUS_FAILED));
+    assertTrue(actualDate.equals(expectedDate));
+  }
+
+  @Step("Check process status")
+  public void checkProcessStatus(String actualStatus, String expectedStatus) {
+    assertEquals(actualStatus, expectedStatus);
   }
 
   @Step("Check subprocesses")
@@ -228,17 +256,6 @@ public class ProcessSearchPage {
     $(CONFIRMATION_DIALOG).should(visible);
     $(CONFIRMATION_DIALOG_MESSAGE).shouldHave(text("Prozess wurde neugestartet. Sie werden zu einem neuen Tab mit der Prozesssuche weitergeleitet"));
     $(OK_IN_CONFIRMATION_DIALOG).shouldBe(enabled);
-  }
-
-  @Step("Check process after restoration")
-  public void checkRestoredProcess(Process restoredProcess, Process initialProcess) {
-    assertTrue(restoredProcess.getProcessName().equals(initialProcess.getProcessName()));
-    assertTrue(restoredProcess.getEndSz().equals(initialProcess.getEndSz()));
-    assertTrue(restoredProcess.getSlotNumber().equals(initialProcess.getSlotNumber()));
-    assertTrue(restoredProcess.getPortNumber().equals(initialProcess.getPortNumber()));
-    assertTrue(restoredProcess.getLineId().equals(initialProcess.getLineId()));
-    assertTrue(restoredProcess.getStartTime().equals(initialProcess.getStartTime()));
-    //assertTrue(restoredProcess.getState().equals(STATUS_GESTARTET));
   }
 
   public void safeJavaScriptClick(SelenideElement element) throws Exception {
@@ -260,4 +277,112 @@ public class ProcessSearchPage {
     }
   }
 
+  public void waitUntilNeededStatus(String expectedStatus) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PROVISIONING_TO_FAIL); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkProvisioning = () -> {
+        Boolean result = false;
+        try {
+          result = clickSearchButton()
+                  .getInfoForMainProcesses().get(0).getState().equals(expectedStatus);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return result;
+      };
+      timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+  }
+
+  public String parseStartDateFromUi(Process process) {
+    String startTime = process
+            .getStartTime()
+            .split(",", 2)[0];
+    if (startTime.indexOf(" ") > 0) {
+      String month = startTime.substring(0, startTime.indexOf(" "));
+      String dayOfMonth = startTime.substring(startTime.indexOf(" ") + 1);
+      switch (month) {
+        case ("Jan."):
+          month = "01";
+          break;
+        case ("Feb."):
+          month = "02";
+          break;
+        case ("März"):
+          month = "03";
+          break;
+        case ("Apr."):
+          month = "04";
+          break;
+        case ("Mai"):
+          month = "05";
+          break;
+        case ("Juni"):
+          month = "06";
+          break;
+        case ("Juli"):
+          month = "07";
+          break;
+        case ("Aug."):
+          month = "08";
+          break;
+        case ("Sept."):
+          month = "09";
+          break;
+        case ("Okt."):
+          month = "10";
+          break;
+        case ("Nov."):
+          month = "11";
+          break;
+        case ("Dez."):
+          month = "12";
+          break;
+      }
+      return dayOfMonth + " " + month;
+    } else {
+      return  startTime.substring(0, 5).replace('.', ' ');
+    }
+  }
+
+  public String parseStartTimeFromUI(Process process) {
+    String startTime = process
+            .getStartTime()
+            .split(",", 2)[1].substring(1);
+    String startHour = startTime.split(":")[0];
+    return startHour;
+  }
+
+  public boolean compareDates(String lastFoundDate, String expectedDate) {
+    int actualDay = Integer.parseInt(lastFoundDate.substring(0, lastFoundDate.indexOf(" ")));
+    int actualMonth = Integer.parseInt(lastFoundDate.substring(lastFoundDate.indexOf(" ") + 1));
+
+    int expectedDay = Integer.parseInt(expectedDate.substring(0, expectedDate.indexOf(" ")));
+    int expectedMonth = Integer.parseInt(expectedDate.substring(expectedDate.indexOf(" ") + 1));
+
+    if (actualDay > expectedDay) {
+      return true;
+    } else {
+      if (actualMonth > expectedMonth) {
+        return true;
+      }
+      else {
+        return actualMonth == 1 && expectedMonth == 12;
+      }
+    }
+  }
+
+  public boolean compareTime(Process process, String lastFoundTime, String expectedHour, String today) {
+    int actualTime = Integer.parseInt(lastFoundTime);
+    int expectedTime = Integer.parseInt(expectedHour);
+    if (actualTime >= expectedTime) {
+      return true;
+    } else {
+      parseStartDateFromUi(process);
+      return (compareDates(parseStartDateFromUi(process), today));
+      }
+    }
 }

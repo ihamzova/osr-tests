@@ -19,6 +19,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4RebellSyncTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceOrderTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceOrderSearchPageTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.berlinium.A4PhysicalInventoryTest"/>
         </classes>
     </test>
 </suite>

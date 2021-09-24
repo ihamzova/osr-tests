@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.GsonObjectMapper;
@@ -29,14 +30,14 @@ public class A4CarrierManagementClient implements Resetable {
                         .addFilter(new RequestLoggingFilter())
                         .addFilter(new ResponseLoggingFilter())
                         .addHeader("Content-Type", "application/json")
-                        .setBaseUri(new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri())));
+                        .setBaseUri(new GigabitUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri())));
     }
 
     public A4CarrierManagementClient(AuthTokenProvider authTokenProvider){
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
                 () -> RequestSpecBuilders.getDefaultWithAuth(
                         GsonObjectMapper.gson(),
-                        new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri(),
+                        new GigabitUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri(),
                         new BearerHeaderAuthTokenInjector(authTokenProvider)
                 )
         ));

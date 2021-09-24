@@ -19,9 +19,9 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.cli
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.CardRequestDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.PortDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.CardRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.DeviceDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.PortDto;
 import de.telekom.it.t3a.kotlin.log.ServiceDiscoveryStrategy;
 import de.telekom.it.t3a.kotlin.log.query.ServiceDescriptor;
 import io.qameta.allure.Step;
@@ -92,8 +92,10 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Start port deprovisioning")
-  public void startPortDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+  public void startPortDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess()
+            .startPortDeprovisioning()
+            .noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new PortDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber())
@@ -113,17 +115,18 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Start card deprovisioning")
-  public void startCardDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning()
+  public void startCardDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(Stream.of(new CardRequestDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber()))
                     .collect(Collectors.toList()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
+
   @Step("Start card deprovisioning for 1 card")
-  public void startCardDeprovisioningV2(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardDeprovisioning()
+  public void startCardDeprovisioningV2(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new CardRequestDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber()))
@@ -131,8 +134,8 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Start device deprovisioning")
-  public void startDeviceDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning()
+  public void startDeviceDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new DeviceDto()
                     .endSz(port.getEndSz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
@@ -246,6 +249,7 @@ public class WgAccessProvisioningRobot {
     portBeforeProvisioning.setPortNumber(portNumber);
     portBeforeProvisioning.setLineIdPool(port.getLineIdPool());
     portBeforeProvisioning.setHomeIdPool(port.getHomeIdPool());
+    portBeforeProvisioning.setBackhaulId(port.getBackhaulId());
     portBeforeProvisioning.setDefaultNEProfilesActive(port.getDefaultNEProfilesActive());
     portBeforeProvisioning.setDefaultNetworkLineProfilesActive(port.getDefaultNetworkLineProfilesActive());
     portBeforeProvisioning.setAccessLinesWG(port.getAccessLinesWG());

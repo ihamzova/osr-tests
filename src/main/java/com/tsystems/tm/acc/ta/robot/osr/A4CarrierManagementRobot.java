@@ -13,16 +13,21 @@ import lombok.extern.slf4j.Slf4j;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A10NSP_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NETWORK_LINE_PROFILE_MANAGEMENT_MS;
 
 @Slf4j
 public class A4CarrierManagementRobot {
 
-    private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_CARRIER_MANAGEMENT_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_CARRIER_MANAGEMENT_MS));
+    private static final AuthTokenProvider authTokenProviderNLPM =
+            new RhssoClientFlowAuthTokenProvider(NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+                    RhssoHelper.getSecretOfGigabitHub(NETWORK_LINE_PROFILE_MANAGEMENT_MS));
+    private static final AuthTokenProvider authTokenProviderA10NSP =
+            new RhssoClientFlowAuthTokenProvider(A10NSP_INVENTORY_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A10NSP_INVENTORY_MS));
 
-    private final ApiClient a4CarrierManagement = new A4CarrierManagementClient(authTokenProvider).getClient();
+    private final ApiClient a4CarrierManagementNLPM = new A4CarrierManagementClient(authTokenProviderNLPM).getClient();
+    private final ApiClient a4CarrierManagementA10Nsp = new A4CarrierManagementClient(authTokenProviderA10NSP).getClient();
 
     @Step("send POST for allocateL2BsaNspTask")
     public void sendPostForAllocateL2BsaNsp
@@ -33,7 +38,7 @@ public class A4CarrierManagementRobot {
         allocateL2BsaNspTask.setDataRateDown(dataRateDown);
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
         allocateL2BsaNspTask.setL2CcId(l2CcId);
-        a4CarrierManagement
+        a4CarrierManagementNLPM
                 .allocateL2BsaNspTask()
                 .allocateL2BsaNspTask()
                 .body(allocateL2BsaNspTask)
@@ -49,7 +54,7 @@ public class A4CarrierManagementRobot {
         allocateL2BsaNspTask.setDataRateDown(dataRateDown);
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
         allocateL2BsaNspTask.setL2CcId(l2CcId);
-        a4CarrierManagement
+        a4CarrierManagementNLPM
                 .allocateL2BsaNspTask()
                 .allocateL2BsaNspTask()
                 .body(allocateL2BsaNspTask)
@@ -66,7 +71,7 @@ public class A4CarrierManagementRobot {
         allocateL2BsaNspTask.setDataRateUp(dataRateUp);
         allocateL2BsaNspTask.setL2CcId(l2CcId);
 
-        a4CarrierManagement
+        a4CarrierManagementNLPM
                 .allocateL2BsaNspTask()
                 .allocateL2BsaNspTask()
                 .body(allocateL2BsaNspTask)
@@ -78,7 +83,7 @@ public class A4CarrierManagementRobot {
         ReleaseL2BsaNspTask releaseL2BsaNspTask = new ReleaseL2BsaNspTask();
         releaseL2BsaNspTask.setUuid(uuid);
 
-        a4CarrierManagement
+        a4CarrierManagementNLPM
                 .releaseL2BsaNspTask()
                 .releaseL2BsaNspTask()
                 .body(releaseL2BsaNspTask)
@@ -89,17 +94,15 @@ public class A4CarrierManagementRobot {
     @Step("send GET for determination of free L2BSA TP on NEG")
     public void sendGetNegCarrierConnection (String uuid) {
 
-       // System.out.println("+++ Robot meldet sich mit uuid: " + uuid);
-
         // 711d393e-a007-49f2-a0cd-0d80195763b0 wird übergeben, oder default-neg
-        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
+        a4CarrierManagementA10Nsp.negCarrierConnections().getNegCarrierConnections()
                 .negUuidQuery(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
     @Step("send GET for determination of free L2BSA TP on unknown NEG")
     public void sendGetNoNegCarrierConnection (String uuid) {
 
-        a4CarrierManagement.negCarrierConnections().getNegCarrierConnections()
+        a4CarrierManagementA10Nsp.negCarrierConnections().getNegCarrierConnections()
                 .negUuidQuery(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
 

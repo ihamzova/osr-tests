@@ -1,0 +1,15 @@
+name: l2BsaNspReferenceActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
+values:
+  l2ccid: "l2ccid-110"
+  carrierBsaReference: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+  downBandwidth: 30000
+  upBandwidth: 10000
+---
+name: l2BsaNspReferenceModification
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
+values:
+  l2ccid: "l2ccid-110"
+  carrierBsaReference: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+  downBandwidth: 40000
+  upBandwidth: 20000

@@ -11,7 +11,8 @@ import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class AncpConfigurationStub extends AbstractStubMapping {
-    public static final String ANCP_CONFIGURATION_URL = "/api/ancpConfiguration/v2/ancp";
+    public static final String ANCP_CONFIGURATION_URL = "/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask";
+    public static final String ANCP_DECONFIGURATION_URL = "/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask";
 
     public MappingBuilder postCreateAncpConfiguration202(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))
@@ -43,7 +44,7 @@ public class AncpConfigurationStub extends AbstractStubMapping {
     }
 
     public MappingBuilder deleteAncpConfiguration202() {
-        return delete(urlMatching(ANCP_CONFIGURATION_URL + "/.*"))
+        return post(urlMatching(ANCP_DECONFIGURATION_URL + "/.*"))
                 .withName("deleteAncpConfiguration202")
                 .willReturn(aDefaultResponseWithBody(null, 202))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(true))
@@ -51,7 +52,7 @@ public class AncpConfigurationStub extends AbstractStubMapping {
     }
 
     public MappingBuilder deleteAncpConfiguration202CallbackError() {
-        return delete(urlMatching(ANCP_CONFIGURATION_URL + "/.*"))
+        return post(urlMatching(ANCP_DECONFIGURATION_URL + "/.*"))
                 .withName("deleteAncpConfiguration202CallbackError")
                 .willReturn(aDefaultResponseWithBody(null, 202))
                 .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new DpuComissioningMapper().getConfigurationUplinkDTOResult(false))));
