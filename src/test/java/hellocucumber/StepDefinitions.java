@@ -9,6 +9,8 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -18,40 +20,17 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class StepDefinitions extends GigabitTest {
 
     private OsrTestContext osrTestContext;
-    private A4ResourceInventoryRobot a4Inventory;
-    private A4NemoUpdaterRobot a4NemoUpdater;
+    private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock;
 
-    public void setup(A4NetworkElementGroup negData) {
-        a4Inventory.createNetworkElementGroup(negData);
-    }
-
-    public void cleanup(A4NetworkElementGroup negData) {
-        wiremock.close();
-        wiremock
-                .eventsHook(saveEventsToDefaultDir())
-                .eventsHook(attachEventsToAllureReport());
-
-        a4Inventory.deleteA4TestDataRecursively(negData);
-    }
-
-    @Given("test context is set up")
+    @Before
     public void test_context_is_set_up() {
         osrTestContext = OsrTestContext.get();
-        a4Inventory = new A4ResourceInventoryRobot();
-        a4NemoUpdater = new A4NemoUpdaterRobot();
 
-        // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
-        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
-
-    }
-
-    @Given("Nemo wiremock is set up")
-    public void nemo_wiremock_is_set_up() {
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
-                .addWgA4ProvisioningMock()
                 .addNemoMock()
                 .build();
         wiremock.publish()
@@ -59,28 +38,26 @@ public class StepDefinitions extends GigabitTest {
                 .publishedHook(attachStubsToAllureReport());
     }
 
-    @Given("test data is cleaned up for uuid {string}")
-    public void test_data_is_cleaned_up_for_uuid(String uuid) {
-        a4Inventory.deleteA4TestDataRecursively(uuid);
+    @After
+    public void cleanup() {
+        wiremock.close();
+        wiremock
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
     }
 
-    @Given("a NEG with uuid {string}")
+    @Given("a NEG with uuid {string} exists in A4 resource inventory")
     public void a_neg_with_uuid(String uuid) {
         A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         negData.setUuid(uuid);
 
-        cleanup(negData);
-        setup(negData);
+        a4Inventory.createNetworkElementGroup(negData);
     }
 
-    @Given("no existing element with uuid {string}")
+    @Given("no NEG with uuid {string} exists in A4 resource inventory")
     public void no_existing_element_with_uuid(String uuid) {
-        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        negData.setUuid(uuid);
-
-        cleanup(negData);
+        a4Inventory.deleteA4TestDataRecursively(uuid);
     }
 
     @When("a Nemo update is triggered for uuid {string}")
