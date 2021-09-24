@@ -15,6 +15,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 public class StepDefinitions extends GigabitTest {
@@ -25,6 +26,8 @@ public class StepDefinitions extends GigabitTest {
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock;
+
+    private String uuid;
 
     @Before
     public void test_context_is_set_up() {
@@ -44,13 +47,19 @@ public class StepDefinitions extends GigabitTest {
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
+
+        a4Inventory.deleteA4TestDataRecursively(uuid);
     }
 
     @Given("a NEG with uuid {string} exists in A4 resource inventory")
-    public void a_neg_with_uuid(String uuid) {
+    public void a_neg_with_uuid(String negUuid) {
         A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+
+        uuid = negUuid;
+
         negData.setUuid(uuid);
+        negData.setName("NEG " + getRandomDigits(6));
 
         a4Inventory.createNetworkElementGroup(negData);
     }
