@@ -28,7 +28,7 @@ import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19
 import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
-  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
+  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
 
   private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
   private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProvider).getClient();

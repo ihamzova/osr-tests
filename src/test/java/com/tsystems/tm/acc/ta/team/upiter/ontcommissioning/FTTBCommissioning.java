@@ -9,6 +9,8 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.PortType;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultVoid;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -18,7 +20,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
@@ -65,12 +70,19 @@ public class FTTBCommissioning extends GigabitTest {
             .portNumber(accessLineTwistedPair.getDpuPortNumber())
             .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineTwistedPair.getDpuPortType()))
             .homeId(accessLineTwistedPair.getHomeId());
-    String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-    accessLineTwistedPair.setLineId(lineId);
+    OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertNotNull(callback.getResponse().getLineId());
+    assertEquals(accessLineTwistedPair.getHomeId(), callback.getResponse().getHomeId());
+    accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
 
+    // check alri
+    accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
     String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId();
-    assertEquals(actualHomeId, accessLineTwistedPair.getHomeId());
+    assertEquals(accessLineTwistedPair.getHomeId(), actualHomeId);
     ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
     ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt();
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
@@ -84,7 +96,14 @@ public class FTTBCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-75824")
   @Description("Terminate FTTB Twisted Pair AccessLine: general case")
   public void FTTBLineDecommissioningTwistedPair() {
-    ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair);
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair);
+
+    // check callback
+    assertTrue(callback.getSuccess());
+    assertNull(callback.getError());
+    assertNull(callback.getResponse());
+
+    //check alri
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
@@ -104,10 +123,17 @@ public class FTTBCommissioning extends GigabitTest {
             .portNumber(accessLineCoax.getDpuPortNumber())
             .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineCoax.getDpuPortType()))
             .homeId(accessLineCoax.getHomeId());
-    String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-    accessLineCoax.setLineId(lineId);
+    OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertNotNull(callback.getResponse().getLineId());
+    assertEquals(accessLineCoax.getHomeId(), callback.getResponse().getHomeId());
+    accessLineCoax.setLineId(callback.getResponse().getLineId());
 
+    // check alri
+    accessLineCoax.setLineId(callback.getResponse().getLineId());
     String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId();
     assertEquals(actualHomeId, accessLineCoax.getHomeId());
     ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
@@ -123,7 +149,14 @@ public class FTTBCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-75824")
   @Description("Terminate FTTB Coax AccessLine: general case")
   public void FTTBLineDecommissioningCoax() {
-    ontOltOrchestratorRobot.decommissionOnt(accessLineCoax);
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineCoax);
+
+    // check callback
+    assertTrue(callback.getSuccess());
+    assertNull(callback.getError());
+    assertNull(callback.getResponse());
+
+    // check alri
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);

@@ -12,15 +12,11 @@ import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.AttenuationMeasurementsDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntConnectivityInfoDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultEmsEventDto;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_6_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,6 +27,7 @@ import java.util.UUID;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.*;
 
 @ServiceLog({
@@ -80,8 +77,8 @@ public class A4OntCommissioning extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-58640")
-  @Description("A4 Register ONT resource")
-  public void a4ontRegistrationTest() {
+  @Description("A4 Reserve AccessLine")
+  public void a4ReservationTest() {
     wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
     accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
     accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
@@ -91,35 +88,76 @@ public class A4OntCommissioning extends GigabitTest {
             .slotNumber(accessLine.getSlotNumber())
             .portNumber(accessLine.getPortNumber())
             .homeId(accessLine.getHomeId());
-    String lineId = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-    accessLine.setLineId(lineId);
+    OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
+
+    //check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertNotNull(callback.getResponse().getLineId());
+    assertEquals(accessLine.getHomeId(), callback.getResponse().getHomeId());
+
+    // check alri
+    accessLine.setLineId(callback.getResponse().getLineId());
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.ASSIGNED);
-    Assert.assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(),
-            "Serial number is not null");
-    ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
-    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"a4ontRegistrationTest"})
-  @TmsLink("DIGIHUB-58673")
-  @Description("A4 ONT Connectivity test")
+  @Test(dependsOnMethods = {"a4ReservationTest"})
+  @TmsLink("DIGIHUB-58640")
+  @Description("A4 Register ONT resource")
+  public void a4ontRegistrationTest() {
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
+
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertEquals(accessLine.getLineId(), callback.getResponse().getLineId());
+    assertEquals(ontSerialNumber.getSerialNumber(), callback.getResponse().getSerialNumber());
+
+    // check alri
+    assertEquals(ontSerialNumber.getSerialNumber(),
+            accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
+
+
+  @Test(dependsOnMethods = {"a4ReservationTest", "a4ontRegistrationTest"})
+  @TmsLink("DIGIHUB-121302")
+  // todo positive scenario DIGIHUB-58673
+  @Description("A4 ONT Connectivity test, OntState = Offline (address mismatch")
   public void a4ontTest() {
-    ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
+    OperationResultOntTestDto callback = ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
+
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertNotNull(callback.getResponse().getLastUpTime());
+    assertEquals(OntState.OFFLINE, callback.getResponse().getActualRunState());
+
     ontOltOrchestratorRobot.updateOntState(accessLine);
+
+    // check alri
     assertNotNull(accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getHomeId(), "HomeId is null");
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"a4ontRegistrationTest", "a4ontTest"})
+  @Test(dependsOnMethods = {"a4ReservationTest", "a4ontRegistrationTest", "a4ontTest"})
   @TmsLink("DIGIHUB-58725")
   @Description("A4 ONT Change test")
   public void a4ontChangeTest() {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-    ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
+
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertEquals(accessLine.getLineId(), callback.getResponse().getLineId());
+    assertEquals(ontSerialNumber.getNewSerialNumber(), callback.getResponse().getSerialNumber());
+
+    // check alri
     assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 
-  @Test(dependsOnMethods = {"a4ontRegistrationTest", "a4ontTest", "a4ontChangeTest"})
+  @Test(dependsOnMethods = {"a4ReservationTest", "a4ontRegistrationTest", "a4ontTest", "a4ontChangeTest"})
   @TmsLink("DIGIHUB-117787")
   @Description("ONT Pon Detection for A4, NSP is found in A4RI")
   public void onePonDetectTest() {
@@ -128,6 +166,8 @@ public class A4OntCommissioning extends GigabitTest {
             .endSz(accessLine.getOltDevice().getEndsz())
             .serialNumber(ontSerialNumber.getNewSerialNumber())
             .timestamp(timestamp));
+
+    // check callback
     assertTrue(operationResultEmsEventCallback.getSuccess());
     assertNull(operationResultEmsEventCallback.getError());
     assertEquals(operationResultEmsEventCallback.getResponse().getEndSz(), portDetectedInA4.getEndSz());
@@ -139,7 +179,7 @@ public class A4OntCommissioning extends GigabitTest {
     assertNull(operationResultEmsEventCallback.getResponse().getEventMessage());
   }
 
-  @Test(dependsOnMethods = {"a4ontTest"})
+  @Test(dependsOnMethods = {"a4ReservationTest", "a4ontRegistrationTest", "a4ontTest"})
   @TmsLink("DIGIHUB-58674")
   @Description("A4 Postprovisioning test(negative)")
   public void a4PostprovisioningTest() {
@@ -149,16 +189,27 @@ public class A4OntCommissioning extends GigabitTest {
             .slotNumber(accessLine.getSlotNumber())
             .portNumber(accessLine.getPortNumber())
             .homeId(accessLineRiRobot.getHomeIdByPort(accessLine));
-    String response = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
-    assertEquals(response, "Walled Garden access line not found");
+
+    OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
+
+    // check callback
+    assertEquals("Walled Garden access line not found", callback.getError().getMessage());
+    assertEquals(404, callback.getError().getStatus().intValue());
   }
 
-  @Test(dependsOnMethods = {"a4ontChangeTest"})
+  @Test(dependsOnMethods = {"a4ReservationTest", "a4ontRegistrationTest", "a4ontTest", "a4ontChangeTest", "onePonDetectTest"})
   @TmsLink("DIGIHUB-59626")
   @Description("Decommissioning case A4")
   public void a4DecommissioningTest() {
-    ontOltOrchestratorRobot.decommissionOnt(accessLine);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()).toString(), AccessLineStatus.WALLED_GARDEN.toString());
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLine);
+
+    // check callback
+    assertTrue(callback.getSuccess());
+    assertNull(callback.getError());
+    assertNull(callback.getResponse());
+
+    // check alri
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
     assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(), accessLine.getHomeId());
   }
@@ -168,6 +219,8 @@ public class A4OntCommissioning extends GigabitTest {
   @Description("Get attenuation measurement for an A4 AccessLine")
   public void ontAttenuationMeasurementTest() {
     AttenuationMeasurementsDto attenuationMeasurementsCallback = ontOltOrchestratorRobot.getOntAttenuationMeasurement(accessLineForAttenuationMeasurement);
+
+    // check callback
     assertNotNull(attenuationMeasurementsCallback.getError());
     assertFalse(attenuationMeasurementsCallback.getSuccess());
     assertNull(attenuationMeasurementsCallback.getResponse());
