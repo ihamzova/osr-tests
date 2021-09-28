@@ -86,14 +86,21 @@ public class OltProvisioning5600 extends GigabitTest {
   @Description("Card provisioning case with 1 empty port")
   public void cardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v1);
-    wgAccessProvisioningRobot.startCardProvisioning(card5600v1);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v1.getEndSz(),
+            card5600v1.getSlotNumber(),
+            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5600v1);
+
+    System.out.println(port);
+
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getPorts().size(), 8);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v1).size(), 0);
-    accessLineRiRobot.checkFtthPortParameters(card5600v1);
-    accessLineRiRobot.checkDefaultNeProfiles(card5600v1, defaultNeProfile, card5600v1.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v1, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(card5600v1, 1, 1);
+
+    wgAccessProvisioningRobot.startCardProvisioning(card5600v1);
+    accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
 
   @Test(priority = 1)
@@ -115,18 +122,20 @@ public class OltProvisioning5600 extends GigabitTest {
   @TmsLink("DIGIHUB-29667")
   @Description("Device provisioning case")
   public void deviceProvisioning() {
-    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(device5600);
-    assertNotNull(deviceBeforeProvisioning);
-    assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5600T");
-    assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
+    Device device = wgAccessProvisioningRobot.getDevice(device5600);
+//    Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(device5600);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
+            device.getEquipmentHolders().get(1).getSlotNumber(),
+            device.getEquipmentHolders().get(1).getCard().getPorts().get(0).getPortNumber(), device5600);
+
+    System.out.println(port);
+
+    assertNotNull(device);
+    assertEquals(device.getEmsNbiName(), "MA5600T");
+    assertEquals(device.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(device5600);
-    Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(device5600);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
-            deviceAfterProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
-            deviceAfterProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5600);
-    System.out.println("port = " + port);
-    System.out.println("device5600 = " + device5600);
+
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(device5600, defaultNeProfile, device5600.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(device5600, defaultNetworkLineProfile, device5600.getAccessLinesCount());

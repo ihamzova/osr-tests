@@ -13,16 +13,19 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.HomeIdStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.LineIdStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 @ServiceLog({
         ONT_OLT_ORCHESTRATOR_MS,
@@ -66,25 +69,26 @@ public class DGFaccessLineReservation extends GigabitTest {
         //Precondition port commissioning
         //Get 1 Free HomeId from pool
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
-
-        //Start access line registration
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
-        String lineId = ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto);
-        accessLine.setLineId(lineId);
+        OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto);
 
-        //Get HomeId and LineId state
+        //check callback
+        assertNull(callback.getError());
+        assertTrue(callback.getSuccess());
+        assertNotNull(callback.getResponse().getLineId());
+        assertEquals(accessLine.getHomeId(), callback.getResponse().getHomeId());
+
+        accessLine.setLineId(callback.getResponse().getLineId());
+
+        // get data from alri
         HomeIdStatus homeIdState = accessLineRiRobot.getHomeIdStateByHomeId(accessLine.getHomeId());
-        LineIdStatus lineIdState = accessLineRiRobot.getLineIdStateByLineId(lineId);
-
-        //Check that homeId and LineId change state
-        assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
-        assertEquals(lineIdState, LineIdStatus.USED);
-
-        //Get Access line state
+        LineIdStatus lineIdState = accessLineRiRobot.getLineIdStateByLineId(accessLine.getLineId());
         AccessLineStatus accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
-        //Check that access line became assigned
+        // check alri
+        assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
+        assertEquals(lineIdState, LineIdStatus.USED);
         assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
 
 /*        //Create temp List to check business data
@@ -95,5 +99,4 @@ public class DGFaccessLineReservation extends GigabitTest {
         List<BusinessInformation> businessInformationLogCollector = wgAccessProvisioningRobot.getBusinessInformation();
         Assert.assertTrue(businessInformationLogCollector.containsAll(businessInformationList),"Business information is not found");*/
     }
-
 }
