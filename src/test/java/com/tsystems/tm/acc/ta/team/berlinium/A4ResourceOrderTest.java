@@ -133,7 +133,7 @@ public class A4ResourceOrderTest {
                 .eventsHook(attachEventsToAllureReport());
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
-        a4ResourceOrder.deleteA4TestDataRecursively(ro);
+        // a4ResourceOrder.deleteA4TestDataRecursively(ro);
     }
 
     @Test
