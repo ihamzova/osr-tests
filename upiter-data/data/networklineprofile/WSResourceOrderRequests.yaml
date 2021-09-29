@@ -1,4 +1,4 @@
-name: networkLineProfileModifySuccessWS
+name: WSNetworkLineProfile
 template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
 values:
   resourceOrder:
@@ -24,7 +24,27 @@ values:
             - name: "PPUPL3"
               value: "123000"
 ---
-name: accesslineForSubscriberNLPWS
+name: WSAccesslineForSubscriberNLP
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA2096879"
+---
+  name: WSNetworkLineProfileDelete
+  template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+  values:
+    resourceOrder:
+      id: "123"
+      resourceOrderItems:
+        - id: "123"
+          action: "DELETE"
+          resource:
+            id: "123"
+            resourceCharacteristics:
+              - name: "CALID"
+                value: "DEU.DTAG.SQA2096879"
+              - name: "KLSID"
+                value: "12345"
+              - name: "AUTHMETHOD"
+                value: "1"
+              - name: "FEDERATIONPARTNER"
+                value: "t-online.de"

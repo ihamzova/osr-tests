@@ -1,0 +1,11 @@
+name: WBSubscriberNetworkLineProfile
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1110000
+  maxUpBandwidth: 222000
+  minDownBandwidth: 33300
+  minUpBandwidth: 44400
+  guaranteedDownBandwidth: 55500
+  guaranteedUpBandwidth: 66600
