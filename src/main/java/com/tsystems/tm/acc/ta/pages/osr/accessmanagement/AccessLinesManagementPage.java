@@ -39,8 +39,8 @@ public class AccessLinesManagementPage {
     private static final By ONLINE_ONT_STATE = byXpath("//*[@id='ONLINE']");
     private static final By ASSIGNED_STATUS = byXpath("//*[@id='ASSIGNED']");
     private static final By WALLED_GARDEN_STATUS = byXpath("//*[@id='WALLED_GARDEN']");
-
     private static final By NOTIFICATION = byXpath("//h2[@role = 'alert']");
+    private static final By CLOSE_NOTIFICATION_BUTTON =byXpath("//*[@role='alert']/button");
 
     @Step("Return on first window")
     public AccessLineSearchPage returnToAccessLinesSearchPage(){
@@ -58,6 +58,7 @@ public class AccessLinesManagementPage {
     public AccessLinesManagementPage clickSaveAndReconfigureButton(){
         $(SAVE_AND_RECONFIGURE_BUTTON).click();
         $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        closeNotificationButton();
         return this;
     }
 
@@ -71,6 +72,7 @@ public class AccessLinesManagementPage {
     public AccessLinesManagementPage clickBestätigenButton()  {
         $(BESTAETIGEN_BUTTON).click();
         $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        closeNotificationButton();
         return this;
     }
 
@@ -158,5 +160,9 @@ public class AccessLinesManagementPage {
         assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState));
         assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
         assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+    }
+    @Step ("Close Notification button")
+    public void closeNotificationButton (){
+        $(CLOSE_NOTIFICATION_BUTTON).click();
     }
 }

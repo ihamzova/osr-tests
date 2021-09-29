@@ -1,0 +1,57 @@
+name: NetworkLineProfileCreation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "CALID"
+              value: "DEU.DTAG.DQA8823841"
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+---
+name: AccesslineForSubscriberNLP
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.DQA8823841"
+---
+name: PortForAccessLine
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "1"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  accessLinesCount: 1
+---
+name: NetworkLineProfileDelete
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+    resourceOrder:
+      id: "123"
+      resourceOrderItems:
+        - id: "123"
+          action: "DELETE"
+          resource:
+            id: "123"
+            resourceCharacteristics:
+              - name: "CALID"
+                value: "DEU.DTAG.DQA8823841"
+              - name: "KLSID"
+                value: "12345"
+              - name: "AUTHMETHOD"
+                value: "1"
+              - name: "FEDERATIONPARTNER"
+                value: "t-online.de"

@@ -99,7 +99,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Check pools")
-  public void checkIdPools(PortProvisioning port){
+  public void checkIdPools(PortProvisioning port) {
     checkHomeIdsCount(port);
     checkLineIdsCount(port);
     checkBackhaulIdCount(port);
@@ -215,7 +215,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Check Default NE Profiles")
-  public void checkDefaultNeProfiles (PortProvisioning port, DefaultNeProfile expectedDefaultNeProfile, int numberOfAccessLinesForProvisioning) {
+  public void checkDefaultNeProfiles(PortProvisioning port, DefaultNeProfile expectedDefaultNeProfile, int numberOfAccessLinesForProvisioning) {
     List<DefaultNeProfileDto> actualDefaultNeProfileDtos = getAccessLinesByPort(port)
             .stream().map(AccessLineDto::getDefaultNeProfile).collect(Collectors.toList());
     assertEquals(actualDefaultNeProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NE Profiles count is incorrect");
@@ -235,6 +235,36 @@ public class AccessLineRiRobot {
     assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
             "Default NetworkLine Profiles are incorrect");
   }
+  @Step("Check Default NetworkLine Profiles")
+  public void checkDefaultNetworkLineProfiles(AccessLine accessLine, DefaultNetworkLineProfile expectedDefaultNLineProfile) {
+    List<DefaultNetworkLineProfileDto> actualDefaultNLProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getDefaultNetworkLineProfile).collect(Collectors.toList());
+    List<DefaultNetworkLineProfile> actualDefaultNLProfiles =
+            actualDefaultNLProfileDtos.stream().map(AccessLineRiRobot::mapToNLProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
+            "Default NetworkLine Profiles are incorrect");
+  }
+
+  @Step("Check Subscriber NetworkLine Profiles")
+  public void checkSubscriberNetworkLineProfiles(PortProvisioning port, SubscriberNetworkLineProfile expectedSubscriberNetworklineProfile, int numberOfAccessLinesForProvisioning) {
+    List<SubscriberNetworkLineProfileDto> actualSubscriberProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getSubscriberNetworkLineProfile).collect(Collectors.toList());
+    assertEquals(actualSubscriberProfileDtos.size(), numberOfAccessLinesForProvisioning, "Subscriber NetworkLine Profiles count is incorrect");
+    List<SubscriberNetworkLineProfile> actualSubscriberProfiles =
+            actualSubscriberProfileDtos.stream().map(AccessLineRiRobot::mapToSubscriberNetworkLineProfile).collect(Collectors.toList());
+    assertTrue(actualSubscriberProfiles.stream().allMatch(subscriberNetworkLineProfile -> subscriberNetworkLineProfile.equals(expectedSubscriberNetworklineProfile)),
+            "Subscriber NetworkLine Profiles are incorrect");
+  }
+  @Step("Check Subscriber NetworkLine Profiles")
+  public void checkSubscriberNetworkLineProfiles(AccessLine accessLine, SubscriberNetworkLineProfile expectedSubscriberNetworklineProfile) {
+    List<SubscriberNetworkLineProfileDto> actualSubscriberProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getSubscriberNetworkLineProfile).collect(Collectors.toList());
+    List<SubscriberNetworkLineProfile> actualSubscriberProfiles =
+            actualSubscriberProfileDtos.stream().map(AccessLineRiRobot::mapToSubscriberNetworkLineProfile).collect(Collectors.toList());
+    assertTrue(actualSubscriberProfiles.stream().allMatch(subscriberNetworkLineProfile -> subscriberNetworkLineProfile.equals(expectedSubscriberNetworklineProfile)),
+            "Subscriber NetworkLine Profiles are incorrect");
+  }
+
 
   @Step("Check FTTB NE Profiles")
   public void checkFttbNeProfiles(PortProvisioning port, FttbNeProfile expectedFttbNeProfile, int numberOfAccessLinesForProvisioning) {
@@ -363,8 +393,8 @@ public class AccessLineRiRobot {
     return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString())).collect(Collectors.toList());
   }
 
-  @Step ("Get Ethernet Ports")
-  public List<ReferenceDto> getEthernetPorts (PortProvisioning port) {
+  @Step("Get Ethernet Ports")
+  public List<ReferenceDto> getEthernetPorts(PortProvisioning port) {
     List<ReferenceDto> ponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
             .searchPhysicalResourceReference()
             .body(new SearchPhysicalResourceReferenceDto()
@@ -373,8 +403,8 @@ public class AccessLineRiRobot {
     return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(ETHERNET.toString())).collect(Collectors.toList());
   }
 
-  @Step ("Get Gfast Ports")
-  public List<ReferenceDto> getGfastPorts (DpuDevice dpuDevice) {
+  @Step("Get Gfast Ports")
+  public List<ReferenceDto> getGfastPorts(DpuDevice dpuDevice) {
     List<ReferenceDto> gfastPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
             .searchPhysicalResourceReference()
             .body(new SearchPhysicalResourceReferenceDto()
@@ -383,8 +413,8 @@ public class AccessLineRiRobot {
     return gfastPorts.stream().filter(gfastPort -> gfastPort.getPortType().getValue().equals(GFAST.toString())).collect(Collectors.toList());
   }
 
-  @Step ("Get Gpon Ports")
-  public List<ReferenceDto> getGponPorts (PortProvisioning port) {
+  @Step("Get Gpon Ports")
+  public List<ReferenceDto> getGponPorts(PortProvisioning port) {
     List<ReferenceDto> gpontPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
             .searchPhysicalResourceReference()
             .body(new SearchPhysicalResourceReferenceDto()
@@ -605,6 +635,23 @@ public class AccessLineRiRobot {
     return l2BsaNspReferenceList;
   }
 
+  private static SubscriberNetworkLineProfile mapToSubscriberNetworkLineProfile(SubscriberNetworkLineProfileDto subscriberNetworkLineProfile) {
+    SubscriberNetworkLineProfile subscriberNetworkLineProfileList = new SubscriberNetworkLineProfile();
+    subscriberNetworkLineProfileList.setMaxDownBandwidth(subscriberNetworkLineProfile.getMaxDownBandwidth());
+    subscriberNetworkLineProfileList.setMaxUpBandwidth(subscriberNetworkLineProfile.getMaxUpBandwidth());
+    subscriberNetworkLineProfileList.setMinDownBandwidth(subscriberNetworkLineProfile.getMinDownBandwidth());
+    subscriberNetworkLineProfileList.setMinUpBandwidth(subscriberNetworkLineProfile.getMinUpBandwidth());
+    subscriberNetworkLineProfileList.setGuaranteedDownBandwidth(subscriberNetworkLineProfile.getGuaranteedDownBandwidth());
+    subscriberNetworkLineProfileList.setGuaranteedUpBandwidth(subscriberNetworkLineProfile.getGuaranteedUpBandwidth());
+    subscriberNetworkLineProfileList.setDownBandwidth(subscriberNetworkLineProfile.getDownBandwidth());
+    subscriberNetworkLineProfileList.setUpBandwidth(subscriberNetworkLineProfile.getUpBandwidth());
+
+
+
+    subscriberNetworkLineProfileList.setKlsId(Math.toIntExact(subscriberNetworkLineProfile.getKlsId()));
+    subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
+    return subscriberNetworkLineProfileList;
+  }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {
 //    List<String> portNumbers = wgAccessProvisioningRobot.getPonPorts(port)

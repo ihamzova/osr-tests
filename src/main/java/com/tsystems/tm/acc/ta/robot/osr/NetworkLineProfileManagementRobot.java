@@ -76,7 +76,7 @@ public class NetworkLineProfileManagementRobot {
                 exactly(1),
                 newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
-                400_000);
+                500_000);
         log.info("Callback: " + requests);
         assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
