@@ -1,4 +1,4 @@
-name: CreateDpuDemandOnlyMandatory
+name: ModifyDpuDemandWo
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand
 values:
   dpuAccessTechnology: FTTB_COAX
@@ -6,3 +6,4 @@ values:
   klsId: "584741154"
   numberOfNeededDpuPorts: "15"
   state: OPEN
+  workorderId: "11636"
