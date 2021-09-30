@@ -22,7 +22,8 @@ import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_WALLED_GARDEN;
 import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.BackhaulStatus.CONFIGURED;
 import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.PortType.*;
 import static org.testng.Assert.*;
@@ -58,7 +59,7 @@ public class AccessLineRiRobot {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseWithAdtranOlt()
             .HOME_ID_SEQQuery(1)
             .LINE_ID_SEQQuery(1)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Add FTTB access lines to olt device")
