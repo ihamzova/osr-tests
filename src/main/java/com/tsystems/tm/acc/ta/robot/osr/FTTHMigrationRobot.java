@@ -8,14 +8,13 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AncpConfigurationClient;
 import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.*;
@@ -23,7 +22,6 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -174,6 +172,7 @@ public class FTTHMigrationRobot {
                         .atType(ancpIpSubnetData.getAtType())
                 ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
+
         Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
         //log.info("+++ ancpIpSubnet = {}", ancpIpSubnet.getId());
         return ancpIpSubnet.getId();
@@ -223,6 +222,7 @@ public class FTTHMigrationRobot {
 
     @Step("Patch device and  set lifeCycleState to OPERATING")
     public void patchDeviceLifeCycleState(Long oltDeviceId)  {
+        /*
         oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
                 .idPath(oltDeviceId)
                 .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
@@ -230,6 +230,8 @@ public class FTTHMigrationRobot {
                         .path("/lifeCycleState")
                         .value("OPERATING")))
                 .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+
+         */
     }
 
     @Step("Checks olt data in olt-ri after migration process")

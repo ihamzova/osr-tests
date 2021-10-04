@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
@@ -17,9 +18,9 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.DeviceType;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Uplink;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -34,7 +35,8 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -43,6 +45,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltResourceInventoryClient oltResourceInventoryClient;
+    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
@@ -51,6 +54,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
     @BeforeClass
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
+        deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
         OsrTestContext context = OsrTestContext.get();
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
@@ -165,17 +169,16 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
      */
     private void checkDeviceSDX3620(String endSz) {
 
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
         Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
         Device device = deviceList.get(0);
         Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
 
         Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
-        Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-        //Assert.assertEquals(device.getTkz2(), "02353310", "TKZ2 missmatch");
-        Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-        Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
+        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT);
+        Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
@@ -188,22 +191,24 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
      * check uplink and ancp-session data from olt-ressource-inventory
      */
     private void checkUplink(String endSz) {
-        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-                .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        Assert.assertEquals(uplinkDTOList.size(), 1L);
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-        Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+        List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(uplinkList.size(), 1L);
+
+       //Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
+        //Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
     }
 
     /**
      * check uplink is not exist in olt-resource-inventory
      */
     private void checkUplinkDeleted(String endSz) {
-        List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-                .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        Assert.assertTrue(uplinkDTOList.isEmpty());
+        Assert.assertTrue(uplinkList.isEmpty());
     }
 
     /**
