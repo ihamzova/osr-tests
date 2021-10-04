@@ -18,9 +18,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.DeviceType;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Uplink;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -177,12 +175,12 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
 
         Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
-        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT);
-        Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
+        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+        Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "composite partyId DTAG missmatch");
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
-        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz, "UI EndSz missmatch");
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_SDX6320_16, "UI EMS NBI name missmatch");
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (dynamic Mock)");
     }
@@ -194,11 +192,13 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
         List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
                 .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+        Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
 
-        Assert.assertEquals(uplinkList.size(), 1L);
-
-       //Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-        //Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+        List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+                .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+        Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
     }
 
     /**

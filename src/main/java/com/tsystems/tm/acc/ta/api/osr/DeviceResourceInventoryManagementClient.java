@@ -8,35 +8,23 @@ import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.GsonObjectMapper;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.ApiClient;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.GsonObjectMapper.gson;
-import static io.restassured.RestAssured.config;
-import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
 @Getter
 public class DeviceResourceInventoryManagementClient implements Resetable {
 
     private final ApiClient client;
 
-    public DeviceResourceInventoryManagementClient() {
-        client = com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.ApiClient.api(com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> new RequestSpecBuilder().setConfig(config().objectMapperConfig(objectMapperConfig().defaultObjectMapper(gson())))
-                        .addFilter(new RequestLoggingFilter())
-                        .addFilter(new ResponseLoggingFilter())
-                        .addHeader("Content-Type", "application/json")
-                        .setBaseUri(new GigabitUrlBuilder(OLT_RESOURCE_INVENTORY_MS).buildUri())));
-    }
+    private final String BASE_PATH = "/resource-order-resource-inventory/v5";
 
     public DeviceResourceInventoryManagementClient(AuthTokenProvider authTokenProvider) {
         client = com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.ApiClient.api(com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.invoker.ApiClient.Config.apiConfig().reqSpecSupplier(
                 () -> RequestSpecBuilders.getDefaultWithAuth(
                         GsonObjectMapper.gson(),
                         new GigabitUrlBuilder(OLT_RESOURCE_INVENTORY_MS)
+                                .withEndpoint(BASE_PATH)
                                 .buildUri(),
                         new BearerHeaderAuthTokenInjector(authTokenProvider))
         ));
