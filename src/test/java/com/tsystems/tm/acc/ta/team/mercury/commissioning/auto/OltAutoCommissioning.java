@@ -2,8 +2,8 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.auto;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -17,9 +17,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -54,11 +52,13 @@ public class OltAutoCommissioning extends GigabitTest {
   private OltDevice oltDeviceDTAG;
   private OltDevice oltDeviceGFNW;
   private OltResourceInventoryClient oltResourceInventoryClient;
+  private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private WireMockMappingsContext mappingsContext;
 
   @BeforeClass
   public void init() {
     oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
+    deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
     oltDeviceDTAG = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HG_SDX_6320_16);
@@ -207,16 +207,16 @@ public class OltAutoCommissioning extends GigabitTest {
   private void checkDeviceMA5600(OltDevice oltDevice) {
     String endSz = oltDevice.getEndsz();
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(deviceList.size(), 1L);
-    Device device = deviceList.get(0);
-    Assert.assertEquals(device.getEndSz(), endSz);
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-    Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5600);
-    Assert.assertEquals(device.getTkz1(), "02353310");
-    Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG);
+    Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
+    Device device = deviceList.get(0);
+    Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
+
+    Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5600, "EMS NBI name missmatch");
+    Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+    Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "composite partyId DTAG missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
@@ -235,16 +235,16 @@ public class OltAutoCommissioning extends GigabitTest {
   private void checkDeviceMA5800(OltDevice oltDevice) {
     String endSz = oltDevice.getEndsz();
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(deviceList.size(), 1L);
-    Device device = deviceList.get(0);
-    Assert.assertEquals(device.getEndSz(), endSz);
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-    Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5800);
-    Assert.assertEquals(device.getTkz1(), "2352QCR");
-    Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_GFNW);
+    Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
+    Device device = deviceList.get(0);
+    Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
+
+    Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5800, "EMS NBI name missmatch");
+    Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+    Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_GFNW.toString(), "composite partyId GFNW missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
@@ -261,16 +261,16 @@ public class OltAutoCommissioning extends GigabitTest {
    */
   private void checkDeviceSDX3620(OltDevice oltDevice, Long compositePartyId) {
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
     Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
     Device device = deviceList.get(0);
     Assert.assertEquals(device.getEndSz(), oltDevice.getEndsz(), "OLT EndSz missmatch");
 
     Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
-    Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-    Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), compositePartyId, "composite partyId missmatch");
+    Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+    Assert.assertEquals(device.getRelatedParty().get(0).getId(), compositePartyId.toString(), "composite partyId missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
@@ -286,12 +286,15 @@ public class OltAutoCommissioning extends GigabitTest {
    * check uplink and ancp-session data from olt-resource-inventory
    */
   private void checkUplink(String endSz) {
-    List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-            .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
 
-    Assert.assertEquals(uplinkDTOList.size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
+    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+            .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
   }
 
   /**
