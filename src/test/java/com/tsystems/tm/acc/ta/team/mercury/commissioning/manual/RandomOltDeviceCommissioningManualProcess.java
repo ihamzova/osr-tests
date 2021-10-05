@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -35,6 +36,7 @@ import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
@@ -45,6 +47,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltResourceInventoryClient oltResourceInventoryClient;
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
+    private DeviceTestDataManagementClient deviceTestDataManagementClient;
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
@@ -53,6 +56,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     public void init() {
         oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
+        deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
         OsrTestContext context = OsrTestContext.get();
         //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
@@ -212,6 +216,11 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     private void clearResourceInventoryDataBase(String endSz) {
         oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+               //.execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
     }
 
 }

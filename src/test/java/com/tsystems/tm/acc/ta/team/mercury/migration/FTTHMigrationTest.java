@@ -103,7 +103,7 @@ public class FTTHMigrationTest extends GigabitTest {
         ftthMigrationRobot.createEthernetLink(oltDevice);
         String ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData, oltDevice);
         ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
-        // ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
+        ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
         ftthMigrationRobot.checkOltMigrationResult( oltDevice, true, ancpIpSubnetId);
     }
 }

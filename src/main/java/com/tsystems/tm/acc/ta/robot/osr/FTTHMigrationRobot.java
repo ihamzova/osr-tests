@@ -238,7 +238,7 @@ public class FTTHMigrationRobot {
 
     }
 
-    @Step("Patch device and  set lifeCycleState to OPERATING")
+    @Step("Patch device and set lifeCycleState to OPERATING")
     public void patchDeviceLifeCycleState(Long oltDeviceId)  {
         log.info("patchDeviceLifeCycleState");
         deviceResourceInventoryManagementClient.getClient().device().patchDevice()
@@ -285,15 +285,14 @@ public class FTTHMigrationRobot {
 
         if (!uplinkAncpExist) {
             // check device lifecycle state
-            Assert.assertEquals(LifeCycleState.NOT_OPERATING, deviceAfterMigration.getLifeCycleState(), "device without ANCP, device LifeCycleState mismatch");
+            Assert.assertEquals( deviceAfterMigration.getLifeCycleState(), LifeCycleState.NOT_OPERATING, "device without ANCP, device LifeCycleState mismatch");
             // check uplink port lifecycle state
-            Assert.assertEquals(LifeCycleState.NOT_OPERATING, uplinkPortList.get(0).getLifeCycleState(), "device without ANCP, uplinkPort LifeCycleState mismatch");
+            Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.NOT_OPERATING, "device without ANCP, uplinkPort LifeCycleState mismatch");
         } else {
-
             // check device lifecycle state
-            // 403  Assert.assertEquals(LifeCycleState.OPERATING, deviceAfterMigration.getLifeCycleState(), "device LifeCycleState mismatch");
+            Assert.assertEquals( deviceAfterMigration.getLifeCycleState(), LifeCycleState.OPERATING, "device LifeCycleState mismatch");
             // check uplink port lifecycle state
-            // 403 Assert.assertEquals(LifeCycleState.OPERATING, uplinkPortList.get(0).getLifeCycleState(), "uplinkPort LifeCycleState mismatch");
+            // !!!! Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.OPERATING, "uplinkPort LifeCycleState mismatch");
 
             List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
                     .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
