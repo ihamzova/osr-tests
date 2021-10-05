@@ -5,16 +5,16 @@ import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.GsonObjectMapper;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.invoker.JSON;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.ANCP_CONFIGURATION_MS;
-import static com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_4_1.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 

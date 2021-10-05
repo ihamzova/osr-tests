@@ -9,12 +9,12 @@ import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.FTTHMigrationRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.InventoryCompareResult;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -25,7 +25,6 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -102,9 +101,9 @@ public class FTTHMigrationTest extends GigabitTest {
         Long oltDeviceId = ftthMigrationRobot.checkOltMigrationResult( oltDevice, false, null);
 
         ftthMigrationRobot.createEthernetLink(oltDevice);
-        String ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData);
+        String ancpIpSubnetId = ftthMigrationRobot.createAncpIpSubnet(ancpIpSubnetData, oltDevice);
         ftthMigrationRobot.createAncpSession(ancpIpSubnetId, oltDevice, ancpSessionData);
-        ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
+        // ftthMigrationRobot.patchDeviceLifeCycleState(oltDeviceId);
         ftthMigrationRobot.checkOltMigrationResult( oltDevice, true, ancpIpSubnetId);
     }
 }
