@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 import io.qameta.allure.Step;
@@ -220,7 +221,7 @@ public class A4ResourceOrderRobot {
                 .as(ResourceOrderDto.class);
     }
 
-    public List<ResourceOrderDto> getResourceOrderListByVuepFromDb(String vuep) {
+    public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()
