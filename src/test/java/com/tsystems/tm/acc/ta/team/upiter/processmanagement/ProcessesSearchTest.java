@@ -1,16 +1,23 @@
 package com.tsystems.tm.acc.ta.team.upiter.processmanagement;
 
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.data.upiter.models.process.ProcessCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
 import com.tsystems.tm.acc.ta.pages.osr.accessprocessmanagement.ProcessSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgFttbAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -30,24 +37,38 @@ import static org.testng.Assert.assertTrue;
 public class ProcessesSearchTest extends GigabitTest {
 
   WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+  WgFttbAccessProvisioningRobot wgFttbAccessProvisioningRobot = new WgFttbAccessProvisioningRobot();
+  private AccessLineRiRobot accessLineRiRobot;
   private UpiterTestContext context = UpiterTestContext.get();
-  private Process process;
+  private Process ftthProcess;
+  private Process fttbProcess;
   private String processUuid;
   private String today;
   private String dayAgo;
   private String weekAgo;
   private String threeHoursAgo;
+  private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
+  private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
 
   @BeforeClass
   public void init() {
-    process = context.getData().getProcessDataProvider().get(ProcessCase.processesData);
-    processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(process).toString();
+    ftthProcess = context.getData().getProcessDataProvider().get(ProcessCase.ftthFailedProcess);
+    fttbProcess = context.getData().getProcessDataProvider().get(ProcessCase.fttbFailedProcess);
+    accessLineRiRobot = new AccessLineRiRobot();
+    processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(ftthProcess).toString();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
     dayAgo = OffsetDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd MM"));
     weekAgo = OffsetDateTime.now().minusDays(8).format(DateTimeFormatter.ofPattern("dd MM"));
     threeHoursAgo = OffsetDateTime.now().minusHours(3).format(DateTimeFormatter.ofPattern("HH"));
+    dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
+    oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFailedFttbProvisioningTwistedPair);
+  }
+
+  @AfterClass
+  public void clearData() {
+    accessLineRiRobot.clearDatabase();
   }
 
   @Test
@@ -56,11 +77,11 @@ public class ProcessesSearchTest extends GigabitTest {
   public void searchProcessesByEndSzTest() throws Exception {
     ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
     processSearchPage.validateUrl();
-    processSearchPage.searchProcessesByDevice(process)
+    processSearchPage.searchProcessesByDevice(ftthProcess)
             .clickSearchButton();
 
     Process runningProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkMainProcess(runningProcess, process, today);
+    processSearchPage.checkMainProcess(runningProcess, ftthProcess, today);
     processSearchPage.checkProcessStatus(runningProcess.getState(), STATUS_RUNNING);
 
     processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
@@ -71,7 +92,7 @@ public class ProcessesSearchTest extends GigabitTest {
     processSearchPage.waitUntilNeededStatus(STATUS_FAILED);
 
     Process failedProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkMainProcess(failedProcess, process, today);
+    processSearchPage.checkMainProcess(failedProcess, ftthProcess, today);
     processSearchPage.checkProcessStatus(failedProcess.getState(), STATUS_FAILED);
   }
 
@@ -88,7 +109,7 @@ public class ProcessesSearchTest extends GigabitTest {
     processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
     processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
     Process foundProcess = processSearchPage.getInfoForMainProcesses().get(0);
-    processSearchPage.checkMainProcess(foundProcess, process, today);
+    processSearchPage.checkMainProcess(foundProcess, ftthProcess, today);
     processSearchPage.waitUntilNeededStatus(STATUS_FAILED);
     processSearchPage.clickOpenSubprocessesButton(0);
     processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
@@ -112,6 +133,48 @@ public class ProcessesSearchTest extends GigabitTest {
     Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
     processSearchPage.checkMainProcess(restoredProcess, initialProcess, today);
     processSearchPage.checkProcessStatus(restoredProcess.getState(), STATUS_RUNNING);
+  }
+
+  @Test(priority = 1)
+  @TmsLink("DIGIHUB-122534")
+  @Description("Search processes by DPU Endsz in Access Process Management UI")
+  public void searchFailedFttbProcess() throws Exception {
+    accessLineRiRobot.fillDatabaseForDpuPreprovisioning(dpuDeviceFttbProvisioningTwistedPair, oltDeviceFttbProvisioningTwistedPair);
+    wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningTwistedPair.getEndsz());
+    ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
+    processSearchPage.validateUrl();
+    processSearchPage.searchProcessesByDevice(fttbProcess)
+            .clickSearchButton();
+
+    Process runningProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.checkMainProcess(runningProcess, fttbProcess, today);
+    processSearchPage.checkProcessStatus(runningProcess.getState(), STATUS_RUNNING);
+    processSearchPage.checkTableHeaders(processSearchPage.getTableHeaders());
+    processSearchPage.checkTableMessagePattern(processSearchPage.getTableMessage());
+    processSearchPage.clickOpenSubprocessesButton(0);
+    processSearchPage.checkSubprocesses(processSearchPage.getSubprocesses());
+    processSearchPage.waitUntilNeededStatus(STATUS_FAILED);
+    Process failedProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.checkMainProcess(failedProcess, fttbProcess, today);
+    processSearchPage.checkProcessStatus(failedProcess.getState(), STATUS_FAILED);
+  }
+
+  @Test(dependsOnMethods = "searchFailedFttbProcess", priority = 1)
+  @TmsLink("DIGIHUB-122535")
+  @Description("Restore failed fttb process in Access Process Management UI")
+  public void restoreFailedFttbProcess() throws Exception {
+    ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
+    processSearchPage.validateUrl();
+    processSearchPage.searchProcessesByDevice(fttbProcess)
+            .clickSearchButton();
+    Process initialProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.clickRestartButton(0);
+    processSearchPage.checkConfirmationDialog();
+    processSearchPage.clickOkInConfirmationDialog();
+    Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
+    processSearchPage.checkMainProcess(restoredProcess, initialProcess, today);
+    processSearchPage.checkProcessStatus(restoredProcess.getState(), STATUS_RUNNING);
+
   }
 
   @Test(priority = 1)
