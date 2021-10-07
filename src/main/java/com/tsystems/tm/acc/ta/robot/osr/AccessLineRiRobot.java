@@ -594,7 +594,6 @@ public class AccessLineRiRobot {
             .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
-
   private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {
     DefaultNeProfile defaultNeProfileList = new DefaultNeProfile();
     defaultNeProfileList.setProfileName(defaultNeProfile.getProfileName());
