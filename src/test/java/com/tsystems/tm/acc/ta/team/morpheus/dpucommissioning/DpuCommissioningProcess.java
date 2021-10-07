@@ -12,7 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;

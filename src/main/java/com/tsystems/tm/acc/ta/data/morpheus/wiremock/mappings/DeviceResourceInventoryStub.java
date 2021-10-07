@@ -26,6 +26,7 @@ public class DeviceResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withName("getDpuAncpSession200")
+                .atPriority(0)
                 .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(dpu.getEndSz()));
     }
 
@@ -37,6 +38,7 @@ public class DeviceResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withName("getOltAncpSession200")
+                .atPriority(0)
                 .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(olt.getEndsz()));
     }
 
@@ -47,6 +49,7 @@ public class DeviceResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withName("getDpuAncpSession400")
+                .atPriority(0)
                 .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(dpu.getEndSz()));
     }
 
