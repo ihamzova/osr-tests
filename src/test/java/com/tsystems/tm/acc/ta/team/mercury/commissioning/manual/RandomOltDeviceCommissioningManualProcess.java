@@ -46,7 +46,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
-    private DeviceTestDataManagementClient deviceTestDataManagementClient;
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
@@ -54,7 +53,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     @BeforeMethod
     public void init() {
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
-        deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
         OsrTestContext context = OsrTestContext.get();
         //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
