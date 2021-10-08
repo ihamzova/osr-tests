@@ -51,7 +51,7 @@ public class DeprovisioningTest extends GigabitTest {
   @BeforeMethod
   public void prepareData() {
     accessLineRiRobot.clearDatabase();
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
   }
 
   @AfterClass

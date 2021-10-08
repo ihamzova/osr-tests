@@ -16,32 +16,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA2880866"
 ---
-name: OntGetStateAccessLine
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  lineId: "DEU.DTAG.SQA1190685"
----
-name: EndSzForOntDetection
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  endSz: "49/30/179/76H1"
----
-name: SerialNumberForOntDetection
-template: com.tsystems.tm.acc.ta.data.osr.models.Ont
-values:
-  serialNumber: "1111111111106203"
----
-name: OntDefaultSerialNumber
-template: com.tsystems.tm.acc.ta.data.osr.models.Ont
-values:
-  serialNumber: "1111111111193045"
-  newSerialNumber:  "DEFAULT"
----
-name: AccessLineForAttenuationMeasurement
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  lineId: "DEU.DTAG.SQA3805515"
----
 name: PortFor33LineCase
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:

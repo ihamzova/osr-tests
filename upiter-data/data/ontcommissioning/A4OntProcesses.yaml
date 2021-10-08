@@ -43,11 +43,6 @@ values:
   klsId: "123456"
   newSerialNumber: "B434123412341234"
 ---
-name: A4AccessLineForAttenuationMeasurement
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  lineId: "DEU.DTAG.SQA537202"
----
 name: PortDetectedInA4
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:

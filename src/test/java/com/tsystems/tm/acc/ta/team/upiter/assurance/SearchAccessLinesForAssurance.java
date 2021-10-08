@@ -33,7 +33,7 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
     accessLineRiRobot = new AccessLineRiRobot();
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
     accessLineForSearchByOlt = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByOlt);
     accessLineForSearchByDpu = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByDpu);

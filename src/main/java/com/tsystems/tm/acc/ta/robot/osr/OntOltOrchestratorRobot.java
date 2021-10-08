@@ -88,13 +88,13 @@ public class OntOltOrchestratorRobot {
   }
 
   @Step("Get Ont Attenuation Measurement from SEAL")
-  public AttenuationMeasurementsDto getOntAttenuationMeasurement(AccessLine accessLine) {
+  public AttenuationMeasurementsDto getOntAttenuationMeasurement(String lineId) {
       CORRELATION_ID = UUID.randomUUID().toString();
       ontOltOrchestratorClient
               .getClient()
               .ontOltOrchestratorV2()
               .getAttenuationMeasurements()
-              .lineIdPath(accessLine.getLineId())
+              .lineIdPath(lineId)
               .xCallbackCorrelationIdHeader(CORRELATION_ID)
               .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                       .withEndpoint(CONSUMER_ENDPOINT)

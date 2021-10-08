@@ -69,7 +69,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   public void init() throws InterruptedException {
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     accessLineRetail = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccesslineForSubscriberNLP);
     accessLineWS = context.getData().getAccessLineDataProvider().get(AccessLineCase.WSAccesslineForSubscriberNLP);
     accessLineWB = context.getData().getAccessLineDataProvider().get(AccessLineCase.WBAccesslineForSubscriberNLPWB);

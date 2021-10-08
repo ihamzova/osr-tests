@@ -28,7 +28,8 @@ import static org.testng.Assert.assertTrue;
 @ServiceLog({
         ACCESS_MANAGEMENT_SUPPORT_UI_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
-        ACCESS_LINE_BFF_PROXY_MS
+        ACCESS_LINE_BFF_PROXY_MS,
+        ACCESS_LINE_MANAGEMENT_MS
 })
 public class AccessLinesSearchTest extends GigabitTest {
 
@@ -52,7 +53,7 @@ public class AccessLinesSearchTest extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioning();
+        accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     }
 
     @AfterClass
