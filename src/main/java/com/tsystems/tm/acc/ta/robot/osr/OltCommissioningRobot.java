@@ -37,12 +37,13 @@ public class OltCommissioningRobot {
   private static final Integer LINE_ID_POOL_PER_PORT = 32;
   private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+  private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+  private static final AuthTokenProvider authTokenProviderAccessLineInventory = new RhssoClientFlowAuthTokenProvider(ACCESS_LINE_RESOURCE_INVENTORY_MS, RhssoHelper.getSecretOfGigabitHub(ACCESS_LINE_RESOURCE_INVENTORY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
-  private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProvider);
-  private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
+  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltCommissioning);
+  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderAccessLineInventory);
+  private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
+  private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderAccessLineInventory);
 
   @Step("Starts automatic olt commissioning process")
   public void startAutomaticOltCommissioning(OltDevice olt) {
