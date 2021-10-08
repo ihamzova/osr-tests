@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -16,6 +15,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -46,7 +46,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
   private static final int WAIT_TIME_FOR_RENDERING = 2_000;
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
 
-  private OltResourceInventoryClient oltResourceInventoryClient;
+  private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private OltDevice oltDevice;
 
@@ -55,7 +55,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -79,8 +78,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
   }
 
   @AfterClass
@@ -106,8 +104,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z8_SDX_6320);
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
 
@@ -136,8 +132,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     oltDetailsPage.openPortView(oltDevice.getOltSlot());
     checkPortState(oltDevice, oltDetailsPage);
 
-    checkDeviceSDX3620(endSz);
-    checkUplink(endSz);
+    checkDeviceSDX3620(oltDevice.getEndsz());
+    checkUplink(oltDevice.getEndsz());
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioningGFNW", description = "Manual decommissioning for SDX 6320-16 device as GFNW user")
@@ -251,13 +247,4 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
             .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     Assert.assertEquals(deviceList.size(), 0L, "Device is present");
   }
-
-  /**
-   * clears complete olt-resource-invemtory database
-   */
-  private void clearResourceInventoryDataBase(String endSz) {
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
 }

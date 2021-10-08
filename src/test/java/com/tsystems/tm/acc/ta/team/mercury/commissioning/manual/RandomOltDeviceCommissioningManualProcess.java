@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -15,6 +14,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -36,7 +36,6 @@ import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
@@ -45,7 +44,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
 public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
-    private OltResourceInventoryClient oltResourceInventoryClient;
+    private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
     private DeviceTestDataManagementClient deviceTestDataManagementClient;
     private OltDevice oltDevice;
@@ -54,7 +53,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     @BeforeMethod
     public void init() {
-        oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
         deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
@@ -76,8 +74,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        String endSz = oltDevice.getEndsz();
-        clearResourceInventoryDataBase(endSz);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @AfterMethod
@@ -88,8 +85,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                 .eventsHook(attachEventsToAllureReport());
 
         String endSz = oltDevice.getEndsz();
-        log.info("+++ cleanUp delete device endsz={}", endSz);
-        //clearResourceInventoryDataBase(endSz);
+        //log.info("+++ cleanUp delete device endsz={}", endSz);
+        //oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -209,20 +206,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         Assert.assertTrue(uplinkList.isEmpty());
     }
-
-    /**
-     * clears complete olt-resource-invemtory database
-     */
-    private void clearResourceInventoryDataBase(String endSz) {
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
-               //.execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-    }
-
 }
 
 

@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -16,6 +15,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -45,7 +45,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
 
-  private OltResourceInventoryClient oltResourceInventoryClient;
+  private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private OltDevice oltDevice;
 
@@ -54,7 +54,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -80,8 +79,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
   }
 
   @AfterClass
@@ -109,8 +107,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
 
@@ -138,8 +134,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     oltDetailsPage.openPortView(null);
     checkPortState(oltDevice, oltDetailsPage);
 
-    checkDeviceSDX3620(endSz);
-    checkUplink(endSz);
+    checkDeviceSDX3620(oltDevice.getEndsz());
+    checkUplink(oltDevice.getEndsz());
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioningDTAG", description = "Manual decommissioning for SDX 6320-16 device as DTAG user")
@@ -256,14 +252,4 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
             .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     Assert.assertEquals(deviceList.size(), 0L, "Device is present");
   }
-
-  /**
-   * clears complete olt-resource-invemtory database
-   */
-  private void clearResourceInventoryDataBase(String endSz) {
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-
 }

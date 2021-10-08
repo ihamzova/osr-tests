@@ -10,4 +10,6 @@ public interface MercuryConstants {
     String EMS_NBI_NAME_SDX6320_16 = "SDX 6320-16";
 
     String APIGW = "apigw";
+
+    boolean FEATURE_ANCP_MIGRATION_ACTIVE = false;
 }

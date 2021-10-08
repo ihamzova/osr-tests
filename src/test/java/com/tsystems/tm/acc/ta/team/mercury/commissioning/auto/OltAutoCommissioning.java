@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -14,6 +13,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -51,13 +51,12 @@ public class OltAutoCommissioning extends GigabitTest {
 
   private OltDevice oltDeviceDTAG;
   private OltDevice oltDeviceGFNW;
-  private OltResourceInventoryClient oltResourceInventoryClient;
+  private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private WireMockMappingsContext mappingsContext;
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -94,7 +93,7 @@ public class OltAutoCommissioning extends GigabitTest {
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
     String endSz = oltDevice.getEndsz();
     log.info("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
-    deleteDeviceInResourceInventory(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
 
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
@@ -119,7 +118,7 @@ public class OltAutoCommissioning extends GigabitTest {
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
     String endSz = oltDevice.getEndsz();
     log.info("OltAutoCommissioningGFNWTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
-    deleteDeviceInResourceInventory(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
 
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     Thread.sleep(WAIT_TIME_FOR_RENDERING); // EndSz search can not be selected for the user GFNW if the page is not yet finished.
@@ -145,7 +144,7 @@ public class OltAutoCommissioning extends GigabitTest {
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HG_SDX_6320_16);
     String endSz = oltDevice.getEndsz();
     log.info("OltAutoCommissioningDTAGTest EndSz = {}, LSZ = {}", endSz, oltDevice.getLsz());
-    deleteDeviceInResourceInventory(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
 
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
@@ -170,7 +169,7 @@ public class OltAutoCommissioning extends GigabitTest {
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z9_SDX_6320);
     String endSz = oltDeviceGFNW.getEndsz();
     log.info("OltAutoCommissioningGFNWTest EndSz = {}, LSZ = {}", endSz, oltDeviceGFNW.getLsz());
-    deleteDeviceInResourceInventory(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
 
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     Thread.sleep(WAIT_TIME_FOR_RENDERING); // EndSz search can not be selected for the user GFNW if the page is not yet finished.
@@ -294,16 +293,7 @@ public class OltAutoCommissioning extends GigabitTest {
     List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
             .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
-  }
-
-  /**
-   * clears a device in olt-resource-inventory database.
-   * only one device will be deleted.
-   */
-  private void deleteDeviceInResourceInventory(String endSz) {
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
   }
 }
 
