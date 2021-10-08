@@ -19,5 +19,6 @@ public class AncpSessionData {
     private Integer vlan;
     private String configurationStatus;
     private String ipAddressAccessNode;
+    private String ipAddressBng;
 }
 

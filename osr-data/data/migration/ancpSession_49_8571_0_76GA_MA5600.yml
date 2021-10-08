@@ -9,3 +9,4 @@ values:
   vlan: 16
   configurationStatus: "ACTIVE"
   ipAddressAccessNode: "10.160.240.101"
+  ipAddressBng: "10.160.240.102"

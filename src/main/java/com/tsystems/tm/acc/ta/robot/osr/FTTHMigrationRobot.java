@@ -5,35 +5,31 @@ import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.AncpConfigurationClient;
-import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
-import com.tsystems.tm.acc.ta.data.mercury.MercuryConstants;
+import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpIpSubnetData;
 import com.tsystems.tm.acc.ta.data.osr.models.AncpSessionData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.olt.discovery.v2_1_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
@@ -50,8 +46,10 @@ public class FTTHMigrationRobot {
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
     private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
-    private AncpConfigurationClient ancpConfigurationClient = new AncpConfigurationClient(authTokenProvider);
+    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
     private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProvider);
+    private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProvider);
+    private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
 
     @Step("Start device {oltDevice} discovery ")
@@ -59,7 +57,7 @@ public class FTTHMigrationRobot {
 
         log.info("deviceDiscoveryStartDiscoveryTask for endSz = {} uuid = {}", oltDevice.getEndsz(), uuid);
 
-        String xCallbackUrl = new OCUrlBuilder(WIREMOCK_MS_NAME)
+        String xCallbackUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME)
                 .withEndpoint("/autotestCbDiscoveryStart/")
                 .build()
                 .toString();
@@ -139,40 +137,56 @@ public class FTTHMigrationRobot {
 
     @Step("Create an Ethernet link entity")
     public void createEthernetLink(OltDevice oltDevice) {
-        UplinkDTO uplinkDTO = oltResourceInventoryClient.getClient().ethernetLinkInternalController().updateUplink()
-                .body(new UplinkDTO()
-                        .oltEndSz(oltDevice.getEndsz())
-                        .orderNumber(Integer.valueOf(oltDevice.getOrderNumber()))
-                        .oltSlot(oltDevice.getOltSlot())
-                        .oltPortNumber(oltDevice.getOltPort())
-                        .bngEndSz(oltDevice.getBngEndsz())
-                        .bngSlot(oltDevice.getBngDownlinkSlot())
-                        .bngPortNumber(oltDevice.getBngDownlinkPort())
-                        .lsz(UplinkDTO.LszEnum._4C1))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-        Assert.assertEquals(uplinkDTO.getOltEndSz(),oltDevice.getEndsz(), "create uplink OLT EndSZ mismatch");
-        Assert.assertEquals(uplinkDTO.getOrderNumber(),Integer.valueOf(oltDevice.getOrderNumber()), "create uplink OrderNumber mismatch");
-        Assert.assertEquals(uplinkDTO.getOltSlot(),oltDevice.getOltSlot(), "create uplink olt slot mismatch");
-        Assert.assertEquals(uplinkDTO.getOltPortNumber(),oltDevice.getOltPort(), "create uplink olt port mismatch");
-        Assert.assertEquals(uplinkDTO.getBngEndSz(),oltDevice.getBngEndsz(), "create uplink BNG EndSz mismatch");
-        Assert.assertEquals(uplinkDTO.getBngSlot(),oltDevice.getBngDownlinkSlot(), "create uplink BNG slot mismatch");
-        Assert.assertEquals(uplinkDTO.getBngPortNumber(),oltDevice.getBngDownlinkPort(), "create uplink BNG port mismatch");
-        Assert.assertEquals(uplinkDTO.getLsz(), UplinkDTO.LszEnum._4C1, "create uplink LSZ mismatch");
+        List<EquipmentBusinessRef> equipmentBusinessRefs = new ArrayList<>();
+        equipmentBusinessRefs.add(new EquipmentBusinessRef()
+                .deviceType(DeviceType.OLT)
+                .endSz(oltDevice.getEndsz())
+                .portName(oltDevice.getOltPort())
+                .portType(PortType.ETHERNET)
+                .slotName(oltDevice.getOltSlot())
+                .type("EquipmentBusinessRef"));
+
+        equipmentBusinessRefs.add(new EquipmentBusinessRef()
+                .deviceType(DeviceType.BNG)
+                .endSz(oltDevice.getBngEndsz())
+                .portName(oltDevice.getBngDownlinkPort())
+                .portType(PortType.ETHERNET)
+                .slotName(oltDevice.getBngDownlinkSlot())
+                .type("EquipmentBusinessRef"));
+
+        Uplink uplink = deviceResourceInventoryManagementClient.getClient().uplink().createUplink()
+                .body(new UplinkCreate()
+                        .lsz(UplinkLsz._4C1)
+                        .ordnungsnummer(Integer.valueOf(oltDevice.getOrderNumber()))
+                        .portsEquipmentBusinessRef(equipmentBusinessRefs)
+                        .relatedParty(Collections.singletonList(new RelatedParty().id(COMPOSITE_PARTY_ID_DTAG.toString())))
+                        .state(UplinkState.ACTIVE))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
+        Assert.assertEquals(uplink.getPortsEquipmentBusinessRef(),equipmentBusinessRefs, "create uplink equipmentBusinessRefs mismatch");
+        Assert.assertEquals(uplink.getLsz(), UplinkLsz._4C1, "create uplink LSZ mismatch");
     }
 
     @Step("Create an AncpIpSubnetData entity")
-    public String createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData) {
+    public String createAncpIpSubnet(AncpIpSubnetData ancpIpSubnetData, OltDevice oltDevice) {
 
-        AncpIpSubnet ancpIpSubnet = ancpConfigurationClient.getClient().ancpIpSubnetV3().createAncpIpSubnetV3()
+        AncpIpSubnet ancpIpSubnet = deviceResourceInventoryManagementClient.getClient().ancpIpSubnet().createAncpIpSubnet()
                 .body(new AncpIpSubnetCreate()
+                        .ancpIpSubnetType("OLT")
+                        .bngDownlinkPortEquipmentBusinessRef(new EquipmentBusinessRef()
+                                .deviceType(DeviceType.BNG)
+                                .endSz(oltDevice.getBngEndsz())
+                                .portName(oltDevice.getBngDownlinkPort())
+                                .portType(PortType.ETHERNET)
+                                .slotName(oltDevice.getBngDownlinkSlot()))
                         .ipAddressBng(ancpIpSubnetData.getIpAddressBng())
                         .ipAddressBroadcast(ancpIpSubnetData.getIpAddressBroadcast())
                         .ipAddressLoopback(ancpIpSubnetData.getIpAddressLoopback())
                         .subnetMask(ancpIpSubnetData.getSubnetMask())
-                        .rmkAccessId(ancpIpSubnetData.getRmkAccessId())
-                        .atType(ancpIpSubnetData.getAtType())
-                ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .rmkAccessId(ancpIpSubnetData.getRmkAccessId()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
 
         Assert.assertEquals(ancpIpSubnetData.getIpAddressBng(), ancpIpSubnet.getIpAddressBng(), "IpAddressBng mismatch");
         //log.info("+++ ancpIpSubnet = {}", ancpIpSubnet.getId());
@@ -182,15 +196,9 @@ public class FTTHMigrationRobot {
 
     @Step("Create an AncpSession entity")
     public void createAncpSession(String ancpIpSubnetId, OltDevice oltDevice, AncpSessionData ancpSessionData) {
-
-        ancpConfigurationClient.getClient().ancpSessionV3().createAncpSessionV3()
+    
+        deviceResourceInventoryManagementClient.getClient().ancpSession().createAncpSession()
                 .body(new AncpSessionCreate()
-                        .partitionId(ancpSessionData.getPartitionId())
-                        .rmkEndpointId(ancpSessionData.getRmkEndpointId())
-                        .sealConfigurationId(ancpSessionData.getSealConfigurationId())
-                        .sessionId(ancpSessionData.getSessionId())
-                        .sessionType(AncpSessionType.fromValue(ancpSessionData.getSessionType()))
-                        .vlan(ancpSessionData.getVlan())
                         .accessNodeEquipmentBusinessRef(
                                 new EquipmentBusinessRef()
                                         .deviceType(DeviceType.OLT)
@@ -208,8 +216,9 @@ public class FTTHMigrationRobot {
                                         .slotName(oltDevice.getBngDownlinkSlot())
                                         .portName(oltDevice.getBngDownlinkPort())
                         )
-                        .configurationStatus(AncpConfigurationStatus.fromValue(ancpSessionData.getConfigurationStatus()))
+                        .configurationStatus("ACTIVE")
                         .ipAddressAccessNode(ancpSessionData.getIpAddressAccessNode())
+                        .ipAddressBng(ancpSessionData.getIpAddressBng())
                         .oltUplinkPortEquipmentBusinessRef(
                                 new EquipmentBusinessRef()
                                         .deviceType(DeviceType.OLT)
@@ -217,13 +226,21 @@ public class FTTHMigrationRobot {
                                         .portType(PortType.ETHERNET)
                                         .slotName(oltDevice.getOltSlot())
                                         .portName(oltDevice.getOltPort())
-                        )).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        )
+                        .partitionId(ancpSessionData.getPartitionId())
+                        .rmkEndpointId(ancpSessionData.getRmkEndpointId())
+                        .sealConfigurationId(ancpSessionData.getSealConfigurationId())
+                        .sessionId(ancpSessionData.getSessionId().toString())
+                        .sessionType("OLT")
+                        .vlan(ancpSessionData.getVlan())
+                ).executeAs(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
     }
 
-    @Step("Patch device and  set lifeCycleState to OPERATING")
+    @Step("Patch device and set lifeCycleState to OPERATING")
     public void patchDeviceLifeCycleState(Long oltDeviceId)  {
-        oltResourceInventoryClient.getClient().deviceInternalController().patchDevice()
+        log.info("patchDeviceLifeCycleState");
+        deviceResourceInventoryManagementClient.getClient().device().patchDevice()
                 .idPath(oltDeviceId)
                 .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.ADD)
                         .from("string")
@@ -234,54 +251,75 @@ public class FTTHMigrationRobot {
 
     @Step("Checks olt data in olt-ri after migration process")
     public Long checkOltMigrationResult(OltDevice oltDevice, boolean uplinkAncpExist, String ancpIpSubnetId) {
-
+        log.info("checkOltMigrationResult");
         String oltEndSz = oltDevice.getEndsz();
 
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(oltEndSz).depthQuery(3).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+
         Assert.assertEquals(deviceList.size(), 1L, "device list mismatch");
         Device deviceAfterMigration = deviceList.get(0);
-        Assert.assertEquals(deviceAfterMigration.getType(), Device.TypeEnum.OLT, "device type mismatch");
+        Assert.assertEquals(deviceAfterMigration.getDeviceType(), DeviceType.OLT, "device type mismatch");
         Assert.assertEquals(deviceAfterMigration.getEndSz(), oltEndSz, "device EndSz mismatch");
-        Assert.assertEquals(deviceAfterMigration.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "ddevice composite partyId mismatch");
-        Long oltDeviceId = deviceAfterMigration.getId();
+        Assert.assertEquals(deviceAfterMigration.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "ddevice composite partyId mismatch");
+        Long oltDeviceId = new Long(deviceAfterMigration.getId());
         Assert.assertTrue(oltDeviceId > 0);
 
-        Optional<Integer> portsCountOptional = deviceAfterMigration.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
-                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
-        long portsCount = portsCountOptional.orElse(0);
-        Assert.assertEquals(portsCount, oltDevice.getNumberOfPonSlots() * MA5600_PORTS_PER_GPON_CARD, "numbers of pon ports mismatch");
+        List<Port> portList  = deviceResourceInventoryManagementClient.getClient().port().listPort()
+                .parentEquipmentRefEndSzQuery(oltEndSz)
+                .portTypeQuery(PortType.PON)
+                .depthQuery(3)
+                .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
-        Optional<Port> uplinkPort = deviceAfterMigration.getEquipmentHolders().stream()
-                .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(oltDevice.getOltSlot()))
-                .map(EquipmentHolder::getCard)
-                .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
-                .flatMap(card -> card.getPorts().stream())
-                .filter(port -> port.getPortNumber().equals(oltDevice.getOltPort())).findFirst();
-        Assert.assertTrue(uplinkPort.isPresent(), "uplinkPort  not found");
+        Assert.assertEquals(portList.size(), oltDevice.getNumberOfPonSlots() * MA5600_PORTS_PER_GPON_CARD, "numbers of pon ports mismatch");
+
+        List<Port> uplinkPortList  = deviceResourceInventoryManagementClient.getClient().port().listPort()
+                .parentEquipmentRefEndSzQuery(oltEndSz)
+                .parentEquipmentRefSlotNameQuery(oltDevice.getOltSlot())
+                .portNameQuery(oltDevice.getOltPort())
+                .depthQuery(3)
+                .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+
+        Assert.assertEquals(uplinkPortList.size(), 1L,  "uplinkPort  not found");
 
         if (!uplinkAncpExist) {
             // check device lifecycle state
-            Assert.assertEquals(Device.LifeCycleStateEnum.NOT_OPERATING, deviceAfterMigration.getLifeCycleState(), "device without ANCP, device LifeCycleState mismatch");
+            Assert.assertEquals( deviceAfterMigration.getLifeCycleState(), LifeCycleState.NOT_OPERATING, "device without ANCP, device LifeCycleState mismatch");
             // check uplink port lifecycle state
-            Assert.assertEquals(Port.LifeCycleStateEnum.NOT_OPERATING, uplinkPort.get().getLifeCycleState(), "device without ANCP, uplinkPort LifeCycleState mismatch");
+            Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.NOT_OPERATING, "device without ANCP, uplinkPort LifeCycleState mismatch");
         } else {
-
             // check device lifecycle state
-            Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterMigration.getLifeCycleState(), "device LifeCycleState mismatch");
+            Assert.assertEquals( deviceAfterMigration.getLifeCycleState(), LifeCycleState.OPERATING, "device LifeCycleState mismatch");
             // check uplink port lifecycle state
-            Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "uplinkPort LifeCycleState mismatch");
+            // DIGIHUB-123365 Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.OPERATING, "uplinkPort LifeCycleState mismatch");
 
-            List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
-                    .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+            List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+                    .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+            Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+            Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE,  "uplink not activ");
 
-            Assert.assertEquals(uplinksList.size(), 1);
-            UplinkDTO uplink = uplinksList.get(0);
-            Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE, "uplink not activ");
-            Assert.assertEquals(uplink.getAncpSessions().size(), 1, "ANCP session size");
-            ANCPSession ancpSession = uplink.getAncpSessions().get(0);
-            Assert.assertEquals(ancpSession.getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCP session not active");
-            Assert.assertEquals(ancpSession.getIpSubnet().getId().toString(), ancpIpSubnetId, "ancpIpSubnetId mismatch");
+            List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+                    .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+            Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+            Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
+
+            if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+                List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpIpSubnet>
+                        ancpIpSubnetList = ancpResourceInventoryManagementClient.getClient().ancpIpSubnet().listAncpIpSubnet()
+                        .bngDownlinkPortEquipmentBusinessRefEndSzQuery(oltDevice.getBngEndsz())
+                        .bngDownlinkPortEquipmentBusinessRefSlotNameQuery(oltDevice.getBngDownlinkSlot())
+                        .bngDownlinkPortEquipmentBusinessRefPortNameQuery(oltDevice.getBngDownlinkPort())
+                        .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                Assert.assertEquals(ancpIpSubnetList.size(), 1L, "ancpIpSubnetList.size missmatch");
+                Assert.assertEquals(ancpIpSubnetList.get(0).getId(), ancpIpSubnetId, "ancpIpSubnetId missmatch");
+
+                List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession>
+                        ancpSessionList2 = ancpResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+                        .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz)
+                        .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                Assert.assertEquals(ancpSessionList2.size(), 1L, "ancpSessionList2.size missmatch");
+                Assert.assertEquals(ancpSessionList2.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
+            }
 
         }
         return oltDeviceId;
@@ -290,8 +328,13 @@ public class FTTHMigrationRobot {
     @Step("Clear {oltDevice} device in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(OltDevice oltDevice) {
         String endSz = oltDevice.getEndsz();
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        } else {
+            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
+                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+        }
     }
 
 }
