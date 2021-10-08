@@ -43,7 +43,7 @@ public class FTTBCommissioning extends GigabitTest {
   public void init() throws InterruptedException {
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     Thread.sleep(1000);
     accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
     Thread.sleep(1000);

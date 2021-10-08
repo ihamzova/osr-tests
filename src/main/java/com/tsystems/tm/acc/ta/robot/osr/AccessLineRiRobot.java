@@ -49,9 +49,18 @@ public class AccessLineRiRobot {
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Fill database with test data as a part of OLT Commissioning process emulation")
-  public void fillDatabaseForOltCommissioning() {
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v1")
+  public void fillDatabaseForOltCommissioningV1() {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  public void fillDatabaseForOltCommissioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Fill database with test data as a part of Adtran OLT Commissioning process emulation")
@@ -459,6 +468,51 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
+  @Step("Get OLT_BNG AccessLines with ONT")
+  public List<AccessLineDto> getAccessLinesWithOnt(PortProvisioning port) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
+                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()!=null
+                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(ProfileState.ACTIVE)
+                    &&accessLineDto.getSubscriberNetworkLineProfile()==null)
+            .collect(Collectors.toList());
+    assertTrue(accessLinesWithOnt.size() !=0, "There are no AccessLines with ONT");
+    return accessLinesWithOnt;
+  }
+
+  public List<AccessLineDto> getA4AccessLinesWithOnt() {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(AccessLineProductionPlatform.A4))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List <AccessLineDto> accessLinesWithOnt = accessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
+                    &&accessLineDto.getNetworkServiceProfileReference().getNspOntSerialNumber()!=null)
+            .collect(Collectors.toList());
+    return accessLinesWithOnt;
+  }
+
+  public List<AccessLineDto> getAccessLinesByProductionPlatform(AccessLineProductionPlatform productionPlatform) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(productionPlatform))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return accessLines;
+  }
+
+
   @Step("Get LineID Pool by Port")
   public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
     return accessLineResourceInventory.lineIdController().searchLineIds().body(
@@ -645,9 +699,6 @@ public class AccessLineRiRobot {
     subscriberNetworkLineProfileList.setGuaranteedUpBandwidth(subscriberNetworkLineProfile.getGuaranteedUpBandwidth());
     subscriberNetworkLineProfileList.setDownBandwidth(subscriberNetworkLineProfile.getDownBandwidth());
     subscriberNetworkLineProfileList.setUpBandwidth(subscriberNetworkLineProfile.getUpBandwidth());
-
-
-
     subscriberNetworkLineProfileList.setKlsId(Math.toIntExact(subscriberNetworkLineProfile.getKlsId()));
     subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
     return subscriberNetworkLineProfileList;
