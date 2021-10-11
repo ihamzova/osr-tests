@@ -291,7 +291,7 @@ public class FTTHMigrationRobot {
             // check device lifecycle state
             Assert.assertEquals( deviceAfterMigration.getLifeCycleState(), LifeCycleState.OPERATING, "device LifeCycleState mismatch");
             // check uplink port lifecycle state
-            // DIGIHUB-123365 Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.OPERATING, "uplinkPort LifeCycleState mismatch");
+            Assert.assertEquals( uplinkPortList.get(0).getLifeCycleState(), LifeCycleState.OPERATING, "uplinkPort LifeCycleState mismatch");
 
             List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
                     .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
