@@ -37,7 +37,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
 public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTest {
 
-  private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
+  private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 2_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
   private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -99,7 +99,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
     oltDetailsPage.openPortView(oltDevice.getOltSlot());
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
-    Thread.sleep(1000); // ensure that the resource inventory database is updated
+    Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION); // ensure that the resource inventory database is updated
     checkUplinkDeleted(endSz);
 
     //DIGIHUB-55036 device and card deletion
