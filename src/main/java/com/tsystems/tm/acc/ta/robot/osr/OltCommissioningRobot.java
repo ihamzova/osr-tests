@@ -1,11 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
-import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -24,6 +22,8 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 public class OltCommissioningRobot {
@@ -44,6 +44,7 @@ public class OltCommissioningRobot {
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
   private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
+  private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
   @Step("Starts automatic olt commissioning process")
   public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -225,8 +226,13 @@ public class OltCommissioningRobot {
 
   @Step("Clear {oltDevice} device in olt-resource-inventory database")
   public void clearResourceInventoryDataBase(OltDevice oltDevice) {
-    String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    String endSz = oltDevice.getEndsz();
+    if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+      deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    } else {
+      oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
+              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
   }
 }
