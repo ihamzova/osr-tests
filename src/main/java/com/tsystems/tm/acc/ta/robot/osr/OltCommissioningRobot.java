@@ -40,7 +40,7 @@ public class OltCommissioningRobot {
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltCommissioning);
+  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
   private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
