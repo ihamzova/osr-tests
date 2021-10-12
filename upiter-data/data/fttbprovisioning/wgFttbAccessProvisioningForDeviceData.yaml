@@ -6,6 +6,7 @@ values:
   fsz: "71G0"
   ponConnectionWe: "8"
   ponConnectionGe: "4"
+  ponConnectionSl: "1"
   accessTransmissionMedium: "TWISTED_PAIR"
 ---
 name: oltDeviceForFttbProvisioningTwistedPair
@@ -35,6 +36,7 @@ values:
   fsz: "71G1"
   ponConnectionWe: "8"
   ponConnectionGe: "4"
+  ponConnectionSl: "1"
   accessTransmissionMedium: "COAX"
 ---
 name: oltDeviceForFttbProvisioningCoax

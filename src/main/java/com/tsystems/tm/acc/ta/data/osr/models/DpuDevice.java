@@ -23,6 +23,7 @@ public class DpuDevice {
     private String fiberOnLocationId;
     private String ponConnectionWe;
     private String ponConnectionGe;
+    private String ponConnectionSl;
     private String portNumber;
     private String accessTransmissionMedium;
 
@@ -36,7 +37,7 @@ public class DpuDevice {
     }
 
     public int getNumberOfAccessLines(){
-        return Integer.parseInt(getPonConnectionWe()) + Integer.parseInt(getPonConnectionGe());
+        return Integer.parseInt(getPonConnectionWe()) + Integer.parseInt(getPonConnectionGe()) + Integer.parseInt(getPonConnectionSl());
     }
 
 }
