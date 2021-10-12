@@ -29,7 +29,9 @@ import static org.testng.Assert.assertTrue;
         ACCESS_MANAGEMENT_SUPPORT_UI_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
         ACCESS_LINE_BFF_PROXY_MS,
-        ACCESS_LINE_MANAGEMENT_MS
+        ACCESS_LINE_MANAGEMENT_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        ONT_OLT_ORCHESTRATOR_MS
 })
 public class AccessLinesSearchTest extends GigabitTest {
 
