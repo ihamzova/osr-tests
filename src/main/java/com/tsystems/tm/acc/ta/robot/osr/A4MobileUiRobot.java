@@ -301,7 +301,8 @@ public class A4MobileUiRobot {
 
 
     @Step("check NEL Monitoring")
-    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
+    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList,
+                                       String endPointVpsz, String endPointFsz) {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
@@ -312,17 +313,18 @@ public class A4MobileUiRobot {
         elementsCollection.forEach(k -> monitoringZeile.add(k.getText()));
 
         String monitoringZeileString = monitoringZeile.stream().map(e -> e.toString()).reduce("",String::concat);
-        System.out.println("monitoringStream:" + monitoringZeileString);
 
-        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
-            assertTrue(monitoringZeile.contains("4N4"), "4N4");
+        assertTrue(monitoringZeile.contains("4N4"), "4N4");
         //  NEL has to be in LifecycleState: INSTALLING
-            assertTrue(monitoringZeile.contains("INSTALLING"));
+        assertTrue(monitoringZeile.contains("INSTALLING"));
         //  NEL has to be in OperationalState: NOT_WORKING
-            assertTrue(monitoringZeile.contains("NOT_WORKING"));
-        // lbz from NEL in Monitoring List must contain: vpsz and fsz from NE
+        assertTrue(monitoringZeile.contains("NOT_WORKING"));
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+        // lbz from NEL in Monitoring List must contain: vpsz and fsz from both NE's
            assertTrue(monitoringZeileString.contains(a4NetworkElement.getVpsz()));
+            assertTrue(monitoringZeileString.contains(endPointVpsz));
            assertTrue(monitoringZeileString.contains(a4NetworkElement.getFsz()));
+            assertTrue(monitoringZeileString.contains(endPointFsz));
         });
 
         //check if table has only as many rows as expected by test data set
