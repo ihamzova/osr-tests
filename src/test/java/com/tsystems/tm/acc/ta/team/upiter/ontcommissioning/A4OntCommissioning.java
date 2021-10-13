@@ -175,8 +175,8 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-117787")
   @Description("ONT Pon Detection for A4, NSP is found in A4RI")
   public void onePonDetectTest() {
-      OffsetDateTime timestamp = OffsetDateTime.now();
-      OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+    OffsetDateTime timestamp = OffsetDateTime.now();
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
             .endSz(accessLineForCommissioning.getOltDevice().getEndsz())
             .serialNumber(ontSerialNumber.getNewSerialNumber())
             .timestamp(timestamp));
@@ -302,7 +302,7 @@ public class A4OntCommissioning extends GigabitTest {
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
-    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
             .endSz(accessLine.getEndSz())
             .serialNumber(ontSerialNumber)
             .timestamp(timestamp));
@@ -338,7 +338,7 @@ public class A4OntCommissioning extends GigabitTest {
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
-    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents( new OntConnectivityInfoDto()
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
             .endSz(accessLine.getEndSz())
             .serialNumber(ontSerialNumber)
             .timestamp(timestamp));
@@ -356,4 +356,35 @@ public class A4OntCommissioning extends GigabitTest {
     assertNotNull(operationResultEmsEventCallback.getResponse().getTimestamp());
     assertNotNull(operationResultEmsEventCallback.getResponse().getOnuId());
   }
+
+  @Test
+  @TmsLink("DIGIHUB-123849")
+  @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in A4RI, no NSP in SEAL")
+  public void ontPonDetectNoNspInA4andSealTest() {
+
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    accessLine.setLineId(a4AccessLine.getLineId());
+    accessLine.setEndSz(a4AccessLine.getReference().getEndSz());
+    String ontSerialNumber = a4AccessLine.getNetworkServiceProfileReference().getNspOntSerialNumber();
+    OffsetDateTime timestamp = OffsetDateTime.now();
+
+    mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "Verschaltungsfehler"))
+            .addA4NspBySnMockEmpty()
+            .addSealNoEmsEventsMock()
+            .build()
+            .publish()
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
+
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
+            .endSz(accessLine.getEndSz())
+            .serialNumber(ontSerialNumber)
+            .timestamp(timestamp));
+    mappingsContext.deleteStubs();
+
+    // check callback
+    assertTrue(operationResultEmsEventCallback.getSuccess());
+    assertNull(operationResultEmsEventCallback.getError());
+  }
+
 }

@@ -8,10 +8,13 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.OntState;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
@@ -27,6 +30,8 @@ import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
@@ -55,8 +60,11 @@ public class OntCommissioning extends GigabitTest {
   private BusinessInformation postprovisioningStart;
   private BusinessInformation postprovisioningEnd;
   private Ont ontSerialNumber;
+  private PortProvisioning portDetectedInA4;
   private PortProvisioning port;
   private UpiterTestContext context = UpiterTestContext.get();
+  private WireMockMappingsContext mappingsContext;
+
 
   @BeforeClass
   public void init() throws InterruptedException {
@@ -74,6 +82,9 @@ public class OntCommissioning extends GigabitTest {
     postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumber);
     accessLine = new AccessLine();
+    portDetectedInA4 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.PortDetectedInA4);
+
+
   }
 
   @AfterClass
@@ -137,23 +148,23 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-33938")
   @Description("ONT Connectivity test")
   public void ontTest() {
-      OperationResultOntTestDto callback = ontOltOrchestratorRobot.testOnt(accessLineForCommissioning.getLineId());
+    OperationResultOntTestDto callback = ontOltOrchestratorRobot.testOnt(accessLineForCommissioning.getLineId());
 
-      // check callback
-      assertNull(callback.getError());
-      assertTrue(callback.getSuccess());
-      assertNotNull(callback.getResponse().getLastDownCause());
-      assertNotNull(callback.getResponse().getLastDownTime());
-      assertNotNull(callback.getResponse().getLastUpTime());
-      assertEquals(com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntState.ONLINE, callback.getResponse().getActualRunState());
-      //todo add check for onuid
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertNotNull(callback.getResponse().getLastDownCause());
+    assertNotNull(callback.getResponse().getLastDownTime());
+    assertNotNull(callback.getResponse().getLastUpTime());
+    assertEquals(com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntState.ONLINE, callback.getResponse().getActualRunState());
+    //todo add check for onuid
 
-      ontOltOrchestratorRobot.updateOntState(accessLineForCommissioning);
+    ontOltOrchestratorRobot.updateOntState(accessLineForCommissioning);
 
-      // check alri
-      SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId());
-      assertNotNull(subscriberNEProfile);
-      assertEquals(subscriberNEProfile.getOntState(), OntState.ONLINE);
+    // check alri
+    SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId());
+    assertNotNull(subscriberNEProfile);
+    assertEquals(subscriberNEProfile.getOntState(), OntState.ONLINE);
   }
 
   @Test(dependsOnMethods = {"accessLineReservationByPortAndHomeIdTest", "ontRegistrationTest", "ontTest"})
@@ -222,7 +233,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("ONT Decommissioning, rollback to reservation = false")
   public void ontDecommissioningWithRollbackFalseTest() {
     OperationResultVoid callback =
-              ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDecommissioningRollbackFalse, false);
+            ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineForDecommissioningRollbackFalse, false);
 
     // check callback
     assertTrue(callback.getSuccess());
@@ -244,7 +255,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("Deprovisioning of the 33d AccessLine after termination")
   @Owner("DL_T-Magic.U-Piter@t-systems.com")
   public void ontDecommissioning33LineTest() {
-      OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineFor33LineCaseNew);
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineFor33LineCaseNew);
 
     // check callback
     assertTrue(callback.getSuccess());
@@ -255,7 +266,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), true);
     assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
             lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())
-            &&lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
+                    && lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
@@ -312,6 +323,64 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(operationResultEmsEventCallback.getResponse().getEventMessage(), "LastEvent");
     assertNotNull((operationResultEmsEventCallback.getResponse().getTimestamp()));
   }
+
+  @Test
+  @TmsLink("DIGIHUB-123854")
+  @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in SEAL, A4 returns Events, Slot + Port do not coincide with initial data")
+  public void ontPonDetectNoNspInSealTest() {
+    String ontSerialNumber = accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
+    mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OLT_BNGVerschaltungsfehler"))
+            .addSealNoEmsEventsMock()
+            .build()
+            .publish()
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
+
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
+            .endSz(accessLineForCommissioning.getOltDevice().getEndsz())
+            .serialNumber(ontSerialNumber)
+            .timestamp(OffsetDateTime.now()));
+
+    mappingsContext.deleteStubs();
+
+    // check callback
+    assertTrue(operationResultEmsEventCallback.getSuccess());
+    assertNull(operationResultEmsEventCallback.getError());
+    assertEquals(operationResultEmsEventCallback.getResponse().getEndSz(), portDetectedInA4.getEndSz());
+    assertNull(operationResultEmsEventCallback.getResponse().getSlotNumber());
+    assertEquals(operationResultEmsEventCallback.getResponse().getPortNumber(), portDetectedInA4.getPortNumber());
+    assertEquals(operationResultEmsEventCallback.getResponse().getSerialNumber(), ontSerialNumber);
+    assertNull(operationResultEmsEventCallback.getResponse().getTimestamp());
+    assertNull(operationResultEmsEventCallback.getResponse().getOnuId());
+    assertNull(operationResultEmsEventCallback.getResponse().getEventMessage());
+
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-123850")
+  @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in SEAL, no NSP in A4RI")
+  public void ontPonDetectNoNspInSealAndA4Test() {
+    String ontSerialNumber = accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
+    mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "Verschaltungsfehler"))
+            .addSealNoEmsEventsMock()
+            .addA4NspBySnMockEmpty()
+            .build()
+            .publish()
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
+
+    OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
+            .endSz(accessLineForCommissioning.getOltDevice().getEndsz())
+            .serialNumber(ontSerialNumber)
+            .timestamp(OffsetDateTime.now()));
+
+    mappingsContext.deleteStubs();
+
+    // check callback
+    assertTrue(operationResultEmsEventCallback.getSuccess());
+    assertNull(operationResultEmsEventCallback.getError());
+  }
+
 
   @Test
   @TmsLink("DIGIHUB-116324")
