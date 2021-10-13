@@ -1,9 +1,11 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.tsystems.tm.acc.data.osr.models.a4connector.A4ConnectorCase;
 import com.tsystems.tm.acc.data.osr.models.a4equipment.A4EquipmentCase;
 import com.tsystems.tm.acc.data.osr.models.a4holder.A4HolderCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4Equipment;
 import com.tsystems.tm.acc.ta.data.osr.models.A4Holder;
+import com.tsystems.tm.acc.ta.data.osr.models.A4Connector;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PhysicalInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
@@ -24,6 +26,7 @@ public class A4PhysicalInventoryTest extends GigabitTest {
     private A4Equipment defEqData;
     private A4Equipment eqData;
     private A4Holder hoData;
+    private A4Connector coData;
 
     @BeforeClass
     public void init() {
@@ -33,6 +36,8 @@ public class A4PhysicalInventoryTest extends GigabitTest {
                 .get(A4EquipmentCase.equipmentOlt);
         hoData = osrTestContext.getData().getA4HolderDataProvider()
                 .get(A4HolderCase.holderSFP);
+        coData = osrTestContext.getData().getA4ConnectorDataProvider()
+                .get(A4ConnectorCase.defaultSFP);
     }
 
     @BeforeMethod
@@ -42,6 +47,23 @@ public class A4PhysicalInventoryTest extends GigabitTest {
     @AfterMethod
     public void cleanup() {
     }
+
+
+    @Test(description = "DIGIHUB-112313 Create, Delete connector in physical inventory")
+    @Owner("heiko.schwanke@telekom.de")
+    @TmsLink("DIGIHUB-124002")
+    @Description("Create and Delete new connector in physical inventory")
+    public void testCreateDeleteConnector() throws InterruptedException {
+
+        coData.setLastUpdateTime("2021-10-13T13:13:13.613Z");
+        eqData.setLastUpdateTime("2021-10-13T13:13:13.613Z");
+        a4PhysicalInventory.createEquipment(eqData);
+        a4PhysicalInventory.createConnector(coData, eqData.getUuid());
+        //Thread.sleep(10000);
+        a4PhysicalInventory.deleteConnector(coData);
+        a4PhysicalInventory.deleteEquipment(eqData);
+    }
+
 
     @Test(description = "DIGIHUB-37858 Create equipment in physical inventory ")
     @Owner("Swetlana.Okonetschnikow@telekom.de")
