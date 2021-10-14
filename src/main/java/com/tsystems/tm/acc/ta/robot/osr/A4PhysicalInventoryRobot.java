@@ -146,7 +146,7 @@ public class A4PhysicalInventoryRobot {
         Assert.assertEquals(physicalResourceConnector.getAtBaseType(), "PhysicalResource", ENTITY_TYP_MESSAGE);
         Assert.assertEquals(physicalResourceConnector.getAtType(), "Connector", ENTITY_TYP_MESSAGE);
         Assert.assertEquals(physicalResourceConnector.getResourceRelationship().size(), 1, "ResourceRelationship is the same");
-        Assert.assertEquals(physicalResourceConnector.getCharacteristic().size(), 4, "Characteristics list is the same");
+        Assert.assertEquals(physicalResourceConnector.getCharacteristic().size(), 7, "Characteristics list is the same");
     }
 
     @Step("Delete Connector represented as Physical Resource")
@@ -156,6 +156,31 @@ public class A4PhysicalInventoryRobot {
                 .deletePhysicalResource()
                 .idPath(coData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Create Connector represented as Physical Resource, Equipment not exist")
+    public void createConnectorEquipmentNotFound(A4Connector coData, String uuidEquipment) {
+
+        PhysicalResourceUpdate connectorPhysicalResource = new A4PhysicalInventoryMapper()
+                .getPhysicalResourceUpdateConnector(coData, uuidEquipment);
+
+        a4PhysicalInventory
+                .physicalResource()
+                .updatePhysicalResourcePut()
+                .idPath(coData.getUuid())
+                .body(connectorPhysicalResource)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
+    @Step("Delete Connector from Physical Inventory - not found")
+    public void deleteConnectorNotFound(A4Connector coData) {
+        if (coData.getUuid().isEmpty())
+            coData.setUuid(UUID.randomUUID().toString());
+        a4PhysicalInventory
+                .physicalResource()
+                .deletePhysicalResource()
+                .idPath(coData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
 

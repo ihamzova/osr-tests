@@ -49,21 +49,32 @@ public class A4PhysicalInventoryTest extends GigabitTest {
     }
 
 
-    @Test(description = "DIGIHUB-112313 Create, Delete connector in physical inventory")
+    @Test(description = "DIGIHUB-112313, 112315 Create, Delete connector in physical inventory")
     @Owner("heiko.schwanke@telekom.de")
     @TmsLink("DIGIHUB-124002")
     @Description("Create and Delete new connector in physical inventory")
-    public void testCreateDeleteConnector() throws InterruptedException {
-
-        coData.setLastUpdateTime("2021-10-13T13:13:13.613Z");
-        eqData.setLastUpdateTime("2021-10-13T13:13:13.613Z");
+    public void testCreateDeleteConnector()  {
         a4PhysicalInventory.createEquipment(eqData);
         a4PhysicalInventory.createConnector(coData, eqData.getUuid());
-        //Thread.sleep(10000);
         a4PhysicalInventory.deleteConnector(coData);
         a4PhysicalInventory.deleteEquipment(eqData);
     }
 
+    @Test(description = "DIGIHUB-112313 Create connector in physical inventory, Equipment not found")
+    @Owner("heiko.schwanke@telekom.de")
+    @TmsLink("DIGIHUB-124xxx")
+    @Description("Create new connector in physical inventory, Equipment not found")
+    public void testCreateConnectorEquipmentNotFound()  {
+        a4PhysicalInventory.createConnectorEquipmentNotFound(coData, eqData.getUuid());
+    }
+
+    @Test(description = "DIGIHUB-112315 Delete connector in physical inventory, not found")
+    @Owner("heiko.schwanke@telekom.de")
+    @TmsLink("DIGIHUB-124xxx")
+    @Description("Delete connector in physical inventory, not found")
+    public void testDeleteConnectorNotFound()  {
+        a4PhysicalInventory.deleteConnectorNotFound(coData);
+    }
 
     @Test(description = "DIGIHUB-37858 Create equipment in physical inventory ")
     @Owner("Swetlana.Okonetschnikow@telekom.de")
