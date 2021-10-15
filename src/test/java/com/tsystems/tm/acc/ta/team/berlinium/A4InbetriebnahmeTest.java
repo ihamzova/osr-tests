@@ -174,6 +174,9 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         Map<String, A4NetworkElement> a4NeFilteredApointMap = new HashMap<>();
         a4NeFilteredApointMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
 
+        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
+        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_02_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
+
         // WHEN
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
         a4MobileUi.checkOperating();
@@ -190,10 +193,10 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01).getVpsz(),
                 a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01).getFsz());
 
-        //a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
-        //        a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
+        a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
+                a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
-        //a4MobileUi.checkEmptyNelMonitoringList(a4NelFilteredMap);
+        a4MobileUi.checkEmptyNelMonitoringList(a4NelFilteredMap);
 
     }
 
