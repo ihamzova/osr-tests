@@ -33,7 +33,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @Slf4j
 public class OltCommissioningRobot {
 
-  private static final Integer HTTP_CODE_OK_200 = 200;
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
