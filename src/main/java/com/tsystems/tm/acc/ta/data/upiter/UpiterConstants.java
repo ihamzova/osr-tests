@@ -1,7 +1,5 @@
 package com.tsystems.tm.acc.ta.data.upiter;
 
-import com.tsystems.tm.acc.ta.data.osr.models.Ont;
-
 public interface UpiterConstants {
     String LINE_ID_GENERATOR_MS = "line-id-generator";
     String HOME_ID_MANAGEMENT_MS = "home-id-management";
@@ -24,4 +22,8 @@ public interface UpiterConstants {
     String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
     String RI_ABSTRACTION_LAYER_MS ="ri-abstraction-layer";
+    String ONT_USAGE_MS ="ont-usage";
+    String ONT_USAGE_BFF_PROXY_MS ="ont-usage-bff-proxy";
+    String ONT_USAGE_SUPPLIER_UI ="ont-usage-supplier-ui";
+    String ONT_USAGE_SUPPORT_UI ="ont-usage-support-ui";
 }
