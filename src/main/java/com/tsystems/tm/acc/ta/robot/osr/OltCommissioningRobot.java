@@ -142,11 +142,9 @@ public class OltCommissioningRobot {
       accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
       expectedFreeLineIdCountPerPort = 0;
       expectedUsedLineIdCountPerPort = LINE_ID_POOL_PER_PORT;
-      log.info(" portsCount for ADTRAN OLT = {} EndSz = {}", portsCount, oltEndSz);
     } else {
       portsCount = portList.stream()
               .filter(port -> port.getPortType().equals(PortType.PON)).count();
-      log.info(" portsCount for HUAWEI OLT = {} EndSz = {}", portsCount, oltEndSz);
     }
 
     // check device lifecycle state
@@ -171,7 +169,9 @@ public class OltCommissioningRobot {
     }
 
     // check pon ports lifecycle state
-    boolean allPortsInOperatingState = portList.stream().map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
+    boolean allPortsInOperatingState = portList.stream()
+            .filter(port -> port.getPortType().equals(PortType.PON))
+            .map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
     Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
 
     // check uplink state
