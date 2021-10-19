@@ -62,7 +62,7 @@ public class A4PhysicalInventoryTest extends GigabitTest {
 
     @Test(description = "DIGIHUB-112313 Create connector in physical inventory, Equipment not found")
     @Owner("heiko.schwanke@telekom.de")
-    @TmsLink("DIGIHUB-124xxx")
+    @TmsLink("DIGIHUB-124564")
     @Description("Create new connector in physical inventory, Equipment not found")
     public void testCreateConnectorEquipmentNotFound()  {
         a4PhysicalInventory.createConnectorEquipmentNotFound(coData, eqData.getUuid());
@@ -70,7 +70,7 @@ public class A4PhysicalInventoryTest extends GigabitTest {
 
     @Test(description = "DIGIHUB-112315 Delete connector in physical inventory, not found")
     @Owner("heiko.schwanke@telekom.de")
-    @TmsLink("DIGIHUB-124xxx")
+    @TmsLink("DIGIHUB-124565")
     @Description("Delete connector in physical inventory, not found")
     public void testDeleteConnectorNotFound()  {
         a4PhysicalInventory.deleteConnectorNotFound(coData);

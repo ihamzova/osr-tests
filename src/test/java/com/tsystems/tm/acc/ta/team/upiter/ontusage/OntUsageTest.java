@@ -11,12 +11,21 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsageEntity;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsagePutRequest;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import groovy.util.logging.Slf4j;
 import io.qameta.allure.Epic;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+
 @Slf4j
 @Epic("ONT Usage")
+@ServiceLog({
+        ONT_USAGE_MS,
+        ONT_USAGE_BFF_PROXY_MS,
+        ONT_USAGE_SUPPLIER_UI,
+        ONT_USAGE_SUPPORT_UI
+})
 public class OntUsageTest extends GigabitTest {
 
     private UpiterTestContext context = UpiterTestContext.get();

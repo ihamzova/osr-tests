@@ -57,7 +57,7 @@ public class AccessLinesManagementPage {
     @Step("Click Save and Reconfigure button")
     public AccessLinesManagementPage clickSaveAndReconfigureButton(){
         $(SAVE_AND_RECONFIGURE_BUTTON).click();
-        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        $(NOTIFICATION).shouldHave(text("Der Neukonfigurationsprozess wurde gestartet"));
         closeNotificationButton();
         return this;
     }
