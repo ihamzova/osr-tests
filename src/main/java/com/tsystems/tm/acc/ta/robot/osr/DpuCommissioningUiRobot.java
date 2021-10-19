@@ -1,10 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -13,7 +12,7 @@ import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
@@ -24,8 +23,11 @@ import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DPU_COMMISSIONING_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 
 @Slf4j
 public class DpuCommissioningUiRobot {
@@ -37,11 +39,13 @@ public class DpuCommissioningUiRobot {
     private static final Integer LINE_ID_POOL_PER_PORT = 32;
     private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(DPU_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(DPU_COMMISSIONING_MS));
+    private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
-    private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
-    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
+    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
+    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+    private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+    private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
+    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
     private String businessKey;
 
     @Step("Start automatic dpu creation and commissioning process")
@@ -95,18 +99,18 @@ public class DpuCommissioningUiRobot {
     @Step("Checks data in ri after commissioning process")
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 
-        List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-                .endszQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
-        Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.DPU, "DPU TypeEnum mismatch");
-        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU TypeEnum mismatch");
+        Assert.assertEquals(deviceList.get(0).getDeviceType(), DeviceType.DPU, "DPU DeviceType mismatch");
+        Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
         Device deviceAfterCommissioning = deviceList.get(0);
 
         Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
         Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
         // DIGIHUB-79622 check port and device lifecycle state
-        Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), Device.LifeCycleStateEnum.OPERATING, "DPU LifeCycleState mismatch");
+        Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), LifeCycleState.OPERATING, "DPU LifeCycleState mismatch");
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState mismatch");
 
         // check AccessLines, corresponding profiles and pools
@@ -178,24 +182,47 @@ public class DpuCommissioningUiRobot {
 
     @Step("Clear devices (DPU and OLT) in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getOltEndsz())
+                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getEndsz())
+                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        } else {
+            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        }
     }
 
     @Step("Create the precondition olt-resource-inventory and access-line-resource-inventory database")
     public void prepareResourceInventoryDataBase(DpuDevice dpuDevice) {
-        oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
-                ._01EmsNbiNameQuery("MA5600T")
-                ._02EndszQuery(dpuDevice.getOltEndsz())
-                ._03SlotNumbersQuery("3,4,5,19")
-                ._06KLSIdQuery("12377812")
-                ._07CompositePartyIDQuery("10001")
-                ._08UplinkEndszQuery(dpuDevice.getBngEndsz())
-                ._10ANCPConfQuery("1")
-                ._11RunSQLQuery("1")
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+            deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
+                    .deviceEmsNbiNameQuery(EMS_NBI_NAME_MA5600)
+                    .deviceEndSzQuery(dpuDevice.getOltEndsz())
+                    .deviceSlotNumbersQuery("3,4,5,19")
+                    .deviceKlsIdQuery("12377812")
+                    .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
+                    .uplinkEndSzQuery(dpuDevice.getBngEndsz())
+                    .uplinkTargetPortQuery(dpuDevice.getBngDownlinkPort())
+                    .uplinkAncpConfigurationQuery("1")
+                    .executeSqlQuery("1")
+                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+
+        } else {
+            oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
+                    ._01EmsNbiNameQuery(EMS_NBI_NAME_MA5600)
+                    ._02EndszQuery(dpuDevice.getOltEndsz())
+                    ._03SlotNumbersQuery("3,4,5,19")
+                    ._06KLSIdQuery("12377812")
+                    ._07CompositePartyIDQuery(COMPOSITE_PARTY_ID_DTAG.toString())
+                    ._08UplinkEndszQuery(dpuDevice.getBngEndsz())
+                    ._10ANCPConfQuery("1")
+                    ._11RunSQLQuery("1")
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        }
 
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));

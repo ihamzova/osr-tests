@@ -16,6 +16,7 @@ public class DpuDevice {
     private String oltGponSlot;
     private String oltGponPort;
     private String bngEndsz;
+    private String bngDownlinkPort;
     private String bezeichnung;
     private String hersteller;
     private String klsId;

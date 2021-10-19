@@ -18,10 +18,7 @@ import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.AncpSession;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Uplink;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.UplinkState;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -32,11 +29,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -59,9 +58,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
         Random rnd = new Random();
         char c = (char) ('B' + rnd.nextInt(25));
-        oltDevice.setFsz("76H" + c);
-        //oltDevice.setVpsz("49/8571/" + rnd.nextInt(1000));
-        //oltDevice.setFsz("76HC");
+        ///oltDevice.setFsz("76H" + c);
+        oltDevice.setFsz("76HC");
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
@@ -83,8 +81,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                 .eventsHook(attachEventsToAllureReport());
 
         String endSz = oltDevice.getEndsz();
-        //log.info("+++ cleanUp delete device endsz={}", endSz);
-        //oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
+        log.info("+++ cleanUp delete device endsz={}", endSz);
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -124,6 +122,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         checkPortState(oltDevice, oltDetailsPage);
+        checkPorts(oltDevice);
 
         checkDeviceMA5800(endSz);
         checkUplink(endSz);
@@ -161,6 +160,33 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
             } else {
                 Assert.assertEquals(detailsPage.getPortLifeCycleState(device.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "non active uplink portstate");
             }
+        }
+    }
+
+    public void checkPorts(OltDevice oltDevice) {
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 1L, "Device is not present");
+
+        List<Port> portList = deviceResourceInventoryManagementClient.getClient().port().listPort()
+                .parentEquipmentRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        // check uplink port lifecycle state
+        if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
+            Optional<Port> uplinkPort = portList.stream()
+                    .filter(port -> port.getPortName().equals(oltDevice.getOltPort()))
+                    .filter(port -> port.getPortType().equals(PortType.ETHERNET))
+                    .findFirst();
+            Assert.assertTrue(uplinkPort.isPresent(), "ADTRAN No uplink port is present");
+            Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
+        } else {
+            Optional<Port> uplinkPort = portList.stream()
+                    .filter(port -> port.getParentEquipmentRef().getSlotName().equals(oltDevice.getOltSlot()))
+                    .filter(port -> port.getPortName().equals(oltDevice.getOltPort()))
+                    .filter(port -> port.getPortType().equals(PortType.ETHERNET))
+                    .findFirst();
+            Assert.assertTrue(uplinkPort.isPresent(), "HUAWEI No uplink port is present");
+            Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
         }
     }
 

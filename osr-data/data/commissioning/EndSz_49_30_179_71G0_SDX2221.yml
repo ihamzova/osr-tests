@@ -7,6 +7,7 @@ values:
   oltGponSlot: "3"
   oltGponPort: "3"
   bngEndsz: "49/30/179/43G2"
+  bngDownlinkPort: "ge-4/7/7"
   bezeichnung: "SDX2221-16-TP"
   hersteller: "ADTRAN"
   klsId: "12223344"
