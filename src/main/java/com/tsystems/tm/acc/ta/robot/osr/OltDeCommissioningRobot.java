@@ -19,23 +19,20 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
 import static org.testng.Assert.assertEquals;
 
 public class OltDeCommissioningRobot {
-  private static final Integer HTTP_CODE_OK_200 = 200;
-  private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
   private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 40 * 60_000;
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
+  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
 
   @Step("Start olt decommissioning process after manual commissioning")
   public void startOltDecommissioningAfterManualCommissioning(OltDevice olt) throws InterruptedException {
