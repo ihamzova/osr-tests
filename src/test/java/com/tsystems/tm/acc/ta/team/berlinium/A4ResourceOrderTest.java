@@ -123,6 +123,12 @@ public class A4ResourceOrderTest {
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
+        wiremock.fetchAndDeleteServeEvents();
+        // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
+        // body: {
+        //    "method": "POST",
+        //    "url": "/test_url"
+        // }
     }
 
     @AfterMethod
