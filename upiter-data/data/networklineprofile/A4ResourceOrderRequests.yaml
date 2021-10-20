@@ -1,4 +1,4 @@
-name: a4SubscriberNLCreation
+name: A4NetworkLineProfileActivation
 template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
 values:
   resourceOrder:
@@ -9,8 +9,6 @@ values:
         resource:
           id: "123"
           resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
             - name: "KLSID"
               value: "12345"
             - name: "AUTHMETHOD"
@@ -24,7 +22,7 @@ values:
             - name: "PPUPL3"
               value: "10000"
 ---
-name: a4SubscriberNLChange
+name: A4NetworkLineProfileModification
 template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
 values:
   resourceOrder:
@@ -35,8 +33,6 @@ values:
         resource:
           id: "123"
           resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
             - name: "KLSID"
               value: "12345"
             - name: "AUTHMETHOD"
@@ -49,23 +45,3 @@ values:
               value: "40000"
             - name: "PPUPL3"
               value: "20000"
----
-name: a4SubscriberNLDeletion
-template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
-values:
-  resourceOrder:
-    id: "7453"
-    resourceOrderItems:
-      - id: "7453"
-        action: "DELETE"
-        resource:
-          id: "123"
-          resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
-            - name: "KLSID"
-              value: "12345"
-            - name: "AUTHMETHOD"
-              value: "1"
-            - name: "FEDERATIONPARTNER"
-              value: "t-online.de"

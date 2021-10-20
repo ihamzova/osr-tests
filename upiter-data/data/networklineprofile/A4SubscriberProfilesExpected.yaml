@@ -1,4 +1,4 @@
-name: subscriberProfileA4Activation
+name: A4SubscriberNetworkLineProfileActivation
 template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
 values:
   state: "ACTIVE"
@@ -12,7 +12,7 @@ values:
   downBandwidth: 30000
   upBandwidth: 10000
 ---
-name: subscriberProfileA4Change
+name: A4SubscriberNetworkLineProfileModification
 template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
 values:
   state: "ACTIVE"

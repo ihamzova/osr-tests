@@ -1,4 +1,4 @@
-name: WBNetworkLineProfileCreation
+name: WbNetworkLineProfileActivation
 template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
 values:
   resourceOrder:
@@ -9,8 +9,6 @@ values:
         resource:
           id: "123"
           resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.GFNW.SQA0000777"
             - name: "KLSID"
               value: "12345"
             - name: "AUTHMETHOD"
@@ -30,27 +28,32 @@ values:
             - name: "RAMMINKPUPL2"
               value: "66600"
 ---
-name: WBAccesslineForSubscriberNLPWB
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+name: WbNetworkLineProfileModification
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
 values:
-  lineId: "DEU.GFNW.SQA0000777"
----
-  name: WBNetworkLineProfileDeletion
-  template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
-  values:
-    resourceOrder:
-      id: "123"
-      resourceOrderItems:
-        - id: "123"
-          action: "DELETE"
-          resource:
-            id: "123"
-            resourceCharacteristics:
-              - name: "CALID"
-                value: "DEU.GFNW.SQA0000777"
-              - name: "KLSID"
-                value: "12345"
-              - name: "AUTHMETHOD"
-                value: "1"
-              - name: "FEDERATIONPARTNER"
-                value: "t-online.de"
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "RAMMAXDOWNL2"
+              value: "2220000"
+            - name: "RAMMAXUPL2"
+              value: "333000"
+            - name: "RAMMINDOWNL2"
+              value: "44400"
+            - name: "RAMMINUPL2"
+              value: "55500"
+            - name: "RAMMINKPDOWNL2"
+              value: "66600"
+            - name: "RAMMINKPUPL2"
+              value: "77700"
