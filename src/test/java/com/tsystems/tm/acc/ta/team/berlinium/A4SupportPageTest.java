@@ -11,7 +11,9 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +31,11 @@ import java.util.concurrent.TimeUnit;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static org.testng.Assert.assertEquals;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_NEMO_UPDATER_MS})
+@Epic("OS&R")
 public class A4SupportPageTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
