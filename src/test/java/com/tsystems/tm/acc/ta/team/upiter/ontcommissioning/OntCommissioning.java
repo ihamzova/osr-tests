@@ -302,7 +302,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-53284")
   @Description("Get ONT State by LineID")
   public void getOntStateByLineIdTest() {
-    accessLine.setLineId(accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getLineId());
+    accessLine.setLineId(accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getLineId());
     OntStateDto ontState = ontOltOrchestratorRobot.getOntState(accessLine);
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntState().toString(), ontState.getOntState());
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber(), ontState.getSerialNumber());
@@ -312,7 +312,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-109220")
   @Description("Ont Detection")
   public void getOntInformationTest() {
-    String ontSerialNumber = accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
+    String ontSerialNumber = accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
     OperationResultEmsEventDto operationResultEmsEventCallback = ontOltOrchestratorRobot.getEmsEvents(new OntConnectivityInfoDto()
             .endSz(accessLineForCommissioning.getOltDevice().getEndsz())
             .serialNumber(ontSerialNumber)
@@ -328,7 +328,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-123854")
   @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in SEAL, A4 returns Events, Slot + Port do not coincide with initial data")
   public void ontPonDetectNoNspInSealTest() {
-    String ontSerialNumber = accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
+    String ontSerialNumber = accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
     mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OLT_BNGVerschaltungsfehler"))
             .addSealNoEmsEventsMock()
             .build()
@@ -360,7 +360,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-123850")
   @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in SEAL, no NSP in A4RI")
   public void ontPonDetectNoNspInSealAndA4Test() {
-    String ontSerialNumber = accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
+    String ontSerialNumber = accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
     mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "Verschaltungsfehler"))
             .addSealNoEmsEventsMock()
             .addA4NspBySnMockEmpty()
@@ -386,7 +386,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-116324")
   @Description("Get attenuation measurement for an FTTH AccessLine")
   public void ontAttenuationMeasurementTest() {
-    accessLine.setLineId(accessLineRiRobot.getAccessLinesWithOnt(port).get(0).getLineId());
+    accessLine.setLineId(accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getLineId());
     AttenuationMeasurementsDto attenuationMeasurementsCallback = ontOltOrchestratorRobot.getOntAttenuationMeasurement(accessLine.getLineId());
     assertTrue(attenuationMeasurementsCallback.getSuccess());
     assertNull(attenuationMeasurementsCallback.getError());

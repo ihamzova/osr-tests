@@ -22,6 +22,7 @@ public interface UpiterConstants {
     String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
     String RI_ABSTRACTION_LAYER_MS ="ri-abstraction-layer";
+    String ACCESS_LINE_PROFILE_CATALOG_MS ="access-line-profile-catalog";
     String ONT_USAGE_MS ="ont-usage";
     String ONT_USAGE_BFF_PROXY_MS ="ont-usage-bff-proxy";
     String ONT_USAGE_SUPPLIER_UI ="ont-usage-supplier-ui";

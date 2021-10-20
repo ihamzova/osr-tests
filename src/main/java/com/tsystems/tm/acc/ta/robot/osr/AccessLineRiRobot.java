@@ -63,6 +63,22 @@ public class AccessLineRiRobot {
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  public void fillDatabaseForOltCommissioningWithDpu(Boolean addDpu, AccessTransmissionMedium accessTransmissionMedium, int HOME_ID_SEQ, int LINE_ID_SEQ,
+                                                     String oltEndSz, String dpuEndSz, String oltSlotWithDpu, String oltPortWithDpu) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .ADD_DPUQuery(addDpu)
+            .ACCESS_TRANSMISSION_MEDIUMQuery(accessTransmissionMedium)
+            .END_SZQuery(oltEndSz)
+            .DPU_ENDSZQuery(dpuEndSz)
+            .OLT_SLOT_WITH_DPUQuery(oltSlotWithDpu)
+            .OLT_PORT_WITH_DPUQuery(oltPortWithDpu)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
   @Step("Fill database with test data as a part of Adtran OLT Commissioning process emulation")
   public void fillDatabaseForAdtranOltCommissioning() {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseWithAdtranOlt()
@@ -256,16 +272,6 @@ public class AccessLineRiRobot {
   }
 
   @Step("Check Subscriber NetworkLine Profiles")
-  public void checkSubscriberNetworkLineProfiles(PortProvisioning port, SubscriberNetworkLineProfile expectedSubscriberNetworklineProfile, int numberOfAccessLinesForProvisioning) {
-    List<SubscriberNetworkLineProfileDto> actualSubscriberProfileDtos = getAccessLinesByPort(port)
-            .stream().map(AccessLineDto::getSubscriberNetworkLineProfile).collect(Collectors.toList());
-    assertEquals(actualSubscriberProfileDtos.size(), numberOfAccessLinesForProvisioning, "Subscriber NetworkLine Profiles count is incorrect");
-    List<SubscriberNetworkLineProfile> actualSubscriberProfiles =
-            actualSubscriberProfileDtos.stream().map(AccessLineRiRobot::mapToSubscriberNetworkLineProfile).collect(Collectors.toList());
-    assertTrue(actualSubscriberProfiles.stream().allMatch(subscriberNetworkLineProfile -> subscriberNetworkLineProfile.equals(expectedSubscriberNetworklineProfile)),
-            "Subscriber NetworkLine Profiles are incorrect");
-  }
-  @Step("Check Subscriber NetworkLine Profiles")
   public void checkSubscriberNetworkLineProfiles(AccessLine accessLine, SubscriberNetworkLineProfile expectedSubscriberNetworklineProfile) {
     List<SubscriberNetworkLineProfileDto> actualSubscriberProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
             .stream().map(AccessLineDto::getSubscriberNetworkLineProfile).collect(Collectors.toList());
@@ -274,7 +280,6 @@ public class AccessLineRiRobot {
     assertTrue(actualSubscriberProfiles.stream().allMatch(subscriberNetworkLineProfile -> subscriberNetworkLineProfile.equals(expectedSubscriberNetworklineProfile)),
             "Subscriber NetworkLine Profiles are incorrect");
   }
-
 
   @Step("Check FTTB NE Profiles")
   public void checkFttbNeProfiles(PortProvisioning port, FttbNeProfile expectedFttbNeProfile, int numberOfAccessLinesForProvisioning) {
@@ -291,6 +296,15 @@ public class AccessLineRiRobot {
     List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByPort(port)
             .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
     assertEquals(actualL2bsaNspReferenceDtos.size(), 1, "L2bsaNspReferences count is incorrect");
+    List<L2BsaNspReference> actualL2bsaNspReferences =
+            actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
+    assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
+  }
+
+  @Step("Check L2BSA NSP Reference")
+  public void checkL2bsaNspReference(AccessLine accessLine, L2BsaNspReference expectedL2bsaNspReference) {
+    List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
     List<L2BsaNspReference> actualL2bsaNspReferences =
             actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
     assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
@@ -469,7 +483,21 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get OLT_BNG AccessLines with ONT")
-  public List<AccessLineDto> getAccessLinesWithOnt(PortProvisioning port) {
+  public List<AccessLineDto> getAccessLinesByType(AccessLineProductionPlatform productionPlatform, AccessLineTechnology technology, AccessLineStatus accessLineStatus) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(productionPlatform)
+                    .technology(technology)
+                    .status(accessLineStatus))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertTrue(accessLines.size() !=0, "There are no AccessLines with required parameters");
+    return accessLines;
+  }
+
+  @Step("Get OLT_BNG AccessLines with ONT")
+  public List<AccessLineDto> getFtthAccessLinesWithOnt(PortProvisioning port) {
     List<AccessLineDto> accessLines = accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
@@ -488,6 +516,7 @@ public class AccessLineRiRobot {
     return accessLinesWithOnt;
   }
 
+  @Step("Get A4 AccessLines with ONT")
   public List<AccessLineDto> getA4AccessLinesWithOnt() {
     List<AccessLineDto> accessLines = accessLineResourceInventory
             .accessLineController()
@@ -502,6 +531,7 @@ public class AccessLineRiRobot {
     return accessLinesWithOnt;
   }
 
+  @Step("Get AccessLines by Production Platform and Technology")
   public List<AccessLineDto> getAccessLinesByProductionPlatform(AccessLineProductionPlatform productionPlatform) {
     List<AccessLineDto> accessLines = accessLineResourceInventory
             .accessLineController()
@@ -510,6 +540,22 @@ public class AccessLineRiRobot {
                     .productionPlatform(productionPlatform))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     return accessLines;
+  }
+
+  @Step("Get FTTB AccessLines")
+  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus){
+    List<AccessLineDto> fttbAccessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .technology(AccessLineTechnology.GFAST))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<AccessLineDto> fttbAccessLinesFiltered = fttbAccessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getDpuReference().getAccessTransmissionMedium().equals(accessTransmissionMedium)
+                    &&accessLineDto.getStatus().equals(accessLineStatus))
+            .collect(Collectors.toList());
+    assertTrue(fttbAccessLinesFiltered.size() !=0, "There are no FTTB AccessLines with required parameters");
+    return fttbAccessLinesFiltered;
   }
 
 

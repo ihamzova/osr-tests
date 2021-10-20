@@ -1,99 +1,15 @@
-name: a4L2BsaActivation
-template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+name: L2BsaNspReferenceActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
 values:
-  resourceOrder:
-    id: "7453"
-    resourceOrderItems:
-      - id: "7453"
-        action: "MODIFY"
-        resource:
-          id: "123"
-          resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
-            - name: "KLSID"
-              value: "12345"
-            - name: "AUTHMETHOD"
-              value: "1"
-            - name: "FEDERATIONPARTNER"
-              value: "t-online.de"
-            - name: "PROVIDERID"
-              value: "1234"
-            - name: "CARRIERBSAREFERENCE"
-              value: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
-            - name: "PPDOWNL3"
-              value: "30000"
-            - name: "PPUPL3"
-              value: "10000"
-            - name:  "L2CCID"
-              value: "l2ccid-110"
-
+  l2ccid: "l2ccid-110"
+  carrierBsaReference: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+  downBandwidth: 30000
+  upBandwidth: 10000
 ---
-name: A4accessline
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+name: L2BsaNspReferenceModification
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
 values:
-  lineId: "DEU.DTAG.SQA537202"
----
-name: PortForA4
-template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
-values:
-  endSz: "49/30/179/7KH2"
-  slotNumber: "1"
-  portNumber: "7"
-  homeIdPool: 32
-  lineIdPool: 1
-  accessLinesWG: 1
-  defaultNEProfilesActive: 0
-  defaultNetworkLineProfilesActive: 1
-  nspReference: 1
-  accessLinesCount: 1
----
-name: a4L2BsaModification
-template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
-values:
-  resourceOrder:
-    id: "7453"
-    resourceOrderItems:
-      - id: "7453"
-        action: "MODIFY"
-        resource:
-          id: "123"
-          resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
-            - name: "KLSID"
-              value: "12345"
-            - name: "AUTHMETHOD"
-              value: "1"
-            - name: "FEDERATIONPARTNER"
-              value: "t-online.de"
-            - name: "PROVIDERID"
-              value: "1234"
-            - name: "CARRIERBSAREFERENCE"
-              value: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
-            - name: "PPDOWNL3"
-              value: "40000"
-            - name: "PPUPL3"
-              value: "20000"
-            - name:  "L2CCID"
-              value: "l2ccid-110"
----
-name: a4L2BsaDeactivation
-template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
-values:
-  resourceOrder:
-    id: "7453"
-    resourceOrderItems:
-      - id: "7453"
-        action: "DELETE"
-        resource:
-          id: "123"
-          resourceCharacteristics:
-            - name: "CALID"
-              value: "DEU.DTAG.SQA537202"
-            - name: "KLSID"
-              value: "12345"
-            - name: "AUTHMETHOD"
-              value: "1"
-            - name: "FEDERATIONPARTNER"
-              value: "t-online.de"
+  l2ccid: "l2ccid-110"
+  carrierBsaReference: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+  downBandwidth: 40000
+  upBandwidth: 20000
