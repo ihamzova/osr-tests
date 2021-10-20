@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -17,11 +18,12 @@ import org.testng.annotations.Test;
 
 import java.util.UUID;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_NEMO_UPDATER_MS)*/
+
+@ServiceLog({A4_RESOURCE_INVENTORY_UI_MS,A4_NEMO_UPDATER_MS})
 @Epic("OS&R domain")
 @Feature("Sending update calls to NEMO")
 @TmsLink("DIGIHUB-xxxxx")

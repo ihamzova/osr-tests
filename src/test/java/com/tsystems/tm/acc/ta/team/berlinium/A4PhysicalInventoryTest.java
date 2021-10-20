@@ -9,12 +9,16 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4Connector;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4PhysicalInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+
+@ServiceLog({A4_PHYSICAL_INVENTORY_MS})
 @Epic("OS&R domain")
 @Feature("Save Physical Resources in a4-physical-inventory")
 @TmsLink("DIGIHUB-118755, DIGIHUB-118795")
