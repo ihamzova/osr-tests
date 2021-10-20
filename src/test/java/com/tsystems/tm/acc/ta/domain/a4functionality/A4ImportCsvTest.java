@@ -13,6 +13,7 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -20,15 +21,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
 @TmsLink("DIGIHUB-xxxxx")
-/*@ServiceLog(A4_INVENTORY_IMPORTER_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
-@ServiceLog(A4_NEMO_UPDATER_MS)*/
+@ServiceLog({
+        A4_RESOURCE_INVENTORY_UI_MS,
+        A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
+        A4_RESOURCE_INVENTORY_MS,
+        A4_RESOURCE_INVENTORY_SERVICE_MS,
+        A4_NEMO_UPDATER_MS})
+
 public class A4ImportCsvTest extends GigabitTest {
 
     private final OsrTestContext context = OsrTestContext.get();

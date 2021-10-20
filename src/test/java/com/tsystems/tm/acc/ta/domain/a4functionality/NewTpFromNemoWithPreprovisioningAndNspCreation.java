@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.robot.osr.*;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -19,15 +20,19 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
-/*@ServiceLog(WG_A4_PROVISIONING_MS)
-@ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
-@ServiceLog(NETWORK_LINE_PROFILE_MANAGEMENT_MS)
-@ServiceLog(EA_EXT_ROUTE_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)
-@ServiceLog(A4_NEMO_UPDATER_MS)
-@ServiceLog(ACCESS_LINE_MANAGEMENT)*/
+
+@ServiceLog({
+        WG_A4_PROVISIONING_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        EA_EXT_ROUTE_MS,
+        A4_RESOURCE_INVENTORY_MS,
+        A4_RESOURCE_INVENTORY_SERVICE_MS,
+        A4_NEMO_UPDATER_MS,
+        ACCESS_LINE_MANAGEMENT})
+
 public class NewTpFromNemoWithPreprovisioningAndNspCreation extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
