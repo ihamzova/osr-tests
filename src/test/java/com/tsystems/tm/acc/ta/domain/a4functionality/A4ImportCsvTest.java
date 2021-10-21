@@ -25,7 +25,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
-@TmsLink("DIGIHUB-xxxxx")
+@TmsLink("DIGIHUB-124555")
 @ServiceLog({
         A4_RESOURCE_INVENTORY_UI_MS,
         A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
