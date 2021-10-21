@@ -235,7 +235,7 @@ public class A4ResourceInventoryMapper {
         A10NspQosDto a10NspQosDto = new A10NspQosDto();
         a10NspQosDto.setQosBandwidthDown(UNDEFINED);
         a10NspQosDto.setQosBandwidthUp(UNDEFINED);
-        a10NspQosDto.setQosClass(UNDEFINED);
+        a10NspQosDto.setQosPriority(UNDEFINED);
 
         return new NetworkServiceProfileA10NspDto()
                 .uuid(nspData.getUuid())
