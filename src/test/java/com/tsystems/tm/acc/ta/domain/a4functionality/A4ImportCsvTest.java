@@ -77,9 +77,9 @@ public class A4ImportCsvTest extends GigabitTest {
         a4ResourceInventoryRobot.deleteA4TestDataRecursively(csvData);
     }
 
-    @Test(description = "DIGIHUB-xxxxx Import Network Element (Group) CSV file into A4 Resource Inventory")
+    @Test(description = "DIGIHUB-124555 Import Network Element (Group) CSV file into A4 Resource Inventory")
     @Owner("Phillip.Moeller@t-systems.com, Anita.Junge@t-systems.com, Thea.John@telekom.de")
-    @TmsLink("DIGIHUB-xxxxx")
+    @TmsLink("DIGIHUB-124555")
     @Description("Import Network Element (Group) CSV file into A4 Resource Inventory")
     public void testImportCsvFile() {
         // When / Action
