@@ -27,6 +27,8 @@ public class AccessLinesManagementPage {
     private static final By NE_SUBSCRIBER_ONT_STATE_INPUT = byQaData("ne-sub-ontstate-input");
     private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
     private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
+    private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
+    private static final By TERMINATION_BUTTON = byQaData("btn-terminate");
 
     private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
     private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
@@ -164,5 +166,14 @@ public class AccessLinesManagementPage {
     @Step ("Close Notification button")
     public void closeNotificationButton (){
         $(CLOSE_NOTIFICATION_BUTTON).click();
+    }
+
+    @Step("Click termination button")
+    public AccessLinesManagementPage clickTerminationButton() {
+        $(TERMINATION_BUTTON).click();
+        $(BESTAETIGEN_TERMINATION_BUTTON ).click();
+        $(NOTIFICATION).shouldHave(text("Der Kündigungsprozess wird gestartet. Das wird einige Zeit dauern. Bitte aktualisieren Sie die Seite einige Minuten später"));
+        closeNotificationButton();
+        return this;
     }
 }
