@@ -240,6 +240,4 @@ public class AccessLinesSearchTest extends GigabitTest {
             "ACTIVE", "NULL");
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
   }
-
-
 }
