@@ -13,16 +13,15 @@ import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPa
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineProductionPlatform;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineTechnology;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineProductionPlatform;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineTechnology;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessTransmissionMedium;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import groovy.util.logging.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -46,30 +45,29 @@ public class AccessLinesSearchTest extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
   private AccessLine accessLinesByEndSz;
   private AccessLine accessLineByHomeId;
-  private AccessLine accessLineByLineId;
   private Address addressWithKlsId;
   private Ont ontSerialNumber;
   private AccessLine accessLine;
+  private AccessLine a4AccessLine;
+  private AccessLine accessLineFttbTp;
+
 
   @BeforeClass
   public void init() throws InterruptedException {
     accessLineRiRobot = new AccessLineRiRobot();
-    accessLine = new AccessLine();
     accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
     accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
-    accessLineByLineId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByLineId);
     addressWithKlsId = context.getData().getAddressDataProvider().get(AddressCase.linesByKlsId);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.linesByOnt);
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
+    a4AccessLine = new AccessLine();
+    accessLine = new AccessLine();
+    accessLineFttbTp = new AccessLine();
     accessLineRiRobot.clearDatabase();
-    Thread.sleep(1000);
     accessLineRiRobot.fillDatabaseForOltCommissioningV1();
-  }
-
-  @AfterClass
-  public void clearData() {
-    accessLineRiRobot.clearDatabase();
+    Thread.sleep(1000);
+    accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
   }
 
   @Test
@@ -87,8 +85,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.setWalledGardenStatus().searchAccessLinesByPortAddress(accessLinesByEndSz);
     accessLineSearchPage.checkBasicInformation();
     AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
-            "ACTIVE", "NULL");
+    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL", "ACTIVE", "NULL");
   }
 
   @Test
@@ -119,9 +116,10 @@ public class AccessLinesSearchTest extends GigabitTest {
   @TmsLink("DIGIHUB-39491")
   @Description("Search by LineID, check for basic information, inactive line")
   public void searchAccessLinesByLineIdTest() {
+    accessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.INACTIVE).get(0).getLineId());
     AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
     accessLineSearchPage.validateUrl();
-    accessLineSearchPage.searchAccessLinesByLineID(accessLineByLineId.getLineId()).clickSearchButton();
+    accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton();
     accessLineSearchPage.checkBasicInformation();
     AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
     accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
@@ -167,7 +165,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
     accessLineSearchPage.sortAccessLinesByStatus()
             .setPageSize(10);
-    assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineViewDto.StatusEnum.INACTIVE, "Table wasn't sorted");
+    assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineStatus.INACTIVE, "Table wasn't sorted");
     AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
     accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
             "NULL", "NULL");
@@ -196,7 +194,75 @@ public class AccessLinesSearchTest extends GigabitTest {
             "ACTIVE", "NULL");
   }
 
-  @Test()
+  @Test
+  @TmsLink("DIGIHUB-125083")
+  @Description("Terminate Ftth AccessLine. AccessLine is set to Walled_Garden")
+  public void terminateAssignedFtthAlTest() {
+    accessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED).get(0).getLineId());
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.clickEditButton()
+            .clickTerminationButton()
+            .closeCurrentTab();
+    accessLinesManagementPage.returnToAccessLinesSearchPage()
+            .searchAccessLinesByLineID(accessLine.getLineId())
+            .clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
+            "ACTIVE", "NULL");
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-125016")
+  @Description("Add serialnumber for A4 AccessLine and save locally")
+  public void saveLocallyA4Al() {
+    a4AccessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.A4, AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(a4AccessLine.getLineId()).clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.clickEditButton()
+            .changeAccessLineStatusToAssigned()
+            .addSerialNumberToNSp(ontSerialNumber.getSerialNumber())
+            .changeDefaultNLProfileStateToInactive()
+            .addSubscriberNLProfile(addressWithKlsId.getKlsId())
+            .clickSaveLocalButton()
+            .closeCurrentTab();
+    accessLinesManagementPage.returnToAccessLinesSearchPage()
+            .searchAccessLinesByLineID(a4AccessLine.getLineId())
+            .clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.checkNLProfiles("INACTIVE", "ACTIVE");
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(a4AccessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), ontSerialNumber.getSerialNumber());
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-125017")
+  @Description("Add Subscriber Profile for FTTB AccessLine and save locally")
+  public void saveLocallyFttbAL() {
+    accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLineFttbTp.getLineId()).clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.clickEditButton()
+            .changeAccessLineStatusToAssigned()
+            .changeDefaultNLProfileStateToInactive()
+            .addSubscriberNLProfile(addressWithKlsId.getKlsId())
+            .clickSaveLocalButton()
+            .closeCurrentTab();
+    accessLinesManagementPage.returnToAccessLinesSearchPage()
+            .searchAccessLinesByLineID(accessLineFttbTp.getLineId())
+            .clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.checkFTTBProfiles("INACTIVE", "ACTIVE", "ACTIVE", "ACTIVE");
+  }
+
+
+  @Test
   @TmsLink("DIGIHUB-96235")
   @Description("ONT Abmeldung, AccessLine is set to Walled_Garden")
   public void ontAbmeldungTest() {
@@ -218,26 +284,5 @@ public class AccessLinesSearchTest extends GigabitTest {
             .clickMagnifyingGlassForLine(0);
     accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
             "ACTIVE", "NULL");
-  }
-
-  @Test
-  @TmsLink("DIGIHUB-125083")
-  @Description("Terminate Ftth AccessLine. AccessLine is set to Walled_Garden")
-  public void terminateAssignedFtthAlTest() {
-    accessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED).get(0).getLineId());
-    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-    accessLineSearchPage.validateUrl();
-    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
-            .clickMagnifyingGlassForLine(0);
-    accessLinesManagementPage.clickEditButton()
-            .clickTerminationButton()
-            .closeCurrentTab();
-    accessLinesManagementPage.returnToAccessLinesSearchPage()
-            .searchAccessLinesByLineID(accessLine.getLineId())
-            .clickSearchButton()
-            .clickMagnifyingGlassForLine(0);
-    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
-            "ACTIVE", "NULL");
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
   }
 }

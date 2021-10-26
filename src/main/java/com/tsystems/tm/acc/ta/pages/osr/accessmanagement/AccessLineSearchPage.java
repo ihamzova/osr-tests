@@ -6,7 +6,8 @@ import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.AccessLineViewDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineViewDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -117,7 +118,7 @@ public class AccessLineSearchPage {
     return this;
   }
 
-  @Step("Set Walled_Garden status")
+  @Step("Set Assigned status")
   public AccessLineSearchPage setAssignedStatus() {
     $(ASSIGNED_SEAL_CONFIGURED_STATUS).click();
     return this;
@@ -156,9 +157,9 @@ public class AccessLineSearchPage {
               accessLineInfo.setEndSz(tds.get(1).getText());
               accessLineInfo.setSlotNumber(tds.get(2).getText());
               accessLineInfo.setPortNumber(tds.get(3).getText());
-              accessLineInfo.setLineId(tds.get(4).getText());
-              accessLineInfo.setHomeId(tds.get(5).getText());
-              accessLineInfo.setStatus(AccessLineViewDto.StatusEnum.valueOf(tds.get(14).getText()));
+              accessLineInfo.setLineId(tds.get(5).getText());
+              accessLineInfo.setHomeId(tds.get(6).getText());
+              accessLineInfo.setStatus(AccessLineStatus.valueOf(tds.get(16).getText()));
               return accessLineInfo;
             })
             .collect(Collectors.toList());
@@ -220,7 +221,7 @@ public class AccessLineSearchPage {
 
   @Step("Check table headers")
   public void checkTableHeaders(List<String> tableHeaders) {
-    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "ONU ID", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber");
+    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "ONU ID", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "A4 Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber", "NSP", "L2BSA");
     assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
             supposedHeaders.toArray());
   }
