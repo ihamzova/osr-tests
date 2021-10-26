@@ -3,10 +3,11 @@ package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.address.AddressCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
-import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.Address;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -17,7 +18,9 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessTransmissionMedium;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
+import groovy.util.logging.Slf4j;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,6 +29,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+@Slf4j
+@Epic("Access Management Support UI")
 @ServiceLog({
         ACCESS_MANAGEMENT_SUPPORT_UI_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
@@ -40,14 +45,12 @@ public class AccessLinesSearchTest extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
   private AccessLine accessLinesByEndSz;
   private AccessLine accessLineByHomeId;
-  private AccessLine accessLineByLineId;
   private Address addressWithKlsId;
   private Ont ontSerialNumber;
-  private AccessLine a4AccessLine;
-  private PortProvisioning oltDeviceTwistedPair;
-  private DpuDevice dpuDeviceTwistedPair;
-  private AccessLine accessLineFttbTp;
   private AccessLine accessLine;
+  private AccessLine a4AccessLine;
+  private AccessLine accessLineFttbTp;
+
 
   @BeforeClass
   public void init() throws InterruptedException {
@@ -56,20 +59,17 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineByHomeId = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByHomeId);
     addressWithKlsId = context.getData().getAddressDataProvider().get(AddressCase.linesByKlsId);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.linesByOnt);
-    oltDeviceTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
-    dpuDeviceTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     a4AccessLine = new AccessLine();
     accessLine = new AccessLine();
     accessLineFttbTp = new AccessLine();
-    accessLineByLineId = new AccessLine();
     accessLineRiRobot.clearDatabase();
     accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     Thread.sleep(1000);
     accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
   }
-  
+
   @Test
   @TmsLink("DIGIHUB-39501")
   @Description("Search by EndSz, check for basic information")
@@ -85,8 +85,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.setWalledGardenStatus().searchAccessLinesByPortAddress(accessLinesByEndSz);
     accessLineSearchPage.checkBasicInformation();
     AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
-    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
-            "ACTIVE", "NULL");
+    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL", "ACTIVE", "NULL");
   }
 
   @Test
@@ -196,6 +195,27 @@ public class AccessLinesSearchTest extends GigabitTest {
   }
 
   @Test
+  @TmsLink("DIGIHUB-125083")
+  @Description("Terminate Ftth AccessLine. AccessLine is set to Walled_Garden")
+  public void terminateAssignedFtthAlTest() {
+    accessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED).get(0).getLineId());
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.clickEditButton()
+            .clickTerminationButton()
+            .closeCurrentTab();
+    accessLinesManagementPage.returnToAccessLinesSearchPage()
+            .searchAccessLinesByLineID(accessLine.getLineId())
+            .clickSearchButton()
+            .clickMagnifyingGlassForLine(0);
+    accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
+            "ACTIVE", "NULL");
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+  }
+
+  @Test
   @TmsLink("DIGIHUB-125016")
   @Description("Add serialnumber for A4 AccessLine and save locally")
   public void saveLocallyA4Al() {
@@ -253,7 +273,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     String lineId = accessLinesManagementPage.getLineId();
     accessLinesManagementPage.clickEditButton()
             .clickOntAbmeldungButton()
-            .clickBestätigenButton2()
+            .clickBestätigenButton()
             .clickEditButton()
             .changeAccessLineStatusToWalledGarden()
             .clickSaveAndReconfigureButton()

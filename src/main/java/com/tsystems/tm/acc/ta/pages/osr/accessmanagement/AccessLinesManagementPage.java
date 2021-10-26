@@ -18,28 +18,30 @@ public class AccessLinesManagementPage {
 
   private static final By EDIT_BUTTON = byQaData("btn-edit");
   private static final By SAVE_AND_RECONFIGURE_BUTTON = byQaData("btn-sar");
-  private static final By SAVE_LOCAL_BUTTON = byQaData("btn-save-local");
   private static final By ONT_ABMELDUNG_BUTTON = byQaData("btn-ont-dereg");
   private static final By ADD_SUBSCRIBER_NE_PROFILE_BUTTON = byQaData("btn-ne-profile-add");
-  private static final By ADD_SUBSCRIBER_NL_PROFILE_BUTTON = byQaData("btn-nl-profile-add");
   private static final By NE_DEFAULT_PROFILE_STATE_INPUT = byQaData("ne-def-state-input");
   private static final By NL_DEFAULT_PROFILE_STATE_INPUT = byQaData("nl-def-state-input");
   private static final By NE_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("ne-sub-state-input");
   private static final By NL_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("nl-sub-state-input");
-  private static final By NL_KLSId_INPUT = byQaData("nl-sub-klsid-input");
-  private static final By NL_SUBSCRIBER_PROFILE_STATE = byQaData("nl-sub-state-input");
-  private static final By SERIALNUMBER_IN_NSP = byQaData("nsp-ref-serialnumber-input");
   private static final By NE_SUBSCRIBER_ONT_STATE_INPUT = byQaData("ne-sub-ontstate-input");
   private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
   private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
-  private static final By FTTB_NE_OLT_STATE = byQaData("fttb-ne-stateolt-input");
-  private static final By FTTB_NE_STATEMOSAIC = byQaData("fttb-ne-statemosaic-input");
-  private static final By ONT_SERIALNUMBER = byQaData("ne-sub-ontserialnumber-input");
+  private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
+  private static final By TERMINATION_BUTTON = byQaData("btn-terminate");
+
   private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
   private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
   private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
   private static final By NL_DEFAULT_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
   private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+  private static final By SAVE_LOCAL_BUTTON = byQaData("btn-save-local");
+  private static final By ADD_SUBSCRIBER_NL_PROFILE_BUTTON = byQaData("btn-nl-profile-add");
+  private static final By NL_KLSId_INPUT = byQaData("nl-sub-klsid-input");
+  private static final By NL_SUBSCRIBER_PROFILE_STATE = byQaData("nl-sub-state-input");
+  private static final By SERIALNUMBER_IN_NSP = byQaData("nsp-ref-serialnumber-input");
+  private static final By FTTB_NE_OLT_STATE = byQaData("fttb-ne-stateolt-input");
+  private static final By FTTB_NE_STATEMOSAIC = byQaData("fttb-ne-statemosaic-input");
 
   private static final By INACTIVE_STATE = byXpath("//*[@id='INACTIVE']");
   private static final By ACTIVE_STATE = byXpath("//*[@id='ACTIVE']");
@@ -91,13 +93,6 @@ public class AccessLinesManagementPage {
     return this;
   }
 
-  @Step("Click Bestätigen Button")
-  public AccessLinesManagementPage clickBestätigenButton2() {
-    $(BESTAETIGEN_BUTTON).click();
-    $(NOTIFICATION).shouldHave(text("Der Abmeldungprozess wurde gestartet"));
-    closeNotificationButton();
-    return this;
-  }
 
   @Step("Add Subscriber NE profile")
   public AccessLinesManagementPage addSubscriberNeProfile() {
@@ -242,9 +237,17 @@ public class AccessLinesManagementPage {
     assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
   }
 
-
   @Step("Close Notification button")
   public void closeNotificationButton() {
     $(CLOSE_NOTIFICATION_BUTTON).click();
+  }
+
+  @Step("Click termination button")
+  public AccessLinesManagementPage clickTerminationButton() {
+    $(TERMINATION_BUTTON).click();
+    $(BESTAETIGEN_TERMINATION_BUTTON).click();
+    $(NOTIFICATION).shouldHave(text("Der Kündigungsprozess wird gestartet. Das wird einige Zeit dauern. Bitte aktualisieren Sie die Seite einige Minuten später"));
+    closeNotificationButton();
+    return this;
   }
 }
