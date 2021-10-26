@@ -165,7 +165,7 @@ public class A4ResourceOrderRobot {
                                 urlPathEqualTo(cbPath)));
 
         int count = 0; //count to break loop in emergency after 5 tries
-        while (!ergList.isEmpty() && count < 4) {
+        while (!ergList.isEmpty() && count < 5) {
             ergList = WireMockFactory.get()
                     .retrieve(moreThanOrExactly(0),
                             newRequestPattern(
