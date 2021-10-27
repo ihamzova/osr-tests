@@ -108,6 +108,20 @@ public class A4PhysicalInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
+    @Step("Create Holder represented as Physical Resource, without Equipment")
+    public void createHolderWithoutEquipment(A4Holder hoData) {
+
+        PhysicalResourceUpdate holderPhysicalResource = new A4PhysicalInventoryMapper()
+                .getPhysicalResourceUpdateHolderWithoutEquipment(hoData);
+
+        a4PhysicalInventory
+                .physicalResource()
+                .updatePhysicalResourcePut()
+                .idPath(hoData.getUuid())
+                .body(holderPhysicalResource)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+    }
+
     @Step("Delete Holder from Physical Inventory - not found")
     public void deleteHolderNotFound(A4Holder hoData) {
         if (hoData.getUuid().isEmpty())
@@ -170,6 +184,20 @@ public class A4PhysicalInventoryRobot {
                 .idPath(coData.getUuid())
                 .body(connectorPhysicalResource)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
+    @Step("Create Connector represented as Physical Resource, without Equipment")
+    public void createConnectorWithoutEquipment(A4Connector coData) {
+
+        PhysicalResourceUpdate connectorPhysicalResource = new A4PhysicalInventoryMapper()
+                .getPhysicalResourceUpdateConnectorWithoutEquipment(coData);
+
+        a4PhysicalInventory
+                .physicalResource()
+                .updatePhysicalResourcePut()
+                .idPath(coData.getUuid())
+                .body(connectorPhysicalResource)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
     @Step("Delete Connector from Physical Inventory - not found")
