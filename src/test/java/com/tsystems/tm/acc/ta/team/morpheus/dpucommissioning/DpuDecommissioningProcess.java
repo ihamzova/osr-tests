@@ -103,7 +103,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
@@ -335,7 +335,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkDeleteAncpConfigNotCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
@@ -463,7 +463,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
                     bodyContains("NOT_OPERATING"));
 
             dpuCommissioningRobot.startDecommissioningProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
@@ -521,7 +521,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchDeviceCalled(checkSecondPatchValues);
@@ -584,7 +584,7 @@ public class DpuDecommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkDeleteDpuOltConfigurationCalled();
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkDeleteAncpConfigCalled();
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDpuAtOltConfigForOltCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostPreprovisionFTTHTaskCalled(preprovisionFTTHValues);
             dpuCommissioningRobot.checkPatchPortCalled(checkSecondPatchValues);
