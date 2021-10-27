@@ -112,7 +112,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -165,7 +165,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -226,7 +226,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -291,7 +291,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     bodyContains(olt.getOltPort()));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
         }
@@ -313,7 +313,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
         }
     }
