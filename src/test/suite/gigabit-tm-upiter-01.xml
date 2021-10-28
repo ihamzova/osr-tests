@@ -54,11 +54,6 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
         </classes>
     </test>
-<!--    <test thread-count="1" name="FTTB Deprovisioning Backend Tests">-->
-<!--        <classes>-->
-<!--            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbdeprovisioning.WgFttbAccessDeprovisioningTest"/>-->
-<!--        </classes>-->
-<!--    </test>-->
     <test thread-count="1" name="Ral Test">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest"/>
@@ -76,7 +71,11 @@
     </test>
     <test thread-count="1" name="ONT Usage Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.ontusage.OntUsageTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ontusage.OntUsageTest">
+            <methods>
+                <exclude name="changeSupplierTest"/>
+            </methods>
+            </class>
         </classes>
     </test>
 </suite>
