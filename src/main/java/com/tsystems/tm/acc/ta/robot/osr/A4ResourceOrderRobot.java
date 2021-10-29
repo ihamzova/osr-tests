@@ -43,8 +43,8 @@ public class A4ResourceOrderRobot {
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
-            new RhssoClientFlowAuthTokenProvider(DECOUPLING_MS,
-                    RhssoHelper.getSecretOfGigabitHub(DECOUPLING_MS)); //this will be merlin's service in the future
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); //this will be merlin's service in the future
 
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
@@ -66,6 +66,7 @@ public class A4ResourceOrderRobot {
                 .createResourceOrder()
                 .xCallbackCorrelationIdHeader(correlationId)
                 .xCallbackUrlHeader(cbUrl)
+                .xCallbackIdHeader("1")
                 .body(resourceOrder)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
