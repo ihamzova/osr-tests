@@ -1,0 +1,22 @@
+name: EndSz_49_911_8888_76Z3_MA5800
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/911/8888"
+  fsz: "76Z3"
+  bngEndsz: "49/911/84/7ZJC"
+  bngDownlinkPort: "ge-4/7/1"
+  bngDownlinkSlot: "1"
+  lsz: "4Z2"
+  orderNumber: "223388"
+  vst: "@DefaultVst"
+  oltPort: "1"
+  oltSlot: "9"
+  tplnr: "000049-000911-110-002-001-001"
+  bezeichnung: "MA5800T"
+  hersteller: "HUAWEI"
+  seriennummer: "unbekannt"
+  firmwareVersion: "MA5800V800R016C00"
+  ipAdresse: "10.182.123.196"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40916237

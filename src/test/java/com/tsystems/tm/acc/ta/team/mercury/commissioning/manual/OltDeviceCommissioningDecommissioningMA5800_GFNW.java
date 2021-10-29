@@ -38,7 +38,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
 public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTest {
 
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
@@ -61,6 +61,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTes
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1234_76ZC_MA5800);
+    //OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_8888_76Z3_MA5800);
     String endSz = oltDevice.getEndsz();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
