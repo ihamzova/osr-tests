@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertTrue;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
@@ -167,6 +168,25 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
+    }
+
+    @Test
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-125689")
+    @Description("Test Mobile NE-search-page - button reset to planning")
+    public void testNeResetToPlanning() {
+        a4MobileUiRobot.openNetworkElementMobileSearchPage();
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
+        a4MobileUiRobot.clickSearchButton();
+
+        // select row
+        a4MobileUiRobot.checkRadioButton("1");
+        sleepForSeconds(5);
+        // click reset ne
+        a4MobileUiRobot.clickZeigeNelZuNeButton();  // change button if correct button exist
+        sleepForSeconds(5);
+
+
     }
 
     @Test
