@@ -71,6 +71,9 @@ public class A4MobileNeSearchPage {
     public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
 
     @Getter
+    public static final By NE_RESET_TO_PLANNING_BUTTON_LOCATOR = By.id("resetBtn");
+
+    @Getter
     public static final By RADIO_BUTTON_LOCATOR = By.id("radioAuswahl");
 
 
