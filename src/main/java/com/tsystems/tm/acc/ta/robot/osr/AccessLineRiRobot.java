@@ -148,6 +148,16 @@ public class AccessLineRiRobot {
 
   @Step("Check PhysicalResourceRefs for A4")
   public void checkPhysicalResourceRefCountA4(PortProvisioning port, int expectedGponPortsCount) {
+
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkGponPorts = () -> getGponPorts(port).size() == expectedGponPortsCount;
+      timeoutBlock.addBlock(checkGponPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
     assertEquals(getGponPorts(port).size(), expectedGponPortsCount);
     assertEquals(getPonPorts(port).size(), 0);
     assertEquals(getEthernetPorts(port).size(), 0);
