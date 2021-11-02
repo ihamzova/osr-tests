@@ -280,7 +280,7 @@ public class OntOltOrchestratorRobot {
             exactly(1),
             newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
                     .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
-            120_000);
+            200_000);
     log.info("Callback: " + requests);
     assertTrue(requests.size() >= 1, "Callback is found");
     return requests;
