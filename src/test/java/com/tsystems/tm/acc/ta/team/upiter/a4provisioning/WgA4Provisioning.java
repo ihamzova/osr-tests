@@ -185,16 +185,23 @@ public class WgA4Provisioning extends GigabitTest {
                         .partyId((long)a4OltDevice7kh1.getCompositePartyId())
         );
 
-        assertTrue(accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).size() > 1, "There are <= 1 AccessLines on the port");
+        int accessLinesBeforeDeprovisioning = accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).size();
+        assertTrue(accessLinesBeforeDeprovisioning > 1, "There are <= 1 AccessLines on the port");
+
         a4AccessLine.setLineId(accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).get(0).getLineId());
         wgA4PreProvisioningRobot.startAccessLineDeprovisioning(a4AccessLine.getLineId());
+        int accessLinesAfterDeprovisioning = accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).size();
 
-        assertTrue(accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).size() > 0, "There are no AccessLines left on the port");
-        accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh1, terminationPoint2.getUuid());
+        String tpUuid = accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).get(0).getNetworkServiceProfileReference().getTpRef();
+
+        assertTrue(accessLinesAfterDeprovisioning > 0 && accessLinesAfterDeprovisioning == accessLinesBeforeDeprovisioning-1,
+                "There are no AccessLines left on the port");
+        accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh1, tpUuid);
         accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh1);
         accessLineRiRobot.checkLineIdsCount(a4PortProvisioning7kh1);
         assertEquals(accessLineRiRobot.getLineIdStateByLineId(a4AccessLine.getLineId()), LineIdStatus.FREE);
         accessLineRiRobot.checkPhysicalResourceRefCountA4(a4PortProvisioning7kh1, 1);
+
     }
 
     @Test
