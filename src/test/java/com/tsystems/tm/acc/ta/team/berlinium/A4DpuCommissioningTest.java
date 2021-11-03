@@ -117,9 +117,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Description("If any of attributes in Task are null or empty then throw an error.")
     public void testDpuCannotCreatedValidationError() {
 
-        //Given
+        //Given: one or more attributes are missing
 
-        // When / Action
+        // When: Request for CommissioningDpuA4Task is not complete
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 dpuEndSz,
                 dpuSerialNumber,
@@ -138,11 +138,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 oltEndSz,
                 oltPonPort);
 
-
-
-
-
-        // Then / Assert
+        // Then: Bad Request is required
 
     }
 
