@@ -222,6 +222,7 @@ public class AccessLineRiRobot {
     assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
   }
 
+
   @Step("Check FTTB AccessLines (FTTB_NE_Profile, Default_NetworkLine_Profile")
   public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
     try {
@@ -449,12 +450,12 @@ public class AccessLineRiRobot {
 
   @Step("Get Gpon Ports")
   public List<ReferenceDto> getGponPorts(PortProvisioning port) {
-    List<ReferenceDto> gpontPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+    List<ReferenceDto> gponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
             .searchPhysicalResourceReference()
             .body(new SearchPhysicalResourceReferenceDto()
                     .endSz(port.getEndSz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    return gpontPorts.stream().filter(gponPort -> gponPort.getPortType().getValue().equals(GPON.toString())).collect(Collectors.toList());
+    return gponPorts.stream().filter(gponPort -> gponPort.getPortType().getValue().equals(GPON.toString())).collect(Collectors.toList());
   }
 
   @Step("Get BackhaulId by Port")
@@ -568,6 +569,16 @@ public class AccessLineRiRobot {
     return fttbAccessLinesFiltered;
   }
 
+  @Step("Get AccessLines by tpRef")
+  public List<AccessLineDto> getAccessLineByTpRef(String tpRef) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .tpRef(tpRef))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return accessLines;
+  }
 
   @Step("Get LineID Pool by Port")
   public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
