@@ -1,9 +1,12 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -28,9 +31,21 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class A4DpuCommissioningTest extends GigabitTest {
 
     private final OsrTestContext context = OsrTestContext.get();
-    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
-    private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4DpuCommissioningRobot a4DpuCommissioning = new A4DpuCommissioningRobot();
     private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+
+    private A4NetworkElementGroup negData;
+    private A4NetworkElement neData;
+
+    private String dpuEndSz = "dpuEndSz";
+    private String dpuSerialNumber = "dpuSerialNumber";
+    private String dpuMaterialNumber = "dpuMaterialNumber";
+    private String dpuKlsId = "dpuKlsId";
+    private String dpuFiberOnLocationId = "dpuFiberOnLocationId";
+    private String oltEndSz = "oltEndSz";
+    private String oltPonPort = "oltPonPort";
 
 
     @BeforeClass
@@ -96,33 +111,34 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
     }
 
-    @Test(description = "DIGIHUB-118479 if any of attributes in Task are null then throw an error")
+    @Test(description = "DIGIHUB-118479 if any of attributes in Task are null or empty then throw an error")
     @Owner("xxxxxx@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxxx")
-    @Description("If any of attributes in Task are null then throw an error.")
+    @TmsLink("DIGIHUB-126199")
+    @Description("If any of attributes in Task are null or empty then throw an error.")
     public void testDpuCannotCreatedValidationError() {
 
-        //Given
+        //Given: one or more attributes are missing
 
-        // When / Action
+        // When: Request for CommissioningDpuA4Task is not complete
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                "",
+                oltEndSz,
+                oltPonPort);
 
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                null,
+                oltEndSz,
+                oltPonPort);
 
-        // Then / Assert
-
-    }
-
-    @Test(description = "DIGIHUB-118479 if any of attributes in Task are not sent then throw an error")
-    @Owner("xxxxxx@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxxx")
-    @Description("If any of attributes in Task are not sent then throw an error.")
-    public void testDpuCannotCreatedWrongRequest() {
-
-        //Given
-
-        // When / Action
-
-
-        // Then / Assert
+        // Then: Bad Request is required
 
     }
 
