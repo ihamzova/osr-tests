@@ -17,8 +17,11 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderSearchPageRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
@@ -38,7 +41,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
+@Epic("OS&R")
 public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     private final A4ResourceOrderSearchPageRobot a4ResourceOrderSearchPageRobot = new A4ResourceOrderSearchPageRobot();
@@ -142,10 +148,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
 
         // filter, also null
-        List<ResourceOrderDto> filteredRoList;
+        List<ResourceOrderMainDataDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
                 .filter(group -> Objects.equals(group.getState(), "COMPLETED")
@@ -157,9 +163,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 .collect(Collectors.toList());
 
         // sort
-        List<ResourceOrderDto> sortedRoList;
+        List<ResourceOrderMainDataDto> sortedRoList;
         sortedRoList = filteredRoList
-                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .stream().sorted(Comparator.comparing(ResourceOrderMainDataDto::getId))
                 .collect(Collectors.toList());
 
         System.out.println("+++ number of filtered ROs in DB : "+filteredRoList.size());
@@ -172,6 +178,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+        // the list consists of MainDto without items so we need to load the ro itself again with full data
+        ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
+
+
+
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
@@ -179,10 +190,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
        // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+
 
     }
 
@@ -200,10 +212,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
 
         // filter, also null
-        List<ResourceOrderDto> filteredRoList;
+        List<ResourceOrderMainDataDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
                 .filter(group -> Objects.equals(group.getState(), "COMPLETED")
@@ -215,9 +227,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 .collect(Collectors.toList());
 
         // sort
-        List<ResourceOrderDto> sortedRoList;
+        List<ResourceOrderMainDataDto> sortedRoList;
         sortedRoList = filteredRoList
-                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .stream().sorted(Comparator.comparing(ResourceOrderMainDataDto::getId))
                 .collect(Collectors.toList());
 
         System.out.println("+++ number of filtered ROs in DB : "+filteredRoList.size());
@@ -230,6 +242,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+
+        // the list consists of MainDto without items so we need to load the ro itself again with full data
+        ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
+
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
@@ -237,10 +253,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
        // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -259,10 +275,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
 
         // filter, also null
-        List<ResourceOrderDto> filteredRoList;
+        List<ResourceOrderMainDataDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
                 .filter(group -> Objects.equals(group.getState(), "COMPLETED")
@@ -274,9 +290,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 .collect(Collectors.toList());
 
         // sort
-        List<ResourceOrderDto> sortedRoList;
+        List<ResourceOrderMainDataDto> sortedRoList;
         sortedRoList = filteredRoList
-                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .stream().sorted(Comparator.comparing(ResourceOrderMainDataDto::getId))
                 .collect(Collectors.toList());
 
         System.out.println("+++ number of filtered ROs in DB : "+filteredRoList.size());
@@ -289,6 +305,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+
+        // the list consists of MainDto without items so we need to load the ro itself again with full data
+        ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
+
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
@@ -296,10 +316,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
        // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -319,12 +339,12 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB, filter completed
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
         System.out.println("+++ number of all ROs in DB with vuep: "+allRoList.size());
        // System.out.println("+++ allRoList: "+allRoList);
 
         // filter, also null
-        List<ResourceOrderDto> filteredRoList;
+        List<ResourceOrderMainDataDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
                 .filter(group -> Objects.equals(group.getState(), "COMPLETED")
@@ -332,9 +352,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
                 .collect(Collectors.toList());
 
         // sort
-        List<ResourceOrderDto> sortedRoList;
+        List<ResourceOrderMainDataDto> sortedRoList;
                 sortedRoList = filteredRoList
-                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .stream().sorted(Comparator.comparing(ResourceOrderMainDataDto::getId))
                 .collect(Collectors.toList());
         System.out.println("+++ number of filtered ROs in DB : "+sortedRoList.size());
 
@@ -347,6 +367,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+
+        // the list consists of MainDto without items so we need to load the ro itself again with full data
+        ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
+
+
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
@@ -354,10 +379,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
       //  assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -378,12 +403,12 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : "+roCollection.size()/6);
 
         // get ROs from DB
-        List<ResourceOrderDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
         System.out.println("+++ number of vuep-ROs in DB : "+allRoList.size());
        // System.out.println("+++ allRoList: "+allRoList);
 
         // filter, also null
-        List<ResourceOrderDto> filteredRoList;
+        List<ResourceOrderMainDataDto> filteredRoList;
         filteredRoList = allRoList
                 .stream()
                 .filter(group -> Objects.equals(group.getState(), "INPROGRESS")
@@ -394,9 +419,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         System.out.println("+++ number of filtered ROs in DB : "+filteredRoList.size());
         // sort
-        List<ResourceOrderDto> sortedRoList;
+        List<ResourceOrderMainDataDto> sortedRoList;
         sortedRoList = filteredRoList
-                .stream().sorted(Comparator.comparing(ResourceOrderDto::getId))
+                .stream().sorted(Comparator.comparing(ResourceOrderMainDataDto::getId))
                 .collect(Collectors.toList());
 
         System.out.println("+++ number of sorted ROs in DB : "+sortedRoList.size());
@@ -410,6 +435,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+        // the list consists of MainDto without items so we need to load the ro itself again with full data
+        ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
+
+
+
         // detail-page head
         assertEquals(a4ResourceOrderDetailPageRobot.readRoId(), sortedRoList.get(0).getId()); // ro-id
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), sortedRoList.get(0).getExternalId());
@@ -420,10 +450,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
        // System.out.println("+++ sortedListItem1: "+sortedRoList.get(0).getOrderItem());
 
         //assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size()); // different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getResource()).getName()); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 

@@ -12,7 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -130,16 +130,15 @@ public class OltProvisioning5800 extends GigabitTest {
   @TmsLink("DIGIHUB-30824")
   @Description("Device Provisioning with 1 card and 1 port")
   public void deviceProvisioning() {
-
-    Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(device5800);
+    Device device = wgAccessProvisioningRobot.getDevice(device5800);
 
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5800.getEndSz(),
-            deviceBeforeProvisioning.getEquipmentHolders().get(0).getSlotNumber(),
-            deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5800);
+            device.getEquipmentHolders().get(0).getSlotNumber(),
+            device.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5800);
 
-    assertNotNull(deviceBeforeProvisioning);
-    assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "MA5800-X7");
-    assertEquals(deviceBeforeProvisioning.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
+    assertNotNull(device);
+    assertEquals(device.getEmsNbiName(), "MA5800-X7");
+    assertEquals(device.getEquipmentHolders().get(0).getCard().getPorts().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(device5800);

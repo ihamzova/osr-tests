@@ -17,7 +17,9 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import org.testng.Assert;
 import org.testng.annotations.*;
@@ -28,7 +30,10 @@ import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
+@ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
+@Epic("OS&R")
 public class A4ResourceOrderTest {
 
     // test send a request (resource order) from simulated Merlin to Berlinium and get a callback
@@ -123,6 +128,13 @@ public class A4ResourceOrderTest {
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
+        wiremock.fetchAndDeleteServeEvents();
+        a4ResourceOrder.cleanCallbacksInWiremock();
+        // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
+        // body: {
+        //    "method": "POST",
+        //    "url": "/test_url"
+        // }
     }
 
     @AfterMethod
@@ -133,7 +145,7 @@ public class A4ResourceOrderTest {
                 .eventsHook(attachEventsToAllureReport());
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
-        a4ResourceOrder.deleteA4TestDataRecursively(ro);
+        // a4ResourceOrder.deleteA4TestDataRecursively(ro);
     }
 
     @Test

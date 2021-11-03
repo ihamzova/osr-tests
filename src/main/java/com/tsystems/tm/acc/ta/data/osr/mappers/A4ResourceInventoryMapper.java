@@ -235,7 +235,7 @@ public class A4ResourceInventoryMapper {
         A10NspQosDto a10NspQosDto = new A10NspQosDto();
         a10NspQosDto.setQosBandwidthDown(UNDEFINED);
         a10NspQosDto.setQosBandwidthUp(UNDEFINED);
-        a10NspQosDto.setQosClass(UNDEFINED);
+        a10NspQosDto.setQosPriority(UNDEFINED);
 
         return new NetworkServiceProfileA10NspDto()
                 .uuid(nspData.getUuid())
@@ -298,4 +298,61 @@ public class A4ResourceInventoryMapper {
         return Vpsz.concat("/").concat(Fsz);
     }
 
+    public List<NetworkServiceProfileFtthAccessDto> getListOfNspWithoutOntLastRegisteredOn() {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = new NetworkServiceProfileFtthAccessDto();
+        networkServiceProfileFtthAccessDto.setUuid(UUID.randomUUID().toString());
+        networkServiceProfileFtthAccessDto.setLifecycleState("INSTALLING");
+        networkServiceProfileFtthAccessDto.setOperationalState("WORKING");
+        networkServiceProfileFtthAccessDto.setDescription("A4 Stub without oltPortOntLastRegisteredOn");
+        networkServiceProfileFtthAccessDto.setAdministrativeMode("String");
+        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("String");
+        networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
+        networkServiceProfileFtthAccessDto.setLineId("String");
+        networkServiceProfileFtthAccessDto.setOntSerialNumber("String");
+        networkServiceProfileFtthAccessDto.setLastUpdateTime(OffsetDateTime.now());
+        networkServiceProfileFtthAccessDto.setCreationTime(OffsetDateTime.now().minusDays(1));
+        networkServiceProfileFtthAccessDto.setTerminationPointFtthAccessUuid(UUID.randomUUID().toString());
+        networkServiceProfileFtthAccessDto.setHref("href");
+
+        List<NetworkServiceProfileFtthAccessDto> networkServiceProfileFtthAccessDtos = new ArrayList<>();
+        networkServiceProfileFtthAccessDtos.add(networkServiceProfileFtthAccessDto);
+        return networkServiceProfileFtthAccessDtos;
+    }
+
+    public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOn() {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = new NetworkServiceProfileFtthAccessDto();
+        networkServiceProfileFtthAccessDto.setUuid(UUID.randomUUID().toString());
+        networkServiceProfileFtthAccessDto.setLifecycleState("INSTALLING");
+        networkServiceProfileFtthAccessDto.setOperationalState("WORKING");
+        networkServiceProfileFtthAccessDto.setDescription("A4 Stub without oltPortOntLastRegisteredOn");
+        networkServiceProfileFtthAccessDto.setAdministrativeMode("String");
+        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("String");
+        networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
+        networkServiceProfileFtthAccessDto.setLineId("String");
+        networkServiceProfileFtthAccessDto.setOntSerialNumber("String");
+        networkServiceProfileFtthAccessDto.setLastUpdateTime(OffsetDateTime.now());
+        networkServiceProfileFtthAccessDto.setCreationTime(OffsetDateTime.now().minusDays(1));
+        networkServiceProfileFtthAccessDto.setTerminationPointFtthAccessUuid(UUID.randomUUID().toString());
+        networkServiceProfileFtthAccessDto.setHref("href");
+        return networkServiceProfileFtthAccessDto;
+    }
+
+    public NetworkElementPortDto getNetworkElementPortDto(String endSz, String port) {
+        NetworkElementPortDto networkElementPortDto = new NetworkElementPortDto();
+        networkElementPortDto.setOperationalState("INSTALLING");
+        networkElementPortDto.setAdministrativeState("WORKING");
+        networkElementPortDto.setLogicalLabel("998");
+        networkElementPortDto.setAccessNetworkOperator("AccessNetworkOperator");
+        networkElementPortDto.setType("string");
+        networkElementPortDto.setPortNumber(port);
+        networkElementPortDto.setUuid(UUID.randomUUID().toString());
+        networkElementPortDto.setCreationTime(OffsetDateTime.now().minusDays(1));
+        networkElementPortDto.setLastUpdateTime(OffsetDateTime.now());
+        networkElementPortDto.setSpecificationVersion("14.1");
+        networkElementPortDto.setDescription("A4 mock for getNetworkElementPortDto");
+        networkElementPortDto.setNetworkElementUuid(UUID.randomUUID().toString());
+        networkElementPortDto.setNetworkElementEndsz(endSz);
+        networkElementPortDto.setHref("/networkElements/3e2fece2-5b18-440c-89ef-4441d0320cea");
+        return networkElementPortDto;
+    }
 }

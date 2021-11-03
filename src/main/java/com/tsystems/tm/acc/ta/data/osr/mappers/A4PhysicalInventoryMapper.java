@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
+import com.tsystems.tm.acc.ta.data.osr.models.A4Connector;
 import com.tsystems.tm.acc.ta.data.osr.models.A4Equipment;
 import com.tsystems.tm.acc.ta.data.osr.models.A4Holder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.PhysicalResourceUpdate;
@@ -89,6 +90,95 @@ public class A4PhysicalInventoryMapper {
                         .resourceRef(new ResourceRef()
                                 .id(uuidEquipment)
                                 .type("Equipment")));
+    }
+
+    // Create PhysicalResourceUpdate representation of holder, without equipment
+    public PhysicalResourceUpdate getPhysicalResourceUpdateHolderWithoutEquipment(A4Holder hoData) {
+        if (hoData.getUuid().isEmpty())
+            hoData.setUuid(UUID.randomUUID().toString());
+
+        return generateGenericPhysicalResourceUpdate()
+                .atType("Holder")
+                .description(hoData.getDescription())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("label")
+                        .value(hoData.getLabel()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("type")
+                        .value(hoData.getType()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("creationTime")
+                        .value(hoData.getCreationTime()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lastUpdateTime")
+                        .value(hoData.getLastUpdateTime()));
+    }
+
+    // Create PhysicalResourceUpdate representation of connector
+    public PhysicalResourceUpdate getPhysicalResourceUpdateConnector(A4Connector coData, String uuidEquipment) {
+        if (coData.getUuid().isEmpty())
+            coData.setUuid(UUID.randomUUID().toString());
+
+        return generateGenericPhysicalResourceUpdate()
+                .atType("Connector")
+                .description(coData.getDescription())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("label")
+                        .value(coData.getPhysicalLabel()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("speed")
+                        .value(coData.getSpeed()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("media")
+                        .value(coData.getMedia()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("protocol")
+                        .value(coData.getProtocol()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("formfactor")
+                        .value(coData.getFormfactor()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("creationTime")
+                        .value(coData.getCreationTime()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lastUpdateTime")
+                        .value(coData.getLastUpdateTime()))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(uuidEquipment)
+                                .type("Equipment")));
+    }
+
+
+    // Create PhysicalResourceUpdate representation of connector, without equipment
+    public PhysicalResourceUpdate getPhysicalResourceUpdateConnectorWithoutEquipment(A4Connector coData) {
+        if (coData.getUuid().isEmpty())
+            coData.setUuid(UUID.randomUUID().toString());
+
+        return generateGenericPhysicalResourceUpdate()
+                .atType("Connector")
+                .description(coData.getDescription())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("label")
+                        .value(coData.getPhysicalLabel()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("speed")
+                        .value(coData.getSpeed()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("media")
+                        .value(coData.getMedia()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("protocol")
+                        .value(coData.getProtocol()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("formfactor")
+                        .value(coData.getFormfactor()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("creationTime")
+                        .value(coData.getCreationTime()))
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("lastUpdateTime")
+                        .value(coData.getLastUpdateTime()));
     }
 
     private PhysicalResourceUpdate generateGenericPhysicalResourceUpdate() {

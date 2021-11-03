@@ -160,16 +160,13 @@ public class A4MobileUiRobot {
     @Step("Click Zeige Nel zu Ne button")
     public void clickZeigeNelZuNeButton() { $(A4MobileNeSearchPage.getZEIGE_NEL_ZU_NE_BUTTON_LOCATOR()).click(); }
 
-
     @Step("Click NEL installation button")
     public void clickNelInstallationButton() {
-        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
-    }
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();   }
 
     @Step("Click Monitoring Button")
     public void clickMonitoringButton() {
-        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();
-    }
+        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();   }
 
 
     //inbetriebnahme-page
@@ -224,9 +221,24 @@ public class A4MobileUiRobot {
         $(A4MobileInbetriebnahmeNELPage.getCHECKBOX_LOCATOR()).click();
     }
 
-    @Step("Click button")
+    @Step("Click NEL Install Button")
     public void clickButtonAndConfirm() {
         $(A4MobileInbetriebnahmeNELPage.getSTART_INSTALL_BTN()).click();
+
+        try {
+            WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+            WebDriverWait wait = new WebDriverWait(driver, 5000);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert();
+            alert.accept();
+        } catch (NoAlertPresentException e) {
+            System.out.println("EXCEPTION " + e.getCause());
+        }
+    }
+
+    @Step("Click NE Reset to planning button")
+    public void clickNeResetToPlanningButtonAndConfirm() {
+        $(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).click();
 
         try {
             WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
@@ -301,7 +313,8 @@ public class A4MobileUiRobot {
 
 
     @Step("check NEL Monitoring")
-    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
+    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList,
+                                       String endPointVpsz, String endPointFsz) {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
@@ -312,17 +325,18 @@ public class A4MobileUiRobot {
         elementsCollection.forEach(k -> monitoringZeile.add(k.getText()));
 
         String monitoringZeileString = monitoringZeile.stream().map(e -> e.toString()).reduce("",String::concat);
-        System.out.println("monitoringStream:" + monitoringZeileString);
 
-        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
-            assertTrue(monitoringZeile.contains("4N4"), "4N4");
+        assertTrue(monitoringZeile.contains("4N4"), "4N4");
         //  NEL has to be in LifecycleState: INSTALLING
-            assertTrue(monitoringZeile.contains("INSTALLING"));
+        assertTrue(monitoringZeile.contains("INSTALLING"));
         //  NEL has to be in OperationalState: NOT_WORKING
-            assertTrue(monitoringZeile.contains("NOT_WORKING"));
-        // lbz from NEL in Monitoring List must contain: vpsz and fsz from NE
+        assertTrue(monitoringZeile.contains("NOT_WORKING"));
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+        // lbz from NEL in Monitoring List must contain: vpsz and fsz from both NE's
            assertTrue(monitoringZeileString.contains(a4NetworkElement.getVpsz()));
+            assertTrue(monitoringZeileString.contains(endPointVpsz));
            assertTrue(monitoringZeileString.contains(a4NetworkElement.getFsz()));
+            assertTrue(monitoringZeileString.contains(endPointFsz));
         });
 
         //check if table has only as many rows as expected by test data set

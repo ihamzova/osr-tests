@@ -12,7 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -112,7 +112,7 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -165,7 +165,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -226,7 +226,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
@@ -291,7 +291,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     bodyContains(olt.getOltPort()));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
         }
@@ -313,7 +313,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
         }
     }

@@ -6,7 +6,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -51,7 +51,7 @@ public class DeprovisioningTest extends GigabitTest {
   @BeforeMethod
   public void prepareData() {
     accessLineRiRobot.clearDatabase();
-    accessLineRiRobot.fillDatabaseForOltCommissioning();
+    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
   }
 
   @AfterClass

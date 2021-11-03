@@ -6,11 +6,13 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.NetworkLineProfileManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.AsyncResponseNotification;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.ResourceCharacteristicCallback;
+import com.tsystems.tm.acc.tests.osr.network.line.profile.management.v1_5_0.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.network.line.profile.management.v1_5_0.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
 import io.qameta.allure.Step;
@@ -32,7 +34,7 @@ import static org.testng.Assert.*;
 public class NetworkLineProfileManagementRobot {
 
     private static String CORRELATION_ID;
-    private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider );
+    private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider);
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
 
@@ -67,7 +69,17 @@ public class NetworkLineProfileManagementRobot {
                 .filter(name -> name.getName().equals(ResourceCharacteristicCallback.NameEnum.CALID))
                 .collect(Collectors.toList()).get(0)
                 .getValue(), accessLine.getLineId(), "Subscriber profile was not created");
+    }
 
+    public NetworkLineProfileData setResourceOrderData(NetworkLineProfileData resourceOrderRequest, AccessLine accessline, ResourceCharacteristic calId) {
+        calId.setValue(accessline.getLineId());
+        resourceOrderRequest
+                .getResourceOrder().getResourceOrderItems().get(0).getResource().getResourceCharacteristics()
+                .removeIf(resourceCharacteristic -> resourceCharacteristic.getName().equals(ResourceCharacteristic.NameEnum.CALID));
+        resourceOrderRequest
+                .getResourceOrder().getResourceOrderItems().get(0).getResource().getResourceCharacteristics()
+                .add(calId);
+        return resourceOrderRequest;
     }
 
     @Step("Check callback in Wiremock")
@@ -76,7 +88,7 @@ public class NetworkLineProfileManagementRobot {
                 exactly(1),
                 newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
-                400_000);
+                500_000);
         log.info("Callback: " + requests);
         assertTrue(requests.size() >= 1, "Callback is found");
         return requests;

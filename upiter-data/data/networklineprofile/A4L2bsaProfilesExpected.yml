@@ -1,4 +1,4 @@
-name: l2BsaNspReferenceActivation
+name: L2BsaNspReferenceActivation
 template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
 values:
   l2ccid: "l2ccid-110"
@@ -6,7 +6,7 @@ values:
   downBandwidth: 30000
   upBandwidth: 10000
 ---
-name: l2BsaNspReferenceModification
+name: L2BsaNspReferenceModification
 template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
 values:
   l2ccid: "l2ccid-110"

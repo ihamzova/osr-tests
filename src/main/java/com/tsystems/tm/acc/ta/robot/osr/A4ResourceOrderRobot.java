@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 import io.qameta.allure.Step;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -41,8 +43,8 @@ public class A4ResourceOrderRobot {
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
+            new RhssoClientFlowAuthTokenProvider(DECOUPLING_MS,
+                    RhssoHelper.getSecretOfGigabitHub(DECOUPLING_MS)); //this will be merlin's service in the future
 
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
@@ -155,6 +157,24 @@ public class A4ResourceOrderRobot {
         return getResourceOrderObjectFromJsonString(response);
     }
 
+    public void cleanCallbacksInWiremock() {
+        List<LoggedRequest> ergList = WireMockFactory.get()
+                .retrieve(moreThanOrExactly(0),
+                        newRequestPattern(
+                                RequestMethod.fromString("POST"),
+                                urlPathEqualTo(cbPath)));
+
+        int count = 0; //count to break loop in emergency after 5 tries
+        while (!ergList.isEmpty() && count < 5) {
+            ergList = WireMockFactory.get()
+                    .retrieve(moreThanOrExactly(0),
+                            newRequestPattern(
+                                    RequestMethod.fromString("POST"),
+                                    urlPathEqualTo(cbPath)));
+            count++;
+        }
+    }
+
     private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -220,7 +240,7 @@ public class A4ResourceOrderRobot {
                 .as(ResourceOrderDto.class);
     }
 
-    public List<ResourceOrderDto> getResourceOrderListByVuepFromDb(String vuep) {
+    public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()

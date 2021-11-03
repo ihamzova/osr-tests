@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
@@ -32,12 +33,13 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_UI_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_BFF_PROXY_MS)
-@ServiceLog(A4_INVENTORY_IMPORTER_MS)*/
-@Slf4j
+
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
 @Epic("OS&R")
 @Feature("Test Inbetriebnahme for NEs and NELs, including monitoring")
 @TmsLink("DIGIHUB-xxxxx")
@@ -171,8 +173,11 @@ public class A4InbetriebnahmeTest extends GigabitTest {
     @Description("Test Mobile Monitoring page of NEL for which Inbetriebnahme was done")
     public void testNelMonitoring() {
         // GIVEN
-        Map<String, A4NetworkElement> a4NeFilteredMap = new HashMap<>();
-        a4NeFilteredMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+        Map<String, A4NetworkElement> a4NeFilteredApointMap = new HashMap<>();
+        a4NeFilteredApointMap.put(A4_NE_OPERATING_BOR_02, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
+
+        Map<String, A4NetworkElementLink> a4NelFilteredMap = new HashMap<>();
+        a4NelFilteredMap.put(A4_NE_OPERATING_BOR_02_LINK1, a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
         // WHEN
         a4MobileUi.searchForNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02));
@@ -184,13 +189,16 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.clickButtonAndConfirm();
         a4MobileUi.clickMonitoringButton();
 
+
         // THEN
-        a4MobileUi.checkNELMonitoringList(a4NeFilteredMap);
+        a4MobileUi.checkNELMonitoringList(a4NeFilteredApointMap,
+                a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01).getVpsz(),
+                a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01).getFsz());
 
-        //a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
-        //        a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
+        a4MobileUi.removeNetworkElementFromNELMonitoringList(a4NelFilteredMap, A4_NE_OPERATING_BOR_02_LINK1,
+                a4NetworkElementLinks.get(A4_NE_OPERATING_BOR_02_LINK1));
 
-        //a4MobileUi.checkEmptyNelMonitoringList(a4NelFilteredMap);
+        a4MobileUi.checkEmptyNelMonitoringList(a4NelFilteredMap);
 
     }
 

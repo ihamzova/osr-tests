@@ -1,0 +1,47 @@
+name: A4NetworkLineProfileActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "7453"
+    resourceOrderItems:
+      - id: "7453"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "PPDOWNL3"
+              value: "30000"
+            - name: "PPUPL3"
+              value: "10000"
+---
+name: A4NetworkLineProfileModification
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "7453"
+    resourceOrderItems:
+      - id: "7453"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "PPDOWNL3"
+              value: "40000"
+            - name: "PPUPL3"
+              value: "20000"

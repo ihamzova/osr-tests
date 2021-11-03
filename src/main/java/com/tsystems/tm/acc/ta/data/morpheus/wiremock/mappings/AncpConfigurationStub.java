@@ -11,8 +11,8 @@ import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class AncpConfigurationStub extends AbstractStubMapping {
-    public static final String ANCP_CONFIGURATION_URL = "/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask";
-    public static final String ANCP_DECONFIGURATION_URL = "/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask";
+    public static final String ANCP_CONFIGURATION_URL = "/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask";
+    public static final String ANCP_DECONFIGURATION_URL = "/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask";
 
     public MappingBuilder postCreateAncpConfiguration202(Dpu dpu) {
         return post(urlPathEqualTo(ANCP_CONFIGURATION_URL))

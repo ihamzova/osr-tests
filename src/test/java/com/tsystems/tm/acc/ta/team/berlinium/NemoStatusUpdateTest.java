@@ -18,6 +18,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRelationship;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.*;
 
@@ -26,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+
+
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS,A4_CARRIER_MANAGEMENT_MS,A4_NEMO_UPDATER_MS})
 @Epic("OS&R domain")
 @Feature("Status update requests from NEMO for different A4 network element types")
 public class NemoStatusUpdateTest {

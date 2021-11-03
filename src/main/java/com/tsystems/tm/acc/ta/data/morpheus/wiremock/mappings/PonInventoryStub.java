@@ -30,7 +30,7 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc200")
                     .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK),200))
-                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,7 +42,7 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc400")
                     .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass().getResource(PATH_TO_PO_MOCK).getFile()), Charset.defaultCharset()),400))
-                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc200")
                     .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK_COM_DIFF_PORT),200))
-                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +66,7 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc200")
                     .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK_DECOM_DIFF_SLOT),200))
-                    .withQueryParam("gfApFolId", equalTo(dpu.getGfApFolId()));
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllcDomain200")
                     .willReturn(aDefaultResponseWithBody(prepareBodyForDomain(dpu),200))
-                    .withQueryParam("gfApFolId", equalTo(dpu.getFiberOnLocationId()));
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndsz()));
         } catch (IOException e) {
             e.printStackTrace();
         }

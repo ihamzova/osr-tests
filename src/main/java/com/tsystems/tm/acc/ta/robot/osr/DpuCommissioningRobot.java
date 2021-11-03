@@ -3,16 +3,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
-import com.tsystems.tm.acc.ta.api.RhssoBrowserFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningClient;
+import com.tsystems.tm.acc.ta.api.osr.DpuCommissioningExternalClient;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.robot.utils.WiremockRecordedRequestRetriver;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.api.DpuCommissioningApi;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuCommissioningRequest;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.StartDpuDecommissioningRequest;
-import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.api.RestoreApi;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.DpuCommissioningResponse;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.StartDpuCommissioningRequest;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.StartDpuDecommissioningRequest;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +26,7 @@ public class DpuCommissioningRobot {
 
     public static final Integer HTTP_CODE_CREATED_201 = 201;
     private static final Long DELAY = 8_000L;
-    private DpuCommissioningClient dpuCommissioningClient;
+    private DpuCommissioningExternalClient dpuCommissioningClient;
     public String businessKey;
     public String id;
 
@@ -42,13 +39,13 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuCommissioning")
     public UUID startProcess(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
         UUID traceId = UUID.randomUUID();
 
-        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+        DpuCommissioningResponse response = dpuCommissioningClient.getClient().dpuCommissioningExternal().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
                 .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
                 .xB3TraceIdHeader(traceId.toString())
@@ -62,13 +59,13 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuCommissioning error code 500")
     public UUID startProcess500(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
         UUID traceId = UUID.randomUUID();
 
-        dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+        dpuCommissioningClient.getClient().dpuCommissioningExternal().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
                 .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
                 .xB3TraceIdHeader(traceId.toString())
@@ -81,11 +78,11 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuCommissioning")
     public DpuCommissioningResponse startCommissioningProcess(String endsz, UUID traceId) {
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
         StartDpuCommissioningRequest dpuCommissioningRequest = new StartDpuCommissioningRequest();
         dpuCommissioningRequest.setEndSZ(endsz);
 
-        return dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceCommissioning()
+        return dpuCommissioningClient.getClient().dpuCommissioningExternal().startDpuDeviceCommissioning()
                 .body(dpuCommissioningRequest)
                 .xB3ParentSpanIdHeader(UUID.randomUUID().toString())
                 .xB3TraceIdHeader(traceId.toString())
@@ -96,11 +93,11 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuDecommissioning")
     public DpuCommissioningResponse startDecommissioningProcess(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
 
-        return dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+        return dpuCommissioningClient.getClient().dpuCommissioningExternal().startDpuDeviceDecommissioning()
                 .body(dpuDecommissioningRequest)
                 .xB3ParentSpanIdHeader("1")
                 .xB3TraceIdHeader("2")
@@ -111,11 +108,11 @@ public class DpuCommissioningRobot {
 
     @Step("Start dpuDecommissioning 500")
     public void startDecommissioningProcess500(String endsz) {
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
         StartDpuDecommissioningRequest dpuDecommissioningRequest = new StartDpuDecommissioningRequest();
         dpuDecommissioningRequest.setEndSZ(endsz);
 
-        dpuCommissioningClient.getClient().dpuCommissioning().startDpuDeviceDecommissioning()
+        dpuCommissioningClient.getClient().dpuCommissioningExternal().startDpuDeviceDecommissioning()
                 .body(dpuDecommissioningRequest)
                 .xB3ParentSpanIdHeader("1")
                 .xB3TraceIdHeader("2")
@@ -126,8 +123,8 @@ public class DpuCommissioningRobot {
 
     @Step("Start restore process")
     public void startRestoreProcess(String id){
-        dpuCommissioningClient = new DpuCommissioningClient(authTokenProvider);
-        dpuCommissioningClient.getClient().dpuCommissioning().restoreProcess()
+        dpuCommissioningClient = new DpuCommissioningExternalClient(authTokenProvider);
+        dpuCommissioningClient.getClient().dpuCommissioningExternal().restoreProcess()
                 .processIdPath(id)
                 .xBusinessContextHeader("cef0cbf3-6458-4f13-a418-ee4d7e7505dd")
                 .xCallbackCorrelationIdHeader("cef0cbf3-6458-4f13-a418-ee4d7e7505dd")
@@ -147,15 +144,15 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkGetDpuPonConnCalled(String gfApFolId) {
+    public void checkGetDpuPonConnCalled(String dpuEndSz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?gfApFolId=" + gfApFolId + "&page=0&pageSize=64&direction=ASC"));
+        wiremockRecordedRequestRetriver.isGetRequestCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?dpuEndSz=" + dpuEndSz + "&page=0&pageSize=64&direction=ASC"));
     }
 
     @Step
-    public void checkGetDpuPonConnNotCalled(String gfApFolId) {
+    public void checkGetDpuPonConnNotCalled(String dpuEndSz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?gfApFolId=" + gfApFolId + "&page=0&pageSize=64&direction=ASC"));
+        wiremockRecordedRequestRetriver.isGetRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v2/llc?dpuEndSz=" + dpuEndSz + "&page=0&pageSize=64&direction=ASC"));
     }
 
     @Step
@@ -209,13 +206,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkPostConfigAncpCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
     public void checkPostConfigAncpNotCalled(String dpuEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
     }
 
     @Step
@@ -454,13 +451,13 @@ public class DpuCommissioningRobot {
     @Step
     public void checkDeleteAncpConfigCalled() {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
     }
 
     @Step
     public void checkDeleteAncpConfigNotCalled() {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/reqcb/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartDeconfigurationTask/99990"));
     }
 
     @Step

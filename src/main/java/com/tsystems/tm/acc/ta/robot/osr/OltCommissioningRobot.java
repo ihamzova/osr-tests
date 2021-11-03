@@ -1,11 +1,9 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
-import com.tsystems.tm.acc.ta.api.osr.OltDiscoveryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -13,9 +11,11 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.PortType;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
 import java.util.List;
@@ -24,11 +24,16 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
 
+@Slf4j
 public class OltCommissioningRobot {
 
-  private static final Integer HTTP_CODE_OK_200 = 200;
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
@@ -37,12 +42,15 @@ public class OltCommissioningRobot {
   private static final Integer LINE_ID_POOL_PER_PORT = 32;
   private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+  private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+  private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
-  private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProvider);
-  private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
+  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
+  private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
+  private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
+  private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
+  private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
   @Step("Starts automatic olt commissioning process")
   public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -117,47 +125,68 @@ public class OltCommissioningRobot {
     long expectedFreeLineIdCountPerPort = LINE_ID_POOL_PER_PORT / 2;
     long expectedUsedLineIdCountPerPort = LINE_ID_POOL_PER_PORT / 2;
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(oltEndSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     Assert.assertEquals(deviceList.size(), 1L, "Device is not present");
-    Assert.assertEquals(deviceList.get(0).getType(), Device.TypeEnum.OLT, "Device type is not OLT");
+    Assert.assertEquals(deviceList.get(0).getDeviceType(), DeviceType.OLT, "Device type is not OLT");
     Assert.assertEquals(deviceList.get(0).getEndSz(), oltEndSz, "Device EndSz mismatch");
     Device deviceAfterCommissioning = deviceList.get(0);
 
-    if (deviceList.get(0).getEquipmentHolders().isEmpty()) {
-      Assert.assertEquals(deviceList.get(0).getPorts().size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
+    List<Port> portList = deviceResourceInventoryManagementClient.getClient().port().listPort()
+            .parentEquipmentRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
+      Assert.assertEquals(portList.size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
       portsCount = olt.getNumberOfPonPorts();
       //for ADTRAN device provisioning (strategy 32 on demand)
       accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
       expectedFreeLineIdCountPerPort = 0;
       expectedUsedLineIdCountPerPort = LINE_ID_POOL_PER_PORT;
     } else {
-      Optional<Integer> portsCountOptional = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
-              .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(card -> card.getPorts().size()).reduce(Integer::sum);
-      portsCount = portsCountOptional.orElse(0);
+      portsCount = portList.stream()
+              .filter(port -> port.getPortType().equals(PortType.PON)).count();
     }
 
     // check device lifecycle state
-    Assert.assertEquals(Device.LifeCycleStateEnum.OPERATING, deviceAfterCommissioning.getLifeCycleState(), "Device LifeCycleState after commissioning is not in operating state");
+    Assert.assertEquals(deviceAfterCommissioning.getLifeCycleState(), LifeCycleState.OPERATING, "Device LifeCycleState after commissioning is not in operating state");
 
     // check uplink port lifecycle state
-    if (deviceList.get(0).getEquipmentHolders().isEmpty()) {
-      Optional<Port> uplinkPort = deviceList.get(0).getPorts().stream()
-              .filter(port -> port.getPortNumber().equals(olt.getOltPort()))
-              .filter(port -> port.getPortType().equals(Port.PortTypeEnum.ETHERNET))
+    if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
+      Optional<Port> uplinkPort = portList.stream()
+              .filter(port -> port.getPortName().equals(olt.getOltPort()))
+              .filter(port -> port.getPortType().equals(PortType.ETHERNET))
               .findFirst();
-      Assert.assertTrue(uplinkPort.isPresent(), "No uplink port is present");
-      Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "Uplink port state after commissioning is not in operating state");
+      Assert.assertTrue(uplinkPort.isPresent(), "ADTRAN No uplink port is present");
+      Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
     } else {
-      Optional<Port> uplinkPort = deviceAfterCommissioning.getEquipmentHolders().stream()
-              .filter(equipmentHolder -> equipmentHolder.getSlotNumber().equals(olt.getOltSlot()))
-              .map(EquipmentHolder::getCard)
-              .filter(card -> card.getCardType().equals(Card.CardTypeEnum.UPLINK_CARD) || card.getCardType().equals(Card.CardTypeEnum.PROCESSING_BOARD))
-              .flatMap(card -> card.getPorts().stream())
-              .filter(port -> port.getPortNumber().equals(olt.getOltPort())).findFirst();
-      Assert.assertTrue(uplinkPort.isPresent(), "Uplink is not found");
-      Assert.assertEquals(Port.LifeCycleStateEnum.OPERATING, uplinkPort.get().getLifeCycleState(), "Uplink port state after commissioning is not in operating state");
+      Optional<Port> uplinkPort = portList.stream()
+              .filter(port -> port.getParentEquipmentRef().getSlotName().equals(olt.getOltSlot()))
+              .filter(port -> port.getPortName().equals(olt.getOltPort()))
+              .filter(port -> port.getPortType().equals(PortType.ETHERNET))
+              .findFirst();
+      Assert.assertTrue(uplinkPort.isPresent(), "HUAWEI No uplink port is present");
+      Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
     }
+
+    // check pon ports lifecycle state
+    boolean allPortsInOperatingState = portList.stream()
+            .filter(port -> port.getPortType().equals(PortType.PON))
+            .map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
+    Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
+
+    // check uplink state
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(uplinkList.size(), 1, "There is no uplink");
+    Uplink uplink = uplinkList.get(0);
+    Assert.assertEquals(uplink.getState(), UplinkState.ACTIVE, "UplinkState is not active");
+
+    // check ANCP Session
+    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+            .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus is not active");
+
 
     List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
             .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
@@ -166,31 +195,12 @@ public class OltCommissioningRobot {
 
     Assert.assertEquals(wgLinesCount, portsCount * accessLinesPerPort, "wgLinesCount mismatch");
 
-    boolean allPortsInOperatingState = deviceAfterCommissioning.getEquipmentHolders().stream().map(EquipmentHolder::getCard)
-            .filter(card -> card.getCardType().equals(Card.CardTypeEnum.GPON)).map(Card::getPorts)
-            .flatMap(List::stream).map(Port::getLifeCycleState).allMatch(Port.LifeCycleStateEnum.OPERATING::equals);
-
-    Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
-
     List<Integer> anpTagsList = wgAccessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag())
             .filter(anpTagValue -> anpTagValue >= 128).collect(Collectors.toList());
 
     Assert.assertEquals(anpTagsList.size(), portsCount * accessLinesPerPort, "anpTagsList size mismatch");
 
     Assert.assertTrue(anpTagsList.contains(128), "anpTagsList contains mismatch");
-
-    List<UplinkDTO> uplinksList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz().oltEndSzQuery(oltEndSz)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-    Assert.assertEquals(uplinksList.size(), 1, "There is no uplink");
-
-    UplinkDTO uplink = uplinksList.get(0);
-
-    Assert.assertEquals(uplink.getIpStatus(), UplinkDTO.IpStatusEnum.ACTIVE, "IpStatus is not active");
-
-    Assert.assertEquals(uplink.getAncpSessions().size(), 1, "There are no AncpSessions");
-
-    Assert.assertEquals(uplink.getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE, "ANCPSession is not active");
 
     long homeIdCount = accessLineResourceInventoryClient.getClient().homeIdController().searchHomeIds()
             .body(new SearchHomeIdDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
@@ -224,8 +234,13 @@ public class OltCommissioningRobot {
 
   @Step("Clear {oltDevice} device in olt-resource-inventory database")
   public void clearResourceInventoryDataBase(OltDevice oltDevice) {
-    String endSz = oltDevice.getVpsz() + "/" + oltDevice.getFsz();
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    String endSz = oltDevice.getEndsz();
+    if (FEATURE_ANCP_MIGRATION_ACTIVE) {
+      deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    } else {
+      oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
+              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
   }
 }

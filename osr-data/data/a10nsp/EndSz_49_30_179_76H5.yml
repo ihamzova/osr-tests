@@ -4,6 +4,7 @@ values:
   vpsz: "49/30/179"
   fsz: "76H5"
   bngEndsz: "49/30/179/43G2"
+  bngDownlinkPort: "ge-5/4/4"
   numberOfPonSlots: 1
   numberOfEthernetSlots: 1
   matNumber: 40247069

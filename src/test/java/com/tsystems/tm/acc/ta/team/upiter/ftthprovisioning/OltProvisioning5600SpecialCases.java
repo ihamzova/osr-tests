@@ -10,7 +10,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_19_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -46,7 +46,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
     public void prepareData() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(3000);
-        accessLineRiRobot.fillDatabaseForOltCommissioning();
+        accessLineRiRobot.fillDatabaseForOltCommissioningV1();
     }
 
     @AfterClass
