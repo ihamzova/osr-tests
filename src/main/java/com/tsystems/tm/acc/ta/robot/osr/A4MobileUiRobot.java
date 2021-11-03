@@ -29,8 +29,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class A4MobileUiRobot {
@@ -238,6 +237,7 @@ public class A4MobileUiRobot {
 
     @Step("Click NE Reset to planning button")
     public void clickNeResetToPlanningButtonAndConfirm() {
+        System.out.println("+++ Enabled: "+$(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
         $(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).click();
 
         try {
@@ -251,7 +251,13 @@ public class A4MobileUiRobot {
         }
     }
 
-    @Step("Check error message not found")
+    @Step("Check NE Reset to planning button is disabled")
+    public void checkNeResetToPlanningButtonDisabled() {
+      assertFalse($(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
+      System.out.println("+++ juchhu, disabled");
+    }
+
+        @Step("Check error message not found")
     public String notFoundMsg() {
         return $(A4MobileInbetriebnahmeNELPage.getERROR_LOCATOR()).getText();
     }
