@@ -37,13 +37,12 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
+import static org.testng.Assert.*;
 
 @Slf4j
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
@@ -155,7 +154,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Description("Test Mobile NE-search-page of installation process")
     public void testNeSearchByVpsz() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz()); // VPSZ: "49/4651/0" -  1 NE
+        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         a4MobileUiRobot.clickSearchButton();
 
         Map<String, A4NetworkElement> a4NeFilteredList = a4NetworkElements
@@ -177,11 +176,11 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-125689")
     @Description("Test Mobile NE-search-page - button reset to planning")
-    public void testNeResetToPlanning() {
+    public void testResetNeToPlanning() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         a4MobileUiRobot.clickSearchButton();
-        a4MobileUiRobot.checkRadioButton("1");  // select row
+        a4MobileUiRobot.checkRadioButton("1");
         sleepForSeconds(5);
         // check state in db
         System.out.println("+++ LCS before reset: "+a4ResourceInventoryRobot
@@ -194,11 +193,8 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                         .getUuid())
                 .getLifecycleState() );
 
-        a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();  // click reset ne and confirm the ok-question
-        sleepForSeconds(5);
-
-        // check page
-
+        a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();
+        sleepForSeconds(15);
 
         // check state in db
         System.out.println("+++ LCS after reset: "+a4ResourceInventoryRobot
@@ -210,48 +206,63 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
                 .getLifecycleState() );
+        assertEquals("NOT_WORKING", a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getOperationalState() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getPlannedMatNumber() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getKlsId() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getAddress() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getPlannedRackId() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getPlannedRackPosition() );
+        assertNull( a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getZtpIdent() );
+        System.out.println("+++ UpdateTime: "+a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getLastUpdateTime());
+
+        // check page
+
+        // check NEMO Update
+
+
+
     }
 
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-x")
     @Description("Test Mobile NE-search-page - button reset to planning at planning ne - failed")
-    public void testPlanningNeResetToPlanningFailed() {
+    public void testResetNePlanningToPlanningFailed() {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
         a4MobileUiRobot.clickSearchButton();
-        a4MobileUiRobot.checkRadioButton("1");  // select row
-        sleepForSeconds(5);
-        // check state in db
-        System.out.println("+++ LCS before reset: "+a4ResourceInventoryRobot
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01)
-                        .getUuid())
-                .getLifecycleState());
+        a4MobileUiRobot.checkRadioButton("1");
 
         assertEquals("PLANNING", a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01)
                         .getUuid())
                 .getLifecycleState() );
 
-        a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();  // click and confirm the ok-question
-        sleepForSeconds(5);
-
-        // check page
-
-
-        // dieser Test sollte fehlschlagen - muss noch geändert werden !!!!
-
-        // check state in db
-        System.out.println("+++ LCS after reset: "+a4ResourceInventoryRobot
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01)
-                        .getUuid())
-                .getLifecycleState());
-
-        assertEquals("PLANNING", a4ResourceInventoryRobot
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01)
-                        .getUuid())
-                .getLifecycleState() );
-
+        a4MobileUiRobot.checkNeResetToPlanningButtonDisabled();
     }
 
 
