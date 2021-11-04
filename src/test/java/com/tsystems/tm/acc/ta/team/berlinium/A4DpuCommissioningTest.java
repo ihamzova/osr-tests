@@ -129,8 +129,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //Given
         //Scenario 1: for oltEndSz does not exists any NetworkElement
         //Scenario 2: for oltEndSz exists NetworkElement but is not an OLT
-        //Scenario 3: for oltEndSz exists OLT NetworkElement
-        //        and for dpuEndSz exists NetworkElement but is not an DPU
 
         // When / Action
 
@@ -158,13 +156,30 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingNonOltEndSz,
                 oltPonPort);
 
-        //Scenario 3:
-        //Request for CommissioningDpuA4Task with existing OLT-NE but NE with dpuEndSz is not an DPU
+
+        // Then / Assert
+        //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
+
+    }
+
+
+    @Test(description = "DIGIHUB-118479 if DpuEndSz is not an DPU-NE then throw an error")
+    @Owner("xxxxxx@t-systems.com")
+    @TmsLink("DIGIHUB-126423")
+    @Description("If DpuEndSz is not an DPU-NE then throw an error.")
+    public void testDpuCorruptData() {
+
+        //Given
+        // for oltEndSz exists OLT NetworkElement
+        // and for dpuEndSz exists NetworkElement but is not an DPU
+
+        // When / Action
+
         NetworkElementDto OltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
         String existingOltEndSz = OltNetworkElement.getVpsz() + "/" + OltNetworkElement.getFsz();
         NetworkElementDto noDpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neNotDpuOltData.getUuid());
         String existingNonDpuEndSz = noDpuNetworkElement.getVpsz() + "/" + noDpuNetworkElement.getFsz();
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
                 existingNonDpuEndSz,
                 dpuSerialNumber,
                 dpuMaterialNumber,
@@ -175,9 +190,10 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
 
         // Then / Assert
-        //HTTP return code is 404/ Bad Request and  no DPU-NetworkElement is created
+        //HTTP return code is 500 (Server Error)
 
     }
+
 
     @Test(description = "DIGIHUB-118479 if any of attributes in Task are null or empty then throw an error")
     @Owner("xxxxxx@t-systems.com")
