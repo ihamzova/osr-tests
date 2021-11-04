@@ -62,10 +62,10 @@ public class A4MobileNeSearchPage {
     public static final By INBETRIEBNAHME_NE_BUTTON_LOCATOR = By.id("neInstallBtn");
 
     @Getter
-    public static final By ZEIGE_NEL_ZU_NE_BUTTON_LOCATOR = By.id("nelShowBtn");
+    public static final By ZEIGE_NEL_ZU_NE_BUTTON_LOCATOR = By.id("nelShowBtn"); // button doppelt benannt?
 
     @Getter
-    public static final By INBETRIEBNAHME_NEL_BUTTON_LOCATOR = By.id("nelBtn");
+    public static final By INBETRIEBNAHME_NEL_BUTTON_LOCATOR = By.id("nelShowBtn");  //war nelBtn
 
     @Getter
     public static final By ADD_MONITORING_BUTTON_LOCATOR = By.id("neAddMonitorBtn");
