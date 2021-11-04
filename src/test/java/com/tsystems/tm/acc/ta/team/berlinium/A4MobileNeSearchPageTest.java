@@ -240,7 +240,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getLastUpdateTime());
 
         // check page
-//
+// hi
 
 
         // check NEMO Update
