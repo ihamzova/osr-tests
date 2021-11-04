@@ -240,8 +240,12 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getLastUpdateTime());
 
         // check page
+//
+
 
         // check NEMO Update
+//        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremock(nepB.getUuid());
+//        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nepB.getUuid(), "PUT", 4);
 
 
 
