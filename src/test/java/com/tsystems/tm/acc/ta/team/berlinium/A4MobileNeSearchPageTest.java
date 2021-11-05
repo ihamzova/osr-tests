@@ -202,7 +202,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getLifecycleState() );
 
         a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();
-
+        sleepForSeconds(3); // process in db have to work
 
         // check db
         //a4MobileUiRobot.checkResetStateInDbOk(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid());
@@ -349,7 +349,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         assertNotEquals(lastUpdateTimeOld, lastUpdateTimeNew);
 
 
-        // check page
+        // check ui
         ElementsCollection elementsCollection = a4MobileUiRobot.getNeElementsCollection();
         assertEquals("PLANNING", elementsCollection.get(6).getText());
 
