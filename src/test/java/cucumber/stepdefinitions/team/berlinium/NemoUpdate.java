@@ -1,4 +1,4 @@
-package hellocucumber;
+package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
@@ -18,7 +18,7 @@ import io.cucumber.java.en.When;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-public class StepDefinitions extends GigabitTest {
+public class NemoUpdate extends GigabitTest {
 
     private OsrTestContext osrTestContext;
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
