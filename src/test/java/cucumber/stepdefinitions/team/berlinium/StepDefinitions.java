@@ -35,7 +35,7 @@ public class StepDefinitions extends GigabitTest {
     public void test_context_is_set_up() {
         osrTestContext = OsrTestContext.get();
 
-        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "CucumberA4NemoUpdateTest"))
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
