@@ -3,6 +3,7 @@ package cucumber.stepdefinitions.team.berlinium;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -18,7 +19,7 @@ import io.cucumber.java.en.When;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-public class NemoUpdate extends GigabitTest {
+public class StepDefinitions extends GigabitTest {
 
     private OsrTestContext osrTestContext;
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
@@ -35,7 +36,6 @@ public class NemoUpdate extends GigabitTest {
         osrTestContext = OsrTestContext.get();
 
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
-                .addNemoMock()
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -51,6 +51,13 @@ public class NemoUpdate extends GigabitTest {
 
         if (negData != null)
             a4Inventory.deleteA4TestDataRecursively(negData);
+    }
+
+    @Given("NEMO wiremock is set up")
+    public void nemoWiremockIsSetUp() {
+        wiremock
+                .add(new NemoStub().putNemoUpdate201())
+                .add(new NemoStub().deleteNemoUpdate204());
     }
 
     @Given("a NEG with uuid {string} exists in A4 resource inventory")

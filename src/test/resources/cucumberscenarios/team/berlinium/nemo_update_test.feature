@@ -3,6 +3,7 @@ Feature: Nemo update
 
   Background:
     Given no NEG with uuid "e24bab91-4d2e-4f23-8510-b86528711e7d" exists in A4 resource inventory
+    And NEMO wiremock is set up
 
   Scenario: Nemo update for existent element
     Given a NEG with uuid "e24bab91-4d2e-4f23-8510-b86528711e7d" exists in A4 resource inventory
