@@ -159,7 +159,7 @@ public class WgA4Provisioning extends GigabitTest {
     @Test
     @TmsLink("DIGIHUB-124771")
     @Description("A4 AccessLine deprovisioning, there are AccessLine left on the port")
-    public void a4PortDeprovisioningNotLastAccessLine() {
+    public void a4PortDeprovisioningNotLastAccessLine() throws InterruptedException {
         A4TerminationPoint terminationPoint1 = new A4TerminationPoint();
         A4TerminationPoint terminationPoint2 = new A4TerminationPoint();
         terminationPoint1.setUuid(UUID.randomUUID().toString());
@@ -172,7 +172,7 @@ public class WgA4Provisioning extends GigabitTest {
                         .portNumber(a4PortProvisioning7kh1.getPortNumber())
                         .klsId(a4OltDevice7kh1.getKlsId())
                         .tpRef(terminationPoint1.getUuid())
-                        .partyId((long)a4OltDevice7kh1.getCompositePartyId())
+                        .partyId((long) a4OltDevice7kh1.getCompositePartyId())
         );
 
         wgA4PreProvisioningRobot.startPreProvisioning(
@@ -182,8 +182,10 @@ public class WgA4Provisioning extends GigabitTest {
                         .portNumber(a4PortProvisioning7kh1.getPortNumber())
                         .klsId(a4OltDevice7kh1.getKlsId())
                         .tpRef(terminationPoint2.getUuid())
-                        .partyId((long)a4OltDevice7kh1.getCompositePartyId())
+                        .partyId((long) a4OltDevice7kh1.getCompositePartyId())
         );
+
+        Thread.sleep(5000);
 
         int accessLinesBeforeDeprovisioning = accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh1).size();
         assertTrue(accessLinesBeforeDeprovisioning > 1, "There are <= 1 AccessLines on the port");
