@@ -139,6 +139,16 @@ public class A4NemoUpdaterRobot {
         checkLogicalResourcePutRequestToNemoWiremockDidntHappen(nspList.get(0).getUuid());
     }
 
+    @Step("Check if PUT request to NEMO wiremock with network element has happened")
+    public void checkNetworkElementPutRequestToNemoWiremock(String vpsz, String fsz) {
+        List<NetworkElementDto> neList = a4Inventory
+                .getNetworkElementsByVpszFsz(vpsz, fsz);
+
+        Assert.assertEquals(neList.size(), 1);
+        //System.out.println("+++ ne-list: "+neList);
+        checkLogicalResourcePutRequestToNemoWiremock(neList.get(0).getUuid());
+    }
+
     @Step("Check if PUT request to NEMO wiremock with network element link has happened")
     public void checkNetworkElementLinkPutRequestToNemoWiremock(String uuidNep) {
         List<NetworkElementLinkDto> nelList = a4Inventory
