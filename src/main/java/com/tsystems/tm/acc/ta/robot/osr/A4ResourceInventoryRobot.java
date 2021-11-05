@@ -250,6 +250,18 @@ public class A4ResourceInventoryRobot {
                 .networkElementGroupUuidQuery(negUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+/*
+    @Step("Get a list of Network Elements by NE uuid")
+    public List<NetworkElementDto> getNetworkElementsByNeUuid(String neUuid) {
+        return a4ResourceInventory
+                .networkElements().findNetworkElement()
+      //          .uuidPath(neUuid)
+//                .listNetworkElements()
+  //              .networkElementUuidQuery(neUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+ */
 
     @Step("Get a list of Network Elements by by VPSZ/FSZ")
     // As VPSZ & FSZ are together a unique constraint, the list will have either 0 or 1 entries
