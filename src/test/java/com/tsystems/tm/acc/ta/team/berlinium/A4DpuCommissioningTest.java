@@ -52,6 +52,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElement neDpuData;
     private A4NetworkElement neNotDpuOltData;
     private A4NetworkElementPort nepOlt;
+    private A4NetworkElementPort nepDpu;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final String dpuSerialNumber = "ztp_ident-IntegrationTest";
@@ -74,7 +75,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01);
         nepOlt = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-
+        nepDpu = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -82,37 +84,29 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
-
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neOltData, negData);
         a4ResourceInventory.createNetworkElement(neDpuData, negData);
         a4ResourceInventory.createNetworkElement(neNotDpuOltData, negData);
         a4ResourceInventory.createNetworkElementPort(nepOlt, neOltData);
 
-
-     /*   mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
-                .addNemoMock()
-                .build();
-
-
-        mappingsContext.publish()
-                .publishedHook(savePublishedToDefaultDir())
-                .publishedHook(attachStubsToAllureReport());
-
-      */
+//        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
+//                .addNemoMock()
+//                .build();
+//
+//        mappingsContext.publish()
+//                .publishedHook(savePublishedToDefaultDir())
+//                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterMethod
     public void cleanup() {
-
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
         mappingsContext.close();
         mappingsContext
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
-
-
     }
 
     @Test(description = "DIGIHUB-118479 Create NetworkElement for requested DPU in Resource-Inventory and synchronize with NEMO")
@@ -120,7 +114,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-126432")
     @Description("NetworkElement (DPU) is created and NEMO is triggerd")
     public void testDpuIsCreated() {
-
         //Given
         //NetworkElementGroup by oltEndSz exists
         //DPU- NetworkElement by dpuEndSz not yet exists
@@ -142,7 +135,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         String dpuFsz = dpuEndSz.substring(dpuEndSz.length() - 4);
         String dpuVpsz = dpuEndSz.substring(0, dpuEndSz.length() - 5);
-
         NetworkElementDto createdDpuNe = a4ResourceInventory.getExistingNetworkElementByVpszFsz(dpuVpsz, dpuFsz);
         Assert.assertEquals(createdDpuNe.getCategory(), "DPU");
         Assert.assertEquals(createdDpuNe.getZtpIdent(), dpuSerialNumber);
@@ -323,25 +315,21 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-118479 if DPU already existing and NetworkElementLink is not OLT then throw an error")
-    @Owner("xxxxxx@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxxx")
+    @Owner("bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-118479")
     @Description("If DPU already existing and NetworkElementLink is not OLT then throw an error.")
     public void testDpuCannotUpdatedWrongNel() {
         // GIVEN
-        A4NetworkElement neLeaf = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
-        a4ResourceInventory.createNetworkElement(neLeaf, negData);
-
-        A4NetworkElementPort nepLeaf = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        // First create NEP for NE with type != DPU and != OLT (in this case we use type = POD_SERVER)
+        A4NetworkElementPort nepPodServer = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
-        a4ResourceInventory.createNetworkElementPort(nepLeaf, neLeaf);
+        a4ResourceInventory.createNetworkElementPort(nepPodServer, neNotDpuOltData);
 
-        // NE OLT is connected to invalid other NE with type != DPU (is this case Leaf)
+        // NEP for NE DPU is connected to above NEP -> invalid constellation for CommissioningDpuA4Task
         A4NetworkElementLink invalidNel = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        a4ResourceInventory.createNetworkElementLink(invalidNel, nepOlt, nepLeaf);
+        a4ResourceInventory.createNetworkElementLink(invalidNel, nepDpu, nepPodServer, neDpuData, neNotDpuOltData);
 
-        // WHEN
         CommissioningDpuA4Task comDpuTask = new CommissioningDpuA4Task()
                 .dpuEndSz(getEndsz(neDpuData))
                 .dpuFiberOnLocationId(dpuFiberOnLocationId)
@@ -351,9 +339,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .oltEndSz(getEndsz(neOltData))
                 .oltPonPort(oltPonPort);
 
-        // THEN
+        // WHEN & THEN
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
-        // TODO returned error msg is: "input parameter DPU FSZ is not DPU type" -> test data setup wrong?
+        // Expected error msg: "A4 DPU network element link has not the same OLT"
     }
 
 }
