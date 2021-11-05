@@ -179,7 +179,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         String existingOltEndSz = OltNetworkElement.getVpsz() + "/" + OltNetworkElement.getFsz();
         NetworkElementDto noDpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neNotDpuOltData.getUuid());
         String existingNonDpuEndSz = noDpuNetworkElement.getVpsz() + "/" + noDpuNetworkElement.getFsz();
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 existingNonDpuEndSz,
                 dpuSerialNumber,
                 dpuMaterialNumber,
