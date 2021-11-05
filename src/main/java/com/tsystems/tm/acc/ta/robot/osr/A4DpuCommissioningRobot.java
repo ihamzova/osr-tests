@@ -32,21 +32,28 @@ public class A4DpuCommissioningRobot {
              String dpuKlsId,
              String dpuFiberOnLocationId,
              String oltEndSz,
-             String oltPonPort)
-    {
-    CommissioningDpuA4Task commissioningDpuA4Task = new CommissioningDpuA4Task();
-    commissioningDpuA4Task.setDpuEndSz(dpuEndSz);
-    commissioningDpuA4Task.setDpuSerialNumber(dpuSerialNumber);
-    commissioningDpuA4Task.setDpuMaterialNumber(dpuMaterialNumber);
-    commissioningDpuA4Task.setDpuKlsId(dpuKlsId);
-    commissioningDpuA4Task.setDpuFiberOnLocationId(dpuFiberOnLocationId);
-    commissioningDpuA4Task.setOltEndSz(oltEndSz);
-    commissioningDpuA4Task.setOltPonPort(oltPonPort);
-    a4DpuCommissioning.commissioningDpuA4Tasks()
-                        .commissioningDpuA4Tasks()
-                        .body(commissioningDpuA4Task)
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+             String oltPonPort) {
+        CommissioningDpuA4Task commissioningDpuA4Task = new CommissioningDpuA4Task();
+        commissioningDpuA4Task.setDpuEndSz(dpuEndSz);
+        commissioningDpuA4Task.setDpuSerialNumber(dpuSerialNumber);
+        commissioningDpuA4Task.setDpuMaterialNumber(dpuMaterialNumber);
+        commissioningDpuA4Task.setDpuKlsId(dpuKlsId);
+        commissioningDpuA4Task.setDpuFiberOnLocationId(dpuFiberOnLocationId);
+        commissioningDpuA4Task.setOltEndSz(oltEndSz);
+        commissioningDpuA4Task.setOltPonPort(oltPonPort);
+        a4DpuCommissioning.commissioningDpuA4Tasks()
+                .commissioningDpuA4Tasks()
+                .body(commissioningDpuA4Task)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
+    }
+
+    @Step("send POST for commissioningDpuA4Tasks")
+    public void sendPostForCommissioningDpuA4Tasks(CommissioningDpuA4Task comDpuTask) {
+        a4DpuCommissioning.commissioningDpuA4Tasks()
+                .commissioningDpuA4Tasks()
+                .body(comDpuTask)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     @Step("send POST for commissioningDpuA4Tasks with Validation Error")
@@ -57,8 +64,7 @@ public class A4DpuCommissioningRobot {
              String dpuKlsId,
              String dpuFiberOnLocationId,
              String oltEndSz,
-             String oltPonPort)
-    {
+             String oltPonPort) {
         CommissioningDpuA4Task commissioningDpuA4Task = new CommissioningDpuA4Task();
         commissioningDpuA4Task.setDpuEndSz(dpuEndSz);
         commissioningDpuA4Task.setDpuSerialNumber(dpuSerialNumber);
@@ -73,6 +79,14 @@ public class A4DpuCommissioningRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
+    @Step("send POST for commissioningDpuA4Tasks with Validation Error")
+    public void sendPostForCommissioningDpuA4TasksBadRequest(CommissioningDpuA4Task comDpuTask) {
+        a4DpuCommissioning.commissioningDpuA4Tasks()
+                .commissioningDpuA4Tasks()
+                .body(comDpuTask)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+    }
+
     @Step("send POST for commissioningDpuA4Tasks with Server Error")
     public void sendPostForCommissioningDpuA4TasksServerError
             (String dpuEndSz,
@@ -81,8 +95,7 @@ public class A4DpuCommissioningRobot {
              String dpuKlsId,
              String dpuFiberOnLocationId,
              String oltEndSz,
-             String oltPonPort)
-    {
+             String oltPonPort) {
         CommissioningDpuA4Task commissioningDpuA4Task = new CommissioningDpuA4Task();
         commissioningDpuA4Task.setDpuEndSz(dpuEndSz);
         commissioningDpuA4Task.setDpuSerialNumber(dpuSerialNumber);

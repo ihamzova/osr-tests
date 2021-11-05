@@ -2,8 +2,12 @@ package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
@@ -12,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
@@ -23,6 +28,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Epic("OS&R")
@@ -45,6 +51,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElement neOltData;
     private A4NetworkElement neDpuData;
     private A4NetworkElement neNotDpuOltData;
+    private A4NetworkElementPort nepOlt;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final String dpuSerialNumber = "ztp_ident-IntegrationTest";
@@ -65,7 +72,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementDPU);
         neNotDpuOltData = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01);
-
+        nepOlt = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
 
 
         // Ensure that no old test data is in the way
@@ -79,6 +87,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElement(neOltData, negData);
         a4ResourceInventory.createNetworkElement(neDpuData, negData);
         a4ResourceInventory.createNetworkElement(neNotDpuOltData, negData);
+        a4ResourceInventory.createNetworkElementPort(nepOlt, neOltData);
 
 
      /*   mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
@@ -112,14 +121,14 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Description("NetworkElement (DPU) is created and NEMO is triggerd")
     public void testDpuIsCreated() {
 
-    //Given
-    //NetworkElementGroup by oltEndSz exists
-    //DPU- NetworkElement by dpuEndSz not yet exists
-    NetworkElementDto OltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
-    String existingOltEndSz = OltNetworkElement.getVpsz() + "/" + OltNetworkElement.getFsz();
+        //Given
+        //NetworkElementGroup by oltEndSz exists
+        //DPU- NetworkElement by dpuEndSz not yet exists
+        NetworkElementDto OltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = OltNetworkElement.getVpsz() + "/" + OltNetworkElement.getFsz();
 
-    // When / Action
-    // call A4-DPU-Commissioning-Task
+        // When / Action
+        // call A4-DPU-Commissioning-Task
         a4DpuCommissioning.sendPostForCommissioningDpuA4Tasks(
                 dpuEndSz,
                 dpuSerialNumber,
@@ -129,20 +138,20 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingOltEndSz,
                 oltPonPort);
 
-    // Then / Assert
+        // Then / Assert
 
-        String dpuFsz = dpuEndSz.substring(dpuEndSz.length()-4);
-        String dpuVpsz = dpuEndSz.substring(0,dpuEndSz.length()-5);
+        String dpuFsz = dpuEndSz.substring(dpuEndSz.length() - 4);
+        String dpuVpsz = dpuEndSz.substring(0, dpuEndSz.length() - 5);
 
-        NetworkElementDto createdDpuNe = a4ResourceInventory.getExistingNetworkElementByVpszFsz(dpuVpsz,dpuFsz);
-        Assert.assertEquals(createdDpuNe.getCategory(),"DPU");
-        Assert.assertEquals(createdDpuNe.getZtpIdent(),dpuSerialNumber);
-        Assert.assertEquals(createdDpuNe.getPlannedMatNumber(),dpuMaterialNumber);
-        Assert.assertEquals(createdDpuNe.getKlsId(),dpuKlsId);
-        Assert.assertEquals(createdDpuNe.getFiberOnLocationId(),dpuFiberOnLocationId);
-        Assert.assertEquals(createdDpuNe.getLifecycleState(),"INSTALLING");
-        Assert.assertEquals(createdDpuNe.getOperationalState(),"NOT_WORKING");
-        Assert.assertEquals(createdDpuNe.getType(),"A4-DPU-4P-TP-v1");
+        NetworkElementDto createdDpuNe = a4ResourceInventory.getExistingNetworkElementByVpszFsz(dpuVpsz, dpuFsz);
+        Assert.assertEquals(createdDpuNe.getCategory(), "DPU");
+        Assert.assertEquals(createdDpuNe.getZtpIdent(), dpuSerialNumber);
+        Assert.assertEquals(createdDpuNe.getPlannedMatNumber(), dpuMaterialNumber);
+        Assert.assertEquals(createdDpuNe.getKlsId(), dpuKlsId);
+        Assert.assertEquals(createdDpuNe.getFiberOnLocationId(), dpuFiberOnLocationId);
+        Assert.assertEquals(createdDpuNe.getLifecycleState(), "INSTALLING");
+        Assert.assertEquals(createdDpuNe.getOperationalState(), "NOT_WORKING");
+        Assert.assertEquals(createdDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
         //ToDo Check if NemoUpdater is triggered
 
@@ -278,16 +287,16 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Description("If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
 
-    //Given
-    //NetworkElementGroup by oltEndSz exists
-    //DPU- NetworkElement by dpuEndSz already exists
-    NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
-    String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
-    NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
-    String existingDpuEndSz = dpuNetworkElement.getVpsz() + "/" + dpuNetworkElement.getFsz();
+        //Given
+        //NetworkElementGroup by oltEndSz exists
+        //DPU- NetworkElement by dpuEndSz already exists
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+        NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+        String existingDpuEndSz = dpuNetworkElement.getVpsz() + "/" + dpuNetworkElement.getFsz();
 
-    // When / Action
-    // call A4-DPU-Commissioning-Task
+        // When / Action
+        // call A4-DPU-Commissioning-Task
         a4DpuCommissioning.sendPostForCommissioningDpuA4Tasks(
                 existingDpuEndSz,
                 dpuSerialNumber,
@@ -297,17 +306,17 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingOltEndSz,
                 oltPonPort);
 
-    // Then / Assert
+        // Then / Assert
 
-        NetworkElementDto updatedDpuNe =a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
-        Assert.assertEquals(updatedDpuNe.getCategory(),"DPU");
-        Assert.assertEquals(updatedDpuNe.getZtpIdent(),dpuSerialNumber);
-        Assert.assertEquals(updatedDpuNe.getPlannedMatNumber(),dpuMaterialNumber);
-        Assert.assertEquals(updatedDpuNe.getKlsId(),dpuKlsId);
-        Assert.assertEquals(updatedDpuNe.getFiberOnLocationId(),dpuFiberOnLocationId);
-        Assert.assertEquals(updatedDpuNe.getLifecycleState(),"INSTALLING");
-        Assert.assertEquals(updatedDpuNe.getOperationalState(),"NOT_WORKING");
-        Assert.assertEquals(updatedDpuNe.getType(),"A4-DPU-4P-TP-v1");
+        NetworkElementDto updatedDpuNe = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+        Assert.assertEquals(updatedDpuNe.getCategory(), "DPU");
+        Assert.assertEquals(updatedDpuNe.getZtpIdent(), dpuSerialNumber);
+        Assert.assertEquals(updatedDpuNe.getPlannedMatNumber(), dpuMaterialNumber);
+        Assert.assertEquals(updatedDpuNe.getKlsId(), dpuKlsId);
+        Assert.assertEquals(updatedDpuNe.getFiberOnLocationId(), dpuFiberOnLocationId);
+        Assert.assertEquals(updatedDpuNe.getLifecycleState(), "INSTALLING");
+        Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
+        Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
         //ToDo Check if NemoUpdater is triggered
 
@@ -318,13 +327,33 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxxxx")
     @Description("If DPU already existing and NetworkElementLink is not OLT then throw an error.")
     public void testDpuCannotUpdatedWrongNel() {
+        // GIVEN
+        A4NetworkElement neLeaf = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementPlanningLeafSwitch01);
+        a4ResourceInventory.createNetworkElement(neLeaf, negData);
 
-        //Given
+        A4NetworkElementPort nepLeaf = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+        a4ResourceInventory.createNetworkElementPort(nepLeaf, neLeaf);
 
-        // When / Action
+        // NE OLT is connected to invalid other NE with type != DPU (is this case Leaf)
+        A4NetworkElementLink invalidNel = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        a4ResourceInventory.createNetworkElementLink(invalidNel, nepOlt, nepLeaf);
 
+        // WHEN
+        CommissioningDpuA4Task comDpuTask = new CommissioningDpuA4Task()
+                .dpuEndSz(getEndsz(neDpuData))
+                .dpuFiberOnLocationId(dpuFiberOnLocationId)
+                .dpuKlsId(dpuKlsId)
+                .dpuMaterialNumber(dpuMaterialNumber)
+                .dpuSerialNumber(dpuSerialNumber)
+                .oltEndSz(getEndsz(neOltData))
+                .oltPonPort(oltPonPort);
 
-        // Then / Assert
-
+        // THEN
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
+        // TODO returned error msg is: "input parameter DPU FSZ is not DPU type" -> test data setup wrong?
     }
+
 }
