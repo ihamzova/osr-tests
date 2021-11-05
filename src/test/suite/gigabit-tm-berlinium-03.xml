@@ -20,6 +20,7 @@
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceOrderTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4ResourceOrderSearchPageTest"/>
             <class name="com.tsystems.tm.acc.ta.team.berlinium.A4PhysicalInventoryTest"/>
+            <class name="cucumber.RunCucumberTests"/>
         </classes>
     </test>
 </suite>
