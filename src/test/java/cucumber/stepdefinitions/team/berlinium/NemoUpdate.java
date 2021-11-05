@@ -28,6 +28,7 @@ public class NemoUpdate extends GigabitTest {
     private WireMockMappingsContext wiremock;
 
     private String uuid;
+    private A4NetworkElementGroup negData;
 
     @Before
     public void test_context_is_set_up() {
@@ -48,12 +49,12 @@ public class NemoUpdate extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4Inventory.deleteA4TestDataRecursively(uuid);
+        a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
     @Given("a NEG with uuid {string} exists in A4 resource inventory")
     public void a_neg_with_uuid(String negUuid) {
-        A4NetworkElementGroup negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
+        negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
         uuid = negUuid;
