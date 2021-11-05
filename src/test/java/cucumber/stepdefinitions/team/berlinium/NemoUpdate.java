@@ -49,7 +49,8 @@ public class NemoUpdate extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4Inventory.deleteA4TestDataRecursively(negData);
+        if (negData != null)
+            a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
     @Given("a NEG with uuid {string} exists in A4 resource inventory")
