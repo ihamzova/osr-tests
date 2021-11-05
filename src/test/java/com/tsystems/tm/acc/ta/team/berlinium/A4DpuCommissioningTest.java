@@ -157,6 +157,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //Given
         //Scenario 1: for oltEndSz does not exists any NetworkElement
         //Scenario 2: for oltEndSz exists NetworkElement but is not an OLT
+        //Scenario 3: for oltEndSz exists NetworkElement but dpuEndSz is not in FSZ range
 
         // When / Action
 
@@ -182,6 +183,20 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 dpuKlsId,
                 dpuFiberOnLocationId,
                 existingNonOltEndSz,
+                oltPonPort);
+
+        //Scenario 3:
+        //Request for CommissioningDpuA4Task with existing OLT-NE for required oltEndSz,
+        // but dpuEndSz is in wrong FSZ-range
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                "49/333/0/7KC1",
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
                 oltPonPort);
 
 
@@ -218,7 +233,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
 
         // Then / Assert
-        //HTTP return code is 500 (Server Error)
+        //HTTP return code is 400 (Bad Request)
 
     }
 
@@ -231,8 +246,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         //Given: NE and NEG exists but in request-call one or more attributes are missing
 
-        NetworkElementDto OltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
-        String existingOltEndSz = OltNetworkElement.getVpsz() + "/" + OltNetworkElement.getFsz();
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
 
         // When: Request for CommissioningDpuA4Task is not complete
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
@@ -259,16 +274,42 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
     @Test(description = "DIGIHUB-118479 if DPU already existing and NetworkElementLink is OLT then update DPU")
     @Owner("xxxxxx@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxxx")
+    @TmsLink("DIGIHUB-126534")
     @Description("If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
 
-        //Given
+    //Given
+    //NetworkElementGroup by oltEndSz exists
+    //DPU- NetworkElement by dpuEndSz already exists
+    NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+    String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+    NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+    String existingDpuEndSz = dpuNetworkElement.getVpsz() + "/" + dpuNetworkElement.getFsz();
 
-        // When / Action
+    // When / Action
+    // call A4-DPU-Commissioning-Task
+        a4DpuCommissioning.sendPostForCommissioningDpuA4Tasks(
+                existingDpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
 
+    // Then / Assert
 
-        // Then / Assert
+        NetworkElementDto updatedDpuNe =a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+        Assert.assertEquals(updatedDpuNe.getCategory(),"DPU");
+        Assert.assertEquals(updatedDpuNe.getZtpIdent(),dpuSerialNumber);
+        Assert.assertEquals(updatedDpuNe.getPlannedMatNumber(),dpuMaterialNumber);
+        Assert.assertEquals(updatedDpuNe.getKlsId(),dpuKlsId);
+        Assert.assertEquals(updatedDpuNe.getFiberOnLocationId(),dpuFiberOnLocationId);
+        Assert.assertEquals(updatedDpuNe.getLifecycleState(),"INSTALLING");
+        Assert.assertEquals(updatedDpuNe.getOperationalState(),"NOT_WORKING");
+        Assert.assertEquals(updatedDpuNe.getType(),"A4-DPU-4P-TP-v1");
+
+        //ToDo Check if NemoUpdater is triggered
 
     }
 
