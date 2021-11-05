@@ -45,7 +45,7 @@ public class A4DpuCommissioningRobot {
     a4DpuCommissioning.commissioningDpuA4Tasks()
                         .commissioningDpuA4Tasks()
                         .body(commissioningDpuA4Task)
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                    .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
 
     }
 
