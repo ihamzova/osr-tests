@@ -6,7 +6,7 @@ import org.testng.annotations.DataProvider;
 
 @CucumberOptions(
 //        plugin = { "cucumberHooks.customReportListener", "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm" },
-        plugin = { "pretty", "json:target/cucumberscenarios/cucumberscenarios.json" },
+        plugin = { "pretty", "json:target/allure-results/cucumberscenarios.json" },
         monochrome = true,
         glue = { "cucumber/stepdefinitions" },
         features = { "src/test/resources/cucumberscenarios" }
