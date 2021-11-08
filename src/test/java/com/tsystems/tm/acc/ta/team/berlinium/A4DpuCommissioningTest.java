@@ -155,7 +155,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-126295")
     @Description("If NetworkElementGroup not found then throw an error.")
     public void testDpuCannotCreatedNegNotFound() {
-
         //Given
         //Scenario 1: for oltEndSz does not exists any NetworkElement
         //Scenario 2: for oltEndSz exists NetworkElement but is not an OLT
@@ -204,7 +203,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
-
     }
 
 
@@ -213,7 +211,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-126423")
     @Description("If DpuEndSz is not an DPU-NE then throw an error.")
     public void testDpuCorruptData() {
-
         //Given
         // for oltEndSz exists OLT NetworkElement
         // and for dpuEndSz exists NetworkElement but is not an DPU
@@ -236,7 +233,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
         //HTTP return code is 400 (Bad Request)
-
     }
 
 
@@ -245,7 +241,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-126199")
     @Description("If any of attributes in Task are null or empty then throw an error.")
     public void testDpuCannotCreatedValidationError() {
-
         //Given: NE and NEG exists but in request-call one or more attributes are missing
 
         NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
@@ -271,7 +266,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 oltPonPort);
 
         // Then: Bad Request is required
-
     }
 
     @Test(description = "DIGIHUB-118479 if DPU already existing and NetworkElementLink is OLT then update DPU")
@@ -279,7 +273,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @TmsLink("DIGIHUB-126534")
     @Description("If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
-
         //Given
         //NetworkElementGroup by oltEndSz exists
         //DPU- NetworkElement by dpuEndSz already exists
@@ -315,13 +308,11 @@ public class A4DpuCommissioningTest extends GigabitTest {
         String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
         String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
-
-
     }
 
-    @Test(description = "DIGIHUB-118479 if DPU already existing and NetworkElementLink is not OLT then throw an error")
+    @Test(description = "DIGIHUB-126609 if DPU already existing and NetworkElementLink is not OLT then throw an error")
     @Owner("bela.kovac@t-systems.com")
-    @TmsLink("DIGIHUB-118479")
+    @TmsLink("DIGIHUB-126609")
     @Description("If DPU already existing and NetworkElementLink is not OLT then throw an error.")
     public void testDpuCannotUpdatedWrongNel() {
         // GIVEN
