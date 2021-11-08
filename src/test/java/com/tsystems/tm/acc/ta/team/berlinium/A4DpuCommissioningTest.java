@@ -145,7 +145,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(createdDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
-        //ToDo Check if NemoUpdater is triggered
+        //Check if NemoUpdater is triggered
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
 
     }
 
@@ -310,7 +311,11 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
-        //ToDo Check if NemoUpdater is triggered
+        //Check if NemoUpdater is triggered
+        String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
+        String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
+
 
     }
 
