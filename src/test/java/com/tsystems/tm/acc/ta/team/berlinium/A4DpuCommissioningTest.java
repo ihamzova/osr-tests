@@ -308,8 +308,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
         String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
-
-
     }
 
     @Test(description = "DIGIHUB-126609 if DPU already existing and NetworkElementLink is not OLT then throw an error")
