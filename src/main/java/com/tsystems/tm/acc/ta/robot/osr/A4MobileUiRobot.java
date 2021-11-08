@@ -34,6 +34,8 @@ import static org.testng.Assert.*;
 @Slf4j
 public class A4MobileUiRobot {
 
+    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
+
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage() {
@@ -237,7 +239,7 @@ public class A4MobileUiRobot {
 
     @Step("Click NE Reset to planning button")
     public void clickNeResetToPlanningButtonAndConfirm() {
-        System.out.println("+++ Enabled: "+$(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
+        System.out.println("+++ Button Enabled: "+$(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
         $(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).click();
 
         try {
@@ -251,10 +253,30 @@ public class A4MobileUiRobot {
         }
     }
 
+    @Step("Check NE state after reset to planning")
+    public void checkResetStateInDbOk(String uuid) {
+
+
+
+
+
+    }
+
+    public ElementsCollection getNeElementsCollection() {
+        try {
+            Thread.sleep(2000);
+            return $(A4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     @Step("Check NE Reset to planning button is disabled")
     public void checkNeResetToPlanningButtonDisabled() {
       assertFalse($(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
-      System.out.println("+++ juchhu, disabled");
     }
 
         @Step("Check error message not found")
