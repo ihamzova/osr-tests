@@ -110,7 +110,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-118479 Create NetworkElement for requested DPU in Resource-Inventory and synchronize with NEMO")
-    @Owner("xxxxxx@t-systems.com")
+    @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126432")
     @Description("NetworkElement (DPU) is created and NEMO is triggerd")
     public void testDpuIsCreated() {
@@ -150,7 +150,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-118479 if NetworkElementGroup not found then throw an error")
-    @Owner("xxxxxx@t-systems.com")
+    @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126295")
     @Description("If NetworkElementGroup not found then throw an error.")
     public void testDpuCannotCreatedNegNotFound() {
@@ -208,7 +208,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
 
     @Test(description = "DIGIHUB-118479 if DpuEndSz is not an DPU-NE then throw an error")
-    @Owner("xxxxxx@t-systems.com")
+    @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126423")
     @Description("If DpuEndSz is not an DPU-NE then throw an error.")
     public void testDpuCorruptData() {
@@ -240,7 +240,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
 
     @Test(description = "DIGIHUB-118479 if any of attributes in Task are null or empty then throw an error")
-    @Owner("xxxxxx@t-systems.com")
+    @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126199")
     @Description("If any of attributes in Task are null or empty then throw an error.")
     public void testDpuCannotCreatedValidationError() {
@@ -274,7 +274,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-118479 if DPU already existing and NetworkElementLink is OLT then update DPU")
-    @Owner("xxxxxx@t-systems.com")
+    @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126534")
     @Description("If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
