@@ -10,9 +10,9 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.A4DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -29,7 +29,8 @@ import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 @Epic("OS&R")
 @Feature("A4 DPU Commissioning")
@@ -158,7 +159,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //Given
         //Scenario 1: for oltEndSz does not exists any NetworkElement
         //Scenario 2: for oltEndSz exists NetworkElement but is not an OLT
-        //Scenario 3: for oltEndSz exists NetworkElement but dpuEndSz is not in FSZ range
 
         // When / Action
 
@@ -186,30 +186,15 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingNonOltEndSz,
                 oltPonPort);
 
-        //Scenario 3:
-        //Request for CommissioningDpuA4Task with existing OLT-NE for required oltEndSz,
-        // but dpuEndSz is in wrong FSZ-range
-        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
-        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
-                "49/333/0/7KC1",
-                dpuSerialNumber,
-                dpuMaterialNumber,
-                dpuKlsId,
-                dpuFiberOnLocationId,
-                existingOltEndSz,
-                oltPonPort);
-
-
         // Then / Assert
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
     }
 
 
-    @Test(description = "DIGIHUB-118479 if DpuEndSz is not an DPU-NE then throw an error")
+    @Test(description = "DIGIHUB-118479 if DpuEndSz is not found in catalogue or not an DPU-NE Type then throw an error")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126423")
-    @Description("If DpuEndSz is not an DPU-NE then throw an error.")
+    @Description("If DpuEndSz is not found in catalogue or not DPU-NE Type then throw an error.")
     public void testDpuCorruptData() {
         //Given
         // for oltEndSz exists OLT NetworkElement
@@ -220,7 +205,19 @@ public class A4DpuCommissioningTest extends GigabitTest {
         String existingNonDpuEndSz = noDpuNetworkElement.getVpsz() + "/" + noDpuNetworkElement.getFsz();
 
         // When / Action
-
+        //Scenario 1:
+        //Request for CommissioningDpuA4Task with existing OLT-NE for required oltEndSz,
+        // but dpuEndSz is not found in catalogue
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                "49/333/0/8KC1",
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
+        //Scenario 2:
+        //DPU FSZ not DPU Type
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 existingNonDpuEndSz,
                 dpuSerialNumber,
@@ -253,6 +250,16 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 dpuMaterialNumber,
                 dpuKlsId,
                 "",
+                existingOltEndSz,
+                oltPonPort);
+
+        // When: Request for CommissioningDpuA4Task is not complete
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                "null",
                 existingOltEndSz,
                 oltPonPort);
 
