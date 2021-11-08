@@ -45,7 +45,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4DpuCommissioningRobot a4DpuCommissioning = new A4DpuCommissioningRobot();
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+    private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neOltData;
@@ -90,11 +90,11 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElement(neNotDpuOltData, negData);
         a4ResourceInventory.createNetworkElementPort(nepOlt, neOltData);
 
-//        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
+//        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
 //                .addNemoMock()
 //                .build();
 //
-//        mappingsContext.publish()
+//        wiremock.publish()
 //                .publishedHook(savePublishedToDefaultDir())
 //                .publishedHook(attachStubsToAllureReport());
     }
@@ -103,8 +103,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
     public void cleanup() {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        mappingsContext.close();
-        mappingsContext
+        wiremock.close();
+        wiremock
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
     }
@@ -347,6 +347,41 @@ public class A4DpuCommissioningTest extends GigabitTest {
         // WHEN & THEN
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
         // Expected error msg: "A4 DPU network element link has not the same OLT"
+    }
+
+
+    @Test(description = "DIGIHUB-118479 if NemoUpdater is not reachable then throw Server Error")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-126611")
+    @Description("If NemoUpdater is not reachable then throw Server Error.")
+    public void testNemoNotReachableServerError() {
+
+        //Given: NE and NEG exists but Nemo is not reachable
+
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+
+        // make wiremock return 500 for put DPU-NE
+       /* wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "CreateDpuTest"))
+                .addNemoMock500()
+                .build();
+        wiremock.publish();
+
+        */
+
+        // When: call A4-DPU-Commissioning-Task
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
+
+
+        // Then: Server Error is required
+
     }
 
 }
