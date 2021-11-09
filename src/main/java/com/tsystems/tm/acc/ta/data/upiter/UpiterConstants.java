@@ -27,4 +27,5 @@ public interface UpiterConstants {
     String ONT_USAGE_BFF_PROXY_MS ="ont-usage-bff-proxy";
     String ONT_USAGE_SUPPLIER_UI ="ont-usage-supplier-ui";
     String ONT_USAGE_SUPPORT_UI ="ont-usage-support-ui";
+    String NETWORK_SWITCHING_CONGIF_MGT_MS ="network-switching-config-mgt";
 }
