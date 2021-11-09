@@ -67,7 +67,7 @@ public class A4ResilienceRobot {
         String routeOfNemo = "resource-order-resource-inventory.v1.nemo.logicalResource";
 
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(urlApiGw + "/routes/?size=200");
+        WebTarget resource = client.target(urlApiGw + "/routes/?size=300");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         try {
             Response response = request.get();
@@ -121,7 +121,7 @@ public class A4ResilienceRobot {
     @Step("changeRouteToProvidedMicroservice")
     public void changeRouteToMicroservice(String route, String ms) throws IOException {
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(urlApiGw + "/routes/");
+        WebTarget resource = client.target(urlApiGw + "/routes/?size=300");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         log.debug("Will call " + urlApiGw);
         Response response = request.get();

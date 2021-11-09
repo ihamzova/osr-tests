@@ -14,6 +14,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.APIGW;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_QUEUE_DISPATCHER_MS;
 import static com.tsystems.tm.acc.tests.osr.a4.carrier.management.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
@@ -38,7 +39,7 @@ public class A4ResourceOrderClient implements Resetable {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
                 () -> RequestSpecBuilders.getDefaultWithAuth(
                         GsonObjectMapper.gson(),
-                        new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_MS).buildUri(),
+                        new GigabitUrlBuilder(APIGW).withoutSuffix().buildUri(),
                         new BearerHeaderAuthTokenInjector(authTokenProvider)
                 )
         ));
