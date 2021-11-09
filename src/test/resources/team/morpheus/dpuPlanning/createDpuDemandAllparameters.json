@@ -1,5 +1,5 @@
 {
-  "dpuAccessTechnology": "FTTB_CUDA",
+  "dpuAccessTechnology": "FTTB",
   "dpuEndSz": "49/520/4/78G2",
   "dpuInstallationInstruction": "30cm neben APL",
   "dpuLocation": "Technikraum Keller links",

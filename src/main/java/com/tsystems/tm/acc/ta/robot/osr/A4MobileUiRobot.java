@@ -29,11 +29,12 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class A4MobileUiRobot {
+
+    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
 
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
@@ -160,16 +161,13 @@ public class A4MobileUiRobot {
     @Step("Click Zeige Nel zu Ne button")
     public void clickZeigeNelZuNeButton() { $(A4MobileNeSearchPage.getZEIGE_NEL_ZU_NE_BUTTON_LOCATOR()).click(); }
 
-
     @Step("Click NEL installation button")
     public void clickNelInstallationButton() {
-        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
-    }
+        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();   }
 
     @Step("Click Monitoring Button")
     public void clickMonitoringButton() {
-        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();
-    }
+        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();   }
 
 
     //inbetriebnahme-page
@@ -224,7 +222,7 @@ public class A4MobileUiRobot {
         $(A4MobileInbetriebnahmeNELPage.getCHECKBOX_LOCATOR()).click();
     }
 
-    @Step("Click button")
+    @Step("Click NEL Install Button")
     public void clickButtonAndConfirm() {
         $(A4MobileInbetriebnahmeNELPage.getSTART_INSTALL_BTN()).click();
 
@@ -239,7 +237,49 @@ public class A4MobileUiRobot {
         }
     }
 
-    @Step("Check error message not found")
+    @Step("Click NE Reset to planning button")
+    public void clickNeResetToPlanningButtonAndConfirm() {
+        System.out.println("+++ Button Enabled: "+$(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
+        $(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).click();
+
+        try {
+            WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+            WebDriverWait wait = new WebDriverWait(driver, 5000);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert();
+            alert.accept();
+        } catch (NoAlertPresentException e) {
+            System.out.println("EXCEPTION " + e.getCause());
+        }
+    }
+
+    @Step("Check NE state after reset to planning")
+    public void checkResetStateInDbOk(String uuid) {
+
+
+
+
+
+    }
+
+    public ElementsCollection getNeElementsCollection() {
+        try {
+            Thread.sleep(2000);
+            return $(A4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    @Step("Check NE Reset to planning button is disabled")
+    public void checkNeResetToPlanningButtonDisabled() {
+      assertFalse($(A4MobileNeSearchPage.getNE_RESET_TO_PLANNING_BUTTON_LOCATOR()).isEnabled());
+    }
+
+        @Step("Check error message not found")
     public String notFoundMsg() {
         return $(A4MobileInbetriebnahmeNELPage.getERROR_LOCATOR()).getText();
     }

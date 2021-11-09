@@ -20,7 +20,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -250,6 +249,18 @@ public class A4ResourceInventoryRobot {
                 .networkElementGroupUuidQuery(negUuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+/*
+    @Step("Get a list of Network Elements by NE uuid")
+    public List<NetworkElementDto> getNetworkElementsByNeUuid(String neUuid) {
+        return a4ResourceInventory
+                .networkElements().findNetworkElement()
+      //          .uuidPath(neUuid)
+//                .listNetworkElements()
+  //              .networkElementUuidQuery(neUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+ */
 
     @Step("Get a list of Network Elements by by VPSZ/FSZ")
     // As VPSZ & FSZ are together a unique constraint, the list will have either 0 or 1 entries
@@ -337,6 +348,18 @@ public class A4ResourceInventoryRobot {
                 .findNetworkElement()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Check that Network Element does not exist")
+    public void checkNetworkElementDoesNotExist(String vpsz, String fsz) {
+        List<NetworkElementDto> neList = a4ResourceInventory
+                .networkElements()
+                .listNetworkElements()
+                .vpszQuery(vpsz)
+                .fszQuery(fsz)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        assertEquals(neList.size(), 0);
     }
 
     @Step("Get existing Network Element Port by UUID")
@@ -443,8 +466,6 @@ public class A4ResourceInventoryRobot {
     public void checkNetworkElementPortsByImportCsvData(A4ImportCsvData a4ImportCsvData) {
         AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
         AtomicReference<List<NetworkElementPortDto>> networkElementPortDtoUnderTest = new AtomicReference<>(new ArrayList<>());
-
-        //AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
 
         a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
             networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
