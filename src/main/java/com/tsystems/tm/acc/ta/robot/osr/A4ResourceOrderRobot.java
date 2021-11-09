@@ -68,7 +68,7 @@ public class A4ResourceOrderRobot {
                 .xCallbackUrlHeader(cbUrl)
                 .xCallbackIdHeader("1")
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     }
 
     public ResourceOrder buildResourceOrder() {
