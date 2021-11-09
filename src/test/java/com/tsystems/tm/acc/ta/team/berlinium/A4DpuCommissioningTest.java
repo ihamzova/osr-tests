@@ -29,8 +29,6 @@ import java.io.IOException;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 @Epic("OS&R")
 @Feature("A4 DPU Commissioning")
@@ -138,7 +136,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         //Check if NemoUpdater is triggered
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
-
     }
 
     @Test(description = "DIGIHUB-118479 if NetworkElementGroup not found then throw an error")
@@ -180,7 +177,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
     }
 
-
     @Test(description = "DIGIHUB-118479 if DpuEndSz is not found in catalogue or not an DPU-NE Type then throw an error")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126423")
@@ -217,11 +213,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingOltEndSz,
                 oltPonPort);
 
-
         // Then / Assert
         //HTTP return code is 400 (Bad Request)
     }
-
 
     @Test(description = "DIGIHUB-118479 if any of attributes in Task are null or empty then throw an error")
     @Owner("Anita.Junge@t-systems.com")
