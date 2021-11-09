@@ -8,14 +8,12 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4DpuCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -27,10 +25,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 @Epic("OS&R")
 @Feature("A4 DPU Commissioning")
@@ -42,11 +40,13 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 
 public class A4DpuCommissioningTest extends GigabitTest {
 
+    private final String ROUTE_NAME = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
+
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4DpuCommissioningRobot a4DpuCommissioning = new A4DpuCommissioningRobot();
-    private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "")).build();
+    private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neOltData;
@@ -63,9 +63,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private final String noExistingEndSz = "11/22/333/4444";
     private final String oltPonPort = "oltPonPortIntegrationTest";
 
-
     @BeforeClass
-    public void init() {
+    public void init() throws IOException {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neOltData = osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -90,24 +89,13 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElement(neDpuData, negData);
         a4ResourceInventory.createNetworkElement(neNotDpuOltData, negData);
         a4ResourceInventory.createNetworkElementPort(nepOlt, neOltData);
-
-//        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
-//                .addNemoMock()
-//                .build();
-//
-//        mappingsContext.publish()
-//                .publishedHook(savePublishedToDefaultDir())
-//                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterMethod
-    public void cleanup() {
+    public void cleanup() throws IOException {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        mappingsContext.close();
-        mappingsContext
-                .eventsHook(saveEventsToDefaultDir())
-                .eventsHook(attachEventsToAllureReport());
+        a4ResilienceRobot.changeRouteToMicroservice(ROUTE_NAME, A4_NEMO_UPDATER_MS);
     }
 
     @Test(description = "DIGIHUB-118479 Create NetworkElement for requested DPU in Resource-Inventory and synchronize with NEMO")
@@ -148,7 +136,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         //Check if NemoUpdater is triggered
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
-
     }
 
     @Test(description = "DIGIHUB-118479 if NetworkElementGroup not found then throw an error")
@@ -190,7 +177,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
     }
 
-
     @Test(description = "DIGIHUB-118479 if DpuEndSz is not found in catalogue or not an DPU-NE Type then throw an error")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126423")
@@ -227,11 +213,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 existingOltEndSz,
                 oltPonPort);
 
-
         // Then / Assert
         //HTTP return code is 400 (Bad Request)
     }
-
 
     @Test(description = "DIGIHUB-118479 if any of attributes in Task are null or empty then throw an error")
     @Owner("Anita.Junge@t-systems.com")
@@ -345,6 +329,30 @@ public class A4DpuCommissioningTest extends GigabitTest {
         // WHEN & THEN
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
         // Expected error msg: "A4 DPU network element link has not the same OLT"
+    }
+
+    @Test(description = "DIGIHUB-118479 if NemoUpdater is not reachable then throw Server Error")
+    @Owner("Anita.Junge@t-systems.com, bela.kovac@t-systems.com")
+    @TmsLink("DIGIHUB-126611")
+    @Description("If NemoUpdater is not reachable then throw Server Error.")
+    public void testNemoNotReachableServerError() {
+        //GIVEN
+        // NE and NEG exists but Nemo is not reachable
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+
+        a4ResilienceRobot.changeRouteToWiremock(ROUTE_NAME);
+
+        // WHEN & THEN
+        // call A4-DPU-Commissioning-Task
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
     }
 
 }
