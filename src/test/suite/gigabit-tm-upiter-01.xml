@@ -72,10 +72,15 @@
     <test thread-count="1" name="ONT Usage Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontusage.OntUsageTest">
-            <methods>
-                <exclude name="changeSupplierTest"/>
-            </methods>
+                <methods>
+                    <exclude name="changeSupplierTest"/>
+                </methods>
             </class>
+        </classes>
+    </test>
+    <test thread-count="1" name="Network Switching Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.NetworkSwitching"/>
         </classes>
     </test>
 </suite>

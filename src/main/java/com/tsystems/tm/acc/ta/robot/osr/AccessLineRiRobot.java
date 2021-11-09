@@ -87,6 +87,18 @@ public class AccessLineRiRobot {
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
+  @Step("Fill database with test data for Network Switching")
+  public void fillDatabaseForNetworkSwitching(PortProvisioning sourcePort, PortProvisioning targetPort) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForSwitchingPreparation()
+            .HOME_ID_SEQQuery(1)
+            .LINE_ID_SEQQuery(1)
+            .END_SZQuery(sourcePort.getEndSz())
+            .SLOT_NUMBER1Query(sourcePort.getSlotNumber())
+            .END_SZ_2Query(targetPort.getEndSz())
+            .SLOT_NUMBER2Query(targetPort.getSlotNumber())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
   @Step("Add FTTB access lines to olt device")
   public void fillDatabaseAddFttbLinesToOltDevice() {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().addFttbLinesToOltDevice().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -222,7 +234,6 @@ public class AccessLineRiRobot {
     assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
   }
 
-
   @Step("Check FTTB AccessLines (FTTB_NE_Profile, Default_NetworkLine_Profile")
   public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
     try {
@@ -272,6 +283,7 @@ public class AccessLineRiRobot {
     assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
             "Default NetworkLine Profiles are incorrect");
   }
+
   @Step("Check Default NetworkLine Profiles")
   public void checkDefaultNetworkLineProfiles(AccessLine accessLine, DefaultNetworkLineProfile expectedDefaultNLineProfile) {
     List<DefaultNetworkLineProfileDto> actualDefaultNLProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
@@ -569,6 +581,14 @@ public class AccessLineRiRobot {
     return fttbAccessLinesFiltered;
   }
 
+  @Step("Get AccessLines with HomeIds")
+  public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
+    List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> (accessLineDto.getHomeId()!=null)).collect(Collectors.toList());
+    assertTrue(accessLinesWithHomeIds.size()!=0, "There are no AccessLines with HomeIds");
+    return accessLinesWithHomeIds;
+  }
+
   @Step("Get AccessLines by tpRef")
   public List<AccessLineDto> getAccessLineByTpRef(String tpRef) {
     List<AccessLineDto> accessLines = accessLineResourceInventory
@@ -590,6 +610,27 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
+  @Step("Get LineIDs from the Port")
+  public List<String> getLineIds (PortProvisioning port) {
+    return getLineIdPool(port).stream().map(lineIdDto -> lineIdDto.getLineId()).collect(Collectors.toList());
+  }
+
+  public List<String> getLineIdsByStatus(PortProvisioning port, LineIdStatus lineIdStatus) {
+    return getLineIdPool(port).stream()
+            .filter(lineIdDto -> (lineIdStatus.equals(lineIdDto.getStatus())))
+            .map(lineIdDto -> lineIdDto.getLineId())
+            .collect(Collectors.toList());
+  }
+
+  @Step("Get LineIds from AccessLines by their status")
+  public List<String> getLineIdsByAccessLinesStatus(PortProvisioning port, AccessLineStatus accessLineStatus) {
+    List<String>lineIds = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> accessLineStatus.equals(accessLineDto.getStatus()))
+            .map(accessLineDto -> accessLineDto.getLineId())
+            .collect(Collectors.toList());
+    return lineIds;
+  }
+
   @Step("Get HomeID Pool by Port")
   public List<HomeIdDto> getHomeIdPool(PortProvisioning port) {
     return accessLineResourceInventory.homeIdController().searchHomeIds().body(
@@ -598,6 +639,19 @@ public class AccessLineRiRobot {
                     .slotNumber(port.getSlotNumber())
                     .portNumber(port.getPortNumber()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Get HomeIDs from the Port")
+  public List<String> getHomeIds(PortProvisioning port) {
+    return getHomeIdPool(port).stream().map(homeIdDto -> homeIdDto.getHomeId()).collect(Collectors.toList());
+  }
+
+  @Step("Get HomeIDs from Port by Status")
+  public List<String> getHomeIdsByStatus(PortProvisioning port, HomeIdStatus homeIdStatus) {
+    return getHomeIdPool(port).stream()
+            .filter(homeIdDto -> (homeIdStatus.equals(homeIdDto.getStatus())))
+            .map(homeIdDto -> homeIdDto.getHomeId())
+            .collect(Collectors.toList());
   }
 
   @Step("Get AllocatedOnuIds")
@@ -619,6 +673,30 @@ public class AccessLineRiRobot {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     return onuIdDtos;
+  }
+
+  @Step("Get AllocatedOnuIds by AccessLines")
+  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List <AccessLineDto> accessLinesList) {
+    List<Integer> allocatedOnunIds = accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+            .searchAllocatedOnuId()
+            .body(new SearchAllocatedOnuIdDto()
+                    .oltEndSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber())
+                    .lineId(accessLine.getLineId()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+            .flatMap(List::stream).collect(Collectors.toList());
+    return allocatedOnunIds;
+  }
+
+  @Step("Get AllocatedAnpTags from AccessLines")
+  public List<Integer> getAllocatedAnpTags (List<AccessLineDto> accessLines) {
+    return accessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag()).collect(Collectors.toList());
+  }
+
+  @Step("Get AllocatedAnpTags from the NetworkSwitchingProfiles")
+  public List<Integer> getAllocatedAnpTagsFromNsProfile (List<AccessLineDto> accessLines) {
+    return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile().getAnpTag().getAnpTag()).collect(Collectors.toList());
   }
 
   @Step("Get homeID from pool by port")
