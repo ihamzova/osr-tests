@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
@@ -39,8 +38,8 @@ import static org.testng.Assert.fail;
 @Slf4j
 public class A4ResourceOrderRobot {
 
-    public static final  String cbPath = "/test_url";
-    private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + cbPath; // Wiremock for merlin MS
+    public static final  String CB_PATH = "/test_url";
+    private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + CB_PATH; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
@@ -151,7 +150,7 @@ public class A4ResourceOrderRobot {
                 .retrieve(
                         newRequestPattern(
                                 RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
+                                urlPathEqualTo(CB_PATH)));
 
         String response = ergList.get(0).getBodyAsString();
 
@@ -159,21 +158,11 @@ public class A4ResourceOrderRobot {
     }
 
     public void cleanCallbacksInWiremock() {
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(moreThanOrExactly(0),
+        WireMockFactory.get()
+                .removeEvents(
                         newRequestPattern(
                                 RequestMethod.fromString("POST"),
-                                urlPathEqualTo(cbPath)));
-
-        int count = 0; //count to break loop in emergency after 5 tries
-        while (!ergList.isEmpty() && count < 5) {
-            ergList = WireMockFactory.get()
-                    .retrieve(moreThanOrExactly(0),
-                            newRequestPattern(
-                                    RequestMethod.fromString("POST"),
-                                    urlPathEqualTo(cbPath)));
-            count++;
-        }
+                                urlPathEqualTo(CB_PATH)));
     }
 
     private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {

@@ -129,12 +129,7 @@ public class A4ResourceOrderTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
         wiremock.fetchAndDeleteServeEvents();
-        a4ResourceOrder.cleanCallbacksInWiremock();
-        // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
-        // body: {
-        //    "method": "POST",
-        //    "url": "/test_url"
-        // }
+
     }
 
     @AfterMethod
@@ -146,6 +141,12 @@ public class A4ResourceOrderTest {
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
         // a4ResourceOrder.deleteA4TestDataRecursively(ro);
+        a4ResourceOrder.cleanCallbacksInWiremock();
+        // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
+        // body: {
+        //    "method": "POST",
+        //    "url": "/test_url"
+        // }
     }
 
     @Test
