@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Driver;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
@@ -14,8 +13,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -23,28 +22,22 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.time.DateUtils;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.security.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
-import static javax.print.attribute.Size2DSyntax.MM;
 import static org.testng.Assert.*;
 
 @Slf4j
@@ -53,6 +46,7 @@ import static org.testng.Assert.*;
 
 public class A4MobileNeSearchPageTest extends GigabitTest {
 
+    public static final String STATE_PLANNING = "PLANNING";
     private final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -212,14 +206,14 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                         .getUuid())
                 .getLifecycleState());
 
-        assertEquals("PLANNING", a4ResourceInventoryRobot
+        assertEquals(STATE_PLANNING, a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getLifecycleState() );
+                .getLifecycleState());
         assertEquals("NOT_WORKING", a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getOperationalState() );
+                .getOperationalState());
         assertNull( a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
@@ -254,7 +248,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         // check ui
         ElementsCollection elementsCollection = a4MobileUiRobot.getNeElementsCollection();
-        assertEquals("PLANNING", elementsCollection.get(6).getText());
+        assertEquals(STATE_PLANNING, elementsCollection.get(6).getText());
 
         // check NEMO Update
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(a4ResourceInventoryRobot
@@ -307,14 +301,14 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                         .getUuid())
                 .getLifecycleState());
 
-        assertEquals("PLANNING", a4ResourceInventoryRobot
+        assertEquals(STATE_PLANNING, a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getLifecycleState() );
+                .getLifecycleState());
         assertEquals("NOT_WORKING", a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getOperationalState() );
+                .getOperationalState());
         assertNull( a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
@@ -351,7 +345,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         // check ui
         ElementsCollection elementsCollection = a4MobileUiRobot.getNeElementsCollection();
-        assertEquals("PLANNING", elementsCollection.get(6).getText());
+        assertEquals(STATE_PLANNING, elementsCollection.get(6).getText());
 
 
         // check NEMO Update
@@ -368,42 +362,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
 
 
-    }
-
-    @Test
-    @Owner("Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-126553")
-    @Description("Test Mobile NE-search-page - reset retiring to planning - failed")
-    public void testResetRetiringNeToPlanningFailed() {
-        a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01).getVpsz());
-        a4MobileUiRobot.clickSearchButton();
-        a4MobileUiRobot.checkRadioButton("1");
-
-        assertEquals("RETIRING", a4ResourceInventoryRobot
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01)
-                        .getUuid())
-                .getLifecycleState() );
-
-        a4MobileUiRobot.checkNeResetToPlanningButtonDisabled();
-    }
-
-    @Test
-    @Owner("Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-126554")
-    @Description("Test Mobile NE-search-page - reset planning at planning - failed")
-    public void testResetPlanningNeToPlanningFailed() {
-        a4MobileUiRobot.openNetworkElementMobileSearchPage();
-        a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01).getVpsz());
-        a4MobileUiRobot.clickSearchButton();
-        a4MobileUiRobot.checkRadioButton("1");
-
-        assertEquals("PLANNING", a4ResourceInventoryRobot
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_PLANNING_LEAFSWITCH_01)
-                        .getUuid())
-                .getLifecycleState() );
-
-        a4MobileUiRobot.checkNeResetToPlanningButtonDisabled();
     }
 
     @Test
