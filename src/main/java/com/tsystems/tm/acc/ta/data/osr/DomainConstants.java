@@ -49,4 +49,5 @@ public interface DomainConstants {
     String DECOUPLING_MS = "decoupling-component";
     String APIGW_MS = "apigw-admin";
 
+    String FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME = "business.rori.dpu-lifecycle-uses-dpu-demands";
 }
