@@ -72,6 +72,43 @@ public class DpuCreatePage {
         return this;
     }
 
+    @Step("Input parameters for DPU creation")
+    public DpuCreatePage startDpuCreationWithDpuDemand(DpuDevice dpuDevice) {
+
+        // If the page is opened, the DPU devices are queried from the material-catalog. The DPU types are then entered in the selection list.
+        try {
+            Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+        if($(DPU_OPTION_LOCATER).exists()) {  // Backward compatibility for UI without qa-tags with DPU device selection
+            $(DPU_OPTION_LOCATER).click();
+            for (int index = 0; index < ANZ_OF_DPU_TYPES; ++index) {
+                if ($(byQaData(String.format(dpuOptionLocatorString, index))).exists()) {
+                    log.info("startDpuCreation() check DPU entry {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                    if ($(byQaData(String.format(dpuOptionLocatorString, index))).getText().contains(dpuDevice.getBezeichnung())) {
+                        log.info("startDpuCreation() choose DPU device {} ", $(byQaData(String.format(dpuOptionLocatorString, index))).getText());
+                        $(byQaData(String.format(dpuOptionLocatorString, index))).click();
+                    }
+                }
+            }
+        }
+
+        $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
+        $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
+        $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).click();
+        $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).val(dpuDevice.getKlsId());
+        $(DPU_KLS_ID_SEARCH_START_LOCATOR).click();
+        $(FIBERONLOCATION_OPTION_0).click();
+        try {
+            Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
+        $(DPU_DEVICE_CREATE_BUTTON_LOCATOR).click();
+        return this;
+    }
+
     @Step("Go back to DPU Info page")
     public DpuCreatePage openDpuInfoPage() {
         $(DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR).click();
