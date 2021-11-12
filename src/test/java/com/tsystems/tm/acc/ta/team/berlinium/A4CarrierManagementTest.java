@@ -155,9 +155,9 @@ public class A4CarrierManagementTest extends GigabitTest {
        // a4CarrierManagement.sendGetNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b0");
 
     }
-    @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
+    @Test(description = "test determination of free L2BSA TP with unknown NEG")
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("determination of free L2BSA TP on NEG")
+    @Description("DIGIHUB-89180 determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTPUnknownNeg() throws InterruptedException {
 
         // unbekannte uuid
