@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Step;
@@ -41,7 +42,7 @@ public class OltSearchPage {
 
     @Step("Open OLT-Search page")
     public static OltSearchPage openSearchPage() {
-        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, OltSearchPage.class);
     }
