@@ -1,43 +1,52 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Owner;
-import io.qameta.allure.TmsLink;
 import io.restassured.response.Response;
 
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
-@Epic("OS&R domain")
-@Owner("bela.kovace@t-systems.com")
-@TmsLink("DIGIHUB-xxxxx")
+//@Epic("OS&R domain")
+//@Owner("bela.kovace@t-systems.com")
+//@TmsLink("DIGIHUB-xxxxx")
 @ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_SERVICE_MS})
 public class StepDefinitions extends GigabitTest {
 
     private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
-//    private final A4NemoUpdaterRobot nemoUpdater = new A4NemoUpdaterRobot();
-
+    private final WgA4ProvisioningWiremockRobot deProvWiremock = new WgA4ProvisioningWiremockRobot();
+    private final ObjectMapper om = new ObjectMapper();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    //    private WireMockMappingsContext wiremock;
+
+    private WireMockMappingsContext wiremock;
     private Response response;
 
     private A4NetworkElementGroup negData;
@@ -48,19 +57,19 @@ public class StepDefinitions extends GigabitTest {
 
     @Before
     public void init() {
-//        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "CucumberA4NemoUpdateTest"))
-//                .build();
-//        wiremock.publish()
-//                .publishedHook(savePublishedToDefaultDir())
-//                .publishedHook(attachStubsToAllureReport());
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests"))
+                .build();
+        wiremock.publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
     }
 
     @After
     public void cleanup() {
-//        wiremock.close();
-//        wiremock
-//                .eventsHook(saveEventsToDefaultDir())
-//                .eventsHook(attachEventsToAllureReport());
+        wiremock.close();
+        wiremock
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
 
         if (negData != null)
             a4ResInv.deleteA4TestDataRecursively(negData);
@@ -72,47 +81,6 @@ public class StepDefinitions extends GigabitTest {
         negData = null;
     }
 
-//    @Given("NEMO wiremock is set up")
-//    public void nemoWiremockIsSetUp() {
-//        wiremock
-//                .add(new NemoStub().putNemoUpdate201())
-//                .add(new NemoStub().deleteNemoUpdate204());
-//    }
-//
-//    @Given("a NEG with uuid {string} exists in A4 resource inventory")
-//    public void a_neg_with_uuid(String negUuid) {
-//        negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-//                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-//
-//        negData.setUuid(negData.getUuid());
-//        negData.setName("NEG " + getRandomDigits(6));
-//
-//        a4ResInv.createNetworkElementGroup(negData);
-//    }
-//
-//    @Given("no NEG with uuid {string} exists in A4 resource inventory")
-//    public void no_existing_element_with_uuid(String uuid) {
-//        a4ResInv.deleteA4TestDataRecursively(uuid);
-//    }
-//
-//    @When("a Nemo update is triggered for uuid {string}")
-//    public void nemo_update_is_triggered_for_uuid(String uuid) {
-//        nemoUpdater.triggerNemoUpdate(uuid);
-//    }
-//
-//    @Then("Nemo should have gotten a Put request for uuid {string}")
-//    public void nemo_should_have_gotten_a_put_request_for_uuid(String uuid) {
-//        nemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(uuid);
-//    }
-//
-//    @Then("Nemo should have gotten a Delete request for uuid {string}")
-//    public void nemo_should_have_gotten_a_delete_request_for_uuid(String uuid) {
-//        nemoUpdater.checkLogicalResourceDeleteRequestToNemoWiremock(uuid);
-//    }
-
-
-    //---------------------------------------------------------
-
     @Given("no TP exists in A4 resource inventory")
     public void noTPExistsInA4ResourceInventory() {
         tpData = new A4TerminationPoint();
@@ -123,7 +91,8 @@ public class StepDefinitions extends GigabitTest {
     public void nemoSendsADeleteTPRequest() {
         response = a4ResInvService.deleteLogicalResource(tpData.getUuid());
 
-        // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)?
+        // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
+        sleepForSeconds(2);
     }
 
     @Then("the request is responded/answered with HTTP( error) code {int}")
@@ -145,6 +114,7 @@ public class StepDefinitions extends GigabitTest {
     }
 
     private void setupDefaultTpTestData() {
+        // TP needs to be connected to a NEP, so if no NEP present, create one
         if (nepData == null)
             aNEPIsExistingInA4ResourceInventory();
 
@@ -154,7 +124,8 @@ public class StepDefinitions extends GigabitTest {
 
     @Given("a NEP is existing in A4 resource inventory")
     public void aNEPIsExistingInA4ResourceInventory() {
-        if (nepData == null)
+        // NEP needs to be connected to a NE, so if no NE present, create one
+        if (neData == null)
             aNEIsExistingInA4ResourceInventory();
 
         nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -164,6 +135,7 @@ public class StepDefinitions extends GigabitTest {
 
     @Given("a NE is existing in A4 resource inventory")
     public void aNEIsExistingInA4ResourceInventory() {
+        // NE needs to be connected to a NEG, so if no NEG present, create one
         if (negData == null)
             aNEGIsExistingInA4ResourceInventory();
 
@@ -181,6 +153,7 @@ public class StepDefinitions extends GigabitTest {
 
     @Given("a NSP FTTH(-Access) with Line ID {string} is existing in A4 resource inventory( for the TP)")
     public void aNSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
+        // NSP needs to be connected to a TP, so if no TP present, create one
         if (tpData == null)
             aTPIsExistingInA4ResourceInventory();
 
@@ -199,6 +172,33 @@ public class StepDefinitions extends GigabitTest {
     @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
     public void theTPIsNotExistingInA4ResourceInventoryAnymore() {
         a4ResInv.checkTerminationPointIsDeleted(tpData.getUuid());
+    }
+
+    @Given("U-Piter DPU wiremock will respond HTTP code {int} when called, and do a callback")
+    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDoACallback(int httpCode) {
+        wiremock
+                .add(new DeProvisioningStub().postDeProvAccessLineWithCallback(httpCode))
+                .publish();
+    }
+
+    @Given("U-Piter DPU wiremock will respond HTTP code {int} when called")
+    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
+        wiremock
+                .add(new DeProvisioningStub().postDeProvAccessLine(httpCode))
+                .publish();
+    }
+
+    @Then("a DPU deprovisioning request to U-Piter was triggered with Line ID {string}")
+    public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
+        final String dpuCallbackBody = deProvWiremock.checkPostToDeprovisioningWiremock(1);
+
+        A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
+        assertEquals(erg.getLineId(), lineId);
+    }
+
+    @Then("no DPU deprovisioning request to U-Piter was triggered")
+    public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
+        deProvWiremock.checkPostToDeprovisioningWiremock(0);
     }
 
 }
