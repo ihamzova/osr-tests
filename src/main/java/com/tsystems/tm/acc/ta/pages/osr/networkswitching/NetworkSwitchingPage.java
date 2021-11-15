@@ -67,7 +67,7 @@ public class NetworkSwitchingPage {
 
     private static final By PACKAGE_STATUS = byXpath("//*[@class='package-info']");
     private static final By PACKAGE_ID_PREPARATION_TAB = byXpath("//*[@class='package-polling--id']//a");
-    private static final By PACKAGE_ID_SEARCH_TAB = byXpath("//*[@class='p-treetable-tbody']//a");
+    private static final By PACKAGE_ID_SEARCH_TAB = byXpath("//*[@class='p-element p-treetable-tbody']//a");
 
     @Step("Open Network Switching page")
     public static NetworkSwitchingPage openPage() {
