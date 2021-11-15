@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.apache.commons.lang.RandomStringUtils;
@@ -26,6 +27,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
@@ -56,6 +59,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElementPort nepDpu;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
+    private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
     private final String dpuSerialNumber = "ztp_ident-IntegrationTest";
     private final String dpuMaterialNumber = "MatNumberIntegrationTest";
     private final String dpuKlsId = "dpuKlsIdIntegrationTest";
@@ -101,7 +105,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Test(description = "test DPU-NE is created and NEMO is triggerd")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126432")
-    @Description("DIGIHUB-118479 Create NetworkElement for requested DPU in Resource-Inventory and synchronize with NEMO")
+    @Description("DIGIHUB-118479 Create NetworkElement with Ports for requested DPU in Resource-Inventory and synchronize with NEMO")
     public void testDpuIsCreated() {
         //Given
         //NetworkElementGroup by oltEndSz exists
@@ -122,6 +126,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
 
+        //check if DPU is correct created
         String dpuFsz = dpuEndSz.substring(dpuEndSz.length() - 4);
         String dpuVpsz = dpuEndSz.substring(0, dpuEndSz.length() - 5);
         NetworkElementDto createdDpuNe = a4ResourceInventory.getExistingNetworkElementByVpszFsz(dpuVpsz, dpuFsz);
@@ -133,6 +138,21 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdDpuNe.getLifecycleState(), "INSTALLING");
         Assert.assertEquals(createdDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(createdDpuNe.getType(), "A4-DPU-4P-TP-v1");
+
+        //check if Ports are correct created
+        AtomicInteger numberGponPorts = new AtomicInteger(0);
+        AtomicInteger numberGfPorts = new AtomicInteger(0);
+        List<NetworkElementPortDto> createdDpuPortList = a4ResourceInventory
+                .getNetworkElementPortsByNetworkElement(createdDpuNe.getUuid());
+        Assert.assertEquals(createdDpuPortList.size(),numberOfDpuPorts);
+        createdDpuPortList.forEach(nep ->{
+            Assert.assertEquals(nep.getAdministrativeState(),"ACTIVATED");
+            Assert.assertEquals(nep.getOperationalState(),"NOT_WORKING");
+            if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
+            if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
+        });
+        Assert.assertEquals(numberGponPorts.intValue(),1);
+        Assert.assertEquals(numberGfPorts.intValue(),numberOfDpuPorts-1);
 
         //Check if NemoUpdater is triggered
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
