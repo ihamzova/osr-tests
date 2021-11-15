@@ -99,6 +99,53 @@ public class DpuCommissioningUiRobot {
         Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after com. mismatch");
     }
 
+    @Step("Start automatic dpu creation and commissioning process")
+    public void startDpuCommissioningWithDpuDemand(DpuDevice dpuDevice) {
+        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        oltSearchPage.validateUrl();
+        oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
+
+        oltSearchPage.pressCreateDpuButton();
+
+        DpuCreatePage dpuCreatePage = new DpuCreatePage();
+        dpuCreatePage.validateUrl();
+        dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
+
+        dpuCreatePage.openDpuInfoPage();
+
+        DpuInfoPage dpuInfoPage = new DpuInfoPage();
+        dpuInfoPage.validateUrl();
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Device LifeCycleState mismatch");
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Port LifeCycleState mismatch");
+        dpuInfoPage.startDpuCommissioning();
+        businessKey = dpuInfoPage.getBusinessKey();
+        Assert.assertNotNull(businessKey);
+        Assert.assertFalse(businessKey.isEmpty());
+
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Device LifeCycleState after com. mismatch");
+
+
+        dpuInfoPage.openDpuConfiguraionTab();
+        Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
+        Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE), "OLT EMS configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE), "DPU EMS configuration state mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()), "OLT EMS DPU EndSz mismatch");
+        Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()), "OLT EMS OLT EndSz mismatch");
+        Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()), "DPU EMS DPU EndSz mismatch");
+
+        dpuInfoPage.openDpuAccessLinesTab();
+        dpuInfoPage.openDpuPortsTab();
+        //DIGIHUB-79622
+        dpuInfoPage.openDpuEditPage();
+        DpuEditPage dpuEditPage = new DpuEditPage();
+        dpuEditPage.validateUrl();
+        dpuEditPage.SetDpuState();
+
+        Assert.assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after com. mismatch");
+        Assert.assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after com. mismatch");
+    }
+
     @Step("Checks data in ri after commissioning process")
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 

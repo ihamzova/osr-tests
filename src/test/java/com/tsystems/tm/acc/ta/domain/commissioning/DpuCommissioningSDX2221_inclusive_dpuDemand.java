@@ -51,7 +51,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     public void init() {
         dpuCommissioningUiRobot.restoreOsrDbState();
 
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G1_SDX2221);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
     }
@@ -66,9 +66,9 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.restoreOsrDbState();
     }
 
-    @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
-    @TmsLink("DIGIHUB-75965")
-    @Description("DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
+    @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
+    @TmsLink("DIGIHUB-127585")
+    @Description("DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
     @Owner("DL-T-Magic.Mercury@telekom.de")
     public void dpuCommissioning() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
@@ -88,7 +88,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
+        dpuCommissioningUiRobot.startDpuCommissioningWithDpuDemand(dpuDevice);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
         List<String> values = Arrays.asList(
                 "EXECUTED successfully [Read DPU device data]",

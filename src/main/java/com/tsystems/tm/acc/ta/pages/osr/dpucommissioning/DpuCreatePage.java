@@ -26,6 +26,7 @@ public class DpuCreatePage {
     public static final By DPU_KLS_ID_SEARCH_INPUT_LOCATOR = byQaData("klsidsearch_input");
     public static final By DPU_KLS_ID_SEARCH_START_LOCATOR = byQaData("klsidsearch_start");
     public static final By FIBERONLOCATION_OPTION_0 = byQaData("fiberonlocation_option_0");
+    public static final By DPU_DEMANDS_OPTION_0 = byQaData("dpudemand_option_0");
     public static final By DPU_DEVICE_CREATE_BUTTON_LOCATOR = byQaData("dpu_create");
     public static final By DPU_DEVICE_BACK_TO_DETAILS_BUTTON_LOCATOR = byQaData("dpu_details");
 
@@ -94,12 +95,13 @@ public class DpuCreatePage {
             }
         }
 
-        $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
-        $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).click();
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).val(dpuDevice.getKlsId());
         $(DPU_KLS_ID_SEARCH_START_LOCATOR).click();
         $(FIBERONLOCATION_OPTION_0).click();
+        $(DPU_DEMANDS_OPTION_0).click();
+        $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
+        $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
         try {
             Thread.sleep(WAIT_TIME_FOR_BUTTON_ENABLED);
         } catch (Exception e) {
