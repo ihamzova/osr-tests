@@ -11,14 +11,13 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import org.testng.Assert;
 
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
 
 public class A4ResourceInventoryServiceRobot {
@@ -40,6 +39,15 @@ public class A4ResourceInventoryServiceRobot {
                 .idPath(tpData.getUuid())
                 .body(terminationPointLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Delete Logical Resource")
+    public Response deleteLogicalResource(String uuid) {
+        return a4ResourceInventoryService
+                .logicalResource()
+                .deleteLogicalResource()
+                .idPath(uuid)
+                .execute(voidCheck());
     }
 
     @Step("Send new operational state for Network Element Group")

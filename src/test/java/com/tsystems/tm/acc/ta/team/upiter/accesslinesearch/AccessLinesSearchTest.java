@@ -51,7 +51,6 @@ public class AccessLinesSearchTest extends GigabitTest {
   private AccessLine a4AccessLine;
   private AccessLine accessLineFttbTp;
 
-
   @BeforeClass
   public void init() throws InterruptedException {
     accessLineRiRobot = new AccessLineRiRobot();
@@ -260,7 +259,6 @@ public class AccessLinesSearchTest extends GigabitTest {
             .clickMagnifyingGlassForLine(0);
     accessLinesManagementPage.checkFTTBProfiles("INACTIVE", "ACTIVE", "ACTIVE", "ACTIVE");
   }
-
 
   @Test
   @TmsLink("DIGIHUB-96235")

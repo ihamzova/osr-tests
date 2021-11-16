@@ -34,7 +34,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryServiceRobot a4ResourceInventoryService = new A4ResourceInventoryServiceRobot();
-    private final WgA4PreProvisioningWiremockRobot a4PreProvisioning = new WgA4PreProvisioningWiremockRobot();
+    private final WgA4ProvisioningWiremockRobot a4PreProvisioning = new WgA4ProvisioningWiremockRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
@@ -94,7 +94,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
+        a4Resilience.changeRouteToA4ResourceInventoryService(routeName); //if this is not working check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
@@ -145,6 +145,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
     @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
     public void newTpWithA10NspPreprovisioningRedelivery() throws InterruptedException, IOException {
         // what to do before this test:
+        // check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
         //   edit yaml of service apigw
         //   add ports:
         //      - name: apigw-admin

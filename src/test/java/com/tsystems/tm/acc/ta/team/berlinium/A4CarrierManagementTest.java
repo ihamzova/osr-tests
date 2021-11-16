@@ -87,10 +87,10 @@ public class A4CarrierManagementTest extends GigabitTest {
         a4Inventory.deleteA4TestDataRecursively(negData);
     }
 
-    @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask")
+    @Test(description = "test allocateL2BsaNspTask")
     @Owner("anita.junge@t-systems.com")
     @TmsLink("DIGIHUB-111721")
-    @Description("allocate one free L2BSA NSP for a dedicated AccessLine so that L2BSA products can be produced")
+    @Description("DIGIHUB-89261 allocate one free L2BSA NSP for a dedicated AccessLine so that L2BSA products can be produced")
     public void testAllocateL2BsaNsp() {
         // THEN / Assert
 
@@ -105,10 +105,10 @@ public class A4CarrierManagementTest extends GigabitTest {
         Assert.assertEquals(allocatedL2BsaNSP.getL2CcId(), "Dienstvertrag");
     }
 
-    @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
+    @Test(description = "test allocateL2BsaNspTask with Error by wrong LineId")
     @Owner("anita.junge@t-systems.com")
     //@TmsLink("DIGIHUB-XXXXX")
-    @Description("dont found one free L2BSA NSP for a dedicated AccessLine")
+    @Description("DIGIHUB-89261 dont found one free L2BSA NSP for a dedicated AccessLine")
     public void testAllocateL2BsaNspWrongLineId() {
         // THEN / Assert
 
@@ -117,10 +117,10 @@ public class A4CarrierManagementTest extends GigabitTest {
                         "Dienstvertrag");
     }
 
-    @Test(description = "DIGIHUB-89261 allocateL2BsaNspTask with Error")
+    @Test(description = "test allocateL2BsaNspTask with Error by wrong CarrierBsaReference")
     @Owner("anita.junge@t-systems.com")
     //@TmsLink("DIGIHUB-XXXXX")
-    @Description("dont found one free L2BSA NSP for a dedicated AccessLine")
+    @Description("DIGIHUB-89261 dont found one free L2BSA NSP for a dedicated AccessLine")
     public void testAllocateL2BsaNspWrongCarrierBsaReference() {
         // THEN / Assert
 
@@ -129,10 +129,10 @@ public class A4CarrierManagementTest extends GigabitTest {
                         "Dienstvertrag");
     }
 
-    @Test(description = "DIGIHUB-89266 ReleaseL2BsaNspTask")
+    @Test(description = "test ReleaseL2BsaNspTask")
     @Owner("anita.junge@t-systems.com")
     //@TmsLink("DIGIHUB-XXXXX")
-    @Description("release L2BSA NSP for a dedicated AccessLine so that L2BSA products can be deleted")
+    @Description("DIGIHUB-89266 release L2BSA NSP for a dedicated AccessLine so that L2BSA products can be deleted")
     public void testReleaseL2BsaNsp() {
         // THEN / Assert
 
@@ -144,9 +144,9 @@ public class A4CarrierManagementTest extends GigabitTest {
         Assert.assertNull(allocatedL2BsaNSP.getL2CcId());
     }
 
-    @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
+    @Test(description = "test determination of free L2BSA TP")
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("determination of free L2BSA TP on NEG")
+    @Description("DIGIHUB-89180 determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTP() {
 
         a4CarrierManagement.sendGetNegCarrierConnection(negData.getUuid());
@@ -155,9 +155,9 @@ public class A4CarrierManagementTest extends GigabitTest {
        // a4CarrierManagement.sendGetNegCarrierConnection("711d393e-a007-49f2-a0cd-0d80195763b0");
 
     }
-    @Test(description = "DIGIHUB-89180 determination of free L2BSA TP")
+    @Test(description = "test determination of free L2BSA TP with unknown NEG")
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("determination of free L2BSA TP on NEG")
+    @Description("DIGIHUB-89180 determination of free L2BSA TP on NEG")
     public void testDeterminationFreeL2BsaTPUnknownNeg() throws InterruptedException {
 
         // unbekannte uuid

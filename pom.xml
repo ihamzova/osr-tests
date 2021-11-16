@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>2158.0</version>
+    <version>2248.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -16,9 +16,9 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>0.0.131</osr.models.version>
+        <osr.models.version>0.0.135</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
-        <!--oc.domain.name>priv.cl01.gigadev.telekom.de</oc.domain.name>
+        <!--oc.domain.name>priv.cl01.tmagic-dev.telekom.de</oc.domain.name>
         <oc.project.name>gigabit-tm-berlinium-03</oc.project.name-->
     </properties>
 
@@ -96,6 +96,23 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>6.10.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>6.10.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber6-jvm</artifactId>
+            <version>2.14.0</version>
         </dependency>
     </dependencies>
 

@@ -83,8 +83,6 @@ public class OntCommissioning extends GigabitTest {
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.OntSerialNumber);
     accessLine = new AccessLine();
     portDetectedInA4 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.PortDetectedInA4);
-
-
   }
 
   @AfterClass
