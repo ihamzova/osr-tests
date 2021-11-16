@@ -3,7 +3,8 @@ Feature:
   User Stories: DIGIHUB-118969, DIGIHUB-121769, DIGIHUB-118971
   Berlinium parts of DPU Commissioning in A4 platform - Delete FTTH Access line
 
-# DIGIHUB-118969, Scenario #1
+# US DIGIHUB-118969, Scenario #1
+  # X-Ray: DIGIHUB-127641
   Scenario: NEMO deletes non-existent TP (idempotency test)
     Given no TP exists in A4 resource inventory
     When NEMO sends a delete TP request
@@ -11,12 +12,14 @@ Feature:
 
 # DIGIHUB-118969, Scenario #2
 # NOTE: Will be replaced by DIGIHUB-121769, scenario #2
+  # X-Ray: DIGIHUB-127643
   Scenario: NEMO deletes TP with valid type PON
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
 
 # DIGIHUB-118969, Scenario #3, #4, and #5
+  # X-Ray: DIGIHUB-127642
   Scenario Outline: NEMO deletes TP with invalid types
     Given a TP with type "<Type>" is existing in A4 resource inventory
     When NEMO sends a delete TP request
