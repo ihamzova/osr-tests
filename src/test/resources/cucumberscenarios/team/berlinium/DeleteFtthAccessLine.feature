@@ -30,28 +30,28 @@ Feature:
 
 #--------------------------------------
 
-# DIGIHUB-121769, scenario #1
-# NOTE: Will be replaced by DIGIHUB-118971, scenario #1
-  Scenario: NEMO deletes TP with NSP attached, deprovisioning to U-Piter is triggered
-    Given a TP with type "PON_TP" is existing in A4 resource inventory
-    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
-    And U-Piter DPU wiremock will respond HTTP code 202 when called, and do a callback
-    When NEMO sends a delete TP request
-    Then the request is responded with HTTP code 202
-        # Following line won't work: U-Piter DPU deprovisioning wiremock cannot perform deletion of NSP, therefore TP cannot be deleted
+## DIGIHUB-121769, scenario #1
+## NOTE: Will be replaced by DIGIHUB-118971, scenario #1
+#  Scenario: NEMO deletes TP with NSP attached, deprovisioning to U-Piter is triggered
+#    Given a TP with type "PON_TP" is existing in A4 resource inventory
+#    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
+#    And U-Piter DPU wiremock will respond HTTP code 202 when called, and do a callback
+#    When NEMO sends a delete TP request
+#    Then the request is responded with HTTP code 202
+#        # Following line won't work: U-Piter DPU deprovisioning wiremock cannot perform deletion of NSP, therefore TP cannot be deleted
+##    And the TP does not exist in A4 resource inventory anymore
+#    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
+#
+## DIGIHUB-121769, scenario #2
+## NOTE: This is the same as DIGIHUB-118969, Scenario #2, with added Then steps (TP deleted and no deProv call)
+#  Scenario: NEMO deletes TP without attached NSP, deprovisioning to U-Piter is not triggered
+#    Given a TP with type "PON_TP" is existing in A4 resource inventory
+#    And no NSP FTTH exists in A4 resource inventory for the TP
+#    And U-Piter DPU wiremock will respond HTTP code 202 when called, and do a callback
+#    When NEMO sends a delete TP request
+#    Then the request is responded with HTTP code 202
 #    And the TP does not exist in A4 resource inventory anymore
-    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
-
-# DIGIHUB-121769, scenario #2
-# NOTE: This is the same as DIGIHUB-118969, Scenario #2, with added Then steps (TP deleted and no deProv call)
-  Scenario: NEMO deletes TP without attached NSP, deprovisioning to U-Piter is not triggered
-    Given a TP with type "PON_TP" is existing in A4 resource inventory
-    And no NSP FTTH exists in A4 resource inventory for the TP
-    And U-Piter DPU wiremock will respond HTTP code 202 when called, and do a callback
-    When NEMO sends a delete TP request
-    Then the request is responded with HTTP code 202
-    And the TP does not exist in A4 resource inventory anymore
-    And no DPU deprovisioning request to U-Piter was triggered
+#    And no DPU deprovisioning request to U-Piter was triggered
 
 ## DIGIHUB-121769, scenario #3
 ## TODO How to test this as black-box?
