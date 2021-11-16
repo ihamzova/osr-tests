@@ -50,11 +50,14 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
 
     @BeforeClass
     public void init() {
+        dpuCommissioningUiRobot.disableFeatureToogleDpuDemand();
+
         dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
+
     }
 
     @AfterClass
@@ -65,6 +68,7 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
                 .eventsHook(attachEventsToAllureReport());
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
+
     }
 
     @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-16 TP-AC-MELT) case")
@@ -89,7 +93,7 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice);
+        dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice, false);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
         List<String> values = Arrays.asList(
                 "EXECUTED successfully [Read DPU device data]",

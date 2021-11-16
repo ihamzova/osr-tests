@@ -54,12 +54,12 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
   @BeforeClass
   public void init() {
 
-    disableFeatureToogleDpuDemand();
+    enableFeatureToogleDpuDemand();
     oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
-    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
     WireMockFactory.get().resetToDefaultMappings();
     mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
@@ -77,6 +77,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     WireMockFactory.get().resetToDefaultMappings();
     clearResourceInventoryDataBase(dpuDevice);
+    disableFeatureToogleDpuDemand();
 
   }
 
@@ -88,7 +89,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    //dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
     String endSz = dpuDevice.getEndsz();
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -99,7 +100,8 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
 
     dpuCreatePage.validateUrl();
-    dpuCreatePage.startDpuCreation(dpuDevice);
+    //dpuCreatePage.startDpuCreation(dpuDevice);
+    dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
     Thread.sleep(1000);
 
     dpuCreatePage.openDpuInfoPage();

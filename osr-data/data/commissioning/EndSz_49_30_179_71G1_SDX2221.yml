@@ -13,3 +13,5 @@ values:
   klsId: "122334455"
   seriennummer: "ADTN180600B7"
   fiberOnLocationId: "71520003000111"
+  ponConnectionWe: "1"
+  ponConnectionGe: "0"
