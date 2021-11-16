@@ -61,7 +61,6 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTes
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1234_76ZC_MA5800);
-    //OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_8888_76Z3_MA5800);
     String endSz = oltDevice.getEndsz();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
