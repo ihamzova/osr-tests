@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import io.qameta.allure.Step;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -34,7 +33,10 @@ public class WgA4ProvisioningWiremockRobot {
                                 RequestMethod.POST,
                                 urlPathEqualTo(DEPROV_ACCESS_LINE_URL)));
 
-        return Arrays.toString(requestList.get(0).getBody());
+        if (!requestList.isEmpty()) {
+            return new String(requestList.get(0).getBody());
+        } else
+            return null;
     }
 
 }
