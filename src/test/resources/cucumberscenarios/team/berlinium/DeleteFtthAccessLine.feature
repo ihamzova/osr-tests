@@ -36,6 +36,7 @@ Feature:
 #--------------------------------------
 
 # DIGIHUB-121769, scenario #1
+  # X-Ray: DIGIHUB-127854
 # NOTE: Will be replaced by DIGIHUB-118971, scenario #1
   Scenario: NEMO deletes TP with NSP attached, therefore deprovisioning to U-Piter is triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -48,6 +49,7 @@ Feature:
 #    And the TP does not exist in A4 resource inventory anymore
 
 # DIGIHUB-121769, scenario #2
+  # X-Ray: DIGIHUB-127643 (existent scenario there will be overwritten by this one)
 # NOTE: This is the same as DIGIHUB-118969, Scenario #2, with added Then steps (TP deleted and no deProv call)
   Scenario: NEMO deletes TP without attached NSP, therefore deprovisioning to U-Piter is not triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
