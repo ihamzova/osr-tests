@@ -337,19 +337,26 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
-        //check if Ports are still existing, missing Ports are created and Port attributes are not updated
+        //check if missing Ports are created and attributes of already existing ports are not updated
         AtomicInteger numberGponPorts = new AtomicInteger(0);
         AtomicInteger numberGfPorts = new AtomicInteger(0);
+        AtomicInteger numberWorking = new AtomicInteger(0);
+        AtomicInteger numberNotWorking = new AtomicInteger(0);
+
         List<NetworkElementPortDto> existingDpuPortList = a4ResourceInventory
                 .getNetworkElementPortsByNetworkElement(dpuNetworkElement.getUuid());
+
         Assert.assertEquals(existingDpuPortList.size(),5);
         existingDpuPortList.forEach(nep ->{
-            Assert.assertEquals(nep.getOperationalState(),"NOT_WORKING");
             if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
+            if ("WORKING".equals(nep.getOperationalState())) numberWorking.getAndIncrement();
+            if ("NOT_WORKING".equals(nep.getOperationalState())) numberNotWorking.getAndIncrement();
         });
         Assert.assertEquals(numberGponPorts.intValue(),1);
         Assert.assertEquals(numberGfPorts.intValue(),numberOfDpuPorts-1);
+        Assert.assertEquals(numberWorking.intValue(),2);
+        Assert.assertEquals(numberNotWorking.intValue(),3);
 
 
         //Check if NemoUpdater is triggered
