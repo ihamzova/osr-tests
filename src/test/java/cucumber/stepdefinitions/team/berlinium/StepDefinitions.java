@@ -34,9 +34,6 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
-//@Epic("OS&R domain")
-//@Owner("bela.kovace@t-systems.com")
-//@TmsLink("DIGIHUB-xxxxx")
 @ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_SERVICE_MS})
 public class StepDefinitions extends GigabitTest {
 
@@ -71,6 +68,9 @@ public class StepDefinitions extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
+        // Hopefully next line will reliably remove old requests from our _local_ wiremock (not global one)
+        wiremock.getWireMock().resetRequests();
+
         if (negData != null)
             a4ResInv.deleteA4TestDataRecursively(negData);
 
@@ -87,39 +87,10 @@ public class StepDefinitions extends GigabitTest {
         tpData.setUuid(UUID.randomUUID().toString());
     }
 
-    @When("NEMO sends a delete TP request( to A4 resource inventory service)")
-    public void nemoSendsADeleteTPRequest() {
-        response = a4ResInvService.deleteLogicalResource(tpData.getUuid());
-
-        // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
-        sleepForSeconds(2);
-    }
-
-    @Then("the request is responded/answered with HTTP( error) code {int}")
-    public void theRequestIsRespondedWithHTTPCode(int httpCode) {
-        assertEquals(response.getStatusCode(), httpCode);
-    }
-
-    @Given("a TP with type {string} is existing in A4 resource inventory")
-    public void aTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
-        setupDefaultTpTestData();
-        tpData.setSubType(tpType);
-        a4ResInv.createTerminationPoint(tpData, nepData);
-    }
-
     @Given("a TP is existing in A4 resource inventory")
     public void aTPIsExistingInA4ResourceInventory() {
         setupDefaultTpTestData();
         a4ResInv.createTerminationPoint(tpData, nepData);
-    }
-
-    private void setupDefaultTpTestData() {
-        // TP needs to be connected to a NEP, so if no NEP present, create one
-        if (nepData == null)
-            aNEPIsExistingInA4ResourceInventory();
-
-        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.TerminationPointB);
     }
 
     @Given("a NEP is existing in A4 resource inventory")
@@ -169,9 +140,11 @@ public class StepDefinitions extends GigabitTest {
         nspFtthData.setUuid(UUID.randomUUID().toString());
     }
 
-    @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
-    public void theTPIsNotExistingInA4ResourceInventoryAnymore() {
-        a4ResInv.checkTerminationPointIsDeleted(tpData.getUuid());
+    @Given("a TP with type {string} is existing in A4 resource inventory")
+    public void aTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
+        setupDefaultTpTestData();
+        tpData.setSubType(tpType);
+        a4ResInv.createTerminationPoint(tpData, nepData);
     }
 
     @Given("U-Piter DPU wiremock will respond HTTP code {int} when called, and do a callback")
@@ -188,17 +161,49 @@ public class StepDefinitions extends GigabitTest {
                 .publish();
     }
 
+    @When("NEMO sends a delete TP request( to A4 resource inventory service)")
+    public void nemoSendsADeleteTPRequest() {
+        response = a4ResInvService.deleteLogicalResource(tpData.getUuid());
+
+        // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
+        sleepForSeconds(2);
+    }
+
+    @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
+    public void theTPIsNotExistingInA4ResourceInventoryAnymore() {
+        a4ResInv.checkTerminationPointIsDeleted(tpData.getUuid());
+    }
+
+    @Then("a DPU deprovisioning request to U-Piter was triggered")
+    public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
+        deProvWiremock.checkPostToDeprovisioningWiremock(1);
+    }
+
     @Then("a DPU deprovisioning request to U-Piter was triggered with Line ID {string}")
     public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
         final String dpuCallbackBody = deProvWiremock.checkPostToDeprovisioningWiremock(1);
 
-        A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
+        final A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
     }
 
     @Then("no DPU deprovisioning request to U-Piter was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
         deProvWiremock.checkPostToDeprovisioningWiremock(0);
+    }
+
+    @Then("the request is responded/answered with HTTP( error) code {int}")
+    public void theRequestIsRespondedWithHTTPCode(int httpCode) {
+        assertEquals(response.getStatusCode(), httpCode);
+    }
+
+    private void setupDefaultTpTestData() {
+        // TP needs to be connected to a NEP, so if no NEP present, create one
+        if (nepData == null)
+            aNEPIsExistingInA4ResourceInventory();
+
+        tpData = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.TerminationPointB);
     }
 
 }
