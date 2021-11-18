@@ -89,8 +89,7 @@ public class A4MobileNeSearchPage {
     public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("tblResultNetworkElements");
 
     @Getter
-    // public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]"); // bisher //table/tr[2]/td[6]
-    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.id("ztpiFromForm");
+    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]"); // bisher //table/tr[2]/td[6];
 
 
 
