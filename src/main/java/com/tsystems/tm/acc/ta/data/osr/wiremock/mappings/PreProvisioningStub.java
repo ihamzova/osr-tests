@@ -2,7 +2,7 @@ package com.tsystems.tm.acc.ta.data.osr.wiremock.mappings;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.mappers.PreProvisioningMapper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.JSON;
 
@@ -19,11 +19,11 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 public class PreProvisioningStub extends AbstractStubMapping {
 
     public static final String ACCESS_LINE_URL = "/resource-order-resource-inventory/v1/a4/accessLines";
-    private final String RETRY = "retry";
+    private static final String RETRY = "retry";
 
     public MappingBuilder getAccessLine201() {
-        final String NETWORK_SERVICE_PROFILE_URL = new OCUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri().toString()
-                + "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/" + UUID.randomUUID().toString();
+        final String NETWORK_SERVICE_PROFILE_URL = new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_MS).buildUri()
+                + "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/" + UUID.randomUUID();
 
         return post(urlPathEqualTo(ACCESS_LINE_URL))
                 .inScenario("ResilienceTest")

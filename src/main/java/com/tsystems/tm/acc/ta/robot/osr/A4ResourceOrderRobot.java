@@ -38,7 +38,7 @@ import static org.testng.Assert.fail;
 @Slf4j
 public class A4ResourceOrderRobot {
 
-    public static final  String CB_PATH = "/test_url";
+    public static final String CB_PATH = "/test_url";
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + CB_PATH; // Wiremock for merlin MS
 
     private static final AuthTokenProvider authTokenProviderDispatcher =
@@ -158,11 +158,15 @@ public class A4ResourceOrderRobot {
     }
 
     public void cleanCallbacksInWiremock() {
+        cleanCallbacksInWiremock("POST", CB_PATH);
+    }
+
+    public void cleanCallbacksInWiremock(String method, String path) {
         WireMockFactory.get()
                 .removeEvents(
                         newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(CB_PATH)));
+                                RequestMethod.fromString(method),
+                                urlPathEqualTo(path)));
     }
 
     private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {
@@ -242,14 +246,14 @@ public class A4ResourceOrderRobot {
         ResourceOrderDto ro = getResourceOrderFromDb(id);
 
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
-        if(ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
+        if (ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
             assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
 
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
     public void deleteA4TestDataRecursively(ResourceOrder ro) {
-        if (ro!=null)
+        if (ro != null)
             deleteA4TestDataRecursively(ro.getId());
     }
 
@@ -264,7 +268,7 @@ public class A4ResourceOrderRobot {
 
     }
 
-    private void deleteA4TestDataRecursively(String roUuid){
+    private void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
- }
+}
