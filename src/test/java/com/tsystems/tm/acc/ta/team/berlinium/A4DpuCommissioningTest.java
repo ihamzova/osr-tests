@@ -43,7 +43,8 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 
 public class A4DpuCommissioningTest extends GigabitTest {
 
-    private final String ROUTE_NAME = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
+    private final String nemoUpdaterRouteName = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
+    private final String riPortSpecsRouteName = "resource-order-resource-inventory.v1.a4PortSpecs";
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
@@ -107,13 +108,14 @@ public class A4DpuCommissioningTest extends GigabitTest {
     public void cleanup() throws IOException {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        a4ResilienceRobot.changeRouteToMicroservice(ROUTE_NAME, A4_NEMO_UPDATER_MS);
+        a4ResilienceRobot.changeRouteToMicroservice(nemoUpdaterRouteName, A4_NEMO_UPDATER_MS);
+        a4ResilienceRobot.changeRouteToMicroservice(riPortSpecsRouteName, A4_RESOURCE_INVENTORY_MS);
     }
 
     @Test(description = "test DPU-NE is created and NEMO is triggerd")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126432")
-    @Description("DIGIHUB-118479 Create NetworkElement with Ports for requested DPU in Resource-Inventory and synchronize with NEMO")
+    @Description("DIGIHUB-118479,118482 Create NetworkElement with Ports for requested DPU in Resource-Inventory and synchronize with NEMO")
     public void testDpuIsCreated() {
         //Given
         //NetworkElementGroup by oltEndSz exists
@@ -152,18 +154,18 @@ public class A4DpuCommissioningTest extends GigabitTest {
         AtomicInteger numberGfPorts = new AtomicInteger(0);
         List<NetworkElementPortDto> createdDpuPortList = a4ResourceInventory
                 .getNetworkElementPortsByNetworkElement(createdDpuNe.getUuid());
-        Assert.assertEquals(createdDpuPortList.size(),numberOfDpuPorts);
-        createdDpuPortList.forEach(nep ->{
-            Assert.assertEquals(nep.getAdministrativeState(),"ACTIVATED");
-            Assert.assertEquals(nep.getOperationalState(),"NOT_WORKING");
+        Assert.assertEquals(createdDpuPortList.size(), numberOfDpuPorts);
+        createdDpuPortList.forEach(nep -> {
+            Assert.assertEquals(nep.getAdministrativeState(), "ACTIVATED");
+            Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
             if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
         });
-        Assert.assertEquals(numberGponPorts.intValue(),1);
-        Assert.assertEquals(numberGfPorts.intValue(),numberOfDpuPorts-1);
+        Assert.assertEquals(numberGponPorts.intValue(), 1);
+        Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
 
         //Check if NemoUpdater is triggered
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
     }
 
     @Test(description = "test DPU-NE cannot created when NEG is not found")
@@ -302,7 +304,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Test(description = "test DPU-NE is updated")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126534")
-    @Description("DIGIHUB-118479 If DPU already existing and NetworkElementLink is OLT then update DPU.")
+    @Description("DIGIHUB-118479,118482 If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
         //Given
         //NetworkElementGroup by oltEndSz exists
@@ -346,23 +348,23 @@ public class A4DpuCommissioningTest extends GigabitTest {
         List<NetworkElementPortDto> existingDpuPortList = a4ResourceInventory
                 .getNetworkElementPortsByNetworkElement(dpuNetworkElement.getUuid());
 
-        Assert.assertEquals(existingDpuPortList.size(),5);
-        existingDpuPortList.forEach(nep ->{
+        Assert.assertEquals(existingDpuPortList.size(), 5);
+        existingDpuPortList.forEach(nep -> {
             if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
             if ("WORKING".equals(nep.getOperationalState())) numberWorking.getAndIncrement();
             if ("NOT_WORKING".equals(nep.getOperationalState())) numberNotWorking.getAndIncrement();
         });
-        Assert.assertEquals(numberGponPorts.intValue(),1);
-        Assert.assertEquals(numberGfPorts.intValue(),numberOfDpuPorts-1);
-        Assert.assertEquals(numberWorking.intValue(),2);
-        Assert.assertEquals(numberNotWorking.intValue(),3);
+        Assert.assertEquals(numberGponPorts.intValue(), 1);
+        Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
+        Assert.assertEquals(numberWorking.intValue(), 2);
+        Assert.assertEquals(numberNotWorking.intValue(), 3);
 
 
         //Check if NemoUpdater is triggered
         String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
         String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
@@ -405,12 +407,39 @@ public class A4DpuCommissioningTest extends GigabitTest {
         NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
         String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
 
-        a4ResilienceRobot.changeRouteToWiremock(ROUTE_NAME);
+        a4ResilienceRobot.changeRouteToWiremock(nemoUpdaterRouteName);
 
         // WHEN & THEN
         // call A4-DPU-Commissioning-Task
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
                 dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
+    }
+
+    @Test(description = "test Resource Inventoty is not reachable")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-127907")
+    @Description("DIGIHUB-118482 If Resource Inventory is not reachable then throw Server Error.")
+    public void testRiNotReachableServerError() {
+        //GIVEN
+        // DPU already exists
+        // but for find PortSpec-List Resource Inventory is not reachable
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+        NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+        String existingDpuEndSz = dpuNetworkElement.getVpsz() + "/" + dpuNetworkElement.getFsz();
+
+        a4ResilienceRobot.changeRouteToWiremock(riPortSpecsRouteName);
+
+        // WHEN & THEN
+        // call A4-DPU-Commissioning-Task
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
+                existingDpuEndSz,
                 dpuSerialNumber,
                 dpuMaterialNumber,
                 dpuKlsId,
