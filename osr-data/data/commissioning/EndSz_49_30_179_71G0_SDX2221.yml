@@ -15,3 +15,5 @@ values:
   fiberOnLocationId: "71520003000100"
   ponConnectionWe: "1"
   ponConnectionGe: "0"
+  ponConnectionSl: "0"
+  accessTransmissionMedium: "TWISTED_PAIR"
