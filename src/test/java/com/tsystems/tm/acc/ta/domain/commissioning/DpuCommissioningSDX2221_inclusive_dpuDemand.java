@@ -1,12 +1,16 @@
 package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
+import com.tsystems.tm.acc.data.osr.models.dpudemand.DpuDemandCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.osr.models.fttbneprofile.FttbNeProfileCase;
+import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
@@ -42,8 +46,14 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
+    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private ETCDRobot etcdRobot = new ETCDRobot();
     private DpuDevice dpuDevice;
+    private DpuDemand dpuDemand;
+    private PortProvisioning oltDevice;
+    private FttbNeProfile expectedFttbNeProfile;
+    private DefaultNetworkLineProfile expectedDefaultNlProfile;
+    private int numberOfAcсessLines;
 
     private WireMockMappingsContext mappingsContext;
 
@@ -54,8 +64,21 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G1_SDX2221);
+        dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.DpuDemand_49_30_179_71G1);
+        oltDevice = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H7);
+        expectedFttbNeProfile = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileCoax);
+        expectedDefaultNlProfile = context.getData().getDefaultNetworkLineProfileDataProvider()
+                .get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
+
+        if (dpuCommissioningUiRobot.getFeatureToggleDpuDemandState()) {
+            numberOfAcсessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
+        } else {
+            numberOfAcсessLines = dpuDevice.getNumberOfAccessLines();
+        }
+
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2WithOlt(1, 1, "49/30/179/76H7", "3");
     }
 
     @AfterClass
@@ -94,6 +117,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
 
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice, true);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
+        accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAcсessLines);
         List<String> values = Arrays.asList(
                 "EXECUTED successfully [Read DPU device data]",
                 "EXECUTED successfully [update LifecycleStatus of DPU to INSTALLING]",

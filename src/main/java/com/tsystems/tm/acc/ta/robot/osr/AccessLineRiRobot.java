@@ -54,12 +54,23 @@ public class AccessLineRiRobot {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2, default values")
   public void fillDatabaseForOltCommissioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ) {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
             .fillDatabaseForOltCommissioningWithDpu()
             .HOME_ID_SEQQuery(HOME_ID_SEQ)
             .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  public void fillDatabaseForOltCommissioningV2WithOlt(int HOME_ID_SEQ, int LINE_ID_SEQ, String oltEndSz, String oltSlot) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .SLOT_NUMBER1Query(oltSlot)
+            .END_SZQuery(oltEndSz)
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
@@ -134,6 +145,21 @@ public class AccessLineRiRobot {
 
     assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
     checkIdPools(port);
+  }
+
+  @Step("Check AccessLines after FTTB Provisioning")
+  public void checkAccessLinesAfterFttbProvisioning(PortProvisioning oltPort,
+                                                    DpuDevice dpuDevice,
+                                                    FttbNeProfile expectedFttbNeProfile,
+                                                    DefaultNetworkLineProfile expectedDefaultNetworkLineProfile,
+                                                    int numberOfAccessLines) {
+
+    checkFttbLineParameters(oltPort, numberOfAccessLines);
+    checkAccessTransmissionMedium(dpuDevice, numberOfAccessLines);
+    checkDefaultNetworkLineProfiles(oltPort, expectedDefaultNetworkLineProfile, numberOfAccessLines);
+    checkFttbNeProfiles(oltPort, expectedFttbNeProfile, numberOfAccessLines);
+    checkLineIdsCount(oltPort);
+    checkHomeIdsCount(oltPort);
   }
 
   @Step("Check pools")

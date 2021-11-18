@@ -1,0 +1,25 @@
+name: defaultNLProfileFttbTP
+template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile
+values:
+  accessType: "Gfast"
+  minDownBandwidth: 1152
+  minUpBandwidth: 768
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312
+  maxDownBandwidth: 1168256
+  maxUpBandwidth: 292096
+  state: "ACTIVE"
+---
+name: defaultNLProfileFttbCoax
+template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile
+values:
+  accessType: "GfastCX"
+  minDownBandwidth: 1152
+  minUpBandwidth: 768
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312
+  maxDownBandwidth: 1168256
+  maxUpBandwidth: 292096
+  state: "ACTIVE"
+
+
