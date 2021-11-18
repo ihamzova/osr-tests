@@ -62,6 +62,10 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     context.add(new SealStub().getEmptyListOfEmsEvents());
     return this;
   }
+  public OsrWireMockMappingsContextBuilder addOltNoDeviceMock() {
+    context.add(new OltRiStub().getNoDevicefromOltRi());
+    return this;
+  }
 
   public OsrWireMockMappingsContextBuilder addWgA4ProvisioningMock() {
     context.add(new PreProvisioningStub().getAccessLine500());
@@ -119,5 +123,12 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     context.add(new A4ResourceInventoryStub().getNetworkElementPort(endSz, port));
     return this;
   }
-
+  public OsrWireMockMappingsContextBuilder addDeviceFromA4RiMock() {
+    context.add(new A4ResourceInventoryStub().getA4NetworkElements());
+    return this;
+  }
+  public OsrWireMockMappingsContextBuilder addNoDeviceFromA4RiMock() {
+    context.add(new A4ResourceInventoryStub().getA4NoNetworkElements());
+    return this;
+  }
 }

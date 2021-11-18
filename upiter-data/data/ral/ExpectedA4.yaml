@@ -1,0 +1,15 @@
+name: ExpectedA4Device
+template: com.tsystems.tm.acc.ta.data.osr.models.ExpectedAbstractDevice
+values:
+    productionPlatform: "A4"
+    endSz: "49/30/179/7KH4"
+    fiberOnLocationId: "100000005"
+    klsId: 123456
+    serialNumber: "1234567890123456"
+    emsNbiName: null
+    materialNumber: "40958960"
+    lifeCycleState: "INSTALLING"
+    vpSz: "49/30/179"
+    fSz: "7KH4"
+    relatedParty:
+      id : "10001"

@@ -355,4 +355,33 @@ public class A4ResourceInventoryMapper {
         networkElementPortDto.setHref("/networkElements/3e2fece2-5b18-440c-89ef-4441d0320cea");
         return networkElementPortDto;
     }
+    public NetworkElementDto getNetworkElementDto(){
+        NetworkElementDto networkElementDto=new NetworkElementDto();
+        networkElementDto.setUuid("444");
+        networkElementDto.setCreationTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
+        networkElementDto.setDescription("string");
+        networkElementDto.setLastUpdateTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
+        networkElementDto.setSpecificationVersion("string");
+        networkElementDto.setAddress("Berlin");
+        networkElementDto.setAdministrativeState("ACTIVATED");
+        networkElementDto.setFsz("7KH4");
+        networkElementDto.setVpsz("49/30/179");
+        networkElementDto.setKlsId("123456");
+        networkElementDto.setLifecycleState("INSTALLING");
+        networkElementDto.setOperationalState("NOT_WORKING");
+        networkElementDto.setPlannedMatNumber("40958960");
+        networkElementDto.setPlannedRackId("000031-000000-001-004-002-021");
+        networkElementDto.setPlannedRackPosition("1 / 2 / 3 / 4");
+        networkElementDto.setPlanningDeviceName("dmst.olt.1");
+        networkElementDto.setRoles("SE");
+        networkElementDto.setType("A4-OLT-v1");
+        networkElementDto.setCategory("OLT");
+        networkElementDto.setZtpIdent("1234567890123456");
+        networkElementDto.setFiberOnLocationId("100000005");
+        networkElementDto.setNetworkElementGroupUuid("672f71da-15cc-499e-85ee-fbadee9c97be");
+        networkElementDto.setPartyId("10001");
+        networkElementDto.setHref("/networkElementGroups/672f71da-15cc-499e-85ee-fbadee9c97be");
+        return networkElementDto;
+    }
+
 }
