@@ -11,5 +11,5 @@ public interface MercuryConstants {
 
     String APIGW = "apigw";
 
-    boolean FEATURE_ANCP_MIGRATION_ACTIVE = false;
+    boolean FEATURE_ANCP_MIGRATION_ACTIVE = true;
 }

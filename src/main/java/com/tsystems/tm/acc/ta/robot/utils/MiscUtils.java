@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 
 public class MiscUtils {
 
+    private MiscUtils() {
+
+    }
+
     public static List<String> stringSplit(String string, String separationRegExp) {
         return Arrays.asList(string.split(separationRegExp).clone());
     }
@@ -23,8 +27,7 @@ public class MiscUtils {
     }
 
     public static String getRandomDigits(int numberOfDigits) {
-        Random random = new Random();
-        return random.ints(0,9)
+        return new Random().ints(0, 9)
                 .limit(numberOfDigits)
                 .mapToObj(Integer::toString)
                 .collect(Collectors.joining());
@@ -33,4 +36,5 @@ public class MiscUtils {
     public static String getEndsz(A4NetworkElement neData) {
         return neData.getVpsz() + "/" + neData.getFsz();
     }
+
 }
