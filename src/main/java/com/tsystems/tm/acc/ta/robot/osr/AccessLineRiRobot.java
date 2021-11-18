@@ -10,6 +10,8 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.DeviceProductionPlatform;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -848,6 +850,7 @@ public class AccessLineRiRobot {
     subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
     return subscriberNetworkLineProfileList;
   }
+}
 
 //  private void checkDevicePostConditions(PortProvisioning port) {
 //    List<String> portNumbers = wgAccessProvisioningRobot.getPonPorts(port)
@@ -874,4 +877,3 @@ public class AccessLineRiRobot {
 //    port.setAccessLinesWG(portProvisioning.getAccessLinesWG());
 //    return port;
 //  }
-}

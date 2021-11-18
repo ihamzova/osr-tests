@@ -5,15 +5,15 @@ import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.invoker.GsonObjectMapper;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.invoker.JSON;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_3_0.client.invoker.GsonObjectMapper.gson;
+import static com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.invoker.GsonObjectMapper.gson;
 import static io.restassured.RestAssured.config;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 
