@@ -56,7 +56,8 @@ public class A4MobileNeSearchPage {
 
     // button
     @Getter
-    public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
+    //public static final By SEARCH_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Suchen')]");
+    public static final By SEARCH_BUTTON_LOCATOR = By.id("btnSearch");
 
     @Getter
     public static final By INBETRIEBNAHME_NE_BUTTON_LOCATOR = By.id("neInstallBtn");
@@ -71,7 +72,8 @@ public class A4MobileNeSearchPage {
     public static final By ADD_MONITORING_BUTTON_LOCATOR = By.id("neAddMonitorBtn");
 
     @Getter
-    public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
+    // public static final By MONITORING_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Monitoring der gestarteten Inbetriebnahmen')]");
+    public static final By MONITORING_BUTTON_LOCATOR = By.id("btnMonitoring");
 
     @Getter
     public static final By NE_RESET_TO_PLANNING_BUTTON_LOCATOR = By.id("neResetInstallBtn");
@@ -83,11 +85,12 @@ public class A4MobileNeSearchPage {
 
 
     @Getter
-    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
+    // public static final By SEARCH_RESULT_TABLE_LOCATOR = By.xpath("//table");
+    public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("tblResultNetworkElements");
 
     @Getter
-    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]"); // bisher //table/tr[2]/td[6]
-
+    // public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]"); // bisher //table/tr[2]/td[6]
+    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.id("ztpiFromForm");
 
 
 

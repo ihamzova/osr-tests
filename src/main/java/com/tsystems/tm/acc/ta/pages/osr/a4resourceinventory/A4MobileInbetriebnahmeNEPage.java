@@ -9,7 +9,8 @@ import org.openqa.selenium.By;
 public class A4MobileInbetriebnahmeNEPage {
 
     @Getter
-    public static final By FERTIG_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Installation starten')]");
+    // public static final By FERTIG_BUTTON_LOCATOR = By.xpath("//button[contains(text(),'Installation starten')]");
+    public static final By FERTIG_BUTTON_LOCATOR = By.id("submitButton");
 
     @Getter
     public static final By ZTPIDENT_FIELD_LOCATOR = By.id("ztpiFromForm");

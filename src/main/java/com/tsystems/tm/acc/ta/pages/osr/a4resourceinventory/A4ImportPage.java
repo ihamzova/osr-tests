@@ -26,13 +26,14 @@ public class A4ImportPage {
     public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
 
     @Getter
-    public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = byXpath("//input");
+    // public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = byXpath("//input");
+    public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = By.id("inputUpload");
 
     @Getter
-    public static final By A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR = byId("btnUploadCSV");
+    public static final By A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR =  By.id("btnUploadCSV");
 
     @Getter
-    public static final By A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR = byId("UploadMessage");
+    public static final By A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR =  By.id("UploadMessage");
 
     @Step("Validate page")
     public A4ImportPage validate() {
