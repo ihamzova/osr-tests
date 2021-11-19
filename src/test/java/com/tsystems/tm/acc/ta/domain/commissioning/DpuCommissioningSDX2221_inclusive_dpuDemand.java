@@ -12,10 +12,11 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
+import com.tsystems.tm.acc.ta.robot.osr.DpuPlanningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemandCreate;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
@@ -41,19 +42,21 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
         LINE_ID_GENERATOR_MS,
         ACCESS_LINE_MANAGEMENT,
         ANCP_CONFIGURATION_MS,
-        DPU_COMMISSIONING_MS
+        DPU_COMMISSIONING_MS,
+        DPU_PLANNING_MS
 })
 public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     private OsrTestContext context = OsrTestContext.get();
     private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
-    private ETCDRobot etcdRobot = new ETCDRobot();
+    private DpuPlanningRobot dpuPlanningRobot = new DpuPlanningRobot();
     private DpuDevice dpuDevice;
     private DpuDemand dpuDemand;
     private PortProvisioning oltDevice;
     private FttbNeProfile expectedFttbNeProfile;
     private DefaultNetworkLineProfile expectedDefaultNlProfile;
     private int numberOfAcсessLines;
+    private static final String CREATE_DPU_DEMAND = "/domain/osr/commissioning/createDpuDemandDomain.json";
 
     private WireMockMappingsContext mappingsContext;
 
@@ -75,19 +78,20 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         } else {
             numberOfAcсessLines = dpuDevice.getNumberOfAccessLines();
         }
-
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
         accessLineRiRobot.fillDatabaseForOltCommissioningV2WithOlt(1, 1, "49/30/179/76H7", "3");
     }
 
-    @AfterClass
+    @AfterClass (alwaysRun = true)
     public void teardown() {
+        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdDomain(dpuDemand));
         mappingsContext.close();
         mappingsContext
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
-
         dpuCommissioningUiRobot.disableFeatureToogleDpuDemand();
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
@@ -118,31 +122,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice, true);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
         accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAcсessLines);
-        List<String> values = Arrays.asList(
-                "EXECUTED successfully [Read DPU device data]",
-                "EXECUTED successfully [update LifecycleStatus of DPU to INSTALLING]",
-                "EXECUTED successfully [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                "EXECUTED successfully [Read OltPonPort Data]",
-                "EXECUTED successfully [Read OltUpLinkPortData]",
-                "EXECUTED successfully [Get Unique OnuId for DPU]",
-                "EXECUTED successfully [Read BackhaulId]",
-                "EXECUTED successfully [Read BackhaulId]",
-                "EXECUTED successfully [Deprovision FTTH on PonPort][call]",
-                "EXECUTED successfully [Deprovision FTTH on PonPort][callback]",
-                "EXECUTED successfully [Configure ANCP on BNG][call]",
-                "EXECUTED successfully [Configure ANCP on BNG][callback]",
-                "EXECUTED successfully [Read ANCP Info]",
-                "EXECUTED successfully [Create DpuAtOltConfiguration If Missing]",
-                "EXECUTED successfully [Configure DPU at OLT][call]",
-                "EXECUTED successfully [Configure DPU at OLT][callback]",
-                "EXECUTED successfully [Set DpuAtOltConfiguration.configurationState to active]",
-                "EXECUTED successfully [Create DpuEmsConfiguration If Missing]",
-                "EXECUTED successfully [Configure DPU Ems][call]",
-                "EXECUTED successfully [Configure DPU Ems][callback]",
-                "EXECUTED successfully [Set DpuEmsConfiguration.configurationState to active]",
-                "EXECUTED successfully [Provision FTTB access provisioning on DPU][call]",
-                "EXECUTED successfully [Provision FTTB access provisioning on DPU][callback]");
-        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(), Collections.emptyList());
+        dpuPlanningRobot.checkDpuDemandDomain(dpuPlanningRobot.findDpuDemandByFolIdDomain(dpuDemand));
 
     }
 }

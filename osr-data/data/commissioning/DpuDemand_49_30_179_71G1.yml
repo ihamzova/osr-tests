@@ -4,3 +4,4 @@ values:
   dpuAccessTechnology: "FTTB_COAX"
   dpuEndSz: "49/30/179/71G1"
   numberOfNeededDpuPorts: "4"
+  fiberOnLocationId: "71520003000111"
