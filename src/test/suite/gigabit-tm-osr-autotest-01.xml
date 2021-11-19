@@ -6,7 +6,7 @@
             <class name="com.tsystems.tm.acc.ta.domain.PreTest"/>
         </classes>
     </test>
-    <test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
+    <!--test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/>
         </classes>
@@ -27,8 +27,13 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221"/>
         </classes>
+    </test-->
+    <test name="DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case" thread-count="1">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221_inclusive_dpuDemand"/>
+        </classes>
     </test>
-    <test thread-count="1" name="A10nsp test cases">
+    <!--test thread-count="1" name="A10nsp test cases">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
         </classes>
@@ -37,5 +42,5 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.accessprocessmanagement.AccessProcessManagementUi"/>
         </classes>
-    </test>
+    </test-->
 </suite>
