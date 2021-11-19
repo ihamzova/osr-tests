@@ -64,6 +64,8 @@ Feature:
 # DIGIHUB-121769, scenario #3
 # Will not be automatised: Scenarios are not supposed to look into "inner workings" like queue contents.
 
+#--------------------------------------
+
 ## DIGIHUB-121769, scenario #4, and #5
 #  Scenario Outline: trigger deprovisioning - retry
 #    Given a TP with type "PON_TP" is existing in A4 resource inventory
