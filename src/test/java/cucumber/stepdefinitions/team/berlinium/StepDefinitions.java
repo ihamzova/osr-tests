@@ -18,6 +18,9 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
+import cucumber.ScenarioContext;
+import cucumber.TestContext;
+import cucumber.stepdefinitions.BaseSteps;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -35,7 +38,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_SERVICE_MS})
-public class StepDefinitions extends GigabitTest {
+public class StepDefinitions extends BaseSteps {
 
     private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
@@ -51,6 +54,10 @@ public class StepDefinitions extends GigabitTest {
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpData;
     private A4NetworkServiceProfileFtthAccess nspFtthData;
+
+    public StepDefinitions(TestContext testContext) {
+        super(testContext);
+    }
 
     @Before
     public void init() {
