@@ -28,7 +28,7 @@
 
     <test verbose="1" thread-count="1" parallel="false" name="BDD Tests for Berlinium services"
           group-by-instances="true">
-        <parameter name="subfolder" value="team/berlinium"/>
+        <parameter name="featureFolder" value="team/berlinium"/>
         <parameter name="tags" value="@berlinium"/>
         <classes>
             <class name="cucumber.RunCucumberTests"/>
