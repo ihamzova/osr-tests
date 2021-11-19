@@ -25,10 +25,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -82,7 +78,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2WithOlt(1, 1, "49/30/179/76H7", "3");
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2WithOlt(1, 1, oltDevice.getEndSz(), oltDevice.getSlotNumber());
     }
 
     @AfterClass (alwaysRun = true)

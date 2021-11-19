@@ -168,9 +168,6 @@ public class DpuCommissioningUiRobot {
                     ._11RunSQLQuery("1")
                     .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         }
-
-        accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("get businessKey")

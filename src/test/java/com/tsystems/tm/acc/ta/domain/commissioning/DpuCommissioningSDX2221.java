@@ -69,7 +69,7 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
         numberOfAcсessLines = dpuDevice.getNumberOfAccessLines();
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.prepareResourceInventoryDataBase(dpuDevice);
-
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2WithOlt(1, 1, oltDevice.getEndSz(), oltDevice.getSlotNumber());
     }
 
     @AfterClass
