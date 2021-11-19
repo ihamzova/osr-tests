@@ -2,7 +2,7 @@ package cucumber;
 
 public class TestContext {
 
-    private ScenarioContext scenarioContext;
+    public ScenarioContext scenarioContext;
 
     public TestContext() {
         scenarioContext = new ScenarioContext();
