@@ -18,7 +18,6 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
-import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -26,20 +25,13 @@ import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_UI_MS, A4_RESOURCE_INVENTORY_BFF_PROXY_MS, A4_INVENTORY_IMPORTER_MS})
 @Epic("OS&R")
 @Feature("Test Inbetriebnahme for NEs and NELs, including monitoring")
 @TmsLink("DIGIHUB-xxxxx")
@@ -185,7 +177,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         a4MobileUi.checkRadioButton("1");
         a4MobileUi.clickZeigeNelZuNeButton();
         a4MobileUi.checkPlanningFilter();
-        a4MobileUi.checkCheckbox("1");
+        a4MobileUi.checkCheckbox();
         a4MobileUi.clickButtonAndConfirm();
         a4MobileUi.clickMonitoringButton();
 
