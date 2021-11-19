@@ -103,7 +103,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                .addMocksForDomain(dpuDevice)
+                .addMocksForDomainWithDpuDemands(dpuDevice)
                 .build()
                 .publish();
 
