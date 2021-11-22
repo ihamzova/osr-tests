@@ -67,6 +67,13 @@ public class DpuPlanningRobot {
         assertNotNull(dpuDemandAfterProcess.getCreationDate());
     }
 
+    @Step("Validate DPU Demand")
+    public void checkDpuDemandDomain(DpuDemand dpuDemandToValidate) {
+
+        assertNotNull(dpuDemandToValidate.getDpuEndSz());
+        assertEquals(String.valueOf(dpuDemandToValidate.getState()), "FULFILLED");
+    }
+
     @Step("Create DPU Demand: 400 error code")
     public void createDpuDemand400(DpuDemandCreate dpuDemandRequestData) {
         DpuPlanningClient dpuPlanningClient = new DpuPlanningClient(new RhssoClientFlowAuthTokenProvider(DPU_PLANNING, RhssoHelper.getSecretOfGigabitHub(DPU_PLANNING)));
@@ -141,6 +148,13 @@ public class DpuPlanningRobot {
     public DpuDemand readDpuDemandByEndsz(DpuDemand dpuDemandToRead) {
         return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
                 .dpuEndSzQuery(dpuDemandToRead.getDpuEndSz())
+                .executeAs(validatedWith(shouldBeCode(200))).get(0);
+    }
+
+    @Step("Find DPU Demand by dpuEndSz and check Response")
+    public DpuDemand findDpuDemandByFolIdDomain(com.tsystems.tm.acc.ta.data.osr.models.DpuDemand dpuDemandToRead) {
+        return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
+                .fiberOnLocationIdQuery(dpuDemandToRead.getFiberOnLocationId())
                 .executeAs(validatedWith(shouldBeCode(200))).get(0);
     }
 

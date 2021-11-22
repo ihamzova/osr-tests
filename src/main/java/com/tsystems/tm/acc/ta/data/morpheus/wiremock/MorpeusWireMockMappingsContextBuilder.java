@@ -470,6 +470,13 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
+    public MorpeusWireMockMappingsContextBuilder addMocksForDomainWithDpuDemands(DpuDevice dpu) {
+        context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
+        context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
+        context.add(new PonInventoryStub().getLlcForDomainWithDpuDemands200(dpu));
+        return this;
+    }
+
     public MorpeusWireMockMappingsContextBuilder addAllForDecomGetPonPortDiffSlotError(OltDevice olt, Dpu dpu) {
         addGetDpuDeviceStub(dpu, true);
         addPatchLifecycleStateDeviceStub(dpu);

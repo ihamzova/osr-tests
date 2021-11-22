@@ -1,0 +1,19 @@
+name: fttbNeProfileTwistedPair
+template: com.tsystems.tm.acc.ta.data.osr.models.FttbNeProfile
+values:
+  gfastInterfaceProfile: "PV_FF_Gfast_500M_17a"
+  dpuLineSpectrumProfile: "17a"
+  numberOfGemPorts: 4
+  bandwidthProfile: "500M"
+  stateOlt: "ACTIVE"
+  stateMosaic: "ACTIVE"
+---
+name: fttbNeProfileCoax
+template: com.tsystems.tm.acc.ta.data.osr.models.FttbNeProfile
+values:
+  gfastInterfaceProfile: "PV_FF_Gfast_1000M_Coax"
+  dpuLineSpectrumProfile: "Coax"
+  numberOfGemPorts: 4
+  bandwidthProfile: "1000M"
+  stateOlt: "ACTIVE"
+  stateMosaic: "ACTIVE"

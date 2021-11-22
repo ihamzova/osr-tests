@@ -25,6 +25,7 @@ public interface DomainConstants {
     String OLT_SCHEDULER_MS = "olt-scheduler";
     String OLT_COMMISSIONING_MS = "olt-commissioning";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
+    String DPU_PLANNING_MS = "dpu-planning";
     String A10NSP_INVENTORY_MS = "a10nsp-inventory";
     String OLT_BFF_PROXY_MS = "olt-bff-proxy";
     String A4_RESOURCE_INVENTORY_BFF_PROXY_MS = "a4-resource-inventory-bff-proxy";
@@ -50,4 +51,5 @@ public interface DomainConstants {
     String DECOUPLING_MS = "decoupling-component";
     String APIGW_MS = "apigw-admin";
 
+    String FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME = "business.rori.dpu-lifecycle-uses-dpu-demands";
 }

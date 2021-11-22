@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
@@ -37,6 +38,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 
 @Slf4j
@@ -47,15 +49,17 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
   private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
   private DpuDevice dpuDevice;
   private WireMockMappingsContext mappingsContext;
+  private UnleashClient unleashClient = new UnleashClient();
 
   @BeforeClass
   public void init() {
 
+    enableFeatureToogleDpuDemand();
     oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
-    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
     WireMockFactory.get().resetToDefaultMappings();
     mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
@@ -73,6 +77,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     WireMockFactory.get().resetToDefaultMappings();
     clearResourceInventoryDataBase(dpuDevice);
+    disableFeatureToogleDpuDemand();
 
   }
 
@@ -84,7 +89,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G0_SDX2221);
+    //dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
     String endSz = dpuDevice.getEndsz();
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -95,7 +100,8 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
 
     dpuCreatePage.validateUrl();
-    dpuCreatePage.startDpuCreation(dpuDevice);
+    //dpuCreatePage.startDpuCreation(dpuDevice);
+    dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
     Thread.sleep(1000);
 
     dpuCreatePage.openDpuInfoPage();
@@ -202,5 +208,17 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
               ._11RunSQLQuery("1")
               .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+  }
+
+  public void enableFeatureToogleDpuDemand()
+  {
+    boolean toggleState = unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
+    log.info("toggleState for {} = {}",FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME , toggleState);
+  }
+
+  public void disableFeatureToogleDpuDemand()
+  {
+    boolean toggleState = unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
+    log.info("toggleState for {} = {}",FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME , toggleState);
   }
 }
