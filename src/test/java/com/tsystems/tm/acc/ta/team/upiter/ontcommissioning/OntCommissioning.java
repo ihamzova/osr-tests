@@ -20,6 +20,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.clie
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
@@ -46,6 +47,7 @@ import static org.testng.AssertJUnit.assertNull;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
+@Epic("OLT_BNG FTTH ONT Processes")
 public class OntCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -273,7 +275,7 @@ public class OntCommissioning extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-63811")
-  @Description("ONT Change, newSerialNumber = DEFAULT")
+  @Description("ONT Change, newSerialNumber = DEFAULT (Anbieterwechsel)")
   public void ontDefaultChangeTest() {
     assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntSerialNumber());
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineAnbieterwechsel.getLineId()).getOntState(), OntState.ONLINE);

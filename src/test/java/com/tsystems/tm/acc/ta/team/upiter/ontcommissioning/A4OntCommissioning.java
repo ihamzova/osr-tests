@@ -21,6 +21,7 @@ import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -46,6 +47,8 @@ import static org.testng.AssertJUnit.*;
         DECOUPLING_MS,
         APIGW_MS
 })
+
+@Epic("A4 ONT Processes")
 public class A4OntCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -312,7 +315,7 @@ public class A4OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(operationResultEmsEventCallback.getSuccess());
     assertNull(operationResultEmsEventCallback.getError());
-    assertEquals(accessLine.getEndSz(), operationResultEmsEventCallback.getResponse().getEndSz().replace("_", "/"));
+    assertEquals(accessLine.getEndSz(), operationResultEmsEventCallback.getResponse().getEndSz());
     assertEquals("0", operationResultEmsEventCallback.getResponse().getSlotNumber());
     assertEquals("0", operationResultEmsEventCallback.getResponse().getPortNumber());
     assertEquals(ontSerialNumber, operationResultEmsEventCallback.getResponse().getSerialNumber());
@@ -348,7 +351,7 @@ public class A4OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(operationResultEmsEventCallback.getSuccess());
     assertNull(operationResultEmsEventCallback.getError());
-    assertEquals(accessLine.getEndSz(), operationResultEmsEventCallback.getResponse().getEndSz().replace("_", "/"));
+    assertEquals(accessLine.getEndSz(), operationResultEmsEventCallback.getResponse().getEndSz());
     assertEquals("0", operationResultEmsEventCallback.getResponse().getSlotNumber());
     assertEquals("0", operationResultEmsEventCallback.getResponse().getPortNumber());
     assertEquals(ontSerialNumber, operationResultEmsEventCallback.getResponse().getSerialNumber());
@@ -387,4 +390,23 @@ public class A4OntCommissioning extends GigabitTest {
     assertNull(operationResultEmsEventCallback.getError());
   }
 
+  @Test
+  @TmsLink("DIGIHUB-128158")
+  @Description("ONT Change, newSerialNumber = DEFAULT (Anbieterwechsel)")
+  public void ontDefaultChangeTest() {
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    accessLine.setLineId(a4AccessLine.getLineId());
+
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");
+
+    // check callback
+    assertNull(callback.getError());
+    assertTrue(callback.getSuccess());
+    assertEquals(accessLine.getLineId(), callback.getResponse().getLineId());
+    assertEquals("DEFAULT", callback.getResponse().getSerialNumber());
+
+    // check alri
+    assertEquals(AccessLineStatus.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
+    assertEquals("DEFAULT", accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+  }
 }
