@@ -40,7 +40,7 @@ public class A4RevInvSteps extends BaseSteps {
     @After
     public void cleanup() {
         // ATTENTION: If at any time more than 1 NEG is used for tests, it has to be added here!!
-        if (getScenarioContext().getContext(Context.A4_NEG) != null) {
+        if (getScenarioContext().isContains(Context.A4_NEG)) {
             A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
             a4ResInv.deleteA4TestDataRecursively(neg);
         }
