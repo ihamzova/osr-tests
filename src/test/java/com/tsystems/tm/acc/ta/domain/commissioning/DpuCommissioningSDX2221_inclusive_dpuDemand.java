@@ -97,7 +97,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     @TmsLink("DIGIHUB-127585")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
     @Owner("DL-T-Magic.Mercury@telekom.de")
-    public void dpuCommissioning() {
+    public void dpuCommissioningDpuDemand() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
