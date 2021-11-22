@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.H
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -36,6 +37,7 @@ import static org.testng.AssertJUnit.assertNull;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
+@Epic("DeutcheGlasFaser ONT Processes")
 public class DGFaccessLineReservation extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

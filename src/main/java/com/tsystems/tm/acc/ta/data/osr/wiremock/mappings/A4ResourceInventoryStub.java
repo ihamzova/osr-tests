@@ -12,7 +12,7 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 
 public class A4ResourceInventoryStub extends AbstractStubMapping {
 
-  public static final String A4_NSP_URL_WITH_PARAMETERS = "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess";
+  public static final String A4_NSP_URL_WITH_PARAMETERS = "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/*";
   public static final String A4_NSP_URL = "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/.*";
   public static final String A4_NETWORK_ELEMENT_PORT_URL = "/resource-order-resource-inventory/v1/a4NetworkElementPorts/.*";
   public static final String A4_NETWORK_ELEMENTS_URL = "/resource-order-resource-inventory/v1/a4NetworkElements/*";
@@ -32,9 +32,8 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
   }
 
   public MappingBuilder getNspBySnWithoutOntLastRegisteredOn() {
-    return get(urlPathEqualTo(A4_NSP_URL_WITH_PARAMETERS))
-            .withQueryParam("ontSerialNumber", serialNumberPattern)
-            .withName("getA4NetworkServiceProfilesFtthAccessBySn")
+    return get(urlPathMatching(A4_NSP_URL_WITH_PARAMETERS))
+            .withName("getA4NetworkServiceProfilesFtthAccessByParameters")
             .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getListOfNspWithoutOntLastRegisteredOn()), HTTP_CODE_OK_200))
             .atPriority(0);
   }
@@ -47,8 +46,7 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
   }
 
   public MappingBuilder getNspBySnEmpty() {
-    return get(urlPathEqualTo(A4_NSP_URL_WITH_PARAMETERS))
-            .withQueryParam("ontSerialNumber", serialNumberPattern)
+    return get(urlPathMatching(A4_NSP_URL_WITH_PARAMETERS))
             .withName("getEmptyA4NetworkServiceProfilesFtthAccessBySn")
             .willReturn(aDefaultResponseWithBody("[]", HTTP_CODE_OK_200))
             .atPriority(0);
@@ -66,7 +64,6 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .withName("getA4NetworkElements")
             .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getNetworkElementDto()), HTTP_CODE_OK_200))
             .atPriority(0);
-
   }
 
   public MappingBuilder getA4NoNetworkElements() {
@@ -74,12 +71,9 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .withName("getA4NetworkElements")
             .willReturn(aDefaultResponseWithBody("[]", HTTP_CODE_OK_200))
             .atPriority(0);
-
   }
 
-  StringValuePattern serialNumberPattern = new RegexPattern("[A-Z0-9]{16}");
   StringValuePattern vpsz = new RegexPattern("[0-9]{1,6}\\\\/[0-9]{1,6}\\\\/[0-9]{1,6}");
-
 
   public static String serialize(Object obj) {
     JSON json = new JSON();

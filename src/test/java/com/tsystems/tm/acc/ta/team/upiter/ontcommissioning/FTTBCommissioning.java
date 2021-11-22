@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.O
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -31,6 +32,8 @@ import static org.testng.AssertJUnit.assertNull;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
+
+@Epic("FTTB ONT Processes")
 public class FTTBCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

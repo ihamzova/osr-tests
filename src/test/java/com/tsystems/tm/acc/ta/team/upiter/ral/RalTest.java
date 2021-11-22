@@ -15,6 +15,7 @@ import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.Ab
 import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -31,6 +32,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 @ServiceLog(RI_ABSTRACTION_LAYER_MS)
+@Epic("RI Abstraction Layer")
 public class RalTest extends GigabitTest {
 
   private OltDevice oltDeviceForRal;
