@@ -11,9 +11,9 @@ import org.testng.annotations.DataProvider;
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
         glue = { "cucumber/stepdefinitions" },
-        features = { "src/test/resources/cucumberscenarios/" }
+        features = { "src/test/resources/cucumberscenarios/team/berlinium" }
 )
-public class RunCucumberTests extends AbstractTestNGCucumberTests {
+public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {
 
     @Override
     @DataProvider() // @DataProvider(parallel = true) <- use this if you want to execute multiple scenarios in parallel
