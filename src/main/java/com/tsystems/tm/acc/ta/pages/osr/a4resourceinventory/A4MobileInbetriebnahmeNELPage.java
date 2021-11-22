@@ -10,10 +10,10 @@ import static com.codeborne.selenide.Selectors.byId;
 public class A4MobileInbetriebnahmeNELPage {
 
     @Getter
-    public static final By CHECKBOX_LOCATOR = byId("checkboxAuswahl");
+    public static final By CHECKBOX_LOCATOR = By.id("checkboxAuswahl");
 
     @Getter
-    public static final By START_INSTALL_BTN = byId("StartInstallBtn");
+    public static final By START_INSTALL_BTN = By.id("StartInstallBtn");
 
     @Getter
     public static final By ERROR_LOCATOR = By.id("notFoundMsg");

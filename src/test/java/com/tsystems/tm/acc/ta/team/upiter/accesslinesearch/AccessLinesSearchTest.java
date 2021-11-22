@@ -133,7 +133,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.validateUrl();
     accessLineSearchPage.searchAccessLinesByKlsId(addressWithKlsId.getKlsId()).clickSearchButton();
     accessLineSearchPage.checkBasicInformation();
-    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(1);
+    AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(3);
     accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
             "INACTIVE", "ACTIVE");
   }

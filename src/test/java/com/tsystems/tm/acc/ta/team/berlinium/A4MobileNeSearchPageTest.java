@@ -11,7 +11,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -37,11 +36,12 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage.SEARCH_RESULT_TABLE_LOCATOR;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.*;
 
 @Slf4j
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_UI_MS, A4_RESOURCE_INVENTORY_BFF_PROXY_MS, A4_INVENTORY_IMPORTER_MS})
 @Epic("OS&R")
 
 public class A4MobileNeSearchPageTest extends GigabitTest {
@@ -67,7 +67,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
         //add 1 to number of elements because of table header
-       // numberOfElements++;
+        // numberOfElements++;
 
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
@@ -76,16 +76,15 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
-        ElementsCollection elementsCollection = $(A4MobileNeSearchPage.getSEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
+        ElementsCollection elementsCollection = $(SEARCH_RESULT_TABLE_LOCATOR).findAll(By.xpath("tr/td"));
 
         List<String> concat = new ArrayList<>();
 
         elementsCollection.forEach(k -> concat.add(k.getText()));
-        log.info("+++ Inhalt UI: "+concat);
-        log.info("+++ Größe UI: "+concat.size()/7);
-        log.info("+++ Inhalt NeFilteredList: "+a4NeFilteredList);
-        log.info("+++ Größe NeFilteredList: "+a4NeFilteredList.size());
+        log.info("+++ Inhalt UI: " + concat);
+        log.info("+++ Größe UI: " + concat.size() / 7);
+        log.info("+++ Inhalt NeFilteredList: " + a4NeFilteredList);
+        log.info("+++ Größe NeFilteredList: " + a4NeFilteredList.size());
 
         a4NeFilteredList.forEach((k, a4NetworkElement) -> {
             assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
@@ -174,13 +173,13 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-125689")
     @Description("Test Mobile NE-search-page - reset installing to planning")
-    public void testResetInstallingNeToPlanning() {
+    public void testResetInstallingNeToPlanning() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
         a4MobileUiRobot.clickSearchButton();
         a4MobileUiRobot.checkRadioButton("1");
 
-        System.out.println("+++ LCS before reset: "+a4ResourceInventoryRobot
+        System.out.println("+++ LCS before reset: " + a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
                 .getLifecycleState());
@@ -193,7 +192,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         assertEquals("INSTALLING", a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getLifecycleState() );
+                .getLifecycleState());
 
         a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();
         sleepForSeconds(3); // process in db have to work
@@ -201,7 +200,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         // check db
         //a4MobileUiRobot.checkResetStateInDbOk(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid());
 
-        System.out.println("+++ LCS after reset: "+a4ResourceInventoryRobot
+        System.out.println("+++ LCS after reset: " + a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
                 .getLifecycleState());
@@ -214,30 +213,30 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
                 .getOperationalState());
-        assertNull( a4ResourceInventoryRobot
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getPlannedMatNumber() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedMatNumber());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getKlsId() );
-        assertNull( a4ResourceInventoryRobot
+                .getKlsId());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getAddress() );
-        assertNull( a4ResourceInventoryRobot
+                .getAddress());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getPlannedRackId() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedRackId());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getPlannedRackPosition() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedRackPosition());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
-                .getZtpIdent() );
+                .getZtpIdent());
 
         OffsetDateTime lastUpdateTimeNew = a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
@@ -252,15 +251,15 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         // check NEMO Update
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(a4ResourceInventoryRobot
-                      .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                              .getUuid())
-                      .getVpsz(), a4ResourceInventoryRobot
+                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
+                        .getUuid())
+                .getVpsz(), a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
                         .getUuid())
                 .getFsz());
 
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                      .getUuid(), "PUT", 1);
+                .getUuid(), "PUT", 1);
 
     }
 
@@ -268,14 +267,14 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-126552")
     @Description("Test Mobile NE-search-page - reset operating to planning")
-    public void testResetOperatingNeToPlanning() {
+    public void testResetOperatingNeToPlanning() throws InterruptedException {
         a4MobileUiRobot.openNetworkElementMobileSearchPage();
         a4MobileUiRobot.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
         a4MobileUiRobot.clickSearchButton();
         a4MobileUiRobot.checkRadioButton("1");
 
         // check db
-        System.out.println("+++ LCS before reset: "+a4ResourceInventoryRobot
+        System.out.println("+++ LCS before reset: " + a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
                 .getLifecycleState());
@@ -288,7 +287,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         assertEquals("OPERATING", a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getLifecycleState() );
+                .getLifecycleState());
 
         a4MobileUiRobot.clickNeResetToPlanningButtonAndConfirm();
         sleepForSeconds(3);
@@ -296,7 +295,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         // check db
         //a4MobileUiRobot.checkResetStateInDbOk(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid());
 
-        System.out.println("+++ LCS after reset: "+a4ResourceInventoryRobot
+        System.out.println("+++ LCS after reset: " + a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
                 .getLifecycleState());
@@ -309,30 +308,30 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
                 .getOperationalState());
-        assertNull( a4ResourceInventoryRobot
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getPlannedMatNumber() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedMatNumber());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getKlsId() );
-        assertNull( a4ResourceInventoryRobot
+                .getKlsId());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getAddress() );
-        assertNull( a4ResourceInventoryRobot
+                .getAddress());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getPlannedRackId() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedRackId());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getPlannedRackPosition() );
-        assertNull( a4ResourceInventoryRobot
+                .getPlannedRackPosition());
+        assertNull(a4ResourceInventoryRobot
                 .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                         .getUuid())
-                .getZtpIdent() );
+                .getZtpIdent());
 
 
         OffsetDateTime lastUpdateTimeNew = a4ResourceInventoryRobot
@@ -359,7 +358,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
                 .getUuid(), "PUT", 1);
-
 
 
     }

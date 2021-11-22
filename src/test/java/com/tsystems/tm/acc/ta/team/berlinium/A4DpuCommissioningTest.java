@@ -43,7 +43,8 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 
 public class A4DpuCommissioningTest extends GigabitTest {
 
-    private final String ROUTE_NAME = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
+    private final String nemoUpdaterRouteName = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
+    private final String riPortSpecsRouteName = "resource-order-resource-inventory.v1.a4PortSpecs";
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
@@ -57,6 +58,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElement neNotDpuOltData;
     private A4NetworkElementPort nepOlt;
     private A4NetworkElementPort nepDpu;
+    private A4NetworkElementPort nepDpuGfast01;
+    private A4NetworkElementPort nepDpuGfast02;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
@@ -81,6 +84,10 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDpu = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+        nepDpuGfast01 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_01);
+        nepDpuGfast02 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_02);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -93,19 +100,22 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElement(neDpuData, negData);
         a4ResourceInventory.createNetworkElement(neNotDpuOltData, negData);
         a4ResourceInventory.createNetworkElementPort(nepOlt, neOltData);
+        a4ResourceInventory.createNetworkElementPort(nepDpuGfast01, neDpuData);
+        a4ResourceInventory.createNetworkElementPort(nepDpuGfast02, neDpuData);
     }
 
     @AfterMethod
     public void cleanup() throws IOException {
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        a4ResilienceRobot.changeRouteToMicroservice(ROUTE_NAME, A4_NEMO_UPDATER_MS);
+        a4ResilienceRobot.changeRouteToMicroservice(nemoUpdaterRouteName, A4_NEMO_UPDATER_MS);
+        a4ResilienceRobot.changeRouteToMicroservice(riPortSpecsRouteName, A4_RESOURCE_INVENTORY_MS);
     }
 
     @Test(description = "test DPU-NE is created and NEMO is triggerd")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126432")
-    @Description("DIGIHUB-118479 Create NetworkElement with Ports for requested DPU in Resource-Inventory and synchronize with NEMO")
+    @Description("DIGIHUB-118479,118482 Create NetworkElement with Ports for requested DPU in Resource-Inventory and synchronize with NEMO")
     public void testDpuIsCreated() {
         //Given
         //NetworkElementGroup by oltEndSz exists
@@ -144,18 +154,18 @@ public class A4DpuCommissioningTest extends GigabitTest {
         AtomicInteger numberGfPorts = new AtomicInteger(0);
         List<NetworkElementPortDto> createdDpuPortList = a4ResourceInventory
                 .getNetworkElementPortsByNetworkElement(createdDpuNe.getUuid());
-        Assert.assertEquals(createdDpuPortList.size(),numberOfDpuPorts);
-        createdDpuPortList.forEach(nep ->{
-            Assert.assertEquals(nep.getAdministrativeState(),"ACTIVATED");
-            Assert.assertEquals(nep.getOperationalState(),"NOT_WORKING");
+        Assert.assertEquals(createdDpuPortList.size(), numberOfDpuPorts);
+        createdDpuPortList.forEach(nep -> {
+            Assert.assertEquals(nep.getAdministrativeState(), "ACTIVATED");
+            Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
             if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
         });
-        Assert.assertEquals(numberGponPorts.intValue(),1);
-        Assert.assertEquals(numberGfPorts.intValue(),numberOfDpuPorts-1);
+        Assert.assertEquals(numberGponPorts.intValue(), 1);
+        Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
 
         //Check if NemoUpdater is triggered
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
     }
 
     @Test(description = "test DPU-NE cannot created when NEG is not found")
@@ -294,11 +304,12 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Test(description = "test DPU-NE is updated")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126534")
-    @Description("DIGIHUB-118479 If DPU already existing and NetworkElementLink is OLT then update DPU.")
+    @Description("DIGIHUB-118479,118482 If DPU already existing and NetworkElementLink is OLT then update DPU.")
     public void testDpuIsUpdated() {
         //Given
         //NetworkElementGroup by oltEndSz exists
         //DPU- NetworkElement by dpuEndSz already exists
+        //DPU- NetworkElement has Ports but some are missing
         NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
         String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
         NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
@@ -317,6 +328,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
 
+        //check if DPU-NE is updated
         NetworkElementDto updatedDpuNe = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
         Assert.assertEquals(updatedDpuNe.getCategory(), "DPU");
         Assert.assertEquals(updatedDpuNe.getZtpIdent(), dpuSerialNumber);
@@ -327,10 +339,32 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
+        //check if missing Ports are created and attributes of already existing ports are not updated
+        AtomicInteger numberGponPorts = new AtomicInteger(0);
+        AtomicInteger numberGfPorts = new AtomicInteger(0);
+        AtomicInteger numberWorking = new AtomicInteger(0);
+        AtomicInteger numberNotWorking = new AtomicInteger(0);
+
+        List<NetworkElementPortDto> existingDpuPortList = a4ResourceInventory
+                .getNetworkElementPortsByNetworkElement(dpuNetworkElement.getUuid());
+
+        Assert.assertEquals(existingDpuPortList.size(), 5);
+        existingDpuPortList.forEach(nep -> {
+            if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
+            if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
+            if ("WORKING".equals(nep.getOperationalState())) numberWorking.getAndIncrement();
+            if ("NOT_WORKING".equals(nep.getOperationalState())) numberNotWorking.getAndIncrement();
+        });
+        Assert.assertEquals(numberGponPorts.intValue(), 1);
+        Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
+        Assert.assertEquals(numberWorking.intValue(), 2);
+        Assert.assertEquals(numberNotWorking.intValue(), 3);
+
+
         //Check if NemoUpdater is triggered
         String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
         String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz,dpuFsz);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
@@ -373,12 +407,39 @@ public class A4DpuCommissioningTest extends GigabitTest {
         NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
         String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
 
-        a4ResilienceRobot.changeRouteToWiremock(ROUTE_NAME);
+        a4ResilienceRobot.changeRouteToWiremock(nemoUpdaterRouteName);
 
         // WHEN & THEN
         // call A4-DPU-Commissioning-Task
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
                 dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                oltPonPort);
+    }
+
+    @Test(description = "test Resource Inventoty is not reachable")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-127907")
+    @Description("DIGIHUB-118482 If Resource Inventory is not reachable then throw Server Error.")
+    public void testRiNotReachableServerError() {
+        //GIVEN
+        // DPU already exists
+        // but for find PortSpec-List Resource Inventory is not reachable
+        NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
+        String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
+        NetworkElementDto dpuNetworkElement = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
+        String existingDpuEndSz = dpuNetworkElement.getVpsz() + "/" + dpuNetworkElement.getFsz();
+
+        a4ResilienceRobot.changeRouteToWiremock(riPortSpecsRouteName);
+
+        // WHEN & THEN
+        // call A4-DPU-Commissioning-Task
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
+                existingDpuEndSz,
                 dpuSerialNumber,
                 dpuMaterialNumber,
                 dpuKlsId,
