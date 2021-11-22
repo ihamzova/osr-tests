@@ -93,7 +93,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.restoreOsrDbState();
     }
 
-    @Test(description = "DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
+    @Test(description = "DPU creation and DPU-Commissioning incl DPU demand (device : SDX2221-04-CX) case")
     @TmsLink("DIGIHUB-127585")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
     @Owner("DL-T-Magic.Mercury@telekom.de")
