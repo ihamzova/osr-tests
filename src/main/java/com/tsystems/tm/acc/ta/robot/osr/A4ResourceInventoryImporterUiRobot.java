@@ -9,9 +9,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import static com.codeborne.selenide.Condition.matchText;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ImportPage.*;
 
 @Slf4j
 public class A4ResourceInventoryImporterUiRobot {
@@ -20,12 +20,12 @@ public class A4ResourceInventoryImporterUiRobot {
 
     @Step("uploadCsvFile")
     public void uploadCsvFile(File csvFile) {
-        $(A4ImportPage.getA4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR()).uploadFile(csvFile);
+        $(A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR).uploadFile(csvFile);
     }
 
     @Step("click Senden button")
-    public void clickSendenButton(){
-        $(A4ImportPage.getA4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR()).click();
+    public void clickSendenButton() {
+        $(A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR).click();
     }
 
     @Step("Open UI, log in, and search for existing Network Element")
@@ -43,9 +43,8 @@ public class A4ResourceInventoryImporterUiRobot {
         uploadCsvFile(csvFile);
         clickSendenButton();
 
-        $(A4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(visible, 25000);
-
-        $(A4ImportPage.getA4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR()).waitUntil(matchText("csvLine"), 25000);
+        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).waitUntil(visible, 25000);
+        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).waitUntil(matchText("csvLine"), 25000);
     }
 
 }
