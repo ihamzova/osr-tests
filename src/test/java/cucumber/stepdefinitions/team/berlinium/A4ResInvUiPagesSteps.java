@@ -24,6 +24,12 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
+/*
+!!!
+!!! DON'T USE THESE STEPS YET! Currently UI tests don't run with BDD/Cucumber yet. Needs more analysing/debugging.
+!!!
+ */
+
 public class A4ResInvUiPagesSteps extends BaseSteps {
 
     private final A4InventarSucheRobot a4InventarSuche = new A4InventarSucheRobot();
