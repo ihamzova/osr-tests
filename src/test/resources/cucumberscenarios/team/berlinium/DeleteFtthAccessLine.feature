@@ -52,6 +52,8 @@ Feature:
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
     And U-Piter DPU wiremock will respond HTTP code 202 when called, and do a callback
     When NEMO sends a delete TP request
+    # use (and implement!!) this step when using u-piter wiremock. Then the wiremock webhook can do the NSP deletion, and the callback is the below manual step
+#    And U-Piter sends the callack
     Then the request is responded with HTTP code 202
     And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
     # Following line won't work: U-Piter DPU deprovisioning wiremock cannot perform deletion of NSP, therefore TP cannot be deleted. Possible to test with full domain test.
