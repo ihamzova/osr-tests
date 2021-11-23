@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
@@ -13,11 +14,14 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
+import java.io.IOException;
+
 import static org.testng.Assert.assertEquals;
 
 public class WiremockSteps extends BaseSteps {
 
     private final WgA4ProvisioningWiremockRobot deProvWiremock = new WgA4ProvisioningWiremockRobot();
+    private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
 
     public WiremockSteps(TestContext testContext) {
         super(testContext);
@@ -64,6 +68,21 @@ public class WiremockSteps extends BaseSteps {
     @Then("no DPU deprovisioning request to U-Piter was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
         deProvWiremock.checkPostToDeprovisioningWiremock(0);
+    }
+
+    @Then("TP UUID is added to DLQ")
+    public void tpUuidIsAddedToDlq() {
+
+        try {
+            a4ResilienceRobot.checkMessagesInQueue("jms.dlq.deprovisioning", 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Given ("DLQ is empty")
+    public void dlqIsEmpty() {
+        a4ResilienceRobot.removeAllMessagesInQueue("jms.dlq.deprovisioning");
     }
 
 }
