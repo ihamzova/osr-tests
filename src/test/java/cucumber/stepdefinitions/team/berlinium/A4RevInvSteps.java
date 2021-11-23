@@ -76,12 +76,17 @@ public class A4RevInvSteps extends BaseSteps {
 
     @Given("a NE is existing in A4 resource inventory")
     public void aNEIsExistingInA4ResourceInventory() {
-        // NE needs to be connected to a NEG, so if no NEG present, create one
-        if (!getScenarioContext().isContains(Context.A4_NEG))
-            aNEGIsExistingInA4ResourceInventory();
+        A4NetworkElement ne = setupDefaultNeTestData();
+        getScenarioContext().setContext(Context.A4_NE, ne);
+        A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+        a4ResInv.createNetworkElement(ne, neg);
+    }
 
-        A4NetworkElement ne = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
+    @Given("a NE with VSPZ {string} and FSZ {string} is existing in A4 resource inventory")
+    public void aNEWithVSPZIsExistingInAResourceInventory(String vpsz, String fsz) {
+        A4NetworkElement ne = setupDefaultNeTestData();
+        ne.setVpsz(vpsz);
+        ne.setFsz(fsz);
         getScenarioContext().setContext(Context.A4_NE, ne);
         A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
         a4ResInv.createNetworkElement(ne, neg);
@@ -136,6 +141,15 @@ public class A4RevInvSteps extends BaseSteps {
     public void theRequestIsRespondedWithHTTPCode(int httpCode) {
         Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
         assertEquals(response.getStatusCode(), httpCode);
+    }
+
+    private A4NetworkElement setupDefaultNeTestData() {
+        // NE needs to be connected to a NEG, so if no NEG present, create one
+        if (!getScenarioContext().isContains(Context.A4_NEG))
+            aNEGIsExistingInA4ResourceInventory();
+
+        return osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.defaultNetworkElement);
     }
 
     private A4TerminationPoint setupDefaultTpTestData() {

@@ -1,3 +1,4 @@
+@REG_DIGIHUB-118272
 Feature:
   Epic: DIGIHUB-118272
   User Stories: DIGIHUB-118969, DIGIHUB-121769, DIGIHUB-118971
@@ -5,6 +6,8 @@ Feature:
 
 # US DIGIHUB-118969, Scenario #1
 # X-Ray: DIGIHUB-127641
+  @berlinium @domain
+  @a4-resource-inventory @a4-resource-inventory-service
   Scenario: NEMO deletes non-existent TP (idempotency test)
     Given no TP exists in A4 resource inventory
     When NEMO sends a delete TP request
@@ -13,6 +16,8 @@ Feature:
 # DIGIHUB-118969, Scenario #2
 # NOTE: Will be replaced by DIGIHUB-121769, scenario #2
 # X-Ray: DIGIHUB-127643
+  @berlinium @domain
+  @a4-resource-inventory @a4-resource-inventory-service
   Scenario: NEMO deletes TP with valid type PON
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     When NEMO sends a delete TP request
@@ -20,6 +25,8 @@ Feature:
 
 # DIGIHUB-118969, Scenario #3, #4, and #5
 # X-Ray: DIGIHUB-127642
+  @berlinium @domain
+    @a4-resource-inventory-service
   Scenario Outline: NEMO deletes TP with invalid types
     Given a TP with type "<Type>" is existing in A4 resource inventory
     When NEMO sends a delete TP request
@@ -38,6 +45,8 @@ Feature:
 # DIGIHUB-121769, scenario #1
   # X-Ray: DIGIHUB-127854
 # NOTE: Will be replaced by DIGIHUB-118971, scenario #1
+  @berlinium
+  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
   Scenario: NEMO deletes TP with NSP attached, therefore deprovisioning to U-Piter is triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
@@ -51,6 +60,8 @@ Feature:
 # DIGIHUB-121769, scenario #2
   # X-Ray: DIGIHUB-127643 (existent scenario there will be overwritten by this one)
 # NOTE: This is the same as DIGIHUB-118969, Scenario #2, with added Then steps (TP deleted and no deProv call)
+  @berlinium
+  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
   Scenario: NEMO deletes TP without attached NSP, therefore deprovisioning to U-Piter is not triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     # Following line is redundant: No NSP created anyway.

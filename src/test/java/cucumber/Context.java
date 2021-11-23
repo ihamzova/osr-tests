@@ -10,6 +10,7 @@ public enum Context {
     // Berlinium
     A4_NEG,
     A4_NE,
+    A4_NE_B, // when you need a 2nd NE for your scenario
     A4_NEP,
     A4_NEL,
     A4_TP,
