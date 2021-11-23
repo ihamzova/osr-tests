@@ -21,10 +21,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -256,44 +253,28 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //HTTP return code is 400 (Bad Request)
     }
 
-    @Test(description = "test DPU-NE cannot created of validation error")
+    @DataProvider(name = "notValidRequestParameter")
+    public static Object[] isNotValidRequestParameter(){
+        return new Object[]{"","null",null};
+    }
+    @Test(dataProvider = "notValidRequestParameter", description = "test DPU-NE cannot created of validation error")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126199")
     @Description("DIGIHUB-118479 If any of attributes in Task are null or empty then throw an error.")
-    public void testDpuCannotCreatedValidationError() {
+    public void testDpuCannotCreatedValidationError(String emptyDpuFiberOnLocationId) {
         //Given
-        // NE and NEG exists but in request-call one or more attributes are missing
-
+        // NE and NEG exists but in request-call one or more attributes are missing or null
         NetworkElementDto oltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neOltData.getUuid());
         String existingOltEndSz = oltNetworkElement.getVpsz() + "/" + oltNetworkElement.getFsz();
 
         // When
-        // ToDo parametrized this request call
-        // several Requests for CommissioningDpuA4Task, all of which are incorrect
+        // several Requests for CommissioningDpuA4Task with request parameter that is empty or null
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 dpuEndSz,
                 dpuSerialNumber,
                 dpuMaterialNumber,
                 dpuKlsId,
-                "",
-                existingOltEndSz,
-                oltPonPort);
-
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
-                dpuEndSz,
-                dpuSerialNumber,
-                dpuMaterialNumber,
-                dpuKlsId,
-                "null",
-                existingOltEndSz,
-                oltPonPort);
-
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
-                dpuEndSz,
-                dpuSerialNumber,
-                dpuMaterialNumber,
-                dpuKlsId,
-                null,
+                emptyDpuFiberOnLocationId,
                 existingOltEndSz,
                 oltPonPort);
 
