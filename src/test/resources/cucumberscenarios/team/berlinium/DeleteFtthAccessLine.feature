@@ -87,6 +87,10 @@ Feature:
     And U-Piter DPU wiremock will respond HTTP code <HTTPCode> when called
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
+    Given U-Piter DPU wiremock will respond HTTP code 202 when called
+    Then wait 3min
+    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
+
 
 #    And the deletion process is retried after a delay of 3 minutes
 
