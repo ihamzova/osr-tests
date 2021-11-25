@@ -81,24 +81,23 @@ Feature:
 #--------------------------------------
 
 ## DIGIHUB-121769, scenario #4, and #5
-#  Scenario Outline: trigger deprovisioning - retry
-#    Given a TP with type "PON_TP" is existing in A4 resource inventory
-#    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
-#    And U-Piter DPU wiremock will respond HTTP code <HTTPCode> when called
-#    When NEMO sends a delete TP request
-#    Then the request is responded with HTTP code 202
-##    Given U-Piter DPU wiremock will respond HTTP code 202 when called
-##    Then wait 3min
-##    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
-#
-#
-##    And the deletion process is retried after a delay of 3 minutes
-#
-#    Examples:
-#      | HTTPCode |
-#      | 408      |
-#      | 500      |
-#      | 503      |
+  Scenario Outline: trigger deprovisioning - retry
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
+    And U-Piter DPU wiremock will respond HTTP code <HTTPCode> when called
+    When NEMO sends a delete TP request
+    Then the request is responded with HTTP code 202
+    # the uuid is now in our queue and is going to be retried after 2.5 min, that is checked in next steps
+    Given clean wiremock
+    Given U-Piter DPU wiremock will respond HTTP code 202 when called
+    Then wait 3min
+    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
+
+    Examples:
+      | HTTPCode |
+      | 408      |
+      | 500      |
+      | 503      |
 
 ## DIGIHUB-121769, scenario #6
   Scenario Outline: trigger deprovisioning - give up
@@ -116,7 +115,7 @@ Feature:
       | HTTPCode |
       | 400      |
       | 401      |
-      | 403      |
+      #| 403      | this will be retried, because it can be because of token expiration
 
 #--------------------------------------
 
