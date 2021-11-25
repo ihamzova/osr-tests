@@ -28,17 +28,21 @@ public class NetworkSwitchingPage {
     private static final String ENDPOINT = "/network-switching/prepare";
     private static final long TIMEOUT_FOR_PREPARATION = 180000;
 
-    private static final By PREPARATION_TAB = byQaData("prepare-tab");
+    private static final By PORT_TO_PORT_PREPARATION_TAB = byQaData("port-to-port-tab");
+    private static final By SLOT_TO_SLOT_PREPARATION_TAB = byQaData("slot-to-slot-tab");
     private static final By SEARCH_TAB = byQaData("search-tab");
     private static final By COMMIT_TAB = byQaData("commit-tab");
 
-    private static final By PREPARE_BUTTON = byQaData("prepare-btn");
+    private static final By PORT_TO_PORT_PREPARE_BUTTON = byQaData("port-to-port-btn");
+    private static final By SHOW_DEVICE_BUTTON = byQaData("slot-to-slot-prepare-btn");
+    private static final By ADD_ROW_BUTTON = byQaData("add-row-btn");
+    private static final By DELETE_ROW_BUTTON = byQaData("delete-row-btn");
+    private static final By SLOT_TO_SLOT_PREPARE_BUTTON = byQaData("slot-to-slot-btn");
     private static final By SEARCH_BUTTON = byQaData("search-btn");
     private static final By GET_PACKAGE_DATA_BUTTON = byQaData("get-info-btn");
     private static final By COMMIT_BUTTON = byQaData("commit-btn");
     private static final By ROLLBACK_BUTTON = byQaData("rollback-btn");
     private static final By COPY_PACKAGE_ID_BUTTON = byQaData("copy-btn");
-
 
     private static final By SOURCE_ENDSZ_INPUT = byQaData("endsz-input");
     private static final By SOURCE_SLOT_INPUT = byQaData("slot-input");
@@ -98,7 +102,7 @@ public class NetworkSwitchingPage {
         safeJavaScriptClick($(TARGET_PORT_INPUT));
         $(TARGET_PORT_INPUT).val(targetPort.getPortNumber());
 
-        $(PREPARE_BUTTON).click();
+        $(PORT_TO_PORT_PREPARE_BUTTON).click();
         $(NOTIFICATION).shouldHave(text("Die Vorbereitung für den Zielport hat begonnen"));
         closeNotificationButton();
         return this;
