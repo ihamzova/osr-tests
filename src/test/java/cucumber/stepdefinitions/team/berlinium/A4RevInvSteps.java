@@ -166,7 +166,7 @@ public class A4RevInvSteps extends BaseSteps {
         // NSP needs to be connected to a TP, so if no TP present, create one
         //check if TP has any NSPs connected
 
-        if (getScenarioContext().isContains(Context.A4_TP))
+        if (!getScenarioContext().isContains(Context.A4_TP))
             aTPIsExistingInA4ResourceInventory();
 
        /* A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
