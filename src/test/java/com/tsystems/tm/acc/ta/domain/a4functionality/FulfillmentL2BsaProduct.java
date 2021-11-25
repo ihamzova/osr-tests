@@ -46,6 +46,7 @@ import static org.testng.Assert.*;
         A4_RESOURCE_INVENTORY_MS,
         A4_RESOURCE_INVENTORY_SERVICE_MS,
         A4_NEMO_UPDATER_MS,
+        A4_CARRIER_MANAGEMENT_MS,
         ACCESS_LINE_MANAGEMENT})
 
 public class FulfillmentL2BsaProduct extends GigabitTest {
