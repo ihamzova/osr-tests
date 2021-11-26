@@ -1,13 +1,11 @@
 package com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning;
 
 import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
+import com.tsystems.tm.acc.data.upiter.models.dpudemand.DpuDemandCase;
 import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.fttbneprofile.FttbNeProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.FttbNeProfile;
-import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgFttbAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
@@ -37,6 +35,7 @@ public class WgFttbAccessProvisioning extends GigabitTest {
   private PortProvisioning oltDeviceFttbProvisioningCoax;
   private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
   private DpuDevice dpuDeviceFttbProvisioningCoax;
+  private DpuDemand dpuDemand;
   private FttbNeProfile fttbNeProfileTp;
   private FttbNeProfile fttbNeProfileCoax;
   private DefaultNetworkLineProfile defaultNlProfileFttbTp;
@@ -55,15 +54,16 @@ public class WgFttbAccessProvisioning extends GigabitTest {
     dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
     oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
     oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
+    dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.dpuDemand);
     defaultNlProfileFttbTp = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbTP);
     defaultNlProfileFttbCoax = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
     fttbNeProfileTp = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileTwistedPair);
     fttbNeProfileCoax = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileCoax);
-    numberOfAccessLinesForProvisioningTP = dpuDeviceFttbProvisioningTwistedPair.getNumberOfAccessLines();
+    numberOfAccessLinesForProvisioningTP = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
     if (numberOfAccessLinesForProvisioningTP > 16) {
       numberOfAccessLinesForProvisioningTP = 16;
     }
-    numberOfAccessLinesForProvisioningCoax = dpuDeviceFttbProvisioningCoax.getNumberOfAccessLines();
+    numberOfAccessLinesForProvisioningCoax = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
     if (numberOfAccessLinesForProvisioningCoax > 16) {
       numberOfAccessLinesForProvisioningCoax = 16;
     }
