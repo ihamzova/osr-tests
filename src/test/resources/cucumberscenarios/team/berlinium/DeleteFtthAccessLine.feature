@@ -146,14 +146,29 @@ Feature:
 ## NOTE: Redundant to DIGIHUB-118969, Scenario #1. Skipped.
 #
 ## DIGIHUB-118971, scenario #4
-#  Scenario Outline: Delete TP - RI is down
+  # Scenario Outline: Delete TP - RI is down
 #    Given a TP with type "PON_TP" is existing in A4 resource inventory
 #    And A4 resource inventory will respond HTTP code "<HTTPCode>" when called
 #    When NEMO sends a delete TP request
 #    Then the request is responded with HTTP code 202
 #    And a log entry with message "A4 Resource Inventory not available" has been written
-#
+
 #    Examples:
 #      | HTTPCode |
 #      | 500      |
 #      | 503      |
+
+  ## DIGIHUB-118971, scenario #4
+   Scenario Outline: Delete TP - RI is down
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And DLQ is empty
+    And A4 resource inventory will respond HTTP code <HTTPCode> when called
+    When U-Piter sends the callack
+    Then the request is responded with HTTP code 200
+    And TP UUID is added to DLQ
+
+
+    Examples:
+      | HTTPCode |
+      | 500      |
+      | 503      |

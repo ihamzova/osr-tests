@@ -1,6 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.A4ResourceInventoryStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
@@ -16,6 +17,7 @@ import io.cucumber.java.en.Then;
 
 import java.io.IOException;
 
+import static io.netty.handler.codec.mqtt.MqttMessageBuilders.publish;
 import static org.testng.Assert.assertEquals;
 
 public class WiremockSteps extends BaseSteps {
@@ -83,6 +85,15 @@ public class WiremockSteps extends BaseSteps {
     @Given ("DLQ is empty")
     public void dlqIsEmpty() {
         a4ResilienceRobot.removeAllMessagesInQueue("jms.dlq.deprovisioning");
+    }
+
+    @Given("A4 resource inventory will respond HTTP code {int} when called")
+    public void RiWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+
+        wiremock
+                .add(new A4ResourceInventoryStub().deleteTPWith500(httpCode))
+                .publish();
     }
 
 }
