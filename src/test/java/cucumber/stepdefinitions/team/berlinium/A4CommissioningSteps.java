@@ -21,8 +21,6 @@ public class A4CommissioningSteps extends BaseSteps {
         super(testContext);
     }
 
-
-
     @Before
     public void init() {
     }
