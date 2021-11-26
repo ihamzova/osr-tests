@@ -2,7 +2,7 @@
 name: dpuDeviceForFttbDeprovisioning
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
 values:
-  vpsz: "49/30/179"
+  vpsz: "49/812/179"
   fsz: "71G0"
   oltEndsz: "49/30/179/76H1"
   oltGponSlot: "5"
