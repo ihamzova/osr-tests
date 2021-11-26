@@ -51,8 +51,7 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Delete FTTH Acces
     When NEMO sends a delete TP request
 
     # use (and implement!!) this step when using u-piter wiremock. Then the wiremock webhook can do the NSP deletion, and the callback is the below manual step
-#    And U-Piter sends the DPU deprovisioning callack
-
+#    And U-Piter sends the callack
     Then the request is responded with HTTP code 202
     And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
 
@@ -88,7 +87,11 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Delete FTTH Acces
     And U-Piter DPU wiremock will respond HTTP code <HTTPCode> when called
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
-#    And the deletion process is retried after a delay of 3 minutes
+    # the uuid is now in our queue and is going to be retried after 2.5 min, that is checked in next steps
+    Given clean wiremock
+    Given U-Piter DPU wiremock will respond HTTP code 202 when called
+    Then wait 3min
+    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
 
     Examples:
       | HTTPCode |
@@ -112,33 +115,31 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Delete FTTH Acces
       | HTTPCode |
       | 400      |
       | 401      |
-      | 403      |
+      #| 403      | this will be retried, because it can be because of token expiration
 
 #--------------------------------------
 
 ## DIGIHUB-118971, scenario #1
 ## NOTE: Originally this scenario is _without_ NSP, but this is redundant to DIGIHUB-121769, scenario #2, therefore we change this one to include NSP
 ## NOTE: This is the same as DIGIHUB-121769, scenario #1, with added Then step (NSP not in repo anymore)
-#  Scenario: Receive delete TP "Sunny Day" - NSP is existing for TP
-#    Given a TP with type "PON_TP" is existing in A4 resource inventory
-#    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
-#    And U-Piter wiremock will respond HTTP code "202" when called, and delete NSP "DEU.DTAG.12345", and callback
-#    When NEMO sends a delete TP request
-#    Then the request is responded with HTTP code 202
-#    And the TP is not existing in A4 resource inventory
-#    And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
-#    And the NSP with Line ID "DEU.DTAG.12345" is not existing in A4 resource inventory # to be done by U-Piter mock
+  Scenario: Receive delete TP "Sunny Day" - NSP is existing for TP
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And a NSP FTTH-Access is not existing in A4 resource inventory for the TP
+    When U-Piter sends the callack
+    Then the request is responded with HTTP code 200
+    Then the TP does not exist in A4 resource inventory anymore
+
 #
 #    # TODO: Scenario for when U-Piter callback contains error msg
 #
 ## DIGIHUB-118971, scenario #2
 ## No scenario for this: DIGIHUB-118971, scenario #1 takes care of good day
 ## Instead we create a small scenario with given TP and NSP connected to TP, then a4-res-inv DELETE request for TP, which is rejected because of constraint violation
-#  Scenario: Delete TP with attached NSP – Error provocation
-#    Given a TP with type "PON_TP" is existing in A4 resource inventory
-#    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
-#    When A4 resource inventory is requested to delete TP
-#    Then the request is responded with HTTP code 400
+  Scenario: Delete TP with attached NSP – Error provocation
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
+    When U-Piter sends the callack
+    Then the request is responded with HTTP code 400
 #    And a log entry with message "Constraint Violation: NSP connected to TP" has been written
 #
 ## DIGIHUB-118971, scenario #3
