@@ -22,9 +22,9 @@ public class A4CommissioningSteps extends BaseSteps {
     public void cleanup() {
     }
 
-    @When("U-Piter sends the callack")
-    public void uPiterSendsTheCallack() {
-        // TODO
+    @When("U-Piter sends the DPU deprovisioning callack")
+    public void uPiterSendsTheDPUDeprovisioningCallack() {
+
     }
 
 }
