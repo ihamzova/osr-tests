@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementLinkDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
@@ -26,6 +27,7 @@ import org.testng.annotations.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
@@ -150,17 +152,38 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //check if Ports are correct created
         AtomicInteger numberGponPorts = new AtomicInteger(0);
         AtomicInteger numberGfPorts = new AtomicInteger(0);
+        AtomicInteger index = new AtomicInteger(0);
+        final int[] indexGponPort = new int[1];
         List<NetworkElementPortDto> createdDpuPortList = a4ResourceInventory
                 .getNetworkElementPortsByNetworkElement(createdDpuNe.getUuid());
         Assert.assertEquals(createdDpuPortList.size(), numberOfDpuPorts);
+
         createdDpuPortList.forEach(nep -> {
             Assert.assertEquals(nep.getAdministrativeState(), "ACTIVATED");
             Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
-            if ("GPON".equals(nep.getType())) numberGponPorts.getAndIncrement();
+            index.getAndIncrement();
+            if ("GPON".equals(nep.getType())) {numberGponPorts.getAndIncrement();
+                    indexGponPort[0] = index.intValue();};
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
         });
         Assert.assertEquals(numberGponPorts.intValue(), 1);
         Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
+
+        //Check if NetworkElementlink is correct created
+        List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
+                .getNetworkElementLinksByNePort(nepOltData.getUuid());
+        String lbz = "DPU/1/" + existingOltEndSz + "/" + dpuEndSz;
+        int indexOfGponPort = indexGponPort[0]-1;
+
+        Assert.assertEquals(createdNeLinks.size(),1);
+        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
+        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
+        Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),dpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(),nepOltData.getUuid());
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),createdDpuPortList.
+                get(indexOfGponPort).getUuid());
 
         //Check if NemoUpdater is triggered
         a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
