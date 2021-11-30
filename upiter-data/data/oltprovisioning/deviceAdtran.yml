@@ -2,7 +2,7 @@ name: deviceAdtran
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H5"
-  portNumber: "1"
+  portNumber: "16"
   homeIdPool: 32
   lineIdPool: 32
   backhaulId: 1

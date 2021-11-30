@@ -1,12 +1,17 @@
 package com.tsystems.tm.acc.ta.team.upiter.ontcommissioning;
 
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
+import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessTransmissionMedium;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.PortType;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ProfileState;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
@@ -41,15 +46,31 @@ public class FTTBCommissioning extends GigabitTest {
   private AccessLine accessLineTwistedPair;
   private AccessLine accessLineCoax;
   private UpiterTestContext context = UpiterTestContext.get();
+  private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
+  private PortProvisioning oltDeviceFttbProvisioningCoax;
+  private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
+  private DpuDevice dpuDeviceFttbProvisioningCoax;
 
   @BeforeClass
   public void init() throws InterruptedException {
+    dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
+    dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
+    oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
+    oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
+
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
-    Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
-    Thread.sleep(1000);
+    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1,
+            oltDeviceFttbProvisioningTwistedPair.getEndSz(),
+            dpuDeviceFttbProvisioningTwistedPair.getEndsz(),
+            oltDeviceFttbProvisioningTwistedPair.getSlotNumber(),
+            oltDeviceFttbProvisioningTwistedPair.getPortNumber());
+
+    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000,
+            oltDeviceFttbProvisioningCoax.getEndSz(),
+            dpuDeviceFttbProvisioningCoax.getEndsz(),
+            oltDeviceFttbProvisioningCoax.getSlotNumber(),
+            oltDeviceFttbProvisioningCoax.getPortNumber());
 
     accessLineTwistedPair = context.getData().getAccessLineDataProvider().get(AccessLineCase.FTTBCommissioningTwistedPair);
     accessLineCoax = context.getData().getAccessLineDataProvider().get(AccessLineCase.FTTBCommissioningCoax);
@@ -59,7 +80,6 @@ public class FTTBCommissioning extends GigabitTest {
   public void clearData() {
     accessLineRiRobot.clearDatabase();
   }
-
 
   @Test
   @TmsLink("DIGIHUB-72719")
