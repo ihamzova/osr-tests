@@ -4,9 +4,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
 values:
   vpsz: "49/812/179"
   fsz: "71G0"
-  ponConnectionWe: "8"
-  ponConnectionGe: "4"
-  ponConnectionSl: "1"
   accessTransmissionMedium: "TWISTED_PAIR"
 ---
 name: oltDeviceForFttbProvisioningTwistedPair
@@ -19,24 +16,11 @@ values:
   lineIdPool: 32
   backhaulId: 1
 ---
-name: oltDeviceForFailedFttbProvisioningTwistedPair
-template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
-values:
-  endSz: "49/89/8000/76H3"
-  slotNumber: "1"
-  portNumber: "0"
-  homeIdPool: 32
-  lineIdPool: 32
-  backhaulId: 1
----
 name: dpuDeviceForFttbProvisioningCoax
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
 values:
   vpsz: "49/812/179"
   fsz: "71G1"
-  ponConnectionWe: "8"
-  ponConnectionGe: "4"
-  ponConnectionSl: "1"
   accessTransmissionMedium: "COAX"
 ---
 name: oltDeviceForFttbProvisioningCoax
@@ -48,6 +32,45 @@ values:
   homeIdPool: 32
   lineIdPool: 32
   backhaulId: 1
+---
+name: dpuDeviceForFttbProvisioningOnAdtranTwistedPair
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/812/179"
+  fsz: "71G2"
+  accessTransmissionMedium: "TWISTED_PAIR"
+---
+name: adtranDeviceForFttbProvisioningTwistedPair
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H3"
+  portNumber: "16"
+  homeIdPool: 32
+  lineIdPool: 32
+  backhaulId: 1
+---
+name: dpuDeviceForFttbProvisioningOnAdtranCoax
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/812/179"
+  fsz: "71G3"
+  accessTransmissionMedium: "COAX"
+---
+name: adtranDeviceForFttbProvisioningCoax
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H5"
+  portNumber: "16"
+  homeIdPool: 32
+  lineIdPool: 32
+  backhaulId: 1
+---
+name: standardDpuDeviceData
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  ponConnectionWe: "2"
+  ponConnectionGe: "2"
+  ponConnectionSl: "1"
 ---
 name: dpuDemand
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand

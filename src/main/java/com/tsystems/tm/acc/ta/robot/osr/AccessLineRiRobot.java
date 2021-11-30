@@ -10,8 +10,6 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.DeviceProductionPlatform;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -126,6 +124,23 @@ public class AccessLineRiRobot {
             .DPU_END_SZQuery(dpuDevice.getEndsz())
             .OLT_END_SZQuery(oltDevice.getEndSz())
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of DPU Preprovisioning process emulation, v2")
+  public void fillDatabaseForDpuPreprovisioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ, DpuDevice dpuDevice, PortProvisioning oltDevice){
+    if (oltDevice.getSlotNumber()==null) oltDevice.setSlotNumber("null");
+    accessLineResourceInventoryFillDbClient.
+            getClient()
+            .fillDatabase()
+            .fillDatabaseForDpuPreprovisioningV4()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .OLT_END_SZQuery(oltDevice.getEndSz())
+            .OLT_SLOT_WITH_DPUQuery(oltDevice.getSlotNumber())
+            .OLT_PORT_WITH_DPUQuery(oltDevice.getPortNumber())
+            .DPU_END_SZQuery(dpuDevice.getEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    if (oltDevice.getSlotNumber().equals("null")) oltDevice.setSlotNumber(null);
   }
 
   @Step("Check results after (de)provisioning: AccessLines, default ne profiles, default nl profiles")
