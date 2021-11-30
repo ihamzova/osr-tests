@@ -11,7 +11,7 @@ name: fttbFailedProcess
 template: com.tsystems.tm.acc.ta.data.osr.models.Process
 values:
   processName: "DpuDeviceProvisioning"
-  endSz: "49/30/179/71G0"
+  endSz: "49/812/179/71G0"
   slotNumber: ""
   portNumber: ""
   lineId: ""
