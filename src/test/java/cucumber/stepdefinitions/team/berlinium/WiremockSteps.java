@@ -19,8 +19,11 @@ import java.io.IOException;
 
 import static io.netty.handler.codec.mqtt.MqttMessageBuilders.publish;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 public class WiremockSteps extends BaseSteps {
+
+    private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
 
     private final WgA4ProvisioningWiremockRobot deProvWiremock = new WgA4ProvisioningWiremockRobot();
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
@@ -55,6 +58,11 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
+    @Given("DLQ is empty")
+    public void dlqIsEmpty() {
+        a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
+    }
+
     @Then("a DPU deprovisioning request to U-Piter was triggered")
     public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
         deProvWiremock.checkPostToDeprovisioningWiremock(1);
@@ -74,11 +82,11 @@ public class WiremockSteps extends BaseSteps {
 
     @Then("TP UUID is added to DLQ")
     public void tpUuidIsAddedToDlq() {
-
         try {
-            a4ResilienceRobot.checkMessagesInQueue("jms.dlq.deprovisioning", 1);
+            a4ResilienceRobot.checkMessagesInQueue(QUEUE_DEPROV_DLQ, 1);
         } catch (IOException e) {
             e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
         }
     }
 
