@@ -168,12 +168,6 @@ public class A4RevInvSteps extends BaseSteps {
 
         if (!getScenarioContext().isContains(Context.A4_TP))
             aTPIsExistingInA4ResourceInventory();
-
-       /* A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
-                .getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
-        nspFtth.setLineId(lineId);
-        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);*/
         A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
         a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 0);
     }

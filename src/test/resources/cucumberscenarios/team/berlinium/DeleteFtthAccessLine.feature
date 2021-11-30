@@ -97,7 +97,6 @@ Feature:
       | HTTPCode |
       | 408      |
       | 500      |
-      | 503      |
 
 ## DIGIHUB-121769, scenario #6
   Scenario Outline: trigger deprovisioning - give up
@@ -125,7 +124,7 @@ Feature:
   Scenario: Receive delete TP "Sunny Day" - NSP is existing for TP
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH-Access is not existing in A4 resource inventory for the TP
-    When U-Piter sends the callack
+    When U-Piter sends the callback
     Then the request is responded with HTTP code 200
     Then the TP does not exist in A4 resource inventory anymore
 
@@ -134,12 +133,13 @@ Feature:
 #
 ## DIGIHUB-118971, scenario #2
 ## No scenario for this: DIGIHUB-118971, scenario #1 takes care of good day
-## Instead we create a small scenario with given TP and NSP connected to TP, then a4-res-inv DELETE request for TP, which is rejected because of constraint violation
+## Instead we create a small scenario with given TP and NSP connected to TP, then a4-res-inv DELETE request for TP, which is rejected from RI because of constraint violation
+## current uuid is put into DLQ
   Scenario: Delete TP with attached NSP – Error provocation
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
-    When U-Piter sends the callack
-    Then the request is responded with HTTP code 400
+    When U-Piter sends the callback
+    Then the request is responded with HTTP code 200
 #    And a log entry with message "Constraint Violation: NSP connected to TP" has been written
 #
 ## DIGIHUB-118971, scenario #3
@@ -161,14 +161,11 @@ Feature:
   ## DIGIHUB-118971, scenario #4
    Scenario Outline: Delete TP - RI is down
     Given a TP with type "PON_TP" is existing in A4 resource inventory
-    And DLQ is empty
     And A4 resource inventory will respond HTTP code <HTTPCode> when called
-    When U-Piter sends the callack
+    When U-Piter sends the callback
     Then the request is responded with HTTP code 200
-    And TP UUID is added to DLQ
 
 
     Examples:
       | HTTPCode |
       | 500      |
-      | 503      |
