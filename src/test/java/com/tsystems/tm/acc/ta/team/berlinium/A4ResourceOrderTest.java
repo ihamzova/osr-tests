@@ -39,6 +39,7 @@ public class A4ResourceOrderTest {
     // test send a request (resource order) from simulated Merlin to Berlinium and get a callback
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
+    private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String wiremockScenarioName = "A4ResourceOrderTest";
     private final int sleepTimer = 10;
 
@@ -56,7 +57,9 @@ public class A4ResourceOrderTest {
     private A4NetworkElementLink nelData1;
     private A4NetworkElementLink nelData2;
     private A4NetworkServiceProfileA10Nsp nspA10Data1;
+    private A4NetworkServiceProfileA10Nsp nspA10Data2;
     private A4TerminationPoint tpData1;
+    private A4TerminationPoint tpData2;
     private UewegData uewegData1;
     private UewegData uewegData2;
 
@@ -89,12 +92,14 @@ public class A4ResourceOrderTest {
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-
         nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+        nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
+                .get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro);
         tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
-
+        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.terminationPointA10NspPrePro);
         uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.uewegA);
         uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
@@ -117,7 +122,9 @@ public class A4ResourceOrderTest {
         nelData2.setLifecycleState("INSTALLING");
         a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
+        a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
 
         ro = a4ResourceOrder.buildResourceOrder();
 
@@ -266,7 +273,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Post to Mercury is impossible")
-    public void testNoPostToMercury() {
+    public void testRoNoPostToMercury() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
@@ -283,7 +290,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("rebell-link for resource order from Merlin is unknown")
-    public void testUnknownNel() {
+    public void testRoUnknownNel() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", DEFAULT_ORDER_ITEM_ID, ro); // Link is unknown
@@ -300,7 +307,7 @@ public class A4ResourceOrderTest {
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("add-case: send RO with -add- and get Callback with -completed-")
-    public void testAddItem() {
+    public void testRoAddItem() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
 
@@ -311,6 +318,8 @@ public class A4ResourceOrderTest {
         // THEN
         NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto =
                 a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
+        System.out.println("+++ dto1.nel.uuid: "+networkServiceProfileA10NspDto.getNetworkElementLinkUuid());
+        System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
         Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -318,225 +327,55 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
     }
 
-/*
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: send RO with -add- 2 items and get Callback with -completed-")
-    public void test2AddItems()  {
+    @Description("add-case: send RO with two -add- and get Callback with -completed-")
+    public void testRo2AddItems() {
+        // GIVEN
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.addOrderItemAdd(SECOND_ORDER_ITEM_ID, nelData2, ro);
+        System.out.println("+++ RO mit 2 Items: "+ro);
 
-    ResourceOrder ro_5 = buildResourceOrder();
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(sleepTimer);
+
+        // THEN
+        // ------  nel-uuid in the nsp's -- where is the bug?
+        /*
+                +++ dto1.nel.uuid: b58f3b9f-e1cf-46d4-83d6-72522ef3fa55
+                +++ nelData1.uuid: 5d99468f-97c7-4fd4-9a75-7e2c2b5c05f0
+                +++ dto2.nel.uuid: null
+                +++ nelData2.uuid: b58f3b9f-e1cf-46d4-83d6-72522ef3fa55
+         */
+
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto =
+                a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
+
+        System.out.println("+++ dto1.nel.uuid: "+networkServiceProfileA10NspDto.getNetworkElementLinkUuid());
+        System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
 
 
-        rv2.setName("RahmenvertragsNr");
-        rv2.setValue("1122334456");
-        rv2.setValueType("valueTypeRv2");
-        cbr2.setName("Subscription.keyA");
-        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
-        cbr2.setValueType("valueTypeCbr2");
-        resourceCharacteristicList2.add(rv2);
-        resourceCharacteristicList2.add(cbr2);
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 =
+                a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
-        vuep2.setName("VUEP_Public_Referenz-Nr.");
-        vuep2.setValue("A1000852");
-        vuep2.setValueType("valueTypeVuep2");
-        mtu2.setName("MTU-Size");
-        mtu2.setValue("1500");
-        mtu2.setValueType("valueTypeMtu2");
-        lacp2.setName("LACP_aktiv");
-        lacp2.setValue("true");
-        lacp2.setValueType("valueTypeLacp2");
+        System.out.println("+++ dto2.nel.uuid: "+networkServiceProfileA10NspDto2.getNetworkElementLinkUuid());
+        System.out.println("+++ nelData2.uuid: "+nelData2.getUuid());
 
-        vlanRange2.setVlanRangeLower("0");
-        vlanRange2.setVlanRangeUpper("4094");
-        characteristicVLANrange2.setName("VLAN_Range");
-        characteristicVLANrange2.setValue(vlanRange2);
-        characteristicVLANrange2.setValueType("valueTypeVlan2");
+       // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
+       // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
-        resourceCharacteristicList2.add(vuep2);
-        resourceCharacteristicList2.add(mtu2);
-        resourceCharacteristicList2.add(lacp2);
-        resourceCharacteristicList2.add(characteristicVLANrange2);
-
-        resource2.setName("4L2/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item
-        resource2.setResourceCharacteristic(resourceCharacteristicList2);
-
-        orderItem2.setAction(OrderItemActionType.ADD);
-        orderItem2.setResource(resource2);
-        orderItem2.setId("orderItemId");
-        orderItemList.add(orderItem2);
-
-        // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
-
-        // receive callback with Mock
-        sleepForSeconds(5);
-
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo( "/test_url" )));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ Modify, Delete oder Prozessfehler enthalten: "+notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: "+noNELTrue);
-        System.out.println("+++ completed: "+completeTrue);
-        System.out.println("+++ rejected: "+rejectTrue);
-        System.out.println("+++  ");
-
-        //sleepForSeconds(5);    // Auswertung der DB
-
-        assertTrue(completeTrue);
+        System.out.println("+++ Start 4 End-Checks");
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
     }
-     */
-
-    /*
-@Ignore
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
-    public void testAdd2LinksOneIsUnknown()  {
-
-       ResourceOrder ro_6 = buildResourceOrder();
-
-        rv2.setName("RahmenvertragsNr");
-        rv2.setValue("1122334456");
-        rv2.setValueType("valueTypeRv");
-        cbr2.setName("Subscription.keyA");
-        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
-        cbr2.setValueType("valueTypeCbr");
-        resourceCharacteristicList2.add(rv2);
-        resourceCharacteristicList2.add(cbr2);
-
-        resource2.setName("4L3/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item, Link falsch
-        resource2.setResourceCharacteristic(resourceCharacteristicList2);
-
-        orderItem2.setAction(OrderItemActionType.ADD);
-        orderItem2.setResource(resource2);
-        orderItem2.setId("orderItemId");
-        orderItemList.add(orderItem2);
-
-        // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
-
-        // receive callback with Mock
-        sleepForSeconds(5);
-
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo( "/test_url" )));
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ Delete oder Modify enthalten: "+notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: "+noNELTrue);
-        System.out.println("+++ completed: "+completeTrue);
-        System.out.println("+++ rejected: "+rejectTrue);
-        System.out.println("+++  ");
-
-        //sleepForSeconds(5);    // Auswertung der DB
-
-        assertTrue(rejectTrue);
-    }
-     */
-
-    /*
-@Ignore
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("add/delete-case: send RO with -add- and -delete- items and get Callback with -rejected-")
-    public void testAddItemAndDeleteItem() {
-
-     ResourceOrder ro_7 = buildResourceOrder();
-
-        rv2.setName("RahmenvertragsNr");
-        rv2.setValue("1122334456");
-        rv2.setValueType("valueTypeRv");
-        cbr2.setName("Subscription.keyA");
-        cbr2.setValue("f26bd5de-2150-47c7-8235-a688438973a5");
-        cbr2.setValueType("valueTypeCbr");
-        resourceCharacteristicList2.add(rv2);
-        resourceCharacteristicList2.add(cbr2);
-
-        resource2.setName("4L2/100211-49/30/150/7KDC-49/30/150/7KD3");  // 2. Item
-        resource2.setResourceCharacteristic(resourceCharacteristicList2);
-
-        orderItem2.setAction(OrderItemActionType.DELETE);
-        orderItem2.setResource(resource2);
-        orderItem2.setId("orderItemId");
-        orderItemList.add(orderItem2);
-
-        // send to queue
-        a4ResourceOrderRobot.sendPostResourceOrder(reqUrl, corId, ro);
-
-        // receive callback with Mock
-        sleepForSeconds(5);
-
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo( "/test_url" )));
-
-
-
-        System.out.println(" ");
-        System.out.println("+++ ");
-        System.out.println("+++ empfangener Callback: "+ergList);
-
-        boolean rejectTrue = ergList.toString().contains("rejected");
-        boolean completeTrue = ergList.toString().contains("completed");
-        boolean mercuryPostFalse = ergList.toString().contains("409 Conflict");
-        boolean noNELTrue = ergList.toString().contains("Links are not present");
-        boolean notAddCaseTrue = ergList.toString().contains("not be processed");
-        boolean AddCaseTrue = ergList.toString().contains("add");
-        boolean DeleteCaseTrue = ergList.toString().contains("delete");
-
-        System.out.println("+++  ");
-        System.out.println("+++ POST an Mercury fehlerhaft: "+mercuryPostFalse);
-        System.out.println("+++ Delete oder Modify enthalten: "+notAddCaseTrue);
-        System.out.println("+++ kein Link gefunden: "+noNELTrue);
-        System.out.println("+++ Add gefunden: "+AddCaseTrue);
-        System.out.println("+++ Delete gefunden: "+DeleteCaseTrue);
-
-
-        System.out.println("+++ completed: "+completeTrue);
-        System.out.println("+++ rejected: "+rejectTrue);
-        System.out.println("+++  ");
-
-        //sleepForSeconds(5);    // Auswertung der DB
-
-        assertTrue(rejectTrue);
-    }
-     */
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
-    @Description("Delete is not implemented")
-    public void testDeleteNotImplemented() {
+    @Description("delete-case: send RO with -delete- and get Callback with -completed-")
+    public void testRoDeleteItem() {
         // GIVEN
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
 
@@ -545,9 +384,77 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        // NSP pro item auf default (lcs-planning, was noch?), Link deaktiviert (lcs deactivated), NSP+NEL an Nemo
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);  // actual 'in progress'
     }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("delete-case: send RO with two -delete- and get Callback with -completed-")
+    public void testRo2DeleteItems() {
+        // GIVEN
+        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.addOrderItemDelete(SECOND_ORDER_ITEM_ID, nelData2, ro);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(sleepTimer);
+
+        // THEN
+        // NSP pro item auf default (lcs-planning, was noch?), Link deaktiviert (lcs deactivated), NSP+NEL an Nemo
+        a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);  // actual 'in progress'
+    }
+
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("mixed-case: send RO with -add- and -delete- and get Callback with -rejected-")
+    public void testRoDeleteItemAndAddItem() {
+        // GIVEN
+        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.addOrderItemAdd(SECOND_ORDER_ITEM_ID, nelData2, ro);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(sleepTimer);
+
+        // THEN
+        // NSP pro item auf default (lcs-planning, was noch?), Link deaktiviert (lcs deactivated), NSP+NEL an Nemo
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);  // actual 'in progress'
+    }
+
+
+    @DataProvider(name = "characteristicNamesDelete")
+    public static Object[] characteristicNamesDeleteString() {
+        return new Object[]{
+                RAHMEN_VERTRAGS_NR,
+                CARRIER_BSA_REFERENCE,
+                VUEP_PUBLIC_REFERENZ_NR,
+                LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV,
+                MTU_SIZE,
+                VLAN_RANGE,
+                QOS_LIST};
+    }
+
+    @Test(dataProvider = "characteristicNamesDelete")
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("DIGIHUB-xxx Resource order: Characteristic in delete-order item has wrong value \"\"")
+    public void testRoDeleteWithEmptyValues(String cName) {
+        // GIVEN
+        a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+        a4ResourceOrder.setCharacteristicValue(cName, "", DEFAULT_ORDER_ITEM_ID, ro);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
+        sleepForSeconds(sleepTimer);
+
+        // THEN
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+    }
+
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -583,6 +490,37 @@ public class A4ResourceOrderTest {
 
     }
     */
+
+    /*
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add-case: send RO with -add- 2 items and get Callback with -completed-")
+    public void test2AddItems()  {
+
+
+
+    }
+     */
+
+    /*
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
+    public void testAdd2LinksOneIsUnknown()  {
+
+
+    }
+     */
+
+    /*
+    @Test
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("add/delete-case: send RO with -add- and -delete- items and get Callback with -rejected-")
+    public void testAddItemAndDeleteItem() {
+
+
+    }
+     */
 
     @Test
     @Owner("bela.kovac@t-systems.com")
