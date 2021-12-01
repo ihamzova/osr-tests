@@ -90,11 +90,6 @@ public class WiremockSteps extends BaseSteps {
         }
     }
 
-    @Given ("DLQ is empty")
-    public void dlqIsEmpty() {
-        a4ResilienceRobot.removeAllMessagesInQueue("jms.dlq.deprovisioning");
-    }
-
     @Given("A4 resource inventory will respond HTTP code {int} when called")
     public void RiWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
