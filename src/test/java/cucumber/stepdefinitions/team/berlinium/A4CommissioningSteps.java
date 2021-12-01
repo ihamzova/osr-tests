@@ -29,10 +29,10 @@ public class A4CommissioningSteps extends BaseSteps {
     public void cleanup() {
     }
 
-    @When("U-Piter sends the callack")
-    public void uPiterSendsTheCallack() {
+    @When("U-Piter sends the callback")
+    public void uPiterSendsTheCallback() {
         A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
-        getScenarioContext().setContext(Context.RESPONSE, wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutResponse(tp.getUuid()));
+            getScenarioContext().setContext(Context.RESPONSE, wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutResponse(tp.getUuid()));
     }
 
     @Then("wait {int}min")

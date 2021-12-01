@@ -31,6 +31,13 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .atPriority(1);
   }
 
+  public MappingBuilder deleteTPWith500(int httpcode) {
+    return delete(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+            .withName("deleteTP" + httpcode)
+            .willReturn(aDefaultResponseWithBody("{{{request.body}}}", httpcode))
+            .atPriority(1);
+  }
+
   public MappingBuilder getNspBySnWithoutOntLastRegisteredOn() {
     return get(urlPathMatching(A4_NSP_URL_WITH_PARAMETERS))
             .withName("getA4NetworkServiceProfilesFtthAccessByParameters")
