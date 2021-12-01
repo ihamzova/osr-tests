@@ -59,6 +59,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElementPort nepDpuData;
     private A4NetworkElementPort nepDpuGfast01;
     private A4NetworkElementPort nepDpuGfast02;
+    private A4NetworkElementLink nelDpuToOltData;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
@@ -87,6 +88,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_01);
         nepDpuGfast02 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_02);
+        nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -101,6 +104,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepOltData, neOltData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast01, neDpuData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast02, neDpuData);
+        a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData);
     }
 
     @AfterMethod
