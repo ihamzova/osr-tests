@@ -89,7 +89,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyAdtran);
         assertNotNull(deviceBeforeProvisioning);
         assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
+        assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 16);
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());

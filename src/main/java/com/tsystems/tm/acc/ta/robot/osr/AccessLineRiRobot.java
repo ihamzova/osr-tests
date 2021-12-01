@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
 import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.DeviceProductionPlatform;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -126,6 +127,23 @@ public class AccessLineRiRobot {
             .DPU_END_SZQuery(dpuDevice.getEndsz())
             .OLT_END_SZQuery(oltDevice.getEndSz())
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of DPU Preprovisioning process emulation, v2")
+  public void fillDatabaseForDpuPreprovisioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ, DpuDevice dpuDevice, PortProvisioning oltDevice){
+    if (oltDevice.getSlotNumber()==null) oltDevice.setSlotNumber("null");
+    accessLineResourceInventoryFillDbClient.
+            getClient()
+            .fillDatabase()
+            .fillDatabaseForDpuPreprovisioningV4()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .OLT_END_SZQuery(oltDevice.getEndSz())
+            .OLT_SLOT_WITH_DPUQuery(oltDevice.getSlotNumber())
+            .OLT_PORT_WITH_DPUQuery(oltDevice.getPortNumber())
+            .DPU_END_SZQuery(dpuDevice.getEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    if (oltDevice.getSlotNumber().equals("null")) oltDevice.setSlotNumber(null);
   }
 
   @Step("Check results after (de)provisioning: AccessLines, default ne profiles, default nl profiles")
@@ -876,6 +894,19 @@ public class AccessLineRiRobot {
     subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
     return subscriberNetworkLineProfileList;
   }
+
+  @Owner("TMI")
+  public String getLineIdByHomeId(String homeId) {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> accessLines =
+            accessLineResourceInventory.accessLineControllerExternal()
+                    .listAccessLine()
+                    .homeIdQuery(homeId)
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertNotNull(accessLines.get(0), "AccessLine is not found");
+    assertNotNull(accessLines.get(0).getLineId(), "lineId is not found");
+    return accessLines.get(0).getLineId();
+  }
+
 }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {
