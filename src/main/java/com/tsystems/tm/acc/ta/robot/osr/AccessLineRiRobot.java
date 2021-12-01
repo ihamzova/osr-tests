@@ -10,6 +10,9 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.DeviceProductionPlatform;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -891,6 +894,19 @@ public class AccessLineRiRobot {
     subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
     return subscriberNetworkLineProfileList;
   }
+
+  @Owner("TMI")
+  public String getLineIdByHomeId(String homeId) {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> accessLines =
+            accessLineResourceInventory.accessLineControllerExternal()
+                    .listAccessLine()
+                    .homeIdQuery(homeId)
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertNotNull(accessLines.get(0), "AccessLine is not found");
+    assertNotNull(accessLines.get(0).getLineId(), "lineId is not found");
+    return accessLines.get(0).getLineId();
+  }
+
 }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {
