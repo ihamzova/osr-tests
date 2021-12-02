@@ -49,12 +49,12 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
     @BeforeClass
     public void init() throws InterruptedException {
         wgFttbAccessProvisioningRobot = new WgFttbAccessProvisioningRobot();
+        wgFttbAccessProvisioningRobot.changeFeatureToogleDpuDemandState(false);
+
         accessLineRiRobot = new AccessLineRiRobot();
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
         UpiterTestContext context = UpiterTestContext.get();
-
-        wgFttbAccessProvisioningRobot.changeFeatureToogleDpuDemandState(false);
 
         dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
         dpuDeviceFttbProvisioningonOnAdtranTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranTwistedPair);

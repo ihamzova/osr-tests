@@ -44,7 +44,7 @@ name: adtranDeviceForFttbProvisioningTwistedPair
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H3"
-  portNumber: "16"
+  portNumber: "1"
   homeIdPool: 32
   lineIdPool: 32
   backhaulId: 1
@@ -60,7 +60,7 @@ name: adtranDeviceForFttbProvisioningCoax
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H5"
-  portNumber: "16"
+  portNumber: "1"
   homeIdPool: 32
   lineIdPool: 32
   backhaulId: 1
