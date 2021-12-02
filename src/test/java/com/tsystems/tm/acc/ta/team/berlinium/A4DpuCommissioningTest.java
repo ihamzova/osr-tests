@@ -59,7 +59,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElementPort nepDpuData;
     private A4NetworkElementPort nepDpuGfast01;
     private A4NetworkElementPort nepDpuGfast02;
-    private A4NetworkElementLink nelDpuToOltData;
+    //private A4NetworkElementLink nelDpuToOltData;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
@@ -88,8 +88,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_01);
         nepDpuGfast02 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_02);
-        nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        //nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        //        .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -104,7 +104,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepOltData, neOltData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast01, neDpuData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast02, neDpuData);
-        a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData);
+        //a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData);
     }
 
     @AfterMethod
@@ -376,7 +376,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
-    @Owner("bela.kovac@t-systems.com")
+    @Owner("bela.kovac@t-systems.com, anita.junge@t-systems.com")
     @TmsLink("DIGIHUB-126609")
     @Description("DIGIHUB-126609 If DPU already existing and NetworkElementLink is not OLT then throw an error.")
     public void testDpuCannotUpdatedWrongNel() {
@@ -391,17 +391,16 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
         a4ResourceInventory.createNetworkElementLink(invalidNel, nepDpuData, nepPodServer, neDpuData, neNotDpuOltData);
 
-        CommissioningDpuA4Task comDpuTask = new CommissioningDpuA4Task()
-                .dpuEndSz(getEndsz(neDpuData))
-                .dpuFiberOnLocationId(dpuFiberOnLocationId)
-                .dpuKlsId(dpuKlsId)
-                .dpuMaterialNumber(dpuMaterialNumber)
-                .dpuSerialNumber(dpuSerialNumber)
-                .oltEndSz(getEndsz(neOltData))
-                .oltPonPort(noExistingOltPonPort);
-
         // WHEN & THEN
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
+       // a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                neDpuData.getVpsz() + "/" + neDpuData.getFsz(),
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                neOltData.getVpsz() + "/" + neOltData.getFsz(),
+                nepPodServer.getUuid());
         // Expected error msg: "A4 DPU network element link has not the same OLT"
     }
 

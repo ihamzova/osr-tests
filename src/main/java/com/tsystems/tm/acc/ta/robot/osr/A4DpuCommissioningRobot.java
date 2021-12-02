@@ -5,8 +5,11 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 //import com.tsystems.tm.acc.ta.api.osr.A4I
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.api.osr.A4InventoryImporterClient;
-import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
+import com.tsystems.tm.acc.ta.api.osr.A4DpuCommissioningClient;
+//import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.a4.dpu.commissioning.client.invoker.ApiClient;
+//import com.tsystems.tm.acc.tests.osr.a4.inventory.importer.client.model.CommissioningDpuA4Task;
+import com.tsystems.tm.acc.tests.osr.a4.dpu.commissioning.client.model.CommissioningDpuA4Task;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +25,7 @@ public class A4DpuCommissioningRobot {
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
 
-    private final ApiClient a4DpuCommissioning = new A4InventoryImporterClient(authTokenProviderA4DpuCommissioning).getClient();
+    private final ApiClient a4DpuCommissioning = new A4DpuCommissioningClient(authTokenProviderA4DpuCommissioning).getClient();
 
     @Step("send POST for commissioningDpuA4Tasks")
     public void sendPostForCommissioningDpuA4Tasks
