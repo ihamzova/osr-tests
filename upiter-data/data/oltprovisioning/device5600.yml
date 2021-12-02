@@ -59,7 +59,7 @@ template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76H2"
   slotNumber: "11"
-  portNumber: "7"
+  portNumber: "3"
   homeIdPool: 32
   lineIdPool: 32
   backhaulId: 1

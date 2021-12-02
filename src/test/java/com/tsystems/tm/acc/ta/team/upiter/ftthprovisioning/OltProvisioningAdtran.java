@@ -3,8 +3,6 @@ package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 import com.tsystems.tm.acc.data.upiter.models.defaultneprofile.DefaultNeProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
@@ -40,8 +38,6 @@ public class OltProvisioningAdtran extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;
-    private WgAccessProvisioningClient wgAccessProvisioningClient;
-    private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
     private PortProvisioning portEmptyAdtran;
     private PortProvisioning portDeprovisioningAdtran;
     private PortProvisioning portDeprovisioningForDpu;
@@ -53,8 +49,6 @@ public class OltProvisioningAdtran extends GigabitTest {
     public void init() {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
-        accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
-        wgAccessProvisioningClient = new WgAccessProvisioningClient();
         portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceAdtran);
         portDeprovisioningAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningAdtran);
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
@@ -89,7 +83,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         Device deviceBeforeProvisioning = wgAccessProvisioningRobot.getDevice(portEmptyAdtran);
         assertNotNull(deviceBeforeProvisioning);
         assertEquals(deviceBeforeProvisioning.getEmsNbiName(), "SDX 6320 16-port Combo OLT");
-        assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 16);
+        assertEquals(wgAccessProvisioningRobot.getPonPorts(portEmptyAdtran).size(), 1);
         wgAccessProvisioningRobot.startDeviceProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
         accessLineRiRobot.checkDefaultNeProfiles(portEmptyAdtran, defaultNeProfile, portEmptyAdtran.getAccessLinesCount());
