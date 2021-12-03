@@ -48,7 +48,7 @@ import static org.testng.AssertJUnit.*;
         APIGW_MS
 })
 
-@Epic("A4 ONT Processes")
+@Epic("ONT Processes A4")
 public class A4OntCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

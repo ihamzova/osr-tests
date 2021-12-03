@@ -47,7 +47,7 @@ import static org.testng.AssertJUnit.assertNull;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
-@Epic("OLT_BNG FTTH ONT Processes")
+@Epic("ONT Processes OLT_BNG FTTH")
 public class OntCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();

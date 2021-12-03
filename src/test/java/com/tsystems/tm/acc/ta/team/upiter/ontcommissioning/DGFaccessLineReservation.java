@@ -37,7 +37,7 @@ import static org.testng.AssertJUnit.assertNull;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
-@Epic("DeutcheGlasFaser ONT Processes")
+@Epic("ONT Processes DeutcheGlasFaser")
 public class DGFaccessLineReservation extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
