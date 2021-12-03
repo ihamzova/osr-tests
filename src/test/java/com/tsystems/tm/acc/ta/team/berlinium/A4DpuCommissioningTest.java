@@ -59,7 +59,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElementPort nepDpuData;
     private A4NetworkElementPort nepDpuGfast01;
     private A4NetworkElementPort nepDpuGfast02;
-    //private A4NetworkElementLink nelDpuToOltData;
+   // private A4NetworkElementLink nelDpuToOltData;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
@@ -83,13 +83,11 @@ public class A4DpuCommissioningTest extends GigabitTest {
         nepOltData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDpuData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDpuGfast01 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_01);
         nepDpuGfast02 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_G_FAST_02);
-        //nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-        //        .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -104,7 +102,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepOltData, neOltData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast01, neDpuData);
         a4ResourceInventory.createNetworkElementPort(nepDpuGfast02, neDpuData);
-        //a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData);
     }
 
     @AfterMethod
@@ -319,9 +316,12 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //OLT-NE with GPON Port exists
         //DPU- NetworkElement by dpuEndSz already exists
         //DPU- NetworkElement has Ports but some are missing
+        //between DPU-NE and OLT-NE not yet exists NEL
+
         String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
         String existingOltPonPort = nepOltData.getUuid();
+
 
         // When / Action
         // call A4-DPU-Commissioning-Task
@@ -368,11 +368,20 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(numberWorking.intValue(), 2);
         Assert.assertEquals(numberNotWorking.intValue(), 3);
 
+        //Check if missing NetworkElementlink is correct created
+        List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
+                .getNetworkElementLinksByNePort(nepOltData.getUuid());
+        String lbz = "DPU/1/" + existingOltEndSz + "/" + existingDpuEndSz;
+
+        Assert.assertEquals(createdNeLinks.size(),1);
+        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
+        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
+        Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingDpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
 
         //Check if NemoUpdater is triggered
-        String dpuFsz = existingDpuEndSz.substring(existingDpuEndSz.length() - 4);
-        String dpuVpsz = existingDpuEndSz.substring(0, existingDpuEndSz.length() - 5);
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(neDpuData.getVpsz(),neDpuData.getFsz());
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
