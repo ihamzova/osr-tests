@@ -82,6 +82,9 @@ public class WgFttbAccessProvisioningFeatureToggleOn extends GigabitTest {
 
         accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1, 1, dpuDeviceFttbProvisioningTwistedPair, oltDeviceFttbProvisioningTwistedPair);
         accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(3000, 3000, dpuDeviceFttbProvisioningOnAdtranCoax, adtranDeviceFttbProvisioningCoax);
+
+        // sleep to let the ms get the new value of the feature toggle
+        Thread.sleep(3000);
     }
 
     @Test

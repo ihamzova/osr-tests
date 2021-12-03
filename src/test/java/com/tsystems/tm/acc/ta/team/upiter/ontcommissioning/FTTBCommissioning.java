@@ -38,7 +38,7 @@ import static org.testng.AssertJUnit.assertNull;
         GATEWAY_ROUTE_MS
 })
 
-@Epic("FTTB ONT Processes")
+@Epic("ONT Processes FTTB")
 public class FTTBCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
