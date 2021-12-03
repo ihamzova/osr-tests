@@ -14,7 +14,6 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.a4.dpu.commissioning.client.model.CommissioningDpuA4Task;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementLinkDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
@@ -164,7 +163,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
             Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
             index.getAndIncrement();
             if ("GPON".equals(nep.getType())) {numberGponPorts.getAndIncrement();
-                    indexGponPort[0] = index.intValue();};
+                    indexGponPort[0] = index.intValue();}
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
         });
         Assert.assertEquals(numberGponPorts.intValue(), 1);
@@ -223,8 +222,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // When / Action
         //Request for CommissioningDpuA4Task with existing no OLT-NE for required oltEndSz
-        NetworkElementDto noOltNetworkElement = a4ResourceInventory.getExistingNetworkElement(neNotDpuOltData.getUuid());
-        String existingNonOltEndSz = noOltNetworkElement.getVpsz() + "/" + noOltNetworkElement.getFsz();
+
+        String existingNonOltEndSz = neNotDpuOltData.getVpsz() + "/" + neNotDpuOltData.getFsz();
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 dpuEndSz,
                 dpuSerialNumber,
@@ -236,6 +235,58 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
+    }
+
+    @Test(description = "test DPU-NE cannot created with wrong oltPonPort")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-128907")
+    @Description("DIGIHUB-118484 If GPON Port from OLT-NE does not exists then throw an error.")
+    public void testDpuCannotCreatedWrongOltPonPort() {
+        //Given
+        //for oltEndSz exists NetworkElement but GPON Port does not exists
+
+        // When / Action
+        //Request for CommissioningDpuA4Task with existing OLT-NE for required oltEndSz and wrong oltPonPort
+
+        String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                dpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                noExistingOltPonPort);
+
+        // Then / Assert
+        //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
+    }
+    @Test(description = "test DPU-NE cannot updated with wrong oltPonPort")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-128907")
+    @Description("DIGIHUB-118484 If GPON Port from OLT-NE does not exists then throw an error.")
+    public void testDpuCannotUpdatedWrongOltPonPort() {
+        //Given
+        //DPU already exists
+        //for oltEndSz exists NetworkElement but GPON Port does not exists
+
+        // When / Action
+        //Request for CommissioningDpuA4Task with existing DPU and
+        // existing OLT-NE for required oltEndSz but with wrong oltPonPort
+
+        String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
+        String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
+        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
+                existingDpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                noExistingOltPonPort);
+
+        // Then / Assert
+        //HTTP return code is 400/ Bad Request
     }
 
     @Test(description = "test DPU-NE of corrupt data")
