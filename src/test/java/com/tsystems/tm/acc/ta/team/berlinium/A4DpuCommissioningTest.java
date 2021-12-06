@@ -58,7 +58,6 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private A4NetworkElementPort nepDpuData;
     private A4NetworkElementPort nepDpuGfast01;
     private A4NetworkElementPort nepDpuGfast02;
-   // private A4NetworkElementLink nelDpuToOltData;
 
     private final String dpuEndSz = "49/" + RandomStringUtils.randomNumeric(4) + "/444/7KU7";
     private final int numberOfDpuPorts = 5; // number of Ports for FSZ 7KU7
@@ -436,6 +435,47 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
 
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
+    }
+
+    @Test(description = "test DPU-NEL is untouched when already existing ")
+    @Owner("Anita.Junge@t-systems.com")
+    @TmsLink("DIGIHUB-129817")
+    @Description("DIGIHUB-118484 If DPU and NEL to OLT already existing then update DPU but NEL keeps untouched.")
+    public void testDpuNelIsUntouched() {
+        //Given
+        //NetworkElementGroup by oltEndSz exists
+        //OLT-NE with GPON Port exists
+        //DPU- NetworkElement by dpuEndSz already exists
+        //NEL between DPU and OLT already exists but attributes are not in initial state
+
+        String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
+        String existingOltPonPort = nepOltData.getUuid();
+        String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
+        A4NetworkElementLink nelDpuToOltData;
+        nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+               .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData,neDpuData,neOltData);
+
+        // When / Action
+        // call A4-DPU-Commissioning-Task for update
+
+        a4DpuCommissioning.sendPostForCommissioningDpuA4Tasks(
+                existingDpuEndSz,
+                dpuSerialNumber,
+                dpuMaterialNumber,
+                dpuKlsId,
+                dpuFiberOnLocationId,
+                existingOltEndSz,
+                existingOltPonPort);
+
+        // Then / Assert
+
+        NetworkElementLinkDto existingNeLink = a4ResourceInventory.getExistingNetworkElementLink(nelDpuToOltData.getUuid());
+        Assert.assertEquals(existingNeLink.getLifecycleState(), "PLANNING");
+        List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
+                .getNetworkElementLinksByNePort(existingOltPonPort);
+        Assert.assertEquals(createdNeLinks.size(),1);
+
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
