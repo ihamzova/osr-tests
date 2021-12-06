@@ -136,7 +136,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
 
-        //check if DPU is correct created
+        //check if DPU is correct created and Nemo Updater is triggered
         String dpuFsz = dpuEndSz.substring(dpuEndSz.length() - 4);
         String dpuVpsz = dpuEndSz.substring(0, dpuEndSz.length() - 5);
         NetworkElementDto createdDpuNe = a4ResourceInventory.getExistingNetworkElementByVpszFsz(dpuVpsz, dpuFsz);
@@ -149,7 +149,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(createdDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
-        //check if Ports are correct created
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
+
+        //check if Ports are correct created and Nemo Updater is triggered
         AtomicInteger numberGponPorts = new AtomicInteger(0);
         AtomicInteger numberGfPorts = new AtomicInteger(0);
         AtomicInteger index = new AtomicInteger(0);
@@ -161,6 +163,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         createdDpuPortList.forEach(nep -> {
             Assert.assertEquals(nep.getAdministrativeState(), "ACTIVATED");
             Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
+            a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(nep.getUuid());
             index.getAndIncrement();
             if ("GPON".equals(nep.getType())) {numberGponPorts.getAndIncrement();
                     indexGponPort[0] = index.intValue();}
@@ -169,7 +172,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(numberGponPorts.intValue(), 1);
         Assert.assertEquals(numberGfPorts.intValue(), numberOfDpuPorts - 1);
 
-        //Check if NetworkElementlink is correct created
+        //Check if NetworkElementlink is correct created and Nemo Updater is triggered
         List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
                 .getNetworkElementLinksByNePort(nepOltData.getUuid());
         String lbz = "DPU/1/" + existingOltEndSz + "/" + dpuEndSz;
@@ -185,8 +188,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),createdDpuPortList.
                 get(indexOfGponPort).getUuid());
 
-        //Check if NemoUpdater is triggered
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(dpuVpsz, dpuFsz);
+        a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
     }
 
     @Test(description = "test DPU-NE cannot created when NEG is not found")
@@ -387,7 +389,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // Then / Assert
 
-        //check if DPU-NE is updated
+        //check if DPU-NE is updated and Nemo Updater is triggered
         NetworkElementDto updatedDpuNe = a4ResourceInventory.getExistingNetworkElement(neDpuData.getUuid());
         Assert.assertEquals(updatedDpuNe.getCategory(), "DPU");
         Assert.assertEquals(updatedDpuNe.getZtpIdent(), dpuSerialNumber);
@@ -397,6 +399,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(updatedDpuNe.getLifecycleState(), "INSTALLING");
         Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
+
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(neDpuData.getVpsz(),neDpuData.getFsz());
 
         //check if missing Ports are created and attributes of already existing ports are not updated
         AtomicInteger numberGponPorts = new AtomicInteger(0);
@@ -419,7 +423,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(numberWorking.intValue(), 2);
         Assert.assertEquals(numberNotWorking.intValue(), 3);
 
-        //Check if missing NetworkElementlink is correct created
+        //Check if missing NetworkElementlink is correct created and Nemo Updater is triggered
         List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
                 .getNetworkElementLinksByNePort(nepOltData.getUuid());
         String lbz = "DPU/1/" + existingOltEndSz + "/" + existingDpuEndSz;
@@ -431,8 +435,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingDpuEndSz);
         Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
 
-        //Check if NemoUpdater is triggered
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(neDpuData.getVpsz(),neDpuData.getFsz());
+        a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
     }
 
     @Test(description = "test DPU-NE cannot updated with wrong NEL")
