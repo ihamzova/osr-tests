@@ -14,6 +14,7 @@ public enum Context {
     A4_NEP,
     A4_NEL,
     A4_TP,
-    A4_NSP_FTTH
+    A4_NSP_FTTH,
+    A4_QUEUES // set value to true if any A4 queues are used in scenario steps
 
 }

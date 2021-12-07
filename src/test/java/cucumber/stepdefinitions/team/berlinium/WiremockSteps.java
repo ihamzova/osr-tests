@@ -17,7 +17,7 @@ import static org.testng.Assert.assertEquals;
 
 public class WiremockSteps extends BaseSteps {
 
-    private final WgA4ProvisioningWiremockRobot deProvWiremock = new WgA4ProvisioningWiremockRobot();
+    private final WgA4ProvisioningWiremockRobot a4ProvWiremock = new WgA4ProvisioningWiremockRobot();
 
     public WiremockSteps(TestContext testContext) {
         super(testContext);
@@ -36,6 +36,7 @@ public class WiremockSteps extends BaseSteps {
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDeleteNsp(int httpCode) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
         wiremock
                 .add(new DeProvisioningStub().postDeProvAccessLineWithNspDeletion(httpCode, nspFtth.getUuid()))
                 .publish();
@@ -72,19 +73,19 @@ public class WiremockSteps extends BaseSteps {
 
     @Then("a DPU deprovisioning request to U-Piter was triggered")
     public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
-        deProvWiremock.checkPostToDeprovisioningWiremock(1);
+        a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
     }
 
     @Then("a DPU deprovisioning request to U-Piter was triggered with Line ID {string}")
     public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
-        final String dpuCallbackBody = deProvWiremock.checkPostToDeprovisioningWiremock(1);
+        final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
         final A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
     }
 
     @Then("no DPU deprovisioning request to U-Piter was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
-        deProvWiremock.checkPostToDeprovisioningWiremock(0);
+        a4ProvWiremock.checkPostToDeprovisioningWiremock(0);
     }
 
 }
