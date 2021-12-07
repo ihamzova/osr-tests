@@ -104,7 +104,7 @@ public class A4CarrierManagementRobot {
 
         a4CarrierManagementA10Nsp.negCarrierConnections().getNegCarrierConnections()
                 .negUuidQuery(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_INTERNAL_SERVER_ERROR_500)));
 
     }
 }
