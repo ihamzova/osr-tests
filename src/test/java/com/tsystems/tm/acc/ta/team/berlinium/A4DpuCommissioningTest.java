@@ -264,7 +264,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
     @Test(description = "test DPU-NE cannot updated with wrong oltPonPort")
     @Owner("Anita.Junge@t-systems.com")
-    @TmsLink("DIGIHUB-128907")
+    @TmsLink("DIGIHUB-129807")
     @Description("DIGIHUB-118484 If GPON Port from OLT-NE does not exists then throw an error.")
     public void testDpuCannotUpdatedWrongOltPonPort() {
         //Given
