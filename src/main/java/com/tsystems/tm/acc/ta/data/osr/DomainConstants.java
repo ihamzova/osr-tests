@@ -52,4 +52,7 @@ public interface DomainConstants {
     String APIGW_MS = "apigw-admin";
 
     String FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME = "business.rori.dpu-lifecycle-uses-dpu-demands";
+
+    String RORI_V1_PATH = "/resource-order-resource-inventory/v1/";
+
 }

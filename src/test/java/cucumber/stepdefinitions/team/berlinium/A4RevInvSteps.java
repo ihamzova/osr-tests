@@ -20,6 +20,7 @@ import io.restassured.response.Response;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS})
@@ -64,7 +65,7 @@ public class A4RevInvSteps extends BaseSteps {
     @Given("a NEP is existing in A4 resource inventory")
     public void aNEPIsExistingInA4ResourceInventory() {
         // NEP needs to be connected to a NE, so if no NE present, create one
-        if(!getScenarioContext().isContains(Context.A4_NE))
+        if (!getScenarioContext().isContains(Context.A4_NE))
             aNEIsExistingInA4ResourceInventory();
 
         A4NetworkElementPort nep = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -96,6 +97,7 @@ public class A4RevInvSteps extends BaseSteps {
     public void aNEGIsExistingInA4ResourceInventory() {
         A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+//        neg.setName("NEG Name " + getRandomDigits(6));
         getScenarioContext().setContext(Context.A4_NEG, neg);
         a4ResInv.createNetworkElementGroup(neg);
     }
@@ -159,17 +161,6 @@ public class A4RevInvSteps extends BaseSteps {
 
         return osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
-    }
-
-    @Given("a NSP FTTH-Access is not existing in A4 resource inventory for the TP")
-    public void aNSPFTTHIsNotExistingInA4ResourceInventoryForTheTP() {
-        // NSP needs to be connected to a TP, so if no TP present, create one
-        //check if TP has any NSPs connected
-
-        if (!getScenarioContext().isContains(Context.A4_TP))
-            aTPIsExistingInA4ResourceInventory();
-        A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
-        a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 0);
     }
 
 }

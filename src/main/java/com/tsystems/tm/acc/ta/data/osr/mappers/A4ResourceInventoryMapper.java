@@ -15,8 +15,11 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceInventoryMapper {
 
-    final public static String nelLsz = "4N4";
-    final public static String nelOrderNumber = "1004";
+    public static final String NEL_LSZ = "4N4";
+    public static final String NEL_ORDER_NUMBER = "1004";
+    public static final String ACTIVATED = "ACTIVATED";
+    public static final String INSTALLING = "INSTALLING";
+    public static final String WORKING = "WORKING";
 
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
@@ -30,7 +33,7 @@ public class A4ResourceInventoryMapper {
                 .networkElementGroupUuid(negData.getUuid())
                 .description("NE for integration test")
                 .address("address")
-                .administrativeState("ACTIVATED")
+                .administrativeState(ACTIVATED)
                 .lifecycleState(neData.getLifecycleState())
                 .operationalState(neData.getOperationalState())
                 .category(neData.getCategory())
@@ -48,10 +51,10 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementGroupDto getNetworkElementGroupDto(A4NetworkElementGroup negData) {
-        if (negData.getUuid().isEmpty())
+        if (negData.getUuid().isEmpty() || negData.getUuid() == null)
             negData.setUuid(UUID.randomUUID().toString());
 
-        if (negData.getName().equals(""))
+        if (negData.getName().isEmpty() || negData.getName() == null)
             negData.setName("NEG-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkElementGroupDto()
@@ -86,9 +89,9 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
         UewegData uewegData = new UewegData();
 
-        if(nelData.getUeWegId().isEmpty()){
+        if (nelData.getUeWegId().isEmpty()) {
             uewegData.setUewegId(UUID.randomUUID().toString());
-        }else {
+        } else {
             uewegData.setUewegId(nelData.getUeWegId());
         }
 
@@ -99,11 +102,11 @@ public class A4ResourceInventoryMapper {
         if (nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
-        if(uewegData.getUewegId().isEmpty()){
+        if (uewegData.getUewegId().isEmpty()) {
             uewegData.setUewegId(UUID.randomUUID().toString());
         }
 
-        nelData.setLbz(nelLsz + "/" + nelOrderNumber + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
+        nelData.setLbz(NEL_LSZ + "/" + NEL_ORDER_NUMBER + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
 
         return new NetworkElementLinkDto()
                 .uuid(nelData.getUuid())
@@ -114,10 +117,10 @@ public class A4ResourceInventoryMapper {
                 .description("NEL for integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
-                .lsz(nelLsz)
+                .lsz(NEL_LSZ)
                 .lifecycleState(nelData.getLifecycleState())
                 .operationalState(nelData.getOperationalState())
-                .orderNumber(nelOrderNumber)
+                .orderNumber(NEL_ORDER_NUMBER)
                 .pluralId("2")
                 .ueWegId(uewegData.getUewegId())
                 .lbz(nelData.getLbz());
@@ -141,7 +144,7 @@ public class A4ResourceInventoryMapper {
                 .logicalLabel(nepData.getFunctionalPortLabel())
                 .portNumber(getPortNumberByFunctionalPortLabel(nepData.getFunctionalPortLabel()))
                 .accessNetworkOperator("NetOp")
-                .administrativeState("ACTIVATED")
+                .administrativeState(ACTIVATED)
                 .operationalState(nepData.getOperationalState())
                 .type(nepData.getType())
                 .creationTime(OffsetDateTime.now())
@@ -183,7 +186,7 @@ public class A4ResourceInventoryMapper {
                 .lineId(nspData.getLineId())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
-                .administrativeMode("ACTIVATED")
+                .administrativeMode(ACTIVATED)
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointFtthAccessUuid(tpData.getUuid())
@@ -213,7 +216,7 @@ public class A4ResourceInventoryMapper {
                 .lineId(nspData.getLineId())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
-                .administrativeMode("ACTIVATED")
+                .administrativeMode(ACTIVATED)
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointFtthAccessUuid(tpData.getUuid())
@@ -228,7 +231,7 @@ public class A4ResourceInventoryMapper {
             nspData.setUuid(UUID.randomUUID().toString());
 
         VlanRangeDto vrDto = new VlanRangeDto();
-        String UNDEFINED = "undefined";
+        final String UNDEFINED = "undefined";
         vrDto.setVlanRangeLower(UNDEFINED);
         vrDto.setVlanRangeUpper(UNDEFINED);
 
@@ -242,7 +245,7 @@ public class A4ResourceInventoryMapper {
                 .href("HREF")
                 .specificationVersion("1")
                 .virtualServiceProvider("a Virtual Service Provider")
-                .administrativeMode("ACTIVATED")
+                .administrativeMode(ACTIVATED)
                 .operationalState(nspData.getOperationalState())
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointA10NspUuid(tpData.getUuid())
@@ -267,7 +270,6 @@ public class A4ResourceInventoryMapper {
     public NetworkServiceProfileL2BsaDto getNetworkServiceProfileL2BsaDto(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
         if (nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
-
 
         ServiceBandwidthDto serviceBandwidthDto = new ServiceBandwidthDto();
         serviceBandwidthDto.setDataRateUp("150000");
@@ -294,21 +296,21 @@ public class A4ResourceInventoryMapper {
                 .serviceBandwidth(serviceBandwidthDtoList);
     }
 
-    private String getEndszFromVpszAndFsz(String Vpsz, String Fsz) {
-        return Vpsz.concat("/").concat(Fsz);
+    private String getEndszFromVpszAndFsz(String vpsz, String fsz) {
+        return vpsz.concat("/").concat(fsz);
     }
 
     public List<NetworkServiceProfileFtthAccessDto> getListOfNspWithoutOntLastRegisteredOn() {
         NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = new NetworkServiceProfileFtthAccessDto();
         networkServiceProfileFtthAccessDto.setUuid(UUID.randomUUID().toString());
-        networkServiceProfileFtthAccessDto.setLifecycleState("INSTALLING");
-        networkServiceProfileFtthAccessDto.setOperationalState("WORKING");
+        networkServiceProfileFtthAccessDto.setLifecycleState(INSTALLING);
+        networkServiceProfileFtthAccessDto.setOperationalState(WORKING);
         networkServiceProfileFtthAccessDto.setDescription("A4 Stub without oltPortOntLastRegisteredOn");
-        networkServiceProfileFtthAccessDto.setAdministrativeMode("String");
-        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("String");
+        networkServiceProfileFtthAccessDto.setAdministrativeMode("adm mode");
+        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("virt serv prov");
         networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
-        networkServiceProfileFtthAccessDto.setLineId("String");
-        networkServiceProfileFtthAccessDto.setOntSerialNumber("String");
+        networkServiceProfileFtthAccessDto.setLineId("line id");
+        networkServiceProfileFtthAccessDto.setOntSerialNumber("serial no");
         networkServiceProfileFtthAccessDto.setLastUpdateTime(OffsetDateTime.now());
         networkServiceProfileFtthAccessDto.setCreationTime(OffsetDateTime.now().minusDays(1));
         networkServiceProfileFtthAccessDto.setTerminationPointFtthAccessUuid(UUID.randomUUID().toString());
@@ -322,11 +324,11 @@ public class A4ResourceInventoryMapper {
     public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOn() {
         NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = new NetworkServiceProfileFtthAccessDto();
         networkServiceProfileFtthAccessDto.setUuid(UUID.randomUUID().toString());
-        networkServiceProfileFtthAccessDto.setLifecycleState("INSTALLING");
-        networkServiceProfileFtthAccessDto.setOperationalState("WORKING");
+        networkServiceProfileFtthAccessDto.setLifecycleState(INSTALLING);
+        networkServiceProfileFtthAccessDto.setOperationalState(WORKING);
         networkServiceProfileFtthAccessDto.setDescription("A4 Stub without oltPortOntLastRegisteredOn");
-        networkServiceProfileFtthAccessDto.setAdministrativeMode("String");
-        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("String");
+        networkServiceProfileFtthAccessDto.setAdministrativeMode("adm mode");
+        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("virt serv prov");
         networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
         networkServiceProfileFtthAccessDto.setLineId("String");
         networkServiceProfileFtthAccessDto.setOntSerialNumber("String");
@@ -339,11 +341,11 @@ public class A4ResourceInventoryMapper {
 
     public NetworkElementPortDto getNetworkElementPortDto(String endSz, String port) {
         NetworkElementPortDto networkElementPortDto = new NetworkElementPortDto();
-        networkElementPortDto.setOperationalState("INSTALLING");
-        networkElementPortDto.setAdministrativeState("WORKING");
+        networkElementPortDto.setOperationalState(INSTALLING);
+        networkElementPortDto.setAdministrativeState(WORKING);
         networkElementPortDto.setLogicalLabel("998");
         networkElementPortDto.setAccessNetworkOperator("AccessNetworkOperator");
-        networkElementPortDto.setType("string");
+        networkElementPortDto.setType("type");
         networkElementPortDto.setPortNumber(port);
         networkElementPortDto.setUuid(UUID.randomUUID().toString());
         networkElementPortDto.setCreationTime(OffsetDateTime.now().minusDays(1));
@@ -355,19 +357,20 @@ public class A4ResourceInventoryMapper {
         networkElementPortDto.setHref("/networkElements/3e2fece2-5b18-440c-89ef-4441d0320cea");
         return networkElementPortDto;
     }
-    public NetworkElementDto getNetworkElementDto(){
-        NetworkElementDto networkElementDto=new NetworkElementDto();
+
+    public NetworkElementDto getNetworkElementDto() {
+        NetworkElementDto networkElementDto = new NetworkElementDto();
         networkElementDto.setUuid("444");
         networkElementDto.setCreationTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
         networkElementDto.setDescription("string");
         networkElementDto.setLastUpdateTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
         networkElementDto.setSpecificationVersion("string");
         networkElementDto.setAddress("Berlin");
-        networkElementDto.setAdministrativeState("ACTIVATED");
+        networkElementDto.setAdministrativeState(ACTIVATED);
         networkElementDto.setFsz("7KH4");
         networkElementDto.setVpsz("49/30/179");
         networkElementDto.setKlsId("123456");
-        networkElementDto.setLifecycleState("INSTALLING");
+        networkElementDto.setLifecycleState(INSTALLING);
         networkElementDto.setOperationalState("NOT_WORKING");
         networkElementDto.setPlannedMatNumber("40958960");
         networkElementDto.setPlannedRackId("000031-000000-001-004-002-021");
