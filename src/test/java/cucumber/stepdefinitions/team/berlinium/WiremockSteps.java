@@ -13,6 +13,7 @@ import cucumber.stepdefinitions.BaseSteps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
 public class WiremockSteps extends BaseSteps {
@@ -94,6 +95,12 @@ public class WiremockSteps extends BaseSteps {
     @Then("no DPU deprovisioning request to U-Piter was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
         a4ProvWiremock.checkPostToDeprovisioningWiremock(0);
+    }
+
+    @Then("the deprovisioning request to U-Piter is repeated after {int} minutes")
+    public void wait(int min) {
+        sleepForSeconds(min * 60);
+        a4ProvWiremock.checkPostToDeprovisioningWiremock(2);
     }
 
 }

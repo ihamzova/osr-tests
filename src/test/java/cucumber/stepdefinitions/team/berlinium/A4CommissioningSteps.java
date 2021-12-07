@@ -28,9 +28,4 @@ public class A4CommissioningSteps extends BaseSteps {
         sleepForSeconds(2);
     }
 
-    @When("the deprovisioning request to U-Piter is repeated after {int} minutes")
-    public void wait(int min) {
-        sleepForSeconds(min * 60);
-    }
-
 }
