@@ -97,7 +97,6 @@ public class A4RevInvSteps extends BaseSteps {
     public void aNEGIsExistingInA4ResourceInventory() {
         A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-//        neg.setName("NEG Name " + getRandomDigits(6));
         getScenarioContext().setContext(Context.A4_NEG, neg);
         a4ResInv.createNetworkElementGroup(neg);
     }
