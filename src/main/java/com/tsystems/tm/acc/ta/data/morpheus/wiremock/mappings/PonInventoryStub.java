@@ -20,6 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 public class PonInventoryStub extends AbstractStubMapping {
     public static final String GET_LLC_URL = "/resource-order-resource-inventory/v2/llc";
     public static final String PATH_TO_PO_MOCK = "/team/morpheus/ponInventory.json";
+    public static final String PATH_TO_PO_ADTRAN_MOCK = "/team/morpheus/ponInventory_adtran.json";
     public static final String PATH_TO_PO_MOCK_COM_DIFF_PORT = "/team/morpheus/ponInventory_negative_comissioning_different_ports.json";
     public static final String PATH_TO_PO_MOCK_DECOM_DIFF_SLOT = "/team/morpheus/ponInventory_negative_decomissioning_different_slots.json";
     public static final String PATH_TO_DOMAIN_MOCK = "/team/morpheus/ponInventoryDomain.json";
@@ -31,6 +32,18 @@ public class PonInventoryStub extends AbstractStubMapping {
             return get(urlPathEqualTo(GET_LLC_URL))
                     .withName("getllc200")
                     .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_MOCK),200))
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MappingBuilder getLlcAdtran200(Dpu dpu, OltDevice olt){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllcAdtran200")
+                    .willReturn(aDefaultResponseWithBody(prepareBody(olt, PATH_TO_PO_ADTRAN_MOCK),200))
                     .withQueryParam("dpuEndSz", equalTo(dpu.getEndSz()));
         } catch (IOException e) {
             e.printStackTrace();
