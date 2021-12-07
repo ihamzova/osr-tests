@@ -26,7 +26,7 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Rainy day cases
     Then the request is responded with HTTP code 202
     And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
     And the deprovisioning request to U-Piter is repeated after 3 minutes
-    And the U-Piter DPU mock sends the callback
+    When the U-Piter DPU mock sends the callback
     Then the TP does not exist in A4 resource inventory anymore
 
     Examples:
