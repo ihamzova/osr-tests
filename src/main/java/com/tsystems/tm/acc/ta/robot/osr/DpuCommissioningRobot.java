@@ -204,15 +204,15 @@ public class DpuCommissioningRobot {
     }
 
     @Step
-    public void checkPostConfigAncpCalled(String dpuEndsz) {
+    public void checkPostConfigAncpCalled(String dpuEndsz, String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU" + "&oltEndSz=" + oltEndsz));
     }
 
     @Step
-    public void checkPostConfigAncpNotCalled(String dpuEndsz) {
+    public void checkPostConfigAncpNotCalled(String dpuEndsz, String oltEndsz) {
         WiremockRecordedRequestRetriver wiremockRecordedRequestRetriver = new WiremockRecordedRequestRetriver();
-        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU"));
+        wiremockRecordedRequestRetriver.isPostRequestNotCalled(urlEqualTo("/resource-order-resource-inventory/v3/ancpConfigurationStartConfigurationTask?uplinkId=1049" + "&endSz=" + dpuEndsz + "&sessionType=DPU" + "&oltEndSz=" + oltEndsz));
     }
 
     @Step
