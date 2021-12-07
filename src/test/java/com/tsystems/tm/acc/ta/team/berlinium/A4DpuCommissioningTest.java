@@ -240,9 +240,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
     @Test(description = "test DPU-NE cannot created with wrong oltPonPort")
     @Owner("Anita.Junge@t-systems.com")
-    @TmsLink("DIGIHUB-128907")
+    @TmsLink("DIGIHUB-129807")
     @Description("DIGIHUB-118484 If GPON Port from OLT-NE does not exists then throw an error.")
-    public void testDpuCannotCreatedWrongOltPonPort() {
+    public void testDpuNotCreatedWrongOltPonPort() {
         //Given
         //for oltEndSz exists NetworkElement but GPON Port does not exists
 
@@ -257,7 +257,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 dpuKlsId,
                 dpuFiberOnLocationId,
                 existingOltEndSz,
-                noExistingOltPonPort);
+                neNotDpuOltData.getUuid());
 
         // Then / Assert
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
@@ -266,7 +266,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-129807")
     @Description("DIGIHUB-118484 If GPON Port from OLT-NE does not exists then throw an error.")
-    public void testDpuCannotUpdatedWrongOltPonPort() {
+    public void testDpuNotUpdatedWrongOltPonPort() {
         //Given
         //DPU already exists
         //for oltEndSz exists NetworkElement but GPON Port does not exists
@@ -284,7 +284,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 dpuKlsId,
                 dpuFiberOnLocationId,
                 existingOltEndSz,
-                noExistingOltPonPort);
+                neNotDpuOltData.getUuid());
 
         // Then / Assert
         //HTTP return code is 400/ Bad Request
