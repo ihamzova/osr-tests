@@ -10,7 +10,7 @@ import org.testng.annotations.DataProvider;
                 "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm",
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
-        glue = { "cucumber/stepdefinitions" },
+        glue = { "cucumber/stepdefinitions/team/berlinium" },
         features = { "src/test/resources/cucumberscenarios/team/berlinium" }
 )
 public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {

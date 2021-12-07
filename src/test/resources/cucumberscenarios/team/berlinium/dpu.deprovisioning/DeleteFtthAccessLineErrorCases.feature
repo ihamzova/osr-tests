@@ -18,12 +18,15 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Rainy day cases
 
   # DIGIHUB-121769, scenario #4, and #5
   Scenario Outline: trigger deprovisioning - U-Piter not reachable; retry
-    Given the U-Piter DPU mock will respond HTTP code <HTTPCode> when called 1st time, and HTTP code 202 when called 2nd time, and delete the NSP
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
+    And the U-Piter DPU mock will respond HTTP code <HTTPCode> when called the 1st time
+    And the U-Piter DPU mock will respond HTTP code 202 when called the 2nd time, and delete the NSP
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
     And a DPU deprovisioning request to U-Piter was triggered with Line ID "DEU.DTAG.12345"
-    And the deprovisioning request to U-Piter is repeated after 3 minutes
-    When the U-Piter DPU mock sends the callback
+    When the deprovisioning request to U-Piter is repeated after 3 minutes
+    And the U-Piter DPU mock sends the callback
     Then the TP does not exist in A4 resource inventory anymore
 
     Examples:

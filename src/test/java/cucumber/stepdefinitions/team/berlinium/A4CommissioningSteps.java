@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import cucumber.Context;
 import cucumber.TestContext;
 import cucumber.stepdefinitions.BaseSteps;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
@@ -29,7 +28,7 @@ public class A4CommissioningSteps extends BaseSteps {
         sleepForSeconds(2);
     }
 
-    @Then("the deprovisioning request to U-Piter is repeated after {int} minutes")
+    @When("the deprovisioning request to U-Piter is repeated after {int} minutes")
     public void wait(int min) {
         sleepForSeconds(min * 60);
     }

@@ -21,12 +21,6 @@ public class A4QueueSteps extends BaseSteps {
         super(testContext);
     }
 
-    @Before
-    public void init() {
-        // Make sure that no old test data is in the way
-        cleanup();
-    }
-
     @After
     public void cleanup() {
         if (getScenarioContext().isContains(Context.A4_QUEUES))

@@ -51,13 +51,21 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Given("the U-Piter DPU mock will respond HTTP code {int} when called 1st time, and HTTP code {int} when called 2nd time, and delete the NSP")
-    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst, int httpCodeSecond) {
+    @Given("the U-Piter DPU mock will respond HTTP code {int} when called the 1st time")
+    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst) {
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+
+        wiremock
+                .add(new DeProvisioningStub().postDeProvAccessLineFirstTime(httpCodeFirst))
+                .publish();
+    }
+
+    @Given("the U-Piter DPU mock will respond HTTP code {int} when called the 2nd time, and delete the NSP")
+    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledSecondTimeTime(int httpCodeSecond) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         wiremock
-                .add(new DeProvisioningStub().postDeProvAccessLineFirstTime(httpCodeFirst))
                 .add(new DeProvisioningStub().postDeProvAccessLineSecondTimeWithNspDeletion(httpCodeSecond, nspFtth.getUuid()))
                 .publish();
     }

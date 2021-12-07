@@ -31,12 +31,6 @@ public class A4RevInvSteps extends BaseSteps {
         super(testContext);
     }
 
-    @Before
-    public void init() {
-        // Make sure that no old test data is in the way
-        cleanup();
-    }
-
     @After
     public void cleanup() {
         // ATTENTION: If at any time more than 1 NEG is used for tests, the additional ones have to be added here!
