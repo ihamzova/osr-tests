@@ -25,11 +25,10 @@ import org.testng.annotations.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 
 @Epic("OS&R")
 @Feature("A4 DPU Commissioning")
@@ -65,8 +64,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private final String dpuMaterialNumber = "MatNumberIntegrationTest";
     private final String dpuKlsId = "dpuKlsIdIntegrationTest";
     private final String dpuFiberOnLocationId = "dpuFiberOnLocationIdIntegrationTest";
-    private final String noExistingEndSz = "11/22/333/4444";
-    private final String noExistingOltPonPort = "123456789";
+    private final String noExistingOltPonPort = "73817fee-9620-4796-8a20-53dc01c259f8";
 
     @BeforeClass
     public void init() throws IOException {
@@ -181,10 +179,12 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
         Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
         Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),dpuEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(),nepOltData.getUuid());
-        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),createdDpuPortList.
+        Assert.assertEquals(createdNeLinks.get(0).getLsz(),"DPU");
+        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(),"1");
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),dpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),nepOltData.getUuid());
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(),createdDpuPortList.
                 get(indexOfGponPort).getUuid());
 
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
@@ -200,6 +200,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         // When / Action
         //Request for CommissioningDpuA4Task with not existing NE for required oltEndSz
+        String noExistingEndSz = "11/22/333/4444";
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 dpuEndSz,
                 dpuSerialNumber,
@@ -262,6 +263,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         // Then / Assert
         //HTTP return code is 400/ Bad Request and  no DPU-NetworkElement is created
     }
+
     @Test(description = "test DPU-NE cannot updated with wrong oltPonPort")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-129807")
@@ -333,6 +335,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     public static Object[] isNotValidRequestParameter(){
         return new Object[]{"","null",null};
     }
+
     @Test(dataProvider = "notValidRequestParameter", description = "test DPU-NE cannot created of validation error")
     @Owner("Anita.Junge@t-systems.com")
     @TmsLink("DIGIHUB-126199")
@@ -427,12 +430,22 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 .getNetworkElementLinksByNePort(nepOltData.getUuid());
         String lbz = "DPU/1/" + existingOltEndSz + "/" + existingDpuEndSz;
 
+        String dpuPortUuid = "";
+        Optional<NetworkElementPortDto> dpuPonPort = existingDpuPortList.stream().filter(t -> "GPON".equalsIgnoreCase(t.getType()))
+                .findFirst();
+        if (dpuPonPort.isPresent())
+            dpuPortUuid = dpuPonPort.get().getUuid();
+
         Assert.assertEquals(createdNeLinks.size(),1);
         Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
         Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
         Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingDpuEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getLsz(),"DPU");
+        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(),"1");
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingDpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),nepOltData.getUuid());
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(), dpuPortUuid);
 
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
     }
