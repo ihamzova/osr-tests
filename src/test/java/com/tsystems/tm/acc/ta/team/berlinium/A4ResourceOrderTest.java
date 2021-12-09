@@ -21,6 +21,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
+import io.qameta.allure.TmsLink;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
@@ -356,12 +357,12 @@ public class A4ResourceOrderTest {
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid());
-        System.out.println("+++ nspA10Data1 : "+nspA10Data1);
-        System.out.println("+++ nspA10Data3 : "+nspA10Data3);
+        //System.out.println("+++ nspA10Data1 : "+nspA10Data1);
+        //System.out.println("+++ nspA10Data3 : "+nspA10Data3);
 
         //System.out.println("+++ dto.nel.uuid: "+networkServiceProfileA10NspDto.getNetworkElementLinkUuid());
-        System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
-        System.out.println("+++ nelData2.uuid: "+nelData2.getUuid());
+        //System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
+        //System.out.println("+++ nelData2.uuid: "+nelData2.getUuid());
         //Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData2.getUuid()); // wozu dient der Vergleich?
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -396,26 +397,27 @@ public class A4ResourceOrderTest {
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
 
         //System.out.println("+++ dto1.nel.uuid: "+networkServiceProfileA10NspDto.getNetworkElementLinkUuid());
-        System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
+        //System.out.println("+++ nelData1.uuid: "+nelData1.getUuid());
 
 
        // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
        // System.out.println("+++ dto2.nel.uuid: "+networkServiceProfileA10NspDto2.getNetworkElementLinkUuid());
-        System.out.println("+++ nelData2.uuid: "+nelData2.getUuid());
+        //System.out.println("+++ nelData2.uuid: "+nelData2.getUuid());
 
        // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
        // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
-        System.out.println("+++ Start 4 End-Checks");
+      //  System.out.println("+++ Start 4 End-Checks");
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
     }
 
-    @Test
+    @Test(description = "DIGIHUB-76370 a10-ro delete")
     @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-130475")
     @Description("delete-case: send RO with -delete- and get Callback with -completed-")
     public void testRoDeleteItem() {
         // GIVEN
@@ -426,13 +428,18 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        // NSP pro item auf default (lcs-planning, was noch?), Link deaktiviert (lcs deactivated), NSP+NEL an Nemo
+        // NSP A10NSP is updated, NSP pro item auf default (lcs-planning)
+        // NEL is updated:  (lcs deactivated)
+        // NSP+NEL an Nemo
+
         a4ResourceOrder.checkResourceOrderIsCompleted();
+        // Resource Order Item is set to "completed"
         //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);  // actual 'in progress'
     }
 
-    @Test
+    @Test(description = "DIGIHUB-76370 a10-ro delete")
     @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-130477")
     @Description("delete-case: send RO with two -delete- and get Callback with -completed-")
     public void testRo2DeleteItems() {
         // GIVEN
@@ -449,8 +456,9 @@ public class A4ResourceOrderTest {
         //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);  // actual 'in progress'
     }
 
-    @Test
+    @Test(description = "DIGIHUB-119735 a10-ro delete, prevalidation, action check")
     @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-130474")
     @Description("mixed-case: send RO with -add- and -delete- and get Callback with -rejected-")
     public void testRoDeleteItemAndAddItem() {
         // GIVEN
@@ -482,6 +490,7 @@ public class A4ResourceOrderTest {
 
     @Test(dataProvider = "characteristicNamesDelete")
     @Owner("heiko.schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-130481")
     @Description("DIGIHUB-xxx Resource order: Characteristic in delete-order item has wrong value \"\"")
     public void testRoDeleteWithEmptyValues(String cName) {
         // GIVEN
