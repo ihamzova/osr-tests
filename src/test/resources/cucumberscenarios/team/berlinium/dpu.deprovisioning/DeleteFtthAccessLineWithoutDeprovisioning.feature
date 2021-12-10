@@ -16,5 +16,5 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Delete FTTH Acces
     And the U-Piter DPU mock will respond HTTP code 202 when called
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
-    And no DPU deprovisioning request to U-Piter was triggered
+    And no DPU deprovisioning request to U-Piter DPU mock was triggered
     And the TP does not exist in A4 resource inventory anymore

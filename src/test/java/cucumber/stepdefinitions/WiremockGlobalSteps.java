@@ -10,9 +10,9 @@ import io.cucumber.java.Before;
 
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-public class WiremockBaseSteps extends BaseSteps {
+public class WiremockGlobalSteps extends BaseSteps {
 
-    public WiremockBaseSteps(TestContext testContext) {
+    public WiremockGlobalSteps(TestContext testContext) {
         super(testContext);
     }
 

@@ -12,15 +12,12 @@ import cucumber.TestContext;
 import cucumber.stepdefinitions.BaseSteps;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.After;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import io.restassured.response.Response;
 
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS})
 public class A4RevInvSteps extends BaseSteps {
@@ -131,10 +128,10 @@ public class A4RevInvSteps extends BaseSteps {
         a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
     }
 
-    @Then("the request is responded/answered with HTTP( error) code {int}")
-    public void theRequestIsRespondedWithHTTPCode(int httpCode) {
-        Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
-        assertEquals(response.getStatusCode(), httpCode);
+    @Then("the NSP FTTH does not exist in A4 resource inventory( anymore)/( any longer)")
+    public void theNspFtthIsNotExistingInA4ResourceInventoryAnymore() {
+        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
     private A4NetworkElement setupDefaultNeTestData() {

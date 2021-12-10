@@ -425,6 +425,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
+    @Step("Check that Network Service Profile FTTH Access doesn't exists in Inventory")
+    public void checkNetworkServiceProfileFtthAccessIsDeleted(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
     @Step("Check that existing Network Element has been enriched with data from PSL")
     public void checkNetworkElementIsUpdatedWithPslData(String networkElementUuid, EquipmentData equipmentData) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(networkElementUuid);

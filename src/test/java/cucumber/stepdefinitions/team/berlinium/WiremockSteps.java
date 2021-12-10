@@ -80,24 +80,24 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Then("a DPU deprovisioning request to U-Piter was triggered")
+    @Then("a DPU deprovisioning request to U-Piter DPU mock was triggered")
     public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
         a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
     }
 
-    @Then("a DPU deprovisioning request to U-Piter was triggered with Line ID {string}")
+    @Then("a DPU deprovisioning request to U-Piter DPU mock was triggered with Line ID {string}")
     public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
         final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
         final A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
     }
 
-    @Then("no DPU deprovisioning request to U-Piter was triggered")
+    @Then("no DPU deprovisioning request to U-Piter DPU mock was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
         a4ProvWiremock.checkPostToDeprovisioningWiremock(0);
     }
 
-    @Then("the deprovisioning request to U-Piter is repeated after {int} minutes")
+    @Then("the deprovisioning request to U-Piter DPU mock is repeated after {int} minutes")
     public void wait(int min) {
         sleepForSeconds(min * 60);
         a4ProvWiremock.checkPostToDeprovisioningWiremock(2);
