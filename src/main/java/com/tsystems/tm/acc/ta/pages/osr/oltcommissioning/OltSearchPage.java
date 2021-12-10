@@ -26,6 +26,7 @@ public class OltSearchPage {
 
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/search";
+    //public static final String ENDPOINT = "/" + APP + "/search";
 
     public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchType");
     public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-ENDSZ");

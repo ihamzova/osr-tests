@@ -40,6 +40,7 @@ public interface DomainConstants {
     String A4_COMMISSIONING_MS = "a4-commissioning";
     String NEMO_CLIENT = "nemo-client";
     String CA_INTEGRATION = "ca-integration";
+    String OLT_UPLINK_MANAGEMENT_MS = "olt-uplink-management";
 
     // Activate this when using AMQ
     String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";

@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -39,7 +40,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS })
 public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -47,10 +48,12 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
+    private WireMockMappingsContext mappingsContext2;
 
     @BeforeMethod
     public void init() {
-        oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
+        //oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
+        oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
 
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
@@ -71,6 +74,16 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
+        mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
+                .addAccessLineInventoryMock()
+                .addPonInventoryMock(oltDevice)
+                .addRebellUewegeMock(oltDevice)
+                .build();
+
+        mappingsContext2.publish()                                              //inject in WM
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
@@ -78,6 +91,11 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     public void cleanUp() {
         mappingsContext.close();
         mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
+
+        mappingsContext2.close();
+        mappingsContext2
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
@@ -93,7 +111,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+        //Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         String endSz = oltDevice.getEndsz();
@@ -114,6 +133,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
+        Thread.sleep(5000);
+/*
         oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
@@ -140,7 +161,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
-
+*/
     }
 
     /**
