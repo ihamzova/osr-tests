@@ -11,5 +11,5 @@ public interface MercuryConstants {
 
     String APIGW = "apigw";
 
-    boolean FEATURE_ANCP_MIGRATION_ACTIVE = true;
+    String SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT = "service.olt-resource-inventory-ui.uplink-import";
 }

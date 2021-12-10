@@ -29,7 +29,6 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
@@ -45,7 +44,6 @@ public class FTTHMigrationRobot {
 
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
     private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProvider);
     private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProvider);
@@ -303,23 +301,21 @@ public class FTTHMigrationRobot {
             Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
             Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
 
-            if (FEATURE_ANCP_MIGRATION_ACTIVE) {
-                List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpIpSubnet>
-                        ancpIpSubnetList = ancpResourceInventoryManagementClient.getClient().ancpIpSubnet().listAncpIpSubnet()
-                        .bngDownlinkPortEquipmentBusinessRefEndSzQuery(oltDevice.getBngEndsz())
-                        .bngDownlinkPortEquipmentBusinessRefSlotNameQuery(oltDevice.getBngDownlinkSlot())
-                        .bngDownlinkPortEquipmentBusinessRefPortNameQuery(oltDevice.getBngDownlinkPort())
-                        .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-                Assert.assertEquals(ancpIpSubnetList.size(), 1L, "ancpIpSubnetList.size missmatch");
-                Assert.assertEquals(ancpIpSubnetList.get(0).getId(), ancpIpSubnetId, "ancpIpSubnetId missmatch");
+            List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpIpSubnet>
+                    ancpIpSubnetList = ancpResourceInventoryManagementClient.getClient().ancpIpSubnet().listAncpIpSubnet()
+                    .bngDownlinkPortEquipmentBusinessRefEndSzQuery(oltDevice.getBngEndsz())
+                    .bngDownlinkPortEquipmentBusinessRefSlotNameQuery(oltDevice.getBngDownlinkSlot())
+                    .bngDownlinkPortEquipmentBusinessRefPortNameQuery(oltDevice.getBngDownlinkPort())
+                    .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+            Assert.assertEquals(ancpIpSubnetList.size(), 1L, "ancpIpSubnetList.size missmatch");
+            Assert.assertEquals(ancpIpSubnetList.get(0).getId(), ancpIpSubnetId, "ancpIpSubnetId missmatch");
 
-                List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession>
-                        ancpSessionList2 = ancpResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-                        .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz)
-                        .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-                Assert.assertEquals(ancpSessionList2.size(), 1L, "ancpSessionList2.size missmatch");
-                Assert.assertEquals(ancpSessionList2.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
-            }
+            List<com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession>
+                    ancpSessionList2 = ancpResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+                    .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz)
+                    .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+            Assert.assertEquals(ancpSessionList2.size(), 1L, "ancpSessionList2.size missmatch");
+            Assert.assertEquals(ancpSessionList2.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
 
         }
         return oltDeviceId;
@@ -328,13 +324,8 @@ public class FTTHMigrationRobot {
     @Step("Clear {oltDevice} device in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(OltDevice oltDevice) {
         String endSz = oltDevice.getEndsz();
-        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        } else {
-            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-        }
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
 }

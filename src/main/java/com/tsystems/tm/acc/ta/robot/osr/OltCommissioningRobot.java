@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -26,10 +27,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
 public class OltCommissioningRobot {
@@ -45,12 +44,13 @@ public class OltCommissioningRobot {
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
   private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
   private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+
+  private UnleashClient unleashClient = new UnleashClient();
 
   @Step("Starts automatic olt commissioning process")
   public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -235,12 +235,21 @@ public class OltCommissioningRobot {
   @Step("Clear {oltDevice} device in olt-resource-inventory database")
   public void clearResourceInventoryDataBase(OltDevice oltDevice) {
     String endSz = oltDevice.getEndsz();
-    if (FEATURE_ANCP_MIGRATION_ACTIVE) {
       deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
               .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-    } else {
-      oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-    }
+  }
+
+  @Step("enable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
+  public void enableFeatureToogleUiUplinkImport()
+  {
+    boolean toggleState = unleashClient.enableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
+  }
+
+  @Step("disable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
+  public void disableFeatureToogleUiUplinkImport()
+  {
+    boolean toggleState = unleashClient.disableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
   }
 }

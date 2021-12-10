@@ -4,7 +4,6 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -51,6 +50,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     @BeforeMethod
     public void init() {
+        oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
+
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
         OsrTestContext context = OsrTestContext.get();
@@ -59,7 +60,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Random rnd = new Random();
         char c = (char) ('B' + rnd.nextInt(25));
         ///oltDevice.setFsz("76H" + c);
-        oltDevice.setFsz("76HC");
+        oltDevice.setFsz("76HL");
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
@@ -83,6 +84,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         String endSz = oltDevice.getEndsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
+        oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
