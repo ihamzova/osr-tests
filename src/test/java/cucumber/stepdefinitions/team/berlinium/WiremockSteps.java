@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
 import cucumber.Context;
 import cucumber.TestContext;
-import cucumber.stepdefinitions.BaseSteps;
+import cucumber.BaseSteps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 

@@ -1,5 +1,6 @@
 package cucumber.stepdefinitions;
 
+import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Then;

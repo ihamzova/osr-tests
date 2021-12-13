@@ -1,10 +1,8 @@
-package cucumber.stepdefinitions;
+package cucumber;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import cucumber.ScenarioContext;
-import cucumber.TestContext;
 import io.qameta.allure.Epic;
 
 @Epic("OS&R BDD Tests")

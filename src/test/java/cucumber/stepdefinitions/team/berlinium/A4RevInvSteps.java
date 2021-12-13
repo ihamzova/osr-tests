@@ -9,7 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import cucumber.Context;
 import cucumber.TestContext;
-import cucumber.stepdefinitions.BaseSteps;
+import cucumber.BaseSteps;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;

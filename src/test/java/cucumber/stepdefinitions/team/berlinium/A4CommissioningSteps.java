@@ -4,7 +4,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import cucumber.Context;
 import cucumber.TestContext;
-import cucumber.stepdefinitions.BaseSteps;
+import cucumber.BaseSteps;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 

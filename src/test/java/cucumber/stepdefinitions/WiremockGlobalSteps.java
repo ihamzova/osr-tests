@@ -3,6 +3,7 @@ package cucumber.stepdefinitions;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.After;

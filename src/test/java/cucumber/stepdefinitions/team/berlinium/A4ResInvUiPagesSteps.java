@@ -9,7 +9,7 @@
 //import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 //import cucumber.Context;
 //import cucumber.TestContext;
-//import cucumber.stepdefinitions.BaseSteps;
+//import cucumber.BaseSteps;
 //import io.cucumber.java.en.Given;
 //import io.cucumber.java.en.Then;
 //import io.cucumber.java.en.When;

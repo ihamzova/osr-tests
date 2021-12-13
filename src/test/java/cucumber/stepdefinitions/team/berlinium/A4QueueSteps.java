@@ -2,7 +2,7 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import cucumber.TestContext;
-import cucumber.stepdefinitions.BaseSteps;
+import cucumber.BaseSteps;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
