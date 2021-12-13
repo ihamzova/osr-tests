@@ -5,7 +5,7 @@
     "validFrom": "28.01.2020 16:00:00",
     "endPointB": {
       "endSz": "$oltEndSz",
-      "portName": "0/7/4",
+      "portName": "$oltPortName",
       "endSzParts": {
         "akz": "$olt_akz",
         "vkz": "$olt_vkz",
@@ -14,12 +14,12 @@
       },
       "deviceHostName": "",
       "vendorPortName": "P0004",
-      "portPosition": "7.0"
+      "portPosition": "$oltPortPostion"
     },
     "version": "1",
     "endPointA": {
       "endSz": "$bngEndSz",
-      "portName": "ge-0/0/0",
+      "portName": "$bngPortName",
       "endSzParts": {
         "akz": "$bng_akz",
         "vkz": "$bng_vkz",
@@ -28,7 +28,7 @@
       },
       "deviceHostName": "BONJ73",
       "vendorPortName": "[0/2]/0",
-      "portPosition": "0.0.0"
+      "portPosition": "$bngPortPostion"
     },
     "versionId": "102/1/3371/7819208",
     "lsz": "$lsz",

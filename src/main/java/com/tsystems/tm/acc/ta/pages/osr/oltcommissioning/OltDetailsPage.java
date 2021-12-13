@@ -22,7 +22,7 @@ public class OltDetailsPage {
   public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 10000;
   private static final Integer PORTS_PER_GPON_CARD = 8;
   public static final String APP = "olt-resource-inventory-ui";
-  public static final String ENDPOINT = "/detail";
+  public static final String ENDPOINT =  "/" + APP + "/detail";
 
   public static final By CARDS_VIEW_TAB_LOCATOR = byQaData("a-cards-view");
   public static final By CONFIGURATION_VIEW_TAB_LOCATOR = byQaData("a-configuration-view");

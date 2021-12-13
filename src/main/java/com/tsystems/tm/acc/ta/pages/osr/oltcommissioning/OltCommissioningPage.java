@@ -20,7 +20,7 @@ import static org.testng.Assert.fail;
 public class OltCommissioningPage {
 
     public static final String APP = "olt-resource-inventory-ui";
-    public static final String ENDPOINT = "/commissioning";
+    public static final String ENDPOINT =  "/" + APP + "/commissioning";
 
     public static final By OLT_KLS_ID_INPUT_LOCATOR = byQaData("input-oltklsidtxt");
     public static final By OLT_SLOT_NUMBER_INPUT_LOCATOR = byQaData("input-oltslotnumbertxt");

@@ -58,8 +58,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
         OsrTestContext context = OsrTestContext.get();
-        //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
-        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
+        oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
+        //oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HE_SDX_6320_16);
         Random rnd = new Random();
         char c = (char) ('B' + rnd.nextInt(25));
         ///oltDevice.setFsz("76H" + c);
@@ -111,8 +111,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     public void SearchAndDiscoverOlt() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
-        //Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+        //Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         String endSz = oltDevice.getEndsz();

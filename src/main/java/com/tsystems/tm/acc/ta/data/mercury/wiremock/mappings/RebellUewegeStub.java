@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 
 public class RebellUewegeStub  extends AbstractStubMapping {
@@ -36,6 +35,15 @@ public class RebellUewegeStub  extends AbstractStubMapping {
         String[] oltEndSz = oltDevice.getVpsz().split("/");
         String[] bngEndSz = oltDevice.getBngEndsz().split("/");
 
+        String oltPortPostion = String.format("%s.0", oltDevice.getOltSlot()); // e.g. "19.0",
+        String oltPortName = String.format("0/19/%s", oltDevice.getOltPort()); // e.g. "0/19/0"
+        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+            oltPortPostion = "GE1";
+            oltPortName = String.format("10ge 0/%s", oltDevice.getOltPort());
+        }
+
+        String bngPortPostion = String.format("%s.0.2", oltDevice.getBngDownlinkSlot()); // e.g. "7.0.2"
+
         return FileUtils.readFileToString(new File(getClass()
                 .getResource(PATH_TO_MOCK).getFile()), Charset.defaultCharset())
                 .replace("$oltEndSz", oltDevice.getEndsz().replace("/", "_"))
@@ -43,14 +51,16 @@ public class RebellUewegeStub  extends AbstractStubMapping {
                 .replace("$olt_nkz", oltEndSz[1])
                 .replace("$olt_vkz", oltEndSz[2])
                 .replace("$olt_fsz", oltDevice.getFsz())
-                //.replace("$olt_slot", "GE1")
-                //.replace("$olt_port", oltDevice.getOltPort())
+                .replace("$oltPortPostion", oltPortPostion)
+                .replace("$oltPortName", oltPortName)
                 .replace("$bngEndSz", oltDevice.getBngEndsz().replace("/", "_"))
                 .replace("$bng_akz", bngEndSz[0])
                 .replace("$bng_nkz", bngEndSz[1])
                 .replace("$bng_vkz", bngEndSz[2])
                 .replace("$bng_fsz", bngEndSz[3])
-                .replace("$lsz", oltDevice.getLsz());
+                .replace("$lsz", oltDevice.getLsz())
+                .replace("$bngPortPostion", bngPortPostion)
+                .replace("$bngPortName", oltDevice.getBngDownlinkPort());
 
     }
 }
