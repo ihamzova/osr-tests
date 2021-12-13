@@ -80,6 +80,8 @@ public class NetworkSwitching extends GigabitTest {
         networkSwitchingPage.clickPackageId()
                 .waitUntilNeededStatus("PREPARED", packageId);
 
+        assert(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+
         List<AccessLineDto> sourceAccessLinesAfterPreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
         List<String> lineIdsAfterPreparation = accessLineRiRobot.getLineIds(sourcePort);
         List<String> homeIdsAfterPreparation = accessLineRiRobot.getHomeIds(sourcePort);
@@ -135,6 +137,7 @@ public class NetworkSwitching extends GigabitTest {
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
         networkSwitchingPage.startCommit(packageId)
                 .waitUntilNeededStatus("FINISHED", packageId);
+        assert(networkSwitchingPage.getPackageStatus().contains("FINISHED"));
 
         List<AccessLineDto> sourceAccessLinesAfterCommit = accessLineRiRobot.getAccessLinesWithHomeId(targetPort);
         List<Integer> targetAnpTagsAfterCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommit);
