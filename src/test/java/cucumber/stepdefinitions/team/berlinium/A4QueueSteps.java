@@ -1,8 +1,8 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
-import cucumber.TestContext;
 import cucumber.BaseSteps;
+import cucumber.TestContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
@@ -24,7 +24,7 @@ public class A4QueueSteps extends BaseSteps {
 
     @After
     public void cleanup() {
-            a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
+        a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
     }
 
     @Then("the TP UUID is added to A4 deprovisioning DLQ")

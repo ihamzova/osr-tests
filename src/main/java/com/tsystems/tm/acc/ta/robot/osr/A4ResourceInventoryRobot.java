@@ -125,9 +125,11 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check if one Network Service Profile FTTH Access connected to Termination Point exists")
-    public void checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
+    public NetworkServiceProfileFtthAccessDto checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
+
+        return nspList.get(0);
     }
 
     @Step("Check if one Network Service Profile A10NSP connected to Termination Point exists")

@@ -64,3 +64,8 @@ Feature: Berlinium parts of DPU Commissioning in A4 platform - Rainy day cases
     Examples:
       | HTTPCode |
       | 500      |
+
+
+
+  # TODO
+  # What happens when there's no NSP FTTH connected with the TP, but another NSP (A10NSP, L2BSA)?
