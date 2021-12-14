@@ -12,10 +12,12 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileA10Nsp;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
@@ -55,6 +57,8 @@ public class A4ResourceOrderRobot {
             new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
 
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+
 
     @Step("Send POST for A10nsp Resource Order")
     public void sendPostResourceOrder(ResourceOrder resourceOrder) {
@@ -85,6 +89,43 @@ public class A4ResourceOrderRobot {
     public void addOrderItemDelete(String orderItemId, A4NetworkElementLink nelData, ResourceOrder ro) {
         addOrderItem(orderItemId, OrderItemActionType.DELETE, nelData, ro);
     }
+
+    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
+    System.out.println("+++ A4-NSP im robot angekommen: "+nsp);
+        System.out.println("+++ lcs des nsp in db gelesen: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState());
+    /*
+    A4NetworkServiceProfileA10Nsp(
+    uuid=ace216e6-843d-4686-bb84-6823e9614a8d,
+    operationalState=NOT_WORKING,
+    lifecycleState=PLANNING,
+    numberOfAssociatedNsps=null)
+
+
+
+
+    +++++++ roi
+    "uuid": "8637025e-188e-4563-981b-8022f9b0a073",
+    "creationTime": "2021-12-14T12:37:52.149+01:00",
+    "description": "NEL for integration test",
+    "lastUpdateTime": "2021-12-14T12:37:58.89+01:00",
+    "specificationVersion": null,
+    "lsz": "4N4",
+    "lbz": "4N4/1004-49/3926/0/7KCA-49/3752/0/7KH0",
+    "orderNumber": "1004",
+    "lifecycleState": "DEACTIVATED",
+    "operationalState": "NOT_WORKING",
+    "ueWegId": "430247, 658839",
+    "pluralId": "2",
+    "networkElementPortAUuid": "fe6a2122-885f-4905-ab79-0fba9aa908f0",
+    "networkElementPortBUuid": "09973704-a935-4c32-9217-312a5fab2852",
+    "endszA": "49/3926/0/7KCA",
+    "endszB": "49/3752/0/7KH0"
+    */
+
+
+
+
+}
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {
         ResourceRefOrValue resource = new ResourceRefOrValue()
