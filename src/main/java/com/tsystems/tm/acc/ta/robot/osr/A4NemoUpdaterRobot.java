@@ -66,6 +66,7 @@ public class A4NemoUpdaterRobot {
 
     @Step("Check if PUT request to NEMO wiremock with logical resource has happened")
     public void checkLogicalResourcePutRequestToNemoWiremock(String uuid) {
+        System.out.println("+++ Start checkLogicalResourceRequestToNemoWiremock auf einen Treffer");
         checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 1);
     }
 
@@ -105,11 +106,17 @@ public class A4NemoUpdaterRobot {
 
     @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
     public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(String uuidTp) {
+        checkNetworkServiceProfileA10NspPutRequestToNemoWiremock (uuidTp, 1);
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
+    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(String uuidTp, int count) {
         List<NetworkServiceProfileA10NspDto> nspList = a4Inventory
                 .getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
+        System.out.println("+++ Mock nsp-list: "+nspList);
         Assert.assertEquals(nspList.size(), 1);
-
-        checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
+        System.out.println("+++ checkLogicalResourcePutRequestToNemoWiremock ");
+        checkLogicalResourceRequestToNemoWiremock(nspList.get(0).getUuid(), "PUT", count);
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile L2BSA has happened")
@@ -154,8 +161,24 @@ public class A4NemoUpdaterRobot {
         List<NetworkElementLinkDto> nelList = a4Inventory
                 .getNetworkElementLinksByNePort(uuidNep);
         Assert.assertEquals(nelList.size(), 1);
-
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with network element link has happened")
+    public void checkNetworkElementLinkPutRequestToNemoWiremockByNel(String uuidNel) {
+        checkLogicalResourcePutRequestToNemoWiremock(uuidNel);
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with two network element links at one port has happened")
+    public void checkTwoNetworkElementLinksPutRequestToNemoWiremock(String uuidNep) {
+        List<NetworkElementLinkDto> nelList = a4Inventory
+                .getNetworkElementLinksByNePort(uuidNep);
+        Assert.assertEquals(nelList.size(), 2);
+        System.out.println("+++ checkLogicalResourceNelPutRequestToNemoWiremock for one nel in case of two nel's: "+nelList);
+        System.out.println("+++ get 0: ");
+        checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
+        System.out.println("+++ get 1: ");
+        checkLogicalResourcePutRequestToNemoWiremock(nelList.get(1).getUuid());
     }
 
     @Step("Check if NEMO update PUT requests have been sent (asynchronous)")
