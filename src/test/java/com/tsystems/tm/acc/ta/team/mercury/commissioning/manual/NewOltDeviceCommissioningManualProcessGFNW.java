@@ -20,6 +20,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -31,12 +32,14 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_GFNW;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
 
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
 
   private static final String KLS_ID_EXPECTED = "17056514";
 
@@ -45,6 +48,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
 
   @BeforeClass
   public void init() {
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
   }
 
@@ -78,9 +82,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(oltDevice);
     oltDetailsPage.saveUplinkConfiguration();
-    oltDetailsPage.modifyUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
     oltDetailsPage.updateAncpSessionStatus();
@@ -90,7 +92,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     checkPortState(oltDevice, oltDetailsPage);
 
     checkDeviceMA5600(endSz);
-    checkUplink(endSz);
+    oltCommissioningRobot.checkUplink(oltDevice);
 
     //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
     oltDetailsPage.deconfigureAncpSession();
@@ -141,22 +143,6 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
     Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
     Assert.assertEquals(oltDetailsPage.getKlsID(), KLS_ID_EXPECTED, "KlsId coming from PSL (Mock)");
-  }
-
-  /**
-   * check uplink and ancp-session data from olt-ressource-inventory
-   */
-  private void checkUplink(String endSz) {
-
-    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
-    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
-
-    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-            .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
   }
 
   /**

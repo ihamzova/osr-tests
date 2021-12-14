@@ -95,7 +95,6 @@ public class OltCommissioningRobot {
     oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(olt);
     oltDetailsPage.saveUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
@@ -174,20 +173,6 @@ public class OltCommissioningRobot {
             .map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
     Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
 
-    // check uplink state
-    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-            .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(uplinkList.size(), 1, "There is no uplink");
-    Uplink uplink = uplinkList.get(0);
-    Assert.assertEquals(uplink.getState(), UplinkState.ACTIVE, "UplinkState is not active");
-
-    // check ANCP Session
-    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-            .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus is not active");
-
-
     List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
             .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
             .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
@@ -223,6 +208,46 @@ public class OltCommissioningRobot {
 
     Assert.assertEquals(freeLineIdCount, portsCount * expectedFreeLineIdCountPerPort, "FreeLineIdCount mismatch");
     Assert.assertEquals(usedLineIdCount, portsCount * expectedUsedLineIdCountPerPort, "UsedLineIdCount mismatch");
+  }
+
+
+  @Step("check uplink and ancp-session data from olt-ressource-inventory")
+  public void checkUplink(OltDevice oltDevice) {
+
+    // check uplink state
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE, "UplinkState is not active");
+
+    // check Slot Port configuration
+    Assert.assertEquals(uplinkList.get(0).getPortsEquipmentBusinessRef().size(), 2, "getPortsEquipmentBusinessRef.size missmatch");
+
+    EquipmentBusinessRef equipmentBusinessRef =  uplinkList.get(0).getPortsEquipmentBusinessRef().get(0);
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 0");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 0");
+    }
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 0");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 0");
+    }
+    equipmentBusinessRef =  uplinkList.get(0).getPortsEquipmentBusinessRef().get(1);
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 1");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 1");
+    }
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 1");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 1");
+    }
+
+    // check ANCP Session
+    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+            .accessNodeEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
+
   }
 
   @Step("Restore OSR Database state")

@@ -35,7 +35,8 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
         EA_EXT_ROUTE_MS,
         LINE_ID_GENERATOR_MS,
         ACCESS_LINE_MANAGEMENT,
-        OLT_DISCOVERY_MS
+        OLT_DISCOVERY_MS,
+        OLT_UPLINK_MANAGEMENT_MS
 })
 
 public class AdtranOltCommissioningDecommissioning extends GigabitTest {
@@ -52,6 +53,7 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
 
   @BeforeClass
   public void init() {
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
     oltCommissioningRobot.restoreOsrDbState();
 
     OsrTestContext context = OsrTestContext.get();
@@ -75,6 +77,8 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     mappingsContextPonInv = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get())
             .addPonInventoryMock(oltDeviceManual)
             .addPonInventoryMock(oltDeviceAutomatic)
+            .addRebellUewegeMock(oltDeviceManual)
+            .addRebellUewegeMock(oltDeviceAutomatic)
             .build();
 
     mappingsContextPonInv.publish()
@@ -98,6 +102,7 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     oltCommissioningRobot.restoreOsrDbState();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
+    oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
   }
 
   @Test(description = "Adtran Olt-Commissioning (device : SDX 6320-16) automatically case")
@@ -109,6 +114,7 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
     oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
     oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
+    oltCommissioningRobot.checkUplink(oltDeviceAutomatic);
   }
 
   @Test(dependsOnMethods = "automaticallyAdtranOltCommissioning", description = "Adtran Olt De-Commissioning (device : SDX 6320-16) automatically case")
@@ -132,6 +138,7 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
     oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
     oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+    oltCommissioningRobot.checkUplink(oltDeviceManual);
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioning", description = "Olt-Decommissioning (device : SDX 6320-16) manually case")

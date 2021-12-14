@@ -51,7 +51,7 @@ public class RebellUewegeStub  extends AbstractStubMapping {
                 .replace("$olt_nkz", oltEndSz[1])
                 .replace("$olt_vkz", oltEndSz[2])
                 .replace("$olt_fsz", oltDevice.getFsz())
-                .replace("$oltPortPostion", oltPortPostion)
+                .replace("$oltPortPosition", oltPortPostion)
                 .replace("$oltPortName", oltPortName)
                 .replace("$bngEndSz", oltDevice.getBngEndsz().replace("/", "_"))
                 .replace("$bng_akz", bngEndSz[0])
@@ -59,7 +59,7 @@ public class RebellUewegeStub  extends AbstractStubMapping {
                 .replace("$bng_vkz", bngEndSz[2])
                 .replace("$bng_fsz", bngEndSz[3])
                 .replace("$lsz", oltDevice.getLsz())
-                .replace("$bngPortPostion", bngPortPostion)
+                .replace("$bngPortPosition", bngPortPostion)
                 .replace("$bngPortName", oltDevice.getBngDownlinkPort());
 
     }

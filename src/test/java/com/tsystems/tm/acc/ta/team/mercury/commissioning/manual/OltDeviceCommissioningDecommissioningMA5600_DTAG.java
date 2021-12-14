@@ -34,7 +34,7 @@ import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTest {
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 2_000;
@@ -45,6 +45,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
 
   @BeforeClass
   public void init() {
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
   }
 
@@ -76,9 +77,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(oltDevice);
     oltDetailsPage.saveUplinkConfiguration();
-    oltDetailsPage.modifyUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
     oltDetailsPage.updateAncpSessionStatus();
@@ -88,7 +87,7 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
     checkPortState(oltDevice, oltDetailsPage);
 
     checkDeviceMA5600(endSz);
-    checkUplink(endSz);
+    oltCommissioningRobot.checkUplink(oltDevice);
 
     //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
     oltDetailsPage.deconfigureAncpSession();
@@ -150,21 +149,6 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
     Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
     Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_MA5600);
     Assert.assertEquals(oltDetailsPage.getKlsID(), "17056514");
-  }
-
-  /**
-   * check uplink and ancp-session data from olt-ressource-inventory
-   */
-  private void checkUplink(String endSz) {
-    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
-    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
-
-    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-            .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
   }
 
   /**

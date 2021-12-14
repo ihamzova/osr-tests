@@ -52,7 +52,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     @BeforeMethod
     public void init() {
-        //oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
         oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
 
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
@@ -64,6 +63,8 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         char c = (char) ('B' + rnd.nextInt(25));
         ///oltDevice.setFsz("76H" + c);
         oltDevice.setFsz("76HL");
+
+        // WireMockFactory.get().resetToDefaultMappings();
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
@@ -133,9 +134,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
-        Thread.sleep(5000);
-/*
-        oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
         oltDetailsPage.modifyUplinkConfiguration();
 
@@ -148,7 +146,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         checkPorts(oltDevice);
 
         checkDeviceMA5800(endSz);
-        checkUplink(endSz);
+        oltCommissioningRobot.checkUplink(oltDevice);
 
         //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
@@ -161,7 +159,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
-*/
+
     }
 
     /**
@@ -229,20 +227,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         Device device = deviceList.get(0);
         Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
     }
-
-    /**
-     * check uplink and ancp-session data from olt-ressource-inventory
-     */
-    private void checkUplink(String endSz) {
-        List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
-        Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
-
-        List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-                .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-        Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch"); }
 
     /**
      * check uplink is not exist in olt-resource-inventory

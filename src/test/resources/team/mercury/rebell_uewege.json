@@ -14,7 +14,7 @@
       },
       "deviceHostName": "",
       "vendorPortName": "P0004",
-      "portPosition": "$oltPortPostion"
+      "portPosition": "$oltPortPosition"
     },
     "version": "1",
     "endPointA": {
@@ -28,7 +28,7 @@
       },
       "deviceHostName": "BONJ73",
       "vendorPortName": "[0/2]/0",
-      "portPosition": "$bngPortPostion"
+      "portPosition": "$bngPortPosition"
     },
     "versionId": "102/1/3371/7819208",
     "lsz": "$lsz",
