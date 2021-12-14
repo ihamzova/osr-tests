@@ -46,7 +46,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 public class OltAutoCommissioning extends GigabitTest {
 
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
 
   private static final String KLS_ID_EXPECTED = "17056514";
 
