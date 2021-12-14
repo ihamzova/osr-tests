@@ -95,8 +95,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     mappingsContext2
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
-
-    oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
   }
 
 

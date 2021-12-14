@@ -98,8 +98,6 @@ public class OltAutoCommissioning extends GigabitTest {
     mappingsContext2
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
-
-    oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
   }
 
   @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")

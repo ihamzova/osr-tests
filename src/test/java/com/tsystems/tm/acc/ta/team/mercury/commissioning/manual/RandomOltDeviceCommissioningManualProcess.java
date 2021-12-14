@@ -103,7 +103,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         String endSz = oltDevice.getEndsz();
         log.info("+++ cleanUp delete device endsz={}", endSz);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
-        oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")

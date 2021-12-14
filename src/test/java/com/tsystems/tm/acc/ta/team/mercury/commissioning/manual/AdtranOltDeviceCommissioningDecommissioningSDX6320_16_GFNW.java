@@ -94,8 +94,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     mappingsContext2
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
-
-    oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
   }
 
   @Test(description = "DIGIHUB-104219 Manual commissioning for not discovered SDX 6320-16 device as GFNW user")
