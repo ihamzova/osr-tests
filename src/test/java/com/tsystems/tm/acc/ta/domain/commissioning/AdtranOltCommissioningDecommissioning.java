@@ -102,7 +102,6 @@ public class AdtranOltCommissioningDecommissioning extends GigabitTest {
     oltCommissioningRobot.restoreOsrDbState();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
-    oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
   }
 
   @Test(description = "Adtran Olt-Commissioning (device : SDX 6320-16) automatically case")

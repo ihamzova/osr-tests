@@ -100,8 +100,6 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         oltCommissioningRobot.restoreOsrDbState();
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceManual);
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceAutomatic);
-
-        oltCommissioningRobot.disableFeatureToogleUiUplinkImport();
     }
 
     @Test(description = "Olt-Commissioning (device : MA5600T) automatically case")
