@@ -66,6 +66,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTes
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
 
     oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
     oltSearchPage.pressManualCommissionigButton();

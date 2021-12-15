@@ -108,6 +108,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z8_SDX_6320);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
 
     oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
     oltSearchPage.pressManualCommissionigButton();
@@ -115,8 +116,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     oltDiscoveryPage.makeOltDiscovery();
     oltDiscoveryPage.saveDiscoveryResults();
     oltDiscoveryPage.openOltSearchPage();
-
     Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
+
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
     oltDetailsPage.openPortView(oltDevice.getOltSlot());
