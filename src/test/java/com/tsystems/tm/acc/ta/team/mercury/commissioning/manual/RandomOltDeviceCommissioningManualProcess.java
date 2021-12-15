@@ -134,7 +134,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         oltDetailsPage.startUplinkConfiguration();
         oltDetailsPage.saveUplinkConfiguration();
-        oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
         oltDetailsPage.updateAncpSessionStatus();

@@ -28,21 +28,7 @@ public class OltDetailsPage {
   public static final By CONFIGURATION_VIEW_TAB_LOCATOR = byQaData("a-configuration-view");
 
   public static final By UPLINK_ADD_BUTTON_LOCATOR = byQaData("button-add-uplink");
-  public static final By UPLINK_EDIT_BUTTON_LOCATOR = byQaData("button-edit-uplink");
 
-  //  input uplink values
-  public static final By OLT_SLOT_SELECT_LOCATOR = byQaData("div-oltSlot");
-  public static final By OLT_PORT_SELECT_LOCATOR = byQaData("div-oltPort");
-  public static final By BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngEndSz");
-  public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngSlot");
-  public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngPort");
-  public static final By LSZ_SELECT_LOCATOR = byQaData("div-uplinkLsz");
-  public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-orderNumber");
-  public String slotValueLocatorString = "div-%s";
-  public String portValueLocatorString = "div-%s";
-  public String lszValueLocatorString = "div-%s";
-
-  public static final By UPLINK_MODIFY_CONFIRM_BUTTON_LOCATOR = byQaData("button-uplink-modify-uplink");
   public static final By UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR = byQaData("button-uplink-create-uplink");
   public static final By UPLINK_DELETE_BUTTON_LOCATOR = byQaData("button-delete-uplink");
   public static final By UPLINK_DELETE_CONFIRM_BUTTON_LOCATOR = byQaData("button-uplink-delete-uplink");
@@ -77,7 +63,6 @@ public class OltDetailsPage {
   public static final By START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_2");
   public static final By START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_1");
 
-
   @Step("Validate Url")
   public void validateUrl() {
     assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
@@ -102,36 +87,10 @@ public class OltDetailsPage {
     return this;
   }
 
-  @Step("Input uplink parameters")
-  public OltDetailsPage inputUplinkParameters(OltDevice olt) {
-    if (olt.getOltSlot() != null) {
-      $(OLT_SLOT_SELECT_LOCATOR).click();
-      $(byQaData(String.format(slotValueLocatorString, olt.getOltSlot()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    }
-    $(OLT_PORT_SELECT_LOCATOR).click();
-    $(byQaData(String.format(portValueLocatorString, olt.getOltPort()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(BNG_ENDSZ_INPUT_LOCATOR).val(olt.getBngEndsz());
-    $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(olt.getBngDownlinkSlot());
-    $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(olt.getBngDownlinkPort());
-    $(LSZ_SELECT_LOCATOR).click();
-    $(byQaData(String.format(lszValueLocatorString, olt.getLsz()))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(ORDER_NUMBER_INPUT_LOCATOR).val(olt.getOrderNumber());
-    return this;
-  }
-
-
   @Step("Save uplink configuration")
   public OltDetailsPage saveUplinkConfiguration() {
     $(UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
     return new OltDetailsPage();
-  }
-
-  @Step("Modify uplink configuration and save uplink configuration without changes")
-  public OltDetailsPage modifyUplinkConfiguration() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(UPLINK_EDIT_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(UPLINK_MODIFY_CONFIRM_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    return this;
   }
 
   @Step("Deconfigure uplink")

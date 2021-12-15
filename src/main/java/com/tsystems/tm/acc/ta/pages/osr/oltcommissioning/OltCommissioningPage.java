@@ -22,15 +22,6 @@ public class OltCommissioningPage {
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT =  "/" + APP + "/commissioning";
 
-    public static final By OLT_KLS_ID_INPUT_LOCATOR = byQaData("input-oltklsidtxt");
-    public static final By OLT_SLOT_NUMBER_INPUT_LOCATOR = byQaData("input-oltslotnumbertxt");
-    public static final By OLT_PORT_NUMBER_INPUT_LOCATOR = byQaData("input-oltportnumbertxt");
-    public static final By OLT_BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngendsztxt");
-    public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngslotnumbertxt");
-    public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngportnumbertxt");
-    public static final By LSZ_SELECT_LOCATOR = byQaData("div-lsz");
-    public String LSZ_VALUE_LOCATOR = "//*[@qa-data='div-%s']"; //div-4C1
-    public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
     public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
     public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-view");
     private static final By ERROR_SECTION_LOCATOR = cssSelector("div[class='ui icon message negative']");
