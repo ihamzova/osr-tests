@@ -442,17 +442,15 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemDelete(SECOND_ORDER_ITEM_ID, nelData2, ro);
 
+        // old values of nsp
+        //System.out.println("+++ original nsp: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
+
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(sleepTimer);
 
         // THEN
-        assertEquals(a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()).getLifecycleState(), "PLANNING");
-        // checkDefaultValuesNsp(nspA10Data1) in Robot einbauen
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
-
-        // checkDefaultValuesNel(nel) in Robot einbauen?
-        // ....
+        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1); // lcs is PLANNING and more
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()).getLifecycleState(), "DEACTIVATED");
 

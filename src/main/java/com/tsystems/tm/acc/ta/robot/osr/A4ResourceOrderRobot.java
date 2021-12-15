@@ -91,8 +91,63 @@ public class A4ResourceOrderRobot {
     }
 
     public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
-    System.out.println("+++ A4-NSP im robot angekommen: "+nsp);
-        System.out.println("+++ lcs des nsp in db gelesen: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState());
+
+         /*     values of nsp at start
+    uuid: f0a7f68c-5237-41f3-9420-dec827bab332
+    lifecycleState: PLANNING
+    operationalState: NOT_WORKING
+    description: NSP A10NSP created during osr-test integration test
+    administrativeMode: ACTIVATED
+    virtualServiceProvider: a Virtual Service Provider
+    specificationVersion: 1
+    carrierBsaReference: CarrierBsaReference
+    mtuSize: 1590
+    etherType: 0x88a8
+    itAccountingKey: undefined
+    lacpActive: true
+    lacpMode: undefined
+    minActiveLagLinks: 1
+    sVlanRange: [class VlanRangeDto {
+        vlanRangeLower: undefined
+        vlanRangeUpper: undefined
+    }]
+    dataRate: undefined
+    qosClasses: [class A10NspQosDto {
+        qosPriority: undefined
+        qosBandwidthUp: undefined
+        qosBandwidthDown: undefined
+    }]
+    qosMode: TOLERANT
+    lastUpdateTime: 2021-12-15T09:01:01.403+01:00
+    creationTime: 2021-12-15T09:01:01.403+01:00
+    terminationPointA10NspUuid: 12256701-548b-40aa-8b83-7175c1eb8887
+    numberOfAssociatedNsps: undefined
+    networkElementLinkUuid: null
+    href: /resource-order-resource-inventory/v1/a4TerminationPoints/12256701-548b-40aa-8b83-7175c1eb8887
+     */
+
+        String lcs_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState();
+        assertEquals(lcs_new, "PLANNING");
+        // lastUpdateTime: 2021-12-15T09:01:01.403+01:00  ungleich    creationTime: 2021-12-15T09:01:01.403+01:00
+
+
+        System.out.println("+++++++++++++++++++++++++++++++++++++");
+        System.out.println("+++++++++ new values of nsp +++++++++");
+        System.out.println("+++ lcs of nsp (default is PLANNING): "+lcs_new);
+        System.out.println("+++  ");
+
+        System.out.println("+++  ");
+
+        System.out.println("+++  ");
+
+        System.out.println("+++  ");
+
+        System.out.println("+++  ");
+
+        System.out.println("+++  ");
+        System.out.println("+++  ");
+        System.out.println("+++  ");
+
     /*
     A4NetworkServiceProfileA10Nsp(
     uuid=ace216e6-843d-4686-bb84-6823e9614a8d,
