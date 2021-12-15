@@ -66,6 +66,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     String endSz = oltDevice.getEndsz();
     oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
     oltSearchPage.validateUrl();
 
     oltSearchPage.searchNotDiscoveredByParameters(oltDevice);

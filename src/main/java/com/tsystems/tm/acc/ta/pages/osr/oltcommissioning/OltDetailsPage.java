@@ -13,6 +13,7 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+import static org.testng.Assert.assertEquals;
 
 @Slf4j
 public class OltDetailsPage {
@@ -29,6 +30,7 @@ public class OltDetailsPage {
 
   public static final By UPLINK_ADD_BUTTON_LOCATOR = byQaData("button-add-uplink");
 
+  public static final By UPLINK_UEWEG_SELECTION_0 =  byQaData("ueweg_selection_0");
   public static final By UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR = byQaData("button-uplink-create-uplink");
   public static final By UPLINK_DELETE_BUTTON_LOCATOR = byQaData("button-delete-uplink");
   public static final By UPLINK_DELETE_CONFIRM_BUTTON_LOCATOR = byQaData("button-uplink-delete-uplink");
@@ -89,6 +91,8 @@ public class OltDetailsPage {
 
   @Step("Save uplink configuration")
   public OltDetailsPage saveUplinkConfiguration() {
+    String radio_value = $(UPLINK_UEWEG_SELECTION_0).waitUntil(Condition.exist , 1000).getValue();
+    assertEquals(radio_value, "on", "Start uplink configuration radio value not on");
     $(UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
     return new OltDetailsPage();
   }
