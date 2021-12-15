@@ -156,7 +156,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
         String lineIdNspFtthAccess = generatedNspFtthAccess.getLineId();
 
         //check preprovisioning FTTH AccessLine
-        //(fully checked in test: "NewTpFromNemoWithPreprovisioningAndNspCreation")
+        //(fully checked in test: "NewTpFromNemoWithPreprovisioningAndNspCreationTest")
         assertEquals(accessLine.getLineId(), lineIdNspFtthAccess);
 
         //Activation L2BSA Product
