@@ -5,7 +5,7 @@ values:
   fsz: "76ZC"
   bngEndsz: "49/911/84/7ZJC"
   bngDownlinkPort: "ge-4/2/1"
-  bngDownlinkSlot: "1"
+  bngDownlinkSlot: "4"
   lsz: "4Z2"
   orderNumber: "223344"
   vst: "@DefaultVst"

@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -26,10 +27,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
 public class OltCommissioningRobot {
@@ -45,12 +44,13 @@ public class OltCommissioningRobot {
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
   private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
   private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
   private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+
+  private UnleashClient unleashClient = new UnleashClient();
 
   @Step("Starts automatic olt commissioning process")
   public void startAutomaticOltCommissioning(OltDevice olt) {
@@ -95,7 +95,6 @@ public class OltCommissioningRobot {
     oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(olt);
     oltDetailsPage.saveUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
@@ -174,20 +173,6 @@ public class OltCommissioningRobot {
             .map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
     Assert.assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
 
-    // check uplink state
-    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-            .portsEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(uplinkList.size(), 1, "There is no uplink");
-    Uplink uplink = uplinkList.get(0);
-    Assert.assertEquals(uplink.getState(), UplinkState.ACTIVE, "UplinkState is not active");
-
-    // check ANCP Session
-    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-            .accessNodeEquipmentBusinessRefEndSzQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus is not active");
-
-
     List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
             .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
             .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
@@ -225,6 +210,46 @@ public class OltCommissioningRobot {
     Assert.assertEquals(usedLineIdCount, portsCount * expectedUsedLineIdCountPerPort, "UsedLineIdCount mismatch");
   }
 
+
+  @Step("check uplink and ancp-session data from olt-ressource-inventory")
+  public void checkUplink(OltDevice oltDevice) {
+
+    // check uplink state
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE, "UplinkState is not active");
+
+    // check Slot Port configuration
+    Assert.assertEquals(uplinkList.get(0).getPortsEquipmentBusinessRef().size(), 2, "getPortsEquipmentBusinessRef.size missmatch");
+
+    EquipmentBusinessRef equipmentBusinessRef =  uplinkList.get(0).getPortsEquipmentBusinessRef().get(0);
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 0");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 0");
+    }
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 0");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 0");
+    }
+    equipmentBusinessRef =  uplinkList.get(0).getPortsEquipmentBusinessRef().get(1);
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 1");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 1");
+    }
+    if(equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
+      Assert.assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 1");
+      Assert.assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 1");
+    }
+
+    // check ANCP Session
+    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+            .accessNodeEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
+    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
+
+  }
+
   @Step("Restore OSR Database state")
   public void restoreOsrDbState() {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()
@@ -235,12 +260,21 @@ public class OltCommissioningRobot {
   @Step("Clear {oltDevice} device in olt-resource-inventory database")
   public void clearResourceInventoryDataBase(OltDevice oltDevice) {
     String endSz = oltDevice.getEndsz();
-    if (FEATURE_ANCP_MIGRATION_ACTIVE) {
       deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
               .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-    } else {
-      oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-              .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-    }
+  }
+
+  @Step("enable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
+  public void enableFeatureToogleUiUplinkImport()
+  {
+    boolean toggleState = unleashClient.enableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
+  }
+
+  @Step("disable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
+  public void disableFeatureToogleUiUplinkImport()
+  {
+    boolean toggleState = unleashClient.disableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
   }
 }

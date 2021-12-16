@@ -40,10 +40,10 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends GigabitTest {
 
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
 
   private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -55,6 +55,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
   @BeforeClass
   public void init() {
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -72,6 +73,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
             .addPonInventoryMock(oltDevice)
             .addAccessLineInventoryMock()
+            .addRebellUewegeMock(oltDevice)
             .build();
 
     mappingsContext2.publish()                                              //inject in WM
@@ -106,6 +108,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z8_SDX_6320);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
 
     oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
     oltSearchPage.pressManualCommissionigButton();
@@ -113,17 +116,15 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     oltDiscoveryPage.makeOltDiscovery();
     oltDiscoveryPage.saveDiscoveryResults();
     oltDiscoveryPage.openOltSearchPage();
-
     Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
+
     OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
     oltDetailsPage.openPortView(oltDevice.getOltSlot());
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(oltDevice);
     oltDetailsPage.saveUplinkConfiguration();
-    oltDetailsPage.modifyUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
     oltDetailsPage.updateAncpSessionStatus();
@@ -133,7 +134,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     checkPortState(oltDevice, oltDetailsPage);
 
     checkDeviceSDX3620(oltDevice.getEndsz());
-    checkUplink(oltDevice.getEndsz());
+    oltCommissioningRobot.checkUplink(oltDevice);
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioningGFNW", description = "Manual decommissioning for SDX 6320-16 device as GFNW user")
@@ -212,21 +213,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
     Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_SDX6320_16, "UI EMS NBI name missmatch");
     Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (dynamic Mock)");
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device/ port lifecycle state missmatch");
-  }
-
-  /**
-   * check uplink and ancp-session data from olt-ressource-inventory
-   */
-  private void checkUplink(String endSz) {
-    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
-    Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
-
-    List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-            .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-    Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
   }
 
   /**

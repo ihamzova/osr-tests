@@ -39,7 +39,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS })
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS })
 public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -51,6 +51,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
     @BeforeClass
     public void init() {
+        oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
         deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
         OsrTestContext context = OsrTestContext.get();
@@ -67,6 +68,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
         mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
                 .addPonInventoryMock(oltDevice)
+                .addRebellUewegeMock(oltDevice)
                 .build();
 
         mappingsContext2.publish()                                              //inject in WM
@@ -88,6 +90,8 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         mappingsContext2
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
+
+        oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for Adtran SDX 6320-16 with DTAG user on team environment")
@@ -116,9 +120,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDetailsPage.startUplinkConfiguration();
-        oltDetailsPage.inputUplinkParameters(oltDevice);
         oltDetailsPage.saveUplinkConfiguration();
-        oltDetailsPage.modifyUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
         oltDetailsPage.updateAncpSessionStatus();
@@ -128,7 +130,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         checkPortState(oltDevice, oltDetailsPage);
 
         checkDeviceSDX3620(endSz);
-        checkUplink(endSz);
+        oltCommissioningRobot.checkUplink(oltDevice);
 
         //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
         oltDetailsPage.deconfigureAncpSession();
@@ -182,22 +184,6 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz, "UI EndSz missmatch");
         Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_SDX6320_16, "UI EMS NBI name missmatch");
         Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (dynamic Mock)");
-    }
-
-    /**
-     * check uplink and ancp-session data from olt-ressource-inventory
-     */
-    private void checkUplink(String endSz) {
-
-        List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
-        Assert.assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE);
-
-        List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-                .accessNodeEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-        Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus() , "ACTIVE", "ANCP ConfigurationStatus missmatch");
     }
 
     /**
