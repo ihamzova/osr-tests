@@ -17,7 +17,6 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
@@ -34,8 +33,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class A4ResourceOrderRobot {
@@ -92,93 +90,82 @@ public class A4ResourceOrderRobot {
 
     public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
 
-         /*     values of nsp at start
-    uuid: f0a7f68c-5237-41f3-9420-dec827bab332
-    lifecycleState: PLANNING
-    operationalState: NOT_WORKING
-    description: NSP A10NSP created during osr-test integration test
-    administrativeMode: ACTIVATED
-    virtualServiceProvider: a Virtual Service Provider
-    specificationVersion: 1
-    carrierBsaReference: CarrierBsaReference
-    mtuSize: 1590
-    etherType: 0x88a8
-    itAccountingKey: undefined
-    lacpActive: true
-    lacpMode: undefined
-    minActiveLagLinks: 1
-    sVlanRange: [class VlanRangeDto {
-        vlanRangeLower: undefined
-        vlanRangeUpper: undefined
-    }]
-    dataRate: undefined
-    qosClasses: [class A10NspQosDto {
-        qosPriority: undefined
-        qosBandwidthUp: undefined
-        qosBandwidthDown: undefined
-    }]
-    qosMode: TOLERANT
-    lastUpdateTime: 2021-12-15T09:01:01.403+01:00
-    creationTime: 2021-12-15T09:01:01.403+01:00
-    terminationPointA10NspUuid: 12256701-548b-40aa-8b83-7175c1eb8887
-    numberOfAssociatedNsps: undefined
-    networkElementLinkUuid: null
-    href: /resource-order-resource-inventory/v1/a4TerminationPoints/12256701-548b-40aa-8b83-7175c1eb8887
-     */
-
         String lcs_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState();
         assertEquals(lcs_new, "PLANNING");
-        // lastUpdateTime: 2021-12-15T09:01:01.403+01:00  ungleich    creationTime: 2021-12-15T09:01:01.403+01:00
+        String ops_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getOperationalState();
+        assertEquals(ops_new, "NOT_WORKING");
+        String adm_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getAdministrativeMode();
+        assertEquals(adm_new, "ENABLED");
+        String crt_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getCreationTime().toString();
+        String lut_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLastUpdateTime().toString();
+        assertNotEquals(crt_new, lut_new);
+        String mtu_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getMtuSize();
+        assertEquals(mtu_new, "1590");
+        String eth_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getEtherType();
+        assertEquals(eth_new, "0x88a8");
+        String vsp_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getVirtualServiceProvider();
+        assertEquals(vsp_new, "DTAG");
+        String spv_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getSpecificationVersion();
+        assertEquals(spv_new, "7");
+        String nan_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getNumberOfAssociatedNsps();
+        assertEquals(nan_new, null);
+        String nel_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getNetworkElementLinkUuid();
+        assertEquals(nel_new, null);
+        Boolean laa_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLacpActive();
+        assertTrue(laa_new);
+        String lam_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLacpMode();
+        assertEquals(lam_new, "undefined");
+        String lmi_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getMinActiveLagLinks();
+        assertEquals(lmi_new, "1");
+        String cbr_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getCarrierBsaReference();
+        assertEquals(cbr_new, "undefined");
+        String iak_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getItAccountingKey();
+        assertEquals(iak_new, "undefined");
+        String dar_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getDataRate();
+        assertEquals(dar_new, "undefined");
 
+        String qom_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getQosMode();
+        assertEquals(qom_new, "TOLERANT");
+        String qod_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getQosClasses().get(0).getQosBandwidthDown();
+        assertEquals(qod_new, "undefined");
+        String qou_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getQosClasses().get(0).getQosBandwidthUp();
+        assertEquals(qou_new, "undefined");
+        String qop_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getQosClasses().get(0).getQosPriority();
+        assertEquals(qop_new, "undefined");
 
-        System.out.println("+++++++++++++++++++++++++++++++++++++");
-        System.out.println("+++++++++ new values of nsp +++++++++");
-        System.out.println("+++ lcs of nsp (default is PLANNING): "+lcs_new);
-        System.out.println("+++  ");
+        String vlu_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getsVlanRange().get(0).getVlanRangeUpper();
+        assertEquals(vlu_new, "undefined");
+        String vll_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getsVlanRange().get(0).getVlanRangeLower();
+        assertEquals(vll_new, "undefined");
 
-        System.out.println("+++  ");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("+++++++++ values of nsp after RO -delete- +++++++++++++++");
+        System.out.println("+++ LifecycleState (default is PLANNING):        "+lcs_new);
+        System.out.println("+++ OperationalState (default is NOT_WORKING):   "+ops_new);
+        System.out.println("+++ AdministrativeMode (default is ENABLED):     "+adm_new);
+        System.out.println("+++ specificationVersion (default is 7):         "+spv_new);
+        System.out.println("+++ VirtualServiceProvider (default is DTAG):    "+vsp_new);
+        System.out.println("+++ NumberOfAssociatedNsps (default is null):    "+nan_new);
+        System.out.println("+++ NetworkElementLinkUuid (default is null):    "+nel_new);
+        System.out.println("+++ LacpActive (default is true):                "+laa_new);
+        System.out.println("+++ LacpMode (default is undefined):             "+lam_new);
+        System.out.println("+++ MinActiveLagLinks (default is 1):            "+lmi_new);
+        System.out.println("+++ CarrierBsaReference (default is undefined):  "+cbr_new);
+        System.out.println("+++ ItAccountingKey (default is undefined):      "+iak_new);
+        System.out.println("+++ DataRate (default is undefined):             "+dar_new);
 
-        System.out.println("+++  ");
+        System.out.println("+++ creation time of nsp:                        "+crt_new);
+        System.out.println("+++ update time of nsp (should be different!):   "+lut_new);
 
-        System.out.println("+++  ");
+        System.out.println("+++ Qos mode (default is TOLERANT):              "+qom_new);
+        System.out.println("+++ QosBandwidthDown (default is undefined):     "+qod_new);
+        System.out.println("+++ QosBandwidthUp (default is undefined):       "+qou_new);
+        System.out.println("+++ QosPriority  (default is undefined):         "+qop_new);
 
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-        System.out.println("+++  ");
-        System.out.println("+++  ");
-
-    /*
-    A4NetworkServiceProfileA10Nsp(
-    uuid=ace216e6-843d-4686-bb84-6823e9614a8d,
-    operationalState=NOT_WORKING,
-    lifecycleState=PLANNING,
-    numberOfAssociatedNsps=null)
-
-
-
-
-    +++++++ roi
-    "uuid": "8637025e-188e-4563-981b-8022f9b0a073",
-    "creationTime": "2021-12-14T12:37:52.149+01:00",
-    "description": "NEL for integration test",
-    "lastUpdateTime": "2021-12-14T12:37:58.89+01:00",
-    "specificationVersion": null,
-    "lsz": "4N4",
-    "lbz": "4N4/1004-49/3926/0/7KCA-49/3752/0/7KH0",
-    "orderNumber": "1004",
-    "lifecycleState": "DEACTIVATED",
-    "operationalState": "NOT_WORKING",
-    "ueWegId": "430247, 658839",
-    "pluralId": "2",
-    "networkElementPortAUuid": "fe6a2122-885f-4905-ab79-0fba9aa908f0",
-    "networkElementPortBUuid": "09973704-a935-4c32-9217-312a5fab2852",
-    "endszA": "49/3926/0/7KCA",
-    "endszB": "49/3752/0/7KH0"
-    */
-
-
-
+        System.out.println("+++ VlanRangeLower (default is undefined):       "+vll_new);
+        System.out.println("+++ VlanRangeUpper (default is undefined):       "+vlu_new);
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 }
 
