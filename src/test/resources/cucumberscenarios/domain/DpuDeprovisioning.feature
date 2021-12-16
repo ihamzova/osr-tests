@@ -1,5 +1,15 @@
 Feature: OSR Domain test of DPU Commissioning in A4 platform - Delete FTTH Access line with Deprovisioning
 
+  Scenario: (DOMAIN) NEMO sends a TP to create and Preprovisioning is executed
+    Given a NEP is existing in A4 resource inventory
+    When NEMO sends a create TP request with type "PON_TP" to A4 resource inventory service
+    Then the request is responded with HTTP code 202
+    And a NSP FTTH was created in A4 resource inventory
+    And a put NSP FTTH update notification was sent to NEMO
+    And some U-Piter access line stuff happened
+
+
+
   @domain @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
   Scenario: (DOMAIN) NEMO deletes TP with NSP attached, including deprovisioning on U-Piter side
     Given a TP with type "PON_TP" is existing in A4 resource inventory

@@ -25,7 +25,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
-
 @ServiceLog({
         WG_A4_PROVISIONING_MS,
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
@@ -35,7 +34,6 @@ import static org.testng.Assert.assertEquals;
         A4_RESOURCE_INVENTORY_SERVICE_MS,
         A4_NEMO_UPDATER_MS,
         ACCESS_LINE_MANAGEMENT})
-
 public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -48,9 +46,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpFtthData;
-    private PortProvisioning port;
-
     private NetworkServiceProfileFtthAccessDto nspFtth;
+    private PortProvisioning port;
 
     @BeforeClass
     public void init() {
@@ -68,12 +65,11 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         // Ensure that no old test data is in the way
         cleanup();
 
-        // Call test data setup method here. We cannot use @BeforeMethod because the teo test cases here are dependent
-        // on each other; we cannot cleanup and setup new data in between test cases.
+        // Call test data setup method here. We cannot use @BeforeMethod because the two test cases here are dependent
+        // on each other; we cannot cleanup and setup new data in between these tests.
         setup();
     }
 
-//    @BeforeClass
     public void setup() {
         a4Inventory.createNetworkElementGroup(negData);
         a4Inventory.createNetworkElement(neData, negData);
@@ -96,14 +92,14 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         sleepForSeconds(5);
 
         // THEN
+        // Berlinium checks
+        nspFtth = a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
+        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
+
         // U-Piter checks
         accessLineRi.checkHomeIdsCount(port);
         accessLineRi.checkLineIdsCount(port);
         accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
-
-        // Berlinium checks
-        nspFtth = a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
     }
 
     @Test(dependsOnMethods = "newTpWithFtthAccessPreprovisioning",
