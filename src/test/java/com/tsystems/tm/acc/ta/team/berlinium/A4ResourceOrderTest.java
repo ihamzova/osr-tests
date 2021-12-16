@@ -143,13 +143,10 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
-        a4ResourceInventory.createNetworkElementPort(nepData4, neData2); // neu
+        a4ResourceInventory.createNetworkElementPort(nepData4, neData2);
         // all nel's need same ne1 (type a10-switch) ! important for lbz in ro-items
         a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
-        //nelData2.setLifecycleState("INSTALLING"); // welcher Test braucht das? --> keiner, alle Tests ok
-        //a4ResourceInventory.createNetworkElementLink(nelData2, nepData4, nepData3, neData2, neData3, uewegData2); // geändert v1
-        //a4ResourceInventory.createNetworkElementLink(nelData2, nepData3, nepData4, neData3, neData2, uewegData2); // geändert v2
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2); // orig
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         System.out.println("+++ nel1: "+a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
         System.out.println("+++ nel2: "+a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
@@ -165,10 +162,9 @@ public class A4ResourceOrderTest {
         System.out.println("+++ TP3: "+tpData3);
         System.out.println("+++ TP4: "+tpData4);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-        //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // orig
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // geändert
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3); // neu
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4); // neu
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4);
         System.out.println("+++ NSP1 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
         System.out.println("+++ NSP2 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
         System.out.println("+++ NSP3 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
@@ -196,7 +192,6 @@ public class A4ResourceOrderTest {
                 .eventsHook(attachEventsToAllureReport());
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
-        // a4ResourceOrder.deleteA4TestDataRecursively(ro);
         a4ResourceOrder.cleanCallbacksInWiremock();
         // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
         // body: {
@@ -373,8 +368,6 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
-
-
     }
 
     @Test
@@ -415,18 +408,10 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        assertEquals(a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()).getLifecycleState(), "PLANNING");
+        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
 
-        // NSP+NEL to Nemo
-        System.out.println("+++ Aufruf NemoUpdater, check update one nel");
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
-        //a4NemoUpdater.checkOneNetworkElementLinkPutRequestToNemoWiremock(nepData1.getUuid());  // logicalResourceRequest:
-                                            // Einzellauf: Expected exactly 1 requests matching the following pattern but received 0
-                                            // war bis 13.12. im Einzel-Lauf ok (beim 2. Versuch am 14.12. auch ok)
-                                            // im Gesamt-Testlauf kommt hier ... received 4
-                                            // Gesamtlauf 14.12. 10:40: logicRes nel get 0 schlägt fehl: ...received 0,
-        System.out.println("+++ Aufruf NemoUpdater, check update nsp");
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -442,26 +427,18 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemDelete(SECOND_ORDER_ITEM_ID, nelData2, ro);
 
-        // old values of nsp
-        //System.out.println("+++ original nsp: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
-
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1); // lcs is PLANNING and more
+        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()).getLifecycleState(), "DEACTIVATED");
 
-        // NSP+NEL an Nemo
-        System.out.println("+++ Aufruf NemoUpdater, check update two nel");
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
-                                            // Einzellauf ok
-                                            // Gesamtlauf: checkLogicalResourceRequestToNemo: Expected exactly 1 requests matching the following pattern but received 2
-                                            // 14.12. 10:40 im Gesamtlauf ok
-        System.out.println("+++ Aufruf NemoUpdater, check update nsp");
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(),2);
+
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
@@ -532,29 +509,6 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkResourceOrderIsRejected();
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
-
-    // functions comes later:
-    /*
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("modify-case: NSP of a10nsp remains OPERATING")
-    public void testModifyLink() {
-        //
-
-    }
-
-    */
-
-
-    /*
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
-    public void testAdd2LinksOneIsUnknown()  {
-
-
-    }
-     */
 
 
     @Test
