@@ -17,7 +17,6 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -48,6 +47,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     private A4TerminationPoint tpFtthData;
     private NetworkServiceProfileFtthAccessDto nspFtth;
     private PortProvisioning port;
+    private PortProvisioning portForDeprovisioning;
 
     @BeforeClass
     public void init() {
@@ -61,6 +61,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         port = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4Port);
+        portForDeprovisioning= osrTestContext.getData().getPortProvisioningDataProvider()
+                .get(PortProvisioningCase.a4PortForDeprovisioning);
 
         // Ensure that no old test data is in the way
         cleanup();
@@ -76,7 +78,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4Inventory.createNetworkElementPort(nepData, neData);
     }
 
-    @AfterClass
+    //@AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
         a4Inventory.deleteA4TestDataRecursively(negData);
@@ -109,7 +111,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     @Description("NEMO deletes a Termination Point with Deprovisioning and network service profile (FTTH Access) is deleted")
     public void deleteTpWithDeprovisioning() {
         // GIVEN
-        assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 1, "There are > 1 AccessLines on the port");
+        assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 1, "There are > 1 AccessLines on the port");
 
         // WHEN
         a4Nemo.deleteLogicalResource(tpFtthData.getUuid());
@@ -122,10 +124,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspFtth.getUuid(), "DELETE", 1);
 
         // U-Piter checks
-        accessLineRi.checkPhysicalResourceRefCountA4(port, 0);
-        assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 0, "There are AccessLines left on the port");
-//        accessLineRi.checkHomeIdsCount(port);
-//        accessLineRi.checkLineIdsCount(port);
+        accessLineRi.checkPhysicalResourceRefCountA4(portForDeprovisioning, 0);
+        assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
+          accessLineRi.checkHomeIdsCount(portForDeprovisioning);
+          accessLineRi.checkLineIdsCount(portForDeprovisioning);
     }
 
 }
