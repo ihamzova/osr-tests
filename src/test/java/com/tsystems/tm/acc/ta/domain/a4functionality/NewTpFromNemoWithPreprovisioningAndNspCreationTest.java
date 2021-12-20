@@ -45,6 +45,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpFtthData;
+//    private A4TerminationPoint tpFtthData2;
     private NetworkServiceProfileFtthAccessDto nspFtth;
     private PortProvisioning port;
     private PortProvisioning portForDeprovisioning;
@@ -59,9 +60,11 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+//        tpFtthData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
+//                .get(A4TerminationPointCase.secondTerminationPointFtthAccess);
         port = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4Port);
-        portForDeprovisioning= osrTestContext.getData().getPortProvisioningDataProvider()
+        portForDeprovisioning = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4PortForDeprovisioning);
 
         // Ensure that no old test data is in the way
@@ -99,6 +102,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
 
         // U-Piter checks
+        assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 1, "There are > 1 AccessLines on the port");
         accessLineRi.checkHomeIdsCount(port);
         accessLineRi.checkLineIdsCount(port);
         accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
@@ -126,8 +130,42 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         // U-Piter checks
         accessLineRi.checkPhysicalResourceRefCountA4(portForDeprovisioning, 0);
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
-          accessLineRi.checkHomeIdsCount(portForDeprovisioning);
-          accessLineRi.checkLineIdsCount(portForDeprovisioning);
+        accessLineRi.checkHomeIdsCount(portForDeprovisioning);
+        accessLineRi.checkLineIdsCount(portForDeprovisioning);
     }
+
+    // Deactivated for now because some U-Piter checks seem to happen dozens of times, under investigation
+//    @Test(description = "DIGIHUB-XXXXXX NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
+//    @Owner("bela.kovac@t-systems.com")
+//    @TmsLink("DIGIHUB-XXXXXX")
+//    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
+//    public void newTpWithFtthAccessPreprovisioningMultipleAccessLines() {
+//        // WHEN
+//        a4Nemo.createTerminationPoint(tpFtthData, nepData);
+//        sleepForSeconds(5);
+//        a4Nemo.createTerminationPoint(tpFtthData2, nepData); // resulting in another preProv call to U-Piter, resulting in creating another AL?
+//        sleepForSeconds(5);
+//
+//        a4Nemo.deleteLogicalResource(tpFtthData.getUuid());
+//        sleepForSeconds(5);
+//
+//        // THEN
+//        // Berlinium checks
+//        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 0);
+//        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
+//
+//        a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData2.getUuid(), 1);
+//        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData2.getUuid());
+//
+//        // U-Piter checks
+//        port.setLineIdPool(2);
+//        accessLineRi.checkHomeIdsCount(port);
+//        accessLineRi.checkLineIdsCount(port);
+//
+//        accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
+//        accessLineRi.checkA4LineParameters(port, tpFtthData2.getUuid());
+//
+//        assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 2, "There are > 1 AccessLines on the port");
+//    }
 
 }
