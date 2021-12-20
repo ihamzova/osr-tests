@@ -10,10 +10,7 @@ import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4WiremockRebellRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
@@ -52,6 +49,7 @@ public class A4ResourceOrderTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceOrderRobot a4ResourceOrder = new A4ResourceOrderRobot();
     private final A4WiremockRebellRobot a4WiremockRebellRobot = new A4WiremockRebellRobot();
+    private final A4WiremockA10nspA4Robot a4WiremockA10nspA4Robot = new A4WiremockA10nspA4Robot();
 
     private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
     private final Map<String, A4NetworkElement> a4NetworkElementLinks = new HashMap<>();
@@ -376,6 +374,10 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
 
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+
+        String rv_nr = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(0).getValue().toString();
+        String c_bsa_ref = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(1).getValue().toString();
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref, rv_nr ,"POST",1);
     }
 
     @Test
@@ -434,6 +436,10 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
 
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 0);
+
+        String rv_nr = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(0).getValue().toString();
+        String c_bsa_ref = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(1).getValue().toString();
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref,rv_nr ,"POST",0);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
