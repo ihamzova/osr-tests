@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions;
+package cucumber.stepdefinitions.global;
 
 import cucumber.BaseSteps;
 import cucumber.Context;
