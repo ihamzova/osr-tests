@@ -221,7 +221,7 @@ public class AccessLineSearchPage {
 
   @Step("Check table headers")
   public void checkTableHeaders(List<String> tableHeaders) {
-    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "ONU ID", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "A4 Config", "Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber", "NSP", "L2BSA");
+    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "ONU ID", "Line ID", "Home ID", "Access Platform", "ONT S/N", "SEAL Config", "RDQ Config", "A4 Config", "Status", "Business Status", "Default", "Subscriber", "FTTB", "Default", "Subscriber", "NSP", "L2BSA");
     assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
             supposedHeaders.toArray());
   }
