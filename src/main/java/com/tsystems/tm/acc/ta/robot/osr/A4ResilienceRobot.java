@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsystems.tm.acc.ta.robot.utils.Authenticator;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
@@ -154,17 +155,24 @@ public class A4ResilienceRobot {
     }
 
     @Step("checkMessagesInQueue")
-    public void checkMessagesInQueue(String queue, int expected) throws IOException {
+    public void checkMessagesInQueue(String queue, int expected) {
         assertEquals(countMessagesInQueue(queue), expected, "in " + queue);
     }
 
     @Step("countMessagesInQueue")
-    public int countMessagesInQueue(String queue) throws IOException {
+    public int countMessagesInQueue(String queue) {
         String url = getQueueUrl(queue) + "countMessages()";
         String responseAsString = sendRequestToQueueAndGetResponse(url);
 
-        CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
-        return Integer.parseInt(cm.getValue());
+        try {
+            CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
+            return Integer.parseInt(cm.getValue());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        return 0; // never reached
     }
 
     @Step("removeAllMessagesInQueue")

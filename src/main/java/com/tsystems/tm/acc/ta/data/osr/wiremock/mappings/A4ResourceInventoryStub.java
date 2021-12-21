@@ -9,30 +9,33 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.JSON;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.RORI_V1_PATH;
 
 public class A4ResourceInventoryStub extends AbstractStubMapping {
 
-  public static final String A4_NSP_URL_WITH_PARAMETERS = "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/*";
-  public static final String A4_NSP_URL = "/resource-order-resource-inventory/v1/a4NetworkServiceProfilesFtthAccess/.*";
-  public static final String A4_NETWORK_ELEMENT_PORT_URL = "/resource-order-resource-inventory/v1/a4NetworkElementPorts/.*";
-  public static final String A4_NETWORK_ELEMENTS_URL = "/resource-order-resource-inventory/v1/a4NetworkElements/*";
+  public static final String A4_NSP_URL_WITH_PARAMETERS = RORI_V1_PATH + "a4NetworkServiceProfilesFtthAccess/*";
+  public static final String A4_NSP_URL = RORI_V1_PATH + "a4NetworkServiceProfilesFtthAccess/.*";
+  public static final String A4_NETWORK_ELEMENT_PORT_URL = RORI_V1_PATH + "a4NetworkElementPorts/.*";
+  public static final String A4_NETWORK_ELEMENTS_URL = RORI_V1_PATH + "a4NetworkElements/*";
+  public static final String A4_TERMINATION_POINTS_URL = RORI_V1_PATH + "a4TerminationPoints/.*";
+  final StringValuePattern vpsz = new RegexPattern("[0-9]{1,6}\\\\/[0-9]{1,6}\\\\/[0-9]{1,6}");
 
   public MappingBuilder getTPWith500() {
-    return get(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+    return get(urlPathMatching(A4_TERMINATION_POINTS_URL))
             .withName("getTP500")
             .willReturn(aDefaultResponseWithBody("", HTTP_CODE_INTERNAL_SERVER_ERROR_500))
             .atPriority(1);
   }
 
   public MappingBuilder putTPWith201() {
-    return put(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+    return put(urlPathMatching(A4_TERMINATION_POINTS_URL))
             .withName("putTP201")
             .willReturn(aDefaultResponseWithBody("{{{request.body}}}", HTTP_CODE_CREATED_201))
             .atPriority(1);
   }
 
   public MappingBuilder deleteTPWith500(int httpcode) {
-    return delete(urlPathMatching("/resource-order-resource-inventory/v1/a4TerminationPoints/.*"))
+    return delete(urlPathMatching(A4_TERMINATION_POINTS_URL))
             .withName("deleteTP" + httpcode)
             .willReturn(aDefaultResponseWithBody("{{{request.body}}}", httpcode))
             .atPriority(1);
@@ -79,8 +82,6 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .willReturn(aDefaultResponseWithBody("[]", HTTP_CODE_OK_200))
             .atPriority(0);
   }
-
-  StringValuePattern vpsz = new RegexPattern("[0-9]{1,6}\\\\/[0-9]{1,6}\\\\/[0-9]{1,6}");
 
   public static String serialize(Object obj) {
     JSON json = new JSON();

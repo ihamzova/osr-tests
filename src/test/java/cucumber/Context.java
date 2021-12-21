@@ -14,6 +14,9 @@ public enum Context {
     A4_NEP,
     A4_NEL,
     A4_TP,
-    A4_NSP_FTTH
+    A4_NSP_FTTH,
+
+    // U-Piter
+    TP_REF
 
 }

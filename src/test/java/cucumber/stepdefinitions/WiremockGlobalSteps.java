@@ -3,18 +3,17 @@ package cucumber.stepdefinitions;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.java.en.Given;
 
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 
-public class WiremockBaseSteps extends BaseSteps {
+public class WiremockGlobalSteps extends BaseSteps {
 
-    public WiremockBaseSteps(TestContext testContext) {
+    public WiremockGlobalSteps(TestContext testContext) {
         super(testContext);
     }
 
@@ -41,12 +40,6 @@ public class WiremockBaseSteps extends BaseSteps {
 
         // Hopefully next line will reliably remove old requests from our _local_ wiremock (not global one)
         wiremock.getWireMock().resetRequests();
-    }
-
-    @Given("clean wiremock")
-    public void cleanWiremock() {
-        cleanup();
-        init();
     }
 
 }
