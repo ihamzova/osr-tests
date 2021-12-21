@@ -37,8 +37,8 @@ public class A4ResourceOrderTest {
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
-    private final String wiremockScenarioName = "A4ResourceOrderTest";
-    private final int sleepTimer = 10;
+    private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
+    private final int SLEEP_TIMER = 5;
 
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -73,7 +73,7 @@ public class A4ResourceOrderTest {
     private ResourceOrder ro;
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
-    private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName)).build();
+    private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME)).build();
 
     @BeforeClass
     public void init() {
@@ -149,7 +149,7 @@ public class A4ResourceOrderTest {
 
         ro = a4ResourceOrder.buildResourceOrder();
 
-        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME))
                 .addMerlinMock()
                 .addRebellMock(neData1, uewegData1, neData2, uewegData2, neData3)
                 .build();
@@ -207,7 +207,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -224,7 +224,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -241,7 +241,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -258,7 +258,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -275,7 +275,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -291,7 +291,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid());
@@ -299,7 +299,7 @@ public class A4ResourceOrderTest {
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
 
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
@@ -316,7 +316,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
@@ -328,7 +328,7 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
-        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -341,17 +341,17 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
-        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData1.getUuid(), "DEACTIVATED");
+        a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
 
-        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
+        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1);
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 0);
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 0);
@@ -368,16 +368,15 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
-        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData1.getUuid(), "DEACTIVATED");
-        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData2.getUuid(), "DEACTIVATED");
+        a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
+        a4ResourceInventory.checkLifecycleState(nelData2, "DEACTIVATED");
 
-        a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
+        a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1, 2);
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -395,7 +394,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -425,7 +424,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
@@ -441,7 +440,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -460,7 +459,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -479,7 +478,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        //sleepForSeconds(5);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -507,7 +506,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
@@ -530,7 +529,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);

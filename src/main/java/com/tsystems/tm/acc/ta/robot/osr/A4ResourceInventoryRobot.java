@@ -196,15 +196,6 @@ public class A4ResourceInventoryRobot {
         );
     }
 
-    @Step("Get Network Service Profiles (A10NSP) by UUID")
-    public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspByUuid(String uuid) {
-        return a4ResourceInventory
-                .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfileA10Nsp()
-                .uuidPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
@@ -338,18 +329,6 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Check that Network Element does not exist")
-    public void checkNetworkElementDoesNotExist(String vpsz, String fsz) {
-        List<NetworkElementDto> neList = a4ResourceInventory
-                .networkElements()
-                .listNetworkElements()
-                .vpszQuery(vpsz)
-                .fszQuery(fsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        assertEquals(neList.size(), 0);
-    }
-
     @Step("Get existing Network Element Port by UUID")
     public NetworkElementPortDto getExistingNetworkElementPort(String uuid) {
         return a4ResourceInventory
@@ -395,42 +374,42 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void checkLifecycleStateOfNetworkElementLink(String uuid, String lcs) {
-        assertEquals(getExistingNetworkElementLink(uuid).getLifecycleState(), lcs);
+    public void checkLifecycleState(A4NetworkElementLink nelData, String lcs) {
+        assertEquals(getExistingNetworkElementLink(nelData.getUuid()).getLifecycleState(), lcs);
     }
 
-    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
+    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nspA10Nsp) {
         final String UNDEFINED = "undefined";
-        final NetworkServiceProfileA10NspDto nspA10 = getExistingNetworkServiceProfileA10Nsp(nsp.getUuid());
+        final NetworkServiceProfileA10NspDto nsp = getExistingNetworkServiceProfileA10Nsp(nspA10Nsp.getUuid());
 
-        assertEquals(nspA10.getLifecycleState(), "PLANNING");
-        assertEquals(nspA10.getOperationalState(), "NOT_WORKING");
-        assertEquals(nspA10.getAdministrativeMode(), "ENABLED");
+        assertEquals(nsp.getLifecycleState(), "PLANNING");
+        assertEquals(nsp.getOperationalState(), "NOT_WORKING");
+        assertEquals(nsp.getAdministrativeMode(), "ENABLED");
 
-        String crtNew = Objects.requireNonNull(nspA10.getCreationTime()).toString();
-        String lutNew = Objects.requireNonNull(nspA10.getLastUpdateTime()).toString();
+        String crtNew = Objects.requireNonNull(nsp.getCreationTime()).toString();
+        String lutNew = Objects.requireNonNull(nsp.getLastUpdateTime()).toString();
         assertNotEquals(crtNew, lutNew);
 
-        assertEquals(nspA10.getMtuSize(), "1590");
-        assertEquals(nspA10.getEtherType(), "0x88a8");
-        assertEquals(nspA10.getVirtualServiceProvider(), "DTAG");
-        assertEquals(nspA10.getSpecificationVersion(), "7");
-        assertNull(nspA10.getNumberOfAssociatedNsps());
-        assertNull(nspA10.getNetworkElementLinkUuid());
-        assertTrue(Objects.requireNonNull(nspA10.getLacpActive()));
-        assertEquals(nspA10.getLacpMode(), UNDEFINED);
-        assertEquals(nspA10.getMinActiveLagLinks(), "1");
-        assertEquals(nspA10.getCarrierBsaReference(), UNDEFINED);
-        assertEquals(nspA10.getItAccountingKey(), UNDEFINED);
-        assertEquals(nspA10.getDataRate(), UNDEFINED);
-        assertEquals(nspA10.getQosMode(), "TOLERANT");
+        assertEquals(nsp.getMtuSize(), "1590");
+        assertEquals(nsp.getEtherType(), "0x88a8");
+        assertEquals(nsp.getVirtualServiceProvider(), "DTAG");
+        assertEquals(nsp.getSpecificationVersion(), "7");
+        assertNull(nsp.getNumberOfAssociatedNsps());
+        assertNull(nsp.getNetworkElementLinkUuid());
+        assertTrue(Objects.requireNonNull(nsp.getLacpActive()));
+        assertEquals(nsp.getLacpMode(), UNDEFINED);
+        assertEquals(nsp.getMinActiveLagLinks(), "1");
+        assertEquals(nsp.getCarrierBsaReference(), UNDEFINED);
+        assertEquals(nsp.getItAccountingKey(), UNDEFINED);
+        assertEquals(nsp.getDataRate(), UNDEFINED);
+        assertEquals(nsp.getQosMode(), "TOLERANT");
 
-        A10NspQosDto qosClass = Objects.requireNonNull(nspA10.getQosClasses()).get(0);
+        A10NspQosDto qosClass = Objects.requireNonNull(nsp.getQosClasses()).get(0);
         assertEquals(qosClass.getQosBandwidthDown(), UNDEFINED);
         assertEquals(qosClass.getQosBandwidthUp(), UNDEFINED);
         assertEquals(qosClass.getQosPriority(), UNDEFINED);
 
-        VlanRangeDto vlanRange = Objects.requireNonNull(nspA10.getsVlanRange()).get(0);
+        VlanRangeDto vlanRange = Objects.requireNonNull(nsp.getsVlanRange()).get(0);
         assertEquals(vlanRange.getVlanRangeUpper(), UNDEFINED);
         assertEquals(vlanRange.getVlanRangeLower(), UNDEFINED);
     }

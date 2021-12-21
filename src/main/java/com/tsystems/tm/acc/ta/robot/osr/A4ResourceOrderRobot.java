@@ -244,12 +244,12 @@ public class A4ResourceOrderRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void getResourceOrderFromDbAndCheckIfCompleted(String id) {
-        ResourceOrderDto ro = getResourceOrderFromDb(id);
+    public void getResourceOrderFromDbAndCheckIfCompleted(ResourceOrder ro) {
+        ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
 
-        assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
-        if (ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
-            assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
+        assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
+        if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
+            assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
 
