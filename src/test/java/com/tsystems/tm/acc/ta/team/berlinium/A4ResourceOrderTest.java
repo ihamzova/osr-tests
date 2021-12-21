@@ -44,8 +44,10 @@ public class A4ResourceOrderTest {
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceOrderRobot a4ResourceOrder = new A4ResourceOrderRobot();
-    private final A4WiremockRebellRobot a4WiremockRebellRobot = new A4WiremockRebellRobot();
-    private final A4WiremockA10nspA4Robot a4WiremockA10nspA4Robot = new A4WiremockA10nspA4Robot();
+
+    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
+    private final Map<String, A4NetworkElement> a4NetworkElementLinks = new HashMap<>();
+    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
 
     private A4NetworkElementGroup negData;
@@ -134,22 +136,33 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
         a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
         a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
-        a4ResourceInventory.createNetworkElementPort(nepData4, neData2); // neu
+        a4ResourceInventory.createNetworkElementPort(nepData4, neData2);
         // all nel's need same ne1 (type a10-switch) ! important for lbz in ro-items
         a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
-        //nelData2.setLifecycleState("INSTALLING"); // welcher Test braucht das? --> keiner, alle Tests ok
-        //a4ResourceInventory.createNetworkElementLink(nelData2, nepData4, nepData3, neData2, neData3, uewegData2); // geändert v1
-        //a4ResourceInventory.createNetworkElementLink(nelData2, nepData3, nepData4, neData3, neData2, uewegData2); // geändert v2
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2); // orig
+        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
+        System.out.println("+++ nel1: "+a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
+        System.out.println("+++ nel2: "+a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createTerminationPoint(tpData3, nepData3);
         a4ResourceInventory.createTerminationPoint(tpData4, nepData4);
+        System.out.println("+++ NSP1: "+nspA10Data1);
+        System.out.println("+++ NSP2: "+nspA10Data2);
+        System.out.println("+++ NSP3: "+nspA10Data3);
+        System.out.println("+++ NSP4: "+nspA10Data4);
+        System.out.println("+++ TP1: "+tpData1);
+        System.out.println("+++ TP2: "+tpData2);
+        System.out.println("+++ TP3: "+tpData3);
+        System.out.println("+++ TP4: "+tpData4);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-        //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // orig
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // geändert
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3); // neu
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4); // neu
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3);
+        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4);
+        System.out.println("+++ NSP1 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
+        System.out.println("+++ NSP2 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
+        System.out.println("+++ NSP3 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
+        System.out.println("+++ NSP4 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data4.getUuid()));
+
 
         ro = a4ResourceOrder.buildResourceOrder();
 
@@ -161,6 +174,7 @@ public class A4ResourceOrderTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
         wiremock.fetchAndDeleteServeEvents();
+
     }
 
     @AfterMethod
@@ -325,10 +339,10 @@ public class A4ResourceOrderTest {
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
-        // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
+       // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
-        // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
-        // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
+       // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
+       // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -349,12 +363,10 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        assertEquals(a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()).getLifecycleState(), "PLANNING");
+        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
 
-        // NSP+NEL to Nemo
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
-//        a4NemoUpdater.checkOneNetworkElementLinkPutRequestToNemoWiremock(nepData1.getUuid());  // logicalResourceRequest:
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -380,13 +392,14 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1); // lcs is PLANNING and more
+        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
         assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()).getLifecycleState(), "DEACTIVATED");
 
-        // NSP+NEL an Nemo
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(),2);
+
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
@@ -406,8 +419,8 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+       a4ResourceOrder.checkResourceOrderIsRejected();
+       a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @DataProvider(name = "characteristicNamesDelete")
@@ -456,23 +469,6 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
-    // functions comes later:
-    /*
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("modify-case: NSP of a10nsp remains OPERATING")
-    public void testModifyLink() {
-        //
-    }
-    */
-
-    /*
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("add-case: send RO with -add- 2 items and get Callback with -rejected-")
-    public void testAdd2LinksOneIsUnknown()  {
-    }
-     */
 
     @Test
     @Owner("bela.kovac@t-systems.com")
