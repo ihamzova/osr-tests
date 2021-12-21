@@ -13,7 +13,6 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -21,17 +20,16 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_ORDER_ORCHESTRATOR_MS;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
@@ -149,29 +147,29 @@ public class A4ResourceOrderTest {
         //a4ResourceInventory.createNetworkElementLink(nelData2, nepData4, nepData3, neData2, neData3, uewegData2); // geändert v1
         //a4ResourceInventory.createNetworkElementLink(nelData2, nepData3, nepData4, neData3, neData2, uewegData2); // geändert v2
         a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2); // orig
-        System.out.println("+++ nel1: "+a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
-        System.out.println("+++ nel2: "+a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
+        System.out.println("+++ nel1: " + a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
+        System.out.println("+++ nel2: " + a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createTerminationPoint(tpData3, nepData3);
         a4ResourceInventory.createTerminationPoint(tpData4, nepData4);
-        System.out.println("+++ NSP1: "+nspA10Data1);
-        System.out.println("+++ NSP2: "+nspA10Data2);
-        System.out.println("+++ NSP3: "+nspA10Data3);
-        System.out.println("+++ NSP4: "+nspA10Data4);
-        System.out.println("+++ TP1: "+tpData1);
-        System.out.println("+++ TP2: "+tpData2);
-        System.out.println("+++ TP3: "+tpData3);
-        System.out.println("+++ TP4: "+tpData4);
+        System.out.println("+++ NSP1: " + nspA10Data1);
+        System.out.println("+++ NSP2: " + nspA10Data2);
+        System.out.println("+++ NSP3: " + nspA10Data3);
+        System.out.println("+++ NSP4: " + nspA10Data4);
+        System.out.println("+++ TP1: " + tpData1);
+        System.out.println("+++ TP2: " + tpData2);
+        System.out.println("+++ TP3: " + tpData3);
+        System.out.println("+++ TP4: " + tpData4);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
         //a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // orig
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2); // geändert
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3); // neu
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4); // neu
-        System.out.println("+++ NSP1 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
-        System.out.println("+++ NSP2 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
-        System.out.println("+++ NSP3 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
-        System.out.println("+++ NSP4 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data4.getUuid()));
+        System.out.println("+++ NSP1 in DB: " + a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
+        System.out.println("+++ NSP2 in DB: " + a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
+        System.out.println("+++ NSP3 in DB: " + a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
+        System.out.println("+++ NSP4 in DB: " + a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data4.getUuid()));
 
 
         ro = a4ResourceOrder.buildResourceOrder();
@@ -377,7 +375,7 @@ public class A4ResourceOrderTest {
 
         String rv_nr = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(0).getValue().toString();
         String c_bsa_ref = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(1).getValue().toString();
-        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref, rv_nr ,"POST",1);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref, rv_nr, "POST", 1);
     }
 
     @Test
@@ -394,10 +392,10 @@ public class A4ResourceOrderTest {
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
-       // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
+        // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
-       // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
-       // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -425,10 +423,10 @@ public class A4ResourceOrderTest {
         System.out.println("+++ Aufruf NemoUpdater, check update one nel");
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
         //a4NemoUpdater.checkOneNetworkElementLinkPutRequestToNemoWiremock(nepData1.getUuid());  // logicalResourceRequest:
-                                            // Einzellauf: Expected exactly 1 requests matching the following pattern but received 0
-                                            // war bis 13.12. im Einzel-Lauf ok (beim 2. Versuch am 14.12. auch ok)
-                                            // im Gesamt-Testlauf kommt hier ... received 4
-                                            // Gesamtlauf 14.12. 10:40: logicRes nel get 0 schlägt fehl: ...received 0,
+        // Einzellauf: Expected exactly 1 requests matching the following pattern but received 0
+        // war bis 13.12. im Einzel-Lauf ok (beim 2. Versuch am 14.12. auch ok)
+        // im Gesamt-Testlauf kommt hier ... received 4
+        // Gesamtlauf 14.12. 10:40: logicRes nel get 0 schlägt fehl: ...received 0,
         System.out.println("+++ Aufruf NemoUpdater, check update nsp");
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
 
@@ -439,7 +437,7 @@ public class A4ResourceOrderTest {
 
         String rv_nr = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(0).getValue().toString();
         String c_bsa_ref = ro.getOrderItem().get(0).getResource().getResourceCharacteristic().get(1).getValue().toString();
-        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref,rv_nr ,"POST",0);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(c_bsa_ref, rv_nr, "POST", 0);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -466,11 +464,11 @@ public class A4ResourceOrderTest {
         // NSP+NEL an Nemo
         System.out.println("+++ Aufruf NemoUpdater, check update two nel");
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
-                                            // Einzellauf ok
-                                            // Gesamtlauf: checkLogicalResourceRequestToNemo: Expected exactly 1 requests matching the following pattern but received 2
-                                            // 14.12. 10:40 im Gesamtlauf ok
+        // Einzellauf ok
+        // Gesamtlauf: checkLogicalResourceRequestToNemo: Expected exactly 1 requests matching the following pattern but received 2
+        // 14.12. 10:40 im Gesamtlauf ok
         System.out.println("+++ Aufruf NemoUpdater, check update nsp");
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(),2);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
@@ -490,8 +488,8 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-       a4ResourceOrder.checkResourceOrderIsRejected();
-       a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
 
