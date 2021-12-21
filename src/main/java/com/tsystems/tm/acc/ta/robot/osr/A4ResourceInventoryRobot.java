@@ -13,6 +13,7 @@ import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.*;
 
 public class A4ResourceInventoryRobot {
 
@@ -395,6 +395,46 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void checkLifecycleStateOfNetworkElementLink(String uuid, String lcs) {
+        assertEquals(getExistingNetworkElementLink(uuid).getLifecycleState(), lcs);
+    }
+
+    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
+        final String UNDEFINED = "undefined";
+        final NetworkServiceProfileA10NspDto nspA10 = getExistingNetworkServiceProfileA10Nsp(nsp.getUuid());
+
+        assertEquals(nspA10.getLifecycleState(), "PLANNING");
+        assertEquals(nspA10.getOperationalState(), "NOT_WORKING");
+        assertEquals(nspA10.getAdministrativeMode(), "ENABLED");
+
+        String crtNew = Objects.requireNonNull(nspA10.getCreationTime()).toString();
+        String lutNew = Objects.requireNonNull(nspA10.getLastUpdateTime()).toString();
+        assertNotEquals(crtNew, lutNew);
+
+        assertEquals(nspA10.getMtuSize(), "1590");
+        assertEquals(nspA10.getEtherType(), "0x88a8");
+        assertEquals(nspA10.getVirtualServiceProvider(), "DTAG");
+        assertEquals(nspA10.getSpecificationVersion(), "7");
+        assertNull(nspA10.getNumberOfAssociatedNsps());
+        assertNull(nspA10.getNetworkElementLinkUuid());
+        assertTrue(Objects.requireNonNull(nspA10.getLacpActive()));
+        assertEquals(nspA10.getLacpMode(), UNDEFINED);
+        assertEquals(nspA10.getMinActiveLagLinks(), "1");
+        assertEquals(nspA10.getCarrierBsaReference(), UNDEFINED);
+        assertEquals(nspA10.getItAccountingKey(), UNDEFINED);
+        assertEquals(nspA10.getDataRate(), UNDEFINED);
+        assertEquals(nspA10.getQosMode(), "TOLERANT");
+
+        A10NspQosDto qosClass = Objects.requireNonNull(nspA10.getQosClasses()).get(0);
+        assertEquals(qosClass.getQosBandwidthDown(), UNDEFINED);
+        assertEquals(qosClass.getQosBandwidthUp(), UNDEFINED);
+        assertEquals(qosClass.getQosPriority(), UNDEFINED);
+
+        VlanRangeDto vlanRange = Objects.requireNonNull(nspA10.getsVlanRange()).get(0);
+        assertEquals(vlanRange.getVlanRangeUpper(), UNDEFINED);
+        assertEquals(vlanRange.getVlanRangeLower(), UNDEFINED);
+    }
+
     @Step("Check that Network Element Link doesn't exists in Inventory")
     public void checkNetworkElementLinkIsDeleted(String uuid) {
         a4ResourceInventory
@@ -473,9 +513,9 @@ public class A4ResourceInventoryRobot {
             networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
                     (networkElementDtoUnderTest.get().getUuid()));
 
-            if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
+            if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-OLT-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
-            } else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1")) {
+            } else if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-LEAF-Switch-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
             } else {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 0);

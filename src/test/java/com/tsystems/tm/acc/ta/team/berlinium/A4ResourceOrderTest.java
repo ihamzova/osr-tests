@@ -28,7 +28,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_ORDER_
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
@@ -139,29 +138,14 @@ public class A4ResourceOrderTest {
         // all nel's need same ne1 (type a10-switch) ! important for lbz in ro-items
         a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
         a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
-        System.out.println("+++ nel1: "+a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
-        System.out.println("+++ nel2: "+a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createTerminationPoint(tpData3, nepData3);
         a4ResourceInventory.createTerminationPoint(tpData4, nepData4);
-        System.out.println("+++ NSP1: "+nspA10Data1);
-        System.out.println("+++ NSP2: "+nspA10Data2);
-        System.out.println("+++ NSP3: "+nspA10Data3);
-        System.out.println("+++ NSP4: "+nspA10Data4);
-        System.out.println("+++ TP1: "+tpData1);
-        System.out.println("+++ TP2: "+tpData2);
-        System.out.println("+++ TP3: "+tpData3);
-        System.out.println("+++ TP4: "+tpData4);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4);
-        System.out.println("+++ NSP1 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
-        System.out.println("+++ NSP2 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
-        System.out.println("+++ NSP3 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
-        System.out.println("+++ NSP4 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data4.getUuid()));
-
 
         ro = a4ResourceOrder.buildResourceOrder();
 
@@ -173,7 +157,6 @@ public class A4ResourceOrderTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
         wiremock.fetchAndDeleteServeEvents();
-
     }
 
     @AfterMethod
@@ -319,7 +302,6 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
 
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
-
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
     }
@@ -338,10 +320,10 @@ public class A4ResourceOrderTest {
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
-       // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
+        // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
-       // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
-       // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -362,17 +344,15 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
-
-        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
+        a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
+        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData1.getUuid(), "DEACTIVATED");
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
 
+        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 0);
-
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 0);
     }
@@ -391,13 +371,13 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()).getLifecycleState(), "DEACTIVATED");
+        a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
+        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData1.getUuid(), "DEACTIVATED");
+        a4ResourceInventory.checkLifecycleStateOfNetworkElementLink(nelData2.getUuid(), "DEACTIVATED");
 
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(),2);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(), 2);
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -418,8 +398,8 @@ public class A4ResourceOrderTest {
         sleepForSeconds(sleepTimer);
 
         // THEN
-       a4ResourceOrder.checkResourceOrderIsRejected();
-       a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @DataProvider(name = "characteristicNamesDelete")
