@@ -109,9 +109,9 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     }
 
     @Test(dependsOnMethods = "newTpWithFtthAccessPreprovisioning",
-            description = "DIGIHUB-xxxxxx NEMO deletes a Termination Point with Deprovisioning and network service profile (FTTH Access) is deleted")
-    @Owner("bela.kovac@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxxx")
+            description = "DIGIHUB-132266 NEMO deletes a Termination Point with Deprovisioning and network service profile (FTTH Access) is deleted")
+    @Owner("bela.kovac@t-systems.com, Irina.Khamzova@t-systems.com")
+    @TmsLink("DIGIHUB-132266")
     @Description("NEMO deletes a Termination Point with Deprovisioning and network service profile (FTTH Access) is deleted")
     public void deleteTpWithDeprovisioning() {
         // GIVEN
@@ -136,7 +136,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
 
     // Deactivated for now because some U-Piter checks seem to happen dozens of times, under investigation
 //    @Test(description = "DIGIHUB-XXXXXX NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
-//    @Owner("bela.kovac@t-systems.com")
+//    @Owner("bela.kovac@t-systems.com, Irina.Khamzova@t-systems.com")
 //    @TmsLink("DIGIHUB-XXXXXX")
 //    @Description("NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
 //    public void newTpWithFtthAccessPreprovisioningMultipleAccessLines() {
