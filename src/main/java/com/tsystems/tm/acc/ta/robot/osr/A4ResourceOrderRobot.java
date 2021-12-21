@@ -11,13 +11,13 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
+import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileA10Nsp;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
@@ -34,6 +34,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -91,96 +93,9 @@ public class A4ResourceOrderRobot {
     }
 
     public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nsp) {
-
-         /*     values of nsp at start
-    uuid: f0a7f68c-5237-41f3-9420-dec827bab332
-    lifecycleState: PLANNING
-    operationalState: NOT_WORKING
-    description: NSP A10NSP created during osr-test integration test
-    administrativeMode: ACTIVATED
-    virtualServiceProvider: a Virtual Service Provider
-    specificationVersion: 1
-    carrierBsaReference: CarrierBsaReference
-    mtuSize: 1590
-    etherType: 0x88a8
-    itAccountingKey: undefined
-    lacpActive: true
-    lacpMode: undefined
-    minActiveLagLinks: 1
-    sVlanRange: [class VlanRangeDto {
-        vlanRangeLower: undefined
-        vlanRangeUpper: undefined
-    }]
-    dataRate: undefined
-    qosClasses: [class A10NspQosDto {
-        qosPriority: undefined
-        qosBandwidthUp: undefined
-        qosBandwidthDown: undefined
-    }]
-    qosMode: TOLERANT
-    lastUpdateTime: 2021-12-15T09:01:01.403+01:00
-    creationTime: 2021-12-15T09:01:01.403+01:00
-    terminationPointA10NspUuid: 12256701-548b-40aa-8b83-7175c1eb8887
-    numberOfAssociatedNsps: undefined
-    networkElementLinkUuid: null
-    href: /resource-order-resource-inventory/v1/a4TerminationPoints/12256701-548b-40aa-8b83-7175c1eb8887
-     */
-
-        String lcs_new = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState();
-        assertEquals(lcs_new, "PLANNING");
-        // lastUpdateTime: 2021-12-15T09:01:01.403+01:00  ungleich    creationTime: 2021-12-15T09:01:01.403+01:00
-
-
-        System.out.println("+++++++++++++++++++++++++++++++++++++");
-        System.out.println("+++++++++ new values of nsp +++++++++");
-        System.out.println("+++ lcs of nsp (default is PLANNING): "+lcs_new);
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-
-        System.out.println("+++  ");
-        System.out.println("+++  ");
-        System.out.println("+++  ");
-
-    /*
-    A4NetworkServiceProfileA10Nsp(
-    uuid=ace216e6-843d-4686-bb84-6823e9614a8d,
-    operationalState=NOT_WORKING,
-    lifecycleState=PLANNING,
-    numberOfAssociatedNsps=null)
-
-
-
-
-    +++++++ roi
-    "uuid": "8637025e-188e-4563-981b-8022f9b0a073",
-    "creationTime": "2021-12-14T12:37:52.149+01:00",
-    "description": "NEL for integration test",
-    "lastUpdateTime": "2021-12-14T12:37:58.89+01:00",
-    "specificationVersion": null,
-    "lsz": "4N4",
-    "lbz": "4N4/1004-49/3926/0/7KCA-49/3752/0/7KH0",
-    "orderNumber": "1004",
-    "lifecycleState": "DEACTIVATED",
-    "operationalState": "NOT_WORKING",
-    "ueWegId": "430247, 658839",
-    "pluralId": "2",
-    "networkElementPortAUuid": "fe6a2122-885f-4905-ab79-0fba9aa908f0",
-    "networkElementPortBUuid": "09973704-a935-4c32-9217-312a5fab2852",
-    "endszA": "49/3926/0/7KCA",
-    "endszB": "49/3752/0/7KH0"
-    */
-
-
-
-
-}
+        final String lcsNew = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nsp.getUuid()).getLifecycleState();
+        assertEquals(lcsNew, "PLANNING");
+    }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {
         ResourceRefOrValue resource = new ResourceRefOrValue()
@@ -364,7 +279,20 @@ public class A4ResourceOrderRobot {
 
     }
 
+    public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {
+        ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
+        String rvNumber = (String) getCharacteristic(RAHMEN_VERTRAGS_NR, roi).getValue();
+        String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
+
+        A10nspA4Dto a10 = new A10nspA4Dto();
+        a10.setRahmenvertragsnummer(rvNumber);
+        a10.setCarrierBsaReference(cBsaRef);
+
+        return a10;
+    }
+
     private void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
+
 }
