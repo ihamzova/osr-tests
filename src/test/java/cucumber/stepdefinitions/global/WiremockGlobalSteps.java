@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions;
+package cucumber.stepdefinitions.global;
 
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;

@@ -10,8 +10,8 @@ import org.testng.annotations.DataProvider;
                 "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm",
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
-        glue = { "cucumber/stepdefinitions" },
-        features = { "src/test/resources/cucumberscenarios/domain" }
+        glue = {"cucumber.stepdefinitions"},
+        features = {"src/test/resources/cucumberscenarios/domain"}
 )
 public class RunCucumberTestsDomain extends AbstractTestNGCucumberTests {
 
