@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.PoolL
 import com.tsystems.tm.acc.tests.osr.line.id.generator.v2_1_0.client.model.SingleLineId;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,6 +26,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @ServiceLog(LINE_ID_GENERATOR_MS)
+
+@Epic("LineId Generator")
 public class LineIdTest extends GigabitTest {
 
   private LineIdGeneratorClient lineidGeneratorClient;

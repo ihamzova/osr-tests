@@ -27,6 +27,7 @@ public class DpuDevice {
     private String ponConnectionSl;
     private String portNumber;
     private String accessTransmissionMedium;
+    private int compositePartyId;
 
     @Override
     public String toString() {

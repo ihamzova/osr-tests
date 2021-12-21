@@ -16,6 +16,7 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -34,6 +35,8 @@ import static org.testng.Assert.assertTrue;
         ACCESS_PROCESS_MANAGEMENT_BFF,
         OSR_PROCESS_LOG
 })
+
+@Epic("Access Process Management UI")
 public class ProcessesSearchTest extends GigabitTest {
 
   WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();

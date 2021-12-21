@@ -128,7 +128,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspFtth.getUuid(), "DELETE", 1);
 
         // U-Piter checks
-        accessLineRi.checkPhysicalResourceRefCountA4(portForDeprovisioning, 0);
+        accessLineRi.checkPhysicalResourceRefCountA4Ftth(portForDeprovisioning, 0);
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
         accessLineRi.checkHomeIdsCount(portForDeprovisioning);
         accessLineRi.checkLineIdsCount(portForDeprovisioning);

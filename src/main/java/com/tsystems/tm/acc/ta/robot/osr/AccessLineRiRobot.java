@@ -10,8 +10,6 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.DeviceProductionPlatform;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -204,8 +202,8 @@ public class AccessLineRiRobot {
     assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
   }
 
-  @Step("Check PhysicalResourceRefs for A4")
-  public void checkPhysicalResourceRefCountA4(PortProvisioning port, int expectedGponPortsCount) {
+  @Step("Check PhysicalResourceRefs for A4 FTTH")
+  public void checkPhysicalResourceRefCountA4Ftth(PortProvisioning port, int expectedGponPortsCount) {
 
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
@@ -217,6 +215,23 @@ public class AccessLineRiRobot {
     }
 
     assertEquals(getGponPorts(port).size(), expectedGponPortsCount);
+    assertEquals(getPonPorts(port).size(), 0);
+    assertEquals(getEthernetPorts(port).size(), 0);
+  }
+
+  @Step("Check PhysicalResourceRefs for A4 FTTB")
+  public void checkPhysicalResourceRefCountA4Fttb(DpuDevice dpuDevice, PortProvisioning port, int expectedGfastPortsCount) {
+
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkGfastPorts = () -> getGfastPorts(dpuDevice).size() == expectedGfastPortsCount;
+      timeoutBlock.addBlock(checkGfastPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getGfastPorts(dpuDevice).size(), expectedGfastPortsCount);
     assertEquals(getPonPorts(port).size(), 0);
     assertEquals(getEthernetPorts(port).size(), 0);
   }
@@ -254,7 +269,7 @@ public class AccessLineRiRobot {
             "Assigned access lines count");
   }
 
-  @Step("Check A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
+  @Step("Check A4 OLT_BNG specific parameters (NSP ref and phys ref exist, A4 prod platform")
   public void checkA4LineParameters(PortProvisioning port, String tpRefUuid) {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
@@ -277,6 +292,33 @@ public class AccessLineRiRobot {
     assertEquals(accessLine.getReference().getSlotNumber(), port.getSlotNumber());
     assertEquals(accessLine.getReference().getPortNumber(), port.getPortNumber());
     assertEquals(accessLine.getReference().getPortType(), GPON);
+    assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
+  }
+
+  @Step("Check A4 FTTB specific parameters")
+  public void checkA4FttbLineParameters(PortProvisioning port, String tpRefUuid) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      Supplier<Boolean> checkA4FttbPreProvisioning = () -> getAccessLinesByGfastPort(port).stream().
+              filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count() == 1;
+      timeoutBlock.addBlock(checkA4FttbPreProvisioning); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    List<AccessLineDto> accessLines = getAccessLinesByGfastPort(port);
+    assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
+
+    AccessLineDto accessLine = accessLines.get(0);
+
+    assertEquals(accessLine.getStatus(), AccessLineStatus.WALLED_GARDEN, "AccessLine status");
+    assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
+    assertEquals(accessLine.getNetworkServiceProfileReference().getTpRef(), tpRefUuid);
+    assertNotNull(accessLine.getDpuReference(), "Reference");
+    assertEquals(accessLine.getDpuReference().getEndSz(), port.getEndSz());
+    assertEquals(accessLine.getDpuReference().getSlotNumber(), port.getSlotNumber());
+    assertEquals(accessLine.getDpuReference().getPortNumber(), port.getPortNumber());
+    assertEquals(accessLine.getDpuReference().getPortType(), GFAST);
     assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
   }
 
@@ -538,6 +580,19 @@ public class AccessLineRiRobot {
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber())
                     .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Get list of AccessLines on the specified port")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto> getAccessLinesByGfastPort(PortProvisioning port) {
+    return accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber())
+                    .referenceType(ReferenceType.DPU))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
