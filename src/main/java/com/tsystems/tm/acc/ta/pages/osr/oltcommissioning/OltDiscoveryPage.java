@@ -15,7 +15,7 @@ import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 public class OltDiscoveryPage {
 
     public static final String APP = "olt-resource-inventory-ui";
-    public static final String ENDPOINT = "/oltdiscovery";
+    public static final String ENDPOINT =  "/" + APP + "/oltdiscovery";
 
     public static final By OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR = byQaData("button-discovery-process-start");
     public static final By UPDATE_HISTORY_BUTTON_LOCATOR = byQaData("button-update-history");

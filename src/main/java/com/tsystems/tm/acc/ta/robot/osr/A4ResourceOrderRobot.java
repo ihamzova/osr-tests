@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
+import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
@@ -32,6 +33,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -48,7 +51,6 @@ public class A4ResourceOrderRobot {
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
-
 
     private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProviderDispatcher).getClient();
     private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
@@ -242,12 +244,12 @@ public class A4ResourceOrderRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void getResourceOrderFromDbAndCheckIfCompleted(String id) {
-        ResourceOrderDto ro = getResourceOrderFromDb(id);
+    public void getResourceOrderFromDbAndCheckIfCompleted(ResourceOrder ro) {
+        ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
 
-        assertEquals(ResourceOrderStateType.COMPLETED.toString(), ro.getState());
-        if (ro.getOrderItem() != null && !ro.getOrderItem().isEmpty())
-            assertEquals(ro.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
+        assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
+        if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
+            assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
 
@@ -268,7 +270,20 @@ public class A4ResourceOrderRobot {
 
     }
 
+    public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {
+        ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
+        String rvNumber = (String) getCharacteristic(RAHMEN_VERTRAGS_NR, roi).getValue();
+        String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
+
+        A10nspA4Dto a10 = new A10nspA4Dto();
+        a10.setRahmenvertragsnummer(rvNumber);
+        a10.setCarrierBsaReference(cBsaRef);
+
+        return a10;
+    }
+
     private void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
+
 }

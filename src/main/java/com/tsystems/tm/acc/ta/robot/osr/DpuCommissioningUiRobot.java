@@ -24,7 +24,8 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 import static org.testng.Assert.assertEquals;
@@ -36,15 +37,11 @@ public class DpuCommissioningUiRobot {
     private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
     private static final String OLT_EMS_CONFIGURATION_STATE = "ACTIVE";
     private static final String DPU_EMS_CONFIGURATION_STATE = "ACTIVE";
-    private static final Integer LINE_ID_POOL_PER_PORT = 32;
-    private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
     private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProviderOltBffProxy);
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
-    private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
     private String businessKey;
 
@@ -127,47 +124,25 @@ public class DpuCommissioningUiRobot {
 
     @Step("Clear devices (DPU and OLT) in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
-
-        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getOltEndsz())
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getEndsz())
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        } else {
-            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getEndsz())
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(dpuDevice.getOltEndsz())
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        }
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getOltEndsz())
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getEndsz())
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
     @Step("Create the precondition olt-resource-inventory and access-line-resource-inventory database")
     public void prepareResourceInventoryDataBase(DpuDevice dpuDevice) {
-        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
-                    .deviceEmsNbiNameQuery(EMS_NBI_NAME_MA5600)
-                    .deviceEndSzQuery(dpuDevice.getOltEndsz())
-                    .deviceSlotNumbersQuery("3,4,5,19")
-                    .deviceKlsIdQuery("12377812")
-                    .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
-                    .uplinkEndSzQuery(dpuDevice.getBngEndsz())
-                    .uplinkTargetPortQuery(dpuDevice.getBngDownlinkPort())
-                    .uplinkAncpConfigurationQuery("1")
-                    .executeSqlQuery("1")
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-
-        } else {
-            oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
-                    ._01EmsNbiNameQuery(EMS_NBI_NAME_MA5600)
-                    ._02EndszQuery(dpuDevice.getOltEndsz())
-                    ._03SlotNumbersQuery("3,4,5,19")
-                    ._06KLSIdQuery("12377812")
-                    ._07CompositePartyIDQuery(COMPOSITE_PARTY_ID_DTAG.toString())
-                    ._08UplinkEndszQuery(dpuDevice.getBngEndsz())
-                    ._10ANCPConfQuery("1")
-                    ._11RunSQLQuery("1")
-                    .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        }
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
+                .deviceEmsNbiNameQuery(EMS_NBI_NAME_MA5600)
+                .deviceEndSzQuery(dpuDevice.getOltEndsz())
+                .deviceSlotNumbersQuery("3,4,5,19")
+                .deviceKlsIdQuery("12377812")
+                .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
+                .uplinkEndSzQuery(dpuDevice.getBngEndsz())
+                .uplinkTargetPortQuery(dpuDevice.getBngDownlinkPort())
+                .uplinkAncpConfigurationQuery("1")
+                .executeSqlQuery("1")
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("get businessKey")

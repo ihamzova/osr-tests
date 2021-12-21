@@ -36,6 +36,16 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
     }
 
+    public MappingBuilder getDpuDeviceAdtran200(Dpu dpu) {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceAdtran200")
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDeviceAdtran(dpu.getLifeCycleDpu(), dpu.getLifeCycleUplink()))),
+                        200
+                ))
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
     public MappingBuilder getDpuDevice400(Dpu dpu) {
         return get(urlPathEqualTo(DPU_DEVICE_URL))
                 .withName("getDpuDevice400")

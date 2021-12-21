@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -38,14 +39,14 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
 @TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
 public class OltAutoCommissioning extends GigabitTest {
 
   private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 2 * 60_000;
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
 
   private static final String KLS_ID_EXPECTED = "17056514";
 
@@ -54,9 +55,11 @@ public class OltAutoCommissioning extends GigabitTest {
   private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private WireMockMappingsContext mappingsContext;
+  private WireMockMappingsContext mappingsContext2;
 
   @BeforeClass
   public void init() {
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -73,12 +76,26 @@ public class OltAutoCommissioning extends GigabitTest {
     mappingsContext.publish()
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
+
+    mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
+            .addRebellUewegeMock(oltDeviceDTAG)
+            .addRebellUewegeMock(oltDeviceGFNW)
+            .build();
+
+    mappingsContext2.publish()                                              //inject in WM
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
   }
 
   @AfterClass
   public void cleanUp() {
     mappingsContext.close();
     mappingsContext
+            .eventsHook(saveEventsToDefaultDir())
+            .eventsHook(attachEventsToAllureReport());
+
+    mappingsContext2.close();
+    mappingsContext2
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
   }

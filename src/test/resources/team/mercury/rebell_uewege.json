@@ -1,0 +1,41 @@
+[
+  {
+    "pluralId": "133030213",
+    "uewegId": "I478887958",
+    "validFrom": "28.01.2020 16:00:00",
+    "endPointB": {
+      "endSz": "$oltEndSz",
+      "portName": "$oltPortName",
+      "endSzParts": {
+        "akz": "$olt_akz",
+        "vkz": "$olt_vkz",
+        "fkz": "$olt_fsz",
+        "nkz": "$olt_nkz"
+      },
+      "deviceHostName": "",
+      "vendorPortName": "P0004",
+      "portPosition": "$oltPortPosition"
+    },
+    "version": "1",
+    "endPointA": {
+      "endSz": "$bngEndSz",
+      "portName": "$bngPortName",
+      "endSzParts": {
+        "akz": "$bng_akz",
+        "vkz": "$bng_vkz",
+        "fkz": "$bng_fsz",
+        "nkz": "$bng_nkz"
+      },
+      "deviceHostName": "BONJ73",
+      "vendorPortName": "[0/2]/0",
+      "portPosition": "$bngPortPosition"
+    },
+    "versionId": "102/1/3371/7819208",
+    "lsz": "$lsz",
+    "ordNr": "14",
+    "validUntil": "01.01.2100 00:00:00",
+    "id": 925633399,
+    "lszErg": "",
+    "status": "InBetrieb"
+  }
+]

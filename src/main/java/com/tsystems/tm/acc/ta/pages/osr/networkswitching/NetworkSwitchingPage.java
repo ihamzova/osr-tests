@@ -119,7 +119,7 @@ public class NetworkSwitchingPage {
     public NetworkSwitchingPage startCommit(String packageId) throws Exception {
         clickPaketverwaltungTab();
         getPackageInfo(packageId);
-        $(PACKAGE_STATUS).getText().contains("PREPARED");
+        getPackageStatus().contains("PREPARED");
         $(COMMIT_BUTTON).click();
         $(NOTIFICATION).shouldHave(text("Der Commit-Prozess wurde gestartet"));
         closeNotificationButton();
@@ -159,6 +159,11 @@ public class NetworkSwitchingPage {
         return this;
     }
 
+    @Step("Get Package Status")
+    public String getPackageStatus() {
+        return $(PACKAGE_STATUS).getText();
+    }
+
     @Step("Close Notification button")
     public void closeNotificationButton() {
         $(CLOSE_NOTIFICATION_BUTTON).click();
@@ -182,8 +187,7 @@ public class NetworkSwitchingPage {
                 Boolean result = false;
                 try {
                     getPackageInfo(packageId);
-                    result = $(PACKAGE_STATUS).getText().contains(expectedStatus);
-                    System.out.println($(PACKAGE_STATUS).getText());
+                    result = getPackageStatus().contains(expectedStatus);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

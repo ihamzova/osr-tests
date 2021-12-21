@@ -1,9 +1,6 @@
 package com.tsystems.tm.acc.ta.data.mercury.wiremock;
 
-import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.AccessLineInventoryStub;
-import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.DeviceDiscoveryCallbackStub;
-import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.GigaAreasLocationStub;
-import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.PonInventoryStub;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
@@ -29,13 +26,18 @@ public class MercuryWireMockMappingsContextBuilder extends WireMockMappingsConte
         return this;
     }
 
-    public MercuryWireMockMappingsContextBuilder addPonInventoryMock(OltDevice oltDevice){
+    public MercuryWireMockMappingsContextBuilder addPonInventoryMock(OltDevice oltDevice) {
         context.add(new PonInventoryStub().getLlcInfo200(oltDevice));
         return this;
     }
 
     public MercuryWireMockMappingsContextBuilder addAccessLineInventoryMock(){
         context.add(new AccessLineInventoryStub().getAlCountTask200());
+        return this;
+    }
+
+    public MercuryWireMockMappingsContextBuilder addRebellUewegeMock(OltDevice oltDevice) {
+        context.add(new RebellUewegeStub().getUewege200(oltDevice));
         return this;
     }
 }

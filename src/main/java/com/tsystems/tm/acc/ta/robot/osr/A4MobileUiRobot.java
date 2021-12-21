@@ -41,7 +41,6 @@ public class A4MobileUiRobot {
         openNetworkElementMobileSearchPage();
         enterVpsz(neData.getVpsz());
         enterFsz(neData.getFsz());
-        enterCategory(neData.getCategory());
         clickSearchButton();
     }
 
@@ -52,7 +51,6 @@ public class A4MobileUiRobot {
         assertEquals(readOnkz(), stringSplit(ne.getVpsz(), "/").get(1));
         assertEquals(readVkz(), stringSplit(ne.getVpsz(), "/").get(2));
         assertEquals(readFsz(), ne.getFsz());
-        assertEquals(readCategory(), ne.getCategory());
         assertEquals(readZtpIdent(), ztpIdent);
     }
 
@@ -100,16 +98,6 @@ public class A4MobileUiRobot {
     @Step("Read fsz")
     public String readFsz() {
         return $(FSZ_INPUT_FIELD_LOCATOR).val();
-    }
-
-    @Step("Enter Category")
-    public void enterCategory(String category) {
-        $(CATEGORY_INPUT_FIELD_LOCATOR).selectOption(category);
-    }
-
-    @Step("Read Category")
-    public String readCategory() {
-        return $(CATEGORY_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Read ZTP Ident")
@@ -236,12 +224,6 @@ public class A4MobileUiRobot {
     public ElementsCollection getNeElementsCollection() throws InterruptedException {
         Thread.sleep(2000);
         return $(SEARCH_RESULT_TABLE_LOCATOR).findAll(By.xpath("tr/td"));
-    }
-
-
-    @Step("Check NE Reset to planning button is disabled")
-    public void checkNeResetToPlanningButtonDisabled() {
-        assertFalse($(NE_RESET_TO_PLANNING_BUTTON_LOCATOR).isEnabled());
     }
 
     @Step("Check error message not found")

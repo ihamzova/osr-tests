@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
@@ -10,6 +11,7 @@ import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.OltDto;
@@ -19,12 +21,14 @@ import org.testng.Assert;
 
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.FEATURE_ANCP_MIGRATION_ACTIVE;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A10NSP_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_SCHEDULER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.RebellStub.REBELL_UEWEG_URL;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static org.testng.Assert.*;
 
@@ -43,7 +47,6 @@ public class A10nspCheckRobot {
     private static final AuthTokenProvider authTokenProviderForAlri = new RhssoClientFlowAuthTokenProvider(A10NSP_INVENTORY_MS, RhssoHelper.getSecretOfGigabitHub(A10NSP_INVENTORY_MS));
 
     private A10nspInventoryClient a10nspInventoryClient = new A10nspInventoryClient(authTokenProviderForA10nsp);
-    private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient();
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderForAlri);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
@@ -141,8 +144,7 @@ public class A10nspCheckRobot {
     @Step("fill olt-resource-inventory database with test data")
     public void fillDeviceInResourceInventory(OltDevice oltDevice) {
 
-        if(FEATURE_ANCP_MIGRATION_ACTIVE) {
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
                 .deviceEmsNbiNameQuery(EMS_NBI_NAME_MA5600)
                 .deviceEndSzQuery(oltDevice.getEndsz())
                 .deviceSlotNumbersQuery("3,4,5,19")
@@ -153,18 +155,6 @@ public class A10nspCheckRobot {
                 .uplinkAncpConfigurationQuery("1")
                 .executeSqlQuery("1")
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-        } else {
-            oltResourceInventoryClient.getClient().testDataManagementController().createDevice()
-                    ._01EmsNbiNameQuery(EMS_NBI_NAME_MA5600)
-                    ._02EndszQuery(oltDevice.getEndsz())
-                    ._03SlotNumbersQuery("3,4,5,19")
-                    ._06KLSIdQuery("12377812")
-                    ._07CompositePartyIDQuery(COMPOSITE_PARTY_ID_DTAG.toString())
-                    ._08UplinkEndszQuery(oltDevice.getBngEndsz())
-                    ._10ANCPConfQuery("1")
-                    ._11RunSQLQuery("1")
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-        }
 
         refreshA10nspInventory();        // trigger the a10nsp-inventory refresh
 
@@ -178,13 +168,8 @@ public class A10nspCheckRobot {
 
     @Step("clear the OLT device in olt-resource-invemtory database.")
     public void deleteDeviceInResourceInventory(String endSz) {
-        if (FEATURE_ANCP_MIGRATION_ACTIVE) {
-            deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-        } else {
-            oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-                    .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-        }
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
     @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-invemtory database.")
@@ -202,4 +187,5 @@ public class A10nspCheckRobot {
             log.error("Interrupted");
         }
     }
+
 }
