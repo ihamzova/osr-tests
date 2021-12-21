@@ -171,7 +171,6 @@ public class A4ResourceOrderRobot {
         System.out.println("+++ VlanRangeUpper (default is undefined):       "+vlu_new);
         System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
 }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {

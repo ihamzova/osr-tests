@@ -45,10 +45,9 @@ public class A4ResourceOrderTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceOrderRobot a4ResourceOrder = new A4ResourceOrderRobot();
 
-    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
-    private final Map<String, A4NetworkElement> a4NetworkElementLinks = new HashMap<>();
-    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4WiremockRebellRobot a4WiremockRebellRobot = new A4WiremockRebellRobot();
+    private final A4WiremockA10nspA4Robot a4WiremockA10nspA4Robot = new A4WiremockA10nspA4Robot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData1;
