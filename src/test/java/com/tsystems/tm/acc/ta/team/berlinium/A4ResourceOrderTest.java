@@ -10,12 +10,9 @@ import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -23,19 +20,14 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_ORDER_ORCHESTRATOR_MS;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static org.testng.Assert.assertEquals;
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
@@ -45,17 +37,16 @@ public class A4ResourceOrderTest {
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
-    private final String wiremockScenarioName = "A4ResourceOrderTest";
-    private final int sleepTimer = 10;
+    private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
+    private final int SLEEP_TIMER = 5;
 
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceOrderRobot a4ResourceOrder = new A4ResourceOrderRobot();
 
-    private final Map<String, A4NetworkElement> a4NetworkElements = new HashMap<>();
-    private final Map<String, A4NetworkElement> a4NetworkElementLinks = new HashMap<>();
-    private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4WiremockRebellRobot a4WiremockRebellRobot = new A4WiremockRebellRobot();
+    private final A4WiremockA10nspA4Robot a4WiremockA10nspA4Robot = new A4WiremockA10nspA4Robot();
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData1;
@@ -82,7 +73,7 @@ public class A4ResourceOrderTest {
     private ResourceOrder ro;
 
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
-    private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName)).build();
+    private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME)).build();
 
     @BeforeClass
     public void init() {
@@ -147,33 +138,18 @@ public class A4ResourceOrderTest {
         // all nel's need same ne1 (type a10-switch) ! important for lbz in ro-items
         a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
         a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
-        System.out.println("+++ nel1: "+a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()));
-        System.out.println("+++ nel2: "+a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()));
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createTerminationPoint(tpData2, nepData2);
         a4ResourceInventory.createTerminationPoint(tpData3, nepData3);
         a4ResourceInventory.createTerminationPoint(tpData4, nepData4);
-        System.out.println("+++ NSP1: "+nspA10Data1);
-        System.out.println("+++ NSP2: "+nspA10Data2);
-        System.out.println("+++ NSP3: "+nspA10Data3);
-        System.out.println("+++ NSP4: "+nspA10Data4);
-        System.out.println("+++ TP1: "+tpData1);
-        System.out.println("+++ TP2: "+tpData2);
-        System.out.println("+++ TP3: "+tpData3);
-        System.out.println("+++ TP4: "+tpData4);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data2, tpData2);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4);
-        System.out.println("+++ NSP1 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid()));
-        System.out.println("+++ NSP2 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid()));
-        System.out.println("+++ NSP3 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid()));
-        System.out.println("+++ NSP4 in DB: "+a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data4.getUuid()));
-
 
         ro = a4ResourceOrder.buildResourceOrder();
 
-        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName))
+        wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME))
                 .addMerlinMock()
                 .addRebellMock(neData1, uewegData1, neData2, uewegData2, neData3)
                 .build();
@@ -181,7 +157,6 @@ public class A4ResourceOrderTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
         wiremock.fetchAndDeleteServeEvents();
-
     }
 
     @AfterMethod
@@ -190,92 +165,49 @@ public class A4ResourceOrderTest {
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
+        wiremock.getWireMock().resetRequests();
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        a4ResourceOrder.deleteA4TestDataRecursively(ro);
         a4ResourceOrder.cleanCallbacksInWiremock();
-        // https://wiremock-acc-app-berlinium-03.priv.cl01.gigadev.telekom.de/__admin/requests/remove
-        // body: {
-        //    "method": "POST",
-        //    "url": "/test_url"
-        // }
-
-        wiremock.getWireMock().resetRequests();  // löscht die Counter nach jedem einzelnen Test ! wichtig !
     }
 
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro without vlan-range values (=null)")
-    public void testRoWithoutVlanRangeValues() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        VlanRange vlanRange = new VlanRange()
+    @DataProvider(name = "vlanRangeCombinations")
+    public static Object[] vlanRangeCombinations() {
+        VlanRange vlanRange1 = new VlanRange()
                 .vlanRangeLower(null)
                 .vlanRangeUpper(null);
-        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
-        // WHEN
-        a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
-
-        // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro with empty vlan-range values")
-    public void testRoWithEmptyVlanRangeValues() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        VlanRange vlanRange = new VlanRange()
+        VlanRange vlanRange2 = new VlanRange()
                 .vlanRangeLower("")  // values empty, no change in db; ok
                 .vlanRangeUpper("");
-        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
-        // WHEN
-        a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
-
-        // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro with one empty and one valid vlan-range value")
-    public void testRoWithEmptyAndValidVlanRangeValues() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        VlanRange vlanRange = new VlanRange()
+        VlanRange vlanRange3 = new VlanRange()
                 .vlanRangeLower("3")
                 .vlanRangeUpper("");
-        a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
-        // WHEN
-        a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
-
-        // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro with one null and one valid vlan-range value")
-    public void testRoWithNullAndValidVlanRangeValues() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
-        VlanRange vlanRange = new VlanRange()
+        VlanRange vlanRange4 = new VlanRange()
                 .vlanRangeLower(null)
                 .vlanRangeUpper("4012");
+
+        return new Object[]{
+                vlanRange1,
+                vlanRange2,
+                vlanRange3,
+                vlanRange4};
+    }
+
+    @Test(dataProvider = "vlanRangeCombinations")
+    @Owner("heiko.schwanke@t-systems.com")
+    @Description("ro without vlan-range values (=null)")
+    public void testRoWithoutVlanRangeValues(VlanRange vlanRange) {
+        // GIVEN
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -292,7 +224,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -309,7 +241,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsCompleted();
@@ -326,7 +258,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -343,7 +275,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -359,7 +291,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data3.getUuid());
@@ -367,7 +299,11 @@ public class A4ResourceOrderTest {
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
+
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+        A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
     }
 
     @Test
@@ -380,19 +316,19 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         //NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data1.getUuid());
-       // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
+        // NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto2 = a4ResourceInventory.getExistingNetworkServiceProfileA10Nsp(nspA10Data2.getUuid());
 
-       // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
-       // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto.getNetworkElementLinkUuid(), nelData1.getUuid());
+        // Assert.assertEquals(networkServiceProfileA10NspDto2.getNetworkElementLinkUuid(), nelData2.getUuid());
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
-        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro.getId());
+        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -405,17 +341,20 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
-
-        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid());
+        a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
+        a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+
+        a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1);
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 0);
+        A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 0);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -429,15 +368,15 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkDefaultValuesNsp(nspA10Data1);
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData1.getUuid()).getLifecycleState(), "DEACTIVATED");
-        assertEquals(a4ResourceInventory.getExistingNetworkElementLink(nelData2.getUuid()).getLifecycleState(), "DEACTIVATED");
+        a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
+        a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
+        a4ResourceInventory.checkLifecycleState(nelData2, "DEACTIVATED");
 
-        a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1.getUuid(),2);
+        a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1);
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1, 2);
 
         a4ResourceOrder.checkResourceOrderIsCompleted();
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -455,13 +394,12 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-       a4ResourceOrder.checkResourceOrderIsRejected();
-       a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
-
 
     @DataProvider(name = "characteristicNamesDelete")
     public static Object[] characteristicNamesDeleteString() {
@@ -486,13 +424,12 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
         a4ResourceOrder.checkResourceOrderIsRejected();
     }
-
 
     @Test
     @Owner("heiko.schwanke@t-systems.com")
@@ -503,7 +440,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -522,7 +459,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkResourceOrderIsRejected();
@@ -541,7 +478,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        //sleepForSeconds(5);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
@@ -569,7 +506,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
@@ -592,7 +529,7 @@ public class A4ResourceOrderTest {
 
         // WHEN
         a4ResourceOrder.sendPostResourceOrder(ro);
-        sleepForSeconds(sleepTimer);
+        sleepForSeconds(SLEEP_TIMER);
 
         // THEN
         a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);

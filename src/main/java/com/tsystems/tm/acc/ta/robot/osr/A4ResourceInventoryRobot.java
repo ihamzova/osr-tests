@@ -13,6 +13,7 @@ import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.*;
 
 public class A4ResourceInventoryRobot {
 
@@ -196,15 +196,6 @@ public class A4ResourceInventoryRobot {
         );
     }
 
-    @Step("Get Network Service Profiles (A10NSP) by UUID")
-    public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspByUuid(String uuid) {
-        return a4ResourceInventory
-                .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfileA10Nsp()
-                .uuidPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByTerminationPoint(String uuidTp) {
         return a4ResourceInventory
@@ -338,18 +329,6 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Check that Network Element does not exist")
-    public void checkNetworkElementDoesNotExist(String vpsz, String fsz) {
-        List<NetworkElementDto> neList = a4ResourceInventory
-                .networkElements()
-                .listNetworkElements()
-                .vpszQuery(vpsz)
-                .fszQuery(fsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        assertEquals(neList.size(), 0);
-    }
-
     @Step("Get existing Network Element Port by UUID")
     public NetworkElementPortDto getExistingNetworkElementPort(String uuid) {
         return a4ResourceInventory
@@ -393,6 +372,46 @@ public class A4ResourceInventoryRobot {
                 .findNetworkElementLink()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void checkLifecycleState(A4NetworkElementLink nelData, String lcs) {
+        assertEquals(getExistingNetworkElementLink(nelData.getUuid()).getLifecycleState(), lcs);
+    }
+
+    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nspA10Nsp) {
+        final String UNDEFINED = "undefined";
+        final NetworkServiceProfileA10NspDto nsp = getExistingNetworkServiceProfileA10Nsp(nspA10Nsp.getUuid());
+
+        assertEquals(nsp.getLifecycleState(), "PLANNING");
+        assertEquals(nsp.getOperationalState(), "NOT_WORKING");
+        assertEquals(nsp.getAdministrativeMode(), "ENABLED");
+
+        String crtNew = Objects.requireNonNull(nsp.getCreationTime()).toString();
+        String lutNew = Objects.requireNonNull(nsp.getLastUpdateTime()).toString();
+        assertNotEquals(crtNew, lutNew);
+
+        assertEquals(nsp.getMtuSize(), "1590");
+        assertEquals(nsp.getEtherType(), "0x88a8");
+        assertEquals(nsp.getVirtualServiceProvider(), "DTAG");
+        assertEquals(nsp.getSpecificationVersion(), "7");
+        assertNull(nsp.getNumberOfAssociatedNsps());
+        assertNull(nsp.getNetworkElementLinkUuid());
+        assertTrue(Objects.requireNonNull(nsp.getLacpActive()));
+        assertEquals(nsp.getLacpMode(), UNDEFINED);
+        assertEquals(nsp.getMinActiveLagLinks(), "1");
+        assertEquals(nsp.getCarrierBsaReference(), UNDEFINED);
+        assertEquals(nsp.getItAccountingKey(), UNDEFINED);
+        assertEquals(nsp.getDataRate(), UNDEFINED);
+        assertEquals(nsp.getQosMode(), "TOLERANT");
+
+        A10NspQosDto qosClass = Objects.requireNonNull(nsp.getQosClasses()).get(0);
+        assertEquals(qosClass.getQosBandwidthDown(), UNDEFINED);
+        assertEquals(qosClass.getQosBandwidthUp(), UNDEFINED);
+        assertEquals(qosClass.getQosPriority(), UNDEFINED);
+
+        VlanRangeDto vlanRange = Objects.requireNonNull(nsp.getsVlanRange()).get(0);
+        assertEquals(vlanRange.getVlanRangeUpper(), UNDEFINED);
+        assertEquals(vlanRange.getVlanRangeLower(), UNDEFINED);
     }
 
     @Step("Check that Network Element Link doesn't exists in Inventory")
@@ -473,9 +492,9 @@ public class A4ResourceInventoryRobot {
             networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
                     (networkElementDtoUnderTest.get().getUuid()));
 
-            if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
+            if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-OLT-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
-            } else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1")) {
+            } else if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-LEAF-Switch-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
             } else {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 0);
