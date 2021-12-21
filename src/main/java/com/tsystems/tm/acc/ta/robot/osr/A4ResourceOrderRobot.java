@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A10nspA4DtoMapper;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
@@ -57,6 +58,7 @@ public class A4ResourceOrderRobot {
             new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
 
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
+    private final A10nspA4DtoMapper a10Mapper = new A10nspA4DtoMapper();
 
     @Step("Send POST for A10nsp Resource Order")
     public void sendPostResourceOrder(ResourceOrder resourceOrder) {
@@ -275,11 +277,7 @@ public class A4ResourceOrderRobot {
         String rvNumber = (String) getCharacteristic(RAHMEN_VERTRAGS_NR, roi).getValue();
         String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
 
-        A10nspA4Dto a10 = new A10nspA4Dto();
-        a10.setRahmenvertragsnummer(rvNumber);
-        a10.setCarrierBsaReference(cBsaRef);
-
-        return a10;
+        return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);
     }
 
     private void deleteA4TestDataRecursively(String roUuid) {
