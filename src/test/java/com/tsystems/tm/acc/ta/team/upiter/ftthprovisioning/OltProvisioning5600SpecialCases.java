@@ -13,6 +13,7 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -31,6 +32,8 @@ import static org.testng.Assert.assertEquals;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
+
+@Epic("WG Access Provisioning")
 public class OltProvisioning5600SpecialCases extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;

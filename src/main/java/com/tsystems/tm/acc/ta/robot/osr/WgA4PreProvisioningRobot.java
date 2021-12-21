@@ -12,9 +12,9 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.model.DeprovisioningResponseHolder;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.A4AccessLineRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +46,9 @@ public class WgA4PreProvisioningRobot {
                 .startAccessLinePreProvisioning()
                 .body(tpRefDto)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
-
     }
 
+    @Step("Start AccessLine Deprovisioning")
     public void startAccessLineDeprovisioning(String lineId) {
         CORRELATION_ID = UUID.randomUUID().toString();
         wgA4ProvisioningClient

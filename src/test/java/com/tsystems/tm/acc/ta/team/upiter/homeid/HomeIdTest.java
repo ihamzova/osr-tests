@@ -2,13 +2,14 @@ package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
 import com.tsystems.tm.acc.data.upiter.models.homeidbatch.HomeIdBatchCase;
 import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.home.id.management.v1_3_0.client.model.PoolHomeId;
 import com.tsystems.tm.acc.tests.osr.home.id.management.v1_3_0.client.model.SingleHomeId;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,6 +21,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 @ServiceLog(HOME_ID_MANAGEMENT_MS)
+
+@Epic("HomeId Management")
 public class HomeIdTest extends GigabitTest {
 
     private HomeIdManagementRobot homeIdManagementRobot;

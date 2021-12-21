@@ -5,9 +5,9 @@ import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.invoker.GsonObjectMapper;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.invoker.JSON;
 import lombok.Getter;
 
 @Getter
