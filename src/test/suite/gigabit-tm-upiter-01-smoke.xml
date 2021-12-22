@@ -35,7 +35,7 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.a4provisioning.WgA4Provisioning">
                 <methods>
-                    <include name="a4PortProvisioning"/>
+                    <include name="a4FtthProvisioningWithoutTpType"/>
                 </methods>
             </class>
         </classes>

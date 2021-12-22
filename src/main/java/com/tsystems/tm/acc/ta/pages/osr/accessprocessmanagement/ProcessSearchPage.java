@@ -29,7 +29,7 @@ import static org.testng.Assert.*;
 public class ProcessSearchPage {
 
   WebDriver driver;
-  private static final Integer LATENCY_FOR_PROVISIONING_TO_FAIL = 120_000;
+  private static final Integer LATENCY_FOR_PROVISIONING_TO_FAIL = 150_000;
 
   private static final String APP = "access-process-management-ui";
   private static final String ENDPOINT = "/search";

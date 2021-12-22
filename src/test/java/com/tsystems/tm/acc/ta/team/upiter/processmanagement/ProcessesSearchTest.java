@@ -142,7 +142,7 @@ public class ProcessesSearchTest extends GigabitTest {
   @TmsLink("DIGIHUB-122534")
   @Description("Search processes by DPU Endsz in Access Process Management UI")
   public void searchFailedFttbProcess() throws Exception {
-    accessLineRiRobot.fillDatabaseForDpuPreprovisioning(dpuDeviceFttbProvisioningTwistedPair, oltDeviceFttbProvisioningTwistedPair);
+    accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1000, 1000, dpuDeviceFttbProvisioningTwistedPair, oltDeviceFttbProvisioningTwistedPair);
     wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningTwistedPair.getEndsz());
     ProcessSearchPage processSearchPage = new ProcessSearchPage().openPage();
     processSearchPage.validateUrl();
