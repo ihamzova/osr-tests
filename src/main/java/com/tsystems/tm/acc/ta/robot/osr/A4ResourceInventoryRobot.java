@@ -129,7 +129,10 @@ public class A4ResourceInventoryRobot {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
 
-        return nspList.get(0);
+        if (!nspList.isEmpty())
+            return nspList.get(0);
+        else
+            return null;
     }
 
     @Step("Check if one Network Service Profile A10NSP connected to Termination Point exists")
