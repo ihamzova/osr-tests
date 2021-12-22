@@ -10,5 +10,5 @@ values:
 name: AccessLineForSearchByDpu
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  dpuEndSz: "49/30/179/71G0"
+  dpuEndSz: "49/812/179/71G0"
   dpuPortNumber: "2"
