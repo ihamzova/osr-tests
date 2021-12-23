@@ -2,7 +2,6 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.A4ResourceInventoryStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -23,15 +22,6 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     public WiremockWgA4ProvisioningSteps(TestContext testContext) {
         super(testContext);
     }
-
-//    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called, and send a callback")
-//    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDoACallback(int httpCode) {
-//        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-//
-//        wiremock
-//                .add(new DeProvisioningStub().postDeProvAccessLineWithCallback(httpCode))
-//                .publish();
-//    }
 
     @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called, and delete the NSP")
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDeleteNsp(int httpCode) {
@@ -70,20 +60,6 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
                 .add(new DeProvisioningStub().postDeProvAccessLineSecondTimeWithNspDeletion(httpCodeSecond, nspFtth.getUuid()))
                 .publish();
     }
-
-//    @Given("the A4 resource inventory will respond HTTP code {int} when called")
-//    public void RiWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
-//        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-//
-//        wiremock
-//                .add(new A4ResourceInventoryStub().deleteTPWith500(httpCode))
-//                .publish();
-//    }
-
-//    @Then("a DPU deprovisioning request to wg-a4-provisioning mock was triggered")
-//    public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
-//        a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
-//    }
 
     @Then("a DPU deprovisioning request to wg-a4-provisioning mock was triggered with Line ID {string}")
     public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
