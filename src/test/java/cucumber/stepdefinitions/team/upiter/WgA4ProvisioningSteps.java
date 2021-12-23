@@ -17,7 +17,6 @@ public class WgA4ProvisioningSteps extends BaseSteps {
     @Before
     public void setup() {
         cleanup(); // Make sure no old test data is in the way
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }
 
     @After

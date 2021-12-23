@@ -29,11 +29,11 @@ public class A4ResourceInventoryServiceRobot {
     private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient(authTokenProvider).getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
-    public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+    public Response createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(tpData, nepData);
 
-        a4ResourceInventoryService
+        return a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePut()
                 .idPath(tpData.getUuid())

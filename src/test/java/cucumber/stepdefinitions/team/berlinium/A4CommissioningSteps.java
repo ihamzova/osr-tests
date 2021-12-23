@@ -18,7 +18,7 @@ public class A4CommissioningSteps extends BaseSteps {
         super(testContext);
     }
 
-    @When("the U-Piter DPU mock sends the callback")
+    @When("the wg-a4-provisioning mock sends the callback")
     public void uPiterSendsTheCallback() {
         A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
         final Response response = wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutResponse(tp.getUuid());
