@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.A4ResourceInventoryStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
-import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
@@ -17,25 +16,24 @@ import io.cucumber.java.en.Then;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
-public class WiremockSteps extends BaseSteps {
+public class WiremockWgA4ProvisioningSteps extends BaseSteps {
 
-    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final WgA4ProvisioningWiremockRobot a4ProvWiremock = new WgA4ProvisioningWiremockRobot();
 
-    public WiremockSteps(TestContext testContext) {
+    public WiremockWgA4ProvisioningSteps(TestContext testContext) {
         super(testContext);
     }
 
-    @Given("U-Piter DPU mock will respond HTTP code {int} when called, and send a callback")
-    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDoACallback(int httpCode) {
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+//    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called, and send a callback")
+//    public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDoACallback(int httpCode) {
+//        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+//
+//        wiremock
+//                .add(new DeProvisioningStub().postDeProvAccessLineWithCallback(httpCode))
+//                .publish();
+//    }
 
-        wiremock
-                .add(new DeProvisioningStub().postDeProvAccessLineWithCallback(httpCode))
-                .publish();
-    }
-
-    @Given("the U-Piter DPU mock will respond HTTP code {int} when called, and delete the NSP")
+    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called, and delete the NSP")
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledAndDeleteNsp(int httpCode) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
@@ -45,7 +43,7 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Given("the U-Piter DPU mock will respond HTTP code {int} when called")
+    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called")
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
 
@@ -54,7 +52,7 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Given("the U-Piter DPU mock will respond HTTP code {int} when called the 1st time")
+    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called the 1st time")
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
 
@@ -63,7 +61,7 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Given("the U-Piter DPU mock will respond HTTP code {int} when called the 2nd time, and delete the NSP")
+    @Given("the wg-a4-provisioning mock will respond HTTP code {int} when called the 2nd time, and delete the NSP")
     public void uPiterDPUWiremockWillRespondHTTPCodeWhenCalledSecondTimeTime(int httpCodeSecond) {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
@@ -73,42 +71,36 @@ public class WiremockSteps extends BaseSteps {
                 .publish();
     }
 
-    @Given("the A4 resource inventory will respond HTTP code {int} when called")
-    public void RiWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+//    @Given("the A4 resource inventory will respond HTTP code {int} when called")
+//    public void RiWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
+//        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+//
+//        wiremock
+//                .add(new A4ResourceInventoryStub().deleteTPWith500(httpCode))
+//                .publish();
+//    }
 
-        wiremock
-                .add(new A4ResourceInventoryStub().deleteTPWith500(httpCode))
-                .publish();
-    }
+//    @Then("a DPU deprovisioning request to wg-a4-provisioning mock was triggered")
+//    public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
+//        a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
+//    }
 
-    @Then("a DPU deprovisioning request to U-Piter DPU mock was triggered")
-    public void aDPUDeprovisioningRequestToUPiterWasTriggered() {
-        a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
-    }
-
-    @Then("a DPU deprovisioning request to U-Piter DPU mock was triggered with Line ID {string}")
+    @Then("a DPU deprovisioning request to wg-a4-provisioning mock was triggered with Line ID {string}")
     public void aDPUDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
         final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
         final A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
     }
 
-    @Then("no DPU deprovisioning request to U-Piter DPU mock was triggered")
+    @Then("no DPU deprovisioning request to wg-a4-provisioning mock was triggered")
     public void noDPUDeprovisioningRequestToUPiterWasTriggered() {
         a4ProvWiremock.checkPostToDeprovisioningWiremock(0);
     }
 
-    @Then("the deprovisioning request to U-Piter DPU mock is repeated after {int} minutes")
-    public void wait(int min) {
+    @Then("the deprovisioning request to wg-a4-provisioning mock is repeated after {int} minutes")
+    public void waitAndRetry(int min) {
         sleepForSeconds(min * 60);
         a4ProvWiremock.checkPostToDeprovisioningWiremock(2);
-    }
-
-    @Then("a delete NSP FTTH update notification was sent to NEMO")
-    public void aDeleteNSPFTTHUpdateNotificationWasSentToNEMO() {
-        A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
-        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspFtth.getUuid(), "DELETE", 1);
     }
 
 }

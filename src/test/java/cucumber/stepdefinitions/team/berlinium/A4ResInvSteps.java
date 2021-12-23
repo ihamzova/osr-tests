@@ -7,9 +7,10 @@ import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4N
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
+import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
-import cucumber.BaseSteps;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
@@ -20,11 +21,11 @@ import java.util.UUID;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS})
-public class A4RevInvSteps extends BaseSteps {
+public class A4ResInvSteps extends BaseSteps {
 
     private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
 
-    public A4RevInvSteps(TestContext testContext) {
+    public A4ResInvSteps(TestContext testContext) {
         super(testContext);
     }
 
@@ -132,6 +133,29 @@ public class A4RevInvSteps extends BaseSteps {
     public void theNspFtthIsNotExistingInA4ResourceInventoryAnymore() {
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
+    }
+
+    @Then("the TP does exist in A4 resource inventory")
+    public void theTPDoesExistInA4ResourceInventory() {
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        a4ResInv.checkTerminationPointExists(tp.getUuid());
+    }
+
+    @Then("a/the NSP FTTH (connected to the TP )does exist in A4 resource inventory")
+    public void theNspFtthDoesExistInA4ResourceInventory() {
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
+
+        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
+        nspFtth.setUuid(nspFtthDto.getUuid());
+        nspFtth.setLineId(nspFtthDto.getLineId());
+        nspFtth.setLifecycleState(nspFtthDto.getLifecycleState());
+        nspFtth.setOperationalState(nspFtthDto.getOperationalState());
+        nspFtth.setOntSerialNumber(nspFtthDto.getOntSerialNumber());
+        nspFtth.setOltPortOntLastRegisteredOn(nspFtthDto.getOltPortOntLastRegisteredOn());
+        nspFtth.setTerminationPointUuid(nspFtthDto.getTerminationPointFtthAccessUuid());
+
+        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
     private A4NetworkElement setupDefaultNeTestData() {

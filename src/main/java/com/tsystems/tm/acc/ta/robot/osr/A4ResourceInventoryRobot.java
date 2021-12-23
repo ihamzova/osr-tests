@@ -286,6 +286,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Check if Termination Point exists")
+    public void checkTerminationPointExists(String uuid) {
+         a4ResourceInventory
+                .terminationPoints()
+                .findTerminationPoint()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Check that NEL was created and is connected to Network Element Ports")
     public void checkNetworkElementLinkConnectedToNePortExists(UewegData uewegData,
                                                                String uuidNetworkElementPortA,
