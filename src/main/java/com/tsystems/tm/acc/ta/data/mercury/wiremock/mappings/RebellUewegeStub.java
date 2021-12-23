@@ -5,9 +5,13 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
@@ -44,8 +48,13 @@ public class RebellUewegeStub  extends AbstractStubMapping {
 
         String bngPortPostion = String.format("%s.0.2", oltDevice.getBngDownlinkSlot()); // e.g. "7.0.2"
 
-        return FileUtils.readFileToString(new File(getClass()
-                .getResource(PATH_TO_MOCK).getFile()), Charset.defaultCharset())
+        return new BufferedReader(
+                new InputStreamReader(Objects.requireNonNull(getClass()
+                        .getResourceAsStream(PATH_TO_MOCK)), Charset.defaultCharset()))
+                .lines()
+                .collect(Collectors.joining("\n"))
+                /*   return FileUtils.readFileToString(new File(getClass()
+                           .getResourceAsStream(PATH_TO_MOCK).getFile()), Charset.defaultCharset())*/
                 .replace("$oltEndSz", oltDevice.getEndsz().replace("/", "_"))
                 .replace("$olt_akz", oltEndSz[0])
                 .replace("$olt_nkz", oltEndSz[1])
