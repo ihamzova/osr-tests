@@ -55,9 +55,10 @@ public class ProcessesSearchTest extends GigabitTest {
 
   @BeforeClass
   public void init() {
+    accessLineRiRobot = new AccessLineRiRobot();
+    accessLineRiRobot.clearDatabase();
     ftthProcess = context.getData().getProcessDataProvider().get(ProcessCase.ftthFailedProcess);
     fttbProcess = context.getData().getProcessDataProvider().get(ProcessCase.fttbFailedProcess);
-    accessLineRiRobot = new AccessLineRiRobot();
     processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(ftthProcess).toString();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
