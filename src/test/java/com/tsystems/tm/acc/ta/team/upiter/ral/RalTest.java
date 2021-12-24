@@ -11,8 +11,8 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.AbstractDevice;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -36,6 +36,7 @@ import static org.testng.Assert.assertTrue;
 public class RalTest extends GigabitTest {
 
   private OltDevice oltDeviceForRal;
+  private OltDevice oltDevice;
   private OltDevice a4DeviceForRal;
   private RiAbstractionLayerRobot riAbstractionLayerRobot = new RiAbstractionLayerRobot();
   private UpiterTestContext context = UpiterTestContext.get();
@@ -46,6 +47,7 @@ public class RalTest extends GigabitTest {
 
   @BeforeMethod
   public void loadContext() {
+    oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.OltDevice);
     oltDeviceForRal = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.OltDeviceForRal);
     a4DeviceForRal = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.A4DataForRal);
     expectedA4device = context.getData().getExpectedAbstractDeviceDataProvider().get(ExpectedAbstractDeviceCase.ExpectedA4Device);
@@ -56,14 +58,13 @@ public class RalTest extends GigabitTest {
   @TmsLink("DIGIHUB-51273")
   @Description("Gets common Device by EndSz")
   public void getDeviceByEndSz() {
-    Device response = riAbstractionLayerRobot.getDeviceByEndsz(oltDeviceForRal.getEndsz());
-    assertEquals(response.getEndSz(), oltDeviceForRal.getEndsz());
-    assertEquals(response.getDeviceName(), oltDeviceForRal.getBezeichnung());
-    assertEquals(response.getEquipmentHolders().get(2).getCard().getCardType().toString(), oltDeviceForRal.getCardType());
-    assertEquals(response.getEquipmentHolders().get(0).getSlotNumber(), oltDeviceForRal.getOltSlot());
-    assertEquals(response.getType().toString(), oltDeviceForRal.getDeviceType());
-    assertEquals(response.getEquipmentHolders().get(0).getCard().getPorts().get(3).getPortType().toString(), oltDeviceForRal.getPortType());
-    assertEquals(response.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), oltDeviceForRal.getOltPort());
+    Device response = riAbstractionLayerRobot.getDeviceByEndsz(oltDevice.getEndsz());
+    assertEquals(response.getEndSz(), oltDevice.getEndsz());
+    assertEquals(response.getEmsNbiName(), oltDevice.getBezeichnung());
+    assertEquals(response.getEquipmentHolders().get(0).getCard().getCardType().toString(), oltDevice.getCardType());
+    assertEquals(response.getType().toString(), oltDevice.getDeviceType());
+    assertEquals(response.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortType().toString(), oltDevice.getPortType());
+    assertEquals(response.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), oltDevice.getOltPort());
   }
 
   @Test
@@ -107,6 +108,7 @@ public class RalTest extends GigabitTest {
     List<AbstractDevice> deviceList = riAbstractionLayerRobot.getDeviceByVpsz(a4DeviceForRal.getVpsz());
     mappingsContext.deleteStubs();
     final List<ExpectedAbstractDevice> expectedDeviceList = deviceList.stream().map(RiAbstractionLayerRobot::mapToAbstractDevice).collect(Collectors.toList());
+    System.out.println(expectedA4device);
     assertTrue(expectedDeviceList.contains(expectedA4device));
 
   }
@@ -125,6 +127,9 @@ public class RalTest extends GigabitTest {
     List<AbstractDevice> deviceList = riAbstractionLayerRobot.getDeviceByKlsId(expectedOltBngDevice.getKlsId());
     mappingsContext.deleteStubs();
     final List<ExpectedAbstractDevice> expectedDeviceList = deviceList.stream().map(RiAbstractionLayerRobot::mapToAbstractDevice).collect(Collectors.toList());
+    System.out.println(expectedDeviceList);
+    System.out.println("__________________________________");
+    System.out.println(expectedOltBngDevice);
     assertTrue(expectedDeviceList.contains(expectedOltBngDevice));
   }
 

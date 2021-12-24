@@ -11,5 +11,10 @@ values:
     lifeCycleState: "INSTALLING"
     vpSz: "49/30/179"
     fSz: "7KH4"
+    cards:
+        - ports:
+              - lifeCycleState: "INSTALLING"
+                portType: "GPON"
+                portNumber: "1"
     relatedParty:
-      id : "10001"
+        - id : "10001"

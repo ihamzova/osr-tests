@@ -1,10 +1,14 @@
 package com.tsystems.tm.acc.ta.data.osr.models;
 
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDeviceRelatedParty;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.AbstractDeviceCard;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.AbstractDevicePort;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.RelatedPartyId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -24,6 +28,8 @@ public class ExpectedAbstractDevice {
   private String lifeCycleState;
   private String vpSz;
   private String fSz;
-  private AbstractDeviceRelatedParty relatedParty;
+  private List<AbstractDeviceCard> cards;
+  private List<AbstractDevicePort> ports;
+  private List<RelatedPartyId> relatedParty;
 }
 
