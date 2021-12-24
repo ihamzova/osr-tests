@@ -10,16 +10,17 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 
 public class OltRiStub extends AbstractStubMapping {
   public static final String OLT_DEVICE_FROM_OLT_RI = "/api/oltResourceInventory/v1/device/*";
+  public static final String OLT_ABSTRACT_DEVICE_FROM_OLT_RI = "/resource-order-resource-inventory/v5/device";
+
 
 
 
   public MappingBuilder getNoDevicefromOltRi() {
-    return get(urlPathMatching(OLT_DEVICE_FROM_OLT_RI))
+    return get(urlPathMatching(OLT_ABSTRACT_DEVICE_FROM_OLT_RI))
             .withName("getAbsctractDeviceFromOltRi")
             .willReturn(aDefaultResponseWithBody("[]", HTTP_CODE_OK_200))
             .atPriority(0);
   }
-
   public static String serialize(Object obj) {
     JSON json = new JSON();
     json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());

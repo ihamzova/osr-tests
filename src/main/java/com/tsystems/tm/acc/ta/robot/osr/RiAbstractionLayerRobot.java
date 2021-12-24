@@ -5,8 +5,8 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.RiAbstractionLayerClient;
 import com.tsystems.tm.acc.ta.data.osr.models.ExpectedAbstractDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.AbstractDevice;
-import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_8_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.AbstractDevice;
+import com.tsystems.tm.acc.tests.osr.ri.abstraction.layer.v1_10_0.client.model.Device;
 import io.qameta.allure.Step;
 
 import java.util.List;
@@ -85,7 +85,8 @@ public class RiAbstractionLayerRobot {
     device.setLifeCycleState(abstractDevice.getLifeCycleState().getValue());
     device.setVpSz(abstractDevice.getVpSz());
     device.setFSz(abstractDevice.getfSz());
+    device.setCards(abstractDevice.getCards());
     device.setRelatedParty(abstractDevice.getRelatedParty());
+    device.setPorts(abstractDevice.getPorts());
     return device;
-  }
-}
+  }}
