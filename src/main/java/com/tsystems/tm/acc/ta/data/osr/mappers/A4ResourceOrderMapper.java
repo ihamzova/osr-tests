@@ -18,6 +18,7 @@ public class A4ResourceOrderMapper {
     public static final String VLAN_RANGE = "VLAN_Range";
     public static final String QOS_LIST = "QoS_List";
 
+
     public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
                 .externalId("merlin_id_" + getRandomDigits(4))
