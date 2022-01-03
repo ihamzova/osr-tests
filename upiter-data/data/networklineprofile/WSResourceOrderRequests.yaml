@@ -1,0 +1,47 @@
+name: WsNetworkLineProfileActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "PPDOWNL3"
+              value: "123000"
+            - name: "PPUPL3"
+              value: "123000"
+---
+name: WsNetworkLineProfileModification
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "PPDOWNL3"
+              value: "223000"
+            - name: "PPUPL3"
+              value: "223000"

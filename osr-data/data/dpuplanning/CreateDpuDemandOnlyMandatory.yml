@@ -1,0 +1,8 @@
+name: CreateDpuDemandOnlyMandatory
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand
+values:
+  dpuAccessTechnology: FTTB_COAX
+  fiberOnLocationId: "1000000021049"
+  klsId: "584741154"
+  numberOfNeededDpuPorts: "15"
+  state: OPEN

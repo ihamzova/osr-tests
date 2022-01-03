@@ -15,7 +15,7 @@ import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATE
 
 public class HomeIdManagementRobot {
     private HomeIdManagementClient homeIdManagementClient = new HomeIdManagementClient(authTokenProvider);
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("access-line-resource-inventory", RhssoHelper.getSecretOfGigabitHub("access-line-resource-inventory"));
+    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
 
     @Step ("Generate new homeId")

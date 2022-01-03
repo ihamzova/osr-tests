@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.*;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -42,6 +42,42 @@ public class OltResourceInventoryMapper {
                 .lifeCycleState(deviceState)
                 .compositePartyId(0L)
                 .equipmentHolders(getEquipmentHolders())
+                .ports(Collections.singletonList(getPort(portState)))
+                .fiberOnLocationId("1111222233334444555");
+    }
+
+    public Device getDeviceAdtran(Device.LifeCycleStateEnum deviceState, Port.LifeCycleStateEnum portState) {
+        return new Device()
+                .shortName("MABC VB")
+                .materialNumber("40247069")
+                .emsNbiName("MA5600T")
+                .tkz1("02351082")
+                .tkz2(null)
+                .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40247069")
+                .lastDiscovery(OffsetDateTime.now())
+                .id(1003L)
+                .resourceId("1003")
+                .deviceName("ETSI Service Shelf H8-MABC")
+                .endSz("{{request.requestLine.query.endsz}}")
+                .fachSz(null)
+                .klsId(16063944L)
+                .ipAddress("10.182.112.196")
+                .firmwareVersion(null)
+                .resourceState(Device.ResourceStateEnum.NON_WORKING)
+                .communicationState(Device.CommunicationStateEnum.AVAILABLE)
+                .serialNumber("12345")
+                .importState(Device.ImportStateEnum.PLANNED)
+                .type(Device.TypeEnum.DPU)
+                .importDate(OffsetDateTime.now())
+                .description("string")
+                .asb(0L)
+                .technicalLocation("string")
+                .equipmentNumber("string")
+                .manufacturer("string")
+                .distributionPointId("123456789")
+                .lifeCycleState(deviceState)
+                .compositePartyId(0L)
+                .equipmentHolders(getEquipmentHoldersAdtran())
                 .ports(Collections.singletonList(getPort(portState)))
                 .fiberOnLocationId("1111222233334444555");
     }
@@ -123,18 +159,68 @@ public class OltResourceInventoryMapper {
         );
     }
 
+    private List<EquipmentHolder> getEquipmentHoldersAdtran() {
+        return Collections.singletonList(new EquipmentHolder()
+                .id(1011L)
+                .card(new Card()
+                        .shortName("GPPD")
+                        .materialNumber("40261742")
+                        .emsNbiName("H805GPBD")
+                        .tkz1("03021BQW")
+                        .tkz2(null)
+                        .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742")
+                        .lastDiscovery(OffsetDateTime.now())
+                        .id(1011L)
+                        .resourceId("1011")
+                        .name("8-port GPON OLT Interface Board V2")
+                        .description(null)
+                        .serialNumber("021BQW10B6000065")
+                        .serviceState(null)
+                        .resourceState("INSTALLING_INSTALLED")
+                        .firmwareVersion("507(2015-8-27)")
+                        .cardType(Card.CardTypeEnum.GPON)
+                        .equipmentNumber("40261742")
+                        .manufacturer(null)
+                        .ports(Collections.singletonList(new Port()
+                                        .id(1049L)
+                                        .resourceId("1049")
+                                        .portType(Port.PortTypeEnum.PON)
+                                        .portNumber("1")
+                                        .opticalModule(new OpticalModule()
+                                                .shortName("GPPD")
+                                                .materialNumber("40261742")
+                                                .emsNbiName("H805GPBD")
+                                                .tkz1("03021BQW")
+                                                .tkz2(null)
+                                                .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742")
+                                                .lastDiscovery(OffsetDateTime.now())
+                                                .id(0L)
+                                                .resourceId("1049")
+                                                .name("8-port GPON OLT Interface Board V2")
+                                                .description(null)
+                                                .manufacturer(null)
+                                                .compositePartyId(0L)
+                                        )
+                                        .compositePartyId(0L)
+                                )
+                        )
+                        .compositePartyId(0L)
+                )
+        );
+    }
+
     public Device getDeviceMobileDpuBff(Dpu dpu) {
         return new Device()
-                .shortName("MABC VB")
+                .shortName("SDX2221-04 TP-AC-M-FTTB ETSI")
                 .materialNumber("40247069")
-                .emsNbiName("MA5600T")
+                .emsNbiName("SDX2221-04-TP")
                 .tkz1("02351082")
                 .tkz2(null)
                 .descriptionUrl("https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40247069")
                 .lastDiscovery(OffsetDateTime.now())
                 .id(1111L)
                 .resourceId("1111")
-                .deviceName("ETSI Service Shelf H8-MABC")
+                .deviceName("4 PORT G.FAST FTTB ONU, TWISTED PAIR, AC POWER, WITH MELT")
                 .endSz(dpu.getEndSz())
                 .fachSz(null)
                 .klsId(16063944L)
@@ -156,7 +242,8 @@ public class OltResourceInventoryMapper {
                 .compositePartyId(0L)
                 .equipmentHolders(getEquipmentHolders())
                 .ports(Collections.singletonList(getPortMobileDpuBff()))
-                .fiberOnLocationId("1111222233334444555");
+                .fiberOnLocationId("1111222233334444555")
+                .accessTransmissionMedium(Device.AccessTransmissionMediumEnum.COAX);
     }
 
     public Port getPortMobileDpuBff() {

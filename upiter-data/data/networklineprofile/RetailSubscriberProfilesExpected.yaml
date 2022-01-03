@@ -1,0 +1,23 @@
+name: RetailSubscriberNetworkLineProfileFtth
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  minDownBandwidth: 63680
+  minUpBandwidth: 21312
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312
+---
+name: RetailSubscriberNetworkLineProfileFttb
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1168256
+  maxUpBandwidth: 292096
+  minDownBandwidth: 1152
+  minUpBandwidth: 768
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312

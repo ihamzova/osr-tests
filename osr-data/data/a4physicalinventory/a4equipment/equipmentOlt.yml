@@ -1,0 +1,18 @@
+name: equipmentOlt
+template: com.tsystems.tm.acc.ta.data.osr.models.A4Equipment
+values:
+  uuid: "" # if blank: field will be filled with returned uuid of created Equipment
+  manufacturer: "Adtran"
+  installedPartNumber: "11971330F1"
+  manufactureDate: "2021-08-26T15:04:44.613Z"
+  installedSerialNumber: "LBADTN2029CN928"
+  equipmentRevisionLevel: "1"
+  matNumberStringRetrieved: "40958960"
+  matNumber: "40958960"
+  installedEquipmentType: "OLT"
+  model: "OLT-Adtran SDX 6320-16"
+  lastBootTime: "2021-08-26T15:04:44.613Z"
+  networkElementUuid: "1c71083c-2cce-4681-8f7a-e0acb9bb0092"
+  creationTime: "2021-08-26T15:04:44.613Z"
+  lastUpdateTime: "2021-08-26T15:04:44.613Z"
+  description: "ADTRAN OLT"

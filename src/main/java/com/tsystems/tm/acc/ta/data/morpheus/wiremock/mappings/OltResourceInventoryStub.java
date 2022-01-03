@@ -5,10 +5,10 @@ import com.tsystems.tm.acc.ta.data.morpheus.mappers.OltResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.Dpu;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.AncpSessionDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.AncpSessionDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Port;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
     public static final String DPU_PORT_URL = "/resource-order-resource-inventory/v1/port";
     public static final String GET_DPU_PON_CONNECTION_URL = "/resource-order-resource-inventory/v1/dpu/dpuPonConnection";
     public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v5/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz";
-    public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v1/ancp/session/endsz";
+    public static final String GET_DPU_ANCP_SESSION_URL = "/resource-order-resource-inventory/v5/ancpSession";
     public static final String DPU_AT_OLT_CONF_URL = "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration";
     public static final String DPU_EMS_CONFIGURATION_URL = "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration";
     public static final String DPU_COMMISSIONING_URL = "/resource-order-resource-inventory/v1/dpuProcessRestoreTask";
@@ -31,6 +31,16 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                 .withName("getDpuDevice200")
                 .willReturn(aDefaultResponseWithBody(
                         serialize(Collections.singletonList(new OltResourceInventoryMapper().getDevice(dpu.getLifeCycleDpu(), dpu.getLifeCycleUplink()))),
+                        200
+                ))
+                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder getDpuDeviceAdtran200(Dpu dpu) {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceAdtran200")
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(Collections.singletonList(new OltResourceInventoryMapper().getDeviceAdtran(dpu.getLifeCycleDpu(), dpu.getLifeCycleUplink()))),
                         200
                 ))
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
@@ -120,7 +130,8 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withName("getDpuAncpSession200EmptyBody")
-                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+                .atPriority(0)
+                .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(dpu.getEndSz()));
     }
 
     public MappingBuilder getDpuAncpSession400(OltDevice oltDevice, Dpu dpu) {
@@ -134,7 +145,8 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
         return get(urlPathEqualTo(GET_DPU_ANCP_SESSION_URL))
                 .withName("getDpuAncpSession404")
                 .willReturn(aDefaultResponseWithBody(null, 404))
-                .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+                .atPriority(0)
+                .withQueryParam("accessNodeEquipmentBusinessRef.endSz", equalTo(dpu.getEndSz()));
     }
 
     public MappingBuilder getOltAncpSession200(OltDevice olt, Dpu dpu) {

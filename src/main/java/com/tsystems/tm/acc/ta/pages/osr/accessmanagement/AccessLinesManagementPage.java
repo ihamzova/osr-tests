@@ -1,152 +1,253 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import java.util.Set;
-
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class AccessLinesManagementPage {
 
-    private static final String TITLE = "Access Lines durchsuchen";
-    private static final long TIMEOUT_MS = 30000;
+  private static final long TIMEOUT_MS = 30000;
 
-    private static final By NE_DEFAULT_PROFILE_STATE_INPUT = byQaData("ne-def-state-input");
-    private static final By NL_DEFAULT_PROFILE_STATE_INPUT = byQaData("nl-def-state-input");
-    private static final By NE_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("ne-sub-state-input");
-    private static final By NL_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("nl-sub-state-input");
+  private static final By EDIT_BUTTON = byQaData("btn-edit");
+  private static final By SAVE_AND_RECONFIGURE_BUTTON = byQaData("btn-sar");
+  private static final By ONT_ABMELDUNG_BUTTON = byQaData("btn-ont-dereg");
+  private static final By ADD_SUBSCRIBER_NE_PROFILE_BUTTON = byQaData("btn-ne-profile-add");
+  private static final By NE_DEFAULT_PROFILE_STATE_INPUT = byQaData("ne-def-state-input");
+  private static final By NL_DEFAULT_PROFILE_STATE_INPUT = byQaData("nl-def-state-input");
+  private static final By NE_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("ne-sub-state-input");
+  private static final By NL_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("nl-sub-state-input");
+  private static final By NE_SUBSCRIBER_ONT_STATE_INPUT = byQaData("ne-sub-ontstate-input");
+  private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
+  private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
+  private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
+  private static final By TERMINATION_BUTTON = byQaData("btn-terminate");
 
-    SelenideElement neDefaultProfileTitle = $x("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
-    SelenideElement neSubscriberProfileTitle = $x("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
-    SelenideElement nlDefaultProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
-    SelenideElement nlSubscriberProfileTitle = $x("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
-    SelenideElement editButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
-    SelenideElement saveAndReconfigureButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
-    SelenideElement ontAbmeldungButton = $x("//*[@class='am-form-btn am-primary am-text-center am-pointer p-ripple ng-star-inserted']");
+  private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
+  private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
+  private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
+  private static final By NL_DEFAULT_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
+  private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+  private static final By SAVE_LOCAL_BUTTON = byQaData("btn-save-local");
+  private static final By ADD_SUBSCRIBER_NL_PROFILE_BUTTON = byQaData("btn-nl-profile-add");
+  private static final By NL_KLSId_INPUT = byQaData("nl-sub-klsid-input");
+  private static final By NL_SUBSCRIBER_PROFILE_STATE = byQaData("nl-sub-state-input");
+  private static final By SERIALNUMBER_IN_NSP = byQaData("nsp-ref-serialnumber-input");
+  private static final By FTTB_NE_OLT_STATE = byQaData("fttb-ne-stateolt-input");
+  private static final By FTTB_NE_STATEMOSAIC = byQaData("fttb-ne-statemosaic-input");
 
-    SelenideElement addProfile = $x("//*[@class='am-icon icon--add-profile']");
-    SelenideElement dropDownTriggerStateNEprofile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-1 pi pi-chevron-down']");
-    SelenideElement dropDownTriggerStateSubProfile = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-4 pi pi-chevron-down']");
-    SelenideElement dropDownTriggerOntState = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-5 pi pi-chevron-down']");
-    SelenideElement dropDownTriggerStatus = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-3 pi pi-chevron-down']");//
-    SelenideElement dropDownTriggerStatusToWG = $x("//*[@class='p-dropdown-trigger-icon ng-tns-c49-10 pi pi-chevron-down']");
+  private static final By INACTIVE_STATE = byXpath("//*[@id='INACTIVE']");
+  private static final By ACTIVE_STATE = byXpath("//*[@id='ACTIVE']");
+  private static final By ONLINE_ONT_STATE = byXpath("//*[@id='ONLINE']");
+  private static final By ASSIGNED_STATUS = byXpath("//*[@id='ASSIGNED']");
+  private static final By WALLED_GARDEN_STATUS = byXpath("//*[@id='WALLED_GARDEN']");
+  private static final By NOTIFICATION = byXpath("//h2[@role = 'alert']");
+  private static final By CLOSE_NOTIFICATION_BUTTON = byXpath("//*[@role='alert']/button");
 
-    SelenideElement inactiveState = $x("//*[@id='INACTIVE']");
-    SelenideElement activeState = $x("//*[@id='ACTIVE']");
-    SelenideElement onlineOntState = $x("//*[@id='ONLINE']");
-    SelenideElement assignedStatus = $x("//*[@id='ASSIGNED']");
-    SelenideElement walledGardenStatus = $x("//*[@id='WALLED_GARDEN']");
-    SelenideElement bestatigenData = $x("//*[@qa-data='am-deregistration-proceed']");
+  @Step("Return on first window")
+  public AccessLineSearchPage returnToAccessLinesSearchPage() {
+    switchTo().window(0);
+    return new AccessLineSearchPage();
+  }
+
+  @Step("Click Edit button")
+  public AccessLinesManagementPage clickEditButton() {
+    $(EDIT_BUTTON).click();
+    return this;
+  }
+
+  @Step("Click Save and Reconfigure button")
+  public AccessLinesManagementPage clickSaveAndReconfigureButton() {
+    $(SAVE_AND_RECONFIGURE_BUTTON).click();
+    $(NOTIFICATION).shouldHave(text("Der Neukonfigurationsprozess wurde gestartet"));
+    closeNotificationButton();
+    return this;
+  }
+
+  @Step("Click Save local button")
+  public AccessLinesManagementPage clickSaveLocalButton() {
+    $(SAVE_LOCAL_BUTTON).click();
+    $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich aktualisiert"));
+    closeNotificationButton();
+    return this;
+  }
+
+  @Step("Click ONT Abmeldung Button")
+  public AccessLinesManagementPage clickOntAbmeldungButton() {
+    $(ONT_ABMELDUNG_BUTTON).click();
+    return this;
+  }
+
+  @Step("Click Bestätigen Button")
+  public AccessLinesManagementPage clickBestätigenButton() {
+    $(BESTAETIGEN_BUTTON).click();
+    $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+    closeNotificationButton();
+    return this;
+  }
 
 
-    ElementsCollection neDefaultProfileStateInput = $$(NE_DEFAULT_PROFILE_STATE_INPUT);
-    ElementsCollection nlDefaultProfileStateInput = $$(NL_DEFAULT_PROFILE_STATE_INPUT);
-    ElementsCollection neSubscriberProfileStateInput = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT);
-    ElementsCollection nlSubscriberProfileStateInput = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT);
+  @Step("Add Subscriber NE profile")
+  public AccessLinesManagementPage addSubscriberNeProfile() {
+    $(ADD_SUBSCRIBER_NE_PROFILE_BUTTON).click();
+    $(NE_SUBSCRIBER_PROFILE_STATE_INPUT).click();
+    $(ACTIVE_STATE).click();
+    $(NE_SUBSCRIBER_ONT_STATE_INPUT).click();
+    $(ONLINE_ONT_STATE).click();
+    $(ACCESS_LINE_STATUS_DROPDOWN).click();
+    $(ASSIGNED_STATUS).click();
+    return this;
+  }
 
+  @Step("Add Subscriber NL profile")
+  public AccessLinesManagementPage addSubscriberNLProfile(String klsId) {
+    $(ADD_SUBSCRIBER_NL_PROFILE_BUTTON).click();
+    $(NL_KLSId_INPUT).click();
+    $(NL_KLSId_INPUT).val(klsId);
+    $(NL_SUBSCRIBER_PROFILE_STATE).click();
+    $(ACTIVE_STATE).click();
+    return this;
+  }
 
-    @Step("Return on first window")
-    public void returnOnWindowWithListOfLines(){
-        Selenide.switchTo().window(0);
-        Selenide.refresh();
+  @Step("Add Serialnumber to NSP")
+  public AccessLinesManagementPage addSerialNumberToNSp(String serialnumber) {
+    $(SERIALNUMBER_IN_NSP).click();
+    $(SERIALNUMBER_IN_NSP).val(serialnumber);
+    return this;
+  }
+
+  @Step("Change AccessLine status to WALLED_GARDEN")
+  public AccessLinesManagementPage changeAccessLineStatusToWalledGarden() {
+    $(ACCESS_LINE_STATUS_DROPDOWN).click();
+    $(WALLED_GARDEN_STATUS).click();
+    return this;
+  }
+
+  @Step("Change AccessLine status to Assigned")
+  public AccessLinesManagementPage changeAccessLineStatusToAssigned() {
+    $(ACCESS_LINE_STATUS_DROPDOWN).click();
+    $(ASSIGNED_STATUS).click();
+    return this;
+  }
+
+  @Step("Change Default NE Profile State to Inactive")
+  public AccessLinesManagementPage changeDefaultProfileStateToInactive() {
+    $(NE_DEFAULT_PROFILE_STATE_INPUT).click();
+    $(INACTIVE_STATE).click();
+    return this;
+  }
+
+  @Step("Change Default NL Profile State to Inactive")
+  public AccessLinesManagementPage changeDefaultNLProfileStateToInactive() {
+    $(NL_DEFAULT_PROFILE_STATE_INPUT).click();
+    $(INACTIVE_STATE).click();
+    return this;
+  }
+
+  @Step("Close AccessLine Management Page")
+  public void closeCurrentTab() {
+    switchTo().window(1).close();
+  }
+
+  @Step("Get LineID")
+  public String getLineId() {
+    return $(LINE_ID).getText();
+  }
+
+  @Step("Get Default NE Profile state")
+  public String getNeDefaultProfileState() {
+    String result = "NULL";
+    $(NE_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    if ($$(NE_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
+      result = $$(NE_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
     }
+    return result;
+  }
 
-    @Step("Click edit button")
-    public void clickEditButton(){
-        editButton.click();
+  @Step("Get Default NL Profile state")
+  public String getNLDefaultProfileState() {
+    String result = "NULL";
+    $(NL_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    if ($$(NL_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
+      result = $$(NL_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
     }
+    return result;
+  }
 
-    @Step("Click ONT Abmeldung Button")
-    public void clickONTAbmeldungButton(){
-        ontAbmeldungButton.click();
+  @Step("Get Subscriber NE Profile state")
+  public String getNeSubscriberProfileState() {
+    String result = "NULL";
+    $(NE_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    if ($$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
+      result = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
     }
+    return result;
+  }
 
-    @Step("Click Bestätigen Button")
-    public void clickBestätigenButton() throws InterruptedException {
-        bestatigenData.click();
-        Thread.sleep(5000);
-
-
+  @Step("Get Subscriber NL Profile state")
+  public String getNLSubscriberProfileState() {
+    String result = "NULL";
+    $(NL_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    if ($$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
+      result = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
     }
+    return result;
+  }
 
-    @Step("Click save and reconfigure button")
-    public void clickSaveAndReconfigureButton(){
-        saveAndReconfigureButton.click();
-    }
+  @Step("Get Olt State from NE Profile")
+  public String getOltStatefromNeProfile() {
+    return $$(FTTB_NE_OLT_STATE).get(0).getValue();
+  }
 
-    @Step("Add subscriber profile")
-    public void  addSubscriberProfile()  {
-        addProfile.click();
-        dropDownTriggerStateSubProfile.click();
-        activeState.click();
-        dropDownTriggerOntState.click();
-        onlineOntState.click();
-        dropDownTriggerStatus.click();
-        assignedStatus.click();
+  @Step("Get Mosaic State")
+  public String getMosaicStatefromNeProfile() {
+    return $$(FTTB_NE_STATEMOSAIC).get(0).getValue();
+  }
 
-    }
+  @Step("Check AccessLine profiles states")
+  public void checkAccessLineProfilesStates(String neExpectedDefaultProfileState,
+                                            String neExpectedSubscriberProfileState, String nlExpectedDefaultProfileState,
+                                            String nlExpectedSubscriberProfileState) {
+    assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState));
+    assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState));
+    assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
+    assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+  }
 
-    public  void changeStatusOnWalledGarden(){
-        dropDownTriggerStatusToWG.click();
-        walledGardenStatus.click();
-    }
+  @Step("Check NL profiles states")
+  public void checkNLProfiles(String nlExpectedDefaultProfileState,
+                              String nlExpectedSubscriberProfileState) {
+    assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
+    assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+  }
 
-    @Step("Change default profile")
-    public void  changeDefaultProfile()  {
-        dropDownTriggerStateNEprofile.click();
-        inactiveState.click();
-    }
+  @Step("Check FTTB AccessLine profiles states")
+  public void checkFTTBProfiles(String nlExpectedDefaultProfileState,
+                                String nlExpectedSubscriberProfileState, String oltExpectedState, String mosaicExpectedState) {
+    assertTrue(getOltStatefromNeProfile().contains(oltExpectedState));
+    assertTrue(getMosaicStatefromNeProfile().contains(mosaicExpectedState));
+    assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
+    assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+  }
 
-    public String getPageTitle() {
-        return TITLE;
-    }
+  @Step("Close Notification button")
+  public void closeNotificationButton() {
+    $(CLOSE_NOTIFICATION_BUTTON).click();
+  }
 
-    @Step("Get NE default profile state")
-    public String getNEDefaultProfileState() {
-        String result = "NULL";
-        neDefaultProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
-        if (neDefaultProfileStateInput.size() > 0) {
-            result = neDefaultProfileStateInput.get(0).getValue();
-        }
-        return result;
-    }
-
-    @Step("Get NL default profile state")
-    public String getNLDefaultProfileState() {
-        String result = "NULL";
-        nlDefaultProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
-        if (nlDefaultProfileStateInput.size() > 0) {
-            result = nlDefaultProfileStateInput.get(0).getValue();
-        }
-        return result;
-    }
-
-    @Step("Get NE subscriber profile state")
-    public String getNESubscriberProfileState() {
-        String result = "NULL";
-        neSubscriberProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
-        if (neSubscriberProfileStateInput.size() > 0) {
-            result = neSubscriberProfileStateInput.get(0).getValue();
-        }
-        return result;
-    }
-
-    @Step("Get NL subscriber profile state")
-    public String getNLSubscriberProfileState() {
-        String result = "NULL";
-        nlSubscriberProfileTitle.waitUntil(Condition.visible, TIMEOUT_MS);
-        if (nlSubscriberProfileStateInput.size() > 0) {
-            result = nlSubscriberProfileStateInput.get(0).getValue();
-        }
-        return result;
-    }
+  @Step("Click termination button")
+  public AccessLinesManagementPage clickTerminationButton() {
+    $(TERMINATION_BUTTON).click();
+    $(BESTAETIGEN_TERMINATION_BUTTON).click();
+    $(NOTIFICATION).shouldHave(text("Der Kündigungsprozess wird gestartet. Das wird einige Zeit dauern. Bitte aktualisieren Sie die Seite einige Minuten später"));
+    closeNotificationButton();
+    return this;
+  }
 }

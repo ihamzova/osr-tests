@@ -1,0 +1,17 @@
+name: EndSz_49_8571_0_71G4_SDX2221
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/8571/0"
+  fsz: "71G4"
+  oltEndsz: "49/30/179/76H8"
+  oltGponSlot: "3"
+  oltGponPort: "3"
+  bngEndsz: "49/30/179/43G8"
+  bngDownlinkPort: "ge-8/7/7"
+  bezeichnung: "SDX2221-16-TP"
+  hersteller: "ADTRAN"
+  klsId: "1029"
+  seriennummer: "ADTN180600B9"
+  fiberOnLocationId: "1000000003"
+  ponConnectionWe: "1"
+  ponConnectionGe: "0"

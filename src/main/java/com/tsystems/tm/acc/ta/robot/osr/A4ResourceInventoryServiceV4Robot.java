@@ -18,15 +18,15 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.CA_INTEGRATION;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class A4ResourceInventoryServiceV4Robot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
+            new RhssoClientFlowAuthTokenProvider(CA_INTEGRATION,
+                    RhssoHelper.getSecretOfGigabitHub(CA_INTEGRATION));
 
     private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client(authTokenProvider).getClient();
 
@@ -194,6 +194,19 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkIfAnyNetworkServiceProfileFtthAccessesExist(int minimalExpectedCount) {
         List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
         assertTrue(nspList.size() >= minimalExpectedCount);
+    }
+
+    public void checkResourceRelationshipsByNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData) {
+        NspFtthAccess nspFtthAccess = getNetworkServiceProfileFtthAccessV4ByUuid(nspData.getUuid());
+        List<ResourceRelationship> rrl = nspFtthAccess.getResourceRelationship();
+
+        assertEquals(rrl.size(), 2);
+
+        ResourceRelationship resourceRelationshipTp = rrl.get(0);
+        assertEquals(nspFtthAccess.getTerminationPointUuid(), resourceRelationshipTp.getResource().getId());
+
+        ResourceRelationship resourceRelationshipNep = nspFtthAccess.getResourceRelationship().get(1);
+        assertEquals(nspData.getOltPortOntLastRegisteredOn(), resourceRelationshipNep.getResource().getId());
     }
 
     public void checkIfNetworkServiceProfileFtthAccessExistsByOntSerialNumber(A4NetworkServiceProfileFtthAccess nspData) {

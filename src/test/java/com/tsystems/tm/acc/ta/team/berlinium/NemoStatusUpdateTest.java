@@ -18,10 +18,8 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRelationship;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Owner;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
+import io.qameta.allure.*;
 import org.testng.annotations.*;
 
 import java.time.OffsetDateTime;
@@ -29,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+
+
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS,A4_CARRIER_MANAGEMENT_MS,A4_NEMO_UPDATER_MS})
 @Epic("OS&R domain")
 @Feature("Status update requests from NEMO for different A4 network element types")
 public class NemoStatusUpdateTest {
@@ -146,7 +146,23 @@ public class NemoStatusUpdateTest {
         nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
-        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates
+                (nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+    }
+
+    @Test(description = "DIGIHUB-75778 NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
+    @Owner("Swetlana.Okonetschnikow@telekom.de")
+    @TmsLink("DIGIHUB-116417")
+    @Description("NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
+    public void testNemoStatusAndPortRefPatchForNspFtth() {
+        // WHEN
+        nemo.sendStatusAndPortRefUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData,
+                OPERATIONAL_STATE_WORKING, nepDataA);
+
+        // THEN
+        a4ResourceInventoryRobot
+                .checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStatesAndPortRef(nspFtthData,
+                        OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING, nepDataA);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (A10NSP)")

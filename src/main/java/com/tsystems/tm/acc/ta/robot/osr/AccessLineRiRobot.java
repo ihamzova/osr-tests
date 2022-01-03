@@ -5,12 +5,12 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
@@ -23,26 +23,72 @@ import java.util.stream.IntStream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_WALLED_GARDEN;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.BackhaulStatus.CONFIGURED;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.PortType.*;
+import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
-  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 300_000;
+  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
 
   private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
+  private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("access-line-resource-inventory", RhssoHelper.getSecretOfGigabitHub("access-line-resource-inventory"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider
+          ("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
+  private static final AuthTokenProvider authTokenProviderCa = new RhssoClientFlowAuthTokenProvider
+          ("ca-integration", RhssoHelper.getSecretOfGigabitHub("ca-integration"));
 
 
   @Step("Clear Al RI db")
   public void clearDatabase() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    accessLineResourceInventoryFillDbClient
+            .getClient()
+            .fillDatabase()
+            .truncateDatabase()
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Fill database with test data as a part of OLT Commissioning process emulation")
-  public void fillDatabaseForOltCommissioning() {
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v1")
+  public void fillDatabaseForOltCommissioningV1() {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2, default values")
+  public void fillDatabaseForOltCommissioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  public void fillDatabaseForOltCommissioningV2WithOlt(int HOME_ID_SEQ, int LINE_ID_SEQ, String oltEndSz, String oltSlot) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .SLOT_NUMBER1Query(oltSlot)
+            .END_SZQuery(oltEndSz)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
+  public void fillDatabaseForOltCommissioningWithDpu(Boolean addDpu, AccessTransmissionMedium accessTransmissionMedium, int HOME_ID_SEQ, int LINE_ID_SEQ,
+                                                     String oltEndSz, String dpuEndSz, String oltSlotWithDpu, String oltPortWithDpu) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
+            .fillDatabaseForOltCommissioningWithDpu()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .ADD_DPUQuery(addDpu)
+            .ACCESS_TRANSMISSION_MEDIUMQuery(accessTransmissionMedium)
+            .END_SZQuery(oltEndSz)
+            .DPU_ENDSZQuery(dpuEndSz)
+            .OLT_SLOT_WITH_DPUQuery(oltSlotWithDpu)
+            .OLT_PORT_WITH_DPUQuery(oltPortWithDpu)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Fill database with test data as a part of Adtran OLT Commissioning process emulation")
@@ -50,7 +96,19 @@ public class AccessLineRiRobot {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseWithAdtranOlt()
             .HOME_ID_SEQQuery(1)
             .LINE_ID_SEQQuery(1)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Fill database with test data for Network Switching")
+  public void fillDatabaseForNetworkSwitching(PortProvisioning sourcePort, PortProvisioning targetPort) {
+    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForSwitchingPreparation()
+            .HOME_ID_SEQQuery(1)
+            .LINE_ID_SEQQuery(1)
+            .END_SZQuery(sourcePort.getEndSz())
+            .SLOT_NUMBER1Query(sourcePort.getSlotNumber())
+            .END_SZ_2Query(targetPort.getEndSz())
+            .SLOT_NUMBER2Query(targetPort.getSlotNumber())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Add FTTB access lines to olt device")
@@ -59,59 +117,143 @@ public class AccessLineRiRobot {
   }
 
   @Step("Fill database with test data as a part of DPU Preprovisioning process emulation")
-  public void fillDatabaseForDpuPreprovisioning() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForDpuPreprovisioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  public void fillDatabaseForDpuPreprovisioning(DpuDevice dpuDevice, PortProvisioning oltDevice) {
+    accessLineResourceInventoryFillDbClient.
+            getClient()
+            .fillDatabase()
+            .fillDatabaseForDpuPreprovisioning()
+            .DPU_END_SZQuery(dpuDevice.getEndsz())
+            .OLT_END_SZQuery(oltDevice.getEndSz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Check home id count for port")
-  public void checkHomeIdsCount(PortProvisioning port) {
-    List<HomeIdDto> homeIds = accessLineResourceInventory.homeIdController().searchHomeIds().body(new SearchHomeIdDto()
-            .endSz(port.getEndSz())
-            .slotNumber(port.getSlotNumber())
-            .portNumber(port.getPortNumber()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
+  @Step("Fill database with test data as a part of DPU Preprovisioning process emulation, v2")
+  public void fillDatabaseForDpuPreprovisioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ, DpuDevice dpuDevice, PortProvisioning oltDevice){
+    if (oltDevice.getSlotNumber()==null) oltDevice.setSlotNumber("null");
+    accessLineResourceInventoryFillDbClient.
+            getClient()
+            .fillDatabase()
+            .fillDatabaseForDpuPreprovisioningV4()
+            .HOME_ID_SEQQuery(HOME_ID_SEQ)
+            .LINE_ID_SEQQuery(LINE_ID_SEQ)
+            .OLT_END_SZQuery(oltDevice.getEndSz())
+            .OLT_SLOT_WITH_DPUQuery(oltDevice.getSlotNumber())
+            .OLT_PORT_WITH_DPUQuery(oltDevice.getPortNumber())
+            .DPU_END_SZQuery(dpuDevice.getEndsz())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    if (oltDevice.getSlotNumber().equals("null")) oltDevice.setSlotNumber(null);
   }
 
-  @Step("Check line id count for port")
-  public void checkLineIdsCount(PortProvisioning port) {
-    List<LineIdDto> lineIds = accessLineResourceInventory.lineIdController().searchLineIds().body(new SearchLineIdDto()
-            .endSz(port.getEndSz())
-            .slotNumber(port.getSlotNumber())
-            .portNumber(port.getPortNumber()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
-  }
-
-  @Step("Check access lines parameters of port template (lines count and wg lines count, count of default NE and NetworkLine profiles)")
-  public void checkPortParametersForLines(PortProvisioning port) {
+  @Step("Check results after (de)provisioning: AccessLines, default ne profiles, default nl profiles")
+  public void checkFtthPortParameters(PortProvisioning port) {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-      Supplier<Boolean> checkFtthProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
-      timeoutBlock.addBlock(checkFtthProvisioning); // execute the runnable precondition
+      timeoutBlock.setTimeoutInterval(15000);
+      Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesWG();
+      timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
     } catch (Throwable e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
-    List<AccessLineDto> accessLines = getAccessLinesByPort(port);
-    assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(),
-            "Access lines count");
+    List<AccessLineDto> accessLinesAfterProvisioning = getAccessLinesByPort(port);
+    long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
+            .filter(accessLine -> Objects.requireNonNull(accessLine.getStatus()).getValue()
+                    .equals(STATUS_WALLED_GARDEN))
+            .count();
 
-    long countDefaultNEProfileActive = accessLines.stream().map(AccessLineDto::getDefaultNeProfile)
-            .filter(defaultNeProfile -> defaultNeProfile != null && defaultNeProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+    assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
+    checkIdPools(port);
+  }
 
-    long countDefaultNetworkLineProfileActive = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && defaultNetworkLineProfile.getState().getValue().equals(STATUS_ACTIVE)).count();
+  @Step("Check AccessLines after FTTB Provisioning")
+  public void checkAccessLinesAfterFttbProvisioning(PortProvisioning oltPort,
+                                                    DpuDevice dpuDevice,
+                                                    FttbNeProfile expectedFttbNeProfile,
+                                                    DefaultNetworkLineProfile expectedDefaultNetworkLineProfile,
+                                                    int numberOfAccessLines) {
 
-    long countAccessLinesWG = accessLines.stream()
-            .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
+    checkFttbLineParameters(oltPort, numberOfAccessLines);
+    checkAccessTransmissionMedium(dpuDevice, numberOfAccessLines);
+    checkDefaultNetworkLineProfiles(oltPort, expectedDefaultNetworkLineProfile, numberOfAccessLines);
+    checkFttbNeProfiles(oltPort, expectedFttbNeProfile, numberOfAccessLines);
+    checkLineIdsCount(oltPort);
+    checkHomeIdsCount(oltPort);
+  }
 
-    assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue(),
-            "Default Network Line profile count");
-    assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue(),
-            "Default NE profile count");
-    assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue(),
-            "WG access lines count");
+  @Step("Check pools")
+  public void checkIdPools(PortProvisioning port) {
+    checkHomeIdsCount(port);
+    checkLineIdsCount(port);
+    checkBackhaulIdCount(port);
+  }
+
+  @Step("Check PhysicalResourceRefs for FTTH")
+  public void checkPhysicalResourceRefCountFtth(PortProvisioning port, int expectedPonPortsCount, int expectedEthernetPortsCount) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(port).size() == expectedEthernetPortsCount;
+      timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getPonPorts(port).size(), expectedPonPortsCount);
+    assertEquals(getEthernetPorts(port).size(), expectedEthernetPortsCount);
+  }
+
+  @Step("Check PhysicalResourceRefs for A4 FTTH")
+  public void checkPhysicalResourceRefCountA4Ftth(PortProvisioning port, int expectedGponPortsCount) {
+
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkGponPorts = () -> getGponPorts(port).size() == expectedGponPortsCount;
+      timeoutBlock.addBlock(checkGponPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getGponPorts(port).size(), expectedGponPortsCount);
+    assertEquals(getPonPorts(port).size(), 0);
+    assertEquals(getEthernetPorts(port).size(), 0);
+  }
+
+  @Step("Check PhysicalResourceRefs for A4 FTTB")
+  public void checkPhysicalResourceRefCountA4Fttb(DpuDevice dpuDevice, PortProvisioning port, int expectedGfastPortsCount) {
+
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkGfastPorts = () -> getGfastPorts(dpuDevice).size() == expectedGfastPortsCount;
+      timeoutBlock.addBlock(checkGfastPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getGfastPorts(dpuDevice).size(), expectedGfastPortsCount);
+    assertEquals(getPonPorts(port).size(), 0);
+    assertEquals(getEthernetPorts(port).size(), 0);
+  }
+
+  @Step("Check PhysicalResourceRefs for FTTB")
+  public void checkPhysicalResourceRefCountFttb(DpuDevice dpuDevice,
+                                                PortProvisioning oltPort,
+                                                int expectedGfastPortsCount,
+                                                int expectedEthernetPortsCount,
+                                                int expectedPonPortsCount) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(5000);
+      Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(oltPort).size() == expectedEthernetPortsCount;
+      timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertEquals(getGfastPorts(dpuDevice).size(), expectedGfastPortsCount);
+    assertEquals(getEthernetPorts(oltPort).size(), expectedEthernetPortsCount);
+    assertEquals(getPonPorts(oltPort).size(), expectedPonPortsCount);
   }
 
   @Step("Check assigned access lines count of port template")
@@ -127,7 +269,7 @@ public class AccessLineRiRobot {
             "Assigned access lines count");
   }
 
-  @Step("Check A4 specific parameters (NSP ref and phys ref exist, A4 prod platform")
+  @Step("Check A4 OLT_BNG specific parameters (NSP ref and phys ref exist, A4 prod platform")
   public void checkA4LineParameters(PortProvisioning port, String tpRefUuid) {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
@@ -143,14 +285,40 @@ public class AccessLineRiRobot {
     AccessLineDto accessLine = accessLines.get(0);
 
     assertEquals(accessLine.getStatus(), AccessLineStatus.WALLED_GARDEN, "AccessLine status");
-    assertEquals(accessLine.getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
     assertEquals(accessLine.getNetworkServiceProfileReference().getTpRef(), tpRefUuid);
     assertNotNull(accessLine.getReference(), "Reference");
     assertEquals(accessLine.getReference().getEndSz(), port.getEndSz());
     assertEquals(accessLine.getReference().getSlotNumber(), port.getSlotNumber());
     assertEquals(accessLine.getReference().getPortNumber(), port.getPortNumber());
-    assertEquals(accessLine.getReference().getPortType(), PortType.GPON);
+    assertEquals(accessLine.getReference().getPortType(), GPON);
+    assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
+  }
+
+  @Step("Check A4 FTTB specific parameters")
+  public void checkA4FttbLineParameters(PortProvisioning port, String tpRefUuid) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
+      Supplier<Boolean> checkA4FttbPreProvisioning = () -> getAccessLinesByGfastPort(port).stream().
+              filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count() == 1;
+      timeoutBlock.addBlock(checkA4FttbPreProvisioning); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    List<AccessLineDto> accessLines = getAccessLinesByGfastPort(port);
+    assertEquals(accessLines.size(), port.getAccessLinesCount().intValue(), "Access lines count");
+
+    AccessLineDto accessLine = accessLines.get(0);
+
+    assertEquals(accessLine.getStatus(), AccessLineStatus.WALLED_GARDEN, "AccessLine status");
+    assertNotNull(accessLine.getNetworkServiceProfileReference(), "There is no NSP reference");
+    assertEquals(accessLine.getNetworkServiceProfileReference().getTpRef(), tpRefUuid);
+    assertNotNull(accessLine.getDpuReference(), "Reference");
+    assertEquals(accessLine.getDpuReference().getEndSz(), port.getEndSz());
+    assertEquals(accessLine.getDpuReference().getSlotNumber(), port.getSlotNumber());
+    assertEquals(accessLine.getDpuReference().getPortNumber(), port.getPortNumber());
+    assertEquals(accessLine.getDpuReference().getPortType(), GFAST);
     assertEquals(accessLine.getProductionPlatform(), AccessLineProductionPlatform.A4, "Production platform");
   }
 
@@ -167,15 +335,6 @@ public class AccessLineRiRobot {
     List<AccessLineDto> accessLines = getAccessLinesByPort(port);
     assertEquals(accessLines.size(), numberOfAccessLinesForProvisioning, "AccessLines count");
 
-    long countFttbNeOltStateActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(fttbNeProfile -> fttbNeProfile != null && ProfileState.ACTIVE.equals(fttbNeProfile.getStateOlt())).count();
-
-    long countFttbNeMosaicActive = accessLines.stream().map(AccessLineDto::getFttbNeProfile)
-            .filter(fttbNeProfile -> fttbNeProfile != null && ProfileState.ACTIVE.equals(fttbNeProfile.getStateMosaic())).count();
-
-    long countDefaultNetworkLineProfilesActive = accessLines.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(defaultNetworkLineProfile -> defaultNetworkLineProfile != null && ProfileState.ACTIVE.equals(defaultNetworkLineProfile.getState())).count();
-
     long countAccessLinesWG = accessLines.stream()
             .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count();
 
@@ -185,16 +344,81 @@ public class AccessLineRiRobot {
     List<Integer> onuAccessIds = accessLines.stream().map(AccessLineDto::getFttbNeProfile).map(FttbNeProfileDto::getOnuAccessId).
             map(OnuAccessIdDto::getOnuAccessId).sorted().collect(Collectors.toList());
 
-    assertEquals(countFttbNeOltStateActive, numberOfAccessLinesForProvisioning,
-            "FTTB NE Profiles (Olt State) count is incorrect");
-    assertEquals(countFttbNeMosaicActive, numberOfAccessLinesForProvisioning,
-            "FTTB NE Profiles (Mosaic State) count is incorrect");
-    assertEquals(countDefaultNetworkLineProfilesActive, numberOfAccessLinesForProvisioning,
-            "Default NetworkLine Profile count is incorrect");
     assertEquals(countAccessLinesWG, numberOfAccessLinesForProvisioning,
             "WG AccessLines count is incorrect");
     assertEquals(onuAccessIds, expectedOnuIdsList,
             "OnuAccessIds are incorrect");
+  }
+
+  @Step("Check Default NE Profiles")
+  public void checkDefaultNeProfiles(PortProvisioning port, DefaultNeProfile expectedDefaultNeProfile, int numberOfAccessLinesForProvisioning) {
+    List<DefaultNeProfileDto> actualDefaultNeProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getDefaultNeProfile).collect(Collectors.toList());
+    assertEquals(actualDefaultNeProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NE Profiles count is incorrect");
+    List<DefaultNeProfile> actualDefaultNeProfiles =
+            actualDefaultNeProfileDtos.stream().map(AccessLineRiRobot::mapToDefaultNeProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNeProfiles.stream().allMatch(defaultNeProfile -> defaultNeProfile.equals(expectedDefaultNeProfile)),
+            "Default NE Profiles are incorrect");
+  }
+
+  @Step("Check Default NetworkLine Profiles")
+  public void checkDefaultNetworkLineProfiles(PortProvisioning port, DefaultNetworkLineProfile expectedDefaultNLineProfile, int numberOfAccessLinesForProvisioning) {
+    List<DefaultNetworkLineProfileDto> actualDefaultNLProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getDefaultNetworkLineProfile).collect(Collectors.toList());
+    assertEquals(actualDefaultNLProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NetworkLine Profiles count is incorrect");
+    List<DefaultNetworkLineProfile> actualDefaultNLProfiles =
+            actualDefaultNLProfileDtos.stream().map(AccessLineRiRobot::mapToNLProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
+            "Default NetworkLine Profiles are incorrect");
+  }
+
+  @Step("Check Default NetworkLine Profiles")
+  public void checkDefaultNetworkLineProfiles(AccessLine accessLine, DefaultNetworkLineProfile expectedDefaultNLineProfile) {
+    List<DefaultNetworkLineProfileDto> actualDefaultNLProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getDefaultNetworkLineProfile).collect(Collectors.toList());
+    List<DefaultNetworkLineProfile> actualDefaultNLProfiles =
+            actualDefaultNLProfileDtos.stream().map(AccessLineRiRobot::mapToNLProfile).collect(Collectors.toList());
+    assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
+            "Default NetworkLine Profiles are incorrect");
+  }
+
+  @Step("Check Subscriber NetworkLine Profiles")
+  public void checkSubscriberNetworkLineProfiles(AccessLine accessLine, SubscriberNetworkLineProfile expectedSubscriberNetworklineProfile) {
+    List<SubscriberNetworkLineProfileDto> actualSubscriberProfileDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getSubscriberNetworkLineProfile).collect(Collectors.toList());
+    List<SubscriberNetworkLineProfile> actualSubscriberProfiles =
+            actualSubscriberProfileDtos.stream().map(AccessLineRiRobot::mapToSubscriberNetworkLineProfile).collect(Collectors.toList());
+    assertTrue(actualSubscriberProfiles.stream().allMatch(subscriberNetworkLineProfile -> subscriberNetworkLineProfile.equals(expectedSubscriberNetworklineProfile)),
+            "Subscriber NetworkLine Profiles are incorrect");
+  }
+
+  @Step("Check FTTB NE Profiles")
+  public void checkFttbNeProfiles(PortProvisioning port, FttbNeProfile expectedFttbNeProfile, int numberOfAccessLinesForProvisioning) {
+    List<FttbNeProfileDto> actualFttbNeProfileDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getFttbNeProfile).collect(Collectors.toList());
+    assertEquals(actualFttbNeProfileDtos.size(), numberOfAccessLinesForProvisioning, "FTTB NE Profiles count is incorrect");
+    List<FttbNeProfile> actualFttbNeProfiles =
+            actualFttbNeProfileDtos.stream().map(AccessLineRiRobot::mapToFttbNeProfile).collect(Collectors.toList());
+    assertTrue(actualFttbNeProfiles.stream().allMatch(fttbNeProfile -> fttbNeProfile.equals(expectedFttbNeProfile)), "FTTB NE Profiles are incorrect");
+  }
+
+  @Step("Check L2BSA NSP Reference")
+  public void checkL2bsaNspReference(PortProvisioning port, L2BsaNspReference expectedL2bsaNspReference) {
+    List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByPort(port)
+            .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
+    assertEquals(actualL2bsaNspReferenceDtos.size(), 1, "L2bsaNspReferences count is incorrect");
+    List<L2BsaNspReference> actualL2bsaNspReferences =
+            actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
+    assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
+  }
+
+  @Step("Check L2BSA NSP Reference")
+  public void checkL2bsaNspReference(AccessLine accessLine, L2BsaNspReference expectedL2bsaNspReference) {
+    List<L2BsaNspReferenceDto> actualL2bsaNspReferenceDtos = getAccessLinesByLineId(accessLine.getLineId())
+            .stream().map(AccessLineDto::getL2BsaNspReference).collect(Collectors.toList());
+    List<L2BsaNspReference> actualL2bsaNspReferences =
+            actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
+    assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
   }
 
   @Step("Remove lines with id > 1008, change some port refs")
@@ -233,8 +457,67 @@ public class AccessLineRiRobot {
     });
   }
 
-  public List<ReferenceDto> getPhysicalResourceRef(PortProvisioning port) {
-    List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory
+  @Step("Check PhysicalResourceRef after manual OLT Decommissioning")
+  public void checkPhysicalResourceRefAfterManualOltDecommissioning(OltDevice olt) {
+    List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList());
+
+    long numberOfPhysicalResourceRefs = physicalResourceRefs.stream().map(ReferenceDto::getPortType)
+            .filter(PortType -> !(PortType.getValue()).equals(ETHERNET.toString())).count();
+
+    assertEquals(numberOfPhysicalResourceRefs, 0, "There are PhysicalResourceRefs left");
+  }
+
+  @Step("Check PhysicalResourceRef after Auto OLT Decommissioning")
+  public void checkPhysicalResourceRefAfterAutoOltDecommissioning(OltDevice olt) {
+    long physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+            .stream().collect(Collectors.toList()).size();
+
+    assertEquals(physicalResourceRefs, 0, "There are PhysicalResourceRefs left");
+  }
+
+  @Step("Check home id count for port")
+  public void checkHomeIdsCount(PortProvisioning port) {
+    List<HomeIdDto> homeIds = accessLineResourceInventory.homeIdController().searchHomeIds().body(new SearchHomeIdDto()
+            .endSz(port.getEndSz())
+            .slotNumber(port.getSlotNumber())
+            .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
+  }
+
+  @Step("Check line id count for port")
+  public void checkLineIdsCount(PortProvisioning port) {
+    List<LineIdDto> lineIds = accessLineResourceInventory.lineIdController().searchLineIds().body(new SearchLineIdDto()
+            .endSz(port.getEndSz())
+            .slotNumber(port.getSlotNumber())
+            .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertEquals(lineIds.size(), port.getLineIdPool().intValue(), "Line ids count");
+  }
+
+  @Step("Check BackhaulId count per port")
+  public void checkBackhaulIdCount(PortProvisioning port) {
+    assertEquals(getBackHaulId(port).stream().filter(backhaulId -> backhaulId.getStatus().getValue().equals(CONFIGURED.toString())).collect(Collectors.toList()).size(),
+            port.getBackhaulId().intValue(), "Backhauld count is incorrect");
+  }
+
+  @Step("Check accessTransmissionMedium parameters")
+  public void checkAccessTransmissionMedium(DpuDevice dpuDevice, int numberOfAccessLinesForProvisioning) {
+    long accessTransmissionMedia = getGfastPorts(dpuDevice).stream().map(ReferenceDto::getAccessTransmissionMedium)
+            .filter(accessTransmissionMedium -> accessTransmissionMedium.getValue()
+                    .equals(dpuDevice.getAccessTransmissionMedium()))
+            .count();
+    assertEquals(accessTransmissionMedia, numberOfAccessLinesForProvisioning);
+  }
+
+  @Step("Get Pon Ports")
+  public List<ReferenceDto> getPonPorts(PortProvisioning port) {
+    List<ReferenceDto> ponPorts = accessLineResourceInventory
             .physicalResourceReferenceInternalController()
             .searchPhysicalResourceReference()
             .body(new SearchPhysicalResourceReferenceDto()
@@ -242,9 +525,40 @@ public class AccessLineRiRobot {
                     .slotNumber(port.getSlotNumber())
                     .portNumber(port.getPortNumber()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    return physicalResourceRefs;
+    return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString())).collect(Collectors.toList());
   }
 
+  @Step("Get Ethernet Ports")
+  public List<ReferenceDto> getEthernetPorts(PortProvisioning port) {
+    List<ReferenceDto> ponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+            .searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto()
+                    .endSz(port.getEndSz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(ETHERNET.toString())).collect(Collectors.toList());
+  }
+
+  @Step("Get Gfast Ports")
+  public List<ReferenceDto> getGfastPorts(DpuDevice dpuDevice) {
+    List<ReferenceDto> gfastPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+            .searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto()
+                    .endSz(dpuDevice.getEndsz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return gfastPorts.stream().filter(gfastPort -> gfastPort.getPortType().getValue().equals(GFAST.toString())).collect(Collectors.toList());
+  }
+
+  @Step("Get Gpon Ports")
+  public List<ReferenceDto> getGponPorts(PortProvisioning port) {
+    List<ReferenceDto> gponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+            .searchPhysicalResourceReference()
+            .body(new SearchPhysicalResourceReferenceDto()
+                    .endSz(port.getEndSz()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return gponPorts.stream().filter(gponPort -> gponPort.getPortType().getValue().equals(GPON.toString())).collect(Collectors.toList());
+  }
+
+  @Step("Get BackhaulId by Port")
   public List<BackhaulIdDto> getBackHaulId(PortProvisioning port) {
     List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
             .backhaulIdController()
@@ -257,44 +571,8 @@ public class AccessLineRiRobot {
     return backhaulIds;
   }
 
-  @Step("Check physicalResourceRef and backHaul id absence")
-  public void checkPhysicalResourceRefAndBackhaulIdAbsence(PortProvisioning port) {
-    try {
-      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-      Supplier<Boolean> PhysicalResourceReferenceAbsence = () -> getPhysicalResourceRef(port).size() == 0;
-      timeoutBlock.addBlock(PhysicalResourceReferenceAbsence); // execute the runnable precondition
-      Supplier<Boolean> BackHaulIdAbsence = () -> getBackHaulId(port).size() == 0;
-      timeoutBlock.addBlock(BackHaulIdAbsence); // execute the runnable precondition
-    } catch (Throwable e) {
-      //catch the exception here . Which is block didn't execute within the time limit
-    }
-    assertEquals(getPhysicalResourceRef(port).size(), 0, "There is physicalResourceRef left");
-    assertEquals(getBackHaulId(port).size(), 0, "Backhaul ids count");
-  }
-
-  public void checkPhysicalResourceRefAfterManualOltDecommissioning(OltDevice olt) {
-    List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
-            .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList());
-
-    long numberOfPhysicalResourceRefs = physicalResourceRefs.stream().map(ReferenceDto::getPortType)
-            .filter(PortType -> !(PortType.getValue()).equals(PortType.ETHERNET.toString())).count();
-
-    assertEquals(numberOfPhysicalResourceRefs, 0, "There are PhysicalResourceRefs left");
-  }
-
-  public void checkPhysicalResourceRefAfterAutoOltDecommissioning(OltDevice olt) {
-    long physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
-            .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-            .stream().collect(Collectors.toList()).size();
-
-    assertEquals(physicalResourceRefs, 0, "There are PhysicalResourceRefs left");
-  }
-
-  @Step("Get list of access lines on the specified port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
+  @Step("Get list of AccessLines on the specified port")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
     return accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
@@ -305,7 +583,20 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Get access line by lineId")
+  @Step("Get list of AccessLines on the specified port")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto> getAccessLinesByGfastPort(PortProvisioning port) {
+    return accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber())
+                    .referenceType(ReferenceType.DPU))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Get AccessLine by lineId")
   public List<AccessLineDto> getAccessLinesByLineId(String lineId) {
     return accessLineResourceInventory
             .accessLineController()
@@ -315,8 +606,103 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Get list of lineIds in the pool for the specified port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
+  @Step("Get OLT_BNG AccessLines with ONT")
+  public List<AccessLineDto> getAccessLinesByType(AccessLineProductionPlatform productionPlatform, AccessLineTechnology technology, AccessLineStatus accessLineStatus) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(productionPlatform)
+                    .technology(technology)
+                    .status(accessLineStatus))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertTrue(accessLines.size() !=0, "There are no AccessLines with required parameters");
+    return accessLines;
+  }
+
+  @Step("Get OLT_BNG AccessLines with ONT")
+  public List<AccessLineDto> getFtthAccessLinesWithOnt(PortProvisioning port) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
+                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()!=null
+                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(ProfileState.ACTIVE)
+                    &&accessLineDto.getSubscriberNetworkLineProfile()==null)
+            .collect(Collectors.toList());
+    assertTrue(accessLinesWithOnt.size() !=0, "There are no AccessLines with ONT");
+    return accessLinesWithOnt;
+  }
+
+  @Step("Get A4 AccessLines with ONT")
+  public List<AccessLineDto> getA4AccessLinesWithOnt() {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(AccessLineProductionPlatform.A4))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List <AccessLineDto> accessLinesWithOnt = accessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
+                    &&accessLineDto.getNetworkServiceProfileReference().getNspOntSerialNumber()!=null)
+            .collect(Collectors.toList());
+    return accessLinesWithOnt;
+  }
+
+  @Step("Get AccessLines by Production Platform and Technology")
+  public List<AccessLineDto> getAccessLinesByProductionPlatform(AccessLineProductionPlatform productionPlatform) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(productionPlatform))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return accessLines;
+  }
+
+  @Step("Get FTTB AccessLines")
+  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus){
+    List<AccessLineDto> fttbAccessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .technology(AccessLineTechnology.GFAST))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<AccessLineDto> fttbAccessLinesFiltered = fttbAccessLines.stream()
+            .filter(accessLineDto -> accessLineDto.getDpuReference().getAccessTransmissionMedium().equals(accessTransmissionMedium)
+                    &&accessLineDto.getStatus().equals(accessLineStatus))
+            .collect(Collectors.toList());
+    assertTrue(fttbAccessLinesFiltered.size() !=0, "There are no FTTB AccessLines with required parameters");
+    return fttbAccessLinesFiltered;
+  }
+
+  @Step("Get AccessLines with HomeIds")
+  public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
+    List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> (accessLineDto.getHomeId()!=null)).collect(Collectors.toList());
+    assertTrue(accessLinesWithHomeIds.size()!=0, "There are no AccessLines with HomeIds");
+    return accessLinesWithHomeIds;
+  }
+
+  @Step("Get AccessLines by tpRef")
+  public List<AccessLineDto> getAccessLineByTpRef(String tpRef) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .tpRef(tpRef))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return accessLines;
+  }
+
+  @Step("Get LineID Pool by Port")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.LineIdDto> getLineIdPool(PortProvisioning port) {
     return accessLineResourceInventory.lineIdController().searchLineIds().body(
             new SearchLineIdDto()
                     .endSz(port.getEndSz())
@@ -325,7 +711,28 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Get list of homeIds in the pool for the specified port")
+  @Step("Get LineIDs from the Port")
+  public List<String> getLineIds (PortProvisioning port) {
+    return getLineIdPool(port).stream().map(lineIdDto -> lineIdDto.getLineId()).collect(Collectors.toList());
+  }
+
+  public List<String> getLineIdsByStatus(PortProvisioning port, LineIdStatus lineIdStatus) {
+    return getLineIdPool(port).stream()
+            .filter(lineIdDto -> (lineIdStatus.equals(lineIdDto.getStatus())))
+            .map(lineIdDto -> lineIdDto.getLineId())
+            .collect(Collectors.toList());
+  }
+
+  @Step("Get LineIds from AccessLines by their status")
+  public List<String> getLineIdsByAccessLinesStatus(PortProvisioning port, AccessLineStatus accessLineStatus) {
+    List<String>lineIds = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> accessLineStatus.equals(accessLineDto.getStatus()))
+            .map(accessLineDto -> accessLineDto.getLineId())
+            .collect(Collectors.toList());
+    return lineIds;
+  }
+
+  @Step("Get HomeID Pool by Port")
   public List<HomeIdDto> getHomeIdPool(PortProvisioning port) {
     return accessLineResourceInventory.homeIdController().searchHomeIds().body(
             new SearchHomeIdDto()
@@ -335,41 +742,20 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Check results after provisioning lineId pool, homeId pool, created wg lines, default ne profiles, default nl profiles")
-  public void checkProvisioningResults(PortProvisioning port) {
-    try {
-      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-      timeoutBlock.setTimeoutInterval(15000);
-      Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesCount();
-      timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
-    } catch (Throwable e) {
-      //catch the exception here . Which is block didn't execute within the time limit
-    }
-
-    List<AccessLineDto> accessLinesAfterProvisioning = getAccessLinesByPort(port);
-    long countDefaultNEProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNeProfile)
-            .filter(Objects::nonNull).filter(defaultNeProfile -> Objects.requireNonNull(defaultNeProfile.getState()).getValue()
-                    .equals(STATUS_ACTIVE))
-            .count();
-
-    long countDefaultNetworkLineProfileActive = accessLinesAfterProvisioning.stream().map(AccessLineDto::getDefaultNetworkLineProfile)
-            .filter(Objects::nonNull).filter(defaultNetworkLineProfile -> Objects.requireNonNull(defaultNetworkLineProfile
-                    .getState()).getValue()
-                    .equals(STATUS_ACTIVE))
-            .count();
-
-    long countAccessLinesWG = accessLinesAfterProvisioning.stream().filter(Objects::nonNull)
-            .filter(accessLine -> Objects.requireNonNull(accessLine.getStatus()).getValue()
-                    .equals(STATUS_WALLED_GARDEN))
-            .count();
-
-    assertEquals(getLineIdPool(port).size(), port.getLineIdPool().intValue());
-    assertEquals(getHomeIdPool(port).size(), port.getHomeIdPool().intValue());
-    assertEquals(countDefaultNetworkLineProfileActive, port.getDefaultNetworkLineProfilesActive().intValue());
-    assertEquals(countDefaultNEProfileActive, port.getDefaultNEProfilesActive().intValue());
-    assertEquals(countAccessLinesWG, port.getAccessLinesWG().intValue());
+  @Step("Get HomeIDs from the Port")
+  public List<String> getHomeIds(PortProvisioning port) {
+    return getHomeIdPool(port).stream().map(homeIdDto -> homeIdDto.getHomeId()).collect(Collectors.toList());
   }
 
+  @Step("Get HomeIDs from Port by Status")
+  public List<String> getHomeIdsByStatus(PortProvisioning port, HomeIdStatus homeIdStatus) {
+    return getHomeIdPool(port).stream()
+            .filter(homeIdDto -> (homeIdStatus.equals(homeIdDto.getStatus())))
+            .map(homeIdDto -> homeIdDto.getHomeId())
+            .collect(Collectors.toList());
+  }
+
+  @Step("Get AllocatedOnuIds")
   private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
     List<Integer> onuIds = accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
             .body(new SearchAllocatedOnuIdDto()
@@ -388,7 +774,30 @@ public class AccessLineRiRobot {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     return onuIdDtos;
+  }
 
+  @Step("Get AllocatedOnuIds by AccessLines")
+  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List <AccessLineDto> accessLinesList) {
+    List<Integer> allocatedOnunIds = accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+            .searchAllocatedOnuId()
+            .body(new SearchAllocatedOnuIdDto()
+                    .oltEndSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber())
+                    .lineId(accessLine.getLineId()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+            .flatMap(List::stream).collect(Collectors.toList());
+    return allocatedOnunIds;
+  }
+
+  @Step("Get AllocatedAnpTags from AccessLines")
+  public List<Integer> getAllocatedAnpTags (List<AccessLineDto> accessLines) {
+    return accessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag()).collect(Collectors.toList());
+  }
+
+  @Step("Get AllocatedAnpTags from the NetworkSwitchingProfiles")
+  public List<Integer> getAllocatedAnpTagsFromNsProfile (List<AccessLineDto> accessLines) {
+    return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile().getAnpTag().getAnpTag()).collect(Collectors.toList());
   }
 
   @Step("Get homeID from pool by port")
@@ -399,12 +808,11 @@ public class AccessLineRiRobot {
             .portNumber(accessLine.getPortNumber()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     assertEquals(homeIdPool.size(), 32, "Home ids in a pool count");
-    //Assert.assertEquals(homeIdPool.get(0).getStatus(), HomeIdDto.StatusEnum.FREE);
     return homeIdPool.get(0).getHomeId();
   }
 
   @Step("Get homeID state")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.HomeIdStatus getHomeIdStateByHomeId(String homeId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.HomeIdStatus getHomeIdStateByHomeId(String homeId) {
     List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdController()
             .searchHomeIds()
             .body(new SearchHomeIdDto()
@@ -415,7 +823,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get access line state by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineStatus getAccessLineStateByLineId(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus getAccessLineStateByLineId(String lineId) {
     List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
@@ -426,7 +834,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get lineId state by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.LineIdStatus getLineIdStateByLineId(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.LineIdStatus getLineIdStateByLineId(String lineId) {
     List<LineIdDto> lineIdPool = accessLineResourceInventory.lineIdController()
             .searchLineIds()
             .body(new SearchLineIdDto().lineId(lineId))
@@ -436,7 +844,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get subscriber NE profile by LineId")
-  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
+  public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
     List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
@@ -458,17 +866,16 @@ public class AccessLineRiRobot {
     return line.get(0).getSubscriberNetworkLineProfile();
   }
 
-  @Step("Get AccessLine entities by LineId")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
-    return accessLineResourceInventory
+  @Step("Get AccessLine entities by LineId for CA")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
   }
 
-  @Step("Get AccessLine entities by oltEndSz, slot, port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
-    return accessLineResourceInventory
+  @Step("Get AccessLine entities by oltEndSz, slot, port for CA")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal()
             .listAccessLine()
             .limitQuery(limit)
@@ -476,16 +883,109 @@ public class AccessLineRiRobot {
             .portReferencesOltDownlinkPortReferenceSlotNameQuery(slot)
             .portReferencesOltDownlinkPortReferencePortNameQuery(port)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
   }
 
-  @Step("Get AccessLine entities by dpuEndSz, port")
-  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
-    return accessLineResourceInventory
+  @Step("Get AccessLine entities by dpuEndSz, port for CA")
+  public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
+    return accessLineResourceInventoryCa
             .accessLineControllerExternal()
             .listAccessLine()
             .portReferencesDpuDownlinkPortReferenceEndSZQuery(dpuEndSz)
             .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
+  private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {
+    DefaultNeProfile defaultNeProfileList = new DefaultNeProfile();
+    defaultNeProfileList.setProfileName(defaultNeProfile.getProfileName());
+    defaultNeProfileList.setState(defaultNeProfile.getState().toString());
+    defaultNeProfileList.setAncpPartitionId(defaultNeProfile.getAncpPartitionId());
+    return defaultNeProfileList;
+  }
+
+  private static DefaultNetworkLineProfile mapToNLProfile(DefaultNetworkLineProfileDto defaultNlProfile) {
+    DefaultNetworkLineProfile defaultNlProfileList = new DefaultNetworkLineProfile();
+    defaultNlProfileList.setAccessType(defaultNlProfile.getAccessType());
+    defaultNlProfileList.setMinDownBandwidth(defaultNlProfile.getMinDownBandwidth());
+    defaultNlProfileList.setMinUpBandwidth(defaultNlProfile.getMinUpBandwidth());
+    defaultNlProfileList.setGuaranteedDownBandwidth(defaultNlProfile.getGuaranteedDownBandwidth());
+    defaultNlProfileList.setGuaranteedUpBandwidth(defaultNlProfile.getGuaranteedUpBandwidth());
+    defaultNlProfileList.setMaxDownBandwidth(defaultNlProfile.getMaxDownBandwidth());
+    defaultNlProfileList.setMaxUpBandwidth(defaultNlProfile.getMaxUpBandwidth());
+    defaultNlProfileList.setState(defaultNlProfile.getState().toString());
+    return defaultNlProfileList;
+  }
+
+  private static FttbNeProfile mapToFttbNeProfile(FttbNeProfileDto fttbNeProfile) {
+    FttbNeProfile fttbNeProfileList = new FttbNeProfile();
+    fttbNeProfileList.setGfastInterfaceProfile(fttbNeProfile.getGfastInterfaceProfile());
+    fttbNeProfileList.setDpuLineSpectrumProfile(fttbNeProfile.getDpuLineSpectrumProfile());
+    fttbNeProfileList.setNumberOfGemPorts(fttbNeProfile.getNumberOfGemPorts());
+    fttbNeProfileList.setBandwidthProfile(fttbNeProfile.getBandwidthProfile());
+    fttbNeProfileList.setStateMosaic(fttbNeProfile.getStateMosaic().toString());
+    fttbNeProfileList.setStateOlt(fttbNeProfile.getStateOlt().toString());
+    return fttbNeProfileList;
+  }
+
+  private static L2BsaNspReference mapToL2BsaNspReference(L2BsaNspReferenceDto l2BsaNspReference) {
+    L2BsaNspReference l2BsaNspReferenceList = new L2BsaNspReference();
+    l2BsaNspReferenceList.setL2ccid(l2BsaNspReference.getL2ccid());
+    l2BsaNspReferenceList.setCarrierBsaReference(l2BsaNspReference.getCarrierBsaReference());
+    l2BsaNspReferenceList.setDownBandwidth(l2BsaNspReference.getDownBandwidth());
+    l2BsaNspReferenceList.setUpBandwidth(l2BsaNspReference.getUpBandwidth());
+    return l2BsaNspReferenceList;
+  }
+
+  private static SubscriberNetworkLineProfile mapToSubscriberNetworkLineProfile(SubscriberNetworkLineProfileDto subscriberNetworkLineProfile) {
+    SubscriberNetworkLineProfile subscriberNetworkLineProfileList = new SubscriberNetworkLineProfile();
+    subscriberNetworkLineProfileList.setMaxDownBandwidth(subscriberNetworkLineProfile.getMaxDownBandwidth());
+    subscriberNetworkLineProfileList.setMaxUpBandwidth(subscriberNetworkLineProfile.getMaxUpBandwidth());
+    subscriberNetworkLineProfileList.setMinDownBandwidth(subscriberNetworkLineProfile.getMinDownBandwidth());
+    subscriberNetworkLineProfileList.setMinUpBandwidth(subscriberNetworkLineProfile.getMinUpBandwidth());
+    subscriberNetworkLineProfileList.setGuaranteedDownBandwidth(subscriberNetworkLineProfile.getGuaranteedDownBandwidth());
+    subscriberNetworkLineProfileList.setGuaranteedUpBandwidth(subscriberNetworkLineProfile.getGuaranteedUpBandwidth());
+    subscriberNetworkLineProfileList.setDownBandwidth(subscriberNetworkLineProfile.getDownBandwidth());
+    subscriberNetworkLineProfileList.setUpBandwidth(subscriberNetworkLineProfile.getUpBandwidth());
+    subscriberNetworkLineProfileList.setKlsId(Math.toIntExact(subscriberNetworkLineProfile.getKlsId()));
+    subscriberNetworkLineProfileList.setState((subscriberNetworkLineProfile.getState().toString()));
+    return subscriberNetworkLineProfileList;
+  }
+
+  @Owner("TMI")
+  public String getLineIdByHomeId(String homeId) {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLine> accessLines =
+            accessLineResourceInventory.accessLineControllerExternal()
+                    .listAccessLine()
+                    .homeIdQuery(homeId)
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    assertNotNull(accessLines.get(0), "AccessLine is not found");
+    assertNotNull(accessLines.get(0).getLineId(), "lineId is not found");
+    return accessLines.get(0).getLineId();
+  }
+
 }
+
+//  private void checkDevicePostConditions(PortProvisioning port) {
+//    List<String> portNumbers = wgAccessProvisioningRobot.getPonPorts(port)
+//            .stream()
+//            .map(Port::getPortNumber)
+//            .collect(Collectors.toList()); //list of ponPort numbers
+//
+//    List<PortProvisioning> portProvisioningList = portNumbers
+//            .stream()
+//            .map(portNumber -> getPortProvisioning(port, portNumber))
+//            .collect(Collectors.toList()); //list of portProvisioning numbers
+//
+//    portProvisioningList.forEach(portAfterProvisioning -> checkFtthPortParameters(portAfterProvisioning));
+//  }
+//
+//  private PortProvisioning getPortProvisioning(PortProvisioning portProvisioning, String portNumber) {
+//    PortProvisioning port = new PortProvisioning();
+//    port.setEndSz(portProvisioning.getEndSz());
+//    port.setPortNumber(portNumber);
+//    port.setLineIdPool(portProvisioning.getLineIdPool());
+//    port.setHomeIdPool(portProvisioning.getHomeIdPool());
+//    port.setDefaultNEProfilesActive(portProvisioning.getDefaultNEProfilesActive());
+//    port.setDefaultNetworkLineProfilesActive(portProvisioning.getDefaultNetworkLineProfilesActive());
+//    port.setAccessLinesWG(portProvisioning.getAccessLinesWG());
+//    return port;
+//  }

@@ -1,4 +1,12 @@
-name: A4OltDevice
+name: A4OltDevice7KH0
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH0"
+  klsId: "123456"
+  compositePartyId: 10001
+---
+name: A4OltDevice7KH1
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/30/179"
@@ -6,10 +14,44 @@ values:
   klsId: "123456"
   compositePartyId: 10001
 ---
-name: A4PortForProvisioning
+name: A4OltDevice7KH4
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH4"
+  klsId: "123456"
+  compositePartyId: 10001
+---
+name: A4OltDevice7KH5
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH5"
+  klsId: "123456"
+  compositePartyId: 10001
+---
+name: A4DpuDevice7KH6
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH6"
+  klsId: "123456"
+  compositePartyId: 10001
+  accessTransmissionMedium: "TWISTED_PAIR"
+---
+name: A4DpuDevice7KH7
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/30/179"
+  fsz: "7KH7"
+  klsId: "123456"
+  compositePartyId: 10001
+  accessTransmissionMedium: "TWISTED_PAIR"
+---
+name: A4Port7KH0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  endSz: "49/30/179/7KH1"
+  endSz: "49/30/179/7KH0"
   slotNumber: "1"
   portNumber: "0"
   homeIdPool: 32
@@ -19,9 +61,84 @@ values:
   defaultNetworkLineProfilesActive: 1
   nspReference: 1
   accessLinesCount: 1
-
 ---
-name: A4TerminationPoint
-template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
+name: A4Port7KH1
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  uuid: "c6adce68-f8a4-4ed4-8e1c-f217259f6580"
+  endSz: "49/30/179/7KH1"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 2
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1
+---
+name: A4Port7KH4
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH4"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1
+---
+name: A4PortForDeprovisioning
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  homeIdPool: 0
+  lineIdPool: 0
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
+  nspReference: 0
+  accessLinesCount: 0
+---
+name: A4Port7KH5
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH5"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 1
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1
+---
+name: A4Port7KH6
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH6"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 0
+  lineIdPool: 0
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1
+---
+name: A4Port7KH7
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/7KH7"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 0
+  lineIdPool: 0
+  accessLinesWG: 1
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 1
+  nspReference: 1
+  accessLinesCount: 1

@@ -4,13 +4,14 @@ import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -26,6 +27,8 @@ import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
         DECOUPLING_MS,
         GATEWAY_ROUTE_MS
 })
+
+@Epic("Postprovisioning")
 public class Postprovisioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
@@ -57,13 +60,13 @@ public class Postprovisioning extends GigabitTest {
 
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostProvisioningPrecondition);//create 16 wg access lines
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(12, portFor16_24Case); //12 assigned lines
 
         //1 trigger postprovisioning
         wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor16_24Case, getHomeIdFromAccessLine(accessLine));
 
-        accessLineRiRobot.checkPortParametersForLines(portFor16_24Case);
+        accessLineRiRobot.checkFtthPortParameters(portFor16_24Case);
         accessLineRiRobot.checkPortParametersForAssignedLines(portFor16_24Case);
     }
 
@@ -77,13 +80,13 @@ public class Postprovisioning extends GigabitTest {
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.assignAccessLines16_24_32);
 
         //precondition
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(7, portFor24_32Case); //13 + 7 assigned access lines
 
         //1 to trigger postprovisioning
         wgAccessProvisioningRobot.prepareForPostprovisioning(1, portFor24_32Case, getHomeIdFromAccessLine(accessLine));
 
-        accessLineRiRobot.checkPortParametersForLines(portFor24_32Case);
+        accessLineRiRobot.checkFtthPortParameters(portFor24_32Case);
         accessLineRiRobot.checkPortParametersForAssignedLines(portFor24_32Case);
     }
 
@@ -96,13 +99,13 @@ public class Postprovisioning extends GigabitTest {
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.assignAccessLines16_24_32_onDemand);
 
         //precondition
-        accessLineRiRobot.checkProvisioningResults(portForPostProvisioningPrecondition);
+        accessLineRiRobot.checkFtthPortParameters(portForPostProvisioningPrecondition);
         asignAccessLines(11, portForPostProvisioningPrecondition);  //create 32 assigned lines
 
         wgAccessProvisioningRobot.startPostprovisioning(portForOnDemand); //33 wg line creation
 
-        accessLineRiRobot.checkProvisioningResults(portForOnDemand);
-        accessLineRiRobot.checkPortParametersForLines(portForOnDemand);
+        accessLineRiRobot.checkFtthPortParameters(portForOnDemand);
+        accessLineRiRobot.checkFtthPortParameters(portForOnDemand);
         accessLineRiRobot.checkPortParametersForAssignedLines(portForOnDemand);
     }
 

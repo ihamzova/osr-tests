@@ -27,14 +27,14 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS,A4_CARRIER_MANAGEMENT_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS,A4_CARRIER_MANAGEMENT_MS,A4_NEMO_UPDATER_MS})
 public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
     private final long SLEEP_TIMER = 5; // in seconds
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryServiceRobot a4ResourceInventoryService = new A4ResourceInventoryServiceRobot();
-    private final WgA4PreProvisioningWiremockRobot a4PreProvisioning = new WgA4PreProvisioningWiremockRobot();
+    private final WgA4ProvisioningWiremockRobot a4PreProvisioning = new WgA4ProvisioningWiremockRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4ResilienceRobot a4Resilience = new A4ResilienceRobot();
@@ -94,7 +94,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         a4ResourceInventory.deleteA4TestDataRecursively(negData);
 
-        a4Resilience.changeRouteToA4ResourceInventoryService(routeName);
+        a4Resilience.changeRouteToA4ResourceInventoryService(routeName); //if this is not working check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
@@ -116,7 +116,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // after a little time it is trying to redeliver to wiremock it should answer with 201...
 
-        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 5000);
+        TimeUnit.MILLISECONDS.sleep(REDELIVERY_DELAY + 15000);
 
         // ... and create nsp
         a4ResourceInventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
@@ -136,7 +136,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with A10NSP Preprovisioning, but resource-inventory is not reachable")
@@ -145,6 +145,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
     @Description("NEMO creates new Termination Point with A10NSP Preprovisioning")
     public void newTpWithA10NspPreprovisioningRedelivery() throws InterruptedException, IOException {
         // what to do before this test:
+        // check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
         //   edit yaml of service apigw
         //   add ports:
         //      - name: apigw-admin
@@ -155,13 +156,18 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         //   and uses new port mapping (81 -> 8001)
 
         String queue = "jms.queue.a10NspTP";
-        String dlq = "jms.dead-letter-queue.a10NspTP";
+        String dlq = "jms.dlq.a10NspTP";
+        a4Resilience.removeAllMessagesInQueue(dlq);
+        a4Resilience.removeAllMessagesInQueue(queue);
         //BEFORE
+        a4ResourceInventory.createTerminationPoint(tpA10Data, nepData);
             // change kong route so wiremock is used for TerminationPoint, because that is the first request for preprovisioning
         a4Resilience.changeRouteToWiremock(routeName);
             // make wiremock return 500 for findTerminationPoint
+            //and return 201 for put TerminationPoint
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "NewTpFromNemoWithPreprovisioningTest"))
                 .addA4ResourceInventoryMock500()
+                .addA4ResourceInventoryMock201()
                 .build();
         wiremock.publish();
 
@@ -173,8 +179,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // THEN
             // check if message is still waiting in queue
-        a4Resilience.checkMessagesInQueue(queue, "1");
-        String old = a4Resilience.countMessagesInQueue(dlq);
+        a4Resilience.checkMessagesInQueue(queue, 1);
+        int old = a4Resilience.countMessagesInQueue(dlq);
 
         //AFTER
             // change route back over kong to a4-resource-inventory
@@ -183,7 +189,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
             // wait time of redelivery and check if message it out of queue and
         long sleepTime = a4Resilience.getRedeliveryDelayCarrierManagement();
         TimeUnit.MILLISECONDS.sleep(sleepTime);
-        a4Resilience.checkMessagesInQueue(queue, "0");
+
+        a4Resilience.checkMessagesInQueue(queue, 0);
         a4Resilience.checkMessagesInQueue(dlq, old);
     }
 
@@ -219,7 +226,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
 //        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(tpA10Data.getUuid());
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP and NSP already existing in inventory")
@@ -257,7 +264,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
 
         // THEN
         a4ResourceInventory.checkNetworkServiceProfileA10NspConnectedToTerminationPointExists(tpA10Data.getUuid(), 1);
-        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data.getUuid());
+        a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpA10Data);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point (L2BSA) with TP already existing in inventory, NSP not existing")

@@ -12,7 +12,7 @@ import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.dpu.commissioning.model.DpuCommissioningResponse;
+import com.tsystems.tm.acc.tests.osr.dpu.commissioning.external.client.model.DpuCommissioningResponse;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
@@ -112,12 +112,12 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
             dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -128,7 +128,88 @@ public class DpuCommissioningProcess extends GigabitTest {
             dpuCommissioningRobot.checkPostDpuEmsConfigCalled(dpuEmsCheckValuesPost);
             dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
             dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
-            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz().replace("/", "%2F"));
+        }
+    }
+
+    @Test(description = "Positive case. DPU-commisioning for Adtran OLT without errors")
+    @Description("Positive case. DPU-commisioning for Adtran OLT without errors")
+    public void dpuCommissioningAdtranPositive() {
+        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DefaultOltForCommissioningPositive);
+        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
+
+        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositive")) {
+            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
+                    .addAllSuccessAdtran(olt, dpu)
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport());
+
+            List<Consumer<RequestPatternBuilder>> onuidCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz()));
+
+            List<Consumer<RequestPatternBuilder>> backhaulidCheckValues = Arrays.asList(
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltPort()));
+
+            List<Consumer<RequestPatternBuilder>> deprovisionPortCheckValues = Collections.singletonList(
+                    bodyContains(olt.getEndsz()));
+
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPost = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains(dpu.getOnuId().toString()),
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValues = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            List<Consumer<RequestPatternBuilder>> dpuAtOltCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains(dpu.getOnuId().toString()),
+                    bodyContains(olt.getEndsz()),
+                    bodyContains(olt.getOltPort()),
+                    bodyContains("\"configurationState\":\"ACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPost = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"INACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuEmsCheckValuesPut = Arrays.asList(
+                    bodyContains(dpu.getEndSz()),
+                    bodyContains("\"configurationState\":\"ACTIVE\""));
+
+            List<Consumer<RequestPatternBuilder>> dpuSealAtOltCheckValuesDpu = Collections.singletonList(
+                    bodyContains(dpu.getEndSz().replace("/", "_")));
+
+            List<Consumer<RequestPatternBuilder>> checkFirstPatchValues = Collections.singletonList(
+                    bodyContains("INSTALLING"));
+
+            List<Consumer<RequestPatternBuilder>> checkSecondPatchValues = Collections.singletonList(
+                    bodyContains("OPERATING"));
+
+            dpuCommissioningRobot.startProcess(dpu.getEndSz());
+            dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPatchPortCalled(checkFirstPatchValues);
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
+            dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
+            dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
+            dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
+            dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
+            dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
+            dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
+            dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuAtOltConfigCalled(dpuAtOltCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuAtOltConfigCalled(dpuSealAtOltCheckValues);
+            dpuCommissioningRobot.checkPutDpuAtOltConfigCalled(dpuAtOltCheckValuesPut);
+            dpuCommissioningRobot.checkGetDpuEmsConfigCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDpuEmsConfigCalled(dpuEmsCheckValuesPost);
+            dpuCommissioningRobot.checkPostSEALDpuEmsConfigCalled(dpuSealAtOltCheckValuesDpu);
+            dpuCommissioningRobot.checkPutDpuEmsConfigCalled(dpuEmsCheckValuesPut);
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz().replace("/", "%2F"));
         }
     }
 
@@ -165,12 +246,12 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -226,12 +307,12 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkGetDeviceDPUCalled(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostOnuIdCalled(onuidCheckValues);
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionPortCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetOltAncpSessionCalled(olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAtOltConfigCalled(dpu.getEndSz());
@@ -291,7 +372,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     bodyContains(olt.getOltPort()));
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
             dpuCommissioningRobot.checkPostBackhaulidCalled(backhaulidCheckValues);
         }
@@ -313,7 +394,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getGfApFolId());
+            dpuCommissioningRobot.checkGetDpuPonConnCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetEthernetLinkNotCalled(olt.getEndsz());
         }
     }
@@ -423,7 +504,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz(), olt.getEndsz().replace("/", "%2F"));
         }
     }
 
@@ -442,7 +523,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     .publishedHook(attachStubsToAllureReport());
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz());
         }
     }
@@ -486,7 +567,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             dpuCommissioningRobot.checkPostDeprovisioningPortCalled(deprovisionCheckValues);
-            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpNotCalled(dpu.getEndSz(), olt.getEndsz().replace("/", "%2F"));
         }
     }
 
@@ -505,7 +586,7 @@ public class DpuCommissioningProcess extends GigabitTest {
                     .publishedHook(attachStubsToAllureReport());
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
-            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostConfigAncpCalled(dpu.getEndSz().replace("/", "%2F"), olt.getEndsz().replace("/", "%2F"));
             dpuCommissioningRobot.checkGetDpuAncpSessionNotCalled(dpu.getEndSz().replace("/", "%2F"));
         }
     }
@@ -577,7 +658,7 @@ public class DpuCommissioningProcess extends GigabitTest {
 
             dpuCommissioningRobot.startProcess(dpu.getEndSz());
             Thread.sleep(4000);
-            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz());
+            dpuCommissioningRobot.checkPostDeviceProvisioningCalled(dpu.getEndSz().replace("/", "%2F"));
             dpuCommissioningRobot.checkPatchDeviceNotCalled(checkSecondPatchValues);
         }
     }
@@ -676,50 +757,6 @@ public class DpuCommissioningProcess extends GigabitTest {
 
         }
 
-    }
-
-    @Test(description = "Domain level test. Positive case. DPU-commisioning without errors")
-    @Description("Positive case. DPU-commissioning without errors")
-    public void dpuCommissioningPositiveDomain() throws InterruptedException {
-        OltDevice olt = osrTestContext.getData().getOltDeviceDataProvider().get(OltDeviceCase.DpuCommissioningOlt);
-        Dpu dpu = osrTestContext.getData().getDpuDataProvider().get(DpuCase.DefaultPositive);
-
-        try (WireMockMappingsContext mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain")) {
-            new MorpeusWireMockMappingsContextBuilder(mappingsContext)
-                    .addAllSuccess(olt, dpu)
-                    .build()
-                    .publish()
-                    .publishedHook(savePublishedToDefaultDir())
-                    .publishedHook(attachStubsToAllureReport());
-
-            DpuCommissioningResponse resp = dpuCommissioningRobot.startCommissioningProcess(dpu.getEndSz(), UUID.randomUUID());
-
-            Thread.sleep(30000);
-
-            etcdRobot.checkEtcdValues(resp.getBusinessKey(),
-                    Arrays.asList(
-                            "EXECUTED Successfuly [Read DPU device data]",
-                            "EXECUTED Successfuly [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                            "EXECUTED Successfuly [Read OltPonPort Data]",
-                            "EXECUTED Successfuly [Read OltUpLinkPortData]",
-                            "EXECUTED Successfuly [Get Unique OnuId for DPU]",
-                            "EXECUTED Successfuly [Read BackhaulId]",
-                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][call]",
-                            "EXECUTED Successfuly [Deprovision FTTH on PonPort][callback]",
-                            "EXECUTED Successfuly [Configure ANCP on BNG][call]",
-                            "EXECUTED Successfuly [Configure ANCP on BNG][callback]",
-                            "EXECUTED Successfuly [Read ANCP Info]",
-                            "EXECUTED Successfuly [Create DpuAtOltConfiguration If Missing]",
-                            "EXECUTED Successfuly [Configure DPU at OLT][call]",
-                            "EXECUTED Successfuly [Configure DPU at OLT][callback]",
-                            "EXECUTED Successfuly [Set DpuAtOltConfiguration.configurationState to active]",
-                            "EXECUTED Successfuly [Create DpuEmsConfiguration If Missing]",
-                            "EXECUTED Successfuly [Configure DPU Ems][call]",
-                            "EXECUTED Successfuly [Configure DPU Ems][callback]",
-                            "EXECUTED Successfuly [Set DpuEmsConfiguration.configurationState to active]",
-                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][call]",
-                            "EXECUTED Successfuly [Provision FTTB access provisioning on DPU][callback]"));
-        }
     }
 
     private Consumer<RequestPatternBuilder> bodyContains(String str) {

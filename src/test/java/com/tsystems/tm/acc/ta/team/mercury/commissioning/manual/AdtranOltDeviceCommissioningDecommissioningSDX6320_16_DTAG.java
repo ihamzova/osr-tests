@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -15,12 +15,11 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -35,17 +34,19 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends GigabitTest {
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
 
-  private OltResourceInventoryClient oltResourceInventoryClient;
+  private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
+  private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
   private OltDevice oltDevice;
 
   private WireMockMappingsContext mappingsContext;
@@ -53,7 +54,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
+    deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
     oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
@@ -72,14 +74,14 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
             .addAccessLineInventoryMock()
             .addPonInventoryMock(oltDevice)
+            .addRebellUewegeMock(oltDevice)
             .build();
 
     mappingsContext2.publish()                                              //inject in WM
             .publishedHook(savePublishedToDefaultDir())
             .publishedHook(attachStubsToAllureReport());
 
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
   }
 
   @AfterClass
@@ -93,7 +95,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     mappingsContext2
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
-
   }
 
 
@@ -107,8 +108,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HF_SDX_6320_16);
-    String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
 
@@ -125,9 +124,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(oltDevice);
     oltDetailsPage.saveUplinkConfiguration();
-    oltDetailsPage.modifyUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
     oltDetailsPage.updateAncpSessionStatus();
@@ -136,8 +133,8 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     oltDetailsPage.openPortView(null);
     checkPortState(oltDevice, oltDetailsPage);
 
-    checkDeviceSDX3620(endSz);
-    checkUplink(endSz);
+    checkDeviceSDX3620(oltDevice.getEndsz());
+    oltCommissioningRobot.checkUplink(oltDevice);
   }
 
   @Test(dependsOnMethods = "manuallyAdtranOltCommissioningDTAG", description = "Manual decommissioning for SDX 6320-16 device as DTAG user")
@@ -202,63 +199,41 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
    */
   private void checkDeviceSDX3620(String endSz) {
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
     Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
     Device device = deviceList.get(0);
     Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
 
     Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
-    Assert.assertEquals(device.getTkz1(), "11971330F1", "TKZ1 missmatch");
-    Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_DTAG, "composite partyId DTAG missmatch");
+    Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+    Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "composite partyId DTAG missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
-    Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+    Assert.assertEquals(oltDetailsPage.getEndsz(), endSz, "UI EndSz missmatch");
     Assert.assertEquals(oltDetailsPage.getBezeichnung(), EMS_NBI_NAME_SDX6320_16, "UI EMS NBI name missmatch");
     Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (dynamic Mock)");
     Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device/ port lifecycle state missmatch");
   }
 
   /**
-   * check uplink and ancp-session data from olt-ressource-inventory
-   */
-  private void checkUplink(String endSz) {
-    List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-            .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-    Assert.assertEquals(uplinkDTOList.size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
-  }
-
-  /**
    * check uplink is not exist in olt-resource-inventory
    */
   private void checkUplinkDeleted(String endSz) {
-    List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-            .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-    Assert.assertTrue(uplinkDTOList.isEmpty());
+    Assert.assertTrue(uplinkList.isEmpty());
   }
 
   /**
    * check device is not exist in olt-resource-inventory
    */
   private void checkDeviceDeleted(String endSz) {
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     Assert.assertEquals(deviceList.size(), 0L, "Device is present");
   }
-
-  /**
-   * clears complete olt-resource-invemtory database
-   */
-  private void clearResourceInventoryDataBase(String endSz) {
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-
 }

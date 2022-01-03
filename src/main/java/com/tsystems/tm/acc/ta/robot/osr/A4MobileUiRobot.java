@@ -4,11 +4,10 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmePage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmeNELPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4NelInstallationPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Alert;
@@ -25,10 +24,9 @@ import java.util.Map;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.stringSplit;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class A4MobileUiRobot {
@@ -36,15 +34,13 @@ public class A4MobileUiRobot {
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage() {
-        A4MobileNeSearchPage
-                .login();
+        login();
     }
 
     public void searchForNetworkElement(A4NetworkElement neData) {
         openNetworkElementMobileSearchPage();
         enterVpsz(neData.getVpsz());
         enterFsz(neData.getFsz());
-        enterCategory(neData.getCategory());
         clickSearchButton();
     }
 
@@ -55,7 +51,6 @@ public class A4MobileUiRobot {
         assertEquals(readOnkz(), stringSplit(ne.getVpsz(), "/").get(1));
         assertEquals(readVkz(), stringSplit(ne.getVpsz(), "/").get(2));
         assertEquals(readFsz(), ne.getFsz());
-        assertEquals(readCategory(), ne.getCategory());
         assertEquals(readZtpIdent(), ztpIdent);
     }
 
@@ -65,123 +60,111 @@ public class A4MobileUiRobot {
 
     @Step("Enter vpsz")
     public void enterVpsz(String value) {
-        $(A4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[0]);
-        $(A4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[1]);
-        $(A4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val(getSplittedVpszValues(value)[2]);
+        $(AKZ_INPUT_FIELD_LOCATOR).val(getSplittedVpszValues(value)[0]);
+        $(ONKZ_INPUT_FIELD_LOCATOR).val(getSplittedVpszValues(value)[1]);
+        $(VKZ_INPUT_FIELD_LOCATOR).val(getSplittedVpszValues(value)[2]);
     }
 
     @Step("Read vpsz")
     public String readVpsz() {
-        return $(A4MobileNeSearchPage.getVPSZ_INPUT_FIELD_LOCATOR()).val();
+        return $(VPSZ_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Read akz")
     public String readAkz() {
-        return $(A4MobileNeSearchPage.getAKZ_INPUT_FIELD_LOCATOR()).val();
+        return $(AKZ_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Read onkz")
     public String readOnkz() {
-        return $(A4MobileNeSearchPage.getONKZ_INPUT_FIELD_LOCATOR()).val();
+        return $(ONKZ_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Read vkz")
     public String readVkz() {
-        return $(A4MobileNeSearchPage.getVKZ_INPUT_FIELD_LOCATOR()).val();
+        return $(VKZ_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Click search button")
     public void clickSearchButton() {
-        $(A4MobileNeSearchPage.getSEARCH_BUTTON_LOCATOR()).click();
+        $(SEARCH_BUTTON_LOCATOR).click();
     }
 
     @Step("Enter fsz")
     public void enterFsz(String value) {
-        $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val(value);
+        $(FSZ_INPUT_FIELD_LOCATOR).val(value);
     }
 
     @Step("Read fsz")
     public String readFsz() {
-        return $(A4MobileNeSearchPage.getFSZ_INPUT_FIELD_LOCATOR()).val();
-    }
-
-    @Step("Enter Category")
-    public void enterCategory(String category) {
-        $(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).selectOption(category);
-    }
-
-    @Step("Read Category")
-    public String readCategory() {
-        return $(A4MobileNeSearchPage.getCATEGORY_INPUT_FIELD_LOCATOR()).val();
+        return $(FSZ_INPUT_FIELD_LOCATOR).val();
     }
 
     @Step("Read ZTP Ident")
     public String readZtpIdent() {
-        return $(A4MobileNeSearchPage.getZTPI_INPUT_FIELD_LOCATOR()).getText();
+        return $(ZTPI_INPUT_FIELD_LOCATOR).getText();
     }
 
     @Step("Check planning")
     public void checkPlanning() {
-        $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).click();
-    }
-
-    @Step("Check if planning is checked")
-    public boolean checkIsPlanningChecked() {
-        return $(A4MobileNeSearchPage.getPLANNING_CHECKBOX_LOCATOR()).isSelected();
+        $(PLANNING_CHECKBOX_LOCATOR).click();
     }
 
     @Step("Check operating")
     public void checkOperating() {
-        $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).click();
+        $(OPERATING_CHECKBOX_LOCATOR).click();
     }
 
     @Step("Check installing")
     public void checkInstalling() {
-        $(A4MobileNeSearchPage.getINSTALLING_CHECKBOX_LOCATOR()).click();
-    }
-
-    @Step("Check if operating is checked")
-    public boolean checkIsOperatingChecked() {
-        return $(A4MobileNeSearchPage.getOPERATING_CHECKBOX_LOCATOR()).isSelected();
+        $(INSTALLING_CHECKBOX_LOCATOR).click();
     }
 
     @Step("Check radioButton")
     public void checkRadioButton(String index) {
-        $(A4MobileNeSearchPage.getRADIO_BUTTON_LOCATOR()).append("[" + index + "]").click();
+        $(RADIO_BUTTON_LOCATOR).append("[" + index + "]").click();
     }
 
-    @Step("Click inbetriebnahme button")
+    @Step("Click NE inbetriebnahme button")
     public void clickInbetriebnahmeButton() {
-        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NE_BUTTON_LOCATOR()).click();
+        $(INBETRIEBNAHME_NE_BUTTON_LOCATOR).click();
     }
 
-    @Step("Click nel installation button")
+    @Step("Click Zeige Nel zu Ne button")
+    public void clickZeigeNelZuNeButton() {
+        $(ZEIGE_NEL_ZU_NE_BUTTON_LOCATOR).click();
+    }
+
+    @Step("Click NEL installation button")
     public void clickNelInstallationButton() {
-        $(A4MobileNeSearchPage.getINBETRIEBNAHME_NEL_BUTTON_LOCATOR()).click();
+        $(INBETRIEBNAHME_NEL_BUTTON_LOCATOR).click();
     }
 
     @Step("Click Monitoring Button")
     public void clickMonitoringButton() {
-        $(A4MobileNeSearchPage.getMONITORING_BUTTON_LOCATOR()).click();
+        $(MONITORING_BUTTON_LOCATOR).click();
     }
 
 
     //inbetriebnahme-page
     @Step("Enter ztpIdent")
     public void enterZtpIdent(String value) {
-        $(A4MobileInbetriebnahmePage.getZTPIDENT_FIELD_LOCATOR()).val(value);
+        $(ZTPIDENT_FIELD_LOCATOR).val(value);
     }
 
     @Step("Back navigation")
     public void clickFinishButton() {
-        $(A4MobileInbetriebnahmePage.getFERTIG_BUTTON_LOCATOR()).click();
+        $(FERTIG_BUTTON_LOCATOR).click();
     }
 
-    @Step("Remove Monitoring Item")
-    public void clickRemoveButton() {
-        // $(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
-        $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+    @Step("Remove NE Monitoring Item")
+    public void clickRemoveFromNEListButton() {
+        $(A4MobileMonitoringPage.getSEARCH_NE_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
+    }
 
+    @Step("Remove NEL Monitoring Item")
+    public void clickRemoveFromNELListButton() {
+        $(A4MobileMonitoringPage.getSEARCH_NEL_RESULT_TABLE_LOCATOR()).toWebElement().findElement(A4MobileMonitoringPage.getDELETE_BUTTON_LOCATOR()).click();
     }
 
     public void doNeInbetriebnahme(String ztpIdent) {
@@ -192,7 +175,7 @@ public class A4MobileUiRobot {
     }
 
     public void doNelInstallation() {
-        checkCheckbox("1");
+        checkCheckbox();
         clickButtonAndConfirm();
     }
 
@@ -209,16 +192,19 @@ public class A4MobileUiRobot {
     }
 
     @Step("Check radioButton")
-    public void checkCheckbox(String index) {
-        $(A4NelInstallationPage.getCHECKBOX_LOCATOR()).click();
+    public void checkCheckbox() {
+        $(A4MobileInbetriebnahmeNELPage.getCHECKBOX_LOCATOR()).click();
     }
 
-    @Step("Click button")
+    @Step("Click NEL Install Button")
     public void clickButtonAndConfirm() {
-        $(A4NelInstallationPage.getSTART_INSTALL_BTN()).click();
+        $(A4MobileInbetriebnahmeNELPage.getSTART_INSTALL_BTN()).click();
+        checkAlert();
+    }
 
+    private void checkAlert() {
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
+            WebDriver driver = WebDriverRunner.getWebDriver();
             WebDriverWait wait = new WebDriverWait(driver, 5000);
             Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert();
@@ -228,9 +214,21 @@ public class A4MobileUiRobot {
         }
     }
 
+    @Step("Click NE Reset to planning button")
+    public void clickNeResetToPlanningButtonAndConfirm() {
+        System.out.println("+++ Button Enabled: " + $(NE_RESET_TO_PLANNING_BUTTON_LOCATOR).isEnabled());
+        $(NE_RESET_TO_PLANNING_BUTTON_LOCATOR).click();
+        checkAlert();
+    }
+
+    public ElementsCollection getNeElementsCollection() throws InterruptedException {
+        Thread.sleep(2000);
+        return $(SEARCH_RESULT_TABLE_LOCATOR).findAll(By.xpath("tr/td"));
+    }
+
     @Step("Check error message not found")
     public String notFoundMsg() {
-        return $(A4NelInstallationPage.getERROR_LOCATOR()).getText();
+        return $(A4MobileInbetriebnahmeNELPage.getERROR_LOCATOR()).getText();
     }
 
     @Step("Conten not found msg")
@@ -240,24 +238,33 @@ public class A4MobileUiRobot {
 
     @Step("click planning filter")
     public void checkPlanningFilter() {
-        $(A4NelInstallationPage.getPLANNING_FILTER_LOCATOR()).click();
+        $(A4MobileInbetriebnahmeNELPage.getPLANNING_FILTER_LOCATOR()).click();
     }
 
 
     //monitoring-page
-    @Step("check empty Monitoring")
-    public void checkEmptyMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
-        $(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
-        assertEquals($(A4MobileMonitoringPage.getEMPTY_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste für NetworkElements ist leer.");
+    @Step("check empty NE Monitoring")
+    public void checkEmptyNeMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList) {
+        $(A4MobileMonitoringPage.getEMPTY_NE_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
+        assertEquals($(A4MobileMonitoringPage.getEMPTY_NE_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste für NetworkElements ist leer.");
         assertEquals(a4NeFilteredList.size(), 0);
     }
 
-    @Step("check Monitoring")
-    public void checkMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) {
+
+    //monitoring-page
+    @Step("check empty NEL Monitoring")
+    public void checkEmptyNelMonitoringList(Map<String, A4NetworkElementLink> a4NelFilteredList) {
+        $(A4MobileMonitoringPage.getEMPTY_NEL_LIST_MESSAGE_LOCATOR()).shouldBe(visible);
+        assertEquals($(A4MobileMonitoringPage.getEMPTY_NEL_LIST_MESSAGE_LOCATOR()).text(), "Ihre Monitoring-Liste für NetworkElementLinks ist leer.");
+        assertEquals(a4NelFilteredList.size(), 0);
+    }
+
+    @Step("check NE Monitoring")
+    public void checkNEMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList, EquipmentData equipmentData) {
         //check if rows of tables are there, before proceeding
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
-        ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_RESULT_TABLE_LOCATOR())
+        ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_NE_RESULT_TABLE_LOCATOR())
                 .findAll(By.xpath("tr/td"));
         List<String> concat = new ArrayList<>();
 
@@ -279,23 +286,48 @@ public class A4MobileUiRobot {
         assertEquals(concat.size() / 6, a4NeFilteredList.size());
     }
 
-    public void removeNetworkElementFromMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
+
+    @Step("check NEL Monitoring")
+    public void checkNELMonitoringList(Map<String, A4NetworkElement> a4NeFilteredList,
+                                       String endPointVpsz, String endPointFsz) {
+        //check if rows of tables are there, before proceeding
+        waitForTableToFullyLoad(a4NeFilteredList.size());
+
+        ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_NEL_RESULT_TABLE_LOCATOR())
+                .findAll(By.xpath("tr/td"));
+        List<String> monitoringZeile = new ArrayList<>();
+
+        elementsCollection.forEach(k -> monitoringZeile.add(k.getText()));
+
+        String monitoringZeileString = monitoringZeile.stream().map(String::toString).reduce("", String::concat);
+
+        assertTrue(monitoringZeile.contains("4N4"), "4N4");
+        //  NEL has to be in LifecycleState: INSTALLING
+        assertTrue(monitoringZeile.contains("INSTALLING"));
+        //  NEL has to be in OperationalState: NOT_WORKING
+        assertTrue(monitoringZeile.contains("NOT_WORKING"));
+        a4NeFilteredList.forEach((k, a4NetworkElement) -> {
+            // lbz from NEL in Monitoring List must contain: vpsz and fsz from both NE's
+            assertTrue(monitoringZeileString.contains(a4NetworkElement.getVpsz()));
+            assertTrue(monitoringZeileString.contains(endPointVpsz));
+            assertTrue(monitoringZeileString.contains(a4NetworkElement.getFsz()));
+            assertTrue(monitoringZeileString.contains(endPointFsz));
+        });
+
+        //check if table has only as many rows as expected by test data set
+        //table has 5 columns and a4NeFilteredList contains cells, so we need to calculate a little bit
+        assertEquals(monitoringZeile.size() / 5, a4NeFilteredList.size());
+    }
+
+
+    public void removeNetworkElementFromNEMonitoringList(Map<String, A4NetworkElement> a4NeFilteredMap, String identifier, A4NetworkElement neData) {
         a4NeFilteredMap.put(identifier, neData);
         List<String> toBeRemoved = new ArrayList<>();
 
         // remove all entries
         a4NeFilteredMap.forEach((k, a4NetworkElement) -> {
-            clickRemoveButton();
-            try {
-
-                WebDriver driver = WebDriverRunner.getWebDriver();// new ChromeDriver(capabilities);
-                WebDriverWait wait = new WebDriverWait(driver, 5000);
-                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                driver.switchTo().alert();
-                alert.accept();
-            } catch (NoAlertPresentException e) {
-                System.out.println("EXCEPTION " + e.getCause());
-            }
+            clickRemoveFromNEListButton();
+            checkAlert();
             toBeRemoved.add(k);
 
         });
@@ -304,11 +336,23 @@ public class A4MobileUiRobot {
     }
 
 
+    public void removeNetworkElementFromNELMonitoringList(Map<String, A4NetworkElementLink> a4NELFilteredMap, String identifier, A4NetworkElementLink nelData) {
+        a4NELFilteredMap.put(identifier, nelData);
+        List<String> toBeRemoved = new ArrayList<>();
+
+        // remove all entries
+        a4NELFilteredMap.forEach((k, a4NetworkElementLink) -> {
+            clickRemoveFromNELListButton();
+            checkAlert();
+            toBeRemoved.add(k);
+
+        });
+
+        toBeRemoved.forEach(a4NELFilteredMap::remove);
+    }
+
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
-        //add 1 to number of elements because of table header
-        // numberOfElements++;
-
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 }

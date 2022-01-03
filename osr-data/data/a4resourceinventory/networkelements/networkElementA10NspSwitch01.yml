@@ -8,6 +8,6 @@ values:
   category: "A10NSP_SWITCH"
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
-  type: "A4-A10NSP_SWITCH-v1"
-  plannedMatNr: "40945713"
+  type: "A4-A10NSP-Switch-v1"
+  plannedMatNr: "40990641"
   planningDeviceName: "bln.a10switch.7"

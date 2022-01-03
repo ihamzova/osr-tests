@@ -11,34 +11,43 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import org.testng.Assert;
 
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
 
 public class A4ResourceInventoryServiceRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
+            new RhssoClientFlowAuthTokenProvider(NEMO_CLIENT,
+                    RhssoHelper.getSecretOfGigabitHub(NEMO_CLIENT));
 
     private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient(authTokenProvider).getClient();
 
     @Step("Create Termination Point represented as Logical Resource")
-    public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+    public Response createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
         LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(tpData, nepData);
 
-        a4ResourceInventoryService
+        return a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePut()
                 .idPath(tpData.getUuid())
                 .body(terminationPointLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Delete Logical Resource")
+    public Response deleteLogicalResource(String uuid) {
+        return a4ResourceInventoryService
+                .logicalResource()
+                .deleteLogicalResource()
+                .idPath(uuid)
+                .execute(voidCheck());
     }
 
     @Step("Send new operational state for Network Element Group")
@@ -84,6 +93,21 @@ public class A4ResourceInventoryServiceRobot {
     public void sendStatusUpdateForNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData, String newOperationalState) {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState);
+
+        a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspFtthData.getUuid())
+                .body(nepLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Send new operational state and Port Reference for Network Service Profile (FTTH Access)")
+    public void sendStatusAndPortRefUpdateForNetworkServiceProfileFtthAccess
+            (A4NetworkServiceProfileFtthAccess nspFtthData,
+             A4TerminationPoint tpData, String newOperationalState, A4NetworkElementPort nepData) {
+        LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState, nepData);
 
         a4ResourceInventoryService
                 .logicalResource()

@@ -1,0 +1,75 @@
+name: a4L2BsaActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "CARRIERBSAREFERENCE"
+              value: "Autotest-Carrier"
+            - name: "L2CCID"
+              value: "Dienstvertrag"
+            - name: "PPDOWNL3"
+              value: "30000"
+            - name: "PPUPL3"
+              value: "10000"
+---
+name: a4L2BsaModification
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "CARRIERBSAREFERENCE"
+              value: "Autotest-Carrier"
+            - name: "L2CCID"
+              value: "Dienstvertrag"
+            - name: "PPDOWNL3"
+              value: "40000"
+            - name: "PPUPL3"
+              value: "20000"
+---
+name: a4L2BsaDeactivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "DELETE"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"

@@ -3,38 +3,37 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
 import io.qameta.allure.Step;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 import static org.testng.Assert.assertEquals;
 
 public class OltDeCommissioningRobot {
-  private static final Integer HTTP_CODE_OK_200 = 200;
-  private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
   private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 40 * 60_000;
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
   private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
+  private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
-  private OltResourceInventoryClient oltResourceInventoryClient = new OltResourceInventoryClient(authTokenProvider);
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProvider);
+  private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
 
   @Step("Start olt decommissioning process after manual commissioning")
   public void startOltDecommissioningAfterManualCommissioning(OltDevice olt) throws InterruptedException {
@@ -98,13 +97,16 @@ public class OltDeCommissioningRobot {
   public void checkOltDeCommissioningResult(OltDevice olt, String slot) {
     String oltEndSz = olt.getEndsz();
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(oltEndSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(oltEndSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     assertEquals(deviceList.size(), 0L, "Device is present");
 
     if (slot != null && !slot.isEmpty()) {
-      oltResourceInventoryClient.getClient().cardController().findCard()
-              .endSzQuery(oltEndSz).slotNumberQuery(slot).executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+      List<Card> cardList = deviceResourceInventoryManagementClient.getClient().card().listCard()
+              .parentDeviceEquipmentRefEndSzQuery(oltEndSz)
+              .slotNameQuery(slot)
+              .depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+      assertEquals(cardList.size(), 0L, "Card is present");
     }
 
     List<AccessLineDto> ftthAccessLines = new ArrayList<>(accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()

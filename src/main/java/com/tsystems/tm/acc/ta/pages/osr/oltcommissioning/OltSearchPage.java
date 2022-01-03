@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Step;
@@ -24,7 +25,8 @@ import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 public class OltSearchPage {
 
     public static final String APP = "olt-resource-inventory-ui";
-    public static final String ENDPOINT = "/search";
+    //public static final String ENDPOINT = "/search";
+    public static final String ENDPOINT = "/" + APP + "/search";
 
     public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchType");
     public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-ENDSZ");
@@ -41,7 +43,7 @@ public class OltSearchPage {
 
     @Step("Open OLT-Search page")
     public static OltSearchPage openSearchPage() {
-        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, OltSearchPage.class);
     }

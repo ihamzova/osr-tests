@@ -5,16 +5,20 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElemen
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS})
 @Epic("OS&R")
 @Feature("Test detail-view for found NEs in UI")
 @TmsLink("DIGIHUB-xxxxx")
@@ -33,6 +37,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     private A4NetworkElementPort nepDataA;
     private A4NetworkElementPort nepDataB;
     private A4NetworkElementLink nelData;
+    private UewegData uewegData;
 
     @BeforeClass()
     public void init() {
@@ -51,24 +56,25 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
 
         // Ensure that no old test data is in the way
         cleanUp();
-    }
 
-    @BeforeMethod
-    public void setup() {
+        // Test cases only do read requests, therefore it's ok to crete them only once at beginning
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neDataA, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataA, neDataA);
         a4ResourceInventory.createNetworkElement(neDataB, negData);
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
-        a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB);
+        nelData.setUeWegId(uewegData.getUewegId());
+        a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
     }
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        a4ResourceInventory.deleteA4TestDataRecursively(negData);  // nel wird hier nicht gelöscht?
     }
 
     @Test
@@ -89,13 +95,16 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE Gegenstelle works")
     public void testA4NeDetailPageAndClickOppositeNe() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickGegenStelleIcon();
 
         // THEN
         a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataB);
+
     }
 
     @Test
@@ -103,9 +112,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEP details works")
     public void testA4NeDetailPageAndClickNepButton() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickNepIcon();
 
         // THEN
@@ -117,9 +128,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NEL details works")
     public void testA4NeDetailPageAndClickNelButton() {
-        // WHEN
+        // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
         a4InventarSuche.clickFirstRowInSearchResultTable();
+
+        // WHEN
         a4ResourceInventoryNeDetails.clickNelIcon();
 
         // THEN

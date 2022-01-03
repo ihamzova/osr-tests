@@ -6,18 +6,26 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElement
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
-import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
-/*@ServiceLog(A4_RESOURCE_INVENTORY_MS)
-@ServiceLog(A4_RESOURCE_INVENTORY_SERVICE_MS)*/
+
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS})
+@Epic("OS&R domain")
+
 public class A4ResourceInventoryServiceV4Test extends GigabitTest {
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
@@ -34,6 +42,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     private A4NetworkElementLink nelData;
     private A4NetworkServiceProfileFtthAccess nspDataA;
     private A4NetworkServiceProfileFtthAccess nspDataB;
+    private A4NetworkServiceProfileFtthAccess nspDataC;
 
     @BeforeClass
     public void init() {
@@ -58,6 +67,8 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         nspDataB = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessB);
 
+        nspDataC = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
+                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
         // Ensure that no old test data is in the way
         tearDown();
 
@@ -72,6 +83,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         a4ResourceInventoryRobot.createNetworkElementLink(nelData, nepDataA, nepDataB);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspDataA, tpDataA);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspDataB, tpDataB);
+        a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccessWithPortReference(nspDataC, tpDataA, nepDataA);
     }
 
     @AfterClass
@@ -165,6 +177,15 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
     public void readNetworkServiceProfileFtthAccessFromA4ApiByOnSerialNumber() {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileFtthAccessExistsByOntSerialNumber(nspDataA);
+    }
+
+    @Test(description = "DIGIHUB-75777 Read Network Service ProfileFtthAccess by UUID and check ResourceRelationships")
+    @Owner("Swetlana.Okonetschnikow@telekom.de")
+    @TmsLink("DIGIHUB-116694")
+    @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
+    public void readNetworkServiceProfileFtthAccessFromA4ApiByUuidWithResourceRelationships() {
+        nspDataC.setOltPortOntLastRegisteredOn(nepDataA.getUuid());
+        a4ResourceInventoryServiceV4Robot.checkResourceRelationshipsByNetworkServiceProfileFtthAccess(nspDataC);
     }
 
     @Test(description = "DIGIHUB-xxx Read Network Element Port by Endsz from resource inventory service v4 api")

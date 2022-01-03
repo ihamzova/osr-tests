@@ -9,15 +9,21 @@ import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryBrowserRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
+@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
+@Epic("OS&R")
+
 public class A4ResourceInventoryBrowserTest extends GigabitTest {
 
     private final A4ResourceInventoryBrowserRobot a4ResourceInventoryBrowserRobot = new A4ResourceInventoryBrowserRobot();

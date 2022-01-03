@@ -1,4 +1,4 @@
-name: processesData
+name: ftthFailedProcess
 template: com.tsystems.tm.acc.ta.data.osr.models.Process
 values:
   processName: "PortProvisioning"
@@ -6,4 +6,22 @@ values:
   slotNumber: "1"
   portNumber: "0"
   lineId: ""
-  state: "FAILED"
+---
+name: fttbFailedProcess
+template: com.tsystems.tm.acc.ta.data.osr.models.Process
+values:
+  processName: "DpuDeviceProvisioning"
+  endSz: "49/812/179/71G0"
+  slotNumber: ""
+  portNumber: ""
+  lineId: ""
+---
+name: oltDeviceForFailedFttbProvisioningTwistedPair
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/89/9000/76H6"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  lineIdPool: 32
+  backhaulId: 1

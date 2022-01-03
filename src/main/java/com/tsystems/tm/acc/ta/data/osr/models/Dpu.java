@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.models;
 
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_6_0.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Port;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

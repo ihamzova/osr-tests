@@ -1,0 +1,27 @@
+name: defaultNLProfileFtth
+template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile
+values:
+  accessType: "FTTH"
+  minDownBandwidth: 63680
+  minUpBandwidth: 21312
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  state: "ACTIVE"
+---
+name: l2BsaNspReferenceActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
+values:
+  l2ccid: "Dienstvertrag"
+  carrierBsaReference: "Autotest-Carrier"
+  downBandwidth: 30000
+  upBandwidth: 10000
+---
+name: l2BsaNspReferenceModification
+template: com.tsystems.tm.acc.ta.data.osr.models.L2BsaNspReference
+values:
+  l2ccid: "Dienstvertrag"
+  carrierBsaReference: "Autotest-Carrier"
+  downBandwidth: 40000
+  upBandwidth: 20000

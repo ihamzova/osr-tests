@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Supplier {
     private String supplierName;
+    private String creditorId;
     private String supplierId;
+    private String atomicOrganizationId;
     private Boolean ne3 = true;
     private Boolean ne4 = true;
+    private String acid;
 }

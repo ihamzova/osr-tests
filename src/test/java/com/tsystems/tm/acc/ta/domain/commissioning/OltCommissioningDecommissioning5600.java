@@ -3,6 +3,7 @@ package com.tsystems.tm.acc.ta.domain.commissioning;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
+import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
@@ -34,7 +35,8 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attac
         EA_EXT_ROUTE_MS,
         LINE_ID_GENERATOR_MS,
         ACCESS_LINE_MANAGEMENT,
-        OLT_DISCOVERY_MS
+        OLT_DISCOVERY_MS,
+        OLT_UPLINK_MANAGEMENT_MS
 })
 public class OltCommissioningDecommissioning5600 extends GigabitTest {
 
@@ -48,9 +50,11 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
     private OltDevice oltDeviceAutomatic;
 
     private WireMockMappingsContext mappingsContext;
+    private WireMockMappingsContext mappingsContext2;
 
     @BeforeClass
     public void init() {
+        oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
         oltCommissioningRobot.restoreOsrDbState();
 
         OsrTestContext context = OsrTestContext.get();
@@ -70,12 +74,26 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         mappingsContext.publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
+
+        mappingsContext2 = new MercuryWireMockMappingsContextBuilder(WireMockFactory.get()) //create mocks
+                .addRebellUewegeMock(oltDeviceManual)
+                .addRebellUewegeMock(oltDeviceAutomatic)
+                .build();
+
+        mappingsContext2.publish()                                              //inject in WM
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
     }
 
     @AfterClass
     public void teardown() {
         mappingsContext.close();
         mappingsContext
+                .eventsHook(saveEventsToDefaultDir())
+                .eventsHook(attachEventsToAllureReport());
+
+        mappingsContext2.close();
+        mappingsContext2
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
@@ -93,6 +111,7 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceAutomatic);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceAutomatic);
+        oltCommissioningRobot.checkUplink(oltDeviceAutomatic);
     }
 
     @Test(dependsOnMethods = "automaticallyOltCommissioning", description = "Olt De-Commissioning (device : MA5600T) automatically case")
@@ -116,6 +135,7 @@ public class OltCommissioningDecommissioning5600 extends GigabitTest {
         setCredentials(loginData.getLogin(), loginData.getPassword());
         oltCommissioningRobot.startManualOltCommissioning(oltDeviceManual);
         oltCommissioningRobot.checkOltCommissioningResult(oltDeviceManual);
+        oltCommissioningRobot.checkUplink(oltDeviceManual);
     }
 
     @Test(dependsOnMethods = "manuallyOltCommissioning", description = "Olt-Decommissioning (device : MA5600T) manually case")

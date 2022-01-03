@@ -9,8 +9,8 @@ import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.nelLsz;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.nelOrderNumber;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.NEL_LSZ;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper.NEL_ORDER_NUMBER;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 
 public class RebellMapper {
@@ -19,6 +19,14 @@ public class RebellMapper {
         List<Ueweg> ueWegeList = new ArrayList<>();
         ueWegeList.add(getUeWeg(uewegData, neA, neB));
 
+        return ueWegeList;
+    }
+
+    public List<Ueweg> getUewegListMultiple(A4NetworkElement neA, List<UewegData> uewegData, List<A4NetworkElement> neB) {
+        List<Ueweg> ueWegeList = new ArrayList<>();
+        for(int i = 0; i < uewegData.size(); i++){
+            ueWegeList.add(getUeWeg(uewegData.get(i), neA, neB.get(i)));
+        }
         return ueWegeList;
     }
 
@@ -32,9 +40,9 @@ public class RebellMapper {
 
         return new Ueweg()
                 .id(1)
-                .lsz(nelLsz)
+                .lsz(NEL_LSZ)
                 .lszErg("LszErg")
-                .ordNr(nelOrderNumber)
+                .ordNr(NEL_ORDER_NUMBER)
                 .pluralId("Plural ID")
                 .status("ignored")
                 .uewegId(uewegData.getUewegId())

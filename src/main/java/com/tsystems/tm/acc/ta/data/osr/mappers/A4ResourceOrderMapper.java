@@ -1,31 +1,41 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceOrderMapper {
 
-    public ResourceOrder buildResourceOrder(A4NetworkElementLink nelData) {
+    public static final String RAHMEN_VERTRAGS_NR = "RahmenvertragsNr";
+    public static final String CARRIER_BSA_REFERENCE = "Subscription.keyA";
+    public static final String VUEP_PUBLIC_REFERENZ_NR = "VUEP_Public_Referenz-Nr.";
+    public static final String LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV = "LACP_aktiv";
+    public static final String MTU_SIZE = "MTU-Size";
+    public static final String VLAN_RANGE = "VLAN_Range";
+    public static final String QOS_LIST = "QoS_List";
+
+    public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
-                .externalId("merlin_id_0815")
+                .externalId("merlin_id_" + getRandomDigits(4))
                 .description("resource order of osr-tests")
                 .name("resource order name")
-                .orderItem(buildOrderItem(nelData));
+                .id(UUID.randomUUID().toString());
     }
 
     public List<Characteristic> buildResourceCharacteristicList() {
         List<Characteristic> cList = new ArrayList<>();
 
-        addCharacteristic("RahmenvertragsNr", "1122334455", "valueTypeRv", cList);
-        addCharacteristic("Subscription.keyA", "f26bd5de-2150-47c7-8235-a688438973a4", "valueTypeCbr", cList);
-        addCharacteristic("VUEP_Public_Referenz-Nr.", "A1000851", "valueTypeVuep", cList);
-        addCharacteristic("MTU-Size", "1590", "valueTypeMtu", cList);
-        addCharacteristic("LACP_aktiv", "true", "valueTypeLacp", cList);
-        addCharacteristic("VLAN_Range", buildVlanRange(), "Object", cList);
-        addCharacteristic("QoS_List", buildQosList(), "Object", cList);
+        addCharacteristic(RAHMEN_VERTRAGS_NR, getRandomDigits(8), "valueTypeRv", cList);
+        addCharacteristic(CARRIER_BSA_REFERENCE, UUID.randomUUID().toString(), "valueTypeCbr", cList);
+        addCharacteristic(VUEP_PUBLIC_REFERENZ_NR, "A1000851", "valueTypeVuep", cList);
+        addCharacteristic(LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV, "true", "valueTypeLacp", cList);
+        addCharacteristic(MTU_SIZE, "1590", "valueTypeMtu", cList);
+        addCharacteristic(VLAN_RANGE, buildVlanRange(), "Object", cList);
+        addCharacteristic(QOS_LIST, buildQosList(), "Object", cList);
 
         return cList;
     }
@@ -45,23 +55,6 @@ public class A4ResourceOrderMapper {
         return new QosList().qosClasses(qosClasses);
     }
 
-    private List<ResourceOrderItem> buildOrderItem(A4NetworkElementLink nelData) {
-        List<ResourceOrderItem> orderItemList = new ArrayList<>();
-
-        ResourceRefOrValue resource = new ResourceRefOrValue()
-                .name(nelData.getLbz())
-                .resourceCharacteristic(buildResourceCharacteristicList());
-
-        ResourceOrderItem orderItem = new ResourceOrderItem()
-                .action(OrderItemActionType.ADD)
-                .resource(resource)
-                .id("orderItemId");
-
-        orderItemList.add(orderItem);
-
-        return orderItemList;
-    }
-
     private void addCharacteristic(String name, Object value, String valueType, List<Characteristic> cList) {
         cList.add(new Characteristic()
                 .name(name)
@@ -74,7 +67,7 @@ public class A4ResourceOrderMapper {
         qosClassList.add(new QosClass()
                 .qosClass(className)
                 .qospBit(pBit)
-                .qosBandwidthDown(bwDown)
+                .qosBandwidth(bwDown)
         );
     }
 

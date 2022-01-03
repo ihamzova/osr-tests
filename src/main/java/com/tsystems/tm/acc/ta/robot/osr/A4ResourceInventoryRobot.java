@@ -13,21 +13,21 @@ import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
+import static org.testng.Assert.*;
 
 public class A4ResourceInventoryRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_NEMO_UPDATER_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_NEMO_UPDATER_MS));
 
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient(authTokenProvider).getClient();
 
@@ -125,9 +125,14 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check if one Network Service Profile FTTH Access connected to Termination Point exists")
-    public void checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
+    public NetworkServiceProfileFtthAccessDto checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(String uuidTp, int numberOfExpectedNsp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
+
+        if (!nspList.isEmpty())
+            return nspList.get(0);
+        else
+            return null;
     }
 
     @Step("Check if one Network Service Profile A10NSP connected to Termination Point exists")
@@ -194,15 +199,6 @@ public class A4ResourceInventoryRobot {
         nspList.forEach(nsp ->
                 deleteNetworkServiceProfileL2Bsa(nsp.getUuid())
         );
-    }
-
-    @Step("Get Network Service Profiles (A10NSP) by UUID")
-    public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspByUuid(String uuid) {
-        return a4ResourceInventory
-                .networkServiceProfilesA10Nsp()
-                .findNetworkServiceProfileA10Nsp()
-                .uuidPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
@@ -287,6 +283,15 @@ public class A4ResourceInventoryRobot {
                 .terminationPoints()
                 .findTerminationPoints()
                 .parentUuidQuery(tpUuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Check if Termination Point exists")
+    public void checkTerminationPointExists(String uuid) {
+         a4ResourceInventory
+                .terminationPoints()
+                .findTerminationPoint()
+                .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -383,11 +388,69 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void checkLifecycleState(A4NetworkElementLink nelData, String lcs) {
+        assertEquals(getExistingNetworkElementLink(nelData.getUuid()).getLifecycleState(), lcs);
+    }
+
+    public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nspA10Nsp) {
+        final String UNDEFINED = "undefined";
+        final NetworkServiceProfileA10NspDto nsp = getExistingNetworkServiceProfileA10Nsp(nspA10Nsp.getUuid());
+
+        assertEquals(nsp.getLifecycleState(), "PLANNING");
+        assertEquals(nsp.getOperationalState(), "NOT_WORKING");
+        assertEquals(nsp.getAdministrativeMode(), "ENABLED");
+
+        String crtNew = Objects.requireNonNull(nsp.getCreationTime()).toString();
+        String lutNew = Objects.requireNonNull(nsp.getLastUpdateTime()).toString();
+        assertNotEquals(crtNew, lutNew);
+
+        assertEquals(nsp.getMtuSize(), "1590");
+        assertEquals(nsp.getEtherType(), "0x88a8");
+        assertEquals(nsp.getVirtualServiceProvider(), "DTAG");
+        assertEquals(nsp.getSpecificationVersion(), "7");
+        assertNull(nsp.getNumberOfAssociatedNsps());
+        assertNull(nsp.getNetworkElementLinkUuid());
+        assertTrue(Objects.requireNonNull(nsp.getLacpActive()));
+        assertEquals(nsp.getLacpMode(), UNDEFINED);
+        assertEquals(nsp.getMinActiveLagLinks(), "1");
+        assertEquals(nsp.getCarrierBsaReference(), UNDEFINED);
+        assertEquals(nsp.getItAccountingKey(), UNDEFINED);
+        assertEquals(nsp.getDataRate(), UNDEFINED);
+        assertEquals(nsp.getQosMode(), "TOLERANT");
+
+        A10NspQosDto qosClass = Objects.requireNonNull(nsp.getQosClasses()).get(0);
+        assertEquals(qosClass.getQosBandwidthDown(), UNDEFINED);
+        assertEquals(qosClass.getQosBandwidthUp(), UNDEFINED);
+        assertEquals(qosClass.getQosPriority(), UNDEFINED);
+
+        VlanRangeDto vlanRange = Objects.requireNonNull(nsp.getsVlanRange()).get(0);
+        assertEquals(vlanRange.getVlanRangeUpper(), UNDEFINED);
+        assertEquals(vlanRange.getVlanRangeLower(), UNDEFINED);
+    }
+
     @Step("Check that Network Element Link doesn't exists in Inventory")
     public void checkNetworkElementLinkIsDeleted(String uuid) {
         a4ResourceInventory
                 .networkElementLinks()
                 .findNetworkElementLink()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
+    @Step("Check that Termination Point doesn't exists in Inventory")
+    public void checkTerminationPointIsDeleted(String uuid) {
+        a4ResourceInventory
+                .terminationPoints()
+                .findTerminationPoint()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
+    @Step("Check that Network Service Profile FTTH Access doesn't exists in Inventory")
+    public void checkNetworkServiceProfileFtthAccessIsDeleted(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfileFtthAccess()
                 .uuidPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
@@ -443,8 +506,6 @@ public class A4ResourceInventoryRobot {
         AtomicReference<NetworkElementDto> networkElementDtoUnderTest = new AtomicReference<>(new NetworkElementDto());
         AtomicReference<List<NetworkElementPortDto>> networkElementPortDtoUnderTest = new AtomicReference<>(new ArrayList<>());
 
-        //AtomicReference<List<NetworkElementGroupDto>> networkElementGroupDtoListUnderTest = new AtomicReference<>(new ArrayList<>());
-
         a4ImportCsvData.getCsvLines().forEach(a4ImportCsvLine -> {
             networkElementDtoUnderTest.set(getExistingNetworkElementByVpszFsz
                     (a4ImportCsvLine.getNeVpsz(), a4ImportCsvLine.getNeFsz()));
@@ -454,9 +515,9 @@ public class A4ResourceInventoryRobot {
             networkElementPortDtoUnderTest.set(getNetworkElementPortsByNetworkElement
                     (networkElementDtoUnderTest.get().getUuid()));
 
-            if (networkElementDtoUnderTest.get().getType().equals("A4-OLT-v1")) {
+            if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-OLT-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 20);
-            } else if (networkElementDtoUnderTest.get().getType().equals("A4-LEAF-Switch-v1")) {
+            } else if (Objects.equals(networkElementDtoUnderTest.get().getType(), "A4-LEAF-Switch-v1")) {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 56);
             } else {
                 assertEquals(networkElementPortDtoUnderTest.get().size(), 0);
@@ -479,6 +540,19 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+
+    }
+
+    @Step("Check that lifecycle state, operational state and port reference have been updated for network service profile (FTTH Access)")
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStatesAndPortRef
+            (A4NetworkServiceProfileFtthAccess nspFtthData, String expectedNewOperationalState,
+             String expectedNewLifecycleState, A4NetworkElementPort nepData) {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto =
+                getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
+
+        assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
+        assertEquals(networkServiceProfileFtthAccessDto.getOltPortOntLastRegisteredOn(), nepData.getUuid());
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network service profile (A10NSP)")
@@ -657,6 +731,21 @@ public class A4ResourceInventoryRobot {
     public void createNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
         NetworkServiceProfileFtthAccessDto nspDto = new A4ResourceInventoryMapper()
                 .getNetworkServiceProfileFtthAccessDto(nspData, tpData);
+
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
+    public void createNetworkServiceProfileFtthAccessWithPortReference(A4NetworkServiceProfileFtthAccess nspData,
+                                                                       A4TerminationPoint tpData,
+                                                                       A4NetworkElementPort nepData) {
+        NetworkServiceProfileFtthAccessDto nspDto = new A4ResourceInventoryMapper()
+                .getNetworkServiceProfileFtthAccessDto(nspData, tpData, nepData);
 
         a4ResourceInventory
                 .networkServiceProfilesFtthAccess()

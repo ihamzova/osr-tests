@@ -16,5 +16,6 @@ public class A4NetworkServiceProfileFtthAccess {
     private String lineId;
     private String operationalState;
     private String lifecycleState;
-
+    private String oltPortOntLastRegisteredOn;
+    private String terminationPointUuid;
 }

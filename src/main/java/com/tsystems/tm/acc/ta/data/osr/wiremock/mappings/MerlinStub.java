@@ -8,8 +8,6 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
 
 public class MerlinStub extends AbstractStubMapping {
 
-
-
     public MappingBuilder postMerlinCallbackResponce202() {
         return post(urlPathMatching("/test_url"))
                  .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_ACCEPTED_202))

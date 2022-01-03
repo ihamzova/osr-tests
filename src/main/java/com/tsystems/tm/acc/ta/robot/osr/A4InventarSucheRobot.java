@@ -21,13 +21,26 @@ public class A4InventarSucheRobot {
 
     public ElementsCollection getNegElementsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
-        return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
+        try {
+            Thread.sleep(2000);
+            return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
     public ElementsCollection getNeElementsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
-        return $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
+        try {
+            Thread.sleep(2000);
+            return $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

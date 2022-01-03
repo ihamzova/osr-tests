@@ -14,13 +14,14 @@ import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.log.ContainsExpecter;
 import com.tsystems.tm.acc.ta.log.ServiceLogExpectSince;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_14_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_10_0.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.CardRequestDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_0_0.client.model.PortDto;
+import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.CardRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.DeviceDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.PortDto;
 import de.telekom.it.t3a.kotlin.log.ServiceDiscoveryStrategy;
 import de.telekom.it.t3a.kotlin.log.query.ServiceDescriptor;
 import io.qameta.allure.Step;
@@ -40,6 +41,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
+import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
@@ -50,7 +52,7 @@ public class WgAccessProvisioningRobot {
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
 
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
+  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
   @Step("Start port provisioning")
   public void startPortProvisioning(PortProvisioning port) {
@@ -90,8 +92,10 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Start port deprovisioning")
-  public void startPortDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+  public void startPortDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess()
+            .startPortDeprovisioning()
+            .noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new PortDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber())
@@ -99,18 +103,30 @@ public class WgAccessProvisioningRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
+  @Step("Start port deprovisioning with deprovisioningForDpu flag")
+  public void startPortDeprovisioningForDpu(PortProvisioning port, boolean deprovisioningForDpu) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+            .body(new PortDto()
+                    .endSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber()))
+            .deprovisioningForDpuQuery(deprovisioningForDpu)
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+  }
+
   @Step("Start card deprovisioning")
-  public void startCardDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning()
+  public void startCardDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(Stream.of(new CardRequestDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber()))
                     .collect(Collectors.toList()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
+
   @Step("Start card deprovisioning for 1 card")
-  public void startCardDeprovisioningV2(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardDeprovisioning()
+  public void startCardDeprovisioningV2(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new CardRequestDto()
                     .endSz(port.getEndSz())
                     .slotNumber(port.getSlotNumber()))
@@ -118,21 +134,10 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Start device deprovisioning")
-  public void startDeviceDeprovisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning()
+  public void startDeviceDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
+    wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
             .body(new DeviceDto()
                     .endSz(port.getEndSz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-  }
-
-  @Step("Start port deprovisioning for DPU Adtran OLT")
-  public void startPortDeprovisioningForDpuAdtran(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess()
-            .startPortDeprovisioning()
-            .deprovisioningForDpuQuery(true)
-            .body(new PortDto()
-                    .endSz(port.getEndSz())
-                    .portNumber(port.getPortNumber()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
@@ -208,6 +213,13 @@ public class WgAccessProvisioningRobot {
     }
   }
 
+  @Step("Get PON Ports")
+  public List<Port> getPonPorts(PortProvisioning port) {
+    return getDevice(port).getPorts().stream()
+            .filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString()))
+            .collect(Collectors.toList());
+  }
+
   @Step("Check card before provisioning")
   public Card getCard(PortProvisioning port) {
     URL cardUrl = new OCUrlBuilder("wiremock-acc")
@@ -237,6 +249,7 @@ public class WgAccessProvisioningRobot {
     portBeforeProvisioning.setPortNumber(portNumber);
     portBeforeProvisioning.setLineIdPool(port.getLineIdPool());
     portBeforeProvisioning.setHomeIdPool(port.getHomeIdPool());
+    portBeforeProvisioning.setBackhaulId(port.getBackhaulId());
     portBeforeProvisioning.setDefaultNEProfilesActive(port.getDefaultNEProfilesActive());
     portBeforeProvisioning.setDefaultNetworkLineProfilesActive(port.getDefaultNetworkLineProfilesActive());
     portBeforeProvisioning.setAccessLinesWG(port.getAccessLinesWG());

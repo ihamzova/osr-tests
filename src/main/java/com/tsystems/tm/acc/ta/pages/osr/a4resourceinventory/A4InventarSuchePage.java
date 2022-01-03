@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -83,7 +84,8 @@ public class A4InventarSuchePage {
     public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
     @Getter
-    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");   //
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");
+    //public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
 
     @Getter
     public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
@@ -100,7 +102,7 @@ public class A4InventarSuchePage {
     public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("searchResultsNetworkElementGroup");
+    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElementGroup");
 
 
     // common
@@ -113,7 +115,7 @@ public class A4InventarSuchePage {
 
     @Step("Login")
     public static A4InventarSuchePage login() {
-        URL url = new OCUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
         return open(url, A4InventarSuchePage.class);
     }
 

@@ -3,7 +3,7 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
@@ -12,15 +12,15 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.ANCPSession;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.UplinkDTO;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -29,22 +29,27 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_GFNW;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
 public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
 
-  private static final int WAIT_TIME_FOR_RENDERING = 2_000;
+  private static final int WAIT_TIME_FOR_RENDERING = 5_000;
 
   private static final String KLS_ID_EXPECTED = "17056514";
 
-  private OltResourceInventoryClient oltResourceInventoryClient;
+  private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
+  private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
 
   @BeforeClass
   public void init() {
-    oltResourceInventoryClient = new OltResourceInventoryClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
+    oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
+    deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
   }
 
   @Test(description = "DIGIHUB-53713 Manual commissioning for MA5600 with GFNW user on team environment")
@@ -59,8 +64,9 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
 
     OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
     String endSz = oltDevice.getEndsz();
-    clearResourceInventoryDataBase(endSz);
+    oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    Thread.sleep(WAIT_TIME_FOR_RENDERING); // During the pipeline test no EndSz Search can be selected for the user GFNW if the page is not yet finished.
     oltSearchPage.validateUrl();
 
     oltSearchPage.searchNotDiscoveredByParameters(oltDevice);
@@ -77,9 +83,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
     oltDetailsPage.startUplinkConfiguration();
-    oltDetailsPage.inputUplinkParameters(oltDevice);
     oltDetailsPage.saveUplinkConfiguration();
-    oltDetailsPage.modifyUplinkConfiguration();
 
     oltDetailsPage.configureAncpSessionStart();
     oltDetailsPage.updateAncpSessionStatus();
@@ -89,7 +93,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
     checkPortState(oltDevice, oltDetailsPage);
 
     checkDeviceMA5600(endSz);
-    checkUplink(endSz);
+    oltCommissioningRobot.checkUplink(oltDevice);
 
     //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
     oltDetailsPage.deconfigureAncpSession();
@@ -124,16 +128,16 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
    */
   private void checkDeviceMA5600(String endSz) {
 
-    List<Device> deviceList = oltResourceInventoryClient.getClient().deviceInternalController().findDeviceByCriteria()
-            .endszQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertEquals(deviceList.size(), 1L);
-    Device device = deviceList.get(0);
-    Assert.assertEquals(device.getEndSz(), endSz);
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-    Assert.assertEquals(device.getEmsNbiName(), "MA5600T");
-    Assert.assertEquals(device.getTkz1(), "02353310");
-    Assert.assertEquals(device.getType(), Device.TypeEnum.OLT);
-    Assert.assertEquals(device.getCompositePartyId(), COMPOSITE_PARTY_ID_GFNW);
+    Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
+    Device device = deviceList.get(0);
+    Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz missmatch");
+
+    Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_MA5600, "EMS NBI name missmatch");
+    Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
+    Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_GFNW.toString(), "composite partyId GFNW missmatch");
 
     OltDetailsPage oltDetailsPage = new OltDetailsPage();
     oltDetailsPage.validateUrl();
@@ -143,35 +147,14 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
   }
 
   /**
-   * check uplink and ancp-session data from olt-ressource-inventory
-   */
-  private void checkUplink(String endSz) {
-    List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-            .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-    Assert.assertEquals(uplinkDTOList.size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().size(), 1L);
-    Assert.assertEquals(uplinkDTOList.get(0).getAncpSessions().get(0).getSessionStatus(), ANCPSession.SessionStatusEnum.ACTIVE);
-  }
-
-  /**
    * check uplink is not exist in olt-resource-inventory
    */
   private void checkUplinkDeleted(String endSz) {
-    List<UplinkDTO> uplinkDTOList = oltResourceInventoryClient.getClient().ethernetLinkInternalController().findEthernetLinksByEndsz()
-            .oltEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    Assert.assertTrue(uplinkDTOList.isEmpty());
+    List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+            .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    Assert.assertTrue(uplinkList.isEmpty());
   }
-
-  /**
-   * clears complete olt-resource-invemtory database
-   */
-  private void clearResourceInventoryDataBase(String endSz) {
-    oltResourceInventoryClient.getClient().testDataManagementController().deleteDevice().endszQuery(endSz)
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-
 }
 
 

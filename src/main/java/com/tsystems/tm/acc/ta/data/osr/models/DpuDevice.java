@@ -16,6 +16,7 @@ public class DpuDevice {
     private String oltGponSlot;
     private String oltGponPort;
     private String bngEndsz;
+    private String bngDownlinkPort;
     private String bezeichnung;
     private String hersteller;
     private String klsId;
@@ -23,7 +24,10 @@ public class DpuDevice {
     private String fiberOnLocationId;
     private String ponConnectionWe;
     private String ponConnectionGe;
+    private String ponConnectionSl;
     private String portNumber;
+    private String accessTransmissionMedium;
+    private int compositePartyId;
 
     @Override
     public String toString() {
@@ -35,7 +39,7 @@ public class DpuDevice {
     }
 
     public int getNumberOfAccessLines(){
-        return Integer.parseInt(getPonConnectionWe()) + Integer.parseInt(getPonConnectionGe());
+        return Integer.parseInt(getPonConnectionWe()) + Integer.parseInt(getPonConnectionGe()) + Integer.parseInt(getPonConnectionSl());
     }
 
 }

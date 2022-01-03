@@ -1,0 +1,35 @@
+name: NetworkLineProfileActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "123"
+    resourceOrderItems:
+      - id: "123"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+---
+name: NetworkLineProfileDeactivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+    resourceOrder:
+      id: "123"
+      resourceOrderItems:
+        - id: "123"
+          action: "DELETE"
+          resource:
+            id: "123"
+            resourceCharacteristics:
+              - name: "KLSID"
+                value: "12345"
+              - name: "AUTHMETHOD"
+                value: "1"
+              - name: "FEDERATIONPARTNER"
+                value: "t-online.de"

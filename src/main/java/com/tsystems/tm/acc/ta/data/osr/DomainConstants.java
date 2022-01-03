@@ -25,16 +25,35 @@ public interface DomainConstants {
     String OLT_SCHEDULER_MS = "olt-scheduler";
     String OLT_COMMISSIONING_MS = "olt-commissioning";
     String DPU_COMMISSIONING_MS = "dpu-commissioning";
+    String DPU_PLANNING_MS = "dpu-planning";
     String A10NSP_INVENTORY_MS = "a10nsp-inventory";
     String OLT_BFF_PROXY_MS = "olt-bff-proxy";
     String A4_RESOURCE_INVENTORY_BFF_PROXY_MS = "a4-resource-inventory-bff-proxy";
     String A4_RESOURCE_INVENTORY_UI_MS = "a4-resource-inventory-ui";
     String A4_RESOURCE_INVENTORY_SERVICE_MS = "a4-resource-inventory-service";
+    String A4_PHYSICAL_INVENTORY_MS = "a4-physical-inventory";
     String A4_RESOURCE_INVENTORY_MS = "a4-resource-inventory";
     String A4_INVENTORY_IMPORTER_MS = "a4-inventory-importer";
     String A4_NEMO_UPDATER_MS = "a4-nemo-updater";
     String A4_CARRIER_MANAGEMENT_MS = "a4-carrier-management";
     String A4_QUEUE_DISPATCHER_MS = "a4-queue-dispatcher";
+    String A4_COMMISSIONING_MS = "a4-commissioning";
+    String NEMO_CLIENT = "nemo-client";
+    String CA_INTEGRATION = "ca-integration";
+    String OLT_UPLINK_MANAGEMENT_MS = "olt-uplink-management";
+
+    // Activate this when using AMQ
+    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";
+
+    // Activate this when using AMQ-HA
+//    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq-ha";
+
+    String A4_RESOURCE_ORDER_ORCHESTRATOR_MS = "a4-resource-order-orchestrator";
     String DECOUPLING_MS = "decoupling-component";
-    String APIGW_MS = "apigw";
+    String APIGW_MS = "apigw-admin";
+
+    String FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME = "business.rori.dpu-lifecycle-uses-dpu-demands";
+
+    String RORI_V1_PATH = "/resource-order-resource-inventory/v1/";
+
 }

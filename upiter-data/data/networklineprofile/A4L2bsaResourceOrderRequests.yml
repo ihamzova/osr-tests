@@ -1,0 +1,55 @@
+name: A4L2BsaActivation
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "7453"
+    resourceOrderItems:
+      - id: "7453"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "CARRIERBSAREFERENCE"
+              value: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+            - name: "PPDOWNL3"
+              value: "30000"
+            - name: "PPUPL3"
+              value: "10000"
+            - name:  "L2CCID"
+              value: "l2ccid-110"
+---
+name: A4L2BsaModification
+template: com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData
+values:
+  resourceOrder:
+    id: "7453"
+    resourceOrderItems:
+      - id: "7453"
+        action: "MODIFY"
+        resource:
+          id: "123"
+          resourceCharacteristics:
+            - name: "KLSID"
+              value: "12345"
+            - name: "AUTHMETHOD"
+              value: "1"
+            - name: "FEDERATIONPARTNER"
+              value: "t-online.de"
+            - name: "PROVIDERID"
+              value: "1234"
+            - name: "CARRIERBSAREFERENCE"
+              value: "bba896d2-bd0e-4cf4-939f-300d3b106cee"
+            - name: "PPDOWNL3"
+              value: "40000"
+            - name: "PPUPL3"
+              value: "20000"
+            - name:  "L2CCID"
+              value: "l2ccid-110"

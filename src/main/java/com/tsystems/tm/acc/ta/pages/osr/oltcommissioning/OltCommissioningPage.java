@@ -20,17 +20,8 @@ import static org.testng.Assert.fail;
 public class OltCommissioningPage {
 
     public static final String APP = "olt-resource-inventory-ui";
-    public static final String ENDPOINT = "/commissioning";
+    public static final String ENDPOINT =  "/" + APP + "/commissioning";
 
-    public static final By OLT_KLS_ID_INPUT_LOCATOR = byQaData("input-oltklsidtxt");
-    public static final By OLT_SLOT_NUMBER_INPUT_LOCATOR = byQaData("input-oltslotnumbertxt");
-    public static final By OLT_PORT_NUMBER_INPUT_LOCATOR = byQaData("input-oltportnumbertxt");
-    public static final By OLT_BNG_ENDSZ_INPUT_LOCATOR = byQaData("input-bngendsztxt");
-    public static final By BNG_EQUIPMENTHOLDER_INPUT_LOCATOR = byQaData("input-bngslotnumbertxt");
-    public static final By BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR = byQaData("input-bngportnumbertxt");
-    public static final By LSZ_SELECT_LOCATOR = byQaData("div-lsz");
-    public String LSZ_VALUE_LOCATOR = "//*[@qa-data='div-%s']"; //div-4C1
-    public static final By ORDER_NUMBER_INPUT_LOCATOR = byQaData("input-ordernumbertxt");
     public static final By COMMISSIONING_START_BUTTON_LOCATOR = byQaData("button-start-commissioning");
     public static final By CARDS_DETAILS_TAB_LOCATOR = byQaData("a-cards-view");
     private static final By ERROR_SECTION_LOCATOR = cssSelector("div[class='ui icon message negative']");
@@ -41,29 +32,8 @@ public class OltCommissioningPage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    @Step("Input params and start commissioning")
+    @Step("Start OLT commissioning")
     public OltCommissioningPage startOltCommissioning(OltDevice olt, Integer timeout) {
-        // Temporarily backwards compatible until the input fields for KlsId in the UI have been removed in all environments.
-        if($(OLT_KLS_ID_INPUT_LOCATOR).exists()) {
-            $(OLT_KLS_ID_INPUT_LOCATOR).click();
-            $(OLT_KLS_ID_INPUT_LOCATOR).val("99875");
-        }
-        if ($(OLT_SLOT_NUMBER_INPUT_LOCATOR).exists()) {
-            $(OLT_SLOT_NUMBER_INPUT_LOCATOR).click();
-            $(OLT_SLOT_NUMBER_INPUT_LOCATOR).val(olt.getOltSlot());
-        }
-        $(OLT_PORT_NUMBER_INPUT_LOCATOR).click();
-        $(OLT_PORT_NUMBER_INPUT_LOCATOR).val(olt.getOltPort());
-        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).click();
-        $(OLT_BNG_ENDSZ_INPUT_LOCATOR).val(olt.getBngEndsz());
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).click();
-        $(BNG_EQUIPMENTHOLDER_INPUT_LOCATOR).val(olt.getBngDownlinkSlot());
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).click();
-        $(BNG_DOWNLINK_CARD_PORT_INPUT_LOCATOR).val(olt.getBngDownlinkPort());
-        $(LSZ_SELECT_LOCATOR).click();
-        $(By.xpath(String.format(LSZ_VALUE_LOCATOR, olt.getLsz()))).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).click();
-        $(ORDER_NUMBER_INPUT_LOCATOR).val(olt.getOrderNumber());
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
         Instant start = Instant.now();
         while (Instant.now().minus(timeout, ChronoUnit.MILLIS).isBefore(start)) {

@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4NemoUpdaterClient;
-import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
@@ -16,6 +16,7 @@ import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -23,26 +24,30 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 
 @Slf4j
 public class A4NemoUpdaterRobot {
 
     private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_NEMO_UPDATER_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_NEMO_UPDATER_MS));
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
+
+    private static final AuthTokenProvider authTokenProviderImporter =
+            new RhssoClientFlowAuthTokenProvider(A4_INVENTORY_IMPORTER_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_INVENTORY_IMPORTER_MS));
 
     private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient(authTokenProvider).getClient();
-
+    private final ApiClient a4NemoUpdaterImporter = new A4NemoUpdaterClient(authTokenProviderImporter).getClient();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
 
     @Step("Trigger NEMO Update")
     public void triggerNemoUpdate(String uuid) {
         UpdateNemoTask updateNemoTask = new UpdateNemoTask();
         updateNemoTask.setEntityUuid(uuid);
-        a4NemoUpdater
+        a4NemoUpdaterImporter
                 .nemoUpdateService()
                 .updateNemoTask()
                 .body(updateNemoTask)
@@ -51,23 +56,16 @@ public class A4NemoUpdaterRobot {
 
     @Step("Trigger NEMO Update")
     public void triggerAsyncNemoUpdate(List<String> uuids) {
-        ArrayList updateNemoTaskAsync = new ArrayList();
-        updateNemoTaskAsync.addAll(uuids);
         a4NemoUpdater
                 .nemoUpdateServiceAsync()
                 .updateNemoTaskAsync()
-                .body(updateNemoTaskAsync)
+                .body(uuids)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     @Step("Check if PUT request to NEMO wiremock with logical resource has happened")
     public void checkLogicalResourcePutRequestToNemoWiremock(String uuid) {
         checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 1);
-    }
-
-    @Step("Check if PUT request to NEMO wiremock with logical resource has NOT happened")
-    public void checkLogicalResourcePutRequestToNemoWiremockDidntHappen(String uuid) {
-        checkLogicalResourceRequestToNemoWiremock(uuid, "PUT", 0);
     }
 
     @Step("Check if DELETE request to NEMO wiremock with logical resource has happened")
@@ -100,12 +98,16 @@ public class A4NemoUpdaterRobot {
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
-    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(String uuidTp) {
-        List<NetworkServiceProfileA10NspDto> nspList = a4Inventory
-                .getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
-        Assert.assertEquals(nspList.size(), 1);
+    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(A4TerminationPoint tpData) {
+        checkNetworkServiceProfileA10NspPutRequestToNemoWiremock (tpData, 1);
+    }
 
-        checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
+    @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
+    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(A4TerminationPoint tpData, int count) {
+        List<NetworkServiceProfileA10NspDto> nspList = a4Inventory
+                .getNetworkServiceProfilesA10NspByTerminationPoint(tpData.getUuid());
+        Assert.assertEquals(nspList.size(), 1);
+        checkLogicalResourceRequestToNemoWiremock(nspList.get(0).getUuid(), "PUT", count);
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile L2BSA has happened")
@@ -117,22 +119,13 @@ public class A4NemoUpdaterRobot {
         checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
     }
 
-    @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has NOT happened")
-    public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremockDidntHappen(String uuidTp) {
-        List<NetworkServiceProfileA10NspDto> nspList = a4Inventory
-                .getNetworkServiceProfilesA10NspByTerminationPoint(uuidTp);
-        Assert.assertEquals(nspList.size(), 1);
+    @Step("Check if PUT request to NEMO wiremock with network element has happened")
+    public void checkNetworkElementPutRequestToNemoWiremock(String vpsz, String fsz) {
+        List<NetworkElementDto> neList = a4Inventory
+                .getNetworkElementsByVpszFsz(vpsz, fsz);
 
-        checkLogicalResourcePutRequestToNemoWiremockDidntHappen(nspList.get(0).getUuid());
-    }
-
-    @Step("Check if PUT request to NEMO wiremock with network service profile L2BSA has NOT happened")
-    public void checkNetworkServiceProfileL2BsaPutRequestToNemoWiremockDidntHappen(String uuidTp) {
-        List<NetworkServiceProfileL2BsaDto> nspList = a4Inventory
-                .getNetworkServiceProfilesL2BsaByTerminationPoint(uuidTp);
-        Assert.assertEquals(nspList.size(), 1);
-
-        checkLogicalResourcePutRequestToNemoWiremockDidntHappen(nspList.get(0).getUuid());
+        Assert.assertEquals(neList.size(), 1);
+        checkLogicalResourcePutRequestToNemoWiremock(neList.get(0).getUuid());
     }
 
     @Step("Check if PUT request to NEMO wiremock with network element link has happened")
@@ -140,8 +133,21 @@ public class A4NemoUpdaterRobot {
         List<NetworkElementLinkDto> nelList = a4Inventory
                 .getNetworkElementLinksByNePort(uuidNep);
         Assert.assertEquals(nelList.size(), 1);
-
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with network element link has happened")
+    public void checkNetworkElementLinkPutRequestToNemoWiremockByNel(A4NetworkElementLink nelData) {
+        checkLogicalResourcePutRequestToNemoWiremock(nelData.getUuid());
+    }
+
+    @Step("Check if PUT request to NEMO wiremock with two network element links at one port has happened")
+    public void checkTwoNetworkElementLinksPutRequestToNemoWiremock(A4NetworkElementPort nepData) {
+        List<NetworkElementLinkDto> nelList = a4Inventory
+                .getNetworkElementLinksByNePort(nepData.getUuid());
+        Assert.assertEquals(nelList.size(), 2);
+        checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
+        checkLogicalResourcePutRequestToNemoWiremock(nelList.get(1).getUuid());
     }
 
     @Step("Check if NEMO update PUT requests have been sent (asynchronous)")
@@ -151,14 +157,14 @@ public class A4NemoUpdaterRobot {
         //they are needed to check if nemo received all of them
         List<String> uuidList = new ArrayList<>();
 
-        csvData.getCsvLines().forEach((csvLine) ->
+        csvData.getCsvLines().forEach(csvLine ->
                 uuidList.add(a4Inventory.getExistingNetworkElementByVpszFsz(csvLine.getNeVpsz(), csvLine.getNeFsz()).getUuid())
         );
 
         //get the ports of each NE
         List<NetworkElementPortDto> networkElementPortDtoList = new ArrayList<>();
 
-        uuidList.forEach((neUuid) ->
+        uuidList.forEach(neUuid ->
                 networkElementPortDtoList.addAll(a4Inventory.getNetworkElementPortsByNetworkElement(neUuid))
         );
 
@@ -169,23 +175,23 @@ public class A4NemoUpdaterRobot {
 
         //get UUIDs of the group
         //assumption is that NEG name is unique so that first element can be taken
-        uuidList.add(
-                a4Inventory
-                        .getNetworkElementGroupsByName(csvData
-                                .getCsvLines().stream()
-                                .findFirst().get().getNegName()).get(0).getUuid()
-        );
+        Optional<A4ImportCsvLine> firstCsvLine = csvData.getCsvLines().stream().findFirst();
+        if(firstCsvLine.isPresent()) {
+            String negName = firstCsvLine.get().getNegName();
+            uuidList.add(
+                    a4Inventory.getNetworkElementGroupsByName(negName).get(0).getUuid()
+            );
 
-         //uuidList.add("kram");
-        //check if requests reached Wiremock
-        //if so delivery by AMQ-consumer was successful
+            //check if requests reached Wiremock
+            //if so delivery by AMQ-consumer was successful
 //            uuidList.forEach(uuid -> {
 //                new Thread(() -> {
 //                checkLogicalResourcePutRequestToNemoWiremock(uuid);
 //                log.debug(uuid + "+++finish+++");
 //                });
 //            });
-        uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
+            uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
+        }
     }
 
 }

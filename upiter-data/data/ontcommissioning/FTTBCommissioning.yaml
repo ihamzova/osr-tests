@@ -1,10 +1,19 @@
-name: FTTBCommissioning
+name: FTTBCommissioningTwistedPair
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  oltDevice: "@EndSz_49_30_179_76H1"
-  slotNumber: "5"
+  oltDevice: "@EndSz_49_89_8000_76H2"
+  slotNumber: "1"
   portNumber: "0"
-  dpuDevice: "@dpuDeviceForFttbProvisioning"
-  dpuPortNumber: "2"
+  dpuDevice: "@dpuDeviceForFttbProvisioningTwistedPair"
+  dpuPortNumber: "1"
   dpuPortType: "GFAST"
-
+---
+name: FTTBCommissioningCoax
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  oltDevice: "@EndSz_49_911_1100_76H1"
+  slotNumber: "1"
+  portNumber: "0"
+  dpuDevice: "@dpuDeviceForFttbProvisioningCoax"
+  dpuPortNumber: "1"
+  dpuPortType: "GFAST"

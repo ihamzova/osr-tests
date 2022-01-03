@@ -11,36 +11,37 @@ values:
   serialNumber: "1234123412341234"
   newSerialNumber: "9876987698769876"
 ---
-name: ForDeprovisioningOntRegistrationAccessLine1
+name: AccessLineAnbieterwechsel
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  oltDevice: "@EndSz_49_30_179_76H1"
+  lineId: "DEU.DTAG.SQA2880866"
+---
+name: PortFor33LineCase
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "1"
-  lineId: "DEU.DTAG.SQA3322830"
-  homeId: "0037W5M"
 ---
-name: ForDeprovisioningOntSerialNumber
-template: com.tsystems.tm.acc.ta.data.osr.models.Ont
-values:
-  serialNumber: "1234123412341234"
----
-name: ForDeprovisioningOntRegistrationAccessLine2
+name: ForDecommissioning33LineCaseAccessLine1
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  oltDevice: "@EndSz_49_30_179_76H1"
-  slotNumber: "3"
-  portNumber: "1"
-  lineId: "DEU.DTAG.SQA1665380"
-  homeId: "0037W5M"
+  lineId: "DEU.DTAG.SQA8823841"
+  homeId: "0037F3H"
 ---
-name: ForDeprovisioningTrue
+name: ForDecommissioning33LineCaseAccessLine2
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  lineId: "DEU.DTAG.DQA8823841"
+  homeId: "0037F3H"
+---
+name: ForDecommissioingRollbackTrue
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA4643677"
   homeId: "0037WCC"
 ---
-name: ForDeprovisioningFalse
+name: ForDecommissioingRollbackFalse
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
   lineId: "DEU.DTAG.SQA4935632"

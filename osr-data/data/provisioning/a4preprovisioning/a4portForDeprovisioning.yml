@@ -1,0 +1,12 @@
+name: a4PortForDeprovisioning
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
+  slotNumber: "${scope, global.a4Provisioning.slotNumber}"
+  portNumber: "${scope, global.a4Provisioning.portNumber}"
+  homeIdPool: 0
+  lineIdPool: 0
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
+  accessLinesCount: 0

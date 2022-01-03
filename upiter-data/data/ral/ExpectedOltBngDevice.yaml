@@ -1,0 +1,29 @@
+name: ExpectedOltBngDevice
+template: com.tsystems.tm.acc.ta.data.osr.models.ExpectedAbstractDevice
+values:
+  id: 1003
+  productionPlatform: "OLT_BNG"
+  endSz: "49/30/179/76H3"
+  fiberOnLocationId: "10000000005"
+  klsId: 123456
+  serialNumber: "6654785985478547"
+  emsNbiName: "MA5600T"
+  materialNumber: "325874"
+  accessTransmissionMedium: "FIBER"
+  lifeCycleState: "NOT_OPERATING"
+  vpSz: "49/30/179"
+  fSz: "76H3"
+  cards:
+    - ports:
+        - id: !!java.lang.Long 1001
+          lifeCycleState: "NOT_OPERATING"
+          portType: "PON"
+          portNumber: "1"
+      cardType: "GPON"
+  ports:
+    - id: !!java.lang.Long 1002
+      lifeCycleState: "NOT_OPERATING"
+      portType: "PON"
+      portNumber: "1"
+  relatedParty:
+    - id: "10001"

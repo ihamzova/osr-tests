@@ -61,6 +61,14 @@ public class A4ResourceInventoryServiceMapper {
         return generateNspFtthLogicalResourceUpdate(nspFtthData, tpData, operationalState);
     }
 
+    // Create logicalResource representation of network service profile (FTTH Access) with
+    // manually set operational state and port reference
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData,
+                                                          A4TerminationPoint tpData,
+                                                          String operationalState,
+                                                          A4NetworkElementPort nepData) {
+        return generateNspFtthLogicalResourceUpdate(nspFtthData, tpData, operationalState, nepData);
+    }
     // Create logicalResource representation of network service profile (A10NSP) with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
         return generateNspA10NspLogicalResourceUpdate(nspA10Data, tpData, operationalState);
@@ -133,6 +141,27 @@ public class A4ResourceInventoryServiceMapper {
                         .resourceRef(new ResourceRef()
                                 .id(tpData.getUuid())
                                 .type("TerminationPoint")));
+    }
+
+    private LogicalResourceUpdate generateNspFtthLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData,
+                                                                       A4TerminationPoint tpData,
+                                                                       String operationalState,
+                                                                       A4NetworkElementPort nepData) {
+        return generateGenericLogicalResourceUpdate(nspFtthData.getUuid())
+                .atType("NspFtthAccess")
+                .description("NSP-FTTH-ACCESS with Port Ref for integration test")
+                .lifecycleState(nspFtthData.getLifecycleState())
+                .addCharacteristicItem(new ResourceCharacteristic()
+                        .name("operationalState")
+                        .value(operationalState))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(tpData.getUuid())
+                                .type("TerminationPoint")))
+                .addResourceRelationshipItem(new ResourceRelationship()
+                        .resourceRef(new ResourceRef()
+                                .id(nepData.getUuid())
+                                .type("NetworkElementPort")));
     }
 
     private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {

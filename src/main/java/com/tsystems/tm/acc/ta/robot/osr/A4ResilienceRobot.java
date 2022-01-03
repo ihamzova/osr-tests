@@ -1,9 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsystems.tm.acc.ta.robot.utils.Authenticator;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,14 +15,12 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -30,13 +29,13 @@ public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
     String queueAuthenticate = "a4_user";
-    String urlApiGw = "https://apigw-admin-berlinium-03.priv.cl01.gigadev.telekom.de/";
+    String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
 
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelayNemoUpdater() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_NEMO_UPDATER_MS).buildUri();
-        String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
+        String url = new GigabitUrlBuilder(A4_NEMO_UPDATER_MS).buildUri()
+                + "/actuator/env/redeliveryDelay"; // redeliveryDelay
 
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url);
@@ -52,8 +51,8 @@ public class A4ResilienceRobot {
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelayCarrierManagement() throws IOException {
 
-        URI uri = new OCUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri();
-        String url = uri.toString() + "/actuator/env/queue.redelivery-delay";
+        String url = new GigabitUrlBuilder(A4_CARRIER_MANAGEMENT_MS).buildUri()
+                + "/actuator/env/queue.redeliveryDelay";
 
         Client client = ClientBuilder.newClient();
         WebTarget resource = client.target(url);
@@ -69,7 +68,7 @@ public class A4ResilienceRobot {
         String routeOfNemo = "resource-order-resource-inventory.v1.nemo.logicalResource";
 
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(urlApiGw + "routes/?size=200");
+        WebTarget resource = client.target(urlApiGw + "/routes/?size=300");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         try {
             Response response = request.get();
@@ -92,28 +91,38 @@ public class A4ResilienceRobot {
 
             String uuidOfMockService = mockData.getService().getId();
 
-            Data newRoute = new Data();
-            newRoute.setProtocols(new ArrayList<>(Arrays.asList("http", "https")));
-            Service newService = new Service();
-            newService.setId(uuidOfMockService);
-            newRoute.setService(newService);
-            newRoute.setId(uuidOfRoute);
-            newRoute.setName(route);
+            Data newRoute = setupNewRoute(route, uuidOfRoute, uuidOfMockService);
 
-            resource = client.target(urlApiGw + "routes/" + uuidOfRoute);
+            resource = client.target(urlApiGw + "/routes/" + uuidOfRoute);
             request = resource.request(MediaType.APPLICATION_JSON);
             response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
             assertEquals(response.getStatus(), HttpStatus.SC_OK);
-        }catch(Exception e){
+        } catch (Exception e) {
             fail("apigw-admin url is missing!");
         }
     }
 
+    private Data setupNewRoute(String route, String uuidOfRoute, String uuidOfMockService) {
+        Data newRoute = new Data();
+        newRoute.setProtocols(new ArrayList<>(Arrays.asList("http", "https")));
+        Service newService = new Service();
+        newService.setId(uuidOfMockService);
+        newRoute.setService(newService);
+        newRoute.setId(uuidOfRoute);
+        newRoute.setName(route);
+
+        return newRoute;
+    }
+
     @Step("changeRouteToA4ResourceInventoryService")
     public void changeRouteToA4ResourceInventoryService(String route) throws IOException {
+        changeRouteToMicroservice(route, A4_RESOURCE_INVENTORY_MS);
+    }
 
+    @Step("changeRouteToProvidedMicroservice")
+    public void changeRouteToMicroservice(String route, String ms) throws IOException {
         Client client = ClientBuilder.newClient();
-        WebTarget resource = client.target(urlApiGw + "routes/");
+        WebTarget resource = client.target(urlApiGw + "/routes/?size=300");
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         log.debug("Will call " + urlApiGw);
         Response response = request.get();
@@ -126,83 +135,75 @@ public class A4ResilienceRobot {
         String uuidOfRoute = routeList.get(0).getId();
 
         client = ClientBuilder.newClient();
-        resource = client.target(urlApiGw + "services/");
+        resource = client.target(urlApiGw + "/services/");
         request = resource.request(MediaType.APPLICATION_JSON);
         response = request.get();
         Routes services = objectMapper.readValue(response.readEntity(String.class), Routes.class);
         List<Data> servicesList = services.getData()
                 .stream()
-                .filter(i -> i.getName().equals("a4-resource-inventory"))
+                .filter(i -> i.getName().equals(ms))
                 .collect(Collectors.toList());
         String uuidOfService = servicesList.get(0).getId();
 
-        Data newRoute = new Data();
-        newRoute.setProtocols(new ArrayList<>(Arrays.asList("http", "https")));
-        Service newService = new Service();
-        newService.setId(uuidOfService);
-        newRoute.setService(newService);
-        newRoute.setId(uuidOfRoute);
-        newRoute.setName(route);
+        Data newRoute = setupNewRoute(route, uuidOfRoute, uuidOfService);
 
         client = ClientBuilder.newClient();
-        resource = client.target(urlApiGw + "routes/" + uuidOfRoute);
+        resource = client.target(urlApiGw + "/routes/" + uuidOfRoute);
         request = resource.request(MediaType.APPLICATION_JSON);
         response = request.method("PATCH", Entity.json(objectMapper.writeValueAsString(newRoute)));
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
     }
 
     @Step("checkMessagesInQueue")
-    public void checkMessagesInQueue(String queue, String expected) throws IOException {
+    public void checkMessagesInQueue(String queue, int expected) {
         assertEquals(countMessagesInQueue(queue), expected, "in " + queue);
     }
 
-    @Step("checkMessagesInQueueNemoUpdater")
-    public void checkMessagesInQueueNemoUpdater(String queue, int expected) throws IOException {
-        assertEquals(Integer.parseInt(countMessagesInQueueNemoUpdater(queue)), expected, "in " + queue);
-    }
-
     @Step("countMessagesInQueue")
-    public String countMessagesInQueue(String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
-                queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
-                queue + "%22/countMessages()";
+    public int countMessagesInQueue(String queue) {
+        String url = getQueueUrl(queue) + "countMessages()";
+        String responseAsString = sendRequestToQueueAndGetResponse(url);
 
-        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
-        WebTarget resource = client.target(url);
-        Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
-        Response response = request.get();
-        String responseAsString = response.readEntity(String.class);
-        CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
-        assertEquals(response.getStatus(), HttpStatus.SC_OK);
-        return cm.getValue();
+        try {
+            CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
+            return Integer.parseInt(cm.getValue());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        return 0; // never reached
     }
 
-    @Step("countMessagesInQueueNemoUpdater")
-    public String countMessagesInQueueNemoUpdater(String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
-                queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
-                queue + "%22/countMessages()";
-
-        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
-        WebTarget resource = client.target(url);
-        Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
-        Response response = request.get();
-        String responseAsString = response.readEntity(String.class);
-        CountMessage cm = objectMapper.readValue(responseAsString, CountMessage.class);
-        assertEquals(response.getStatus(), HttpStatus.SC_OK);
-        return cm.getValue();
+    @Step("removeAllMessagesInQueue")
+    public void removeAllMessagesInQueue(String queue) {
+        String url = getQueueUrl(queue) + "removeAllMessages()";
+        sendRequestToQueueAndGetResponse(url);
     }
-    @Step("removeAllMessagesInQueueNemoUpdater")
-    public void removeAllMessagesInQueueNemoUpdater (String queue) throws IOException {
-        String url = "https://a4-queue-dispatcher-amq-berlinium-03.priv.cl01.gigadev.telekom.de:443/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"+
-                queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22" +
-                queue + "%22/removeAllMessages()";
 
+    private String sendRequestToQueueAndGetResponse(String url) {
         Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
         assertEquals(response.getStatus(), HttpStatus.SC_OK);
+
+        return response.readEntity(String.class);
+    }
+
+    private String getQueueUrl(String queue) {
+        // Activate this when using AMQ
+        return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
+                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"
+                + queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22"
+                + queue + "%22/";
+
+        // Activate this when using AMQ-HA
+//        return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
+//                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=!%22"
+//                + A4_QUEUE_DISPATCHER_QUEUE + "!%22,component=addresses,address=!%22"
+//                + queue + "!%22,subcomponent=queues,routing-type=!%22anycast!%22,queue=!%22"
+//                + queue + "!%22/";
     }
 
 }

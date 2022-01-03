@@ -1,0 +1,11 @@
+{
+  "dpuAccessTechnology": "FTTB",
+  "dpuEndSz": "49/520/4/78G2",
+  "dpuInstallationInstruction": "30cm neben APL",
+  "dpuLocation": "Technikraum Keller links",
+  "fiberOnLocationId": "1000000021049",
+  "klsId": "584741042",
+  "numberOfNeededDpuPorts": 25,
+  "state": "FULFILLED",
+  "workorderId": "10835"
+}

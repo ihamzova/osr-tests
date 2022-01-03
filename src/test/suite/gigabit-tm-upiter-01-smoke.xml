@@ -14,8 +14,8 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning">
                 <methods>
-                    <include name="accessLineReservationByPortAndHomeId"/>
-                    <include name="ontRegistration"/>
+                    <include name="accessLineReservationByPortAndHomeIdTest"/>
+                    <include name="ontRegistrationTest"/>
                     <include name="ontTest"/>
                     <include name="ontDecommissioningWithRollbackFalseTest"/>
                 </methods>
@@ -24,9 +24,9 @@
     </test>
     <test thread-count="1" name="FTTH Provisioning(for 5600) Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.provisioning.OltProvisioning5600">
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning.OltProvisioning5600">
                 <methods>
-                    <include name="portProvisioningEmpty"/>
+                    <include name="portProvisioning"/>
                 </methods>
             </class>
         </classes>
@@ -35,16 +35,16 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.a4provisioning.WgA4Provisioning">
                 <methods>
-                    <include name="a4PortProvisioning"/>
+                    <include name="a4FtthProvisioningWithoutTpType"/>
                 </methods>
             </class>
         </classes>
     </test>
     <test thread-count="1" name="FTTB Provisioning Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning">
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioningFeatureToggleOn">
                 <methods>
-                    <include name="fttbDeviceProvisioningTest"/>
+                    <include name="fttbDeviceProvisioningTwistedPairTest"/>
                 </methods>
             </class>
         </classes>
