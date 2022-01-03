@@ -22,11 +22,15 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
         a4InventarSuche.clickNetworkElement();
     }
 
-    @When("enters VPSZ {string} and FSZ {string} into the input fields")
-    public void entersVPSZAndFSZIntoFields(String vpsz, String fsz) {
+    @When("(the user )enters VPSZ {string} into the input fields")
+    public void entersVPSZIntoFields(String vpsz) {
         a4InventarSuche.enterNeAkzByVpsz(vpsz);
         a4InventarSuche.enterNeOnkzByVpsz(vpsz);
         a4InventarSuche.enterNeVkzByVpsz(vpsz);
+    }
+
+    @When("(the user )enters FSZ {string} into the input field")
+    public void entersFSZIntoField(String fsz) {
         a4InventarSuche.enterNeFsz(fsz);
     }
 
