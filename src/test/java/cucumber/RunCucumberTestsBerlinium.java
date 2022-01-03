@@ -24,10 +24,4 @@ public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {
         return super.scenarios();
     }
 
-//    @BeforeClass
-//    @Parameters({ "subfolder" })
-//    public void init(@Optional("/") String subfolder) {
-//        final String subfolder1 = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("subfolder");
-//    }
-
 }
