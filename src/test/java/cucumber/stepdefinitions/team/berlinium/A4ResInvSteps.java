@@ -55,6 +55,7 @@ public class A4ResInvSteps extends BaseSteps {
     @Given("a TP is existing in A4 resource inventory")
     public void aTPIsExistingInA4ResourceInventory() {
         A4TerminationPoint tp = setupDefaultTpTestData();
+        tp.setUuid(UUID.randomUUID().toString());
         A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
         getScenarioContext().setContext(Context.A4_TP, tp);
         a4ResInv.createTerminationPoint(tp, nep);
@@ -68,6 +69,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         A4NetworkElementPort nep = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+        nep.setUuid(UUID.randomUUID().toString());
         getScenarioContext().setContext(Context.A4_NEP, nep);
         A4NetworkElement ne = (A4NetworkElement) getScenarioContext().getContext(Context.A4_NE);
         a4ResInv.createNetworkElementPort(nep, ne);
@@ -95,6 +97,7 @@ public class A4ResInvSteps extends BaseSteps {
     public void aNEGIsExistingInA4ResourceInventory() {
         A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        neg.setUuid(UUID.randomUUID().toString());
         getScenarioContext().setContext(Context.A4_NEG, neg);
         a4ResInv.createNetworkElementGroup(neg);
     }
@@ -108,6 +111,7 @@ public class A4ResInvSteps extends BaseSteps {
         A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
                 .getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+        nspFtth.setUuid(UUID.randomUUID().toString());
         nspFtth.setLineId(lineId);
         getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
         A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
@@ -170,8 +174,11 @@ public class A4ResInvSteps extends BaseSteps {
         if (!getScenarioContext().isContains(Context.A4_NEG))
             aNEGIsExistingInA4ResourceInventory();
 
-        return osrTestContext.getData().getA4NetworkElementDataProvider()
+        A4NetworkElement ne = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
+        ne.setUuid(UUID.randomUUID().toString());
+
+        return ne;
     }
 
     private A4TerminationPoint setupDefaultTpTestData() {
@@ -179,8 +186,11 @@ public class A4ResInvSteps extends BaseSteps {
         if (!getScenarioContext().isContains(Context.A4_NEP))
             aNEPIsExistingInA4ResourceInventory();
 
-        return osrTestContext.getData().getA4TerminationPointDataProvider()
+        A4TerminationPoint tp = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
+        tp.setUuid(UUID.randomUUID().toString());
+
+        return tp;
     }
 
 }
