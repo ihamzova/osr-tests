@@ -38,6 +38,13 @@ public class A4ResInvSteps extends BaseSteps {
         }
     }
 
+    @Given("no NE exists in A4 resource inventory")
+    public void noNEExistsInA4ResourceInventory() {
+        A4NetworkElement ne = new A4NetworkElement();
+        ne.setUuid(UUID.randomUUID().toString());
+        getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
     @Given("no TP exists in A4 resource inventory")
     public void noTPExistsInA4ResourceInventory() {
         A4TerminationPoint tp = new A4TerminationPoint();

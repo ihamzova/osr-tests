@@ -5,17 +5,25 @@ import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.codeborne.selenide.Selenide.$;
+import static org.testng.Assert.assertEquals;
 
 @Slf4j
 public class A4InventarSucheRobot {
 
     // helper method 'wait'
-    public void waitForTableToFullyLoad(int numberOfElements){
+    public void waitForTableToFullyLoad(int numberOfElements) {
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
@@ -51,10 +59,14 @@ public class A4InventarSucheRobot {
     }
 
     @Step("Enter vpsz")
-    public void enterNeVpsz(String value) { $(A4InventarSuchePage.getNE_VPSZ_FIELD_LOCATOR()).val(value); }
+    public void enterNeVpsz(String value) {
+        $(A4InventarSuchePage.getNE_VPSZ_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Enter akz")
-    public void enterNeAkz(String value) { $(A4InventarSuchePage.getNE_AKZ_FIELD_LOCATOR()).val(value); }
+    public void enterNeAkz(String value) {
+        $(A4InventarSuchePage.getNE_AKZ_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Enter akz")
     public void enterNeAkzByVpsz(String vpsz) {
@@ -63,7 +75,9 @@ public class A4InventarSucheRobot {
     }
 
     @Step("Enter onkz")
-    public void enterNeOnkz(String value) { $(A4InventarSuchePage.getNE_ONKZ_FIELD_LOCATOR()).val(value); }
+    public void enterNeOnkz(String value) {
+        $(A4InventarSuchePage.getNE_ONKZ_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Enter onkz")
     public void enterNeOnkzByVpsz(String vpsz) {
@@ -72,7 +86,9 @@ public class A4InventarSucheRobot {
     }
 
     @Step("Enter vkz")
-    public void enterNeVkz(String value) { $(A4InventarSuchePage.getNE_VKZ_FIELD_LOCATOR()).val(value); }
+    public void enterNeVkz(String value) {
+        $(A4InventarSuchePage.getNE_VKZ_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Enter vkz")
     public void enterNeVkzByVpsz(String vpsz) {
@@ -81,10 +97,14 @@ public class A4InventarSucheRobot {
     }
 
     @Step("Enter fsz")
-    public void enterNeFsz(String value) { $(A4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value); }
+    public void enterNeFsz(String value) {
+        $(A4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value);
+    }
 
     @Step("Enter category")
-    public void enterNeCategory(String value) { $(A4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value); }
+    public void enterNeCategory(String value) {
+        $(A4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value);
+    }
 
     @Step("Click ne search button")
     public void clickNeSearchButton() {
@@ -94,37 +114,59 @@ public class A4InventarSucheRobot {
 
     // checkboxes
     @Step("Checkbox WORKING")
-    public void checkboxWorking() { $(A4InventarSuchePage.getWORKING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxWorking() {
+        $(A4InventarSuchePage.getWORKING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox Op INSTALLING")
-    public void checkboxOpInstalling() { $(A4InventarSuchePage.getOPS_INSTALLING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxOpInstalling() {
+        $(A4InventarSuchePage.getOPS_INSTALLING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox NOT WORKING")
-    public void checkboxNotWorking() { $(A4InventarSuchePage.getNOT_WORKING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxNotWorking() {
+        $(A4InventarSuchePage.getNOT_WORKING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox NOT MANAGEABLE")
-    public void checkboxNotManageable() { $(A4InventarSuchePage.getNOT_MANAGEABLE_CHECKBOX_LOCATOR()).click();}
+    public void checkboxNotManageable() {
+        $(A4InventarSuchePage.getNOT_MANAGEABLE_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox FAILED")
-    public void checkboxFailed() { $(A4InventarSuchePage.getFAILED_CHECKBOX_LOCATOR()).click();}
+    public void checkboxFailed() {
+        $(A4InventarSuchePage.getFAILED_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox ACTIVATING")
-    public void checkboxActivating() { $(A4InventarSuchePage.getACTIVATING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxActivating() {
+        $(A4InventarSuchePage.getACTIVATING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox DEACTIVATING")
-    public void checkboxDeactivating() { $(A4InventarSuchePage.getDEACTIVATING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxDeactivating() {
+        $(A4InventarSuchePage.getDEACTIVATING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox PLANNING")
-    public void checkboxPlanning() { $(A4InventarSuchePage.getPLANNING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxPlanning() {
+        $(A4InventarSuchePage.getPLANNING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox Life INSTALLING")
-    public void checkboxLifeInstalling() { $(A4InventarSuchePage.getLIFECYCLE_INSTALLING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxLifeInstalling() {
+        $(A4InventarSuchePage.getLIFECYCLE_INSTALLING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox OPERATING")
-    public void checkboxOperating() { $(A4InventarSuchePage.getOPERATING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxOperating() {
+        $(A4InventarSuchePage.getOPERATING_CHECKBOX_LOCATOR()).click();
+    }
 
     @Step("Checkbox RETIRING")
-    public void checkboxRetiring() { $(A4InventarSuchePage.getRETIRING_CHECKBOX_LOCATOR()).click();}
+    public void checkboxRetiring() {
+        $(A4InventarSuchePage.getRETIRING_CHECKBOX_LOCATOR()).click();
+    }
 
     // neg
     @Step("Choose search by NetworkElementGroup")
@@ -149,7 +191,7 @@ public class A4InventarSucheRobot {
 
     // common
     @Step("Open UI, log in, and goTo Inventar-Suche-page")
-    public void openInventarSuchePage(){
+    public void openInventarSuchePage() {
         A4InventarSuchePage
                 .login();
     }
@@ -166,6 +208,47 @@ public class A4InventarSucheRobot {
 
     public void clickFirstRowInSearchResultTable() {
         getNeElementsCollection().get(0).click();
+    }
+
+    public List<NetworkElementDto> createNeListActualResult() {
+        ElementsCollection elementsCollection = getNeElementsCollection();
+        return createNeListActualResult(elementsCollection);
+    }
+
+    public List<NetworkElementDto> createNeListActualResult(ElementsCollection elementsCollection) {
+        final int numberOfColumnsNeList = 12;
+
+        // create empty list
+        List<NetworkElementDto> neActualResultList = new ArrayList<>();
+        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
+            NetworkElementDto neActualGeneric = new NetworkElementDto();
+            neActualResultList.add(neActualGeneric);
+        }
+
+        // read table from ui and fill list (actual result)
+        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
+            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList).getText());
+            neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList + 1).getText());
+            neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList + 2).getText());
+            neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList + 3).getText());
+            neActualResultList.get(i).setType(elementsCollection.get(i * numberOfColumnsNeList + 4).getText());
+            neActualResultList.get(i).setZtpIdent(elementsCollection.get(i * numberOfColumnsNeList + 5).getText());
+            neActualResultList.get(i).setKlsId(elementsCollection.get(i * numberOfColumnsNeList + 6).getText());
+            neActualResultList.get(i).setPlanningDeviceName(elementsCollection.get(i * numberOfColumnsNeList + 7).getText());
+            neActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList + 8).getText());
+            neActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList + 9).getText());
+            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i * numberOfColumnsNeList + 10).getText());
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i * numberOfColumnsNeList + 11).getText());
+            neActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            neActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+        }
+
+        // sort
+        neActualResultList = neActualResultList
+                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+                .collect(Collectors.toList());
+
+        return neActualResultList;
     }
 
 }

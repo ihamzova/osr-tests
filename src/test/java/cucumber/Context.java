@@ -6,6 +6,7 @@ public enum Context {
     // Global
     RESPONSE,
     WIREMOCK,
+    BROWSER,
 
     // Berlinium
     A4_NEG,

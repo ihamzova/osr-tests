@@ -77,39 +77,39 @@ public class A4InventarSuchePageTest extends GigabitTest {
     }
 
     // helper 'createActualResult NE'
-    public List<NetworkElementDto> createNeListActualResult ( ElementsCollection elementsCollection ){
-        // create empty list
-        List <NetworkElementDto> neActualResultList = new ArrayList<>();
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
-            NetworkElementDto neActualGeneric = new NetworkElementDto();
-            neActualResultList.add(neActualGeneric);
-        }
-      //  log.info("+++ neActualResultList: "+neActualResultList.size());
-
-        // read table from ui and fill list (actual result)
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++){
-            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList).getText());
-            neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList +1).getText());
-            neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList +2).getText());
-            neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList +3).getText());
-            neActualResultList.get(i).setType(elementsCollection.get(i * numberOfColumnsNeList +4).getText());
-            neActualResultList.get(i).setZtpIdent(elementsCollection.get(i * numberOfColumnsNeList +5).getText());
-            neActualResultList.get(i).setKlsId(elementsCollection.get(i * numberOfColumnsNeList +6).getText());
-            neActualResultList.get(i).setPlanningDeviceName(elementsCollection.get(i * numberOfColumnsNeList +7).getText());
-            neActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList +8).getText());
-            neActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList +9).getText());
-            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+10).getText());
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+11).getText());
-            neActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
-            neActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
-           // log.info("+++ uuid: "+neActualResultList.get(i).getUuid());
-        }
-        // sort
-        neActualResultList = neActualResultList
-                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
-                .collect(Collectors.toList());
-        return neActualResultList;
-    }
+//    public List<NetworkElementDto> createNeListActualResult ( ElementsCollection elementsCollection ){
+//        // create empty list
+//        List <NetworkElementDto> neActualResultList = new ArrayList<>();
+//        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
+//            NetworkElementDto neActualGeneric = new NetworkElementDto();
+//            neActualResultList.add(neActualGeneric);
+//        }
+//      //  log.info("+++ neActualResultList: "+neActualResultList.size());
+//
+//        // read table from ui and fill list (actual result)
+//        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++){
+//            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList).getText());
+//            neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList +1).getText());
+//            neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList +2).getText());
+//            neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList +3).getText());
+//            neActualResultList.get(i).setType(elementsCollection.get(i * numberOfColumnsNeList +4).getText());
+//            neActualResultList.get(i).setZtpIdent(elementsCollection.get(i * numberOfColumnsNeList +5).getText());
+//            neActualResultList.get(i).setKlsId(elementsCollection.get(i * numberOfColumnsNeList +6).getText());
+//            neActualResultList.get(i).setPlanningDeviceName(elementsCollection.get(i * numberOfColumnsNeList +7).getText());
+//            neActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList +8).getText());
+//            neActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList +9).getText());
+//            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+10).getText());
+//            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNeList+11).getText());
+//            neActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+//            neActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+//           // log.info("+++ uuid: "+neActualResultList.get(i).getUuid());
+//        }
+//        // sort
+//        neActualResultList = neActualResultList
+//                .stream().sorted(Comparator.comparing(NetworkElementDto::getUuid))
+//                .collect(Collectors.toList());
+//        return neActualResultList;
+//    }
 
     // helper 'compare ne'
     public void compareExpectedResultWithActualResultNeList (List <NetworkElementDto>neFilteredList,
@@ -216,7 +216,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++neFilteredList : "+neFilteredList.size());
 
         // create actual result
-        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
+        List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
         compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
@@ -265,7 +265,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++neFilteredList : "+neFilteredList.size());
 
         // create actual result
-        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
+        List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
         compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
@@ -323,7 +323,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++neFilteredList : "+neFilteredList.size());
 
         // create actual result
-        List<NetworkElementDto> neActualResultList = createNeListActualResult(elementsCollection);
+        List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
         compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
