@@ -83,8 +83,8 @@ public class A4ResInvSteps extends BaseSteps {
         a4ResInv.createNetworkElement(ne, neg);
     }
 
-    @Given("a NE with VSPZ {string} and FSZ {string} is existing in A4 resource inventory")
-    public void aNEWithVSPZIsExistingInAResourceInventory(String vpsz, String fsz) {
+    @Given("a NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
+    public void aNEWithVPSZIsExistingInAResourceInventory(String vpsz, String fsz) {
         A4NetworkElement ne = setupDefaultNeTestData();
         ne.setVpsz(vpsz);
         ne.setFsz(fsz);

@@ -6,7 +6,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
   @berlinium
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element
-    Given a NE with VSPZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
+    Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And enters FSZ <FSZ> into the input field
@@ -20,8 +20,8 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
   @berlinium
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element; multiple results
-    Given a NE with VSPZ <VPSZ> and FSZ <FSZ_A> is existing in A4 resource inventory
-    And a NE with VSPZ <VPSZ> and FSZ <FSZ_B> is existing in A4 resource inventory
+    Given a NE with VPSZ <VPSZ> and FSZ <FSZ_A> is existing in A4 resource inventory
+    And a NE with VPSZ <VPSZ> and FSZ <FSZ_B> is existing in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And clicks the submit button
