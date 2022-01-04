@@ -52,10 +52,8 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
                 .collect(Collectors.toList());
 
         assertEquals(neFilteredlist.size(), 1); // NE with both VPSZ & FSZ are unique, there can be only one
-        neFilteredlist.forEach(ne -> {
-            assertEquals(ne.getVpsz(), vpsz);
-            assertEquals(ne.getFsz(), fsz);
-        });
+        assertEquals(neFilteredlist.get(0).getVpsz(), vpsz);
+        assertEquals(neFilteredlist.get(0).getFsz(), fsz);
     }
 
     @Then("{int} NE(s) in the search result list has/have VPSZ {string}")
