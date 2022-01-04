@@ -44,7 +44,7 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
         a4ResInvSearch.clickNeSearchButton();
     }
 
-    @Then("the/a/one/1 NE with VPSZ {string} and FSZ {string} is shown in the search result list")
+    @Then("the/a/one/1 NE in the search result list has VPSZ {string} and FSZ {string}")
     public void userGetsSearchResultsInTable(String vpsz, String fsz) {
         List<NetworkElementDto> neFilteredlist = a4ResInvSearch.createNeListActualResult()
                 .stream()
@@ -52,13 +52,11 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
                 .collect(Collectors.toList());
 
         assertEquals(neFilteredlist.size(), 1); // NE with both VPSZ & FSZ are unique, there can be only one
-        neFilteredlist.forEach(ne -> {
-            assertEquals(ne.getVpsz(), vpsz);
-            assertEquals(ne.getFsz(), fsz);
-        });
+        assertEquals(neFilteredlist.get(0).getVpsz(), vpsz);
+        assertEquals(neFilteredlist.get(0).getFsz(), fsz);
     }
 
-    @Then("{int} NE(s) with VPSZ {string} is/are shown in the search result list")
+    @Then("{int} NE(s) in the search result list has/have VPSZ {string}")
     public void xNEsAreShownInSearchResults(int count, String vpsz) {
         List<NetworkElementDto> neFilteredlist = a4ResInvSearch.createNeListActualResult()
                 .stream()
@@ -73,9 +71,14 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
 
     @Then("the NE search result list is empty")
     public void theNESearchResultListIsEmpty() {
+        xNEAreShownInSearchResultList(0);
+    }
+
+    @Then("{int} NE(s) is/are shown in the search result list")
+    public void xNEAreShownInSearchResultList(int count) {
         List<NetworkElementDto> neFoundlist = a4ResInvSearch.createNeListActualResult();
 
-        assertEquals(neFoundlist.size(), 0);
+        assertEquals(neFoundlist.size(), count);
     }
 
 }

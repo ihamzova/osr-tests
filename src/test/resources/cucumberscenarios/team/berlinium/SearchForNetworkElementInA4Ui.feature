@@ -7,11 +7,13 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element
     Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
+    And a NE with VPSZ <VPSZ> and FSZ "7KH1" is existing in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And enters FSZ <FSZ> into the input field
     And clicks the submit button
-    Then 1 NE with VPSZ <VPSZ> and FSZ <FSZ> is shown in the search result list
+    Then 1 NE is shown in the search result list
+    And 1 NE in the search result list has VPSZ <VPSZ> and FSZ <FSZ>
 
     Examples:
       | VPSZ        | FSZ    |
@@ -20,16 +22,17 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
   @berlinium
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element; multiple results
-    Given a NE with VPSZ <VPSZ> and FSZ <FSZ_A> is existing in A4 resource inventory
-    And a NE with VPSZ <VPSZ> and FSZ <FSZ_B> is existing in A4 resource inventory
+    Given a NE with VPSZ <VPSZ> and FSZ "7KH0" is existing in A4 resource inventory
+    And a NE with VPSZ <VPSZ> and FSZ "7KH1" is existing in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And clicks the submit button
-    Then 2 NEs with VPSZ <VPSZ> are shown in the search result list
+    Then 2 NEs are shown in the search result list
+    And 2 NEs in the search result list have VPSZ <VPSZ>
 
     Examples:
-      | VPSZ        | FSZ_A  | FSZ_B  |
-      | "49/1234/0" | "7KH0" | "7KH1" |
+      | VPSZ        |
+      | "49/1234/0" |
 
   @berlinium
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
@@ -37,6 +40,5 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
     Given no NE exists in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ "49/1234/0" into the input fields
-    And enters FSZ "7KH0" into the input field
     And clicks the submit button
     Then the NE search result list is empty
