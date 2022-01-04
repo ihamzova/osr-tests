@@ -84,8 +84,8 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
-  public OsrWireMockMappingsContextBuilder addNemoMock500() {
-    context.add(new NemoStub().deleteNemoUpdate500());
+  public OsrWireMockMappingsContextBuilder addNemoMock500(String uuid) {
+    context.add(new NemoStub().deleteNemoUpdate500(uuid));
     return this;
   }
 
