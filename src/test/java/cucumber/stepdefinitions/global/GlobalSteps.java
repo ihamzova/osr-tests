@@ -17,8 +17,7 @@ import io.restassured.response.Response;
 
 import java.net.URL;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static org.testng.Assert.assertEquals;
@@ -51,6 +50,9 @@ public class GlobalSteps extends BaseSteps {
                 .eventsHook(attachEventsToAllureReport());
 
         wiremock.getWireMock().resetRequests();
+
+        if(getScenarioContext().isContains(Context.BROWSER))
+            closeWebDriver();
     }
 
     @Given("user {string} with password {string} is logged in to {string}")
@@ -64,6 +66,7 @@ public class GlobalSteps extends BaseSteps {
 
         final URL url = new GigabitUrlBuilder(ms).build();
         open(url);
+        getScenarioContext().setContext(Context.BROWSER, true);
 
         final SelenideElement usernameInput = $("#username");
         final SelenideElement passwordInput = $("#password");
