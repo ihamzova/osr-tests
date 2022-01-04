@@ -5,9 +5,9 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
 
   @berlinium
   @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
-  Scenario Outline: User wants to look up an existing NE (INCOMPLETE!)
+  Scenario Outline: User wants to look up an existing Network Element (INCOMPLETE!)
     Given a NE with VSPZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
-    When the user opens NE search page
+    When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And enters FSZ <FSZ> into the input field
     And clicks the submit button

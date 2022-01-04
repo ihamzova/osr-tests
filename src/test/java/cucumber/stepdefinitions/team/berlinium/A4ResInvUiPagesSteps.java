@@ -16,25 +16,25 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
         super(testContext);
     }
 
-    @When("the user opens NE search page")
+    @When("the user navigates to (the )NE search page")
     public void userOpensNESearchPage() {
         a4InventarSuche.openInventarSuchePage();
         a4InventarSuche.clickNetworkElement();
     }
 
-    @When("(the user )enters VPSZ {string} into the input fields")
+    @When("(the user )/(she )enters VPSZ {string} into the input fields")
     public void entersVPSZIntoFields(String vpsz) {
         a4InventarSuche.enterNeAkzByVpsz(vpsz);
         a4InventarSuche.enterNeOnkzByVpsz(vpsz);
         a4InventarSuche.enterNeVkzByVpsz(vpsz);
     }
 
-    @When("(the user )enters FSZ {string} into the input field")
+    @When("(the user )/(she )enters FSZ {string} into the input field")
     public void entersFSZIntoField(String fsz) {
         a4InventarSuche.enterNeFsz(fsz);
     }
 
-    @When("clicks the submit button")
+    @When("(the user )/(she )clicks the submit button")
     public void clicksSubmitButton() {
         a4InventarSuche.clickNeSearchButton();
     }
