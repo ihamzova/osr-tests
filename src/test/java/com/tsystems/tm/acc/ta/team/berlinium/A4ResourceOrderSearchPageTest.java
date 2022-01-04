@@ -55,6 +55,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private A4NetworkElementGroup negData;
     private ResourceOrder ro;
     private ResourceOrder ro2;
+    A4NetworkElementLink nelData1;
 
 
     @BeforeClass()
@@ -80,7 +81,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         A4NetworkElementPort nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
-        A4NetworkElementLink nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         A4NetworkElementLink nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
@@ -110,74 +111,32 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
+/*
         ro = a4ResourceOrderRobot.buildResourceOrder();
 
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro);
+*/
 
-        // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro); // case-sensitive problem
+        ro = initResourceOrder(nelData1);
+        sendResourceOrder(ro); // case-sensitive problem
         sleepForSeconds(10);
     }
 
-    private void initRejectedResourceOrder() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
 
-        negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
+    private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
+        ResourceOrder resourceOrder;
 
-        A4NetworkElement neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementA10NspSwitch01);
-        A4NetworkElementPort nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
+        resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
 
-        A4NetworkElement neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
-        A4NetworkElementPort nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
+        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, resourceOrder);
+        a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
 
-        A4NetworkElement neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementB);
-        A4NetworkElementPort nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+        return resourceOrder;
+    }
 
-        A4NetworkElementLink nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
-        A4NetworkElementLink nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-
-        A4NetworkServiceProfileA10Nsp nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        A4TerminationPoint tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
-
-        UewegData uewegData1 = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.uewegA);
-        UewegData uewegData2 = osrTestContext.getData().getUewegDataDataProvider()
-                .get(UewegDataCase.uewegB);
-
-
-        a4ResourceInventory.createNetworkElementGroup(negData);
-        a4ResourceInventory.createNetworkElement(neData1, negData);
-        a4ResourceInventory.createNetworkElement(neData2, negData);
-        a4ResourceInventory.createNetworkElement(neData3, negData);
-        a4ResourceInventory.createNetworkElementPort(nepData1, neData1);
-        a4ResourceInventory.createNetworkElementPort(nepData2, neData2);
-        a4ResourceInventory.createNetworkElementPort(nepData3, neData3);
-        a4ResourceInventory.createNetworkElementLink(nelData1, nepData1, nepData2, neData1, neData2, uewegData1);
-        a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
-        a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
-        a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-
-        ro2 = a4ResourceOrderRobot.buildResourceOrder();
-
-        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro2);
-        a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro2);
-        ro2.getOrderItem().get(0).getResource().setName("4N4-1004-49-2246-0-7KCA-49-3608-0-7KH0");
-
-        // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro2); // case-sensitive problem
+    private void sendResourceOrder(ResourceOrder resourceOrder) {
+        a4ResourceOrderRobot.sendPostResourceOrder(resourceOrder); // case-sensitive problem
         sleepForSeconds(10);
     }
 
@@ -251,7 +210,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
         assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
         assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
-
 
     }
 
@@ -449,7 +407,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, rejected and inprogress with vuep")
     public void testRoSearchRejectedInprogressWithVuep()  {
         //creating a RO with wrong LBZ to provoke RO status = rejected
-        initRejectedResourceOrder();
+        ro2 = initResourceOrder(nelData1);
+        ro2.getOrderItem().get(0).getResource().setName("4N4-1004-49-2246-0-7KCA-49-3608-0-7KH0");
+        sendResourceOrder(ro2);
 
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
@@ -514,6 +474,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
         assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
         assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro2);
     }
 
