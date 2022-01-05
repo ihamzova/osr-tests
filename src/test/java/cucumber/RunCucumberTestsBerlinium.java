@@ -19,11 +19,11 @@ import org.testng.annotations.Test;
 )
 public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {
 
-    GigabitTest gbt;
-
-    RunCucumberTestsBerlinium() {
-        gbt = new GigabitTest();
-    }
+//    GigabitTest gbt;
+//
+//    RunCucumberTestsBerlinium() {
+//        gbt = new GigabitTest();
+//    }
 
     @Override
     @DataProvider() // @DataProvider(parallel = true) <- use this if you want to execute multiple scenarios in parallel
