@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.global;
+package cucumber.stepdefinitions.common;
 
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
@@ -22,9 +22,9 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static org.testng.Assert.assertEquals;
 
-public class GlobalSteps extends BaseSteps {
+public class CommonSteps extends BaseSteps {
 
-    public GlobalSteps(TestContext testContext) {
+    public CommonSteps(TestContext testContext) {
         super(testContext);
     }
 
@@ -51,14 +51,19 @@ public class GlobalSteps extends BaseSteps {
 
         wiremock.getWireMock().resetRequests();
 
-        if(getScenarioContext().isContains(Context.BROWSER))
+        if(getScenarioContext().isContains(Context.BROWSER)) {
+            destroySelenium();
             closeWebDriver();
+        }
     }
 
     @Given("user {string} with password {string} is logged in to {string}")
     public void userIsLoggedInToUiWithPassword(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
+
+        setCredentials(user, password);
+        initSelenium();
 
         final String WEB_DRIVER = "webdriver.chrome.driver";
         final String driver = GlobalContextKt.getContext().get(WEB_DRIVER, "otherValue");

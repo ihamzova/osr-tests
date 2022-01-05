@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4ResInvUiPagesSteps extends BaseSteps {
+public class A4UiSearchPageSteps extends BaseSteps {
 
     private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
 
-    public A4ResInvUiPagesSteps(TestContext testContext) {
+    public A4UiSearchPageSteps(TestContext testContext) {
         super(testContext);
     }
 

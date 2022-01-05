@@ -13,8 +13,8 @@ import org.testng.annotations.Test;
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
         glue = {"cucumber.stepdefinitions.team.berlinium",
-                "cucumber.stepdefinitions.global"},
-        features = {"src/test/resources/cucumberscenarios/team/berlinium"}
+                "cucumber.stepdefinitions.common"},
+        features = {"src/test/resources/cucumberscenarios/team/berlinium/SearchForNetworkElementInA4Ui.feature"}
 )
 public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {
 
