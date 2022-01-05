@@ -143,7 +143,7 @@ public class A4SupportPageTest extends GigabitTest {
 
         // wiremock with 400 error
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
-                .addNemoMock400()
+                .addNemoMock400(uuids.get(0))
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -206,7 +206,7 @@ public class A4SupportPageTest extends GigabitTest {
 
         // wiremock with 400 error
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4NemoUpdateTest"))
-                .addNemoMock400()
+                .addNemoMock400(uuids.get(0))
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())
