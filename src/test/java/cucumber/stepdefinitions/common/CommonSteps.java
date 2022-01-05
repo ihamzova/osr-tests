@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.global;
+package cucumber.stepdefinitions.common;
 
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
@@ -17,19 +17,20 @@ import io.restassured.response.Response;
 
 import java.net.URL;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static org.testng.Assert.assertEquals;
 
-public class GlobalSteps extends BaseSteps {
+public class CommonSteps extends BaseSteps {
 
-    public GlobalSteps(TestContext testContext) {
+    public CommonSteps(TestContext testContext) {
         super(testContext);
     }
 
     @Before
-    public void init() {
+    public void setup() {
+        // ACTION
         WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(
                 new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests"))
                 .build();
@@ -37,13 +38,17 @@ public class GlobalSteps extends BaseSteps {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
+        // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.WIREMOCK, wiremock);
     }
 
     @After
     public void cleanup() {
+        // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        final boolean BROWSER_ACTIVE = getScenarioContext().isContains(Context.BROWSER);
 
+        // ACTION
         wiremock.close();
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
@@ -51,17 +56,34 @@ public class GlobalSteps extends BaseSteps {
 
         wiremock.getWireMock().resetRequests();
 
-        if(getScenarioContext().isContains(Context.BROWSER))
-            closeWebDriver();
+        if(BROWSER_ACTIVE) {
+            destroySelenium();
+//            closeWebDriver();
+        }
     }
 
+    // -----=====[ GIVENS ]=====-----
+
     @Given("user {string} with password {string} is logged in to {string}")
-    public void userIsLoggedInToUiWithPassword(String user, String password, String ms) {
+    public void givenUserWithPasswordIsLoggedInToUi(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
+        
+        // ACTION
+
+        // This is work in progress, don't mind the dirtiness :)
+
+//        DesiredCapabilities cap = DesiredCapabilities.chrome();
+//        cap.setCapability(ChromeOptions.CAPABILITY, options);
+
+//        setCredentials(user, password);
+//        initSelenium();
 
         final String WEB_DRIVER = "webdriver.chrome.driver";
         final String driver = GlobalContextKt.getContext().get(WEB_DRIVER, "otherValue");
+
+//        System.out.println("+++ Driver: " + driver);
+
         System.setProperty(WEB_DRIVER, driver);
 
         final URL url = new GigabitUrlBuilder(ms).build();
@@ -76,9 +98,14 @@ public class GlobalSteps extends BaseSteps {
         loginButton.click();
     }
 
+    // -----=====[ THENS ]=====-----
+
     @Then("the request is responded/answered with HTTP( error) code {int}")
-    public void theRequestIsRespondedWithHTTPCode(int httpCode) {
+    public void thenTheRequestIsRespondedWithHTTPCode(int httpCode) {
+        // INPUT FROM SCENARIO CONTEXT
         Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
+
+        // ACTION
         assertEquals(response.getStatusCode(), httpCode);
     }
 

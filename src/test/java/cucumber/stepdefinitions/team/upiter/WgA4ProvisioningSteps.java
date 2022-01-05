@@ -16,11 +16,13 @@ public class WgA4ProvisioningSteps extends BaseSteps {
 
     @Before
     public void setup() {
+        // ACTION
         cleanup(); // Make sure no old test data is in the way
     }
 
     @After
     public void cleanup() {
+        // ACTION
         accessLineRiRobot.clearDatabase();
     }
 

@@ -13,39 +13,48 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4ResInvUiPagesSteps extends BaseSteps {
+public class A4UiSearchPageSteps extends BaseSteps {
 
     private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
 
-    public A4ResInvUiPagesSteps(TestContext testContext) {
+    public A4UiSearchPageSteps(TestContext testContext) {
         super(testContext);
     }
 
+    // -----=====[ WHENS ]=====-----
+
     @When("the user navigates to (the )NE search page")
-    public void userOpensNESearchPage() {
+    public void whenUserNavigatesToNeSearchPage() {
+        // ACTION
         a4ResInvSearch.openInventarSuchePage();
         a4ResInvSearch.clickNetworkElement();
     }
 
     @When("(the user )/(she )enters VPSZ {string} into the input fields")
-    public void entersVPSZIntoFields(String vpsz) {
+    public void whenUserentersVpszIntoFields(String vpsz) {
+        // ACTION
         a4ResInvSearch.enterNeAkzByVpsz(vpsz);
         a4ResInvSearch.enterNeOnkzByVpsz(vpsz);
         a4ResInvSearch.enterNeVkzByVpsz(vpsz);
     }
 
     @When("(the user )/(she )enters FSZ {string} into the input field")
-    public void entersFSZIntoField(String fsz) {
+    public void whenUserentersFszIntoField(String fsz) {
+        // ACTION
         a4ResInvSearch.enterNeFsz(fsz);
     }
 
     @When("(the user )/(she )clicks the submit button")
-    public void clicksSubmitButton() {
+    public void whenUserClicksSubmitButton() {
+        // ACTION
         a4ResInvSearch.clickNeSearchButton();
     }
 
+    // -----=====[ THENS ]=====-----
+
     @Then("the/a/one/1 NE in the search result list has VPSZ {string} and FSZ {string}")
-    public void userGetsSearchResultsInTable(String vpsz, String fsz) {
+    public void thenUserGetsSearchResultsWithVpszAndFszInTable(String vpsz, String fsz) {
+        // ACTION
         List<NetworkElementDto> neFilteredlist = a4ResInvSearch.createNeListActualResult()
                 .stream()
                 .filter(ne -> Objects.equals(ne.getVpsz(), vpsz) && Objects.equals(ne.getFsz(), fsz))
@@ -57,7 +66,8 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
     }
 
     @Then("{int} NE(s) in the search result list has/have VPSZ {string}")
-    public void xNEsAreShownInSearchResults(int count, String vpsz) {
+    public void thenXNEsAreShownInSearchResultTable(int count, String vpsz) {
+        // ACTION
         List<NetworkElementDto> neFilteredlist = a4ResInvSearch.createNeListActualResult()
                 .stream()
                 .filter(ne -> Objects.equals(ne.getVpsz(), vpsz))
@@ -70,12 +80,14 @@ public class A4ResInvUiPagesSteps extends BaseSteps {
     }
 
     @Then("the NE search result list is empty")
-    public void theNESearchResultListIsEmpty() {
-        xNEAreShownInSearchResultList(0);
+    public void thenTheNeSearchResultListIsEmpty() {
+        // ACTION
+        thenXNesAreShownInSearchResultList(0);
     }
 
     @Then("{int} NE(s) is/are shown in the search result list")
-    public void xNEAreShownInSearchResultList(int count) {
+    public void thenXNesAreShownInSearchResultList(int count) {
+        // ACTION
         List<NetworkElementDto> neFoundlist = a4ResInvSearch.createNeListActualResult();
 
         assertEquals(neFoundlist.size(), count);
