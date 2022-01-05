@@ -24,15 +24,15 @@ public class NemoStub extends AbstractStubMapping {
                 .atPriority(9);
     }
 
-    public MappingBuilder deleteNemoUpdate500() {
-        return delete(urlPathMatching(NEMO_URL + "/.*"))
+    public MappingBuilder deleteNemoUpdate500(String uuid) {
+        return delete(urlPathMatching(NEMO_URL + "/" + uuid))
                 .withName("deleteNemoUpdate500")
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_INTERNAL_SERVER_ERROR_500))
                 .atPriority(9);
     }
 
-    public MappingBuilder deleteNemoUpdate400() {
-        return delete(urlPathMatching(NEMO_URL + "/.*"))
+    public MappingBuilder deleteNemoUpdate400(String uuid) {
+        return delete(urlPathMatching(NEMO_URL + "/" + uuid))
                 .withName("deleteNemoUpdate400")
                 .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_BAD_REQUEST_400))
                 .atPriority(9);
