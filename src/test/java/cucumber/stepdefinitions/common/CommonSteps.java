@@ -14,14 +14,12 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static org.testng.Assert.assertEquals;
 
 public class CommonSteps extends BaseSteps {
@@ -31,7 +29,7 @@ public class CommonSteps extends BaseSteps {
     }
 
     @Before
-    public void init() {
+    public void setup() {
         // ACTION
         WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(
                 new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests"))
@@ -48,7 +46,7 @@ public class CommonSteps extends BaseSteps {
     public void cleanup() {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-        final boolean BROWSER_ACTIVE = (boolean) getScenarioContext().getContext(Context.BROWSER);
+        final boolean BROWSER_ACTIVE = getScenarioContext().isContains(Context.BROWSER);
 
         // ACTION
         wiremock.close();
@@ -67,11 +65,13 @@ public class CommonSteps extends BaseSteps {
     // -----=====[ GIVENS ]=====-----
 
     @Given("user {string} with password {string} is logged in to {string}")
-    public void givenUserIsLoggedInToUiWithPassword(String user, String password, String ms) {
+    public void givenUserWithPasswordIsLoggedInToUi(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
         
         // ACTION
+
+        // This is work in progress, don't mind the dirtiness :)
 
 //        DesiredCapabilities cap = DesiredCapabilities.chrome();
 //        cap.setCapability(ChromeOptions.CAPABILITY, options);
@@ -82,7 +82,7 @@ public class CommonSteps extends BaseSteps {
         final String WEB_DRIVER = "webdriver.chrome.driver";
         final String driver = GlobalContextKt.getContext().get(WEB_DRIVER, "otherValue");
 
-        System.out.println("+++ Driver: " + driver);
+//        System.out.println("+++ Driver: " + driver);
 
         System.setProperty(WEB_DRIVER, driver);
 
