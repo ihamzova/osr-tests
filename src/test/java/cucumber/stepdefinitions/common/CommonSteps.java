@@ -81,6 +81,9 @@ public class CommonSteps extends BaseSteps {
 
         final String WEB_DRIVER = "webdriver.chrome.driver";
         final String driver = GlobalContextKt.getContext().get(WEB_DRIVER, "otherValue");
+
+        System.out.println("+++ Driver: " + driver);
+
         System.setProperty(WEB_DRIVER, driver);
 
         final URL url = new GigabitUrlBuilder(ms).build();
