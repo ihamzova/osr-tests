@@ -190,7 +190,7 @@ public class A4ResInvSteps extends BaseSteps {
     // -----=====[ THENS ]=====-----
 
     @Then("the TP does exist in A4 resource inventory")
-    public void ThenTheTPDoesExistInA4ResourceInventory() {
+    public void thenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
