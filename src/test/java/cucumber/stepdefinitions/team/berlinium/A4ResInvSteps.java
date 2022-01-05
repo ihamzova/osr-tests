@@ -48,7 +48,7 @@ public class A4ResInvSteps extends BaseSteps {
     // -----=====[ GIVENS ]=====-----
 
     @Given("a NEG is existing in A4 resource inventory")
-    public void aNEGIsExistingInA4ResourceInventory() {
+    public void givenANEGIsExistingInA4ResourceInventory() {
         // ACTION
         A4NetworkElementGroup neg = setupDefaultNegTestData();
         a4ResInv.createNetworkElementGroup(neg);
@@ -58,7 +58,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a NE is existing in A4 resource inventory")
-    public void aNEIsExistingInA4ResourceInventory() {
+    public void givenANEIsExistingInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
 
@@ -71,7 +71,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
-    public void aNEWithVPSZIsExistingInAResourceInventory(String vpsz, String fsz) {
+    public void givenANEWithVPSZAndFSZIsExistingInAResourceInventory(String vpsz, String fsz) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
 
@@ -86,7 +86,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("no NE exists in A4 resource inventory")
-    public void noNEExistsInA4ResourceInventory() {
+    public void givenNoNEExistsInA4ResourceInventory() {
         // ACTION
         A4NetworkElement ne = new A4NetworkElement();
         ne.setUuid(UUID.randomUUID().toString());
@@ -96,7 +96,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a NEP is existing in A4 resource inventory")
-    public void aNEPIsExistingInA4ResourceInventory() {
+    public void givenANEPIsExistingInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElement ne = (A4NetworkElement) getScenarioContext().getContext(Context.A4_NE);
 
@@ -109,7 +109,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a TP is existing in A4 resource inventory")
-    public void aTPIsExistingInA4ResourceInventory() {
+    public void givenATPIsExistingInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
 
@@ -122,7 +122,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a TP with type {string} is existing in A4 resource inventory")
-    public void aTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
+    public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
 
@@ -136,7 +136,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("no TP exists in A4 resource inventory")
-    public void noTPExistsInA4ResourceInventory() {
+    public void givenNoTPExistsInA4ResourceInventory() {
         // ACTION
         A4TerminationPoint tp = new A4TerminationPoint();
         tp.setUuid(UUID.randomUUID().toString());
@@ -146,7 +146,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("a NSP FTTH(-Access) with Line ID {string} is existing in A4 resource inventory( for the TP)")
-    public void aNSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
+    public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
@@ -160,7 +160,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Given("no NSP FTTH(-Access) exists in A4 resource inventory( for the TP)")
-    public void noNSPFTTHExistsInA4ResourceInventoryForTheTP() {
+    public void givenNoNSPFTTHExistsInA4ResourceInventoryForTheTP() {
         // ACTION
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
         nspFtth.setUuid(UUID.randomUUID().toString());
@@ -172,7 +172,7 @@ public class A4ResInvSteps extends BaseSteps {
     // -----=====[ THENS ]=====-----
 
     @Then("the TP does exist in A4 resource inventory")
-    public void theTPDoesExistInA4ResourceInventory() {
+    public void ThenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
@@ -181,7 +181,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
-    public void theTPIsNotExistingInA4ResourceInventoryAnymore() {
+    public void thenTheTPIsDoesNotExistInA4ResourceInventoryAnymore() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
@@ -189,8 +189,8 @@ public class A4ResInvSteps extends BaseSteps {
         a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
     }
 
-    @Then("a/the NSP FTTH (connected to the TP )does exist in A4 resource inventory")
-    public void theNspFtthDoesExistInA4ResourceInventory() {
+    @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory( anymore)/( any longer)")
+    public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventoryAnymore() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
@@ -211,7 +211,7 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Then("the NSP FTTH does not exist in A4 resource inventory( anymore)/( any longer)")
-    public void theNspFtthIsNotExistingInA4ResourceInventoryAnymore() {
+    public void thenTheNspFtthDoesNotExistInA4ResourceInventoryAnymore() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
@@ -238,7 +238,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         // NE needs to be connected to a NEG, so if no NEG present, create one
         if (!NEG_PRESENT)
-            aNEGIsExistingInA4ResourceInventory();
+            givenANEGIsExistingInA4ResourceInventory();
 
         A4NetworkElement ne = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
@@ -255,7 +255,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         // NEP needs to be connected to a NE, so if no NE present, create one
         if (!NE_PRESENT)
-            aNEIsExistingInA4ResourceInventory();
+            givenANEIsExistingInA4ResourceInventory();
 
         A4NetworkElementPort nep = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
@@ -272,7 +272,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         // TP needs to be connected to a NEP, so if no NEP present, create one
         if (!NEP_PRESENT)
-            aNEPIsExistingInA4ResourceInventory();
+            givenANEPIsExistingInA4ResourceInventory();
 
         A4TerminationPoint tp = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
@@ -289,7 +289,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         // NSP needs to be connected to a TP, so if no TP present, create one
         if (!TP_PRESENT)
-            aTPIsExistingInA4ResourceInventory();
+            givenATPIsExistingInA4ResourceInventory();
 
         A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
                 .getA4NetworkServiceProfileFtthAccessDataProvider()

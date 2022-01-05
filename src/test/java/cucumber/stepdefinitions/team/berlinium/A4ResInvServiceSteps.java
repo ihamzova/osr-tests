@@ -27,7 +27,7 @@ public class A4ResInvServiceSteps extends BaseSteps {
     // -----=====[ WHENS ]=====-----
 
     @When("NEMO sends a delete TP request( to A4 resource inventory service)")
-    public void nemoSendsADeleteTPRequest() {
+    public void whenNemoSendsADeleteTPRequest() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
@@ -42,7 +42,7 @@ public class A4ResInvServiceSteps extends BaseSteps {
     }
 
     @When("NEMO sends a create TP request with type {string}")
-    public void nemoSendsACreateTPRequestWithType(String tpType) {
+    public void whenNemoSendsACreateTPRequestWithType(String tpType) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
 

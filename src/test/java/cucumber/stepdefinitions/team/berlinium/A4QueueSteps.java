@@ -33,7 +33,7 @@ public class A4QueueSteps extends BaseSteps {
     // -----=====[ THENS ]=====-----
 
     @Then("the TP UUID is added to A4 deprovisioning DLQ")
-    public void tpUuidIsAddedToDlq() {
+    public void thenTheTpUuidIsAddedToA4DeprovisioningDlq() {
         // ACTION
         a4ResilienceRobot.checkMessagesInQueue(QUEUE_DEPROV_DLQ, 1);
     }

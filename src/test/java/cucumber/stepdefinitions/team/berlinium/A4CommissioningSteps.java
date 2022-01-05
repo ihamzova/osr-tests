@@ -21,7 +21,7 @@ public class A4CommissioningSteps extends BaseSteps {
     // -----=====[ WHENS ]=====-----
 
     @When("the wg-a4-provisioning mock sends the callback")
-    public void uPiterSendsTheCallback() {
+    public void whenUPiterMockSendsTheCallback() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 

@@ -67,7 +67,7 @@ public class CommonSteps extends BaseSteps {
     // -----=====[ GIVENS ]=====-----
 
     @Given("user {string} with password {string} is logged in to {string}")
-    public void userIsLoggedInToUiWithPassword(String user, String password, String ms) {
+    public void givenUserIsLoggedInToUiWithPassword(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
         
@@ -98,7 +98,7 @@ public class CommonSteps extends BaseSteps {
     // -----=====[ THENS ]=====-----
 
     @Then("the request is responded/answered with HTTP( error) code {int}")
-    public void theRequestIsRespondedWithHTTPCode(int httpCode) {
+    public void thenTheRequestIsRespondedWithHTTPCode(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
         Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
 
