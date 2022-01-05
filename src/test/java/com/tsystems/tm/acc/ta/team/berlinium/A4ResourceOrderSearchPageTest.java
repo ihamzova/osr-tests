@@ -119,8 +119,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 */
 
         ro = initResourceOrder(nelData1);
-        sendResourceOrder(ro); // case-sensitive problem
-        sleepForSeconds(10);
+        sendResourceOrder(ro);
     }
 
 
