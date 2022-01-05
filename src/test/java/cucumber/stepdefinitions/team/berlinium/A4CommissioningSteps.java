@@ -18,14 +18,21 @@ public class A4CommissioningSteps extends BaseSteps {
         super(testContext);
     }
 
+    // -----=====[ WHENS ]=====-----
+
     @When("the wg-a4-provisioning mock sends the callback")
     public void uPiterSendsTheCallback() {
-        A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
         final Response response = wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutResponse(tp.getUuid());
-        getScenarioContext().setContext(Context.RESPONSE, response);
 
         // Add a bit of waiting time here, to give process the chance to complete
         sleepForSeconds(2);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
 }

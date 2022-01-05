@@ -18,17 +18,23 @@ public class A4QueueSteps extends BaseSteps {
 
     @Before
     public void setup() {
+        // ACTION
+
         // Make sure no old test data is in the way
         cleanup();
     }
 
     @After
     public void cleanup() {
+        // ACTION
         a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
     }
 
+    // -----=====[ THENS ]=====-----
+
     @Then("the TP UUID is added to A4 deprovisioning DLQ")
     public void tpUuidIsAddedToDlq() {
+        // ACTION
         a4ResilienceRobot.checkMessagesInQueue(QUEUE_DEPROV_DLQ, 1);
     }
 

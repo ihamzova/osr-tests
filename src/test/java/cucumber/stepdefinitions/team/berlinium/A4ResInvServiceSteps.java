@@ -24,28 +24,40 @@ public class A4ResInvServiceSteps extends BaseSteps {
         super(testContext);
     }
 
+    // -----=====[ WHENS ]=====-----
+
     @When("NEMO sends a delete TP request( to A4 resource inventory service)")
     public void nemoSendsADeleteTPRequest() {
-        A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
         Response response = a4ResInvService.deleteLogicalResource(tp.getUuid());
-        getScenarioContext().setContext(Context.RESPONSE, response);
 
         // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
         sleepForSeconds(SLEEP_TIMER);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
     @When("NEMO sends a create TP request with type {string}")
     public void nemoSendsACreateTPRequestWithType(String tpType) {
-        A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+
+        // ACTION
         A4TerminationPoint tp = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         tp.setSubType(tpType);
-        getScenarioContext().setContext(Context.A4_TP, tp);
         Response response = a4ResInvService.createTerminationPoint(tp, nep);
-        getScenarioContext().setContext(Context.RESPONSE, response);
 
         // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
         sleepForSeconds(SLEEP_TIMER);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_TP, tp);
+        getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
 }

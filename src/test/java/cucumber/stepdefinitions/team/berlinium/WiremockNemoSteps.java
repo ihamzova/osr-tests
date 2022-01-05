@@ -15,9 +15,14 @@ public class WiremockNemoSteps extends BaseSteps {
         super(testContext);
     }
 
+    // -----=====[ THENS ]=====-----
+
     @Then("{int} {string} NSP FTTH update notification(s) was/were sent to NEMO")
     public void aNSPFTTHUpdateNotificationWasSentToNEMO(int count, String method) {
-        A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspFtth.getUuid(), method, count);
     }
 

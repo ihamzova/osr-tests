@@ -18,8 +18,11 @@ public class DpuCommissioningSteps extends BaseSteps {
         a4ResInvServiceSteps = new A4ResInvServiceSteps(testContext);
     }
 
+    // -----=====[ GIVENS ]=====-----
+
     @Given("a DPU preprovisioning was done earlier")
     public void doDpuPreprovisioning() {
+        // ACTION
         a4ResInvSteps.aNEPIsExistingInA4ResourceInventory();
         a4ResInvServiceSteps.nemoSendsACreateTPRequestWithType("PON_TP");
         a4ResInvSteps.theNspFtthDoesExistInA4ResourceInventory();

@@ -14,6 +14,8 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
 
@@ -30,6 +32,7 @@ public class CommonSteps extends BaseSteps {
 
     @Before
     public void init() {
+        // ACTION
         WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(
                 new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests"))
                 .build();
@@ -37,13 +40,17 @@ public class CommonSteps extends BaseSteps {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
+        // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.WIREMOCK, wiremock);
     }
 
     @After
     public void cleanup() {
+        // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        final boolean BROWSER_ACTIVE = (boolean) getScenarioContext().getContext(Context.BROWSER);
 
+        // ACTION
         wiremock.close();
         wiremock
                 .eventsHook(saveEventsToDefaultDir())
@@ -51,19 +58,26 @@ public class CommonSteps extends BaseSteps {
 
         wiremock.getWireMock().resetRequests();
 
-        if(getScenarioContext().isContains(Context.BROWSER)) {
+        if(BROWSER_ACTIVE) {
             destroySelenium();
-            closeWebDriver();
+//            closeWebDriver();
         }
     }
+
+    // -----=====[ GIVENS ]=====-----
 
     @Given("user {string} with password {string} is logged in to {string}")
     public void userIsLoggedInToUiWithPassword(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
+        
+        // ACTION
 
-        setCredentials(user, password);
-        initSelenium();
+//        DesiredCapabilities cap = DesiredCapabilities.chrome();
+//        cap.setCapability(ChromeOptions.CAPABILITY, options);
+
+//        setCredentials(user, password);
+//        initSelenium();
 
         final String WEB_DRIVER = "webdriver.chrome.driver";
         final String driver = GlobalContextKt.getContext().get(WEB_DRIVER, "otherValue");
@@ -81,9 +95,14 @@ public class CommonSteps extends BaseSteps {
         loginButton.click();
     }
 
+    // -----=====[ THENS ]=====-----
+
     @Then("the request is responded/answered with HTTP( error) code {int}")
     public void theRequestIsRespondedWithHTTPCode(int httpCode) {
+        // INPUT FROM SCENARIO CONTEXT
         Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
+
+        // ACTION
         assertEquals(response.getStatusCode(), httpCode);
     }
 
