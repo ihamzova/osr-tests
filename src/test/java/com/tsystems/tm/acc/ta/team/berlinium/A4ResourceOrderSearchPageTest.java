@@ -28,20 +28,16 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP_PUBLIC_REFERENZ_NR;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
-
-import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
@@ -58,7 +54,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     private A4NetworkElementGroup negData;
     private ResourceOrder ro;
-
+    private ResourceOrder ro2;
+    A4NetworkElementLink nelData1;
 
     @BeforeClass()
     public void init() {
@@ -83,7 +80,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         A4NetworkElementPort nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
-        A4NetworkElementLink nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         A4NetworkElementLink nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
@@ -113,16 +110,33 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
 
+/*
         ro = a4ResourceOrderRobot.buildResourceOrder();
 
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, ro);
+*/
 
-        // WHEN
-        a4ResourceOrderRobot.sendPostResourceOrder(ro); // case-sensitive problem
-        sleepForSeconds(10);
+        ro = initResourceOrder(nelData1);
+        sendResourceOrder(ro);
     }
 
+
+    private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
+        ResourceOrder resourceOrder;
+
+        resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
+
+        a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, resourceOrder);
+        a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
+
+        return resourceOrder;
+    }
+
+    private void sendResourceOrder(ResourceOrder resourceOrder) {
+        a4ResourceOrderRobot.sendPostResourceOrder(resourceOrder); // case-sensitive problem
+        sleepForSeconds(10);
+    }
 
     @AfterClass
     public void cleanUp() {
@@ -194,7 +208,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
         assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
         assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
-
 
     }
 
@@ -391,6 +404,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @TmsLink("DIGIHUB-116462")
     @Description("test RO search page of A4 browser, rejected and inprogress with vuep")
     public void testRoSearchRejectedInprogressWithVuep()  {
+        //creating a RO with wrong LBZ to provoke RO status = rejected
+        ro2 = initResourceOrder(nelData1);
+        ro2.getOrderItem().get(0).getResource().setName("4N4-1004-49-2246-0-7KCA-49-3608-0-7KH0");
+        sendResourceOrder(ro2);
+
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.selectInProgress();
@@ -455,6 +473,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
         assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
+        a4ResourceOrderRobot.deleteA4TestDataRecursively(ro2);
     }
 
 
