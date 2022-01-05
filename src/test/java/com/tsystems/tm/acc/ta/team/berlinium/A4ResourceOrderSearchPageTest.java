@@ -57,7 +57,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private ResourceOrder ro2;
     A4NetworkElementLink nelData1;
 
-
     @BeforeClass()
     public void init() {
         Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
