@@ -32,118 +32,187 @@ public class A4ResInvSteps extends BaseSteps {
     @After
     public void cleanup() {
         // ATTENTION: If at any time more than 1 NEG is used for tests, the additional ones have to be added here!
-        if (getScenarioContext().isContains(Context.A4_NEG)) {
-            A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
+        A4NetworkElementGroup neg = null;
+
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NEG_PRESENT = getScenarioContext().isContains(Context.A4_NEG);
+        if (NEG_PRESENT)
+            neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
+        // ACTION
+        if (NEG_PRESENT)
             a4ResInv.deleteA4TestDataRecursively(neg);
-        }
     }
 
-    @Given("no TP exists in A4 resource inventory")
-    public void noTPExistsInA4ResourceInventory() {
-        A4TerminationPoint tp = new A4TerminationPoint();
-        tp.setUuid(UUID.randomUUID().toString());
-        getScenarioContext().setContext(Context.A4_TP, tp);
-    }
+    // -----=====[ GIVENS ]=====-----
 
-    @Given("a TP is existing in A4 resource inventory")
-    public void aTPIsExistingInA4ResourceInventory() {
-        A4TerminationPoint tp = setupDefaultTpTestData();
-        A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
-        getScenarioContext().setContext(Context.A4_TP, tp);
-        a4ResInv.createTerminationPoint(tp, nep);
-    }
+    @Given("a NEG is existing in A4 resource inventory")
+    public void givenANEGIsExistingInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElementGroup neg = setupDefaultNegTestData();
+        a4ResInv.createNetworkElementGroup(neg);
 
-    @Given("a NEP is existing in A4 resource inventory")
-    public void aNEPIsExistingInA4ResourceInventory() {
-        // NEP needs to be connected to a NE, so if no NE present, create one
-        if (!getScenarioContext().isContains(Context.A4_NE))
-            aNEIsExistingInA4ResourceInventory();
-
-        A4NetworkElementPort nep = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        getScenarioContext().setContext(Context.A4_NEP, nep);
-        A4NetworkElement ne = (A4NetworkElement) getScenarioContext().getContext(Context.A4_NE);
-        a4ResInv.createNetworkElementPort(nep, ne);
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NEG, neg);
     }
 
     @Given("a NE is existing in A4 resource inventory")
-    public void aNEIsExistingInA4ResourceInventory() {
+    public void givenANeIsExistingInA4ResourceInventory() {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because NEG might not exist yet
+
+        // ACTION
         A4NetworkElement ne = setupDefaultNeTestData();
-        getScenarioContext().setContext(Context.A4_NE, ne);
-        A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
         a4ResInv.createNetworkElement(ne, neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
-    @Given("a NE with VSPZ {string} and FSZ {string} is existing in A4 resource inventory")
-    public void aNEWithVSPZIsExistingInAResourceInventory(String vpsz, String fsz) {
+    @Given("a NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
+    public void givenANeWithVpszAndFszIsExistingInA4ResourceInventory(String vpsz, String fsz) {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because NEG might not exist yet
+
+        // ACTION
         A4NetworkElement ne = setupDefaultNeTestData();
         ne.setVpsz(vpsz);
         ne.setFsz(fsz);
-        getScenarioContext().setContext(Context.A4_NE, ne);
-        A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
+
         a4ResInv.createNetworkElement(ne, neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
-    @Given("a NEG is existing in A4 resource inventory")
-    public void aNEGIsExistingInA4ResourceInventory() {
-        A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        getScenarioContext().setContext(Context.A4_NEG, neg);
-        a4ResInv.createNetworkElementGroup(neg);
+    @Given("no NE exists in A4 resource inventory")
+    public void givenNoNEExistsInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElement ne = new A4NetworkElement();
+        ne.setUuid(UUID.randomUUID().toString());
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
-    @Given("a NSP FTTH(-Access) with Line ID {string} is existing in A4 resource inventory( for the TP)")
-    public void aNSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
-        // NSP needs to be connected to a TP, so if no TP present, create one
-        if (!getScenarioContext().isContains(Context.A4_TP))
-            aTPIsExistingInA4ResourceInventory();
+    @Given("a NEP is existing in A4 resource inventory")
+    public void givenANEPIsExistingInA4ResourceInventory() {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because NE might not exist yet
 
-        A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
-                .getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
-        nspFtth.setLineId(lineId);
-        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
-        A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtth, tp);
+        // ACTION
+        A4NetworkElementPort nep = setupDefaultNepTestData();
+
+        final A4NetworkElement ne = (A4NetworkElement) getScenarioContext().getContext(Context.A4_NE);
+
+        a4ResInv.createNetworkElementPort(nep, ne);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NEP, nep);
     }
 
-    @Given("no NSP FTTH(-Access) exists in A4 resource inventory( for the TP)")
-    public void noNSPFTTHExistsInA4ResourceInventoryForTheTP() {
-        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
-        nspFtth.setUuid(UUID.randomUUID().toString());
-        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
+    @Given("a TP is existing in A4 resource inventory")
+    public void givenATPIsExistingInA4ResourceInventory() {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because NEP might not exist yet
+
+        // ACTION
+        A4TerminationPoint tp = setupDefaultTpTestData();
+
+        final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+
+        a4ResInv.createTerminationPoint(tp, nep);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_TP, tp);
     }
 
     @Given("a TP with type {string} is existing in A4 resource inventory")
-    public void aTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
+    public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because NEP might not exist yet
+
+        // ACTION
         A4TerminationPoint tp = setupDefaultTpTestData();
         tp.setSubType(tpType);
-        getScenarioContext().setContext(Context.A4_TP, tp);
-        A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+
+        final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+
         a4ResInv.createTerminationPoint(tp, nep);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_TP, tp);
     }
 
-    @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
-    public void theTPIsNotExistingInA4ResourceInventoryAnymore() {
+    @Given("no TP exists in A4 resource inventory")
+    public void givenNoTPExistsInA4ResourceInventory() {
+        // ACTION
+        A4TerminationPoint tp = new A4TerminationPoint();
+        tp.setUuid(UUID.randomUUID().toString());
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_TP, tp);
+    }
+
+    @Given("a NSP FTTH(-Access) with Line ID {string} is existing in A4 resource inventory( for the TP)")
+    public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because TP might not exist yet
+
+        // ACTION
+        A4NetworkServiceProfileFtthAccess nspFtth = setupDefaultNspFtthTestData();
+        nspFtth.setLineId(lineId);
+
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
-        a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
+
+        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtth, tp);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
-    @Then("the NSP FTTH does not exist in A4 resource inventory( anymore)/( any longer)")
-    public void theNspFtthIsNotExistingInA4ResourceInventoryAnymore() {
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
-        a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
+    @Given("no NSP FTTH(-Access) exists in A4 resource inventory( for the TP)")
+    public void givenNoNSPFTTHExistsInA4ResourceInventoryForTheTP() {
+        // ACTION
+        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
+        nspFtth.setUuid(UUID.randomUUID().toString());
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
+
+    // -----=====[ THENS ]=====-----
 
     @Then("the TP does exist in A4 resource inventory")
-    public void theTPDoesExistInA4ResourceInventory() {
+    public void thenTheTPDoesExistInA4ResourceInventory() {
+        // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
         a4ResInv.checkTerminationPointExists(tp.getUuid());
     }
 
-    @Then("a/the NSP FTTH (connected to the TP )does exist in A4 resource inventory")
-    public void theNspFtthDoesExistInA4ResourceInventory() {
+    @Then("the TP does not exist in A4 resource inventory( anymore)/( any longer)")
+    public void thenTheTPIsDoesNotExistInA4ResourceInventoryAnymore() {
+        // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
+        a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
+    }
+
+    @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory")
+    public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
         NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
 
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
@@ -155,25 +224,97 @@ public class A4ResInvSteps extends BaseSteps {
         nspFtth.setOltPortOntLastRegisteredOn(nspFtthDto.getOltPortOntLastRegisteredOn());
         nspFtth.setTerminationPointUuid(nspFtthDto.getTerminationPointFtthAccessUuid());
 
+        // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
-    private A4NetworkElement setupDefaultNeTestData() {
-        // NE needs to be connected to a NEG, so if no NEG present, create one
-        if (!getScenarioContext().isContains(Context.A4_NEG))
-            aNEGIsExistingInA4ResourceInventory();
+    @Then("the NSP FTTH does not exist in A4 resource inventory( anymore)/( any longer)")
+    public void thenTheNspFtthDoesNotExistInA4ResourceInventoryAnymore() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
-        return osrTestContext.getData().getA4NetworkElementDataProvider()
+        // ACTION
+        a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
+    }
+
+    // -----=====[ HELPERS ]=====-----
+
+    private A4NetworkElementGroup setupDefaultNegTestData() {
+        // ACTION
+        A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
+                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        neg.setUuid(UUID.randomUUID().toString());
+
+        return neg;
+    }
+
+    private A4NetworkElement setupDefaultNeTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NEG_PRESENT = getScenarioContext().isContains(Context.A4_NEG);
+
+        // ACTION
+
+        // NE needs to be connected to a NEG, so if no NEG present, create one
+        if (!NEG_PRESENT)
+            givenANEGIsExistingInA4ResourceInventory();
+
+        A4NetworkElement ne = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
+        ne.setUuid(UUID.randomUUID().toString());
+
+        return ne;
+    }
+
+    private A4NetworkElementPort setupDefaultNepTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NE_PRESENT = getScenarioContext().isContains(Context.A4_NE);
+
+        // ACTION
+
+        // NEP needs to be connected to a NE, so if no NE present, create one
+        if (!NE_PRESENT)
+            givenANeIsExistingInA4ResourceInventory();
+
+        A4NetworkElementPort nep = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
+        nep.setUuid(UUID.randomUUID().toString());
+
+        return nep;
     }
 
     private A4TerminationPoint setupDefaultTpTestData() {
-        // TP needs to be connected to a NEP, so if no NEP present, create one
-        if (!getScenarioContext().isContains(Context.A4_NEP))
-            aNEPIsExistingInA4ResourceInventory();
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NEP_PRESENT = getScenarioContext().isContains(Context.A4_NEP);
 
-        return osrTestContext.getData().getA4TerminationPointDataProvider()
+        // ACTION
+
+        // TP needs to be connected to a NEP, so if no NEP present, create one
+        if (!NEP_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory();
+
+        A4TerminationPoint tp = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
+        tp.setUuid(UUID.randomUUID().toString());
+
+        return tp;
+    }
+
+    private A4NetworkServiceProfileFtthAccess setupDefaultNspFtthTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean TP_PRESENT = getScenarioContext().isContains(Context.A4_TP);
+
+        // ACTION
+
+        // NSP needs to be connected to a TP, so if no TP present, create one
+        if (!TP_PRESENT)
+            givenATPIsExistingInA4ResourceInventory();
+
+        A4NetworkServiceProfileFtthAccess nspFtth = osrTestContext.getData()
+                .getA4NetworkServiceProfileFtthAccessDataProvider()
+                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+        nspFtth.setUuid(UUID.randomUUID().toString());
+
+        return nspFtth;
     }
 
 }

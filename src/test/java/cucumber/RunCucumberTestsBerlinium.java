@@ -13,21 +13,22 @@ import org.testng.annotations.Test;
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
         glue = {"cucumber.stepdefinitions.team.berlinium",
-                "cucumber.stepdefinitions.global"},
+                "cucumber.stepdefinitions.common"},
         features = {"src/test/resources/cucumberscenarios/team/berlinium"}
 )
 public class RunCucumberTestsBerlinium extends AbstractTestNGCucumberTests {
+
+    // This is work in progress, will be cleaned later
+//    GigabitTest gbt;
+//
+//    RunCucumberTestsBerlinium() {
+//        gbt = new GigabitTest();
+//    }
 
     @Override
     @DataProvider() // @DataProvider(parallel = true) <- use this if you want to execute multiple scenarios in parallel
     public Object[][] scenarios() {
         return super.scenarios();
     }
-
-//    @BeforeClass
-//    @Parameters({ "subfolder" })
-//    public void init(@Optional("/") String subfolder) {
-//        final String subfolder1 = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("subfolder");
-//    }
 
 }

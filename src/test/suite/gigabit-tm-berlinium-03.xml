@@ -26,7 +26,7 @@
         </classes>
     </test>
 
-    <test verbose="1" thread-count="1" parallel="false" name="BDD Tests for Berlinium services"
+    <test verbose="0" thread-count="1" parallel="false" name="BDD Tests for Berlinium services"
           group-by-instances="true">
         <parameter name="featureFolder" value="team/berlinium"/>
         <parameter name="tags" value="@berlinium"/>
