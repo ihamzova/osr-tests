@@ -25,7 +25,7 @@ public class DpuCommissioningSteps extends BaseSteps {
         // ACTION
         a4ResInvSteps.givenANEPIsExistingInA4ResourceInventory();
         a4ResInvServiceSteps.whenNemoSendsACreateTPRequestWithType("PON_TP");
-        a4ResInvSteps.thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventoryAnymore();
+        a4ResInvSteps.thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory();
     }
 
 }

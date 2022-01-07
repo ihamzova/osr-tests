@@ -24,14 +24,23 @@ public class WgA4ProvisioningWiremockRobot {
                                 urlPathEqualTo(ACCESS_LINE_URL)));
     }
 
+    @Step("Check if POST request to a4-preprovisioning wiremock has happened")
+    public void checkPostToPreprovisioningWiremock(int count) {
+        checkPostCallToWiremock(ACCESS_LINE_URL, count);
+    }
+
     @Step("Check if POST request to a4-deprovisioning wiremock has happened")
     public String checkPostToDeprovisioningWiremock(int count) {
+        return checkPostCallToWiremock(DEPROV_ACCESS_LINE_URL, count);
+    }
+
+    private String checkPostCallToWiremock(String url, int count) {
         List<LoggedRequest> requestList = WireMockFactory.get()
                 .retrieve(
                         exactly(count),
                         newRequestPattern(
                                 RequestMethod.POST,
-                                urlPathEqualTo(DEPROV_ACCESS_LINE_URL)));
+                                urlPathEqualTo(url)));
 
         if (!requestList.isEmpty()) {
             return new String(requestList.get(0).getBody());
