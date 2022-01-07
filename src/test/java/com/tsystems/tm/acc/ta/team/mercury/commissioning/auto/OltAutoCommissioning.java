@@ -66,6 +66,10 @@ public class OltAutoCommissioning extends GigabitTest {
     oltDeviceDTAG = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HG_SDX_6320_16);
     oltDeviceGFNW = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z9_SDX_6320);
 
+    // temporary until fixed stubs adjusted !!!!
+    OltDevice oltDeviceTmp = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
+    OltDevice oltDeviceTmpGFNW = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
+
     mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
             .addSealMock(oltDeviceDTAG)
             .addSealMock(oltDeviceGFNW)
@@ -73,6 +77,8 @@ public class OltAutoCommissioning extends GigabitTest {
             .addPslMock(oltDeviceGFNW)
             .addPslMockXML(oltDeviceDTAG)
             .addPslMockXML(oltDeviceGFNW)
+            .addPslMockXML(oltDeviceTmp)
+            .addPslMockXML(oltDeviceTmpGFNW)
             .build();
 
     mappingsContext.publish()
