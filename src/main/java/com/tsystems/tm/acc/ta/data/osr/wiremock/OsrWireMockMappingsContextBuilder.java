@@ -8,10 +8,12 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBuilder {
 
   public OsrWireMockMappingsContextBuilder(ExtendedWireMock wireMock) {
@@ -50,6 +52,15 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
   public OsrWireMockMappingsContextBuilder addPslMock(OltDevice oltDevice) {
     context.add(new PslStub().postReadEquipment202(oltDevice));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addPslMockXML(OltDevice oltDevice) {
+    try {
+      context.add(new PslStub().postReadEquipmentXml202(oltDevice));
+    } catch(Exception e) {
+      log.warn("addPslMockXML endSz = " + oltDevice.getEndsz() + " exception " + e.getMessage());
+    }
     return this;
   }
 

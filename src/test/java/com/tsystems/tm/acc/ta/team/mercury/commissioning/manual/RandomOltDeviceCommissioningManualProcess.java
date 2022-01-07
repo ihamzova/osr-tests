@@ -40,7 +40,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS })
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -69,6 +69,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
                 .addPslMock(oltDevice)
+                .addPslMockXML(oltDevice)
                 .build();
 
         mappingsContext.publish()
@@ -128,7 +129,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         OltDetailsPage oltDetailsPage = oltSearchPage.searchDiscoveredOltByParameters(oltDevice);
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
-
+/*
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
@@ -157,7 +158,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
         Thread.sleep(1000); // ensure that the resource inventory database is updated
         checkUplinkDeleted(endSz);
-
+*/
     }
 
     /**

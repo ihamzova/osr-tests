@@ -27,7 +27,7 @@ import java.util.*;
 @Slf4j
 public class JsonToXmlConverter {
 		public static String convertPslJsonToXml(String fileName, String stringJson) throws Exception {
-				log.debug("ConverterUtil::convertPslJsonToXml fileName = {}", fileName);
+				log.info("ConverterUtil::convertPslJsonToXml stringJson = {}", stringJson);
 
 				String stringXml;
 				Document docXml;
@@ -94,28 +94,24 @@ public class JsonToXmlConverter {
 				docXml.renameNode(docXml.getElementsByTagName("id").item(0), null, "ID");
 				docXml.renameNode(docXml.getElementsByTagName("message").item(0), null, "MESSAGE");
 				docXml.renameNode(docXml.getElementsByTagName("type").item(0), null, "TYPE");
-
 				// remove <messageContext> because double
 				docXml
 								.getElementsByTagName("messageContext")
 								.item(0)
 								.getParentNode()
 								.removeChild(docXml.getElementsByTagName("messageContext").item(0));
-
 				// remove <messageV1/> because not in PSL example
 				docXml
 								.getElementsByTagName("messageV1")
 								.item(0)
 								.getParentNode()
 								.removeChild(docXml.getElementsByTagName("messageV1").item(0));
-
 				// remove <success> because not in PSL example
 				docXml
 								.getElementsByTagName("success")
 								.item(0)
 								.getParentNode()
 								.removeChild(docXml.getElementsByTagName("success").item(0));
-
 				// remove <error> because not in PSL example
 				docXml
 								.getElementsByTagName("error")
@@ -123,7 +119,19 @@ public class JsonToXmlConverter {
 								.getParentNode()
 								.removeChild(docXml.getElementsByTagName("error").item(0));
 
-				// Build string from xml doc
+			    // replace json path place holder with xPath
+				docXml
+								.getElementsByTagName("ANFO_KEN")
+								.item(0)
+								.setTextContent("{{xPath request.body '//data/MT_EQDATA_REQ/KOPF/ANFO_KEN/text()'}}");
+
+				// replace json path place holder with xPath
+				docXml
+								.getElementsByTagName("PARTNER")
+								.item(0)
+								.setTextContent("{{xPath request.body '//data/MT_EQDATA_REQ/KOPF/PARTNER/text()'}}");
+
+			    // Build string from xml doc
 				StringWriter stringWriter =
 								new StringWriter();
 				try {
@@ -140,7 +148,7 @@ public class JsonToXmlConverter {
 								.toString()
 								.replace("\"", "'");
 
-				log.debug("ConverterUtil::convertPslJsonToXml result stringXml = {}", stringXml);
+				log.info("ConverterUtil::convertPslJsonToXml result stringXml = {}", stringXml);
 				return stringXml;
 		}
 

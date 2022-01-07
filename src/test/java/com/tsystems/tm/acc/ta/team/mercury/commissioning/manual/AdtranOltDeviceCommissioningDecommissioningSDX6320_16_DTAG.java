@@ -40,7 +40,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends GigabitTest {
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
@@ -65,6 +65,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
     mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
             .addSealMock(oltDevice)
             .addPslMock(oltDevice)
+            .addPslMockXML(oltDevice)
             .build();
 
     mappingsContext.publish()
