@@ -26,7 +26,7 @@ public class A4CommissioningSteps extends BaseSteps {
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
-        final Response response = wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutResponse(tp.getUuid());
+        final Response response = wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutChecks(tp.getUuid());
 
         // Add a bit of waiting time here, to give process the chance to complete
         sleepForSeconds(2);

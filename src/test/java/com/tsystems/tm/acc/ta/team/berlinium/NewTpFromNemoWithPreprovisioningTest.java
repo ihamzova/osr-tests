@@ -97,6 +97,8 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         a4Resilience.changeRouteToA4ResourceInventoryService(routeName); //if this is not working check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
     }
 
+    // INFO: This test also exists in BDD format:
+    // src/test/resources/cucumberscenarios/team/berlinium/DpuCommissioningInA4PlatformCreateFtthAccessLine.feature
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")

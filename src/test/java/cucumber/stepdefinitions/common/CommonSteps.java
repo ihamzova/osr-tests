@@ -100,7 +100,7 @@ public class CommonSteps extends BaseSteps {
 
     // -----=====[ THENS ]=====-----
 
-    @Then("the request is responded/answered with HTTP( error) code {int}")
+    @Then("the (callback )request is responded/answered with HTTP( error) code {int}")
     public void thenTheRequestIsRespondedWithHTTPCode(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
         Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);

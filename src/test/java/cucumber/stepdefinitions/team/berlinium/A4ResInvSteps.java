@@ -207,8 +207,8 @@ public class A4ResInvSteps extends BaseSteps {
         a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
     }
 
-    @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory( anymore)/( any longer)")
-    public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventoryAnymore() {
+    @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory")
+    public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 

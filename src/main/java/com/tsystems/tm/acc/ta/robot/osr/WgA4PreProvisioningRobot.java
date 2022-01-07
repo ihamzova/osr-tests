@@ -26,7 +26,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static org.testng.Assert.assertTrue;
 
@@ -83,23 +82,11 @@ public class WgA4PreProvisioningRobot {
         return requests;
     }
 
-    public void startCallBackA4AccessLineDeprovisioning(String tpuuid) {
-        a4CommissioningClient
-                .callback()
-                .callbackDeprovisioning()
-                .xCallbackCorrelationIdHeader(tpuuid)
-                .body(new DeprovisioningResponseHolder())
-
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-
-        log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
-    }
-
-    public Response startCallBackA4AccessLineDeprovisioningWithoutResponse(String tpuuid) {
+    public Response startCallBackA4AccessLineDeprovisioningWithoutChecks(String tpUuid) {
         return a4CommissioningClient
                 .callback()
                 .callbackDeprovisioning()
-                .xCallbackCorrelationIdHeader(tpuuid)
+                .xCallbackCorrelationIdHeader(tpUuid)
                 .body(new DeprovisioningResponseHolder())
 
                 .execute(voidCheck());
