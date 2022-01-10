@@ -98,7 +98,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
     }
 
     // INFO: This test also exists in BDD format:
-    // src/test/resources/cucumberscenarios/team/berlinium/DpuCommissioningInA4PlatformCreateFtthAccessLine.feature
+    // src/test/resources/cucumberscenarios/team/berlinium/ReceiveAndProcessTerminationPoints.feature
     @Test(description = "DIGIHUB-xxxxx NEMO creates new Termination Point with failed-and-retried FTTH Accesss Preprovisioning")
     @Owner("bela.kovac@t-systems.com")
     @TmsLink("DIGIHUB-xxxxx")
