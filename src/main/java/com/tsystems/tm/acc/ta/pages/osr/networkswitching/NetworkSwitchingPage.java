@@ -25,7 +25,7 @@ public class NetworkSwitchingPage {
     WebDriver driver;
 
     private static final String APP = "network-switching-ui";
-    private static final String ENDPOINT = "/network-switching/prepare";
+    private static final String ENDPOINT = "/network-switching-ui/port-to-port";
     private static final long TIMEOUT_FOR_PREPARATION = 180000;
 
     private static final By PORT_TO_PORT_PREPARATION_TAB = byQaData("port-to-port-tab");
