@@ -1,12 +1,9 @@
 package com.tsystems.tm.acc.ta.helpers.mercury;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -22,8 +19,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.*;
 
-@Component
-@RequiredArgsConstructor
 @Slf4j
 public class JsonToXmlConverter {
 		public static String convertPslJsonToXml(String fileName, String stringJson) throws Exception {
@@ -163,7 +158,7 @@ public class JsonToXmlConverter {
 						return stringJson;
 				} else {
 						StringBuilder stringBuilder;
-						File file = ResourceUtils.getFile(fileName);
+						File file = new File(fileName);
 						try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 								String line;
 								stringBuilder = new StringBuilder();

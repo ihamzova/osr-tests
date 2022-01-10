@@ -62,6 +62,7 @@ public class FTTHMigrationTest extends GigabitTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
                 .addPslMock(oltDevice)
+                .addPslMockXML(oltDevice)
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())

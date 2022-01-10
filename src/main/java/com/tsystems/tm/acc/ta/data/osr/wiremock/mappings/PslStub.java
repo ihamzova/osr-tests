@@ -12,7 +12,6 @@ import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 import com.tsystems.tm.acc.tests.osr.psl.adapter.client.invoker.JSON;
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeAction;
 import com.tsystems.tm.acc.wiremock.webhook.WebhookPostServeActionDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
