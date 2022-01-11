@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -19,6 +20,8 @@ import io.cucumber.java.en.Then;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
+import static org.testng.AssertJUnit.assertEquals;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS})
 public class A4ResInvSteps extends BaseSteps {
@@ -187,6 +190,23 @@ public class A4ResInvSteps extends BaseSteps {
         getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
+    @Given("a NSP L2BSA with operationalState {string} is existing in A4 resource inventory")
+    public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because TP might not exist yet
+
+        // ACTION
+        A4NetworkServiceProfileL2Bsa nspL2Bsa = setupDefaultNspL2BsaTestData();
+        nspL2Bsa.setOperationalState(operationalState);
+
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+    }
+
     // -----=====[ THENS ]=====-----
 
     @Then("the TP does exist in A4 resource inventory")
@@ -244,6 +264,7 @@ public class A4ResInvSteps extends BaseSteps {
         A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neg.setUuid(UUID.randomUUID().toString());
+        neg.setName("neg integration test name " + getRandomDigits(6));
 
         return neg;
     }
@@ -316,5 +337,28 @@ public class A4ResInvSteps extends BaseSteps {
 
         return nspFtth;
     }
+    private A4NetworkServiceProfileL2Bsa setupDefaultNspL2BsaTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean TP_PRESENT = getScenarioContext().isContains(Context.A4_TP);
 
+        // ACTION
+
+        // NSP needs to be connected to a TP, so if no TP present, create one
+        if (!TP_PRESENT)
+            givenATPIsExistingInA4ResourceInventory();
+
+        A4NetworkServiceProfileL2Bsa nspL2Bsa = osrTestContext.getData()
+                .getA4NetworkServiceProfileL2BsaDataProvider()
+                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
+        nspL2Bsa.setUuid(UUID.randomUUID().toString());
+
+        return nspL2Bsa;
+    }
+
+    @Then("the NSP L2BSA operationalState is {string}")
+    public void theNSPLBSAOperationalStateIs(String operationalState) {
+        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        assertEquals(operationalState, nspL2Data.getOperationalState());
+
+    }
 }

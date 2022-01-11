@@ -17,7 +17,8 @@ import org.testng.Assert;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
 
 public class A4ResourceInventoryServiceRobot {
@@ -130,7 +131,7 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Send new operational state for Network Service Profile (A10NSP)")
+    @Step("Send new operational state for Network Service Profile (L2BSA)")
     public void sendStatusUpdateForNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String newOperationalState) {
         LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
@@ -141,7 +142,23 @@ public class A4ResourceInventoryServiceRobot {
                 .idPath(nspL2Data.getUuid())
                 .body(nspL2LogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+
     }
+
+    @Step("Send new operational state for Network Service Profile (L2BSA) without checks")
+    public Response sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String newOperationalState) {
+        LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
+
+        return a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspL2Data.getUuid())
+                .body(nspL2LogicalResource)
+                .execute(voidCheck());
+
+    }
+
 
     @Step("Send PATCH request with logical resource")
     public void sendPatchForLogicalResource(String uuid, LogicalResourceUpdate logicalResource) {
