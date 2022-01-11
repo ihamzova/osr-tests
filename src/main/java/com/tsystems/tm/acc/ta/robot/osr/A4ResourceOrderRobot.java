@@ -1,9 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
@@ -36,6 +34,7 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getObjectMapper;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -174,16 +173,7 @@ public class A4ResourceOrderRobot {
     }
 
     private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-        // action property in json is e.g. "add". Needs to be mapped to enum ADD("add")
-        objectMapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
-
-        // some @... properties like e.g. @BaseType cannot be mapped (to atBaseType). Don't fail, isn't tested here
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        // date-time comes in unix milliseconds. Need to be mapped to OffsetDateTime
-        objectMapper.registerModule(new JavaTimeModule());
+        final ObjectMapper objectMapper = getObjectMapper();
 
         try {
             return objectMapper.readValue(jsonString, ResourceOrder.class);

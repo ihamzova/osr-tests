@@ -1,24 +1,26 @@
-@REG_DIGIHUB-128553
-Feature: [DIGIHUB-128553][Berlinium] Nemo Status Update Test
-  # here links to Gard
-
-  # X-Ray: DIGIHUB-94384 NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage value for Operational_State field, should be allowed"
-  @berlinium @domain
-  @a4-resource-inventory @a4-resource-inventory-service
-  Scenario: NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage value for Operational_State field, should be allowed
-    Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
-    And a NSP L2BSA with operationalState "NOT_WORKING" is existing in A4 resource inventory
-  #  // When: Nemo wants to change operationalState to "Installing"
-    When NEMO sends a request to change NSP L2BSA operationalState to "BlaBla"
-    Then the request is responded with HTTP code 201
-    And the NSP L2BSA operationalState is "NOT_WORKING"
+Feature: [DIGIHUB-xxxxx][Berlinium] Nemo Status Update Test
 
   @berlinium @domain
-  @a4-resource-inventory @a4-resource-inventory-service
-  Scenario: NEMO sends a status patch for A4 Network Service Profile (L2BSA) with garbage value for Operational_State field, should be allowed
+    @a4-resource-inventory @a4-resource-inventory-service
+  Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (L2BSA) Operational State property
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
-    And a NSP L2BSA with operationalState "NOT_WORKING" is existing in A4 resource inventory
-  #  // When: Nemo wants to change operationalState to "Installing"
-    When NEMO sends a request to change NSP L2BSA operationalState to "WORKING"
+    And a NSP L2BSA with operationalState "<OldOpState>" and lifecycleState "<OldLcState>" is existing in A4 resource inventory
+    When NEMO sends a request to change NSP L2BSA operationalState to "<NewOpState>"
     Then the request is responded with HTTP code 201
-    And the NSP L2BSA operationalState is "WORKING"
+    And the NSP L2BSA operationalState is "<NewOpState>"
+    And the NSP L2BSA lifecycleState is "<NewLcState>"
+
+    Examples:
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
+      | NOT_WORKING | OPERATING  | WORKING        | OPERATING  |
+      | NOT_WORKING | RETIRING   | WORKING        | RETIRING   |
+      | NOT_WORKING | PLANNING   | INSTALLING     | PLANNING   |
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING | PLANNING   | NOT_MANAGEABLE | PLANNING   |
+      | NOT_WORKING | PLANNING   | FAILED         | PLANNING   |
+      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
+      | NOT_WORKING | PLANNING   | DEACTIVATING   | PLANNING   |
+      # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |

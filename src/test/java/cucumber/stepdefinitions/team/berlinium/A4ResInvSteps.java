@@ -217,6 +217,24 @@ public class A4ResInvSteps extends BaseSteps {
         getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
     }
 
+    @Given("a NSP L2BSA with operationalState {string} and lifecycleState {string} is existing in A4 resource inventory")
+    public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        // Has to be done after setupDefaultNeTestData() is called, because TP might not exist yet
+
+        // ACTION
+        A4NetworkServiceProfileL2Bsa nspL2Bsa = setupDefaultNspL2BsaTestData();
+        nspL2Bsa.setOperationalState(operationalState);
+        nspL2Bsa.setLifecycleState(lifecycleState);
+
+        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+
+        a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+    }
+
     // -----=====[ THENS ]=====-----
 
     @Then("the TP does exist in A4 resource inventory")
@@ -244,15 +262,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         // ACTION
         NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
-
-        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
-        nspFtth.setUuid(nspFtthDto.getUuid());
-        nspFtth.setLineId(nspFtthDto.getLineId());
-        nspFtth.setLifecycleState(nspFtthDto.getLifecycleState());
-        nspFtth.setOperationalState(nspFtthDto.getOperationalState());
-        nspFtth.setOntSerialNumber(nspFtthDto.getOntSerialNumber());
-        nspFtth.setOltPortOntLastRegisteredOn(nspFtthDto.getOltPortOntLastRegisteredOn());
-        nspFtth.setTerminationPointUuid(nspFtthDto.getTerminationPointFtthAccessUuid());
+        A4NetworkServiceProfileFtthAccess nspFtth = mapDtoToA4NspFtth(nspFtthDto);
 
         // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
@@ -265,6 +275,18 @@ public class A4ResInvSteps extends BaseSteps {
 
         // ACTION
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
+    }
+
+    @Then("the NSP L2BSA operationalState is {string}")
+    public void theNSPLBSAOperationalStateIs(String operationalState) {
+        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        assertEquals(operationalState, nspL2Data.getOperationalState());
+    }
+
+    @Then("the NSP L2BSA lifecycleState is {string}")
+    public void theNSPLBSALifecycleStateIs(String lifecycleState) {
+        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        assertEquals(lifecycleState, nspL2Data.getLifecycleState());
     }
 
     // -----=====[ HELPERS ]=====-----
@@ -347,6 +369,7 @@ public class A4ResInvSteps extends BaseSteps {
 
         return nspFtth;
     }
+
     private A4NetworkServiceProfileL2Bsa setupDefaultNspL2BsaTestData() {
         // INPUT FROM SCENARIO CONTEXT
         final boolean TP_PRESENT = getScenarioContext().isContains(Context.A4_TP);
@@ -365,10 +388,17 @@ public class A4ResInvSteps extends BaseSteps {
         return nspL2Bsa;
     }
 
-    @Then("the NSP L2BSA operationalState is {string}")
-    public void theNSPLBSAOperationalStateIs(String operationalState) {
-        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-        assertEquals(operationalState, nspL2Data.getOperationalState());
+    private A4NetworkServiceProfileFtthAccess mapDtoToA4NspFtth(NetworkServiceProfileFtthAccessDto nspFtthDto) {
+        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
+        nspFtth.setUuid(nspFtthDto.getUuid());
+        nspFtth.setLineId(nspFtthDto.getLineId());
+        nspFtth.setLifecycleState(nspFtthDto.getLifecycleState());
+        nspFtth.setOperationalState(nspFtthDto.getOperationalState());
+        nspFtth.setOntSerialNumber(nspFtthDto.getOntSerialNumber());
+        nspFtth.setOltPortOntLastRegisteredOn(nspFtthDto.getOltPortOntLastRegisteredOn());
+        nspFtth.setTerminationPointUuid(nspFtthDto.getTerminationPointFtthAccessUuid());
 
+        return nspFtth;
     }
+
 }
