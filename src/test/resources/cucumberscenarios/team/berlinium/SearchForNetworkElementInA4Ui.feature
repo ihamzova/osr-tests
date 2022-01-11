@@ -3,7 +3,7 @@
 #  Background:
 #    Given user "autotest.berlinium" with password "autotest.03-Berlinium" is logged in to "a4-resource-inventory-ui"
 #
-#  @berlinium
+#  @berlinium @domain
 #  @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
 #  Scenario Outline: User wants to look up an existing Network Element
 #    Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
@@ -19,7 +19,7 @@
 #      | VPSZ        | FSZ    |
 #      | "49/1234/0" | "7KH0" |
 #
-#  @berlinium
+#  @berlinium @domain
 #  @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
 #  Scenario Outline: User wants to look up an existing Network Element; multiple results
 #    Given a NE with VPSZ <VPSZ> and FSZ "7KH0" is existing in A4 resource inventory
@@ -34,7 +34,7 @@
 #      | VPSZ        |
 #      | "49/1234/0" |
 #
-#  @berlinium
+#  @berlinium @domain
 #  @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
 #  Scenario: User wants to look up a non-existing Network Element
 #    Given no NE exists in A4 resource inventory
