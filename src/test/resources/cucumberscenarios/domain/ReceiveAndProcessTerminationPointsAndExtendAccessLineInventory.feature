@@ -1,4 +1,4 @@
-Feature: [DIGIHUB-xxxxx][OS&R] DPU Commissioning in A4 platform - Create FTTH Accessline
+Feature: [DIGIHUB-35444][DIGIHUB-39620][OS&R] Receive and process Termination Points and extend AccessLine inventory
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438
 
   # X-Ray: DIGIHUB-59383

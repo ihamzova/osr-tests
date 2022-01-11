@@ -1,4 +1,4 @@
-Feature: [DIGIHUB-xxxxx][Berlinium] DPU Commissioning in A4 platform - Create FTTH Accessline
+Feature: [DIGIHUB-35444][Berlinium] Receive and process Termination Points
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438
 
   Background:
