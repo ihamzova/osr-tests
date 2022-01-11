@@ -101,6 +101,16 @@ public class A4ResInvSteps extends BaseSteps {
         getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
+    @Given("no NEG exists in A4 resource inventory")
+    public void givenNoNEGExistsInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElementGroup neg = new A4NetworkElementGroup();
+        neg.setUuid(UUID.randomUUID().toString());
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        getScenarioContext().setContext(Context.A4_NEG, neg);
+    }
+
     @Given("a NEP is existing in A4 resource inventory")
     public void givenANEPIsExistingInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
