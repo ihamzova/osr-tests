@@ -278,13 +278,13 @@ public class A4ResInvSteps extends BaseSteps {
     }
 
     @Then("the NSP L2BSA operationalState is {string}")
-    public void theNSPLBSAOperationalStateIs(String operationalState) {
+    public void thenTheNSPLBSAOperationalStateIs(String operationalState) {
         A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         assertEquals(operationalState, nspL2Data.getOperationalState());
     }
 
     @Then("the NSP L2BSA lifecycleState is {string}")
-    public void theNSPLBSALifecycleStateIs(String lifecycleState) {
+    public void thenTheNSPLBSALifecycleStateIs(String lifecycleState) {
         A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         assertEquals(lifecycleState, nspL2Data.getLifecycleState());
     }
