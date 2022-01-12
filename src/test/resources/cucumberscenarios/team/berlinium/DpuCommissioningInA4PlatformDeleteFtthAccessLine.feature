@@ -42,7 +42,7 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
 
   # X-Ray: DIGIHUB-127642
   @berlinium @domain
-  @a4-resource-inventory-service
+    @a4-resource-inventory-service
   Scenario Outline: NEMO deletes Termination Point with invalid types
     Given a TP with type "<Type>" is existing in A4 resource inventory
     When NEMO sends a delete TP request

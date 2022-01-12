@@ -21,7 +21,7 @@ public class A4NemoUpdaterSteps extends BaseSteps {
 
     // -----=====[ WHENS ]=====-----
 
-    @When("an update call to Nemo for the NEG is triggered")
+    @When("an update call to NEMO for the NEG is triggered")
     public void whenTriggerAnUpdateCallToNemoForNEG() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) getScenarioContext().getContext(Context.A4_NEG);
