@@ -72,7 +72,7 @@ public class A4ResInvServiceSteps extends BaseSteps {
         final Response response = a4ResInvService.sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(nspL2, tp, newOperationalState);
         final String body = response.getBody().asString();
         final LogicalResource lr = a4ResInvService.getLogicalResourceObjectFromJsonString(body);
-        A4NetworkServiceProfileL2Bsa resultNspL2 = mapLrToA4NspL2Bsa(lr);
+        final A4NetworkServiceProfileL2Bsa resultNspL2 = mapLrToA4NspL2Bsa(lr);
 
         // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.RESPONSE, response);
@@ -89,8 +89,8 @@ public class A4ResInvServiceSteps extends BaseSteps {
 
         A4NetworkServiceProfileL2Bsa nspL2 = new A4NetworkServiceProfileL2Bsa();
         nspL2.setUuid(lr.getId());
-        nspL2.setOperationalState(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_OPSTATE, lr));
         nspL2.setLifecycleState(lr.getLifecycleState());
+        nspL2.setOperationalState(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_OPSTATE, lr));
         nspL2.setAdministrativeMode(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_ADMMODE, lr));
         nspL2.setLineId(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_LINEID, lr));
         nspL2.setL2CcId(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_L2CCID, lr));

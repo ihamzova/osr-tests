@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -261,8 +262,8 @@ public class A4ResInvSteps extends BaseSteps {
         final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
-        NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
-        A4NetworkServiceProfileFtthAccess nspFtth = mapDtoToA4NspFtth(nspFtthDto);
+        final NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
+        final A4NetworkServiceProfileFtthAccess nspFtth = mapDtoToA4NspFtth(nspFtthDto);
 
         // OUTPUT INTO SCENARIO CONTEXT
         getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
@@ -277,16 +278,42 @@ public class A4ResInvSteps extends BaseSteps {
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
-    @Then("the NSP L2BSA operationalState is {string}")
+    @Then("the NSP L2BSA operationalState is (now )/(updated to ){string}( in the response)")
     public void thenTheNSPLBSAOperationalStateIs(String operationalState) {
-        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        // ACTION
         assertEquals(operationalState, nspL2Data.getOperationalState());
     }
 
-    @Then("the NSP L2BSA lifecycleState is {string}")
+    @Then("the NSP L2BSA operationalState is (now )/(updated to ){string} in the A4 resource inventory")
+    public void thenTheNSPLBSAOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        // ACTION
+        final NetworkServiceProfileL2BsaDto nspL2 = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+        assertEquals(operationalState, nspL2.getOperationalState());
+    }
+
+    @Then("the NSP L2BSA lifecycleState is (now )/(updated to ){string}( in the response)")
     public void thenTheNSPLBSALifecycleStateIs(String lifecycleState) {
-        A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        // ACTION
         assertEquals(lifecycleState, nspL2Data.getLifecycleState());
+    }
+
+    @Then("the NSP L2BSA lifecycleState is (now )/(updated to ){string} in the A4 resource inventory")
+    public void thenTheNSPLBSALifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        // ACTION
+        final NetworkServiceProfileL2BsaDto nspL2 = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+        assertEquals(lifecycleState, nspL2.getLifecycleState());
     }
 
     // -----=====[ HELPERS ]=====-----
