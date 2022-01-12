@@ -39,7 +39,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
 @TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
@@ -71,6 +71,8 @@ public class OltAutoCommissioning extends GigabitTest {
             .addSealMock(oltDeviceGFNW)
             .addPslMock(oltDeviceDTAG)
             .addPslMock(oltDeviceGFNW)
+            .addPslMockXML(oltDeviceDTAG)
+            .addPslMockXML(oltDeviceGFNW)
             .build();
 
     mappingsContext.publish()

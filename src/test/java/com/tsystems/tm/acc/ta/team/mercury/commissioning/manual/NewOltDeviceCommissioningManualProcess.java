@@ -39,7 +39,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
-@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS })
+@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
 
     private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
@@ -60,6 +60,7 @@ public class NewOltDeviceCommissioningManualProcess extends GigabitTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(WireMockFactory.get())
                 .addSealMock(oltDevice)
                 .addPslMock(oltDevice)
+                .addPslMockXML(oltDevice)
                 .build();
 
         mappingsContext.publish()

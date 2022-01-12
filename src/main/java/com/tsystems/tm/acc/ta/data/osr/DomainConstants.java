@@ -41,6 +41,8 @@ public interface DomainConstants {
     String NEMO_CLIENT = "nemo-client";
     String CA_INTEGRATION = "ca-integration";
     String OLT_UPLINK_MANAGEMENT_MS = "olt-uplink-management";
+    String PSL_ADAPTER_MS = "psl-adapter";
+    String PSL_TRANSFORMER_MS = "psl-transformer";
 
     // Activate this when using AMQ
     String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";

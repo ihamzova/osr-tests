@@ -34,7 +34,7 @@ import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @Slf4j
-@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTest {
 
   private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 2_000;
