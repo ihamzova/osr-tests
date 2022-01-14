@@ -147,6 +147,18 @@ public class A4ResourceInventoryRobot {
         Assert.assertEquals(nspList.size(), numberOfExpectedNsp);
     }
 
+    @Step("Check if Network Element is reset to PLANNING")
+    public void checkNetworkElementIsResetToPlanning(String uuidNe) {
+        assertEquals(getExistingNetworkElement(uuidNe).getLifecycleState(), "PLANNING" );
+        assertEquals(getExistingNetworkElement(uuidNe).getOperationalState(), "NOT_WORKING");
+        assertNull(getExistingNetworkElement(uuidNe).getPlannedMatNumber());
+        assertNull(getExistingNetworkElement(uuidNe).getKlsId());
+        assertNull(getExistingNetworkElement(uuidNe).getAddress());
+        assertNull(getExistingNetworkElement(uuidNe).getPlannedRackId());
+        assertNull(getExistingNetworkElement(uuidNe).getPlannedRackPosition());
+        assertNull(getExistingNetworkElement(uuidNe).getZtpIdent());
+    }
+
     @Step("Delete existing Network Service Profile (FTTH Access) from A4 resource inventory")
     public void deleteNetworkServiceProfileFtthAccess(String uuid) {
         a4ResourceInventory

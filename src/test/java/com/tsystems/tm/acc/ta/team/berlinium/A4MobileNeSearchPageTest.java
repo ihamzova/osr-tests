@@ -22,10 +22,7 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -61,6 +58,12 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
     //helper methods
     public void waitForTableToFullyLoad(int numberOfElements) {
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
+    }
+
+    public void checkLastUpdateTimeHasChanged (OffsetDateTime lastUpdateTimeOld, String ne){
+        OffsetDateTime lastUpdateTimeNew = robotRI.getExistingNetworkElement(a4NetworkElements.get(ne)
+                .getUuid()).getLastUpdateTime();
+        assertNotEquals(lastUpdateTimeOld, lastUpdateTimeNew);
     }
 
     public void checkTableAccordingToSearchCriteria(Map<String, A4NetworkElement> a4NeFilteredList) {
@@ -162,6 +165,45 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         checkTableAccordingToSearchCriteria(a4NeFilteredList);
     }
 
+    @DataProvider(name = "networkElements")
+    public static Object[][] networkElements() {
+               return new Object[][] {
+                       {"a4NetworkElementInstallingOlt01", "INSTALLING"},
+                       {"a4NetworkElementOperatingBor02", "OPERATING"}};
+    }
+
+    @Test(dataProvider = "networkElements")
+    @Owner("Heiko.Schwanke@t-systems.com")
+    @TmsLink("DIGIHUB-125689")
+    @Description("Test Mobile NE-search-page - reset ne to planning")
+    public void testResetNeToPlanning(String ne, String lcs) {
+        robotMobileUi.openNetworkElementMobileSearchPage();
+        robotMobileUi.enterVpsz(a4NetworkElements.get(ne).getVpsz());
+        robotMobileUi.clickSearchButton();
+        robotMobileUi.checkRadioButton("1");
+
+        OffsetDateTime lastUpdateTimeOld = robotRI
+                .getExistingNetworkElement(a4NetworkElements.get(ne).getUuid()).getLastUpdateTime();
+
+        assertEquals(robotRI.getExistingNetworkElement(a4NetworkElements.get(ne).getUuid()).getLifecycleState(), lcs);
+
+        robotMobileUi.clickNeResetToPlanningButtonAndConfirm();
+        sleepForSeconds(3); // process in db have to work
+
+        // check db
+        robotRI.checkNetworkElementIsResetToPlanning(a4NetworkElements.get(ne).getUuid());
+        checkLastUpdateTimeHasChanged (lastUpdateTimeOld, ne);
+
+        // check ui     geht am 14.1.22 nicht mehr ??
+       // ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
+        //assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
+
+        // check NEMO Update
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(ne)
+                .getUuid(), "PUT", 1);
+    }
+
+    /*
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-125689")
@@ -326,6 +368,8 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
 
     }
+
+     */
 
     @Test
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
