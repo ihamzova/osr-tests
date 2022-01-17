@@ -14,13 +14,14 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
 
 @Slf4j
 public class A4DpuCommissioningRobot {
 
     private static final AuthTokenProvider authTokenProviderA4DpuCommissioning =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
+            new RhssoClientFlowAuthTokenProvider(WIREMOCK_MS_NAME,
+                    RhssoHelper.getSecretOfGigabitHub(WIREMOCK_MS_NAME));
 
     private final ApiClient a4DpuCommissioning = new A4DpuCommissioningClient(authTokenProviderA4DpuCommissioning).getClient();
 
