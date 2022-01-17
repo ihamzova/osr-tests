@@ -108,7 +108,6 @@ public class RalTest extends GigabitTest {
     List<AbstractDevice> deviceList = riAbstractionLayerRobot.getDeviceByVpsz(a4DeviceForRal.getVpsz());
     mappingsContext.deleteStubs();
     final List<ExpectedAbstractDevice> expectedDeviceList = deviceList.stream().map(RiAbstractionLayerRobot::mapToAbstractDevice).collect(Collectors.toList());
-    System.out.println(expectedA4device);
     assertTrue(expectedDeviceList.contains(expectedA4device));
 
   }
@@ -127,9 +126,6 @@ public class RalTest extends GigabitTest {
     List<AbstractDevice> deviceList = riAbstractionLayerRobot.getDeviceByKlsId(expectedOltBngDevice.getKlsId());
     mappingsContext.deleteStubs();
     final List<ExpectedAbstractDevice> expectedDeviceList = deviceList.stream().map(RiAbstractionLayerRobot::mapToAbstractDevice).collect(Collectors.toList());
-    System.out.println(expectedDeviceList);
-    System.out.println("__________________________________");
-    System.out.println(expectedOltBngDevice);
     assertTrue(expectedDeviceList.contains(expectedOltBngDevice));
   }
 

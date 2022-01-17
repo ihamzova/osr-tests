@@ -50,11 +50,6 @@ public class AccessLineRiRobot {
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
-  @Step("Fill database with test data as a part of OLT Commissioning process emulation, v1")
-  public void fillDatabaseForOltCommissioningV1() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
   @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2, default values")
   public void fillDatabaseForOltCommissioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ) {
     accessLineResourceInventoryFillDbClient.getClient().fillDatabase()
@@ -108,22 +103,6 @@ public class AccessLineRiRobot {
             .SLOT_NUMBER1Query(sourcePort.getSlotNumber())
             .END_SZ_2Query(targetPort.getEndSz())
             .SLOT_NUMBER2Query(targetPort.getSlotNumber())
-            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-  @Step("Add FTTB access lines to olt device")
-  public void fillDatabaseAddFttbLinesToOltDevice() {
-    accessLineResourceInventoryFillDbClient.getClient().fillDatabase().addFttbLinesToOltDevice().execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-  @Step("Fill database with test data as a part of DPU Preprovisioning process emulation")
-  public void fillDatabaseForDpuPreprovisioning(DpuDevice dpuDevice, PortProvisioning oltDevice) {
-    accessLineResourceInventoryFillDbClient.
-            getClient()
-            .fillDatabase()
-            .fillDatabaseForDpuPreprovisioning()
-            .DPU_END_SZQuery(dpuDevice.getEndsz())
-            .OLT_END_SZQuery(oltDevice.getEndSz())
             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
@@ -620,6 +599,50 @@ public class AccessLineRiRobot {
     return accessLines;
   }
 
+  @Step("Get AccessLines by parameters")
+  public List<AccessLineDto> getAccessLinesByTypeV2(AccessLineProductionPlatform productionPlatform,
+                                                    AccessLineTechnology technology,
+                                                    AccessLineStatus accessLineStatus,
+                                                    ProfileState subscriberNeProfileState,
+                                                    ProfileState subscriberNlProfileState) {
+    List<AccessLineDto> accessLines = accessLineResourceInventory
+            .accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto()
+                    .productionPlatform(productionPlatform)
+                    .technology(technology)
+                    .status(accessLineStatus))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    List<AccessLineDto> accessLinesFilteredByNeStatus;
+    List<AccessLineDto> accessLinesFilteredByNlStatus;
+
+    if (subscriberNeProfileState == null) {
+      accessLinesFilteredByNeStatus = accessLines.stream()
+              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()==null)
+              .collect(Collectors.toList());
+    } else {
+      accessLinesFilteredByNeStatus = accessLines.stream()
+              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()!=null
+                      &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(subscriberNeProfileState))
+              .collect(Collectors.toList());
+    }
+
+    if (subscriberNlProfileState == null) {
+      accessLinesFilteredByNlStatus = accessLinesFilteredByNeStatus.stream()
+              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile()==null)
+              .collect(Collectors.toList());
+    } else {
+      accessLinesFilteredByNlStatus = accessLinesFilteredByNeStatus.stream()
+              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile()!=null
+                      &&accessLineDto.getSubscriberNetworkLineProfile().getState().equals(subscriberNlProfileState))
+              .collect(Collectors.toList());
+    }
+
+    assertTrue(accessLinesFilteredByNlStatus.size() !=0, "There are no AccessLines with required parameters");
+    return accessLinesFilteredByNlStatus;
+  }
+
   @Step("Get OLT_BNG AccessLines with ONT")
   public List<AccessLineDto> getFtthAccessLinesWithOnt(PortProvisioning port) {
     List<AccessLineDto> accessLines = accessLineResourceInventory
@@ -641,12 +664,13 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get A4 AccessLines with ONT")
-  public List<AccessLineDto> getA4AccessLinesWithOnt() {
+  public List<AccessLineDto> getA4AccessLinesWithOnt(AccessLineTechnology technology) {
     List<AccessLineDto> accessLines = accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
-                    .productionPlatform(AccessLineProductionPlatform.A4))
+                    .productionPlatform(AccessLineProductionPlatform.A4)
+                    .technology(technology))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     List <AccessLineDto> accessLinesWithOnt = accessLines.stream()
             .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
@@ -655,24 +679,14 @@ public class AccessLineRiRobot {
     return accessLinesWithOnt;
   }
 
-  @Step("Get AccessLines by Production Platform and Technology")
-  public List<AccessLineDto> getAccessLinesByProductionPlatform(AccessLineProductionPlatform productionPlatform) {
-    List<AccessLineDto> accessLines = accessLineResourceInventory
-            .accessLineController()
-            .searchAccessLines()
-            .body(new SearchAccessLineDto()
-                    .productionPlatform(productionPlatform))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    return accessLines;
-  }
-
   @Step("Get FTTB AccessLines")
-  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus){
+  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus, AccessLineProductionPlatform productionPlatform){
     List<AccessLineDto> fttbAccessLines = accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
             .body(new SearchAccessLineDto()
-                    .technology(AccessLineTechnology.GFAST))
+                    .technology(AccessLineTechnology.GFAST)
+                    .productionPlatform(productionPlatform))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     List<AccessLineDto> fttbAccessLinesFiltered = fttbAccessLines.stream()
             .filter(accessLineDto -> accessLineDto.getDpuReference().getAccessTransmissionMedium().equals(accessTransmissionMedium)
@@ -688,17 +702,6 @@ public class AccessLineRiRobot {
             .filter(accessLineDto -> (accessLineDto.getHomeId()!=null)).collect(Collectors.toList());
     assertTrue(accessLinesWithHomeIds.size()!=0, "There are no AccessLines with HomeIds");
     return accessLinesWithHomeIds;
-  }
-
-  @Step("Get AccessLines by tpRef")
-  public List<AccessLineDto> getAccessLineByTpRef(String tpRef) {
-    List<AccessLineDto> accessLines = accessLineResourceInventory
-            .accessLineController()
-            .searchAccessLines()
-            .body(new SearchAccessLineDto()
-                    .tpRef(tpRef))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    return accessLines;
   }
 
   @Step("Get LineID Pool by Port")

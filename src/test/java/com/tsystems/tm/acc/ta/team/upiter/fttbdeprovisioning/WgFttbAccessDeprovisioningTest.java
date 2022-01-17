@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgFttbAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessTransmissionMedium;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
@@ -38,8 +39,9 @@ public class WgFttbAccessDeprovisioningTest extends GigabitTest {
   public void prepareData() throws InterruptedException {
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
-    accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
+    //accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
+    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1,
+            "49/30/179/76H1", "49/812/179/71G0", "5", "0");
     Thread.sleep(1000);
   }
 

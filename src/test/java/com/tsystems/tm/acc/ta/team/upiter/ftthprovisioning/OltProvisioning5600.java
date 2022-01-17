@@ -7,17 +7,17 @@ import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.OsrSupportRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -40,6 +40,7 @@ import static org.testng.AssertJUnit.assertNotNull;
 public class OltProvisioning5600 extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot;
+  private OsrSupportRobot osrSupportRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private PortProvisioning device5600;
   private PortProvisioning card5600v1;
@@ -49,26 +50,35 @@ public class OltProvisioning5600 extends GigabitTest {
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
 
-  @BeforeClass
-  public void prepareData() {
-    accessLineRiRobot.clearDatabase();
-  }
-
-  @AfterClass
-  public void clearData() {
-    accessLineRiRobot.clearDatabase();
-  }
+//  @AfterClass
+//  public void clearData() {
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(device5600.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v1.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v2.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(port5600.getEndSz());
+//  }
 
   @BeforeClass
   public void init() {
     accessLineRiRobot = new AccessLineRiRobot();
+    osrSupportRobot = new OsrSupportRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
-    device5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
+
+    accessLineRiRobot.clearDatabase();
+
+    device5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5600);
     card5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v1);
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
     port5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+
+
+
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(device5600.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v1.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v2.getEndSz());
+//    osrSupportRobot.forceDeleteAccessLineByEndSz(port5600.getEndSz());
   }
 
   @Test
@@ -91,12 +101,13 @@ public class OltProvisioning5600 extends GigabitTest {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v1);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v1.getEndSz(),
             card5600v1.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5600v1);
+            cardBeforeProvisioning.getContainsPortsRefOrValue().get(0).getPortName(), card5600v1);
 
     System.out.println(port);
+    System.out.println("card5600v1 = " + card5600v1);
 
     assertNotNull(cardBeforeProvisioning);
-    assertEquals(cardBeforeProvisioning.getPorts().size(), 8);
+    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 8);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v1).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioning(card5600v1);
@@ -111,37 +122,49 @@ public class OltProvisioning5600 extends GigabitTest {
   @Description("Card provisioning case with 1 card")
   public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v2);
-    assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v2).size(), 0);
-    wgAccessProvisioningRobot.startCardProvisioningV2(card5600v2);
+    System.out.println(cardBeforeProvisioning);
+    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v2.getEndSz(),
+            card5600v2.getSlotNumber(),
+            cardBeforeProvisioning.getContainsPortsRefOrValue().get(1).getPortName(), card5600v2);
+
+    System.out.println(port);
+    System.out.println("card5600v2 = " + card5600v2);
+
     assertNotNull(cardBeforeProvisioning);
-    assertEquals(cardBeforeProvisioning.getPorts().size(), 3);
-    accessLineRiRobot.checkFtthPortParameters(card5600v2);
-    accessLineRiRobot.checkDefaultNeProfiles(card5600v2, defaultNeProfile, card5600v2.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(card5600v2, defaultNetworkLineProfile, card5600v2.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(card5600v2, 1, 1);
+    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 3);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v2).size(), 0);
+
+    wgAccessProvisioningRobot.startCardProvisioningV2(card5600v2);
+
+    accessLineRiRobot.checkFtthPortParameters(port);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
+
 
   @Test(priority = 1)
   @TmsLink("DIGIHUB-29667")
   @Description("Device provisioning case")
   public void deviceProvisioning() {
     Device device = wgAccessProvisioningRobot.getDevice(device5600);
-//    Device deviceAfterProvisioning = wgAccessProvisioningRobot.getDevice(device5600);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
             device.getEquipmentHolders().get(1).getSlotNumber(),
             device.getEquipmentHolders().get(1).getCard().getPorts().get(0).getPortNumber(), device5600);
 
     System.out.println(port);
+    System.out.println("device5600 = " + device5600);
 
     assertNotNull(device);
     assertEquals(device.getEmsNbiName(), "MA5600T");
     assertEquals(device.getEquipmentHolders().get(0).getCard().getPorts().size(), 3);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startDeviceProvisioning(device5600);
 
     accessLineRiRobot.checkFtthPortParameters(port);
-    accessLineRiRobot.checkDefaultNeProfiles(device5600, defaultNeProfile, device5600.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(device5600, defaultNetworkLineProfile, device5600.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(device5600, 1, 1);
+    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, device5600.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, device5600.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
 }

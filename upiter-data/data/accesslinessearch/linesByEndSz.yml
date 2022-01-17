@@ -1,6 +1,23 @@
 name: linesByEndSz
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  endSz: "49/30/179/76H1"
+  endSz: "49/89/8000/76H2"
   slotNumber: ""
   portNumber: ""
+---
+name: linesByEndSzSlotPort
+template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
+values:
+  endSz: "49/89/8000/76H2"
+  slotNumber: "3"
+  portNumber: "0"
+---
+name: dpuDevice
+template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
+values:
+  vpsz: "49/812/179"
+  fsz: "71G0"
+  oltEndsz: "49/89/8000/76H2"
+  oltGponSlot: "1"
+  oltGponPort: "0"
+

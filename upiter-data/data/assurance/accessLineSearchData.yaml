@@ -1,10 +1,10 @@
 name: AccessLineForSearchByOlt
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  endSz: "49/30/179/76H1"
+  endSz: "49/89/8000/76H2"
   slotNumber: "3"
   portNumber: "1"
-  lineId: "DEU.DTAG.SQA4063162"
+  lineId: "DEU.DTAG.T386"
   limit: 3
 ---
 name: AccessLineForSearchByDpu

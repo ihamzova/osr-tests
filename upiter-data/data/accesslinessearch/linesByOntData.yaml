@@ -1,4 +1,0 @@
-name: linesByOnt
-template: com.tsystems.tm.acc.ta.data.osr.models.Ont
-values:
-  serialNumber: "1111111111181516"
