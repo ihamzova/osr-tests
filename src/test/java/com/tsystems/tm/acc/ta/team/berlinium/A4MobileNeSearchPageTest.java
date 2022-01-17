@@ -174,9 +174,9 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     @Test(dataProvider = "networkElements")
     @Owner("Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-125689")
+    @TmsLink("DIGIHUB-125689, DIGIHUB-126552")
     @Description("Test Mobile NE-search-page - reset ne to planning")
-    public void testResetNeToPlanning(String ne, String lcs) {
+    public void testResetNeToPlanning(String ne, String lcs) throws InterruptedException {
         robotMobileUi.openNetworkElementMobileSearchPage();
         robotMobileUi.enterVpsz(a4NetworkElements.get(ne).getVpsz());
         robotMobileUi.clickSearchButton();
@@ -194,182 +194,14 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         robotRI.checkNetworkElementIsResetToPlanning(a4NetworkElements.get(ne).getUuid());
         checkLastUpdateTimeHasChanged (lastUpdateTimeOld, ne);
 
-        // check ui     geht am 14.1.22 nicht mehr ??
-       // ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
-        //assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
+        // check ui
+        ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
+        assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
 
         // check NEMO Update
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(ne)
                 .getUuid(), "PUT", 1);
     }
-
-    /*
-    @Test
-    @Owner("Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-125689")
-    @Description("Test Mobile NE-search-page - reset installing to planning")
-    public void testResetInstallingNeToPlanning() throws InterruptedException {
-        robotMobileUi.openNetworkElementMobileSearchPage();
-        robotMobileUi.enterVpsz(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getVpsz());
-        robotMobileUi.clickSearchButton();
-        robotMobileUi.checkRadioButton("1");
-
-        System.out.println("+++ LCS before reset: " + robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid())
-                .getLifecycleState());
-
-        OffsetDateTime lastUpdateTimeOld = robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid())
-                .getLastUpdateTime();
-
-        assertEquals(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid()).getLifecycleState()
-                , "INSTALLING");
-
-        robotMobileUi.clickNeResetToPlanningButtonAndConfirm();
-        sleepForSeconds(3); // process in db have to work
-
-        // check db
-        System.out.println("+++ LCS after reset: " + robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid())
-                .getLifecycleState());
-
-        assertEquals(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getLifecycleState()
-                , STATE_PLANNING);
-        assertEquals(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getOperationalState()
-                , "NOT_WORKING");
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getPlannedMatNumber());
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getKlsId());
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getAddress());
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getPlannedRackId());
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getPlannedRackPosition());
-        assertNull(robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01).getUuid()).getZtpIdent());
-
-        OffsetDateTime lastUpdateTimeNew = robotRI.getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                .getUuid()).getLastUpdateTime();
-
-        assertNotEquals(lastUpdateTimeOld, lastUpdateTimeNew);
-
-        // check ui
-        ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
-        assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
-
-        // check NEMO Update
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid())
-                .getVpsz(), robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                        .getUuid())
-                .getFsz());
-
-        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_INSTALLING_OLT_01)
-                .getUuid(), "PUT", 1);
-    }
-
-    @Test
-    @Owner("Heiko.Schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-126552")
-    @Description("Test Mobile NE-search-page - reset operating to planning")
-    public void testResetOperatingNeToPlanning() throws InterruptedException {
-        robotMobileUi.openNetworkElementMobileSearchPage();
-        robotMobileUi.enterVpsz(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getVpsz());
-        robotMobileUi.clickSearchButton();
-        robotMobileUi.checkRadioButton("1");
-
-        // check db
-        System.out.println("+++ LCS before reset: " + robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLifecycleState());
-
-        OffsetDateTime lastUpdateTimeOld = robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLastUpdateTime();
-
-        assertEquals(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLifecycleState(), "OPERATING");
-
-        robotMobileUi.clickNeResetToPlanningButtonAndConfirm();
-        sleepForSeconds(3);
-
-        // check db
-        //a4MobileUiRobot.checkResetStateInDbOk(a4NetworkElements.get(A4_NE_OPERATING_BOR_02).getUuid());
-
-        System.out.println("+++ LCS after reset: " + robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLifecycleState());
-
-        assertEquals(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLifecycleState(), STATE_PLANNING);
-        assertEquals(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getOperationalState(), "NOT_WORKING");
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getPlannedMatNumber());
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getKlsId());
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getAddress());
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getPlannedRackId());
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getPlannedRackPosition());
-        assertNull(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getZtpIdent());
-
-
-        OffsetDateTime lastUpdateTimeNew = robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getLastUpdateTime();
-
-        assertNotEquals(lastUpdateTimeOld, lastUpdateTimeNew);
-
-
-        // check ui
-        ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
-        assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
-
-
-        // check NEMO Update
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getVpsz(), robotRI
-                .getExistingNetworkElement(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                        .getUuid())
-                .getFsz());
-
-        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(A4_NE_OPERATING_BOR_02)
-                .getUuid(), "PUT", 1);
-
-
-    }
-
-     */
 
     @Test
     @Owner("Phillip.Moeller@t-systems.com, Thea.John@telekom.de")
