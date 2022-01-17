@@ -15,8 +15,8 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineProductionPlatform;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -235,7 +235,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-116326")
   @Description("Get attenuation measurement for an A4 AccessLine")
   public void ontAttenuationMeasurementTest() {
-    accessLine.setLineId(accessLineRiRobot.getAccessLinesByProductionPlatform(AccessLineProductionPlatform.A4).get(0).getLineId());
+    accessLine.setLineId(accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0).getLineId());
     AttenuationMeasurementsDto attenuationMeasurementsCallback = ontOltOrchestratorRobot.getOntAttenuationMeasurement(accessLine.getLineId());
     // check callback
     assertNotNull(attenuationMeasurementsCallback.getError());
@@ -250,7 +250,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-58673")
   @Description("A4 ONT Connectivity test, OntState = Offline (address mismatch)")
   public void a4OntTestOffline() {
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
     accessLine.setEndSz(a4AccessLine.getReference().getEndSz());
     accessLine.setPortNumber(a4AccessLine.getReference().getPortNumber());
@@ -268,7 +268,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-123223")
   @Description("A4 Connectivity Test for: A4RI returns no OntLastRegisteredOn, OperationalState = Working")
   public void a4OntTestNoOntLastRegisteredOnTest() {
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
 
     mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4Verschaltungsfehler"))
@@ -292,7 +292,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-123224")
   @Description("OntPonDetection for an A4 AccessLine: A4RI returns no OntLastRegisteredOn, SEAL returns Events, Slot + Port do not coincide with initial data")
   public void ontPonDetectNoOntLastRegisteredOnTest() {
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
     accessLine.setEndSz(a4AccessLine.getReference().getEndSz());
     String ontSerialNumber = a4AccessLine.getNetworkServiceProfileReference().getNspOntSerialNumber();
@@ -328,7 +328,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-117788")
   @Description("OntPonDetection for an A4 AccessLine: no NSP in A4RI, SEAL returns Events, Slot + Port do not coincide with initial data")
   public void ontPonDetectNoNspInA4Test() {
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
     accessLine.setEndSz(a4AccessLine.getReference().getEndSz());
     String ontSerialNumber = a4AccessLine.getNetworkServiceProfileReference().getNspOntSerialNumber();
@@ -365,7 +365,7 @@ public class A4OntCommissioning extends GigabitTest {
   @Description("OntPonDetection for an OLT_BNG AccessLine: no NSP in A4RI, no NSP in SEAL")
   public void ontPonDetectNoNspInA4andSealTest() {
 
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
     accessLine.setEndSz(a4AccessLine.getReference().getEndSz());
     String ontSerialNumber = a4AccessLine.getNetworkServiceProfileReference().getNspOntSerialNumber();
@@ -394,7 +394,7 @@ public class A4OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-128158")
   @Description("ONT Change, newSerialNumber = DEFAULT (Anbieterwechsel)")
   public void ontDefaultChangeTest() {
-    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt().get(0);
+    AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
 
     OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");

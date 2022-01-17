@@ -52,7 +52,7 @@ public class DGFaccessLineReservation extends GigabitTest {
     public void init() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV1();
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }
 
     @AfterClass

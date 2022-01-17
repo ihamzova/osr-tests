@@ -1,4 +1,0 @@
-name: linesByLineId
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  lineId: "DEU.DTAG.SQA3140925"

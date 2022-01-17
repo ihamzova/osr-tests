@@ -47,7 +47,6 @@ public class AdtranOntCommissioning extends GigabitTest {
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
     accessLineRiRobot.fillDatabaseForAdtranOltCommissioning();
-    Thread.sleep(5000);
     accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.adtranOntAccessLine);
     ontSerialNumber = context.getData().getOntDataProvider().get(OntCase.adtranOntSerialNumber);
   }

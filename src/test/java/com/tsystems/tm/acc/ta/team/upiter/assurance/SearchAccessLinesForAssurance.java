@@ -6,8 +6,10 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessTransmissionMedium;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -20,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 
-
+@Epic("Assurance")
 public class SearchAccessLinesForAssurance extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot;
@@ -33,10 +35,10 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
     accessLineRiRobot = new AccessLineRiRobot();
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
-    accessLineRiRobot.fillDatabaseForOltCommissioningV1();
-    accessLineRiRobot.fillDatabaseAddFttbLinesToOltDevice();
     accessLineForSearchByOlt = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByOlt);
     accessLineForSearchByDpu = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByDpu);
+    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1,
+            "49/89/8000/76H2", "49/812/179/71G0", "1", "0");
   }
 
   @AfterClass

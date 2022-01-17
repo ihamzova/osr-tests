@@ -49,7 +49,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
     public void prepareData() throws InterruptedException {
         accessLineRiRobot.clearDatabase();
         Thread.sleep(3000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV1();
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }
 
     @AfterClass

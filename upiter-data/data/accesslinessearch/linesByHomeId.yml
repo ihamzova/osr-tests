@@ -1,5 +1,0 @@
-name: linesByHomeId
-template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
-values:
-  homeId: "0037WT1"
-

@@ -13,7 +13,7 @@ import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -94,20 +94,23 @@ public class OltProvisioning5800 extends GigabitTest {
   @TmsLink("DIGIHUB-30870")
   @Description("Card Provisioning with 1 port")
   public void cardProvisioning() {
-
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5800v1);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5800v1.getEndSz(),
             card5800v1.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5800v1);
+            cardBeforeProvisioning.getContainsPortsRefOrValue().get(1).getPortName(), card5800v1);
+
+    System.out.println(port);
+    System.out.println("card5800v1 = " + card5800v1);
 
     assertNotNull(cardBeforeProvisioning);
-    assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
+    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioning(card5800v1);
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v1.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v1.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
 
   @Test(priority = 1)
@@ -117,27 +120,33 @@ public class OltProvisioning5800 extends GigabitTest {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5800v2);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5800v2.getEndSz(),
             card5800v2.getSlotNumber(),
-            cardBeforeProvisioning.getPorts().get(0).getPortNumber(), card5800v2);
+            cardBeforeProvisioning.getContainsPortsRefOrValue().get(0).getPortName(), card5800v2);
 
-    assertEquals(cardBeforeProvisioning.getPorts().size(), 16);
+    System.out.println(port);
+    System.out.println("card5800v2 = " + card5800v2);
+
+    assertNotNull(cardBeforeProvisioning);
+    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
     wgAccessProvisioningRobot.startCardProvisioningV2(card5800v2);
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v2.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v2.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
-
 
   @Test(priority = 1)
   @TmsLink("DIGIHUB-30824")
   @Description("Device Provisioning with 1 card and 1 port")
   public void deviceProvisioning() {
     Device device = wgAccessProvisioningRobot.getDevice(device5800);
-
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5800.getEndSz(),
             device.getEquipmentHolders().get(0).getSlotNumber(),
             device.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5800);
+
+    System.out.println(port);
+    System.out.println("device5800 = " + device5800);
 
     assertNotNull(device);
     assertEquals(device.getEmsNbiName(), "MA5800-X7");
@@ -148,5 +157,6 @@ public class OltProvisioning5800 extends GigabitTest {
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, device5800.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, device5800.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
 }

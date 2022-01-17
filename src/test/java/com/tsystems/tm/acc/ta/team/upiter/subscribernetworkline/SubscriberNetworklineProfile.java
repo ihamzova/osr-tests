@@ -308,7 +308,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   @TmsLink("DIGIHUB-115530")
   @Description("Subscriber Network line profile creation for FTTB Coax (Retail)")
   public void createSubscriberNetworkLineProfileFttbCoax() {
-    accessLineFttbCoax.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.COAX, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    accessLineFttbCoax.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.COAX, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderRetailActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderRetailActivation, accessLineFttbCoax, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderRetailActivation.getResourceOrder(), accessLineFttbCoax);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbCoax.getLineId()), AccessLineStatus.ASSIGNED);
@@ -330,7 +330,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   @TmsLink("DIGIHUB-115854")
   @Description("Subscriber Network line profile creation for FTTB Twisted_Pair (Wholesale)")
   public void createSubscriberNetworkLineProfileFttbTp() {
-    accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderWsActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsActivation, accessLineFttbTp, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsActivation.getResourceOrder(), accessLineFttbTp);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);
@@ -342,7 +342,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   @TmsLink("DIGIHUB-115854")
   @Description("Subscriber Network line profile modification for FTTB Twisted_Pair (Wholesale)")
   public void changeSubscriberNetworkLineProfileFttbTp() {
-    accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderWsModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsModification, accessLineFttbTp, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsModification.getResourceOrder(), accessLineFttbTp);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);

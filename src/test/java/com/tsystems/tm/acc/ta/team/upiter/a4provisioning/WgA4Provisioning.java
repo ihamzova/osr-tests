@@ -108,7 +108,7 @@ public class WgA4Provisioning extends GigabitTest {
         accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh0);
         accessLineRiRobot.checkLineIdsCount(a4PortProvisioning7kh0);
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh0, 1);
-        assertNull(accessLineRiRobot.getGponPorts(a4PortProvisioning7kh5).get(0).getAccessTransmissionMedium());
+        assertNull(accessLineRiRobot.getGponPorts(a4PortProvisioning7kh0).get(0).getAccessTransmissionMedium());
     }
 
     @Test(dependsOnMethods = "a4FtthProvisioningWithoutTpType")

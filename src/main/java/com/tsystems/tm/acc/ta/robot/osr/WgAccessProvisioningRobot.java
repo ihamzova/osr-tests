@@ -15,7 +15,7 @@ import com.tsystems.tm.acc.ta.log.ContainsExpecter;
 import com.tsystems.tm.acc.ta.log.ServiceLogExpectSince;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Card;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
@@ -223,12 +223,14 @@ public class WgAccessProvisioningRobot {
   @Step("Check card before provisioning")
   public Card getCard(PortProvisioning port) {
     URL cardUrl = new OCUrlBuilder("wiremock-acc")
-            .withEndpoint("/api/oltResourceInventory/v1/card")
-            .withParameter("endSz", port.getEndSz())
-            .withParameter("slotNumber", port.getSlotNumber()).build();
+            .withEndpoint("/resource-order-resource-inventory/v5/card")
+            .withParameter("parentDeviceEquipmentRef.endSz", port.getEndSz())
+            .withParameter("slotName", port.getSlotNumber())
+            .withParameter("depth", "1").build();
     String response = RestAssured.given().when().get(cardUrl.toString().replace("%2F", "/"))
             .then().extract().body().asString().replaceFirst("\"lastDiscovery\": \".+\",\n", "");
-    return OltResourceInventoryClient.json().deserialize(response, Card.class);
+    final Card[] result = OltResourceInventoryClient.json().deserialize(response, Card[].class);
+    return result[0];
   }
 
   @Step("Check device before/after provisioning")
