@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessprocessmanagement;
 
-import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
@@ -20,8 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byClassName;
-import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -189,12 +187,12 @@ public class ProcessSearchPage {
 
   @Step("Get the main process")
   public List<SelenideElement> getMainProcesses() {
-    return $(SEARCH_TABLE).find(By.tagName("tbody")).findAll(byClassName("level--0"));
+    return $(SEARCH_TABLE).find(By.tagName("tbody")).findAll(byCssSelector(".level--0"));
   }
 
   @Step("Get subprocesses")
   public List<SelenideElement> getSubprocesses() {
-    return $(SEARCH_TABLE).find(By.tagName("tbody")).findAll(byClassName("level--1"));
+    return $(SEARCH_TABLE).find(By.tagName("tbody")).findAll(byCssSelector(".level--1"));
   }
 
   @Step("Get info of the main processes")
