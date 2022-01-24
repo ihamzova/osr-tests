@@ -13,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
@@ -187,7 +189,7 @@ public class AccessLineSearchPage {
             .findAll(By.tagName("li"))
             .find(Condition.text(String.valueOf(pageSize)))
             .click();
-    $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHaveSize(pageSize);
+    $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHave(size(pageSize));
     return this;
   }
 
@@ -203,7 +205,7 @@ public class AccessLineSearchPage {
     String status = getTableLines().get(0).getStatus().toString();
     $(SORT_BY_STATUS).click();
     ElementsCollection tds = $$(By.tagName("td"));
-    tds.get(10).waitUntil(Condition.not(text(status)), TIMEOUT);
+    tds.get(10).shouldNotHave(text(status), Duration.ofMillis(TIMEOUT));
     return this;
   }
 

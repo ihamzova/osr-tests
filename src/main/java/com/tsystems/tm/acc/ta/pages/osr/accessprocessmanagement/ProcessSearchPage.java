@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessprocessmanagement;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
@@ -17,6 +18,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byClassName;
 import static com.codeborne.selenide.Selectors.byXpath;
@@ -174,7 +176,7 @@ public class ProcessSearchPage {
 
   @Step("Get table headers")
   public List<String> getTableHeaders() {
-    $(SEARCH_TABLE).findAll(By.tagName("th")).shouldHaveSize(10);
+    $(SEARCH_TABLE).findAll(By.tagName("th")).shouldHave(size(10));
     return $(SEARCH_TABLE).findAll(By.tagName("th")).stream()
             .map(SelenideElement::text)
             .collect(Collectors.toList());

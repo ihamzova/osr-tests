@@ -2,10 +2,8 @@ package com.tsystems.tm.acc.ta.data.morpheus.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.*;
-import org.openqa.selenium.remote.server.handler.interactions.touch.Up;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DeviceResourceInventoryMapper {

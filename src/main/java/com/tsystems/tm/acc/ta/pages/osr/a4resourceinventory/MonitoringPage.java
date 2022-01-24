@@ -5,6 +5,8 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selectors.byXpath;
@@ -24,8 +26,8 @@ public class MonitoringPage {
 
     @Step("Validate page")
     public void validate() {
-        $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).waitUntil(visible, 3000);
-        $(INSTALLATION_BUTTON).waitUntil(visible, 3000);
+        $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        $(INSTALLATION_BUTTON).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT);
     }
 

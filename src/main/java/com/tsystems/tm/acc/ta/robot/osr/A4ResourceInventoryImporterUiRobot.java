@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.UUID;
 
 import static com.codeborne.selenide.Condition.*;
@@ -43,8 +44,8 @@ public class A4ResourceInventoryImporterUiRobot {
         uploadCsvFile(csvFile);
         clickSendenButton();
 
-        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).waitUntil(visible, 25000);
-        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).waitUntil(matchText("csvLine"), 25000);
+        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).shouldBe(visible, Duration.ofMillis(25000));
+        $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).should(matchText("csvLine"), Duration.ofMillis(25000));
     }
 
 }

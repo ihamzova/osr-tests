@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import com.tsystems.tm.acc.tests.rhsso.client.model.Token;
+import com.tsystems.tm.api.client.rhsso.model.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
