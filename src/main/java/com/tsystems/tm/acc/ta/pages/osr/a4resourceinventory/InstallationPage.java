@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.io.File;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byId;
@@ -38,8 +39,8 @@ public class InstallationPage {
 
     @Step("Validate page")
     public void validate() {
-        $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).waitUntil(visible, 3000);
-        $(CSV_FILE_INPUT_FIELD_LOCATOR).waitUntil(visible, 3000);
+        $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        $(CSV_FILE_INPUT_FIELD_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT);
     }
 
@@ -59,15 +60,15 @@ public class InstallationPage {
     private void checkNetworkElementExists(String vpsz, String fsz) {
         $(INPUT_VPSZ_LOCATOR).val(vpsz);
         $(INPUT_FSZ_LOCATOR).val(fsz);
-        $(SEARCH_BUTTON).waitUntil(enabled, 5000).click();
-        $(INPUT_ZPTIDENT_LOCATOR).waitUntil(not(disabled), 5000);
+        $(SEARCH_BUTTON).shouldBe(enabled, Duration.ofMillis(5000)).click();
+        $(INPUT_ZPTIDENT_LOCATOR).shouldNotBe(disabled, Duration.ofMillis(5000));
         assertContains($(TEXT_NETWORK_ELEMENT).getText(), NETWORK_ELEMENT_FOUND); // only shows up when NE is found
     }
 
     @Step("Enter ZTP Ident value")
     public void enterZtpIdent(String value) {
         $(INPUT_ZPTIDENT_LOCATOR).val(value);
-        $(SAVE_BUTTON).waitUntil(enabled, 5000).click();
+        $(SAVE_BUTTON).shouldBe(enabled, Duration.ofMillis(5000)).click();
         sleep(5000);
         assertContains($(TEXT_NETWORK_ELEMENT).getText(), ZTP_SAVED_SUCCESSFULLY);
         assertContains($(TEXT_NETWORK_ELEMENT).getText(), value);
@@ -75,7 +76,7 @@ public class InstallationPage {
 
     @Step("Go to monitoring page")
     public MonitoringPage openMonitoringPage() {
-        $(MONITORING_BUTTON).waitUntil(enabled, 5000).click();
+        $(MONITORING_BUTTON).shouldBe(enabled, Duration.ofMillis(5000)).click();
         return new MonitoringPage();
     }
 
@@ -103,7 +104,7 @@ public class InstallationPage {
     @Step("reset search for next element")
     public void resetSearch() {
         $(RESET_SEARCH_BUTTON).click();
-        $(INPUT_FSZ_LOCATOR).waitUntil(empty, 5000);
+        $(INPUT_FSZ_LOCATOR).shouldBe(empty, Duration.ofMillis(5000));
     }
 
 }

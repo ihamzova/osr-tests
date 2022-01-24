@@ -5,7 +5,10 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -164,7 +167,7 @@ public class AccessLinesManagementPage {
   @Step("Get Default NE Profile state")
   public String getNeDefaultProfileState() {
     String result = "NULL";
-    $(NE_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    $(NE_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
     if ($$(NE_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
       result = $$(NE_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
     }
@@ -174,7 +177,7 @@ public class AccessLinesManagementPage {
   @Step("Get Default NL Profile state")
   public String getNLDefaultProfileState() {
     String result = "NULL";
-    $(NL_DEFAULT_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    $(NL_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
     if ($$(NL_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
       result = $$(NL_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
     }
@@ -184,7 +187,7 @@ public class AccessLinesManagementPage {
   @Step("Get Subscriber NE Profile state")
   public String getNeSubscriberProfileState() {
     String result = "NULL";
-    $(NE_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    $(NE_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
     if ($$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
       result = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
     }
@@ -194,7 +197,7 @@ public class AccessLinesManagementPage {
   @Step("Get Subscriber NL Profile state")
   public String getNLSubscriberProfileState() {
     String result = "NULL";
-    $(NL_SUBSCRIBER_PROFILE_TITLE).waitUntil(Condition.visible, TIMEOUT_MS);
+    $(NL_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
     if ($$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
       result = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
     }

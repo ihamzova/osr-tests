@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
@@ -65,14 +66,14 @@ public class A4ResourceInventoryNeDetailsPage {
 
     @Step("Validate page")
     public A4ResourceInventoryNeDetailsPage validate() {
-        $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
+        $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT);
         return this;
     }
 
     @Step("Validate page")
     public A4ResourceInventoryNeDetailsPage validate(String uuid) {
-        $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
+        $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT + "/" + uuid);
         return this;
     }

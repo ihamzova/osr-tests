@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
@@ -168,7 +170,7 @@ public class OltRiCommissioningPage {
             }
         } while (!(steps.containsAll(requiredSteps) && messages.containsAll(requiredMessages) && greenCircleCount == requiredSteps.size()-1));
 
-        root.find(byXpath(".//div[@class='step active']")).waitUntil(Condition.not(Condition.exist), COMMISSIONING_TIMEOUT);
+        root.find(byXpath(".//div[@class='step active']")).shouldNot(exist, Duration.ofMillis(COMMISSIONING_TIMEOUT));
 
 
         return new OltRiOltDetailPage();

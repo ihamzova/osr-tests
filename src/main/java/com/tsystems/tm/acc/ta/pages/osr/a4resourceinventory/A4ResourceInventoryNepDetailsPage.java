@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
@@ -21,14 +23,14 @@ public class A4ResourceInventoryNepDetailsPage {
 
     @Step("Validate page")
     public A4ResourceInventoryNepDetailsPage validate() {
-        $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
+        $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT);
         return this;
     }
 
     @Step("Validate page")
     public A4ResourceInventoryNepDetailsPage validate(String uuid) {
-        $(A4_SEARCH_PAGE_HEADER).waitUntil(visible, 3000);
+        $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT + "/" + uuid);
         return this;
     }

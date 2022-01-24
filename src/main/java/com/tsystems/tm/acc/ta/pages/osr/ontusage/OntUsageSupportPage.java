@@ -12,6 +12,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.net.URL;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byId;
@@ -39,7 +40,7 @@ public class OntUsageSupportPage {
     @Step("Validate Url")
     public OntUsageSupportPage validate() {
         assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
-        $(MENU_ICON).waitUntil(Condition.visible, 3000);
+        $(MENU_ICON).shouldBe(visible, Duration.ofMillis(3000));
         return this;
     }
 
@@ -54,9 +55,9 @@ public class OntUsageSupportPage {
     @Step("Select supplier for search")
     public OntUsageSupportPage selectSupplier(Supplier supplier){
         $(SUPPLIER_SELECTION).click();
-        $(SUPPLIER_SEARCH).waitUntil(Condition.visible, 1000).val(supplier.getSupplierName());
+        $(SUPPLIER_SEARCH).shouldBe(visible, Duration.ofMillis(1000)).val(supplier.getSupplierName());
         By SUPPLIER_LABEL = byXpath("//li[@aria-label='"+supplier.getSupplierName()+"']");
-        $(SUPPLIER_LABEL).waitUntil(Condition.visible, 2000).click();
+        $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(2000)).click();
         $(SUPPLIER_SELECTION).click(); //close supplier selection
         return this;
     }
@@ -64,11 +65,11 @@ public class OntUsageSupportPage {
     @Step("update ONT to given status")
     public OntUsageSupportPage updateStatusOfOnt(Ont ont, String status) {
         By ONT_CELL = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).waitUntil(Condition.exist,3000).scrollTo().waitUntil(Condition.visible, 3000);
+        $(ONT_CELL).should(exist,Duration.ofMillis(3000)).scrollTo().shouldBe(visible, Duration.ofMillis(3000));
         By STATUS_DROPDOWN = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]/parent::td/following-sibling::td[2]/p-dropdown");
-        $(STATUS_DROPDOWN).waitUntil(Condition.visible, 1000).click();
+        $(STATUS_DROPDOWN).shouldBe(visible, Duration.ofMillis(1000)).click();
         WebElement desiredStatusField = $(STATUS_DROPDOWN).findElement(byXpath("//li[contains(@aria-label,'"+status+"')]"));
-        $(desiredStatusField).waitUntil(Condition.visible, 1000).click();
+        $(desiredStatusField).shouldBe(visible, Duration.ofMillis(1000)).click();
         sleep(1000); //this one is needed because the usability of errors is not so nice.. it might popup..
         if ($(ERRORMESSAGE).isDisplayed()){ //this is also needed because of usability the error pops up pretty short..
             throw new Assert.AssertionFailedException();
@@ -80,9 +81,9 @@ public class OntUsageSupportPage {
     public OntUsageSupportPage deleteOnt(Ont ont){
         By DELETE_ONT_BUTTON = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber()+"')]/parent::td/following-sibling::td[contains(@class, 'button-cell')]/i");
         $(DELETE_ONT_BUTTON).shouldBe(Condition.visible).click();
-        $(CONFIRM_BUTTON).waitUntil(Condition.visible, 1000).click();
+        $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(1000)).click();
         By ONT_FIELD = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber() + "')]");
-        $(ONT_FIELD).waitUntil(Condition.disappears, 2000);
+        $(ONT_FIELD).should(disappear, Duration.ofMillis(2000));
         return this;
     }
 
@@ -95,15 +96,15 @@ public class OntUsageSupportPage {
     @Step("delete workorder via support ui")
     public OntUsageSupportPage deleteWorkOrder(Ont ont){
         By DELETE_ONT_BUTTON = byXpath(String.format("//*[@data-qa-delete-workorderid='%s']", ont.getSerialNumber()));
-        $(DELETE_ONT_BUTTON).waitUntil(visible,1000).click();
-        $(DELETE_ONT_BUTTON).waitUntil(not(visible), 2000);
+        $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(1000)).click();
+        $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(2000));
         return this;
     }
 
     @Step("change Supplier")
     public OntUsageSupportPage changeSupplier(Ont ont, Supplier newSupplier){
         By ONT_CELL = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).waitUntil(Condition.exist,3000).scrollTo().waitUntil(Condition.visible, 3000);
+        $(ONT_CELL).should(exist,Duration.ofMillis(3000)).scrollTo().shouldBe(visible, Duration.ofMillis(3000));
         By SUPPLIER_SELECTION = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber()+"')]/parent::td/following-sibling::td[contains(@class, 'dropdown-cell')][1]//p-dropdown");
         $(SUPPLIER_SELECTION).click();
         By NEW_SUPPLIER_FIELD = byXpath("//li[contains(@aria-label,'"+newSupplier.getSupplierName()+"')]");
@@ -114,7 +115,7 @@ public class OntUsageSupportPage {
     @Step("Validating ONT state and supplier")
     public OntUsageSupportPage checkOntDetails(Ont ont, Supplier supplier, String state){
         By ONT_CELL = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).waitUntil(Condition.visible, 3000).click();
+        $(ONT_CELL).shouldBe(visible, Duration.ofMillis(3000)).click();
         $(DETAIL_STATE).shouldHave(text(state));
         $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
         return this;
@@ -122,14 +123,14 @@ public class OntUsageSupportPage {
 
     @Step("validate insufficient permission errormessage")
     public void checkInsufficientPermissionsErrorMessage(){
-        $(PERMISSION_DENIED_MSG).waitUntil(visible,2000);
+        $(PERMISSION_DENIED_MSG).shouldBe(visible,Duration.ofMillis(2000));
     }
 
     @Step("Logout from Support UI")
     public void logout(){
         $(MENU_ICON).scrollTo().click();
-        $(LOGOUT_BUTTON).waitUntil(Condition.visible, 1000).click();
-        $(LOGIN_BUTTON).waitUntil(Condition.visible, 2000); //check that logout was successful
+        $(LOGOUT_BUTTON).shouldBe(visible, Duration.ofMillis(1000)).click();
+        $(LOGIN_BUTTON).shouldBe(visible, Duration.ofMillis(2000)); //check that logout was successful
     }
 
     @Step("check supplier not visible")

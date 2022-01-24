@@ -9,6 +9,8 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -73,10 +75,10 @@ public class OltDetailsPage {
 
   @Step("Open port view")
   public OltDetailsPage openPortView(String slot) {
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     if (slot != null && !slot.isEmpty()) {
       if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
-        $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+        $(byQaData(String.format(slotPortViewLocator, slot))).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
       }
     }
     return this;
@@ -84,74 +86,74 @@ public class OltDetailsPage {
 
   @Step("Configure uplink")
   public OltDetailsPage startUplinkConfiguration() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(UPLINK_ADD_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(UPLINK_ADD_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     return this;
   }
 
   @Step("Save uplink configuration")
   public OltDetailsPage saveUplinkConfiguration() {
-    String radio_value = $(UPLINK_UEWEG_SELECTION_0).waitUntil(Condition.exist , 1000).getValue();
+    String radio_value = $(UPLINK_UEWEG_SELECTION_0).should(exist , Duration.ofMillis(1000)).getValue();
     assertEquals(radio_value, "on", "Start uplink configuration radio value not on");
-    $(UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR).waitUntil(Condition.appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(UPLINK_CREATE_CONFIRM_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     return new OltDetailsPage();
   }
 
   @Step("Deconfigure uplink")
   public OltDetailsPage deleteUplinkConfiguration() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(UPLINK_DELETE_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(UPLINK_DELETE_CONFIRM_BUTTON_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(UPLINK_DELETE_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(UPLINK_DELETE_CONFIRM_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     return this;
   }
 
   @Step("Configure ANCP session")
   public OltDetailsPage configureAncpSession() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
-    $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).waitUntil(visible, MAX_ANCP_COFIGURATION_TIME).isDisplayed();
+    $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).shouldBe(visible, Duration.ofMillis(MAX_ANCP_COFIGURATION_TIME)).isDisplayed();
     return this;
   }
 
   @Step("Start configure ANCP session")
   public OltDetailsPage configureAncpSessionStart() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     $(ANCP_CONFIGURE_BUTTON_LOCATOR).click();
-    $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+    $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).shouldHave(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
     return this;
   }
 
 
   @Step("Deconfigure ANCP session")
   public OltDetailsPage deconfigureAncpSession() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     $(ANCP_DE_CONFIGURE_BUTTON_LOCATOR).click();
-    $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+    $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).shouldHave(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
     return this;
   }
 
 
   @Step("Update ANCP Session State")
   public OltDetailsPage updateAncpSessionStatus() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(ANCP_SESSION_STATUS_UNKNOWN_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(ANCP_SESSION_STATUS_UNKNOWN_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     return this;
   }
 
   @Step("Check ANCP Session State is displayed")
   public OltDetailsPage checkAncpSessionStatus() {
-    $(CONFIGURATION_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
-    $(ANCP_SESSION_STATUS_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).isDisplayed();
+    $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(ANCP_SESSION_STATUS_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).isDisplayed();
     return this;
   }
 
   @Step("Access lines provisioning")
   public OltDetailsPage startAccessLinesProvisioning(Integer timeout) {
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
       if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
         $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).click();
-        $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
+        $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).shouldBe(visible, Duration.ofMillis(timeout)).isDisplayed();
       }
     }
     return this;
@@ -163,13 +165,13 @@ public class OltDetailsPage {
     $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
     $(START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
     $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
+    $(CARDS_VIEW_TAB_LOCATOR).shouldBe(visible, Duration.ofMillis(timeout)).isDisplayed();
     return this;
   }
 
   @Step("Check GPON Ports LifeCycleState on UI")
   public OltDetailsPage checkGponPortLifeCycleState(OltDevice oltDevice, String portLifeCycleState) {
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     if ($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, "1"))).exists()) {
       for (int port = 1; port < oltDevice.getNumberOfPonPorts(); ++port) {
         Assert.assertContains($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, port))).getText(), portLifeCycleState);
@@ -178,7 +180,7 @@ public class OltDetailsPage {
       for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
         if ($(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).isDisplayed()) {
           if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
-            $(byQaData(String.format(slotPortViewLocator, slot))).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+            $(byQaData(String.format(slotPortViewLocator, slot))).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
           }
           for (int port = 0; port < PORTS_PER_GPON_CARD; ++port) {
             Assert.assertContains($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText(), portLifeCycleState);
@@ -201,7 +203,7 @@ public class OltDetailsPage {
   @Step("Delete card")
 
   public OltDetailsPage deleteGponCard() {
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     $(DELETE_CARD_BUTTON_LOCATOR).click();
     $(DELETE_CARD_BUTTON_CONFIRM_LOCATOR).click();
     return this;
@@ -210,11 +212,11 @@ public class OltDetailsPage {
   @Step("Access lines deprovisioning from Gpon LC")
 
   public OltDetailsPage startAccessLinesDeProvisioningFromCard(Integer timeout) {
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(appears, MAX_LATENCY_FOR_ELEMENT_APPEARS).click();
+    $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
       if ($(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).isDisplayed()) {
         $(byQaData(String.format(cardDeCommissioningStartButtonLocator, slot))).click();
-        $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).waitUntil(visible, timeout).isDisplayed();
+        $(byQaData(String.format(cardCommissioningStartButtonLocator, slot))).shouldBe(visible, Duration.ofMillis(timeout)).isDisplayed();
       }
     }
     return this;
@@ -226,7 +228,7 @@ public class OltDetailsPage {
     $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
     $(START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR).click();
     $(START_EDIT_DEVICE_BUTTON_LOCATOR).click();
-    $(CARDS_VIEW_TAB_LOCATOR).waitUntil(visible, timeout).isDisplayed();
+    $(CARDS_VIEW_TAB_LOCATOR).shouldBe(visible, Duration.ofMillis(timeout)).isDisplayed();
     return this;
   }
 

@@ -6,6 +6,10 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.appear;
+import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -33,7 +37,7 @@ public class OltDiscoveryPage {
     }
 
     public int getSuccessfullyDiscoveriesCount() {
-        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).waitUntil(Condition.appears, TIMEOUT_FOR_OLT_DISCOVERY);
+        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_OLT_DISCOVERY));
         return $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).size();
     }
 
@@ -47,7 +51,7 @@ public class OltDiscoveryPage {
         }
         $(UPDATE_HISTORY_BUTTON_LOCATOR).click();
 
-        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).waitWhile(Condition.disabled, TIMEOUT_FOR_OLT_DISCOVERY);
+        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).shouldNotBe(disabled, Duration.ofMillis(TIMEOUT_FOR_OLT_DISCOVERY));
         return this;
     }
 

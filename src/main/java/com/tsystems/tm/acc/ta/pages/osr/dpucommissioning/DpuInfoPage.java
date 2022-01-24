@@ -7,8 +7,9 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.appears;
-import static com.codeborne.selenide.Condition.exactTextCaseSensitive;
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -59,11 +60,11 @@ public class DpuInfoPage {
     public DpuInfoPage startDpuCommissioning() {
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).click();
         //check DPU COMMISSIONING PROCESS and catch businessKey
-        businessKey = $(ETCD_BUSINESS_KEY).waitUntil(Condition.exist, MAX_LATENCY_FOR_LIFECYCLE_CHANGE).getValue();
+        businessKey = $(ETCD_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
         log.info("startDpuCommissioning() businessKey = {}", businessKey);
-        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).waitUntil(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), MAX_LATENCY_FOR_LIFECYCLE_CHANGE);
+        $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
-        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).waitUntil(appears, TIMEOUT_FOR_DPU_COMMISSIONING);
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_DPU_COMMISSIONING));
         return this;
     }
 

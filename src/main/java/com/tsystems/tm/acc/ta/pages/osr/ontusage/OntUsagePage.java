@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
@@ -52,9 +54,9 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     public OntUsagePage clickCreateONT(){
         $(NEW_ONT_BUTTON).click();
         Screenshot.takeScreenshot();
-        $(NEW_SERIAL_INPUT).waitUntil(Condition.visible, 3000);
-        $(USEABLE_FOR_ALL).waitUntil(Condition.visible, 3000);
-        $(SUBMIT_BUTTON).waitUntil(Condition.visible, 3000);
+        $(NEW_SERIAL_INPUT).shouldBe(visible, Duration.ofMillis(3000));
+        $(USEABLE_FOR_ALL).shouldBe(visible, Duration.ofMillis(3000));
+        $(SUBMIT_BUTTON).shouldBe(visible, Duration.ofMillis(3000));
         return this;
     }
 
@@ -64,14 +66,14 @@ public class OntUsagePage implements SupplierCockpitUiPage{
         if (ont.getAssignedEmployee() == null) {
             $(USEABLE_FOR_ALL).click();
             Screenshot.takeScreenshot();
-            $(USERNAME_INPUT).waitUntil(Condition.disabled, 2000);
+            $(USERNAME_INPUT).shouldBe(disabled, Duration.ofMillis(2000));
         } else {
             $(USERNAME_INPUT).val(ont.getAssignedEmployee());
         }
         $(SUBMIT_BUTTON).click();
         Screenshot.takeScreenshot();
         By ONT_CELL = byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).waitUntil(Condition.exist,3000);
+        $(ONT_CELL).should(exist,Duration.ofMillis(3000));
         return this;
     }
 
@@ -84,10 +86,10 @@ public class OntUsagePage implements SupplierCockpitUiPage{
             if (!$(ERRORMESSAGE).isDisplayed()){
                 throw new Assert.AssertionFailedException();
             }
-            $(ONT_CELL).shouldBe(Condition.visible);
+            $(ONT_CELL).shouldBe(visible);
         } else {
-            $(CONFIRM_BUTTON).waitUntil(Condition.visible, 2000).click();
-            $(ONT_CELL).waitUntil(Condition.disappears, 4000);
+            $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(2000)).click();
+            $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
         }
         return this;
     }
@@ -95,8 +97,8 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     @Step("Logout from Supplier UI")
     public void logout(){
         $(MENU_ICON).click();
-        $(LOGOUT_BUTTON).waitUntil(Condition.visible, 1000).click();
-        $(LOGIN_BUTTON).waitUntil(Condition.visible, 2000); //check that logout was successful
+        $(LOGOUT_BUTTON).shouldBe(visible, Duration.ofMillis(1000)).click();
+        $(LOGIN_BUTTON).shouldBe(visible, Duration.ofMillis(2000)); //check that logout was successful
 
     }
 }

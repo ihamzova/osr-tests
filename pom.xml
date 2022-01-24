@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>2.5.0</version>
+        <version>2.8.0</version>
     </parent>
 
     <properties>
@@ -83,11 +83,6 @@
     </profiles>
 
     <dependencies>
-        <dependency>
-            <groupId>com.tsystems.tm.acc.tests</groupId>
-            <artifactId>acc-common-models</artifactId>
-            <version>${framework.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.tsystems.tm.acc.tests</groupId>
             <artifactId>osr-models</artifactId>
@@ -162,11 +157,6 @@
                     </execution>
                 </executions>
                 <dependencies>
-                    <dependency>
-                        <groupId>com.tsystems.tm.acc.tests</groupId>
-                        <artifactId>acc-common-models</artifactId>
-                        <version>${framework.version}</version>
-                    </dependency>
                     <dependency>
                         <groupId>com.tsystems.tm.acc.tests</groupId>
                         <artifactId>acc-common-utils</artifactId>

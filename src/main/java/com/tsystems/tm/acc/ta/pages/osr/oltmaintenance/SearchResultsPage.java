@@ -98,7 +98,7 @@ public class SearchResultsPage {
 
     public Date getDiscoveryDate() {
         $(DISCOVERY_DATE_LOCATOR).shouldBe(visible);
-        $(DISCOVERY_DATE_LOCATOR).should(have(matchesText(".+")));
+        $(DISCOVERY_DATE_LOCATOR).should(have(matchText(".+")));
         String dateStr = $(DISCOVERY_DATE_LOCATOR).text();
         dateStr = dateStr.split("[.]")[0] + MSK_TIME_ZONE;
 
