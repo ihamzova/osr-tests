@@ -42,6 +42,16 @@
             </properties>
         </profile>
         <profile>
+            <id>gigabit-tm-osr-autotest-03</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <test.logs.queryLogsProviderClass>de.telekom.it.t3a.kotlin.kubernetes.KubernetesQueriedServiceLogsProvider</test.logs.queryLogsProviderClass>
+                <verbose.rest.level>FULL</verbose.rest.level>
+            </properties>
+        </profile>
+        <profile>
             <id>gigabit-tm-mercury-01</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
