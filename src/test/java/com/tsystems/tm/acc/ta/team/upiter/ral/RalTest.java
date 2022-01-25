@@ -90,7 +90,6 @@ public class RalTest extends GigabitTest {
     oltList = new ArrayList<>(Arrays.asList(olt1.getEndsz(), olt2.getEndsz(), olt3.getEndsz(), olt4.getEndsz()));
     List<String> response = riAbstractionLayerRobot.getOLtsByVpsz(oltDeviceForRal.getDeviceType(), oltDeviceForRal.getVpsz());
     assertEquals(response, oltList);
-
   }
 
   @Test
@@ -109,7 +108,6 @@ public class RalTest extends GigabitTest {
     mappingsContext.deleteStubs();
     final List<ExpectedAbstractDevice> expectedDeviceList = deviceList.stream().map(RiAbstractionLayerRobot::mapToAbstractDevice).collect(Collectors.toList());
     assertTrue(expectedDeviceList.contains(expectedA4device));
-
   }
 
   @Test

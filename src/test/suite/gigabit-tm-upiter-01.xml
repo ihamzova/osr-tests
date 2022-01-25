@@ -43,7 +43,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.a4provisioning.WgA4Provisioning"/>
         </classes>
     </test>
-    <test thread-count="1" name="HomeId, LineId Backend Tests">
+    <test thread-count="2" name="HomeId, LineId Backend Tests" parallel="classes">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.homeid.HomeIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.lineid.LineIdTest"/>
@@ -60,7 +60,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest"/>
         </classes>
     </test>
-    <test thread-count="1" name="Search AccessLines For Assurance Test">
+    <test thread-count="3" name="Search AccessLines For Assurance Test" parallel="methods">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.assurance.SearchAccessLinesForAssurance"/>
         </classes>
