@@ -107,8 +107,8 @@ public class AccessLineRiRobot {
   }
 
   @Step("Fill database with test data as a part of DPU Preprovisioning process emulation, v2")
-  public void fillDatabaseForDpuPreprovisioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ, DpuDevice dpuDevice, PortProvisioning oltDevice){
-    if (oltDevice.getSlotNumber()==null) oltDevice.setSlotNumber("null");
+  public void fillDatabaseForDpuPreprovisioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ, DpuDevice dpuDevice, PortProvisioning oltDevice) {
+    if (oltDevice.getSlotNumber() == null) oltDevice.setSlotNumber("null");
     accessLineResourceInventoryFillDbClient.
             getClient()
             .fillDatabase()
@@ -595,7 +595,7 @@ public class AccessLineRiRobot {
                     .technology(technology)
                     .status(accessLineStatus))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    assertTrue(accessLines.size() !=0, "There are no AccessLines with required parameters");
+    assertTrue(accessLines.size() != 0, "There are no AccessLines with required parameters");
     return accessLines;
   }
 
@@ -619,27 +619,27 @@ public class AccessLineRiRobot {
 
     if (subscriberNeProfileState == null) {
       accessLinesFilteredByNeStatus = accessLines.stream()
-              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()==null)
+              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile() == null)
               .collect(Collectors.toList());
     } else {
       accessLinesFilteredByNeStatus = accessLines.stream()
-              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()!=null
-                      &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(subscriberNeProfileState))
+              .filter(accessLineDto -> accessLineDto.getDefaultNeProfile().getSubscriberNeProfile() != null
+                      && accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(subscriberNeProfileState))
               .collect(Collectors.toList());
     }
 
     if (subscriberNlProfileState == null) {
       accessLinesFilteredByNlStatus = accessLinesFilteredByNeStatus.stream()
-              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile()==null)
+              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile() == null)
               .collect(Collectors.toList());
     } else {
       accessLinesFilteredByNlStatus = accessLinesFilteredByNeStatus.stream()
-              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile()!=null
-                      &&accessLineDto.getSubscriberNetworkLineProfile().getState().equals(subscriberNlProfileState))
+              .filter(accessLineDto -> accessLineDto.getSubscriberNetworkLineProfile() != null
+                      && accessLineDto.getSubscriberNetworkLineProfile().getState().equals(subscriberNlProfileState))
               .collect(Collectors.toList());
     }
 
-    assertTrue(accessLinesFilteredByNlStatus.size() !=0, "There are no AccessLines with required parameters");
+    assertTrue(accessLinesFilteredByNlStatus.size() != 0, "There are no AccessLines with required parameters");
     return accessLinesFilteredByNlStatus;
   }
 
@@ -655,11 +655,11 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
             .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
-                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile()!=null
-                    &&accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(ProfileState.ACTIVE)
-                    &&accessLineDto.getSubscriberNetworkLineProfile()==null)
+                    && accessLineDto.getDefaultNeProfile().getSubscriberNeProfile() != null
+                    && accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getState().equals(ProfileState.ACTIVE)
+                    && accessLineDto.getSubscriberNetworkLineProfile() == null)
             .collect(Collectors.toList());
-    assertTrue(accessLinesWithOnt.size() !=0, "There are no AccessLines with ONT");
+    assertTrue(accessLinesWithOnt.size() != 0, "There are no AccessLines with ONT");
     return accessLinesWithOnt;
   }
 
@@ -672,15 +672,15 @@ public class AccessLineRiRobot {
                     .productionPlatform(AccessLineProductionPlatform.A4)
                     .technology(technology))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    List <AccessLineDto> accessLinesWithOnt = accessLines.stream()
+    List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
             .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
-                    &&accessLineDto.getNetworkServiceProfileReference().getNspOntSerialNumber()!=null)
+                    && accessLineDto.getNetworkServiceProfileReference().getNspOntSerialNumber() != null)
             .collect(Collectors.toList());
     return accessLinesWithOnt;
   }
 
   @Step("Get FTTB AccessLines")
-  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus, AccessLineProductionPlatform productionPlatform){
+  public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus, AccessLineProductionPlatform productionPlatform) {
     List<AccessLineDto> fttbAccessLines = accessLineResourceInventory
             .accessLineController()
             .searchAccessLines()
@@ -690,17 +690,17 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     List<AccessLineDto> fttbAccessLinesFiltered = fttbAccessLines.stream()
             .filter(accessLineDto -> accessLineDto.getDpuReference().getAccessTransmissionMedium().equals(accessTransmissionMedium)
-                    &&accessLineDto.getStatus().equals(accessLineStatus))
+                    && accessLineDto.getStatus().equals(accessLineStatus))
             .collect(Collectors.toList());
-    assertTrue(fttbAccessLinesFiltered.size() !=0, "There are no FTTB AccessLines with required parameters");
+    assertTrue(fttbAccessLinesFiltered.size() != 0, "There are no FTTB AccessLines with required parameters");
     return fttbAccessLinesFiltered;
   }
 
   @Step("Get AccessLines with HomeIds")
   public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
     List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
-            .filter(accessLineDto -> (accessLineDto.getHomeId()!=null)).collect(Collectors.toList());
-    assertTrue(accessLinesWithHomeIds.size()!=0, "There are no AccessLines with HomeIds");
+            .filter(accessLineDto -> (accessLineDto.getHomeId() != null)).collect(Collectors.toList());
+    assertTrue(accessLinesWithHomeIds.size() != 0, "There are no AccessLines with HomeIds");
     return accessLinesWithHomeIds;
   }
 
@@ -715,7 +715,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get LineIDs from the Port")
-  public List<String> getLineIds (PortProvisioning port) {
+  public List<String> getLineIds(PortProvisioning port) {
     return getLineIdPool(port).stream().map(lineIdDto -> lineIdDto.getLineId()).collect(Collectors.toList());
   }
 
@@ -728,7 +728,7 @@ public class AccessLineRiRobot {
 
   @Step("Get LineIds from AccessLines by their status")
   public List<String> getLineIdsByAccessLinesStatus(PortProvisioning port, AccessLineStatus accessLineStatus) {
-    List<String>lineIds = getAccessLinesByPort(port).stream()
+    List<String> lineIds = getAccessLinesByPort(port).stream()
             .filter(accessLineDto -> accessLineStatus.equals(accessLineDto.getStatus()))
             .map(accessLineDto -> accessLineDto.getLineId())
             .collect(Collectors.toList());
@@ -780,7 +780,7 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AllocatedOnuIds by AccessLines")
-  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List <AccessLineDto> accessLinesList) {
+  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
     List<Integer> allocatedOnunIds = accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
             .searchAllocatedOnuId()
             .body(new SearchAllocatedOnuIdDto()
@@ -794,13 +794,18 @@ public class AccessLineRiRobot {
   }
 
   @Step("Get AllocatedAnpTags from AccessLines")
-  public List<Integer> getAllocatedAnpTags (List<AccessLineDto> accessLines) {
+  public List<Integer> getAllocatedAnpTags(List<AccessLineDto> accessLines) {
     return accessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag()).collect(Collectors.toList());
   }
 
   @Step("Get AllocatedAnpTags from the NetworkSwitchingProfiles")
-  public List<Integer> getAllocatedAnpTagsFromNsProfile (List<AccessLineDto> accessLines) {
+  public List<Integer> getAllocatedAnpTagsFromNsProfile(List<AccessLineDto> accessLines) {
     return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile().getAnpTag().getAnpTag()).collect(Collectors.toList());
+  }
+
+  @Step("Get NetworkSwitchingProfiles")
+  public List<NetworkSwitchingProfileDto> getNsProfile(List<AccessLineDto> accessLines) {
+    return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile()).collect(Collectors.toList());
   }
 
   @Step("Get homeID from pool by port")
@@ -897,6 +902,12 @@ public class AccessLineRiRobot {
             .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
+
+  @Step("Compare two Lists")
+  public <T, U> boolean compareLists(List<T> sourceList, List<U> targetList) {
+    return sourceList.size() == targetList.size() && sourceList.containsAll(targetList) && targetList.containsAll(sourceList);
+  }
+
   private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {
     DefaultNeProfile defaultNeProfileList = new DefaultNeProfile();
     defaultNeProfileList.setProfileName(defaultNeProfile.getProfileName());

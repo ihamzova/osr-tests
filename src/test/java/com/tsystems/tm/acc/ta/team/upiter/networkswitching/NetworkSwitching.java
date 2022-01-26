@@ -39,141 +39,169 @@ import static org.testng.Assert.assertTrue;
 @Epic("Network Switching")
 public class NetworkSwitching extends GigabitTest {
 
-    private AccessLineRiRobot accessLineRiRobot;
-    private NetworkSwitchingRobot networkSwitchingRobot;
-    private UpiterTestContext context = UpiterTestContext.get();
+  private AccessLineRiRobot accessLineRiRobot;
+  private NetworkSwitchingRobot networkSwitchingRobot;
+  private UpiterTestContext context = UpiterTestContext.get();
 
-    private PortProvisioning sourcePort;
-    private PortProvisioning targetPort;
+  private PortProvisioning sourcePort;
+  private PortProvisioning targetPort;
+  private PortProvisioning sourcePortForRollback;
+  private PortProvisioning targetPortForRollback;
 
-    @BeforeClass
-    public void init() throws InterruptedException {
-        accessLineRiRobot = new AccessLineRiRobot();
-        networkSwitchingRobot = new NetworkSwitchingRobot();
-        sourcePort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.Source_49_30_179_76H1);
-        targetPort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.Target_49_911_1100_76H1);
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-        accessLineRiRobot.clearDatabase();
-        networkSwitchingRobot.clearDatabase();
-        Thread.sleep(2000);
-        accessLineRiRobot.fillDatabaseForNetworkSwitching(sourcePort, targetPort);
-    }
+  @BeforeClass
+  public void init() throws InterruptedException {
+    accessLineRiRobot = new AccessLineRiRobot();
+    networkSwitchingRobot = new NetworkSwitchingRobot();
+    sourcePort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.Source_49_30_179_76H1);
+    targetPort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.Target_49_911_1100_76H1);
+    sourcePortForRollback = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.SourceRB_49_30_179_76H1);
+    targetPortForRollback = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.TargetRB_49_911_1100_76H1);
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
+    accessLineRiRobot.clearDatabase();
+    networkSwitchingRobot.clearDatabase();
+    Thread.sleep(2000);
+    accessLineRiRobot.fillDatabaseForNetworkSwitching(sourcePort, targetPort);
 
-    @Test
-    @TmsLink("DIGIHUB-121792")
-    @Description("Network Switching Preparation")
-    public void networkSwitchingPreparationTest() throws Exception {
+  }
 
-        List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
-        List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
-        List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesBeforePreparation);
-        List<String> lineIdsBeforePreparation = accessLineRiRobot.getLineIds(sourcePort);
-        List<String> homeIdsBeforePreparation = accessLineRiRobot.getHomeIds(sourcePort);
+  @Test
+  @TmsLink("DIGIHUB-121792")
+  @Description("Network Switching Preparation")
+  public void networkSwitchingPreparationTest() throws Exception {
 
-        int numberOfAccessLinesOnTargetPortBeforePreparation = accessLineRiRobot.getAccessLinesByPort(targetPort).size();
+    List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
+    List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
+    List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesBeforePreparation);
+    List<String> lineIdsBeforePreparation = accessLineRiRobot.getLineIds(sourcePort);
+    List<String> homeIdsBeforePreparation = accessLineRiRobot.getHomeIds(sourcePort);
 
-        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
-        networkSwitchingPage.validateUrl();
-        networkSwitchingPage.startPreparation(sourcePort, targetPort);
-        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
-        networkSwitchingPage.clickPackageId()
-                .waitUntilNeededStatus("PREPARED", packageId);
+    int numberOfAccessLinesOnTargetPortBeforePreparation = accessLineRiRobot.getAccessLinesByPort(targetPort).size();
 
-        assert(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+    NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+    networkSwitchingPage.validateUrl();
+    networkSwitchingPage.startPreparation(sourcePort, targetPort);
+    String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+    networkSwitchingPage.clickPackageId()
+            .waitUntilNeededStatus("PREPARED", packageId);
 
-        List<AccessLineDto> sourceAccessLinesAfterPreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
-        List<String> lineIdsAfterPreparation = accessLineRiRobot.getLineIds(sourcePort);
-        List<String> homeIdsAfterPreparation = accessLineRiRobot.getHomeIds(sourcePort);
-        List<Integer> sourceAnpTagsAfterPreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterPreparation);
-        List<Integer> sourceOnuIdsAfterPreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterPreparation);
-        List<Integer> targetAnpTagsAfterPreparation = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesAfterPreparation);
-        List<Integer> targetOnuIdsAfterPreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesAfterPreparation);
+    assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
 
-        int numberOfAccessLinesOnTargetPortAfterPreparation = accessLineRiRobot.getAccessLinesByPort(targetPort).size();
+    List<AccessLineDto> sourceAccessLinesAfterPreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
+    List<String> lineIdsAfterPreparation = accessLineRiRobot.getLineIds(sourcePort);
+    List<String> homeIdsAfterPreparation = accessLineRiRobot.getHomeIds(sourcePort);
+    List<Integer> sourceAnpTagsAfterPreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterPreparation);
+    List<Integer> sourceOnuIdsAfterPreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterPreparation);
+    List<Integer> targetAnpTagsAfterPreparation = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesAfterPreparation);
+    List<Integer> targetOnuIdsAfterPreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesAfterPreparation);
 
-        assertEquals(numberOfAccessLinesOnTargetPortAfterPreparation,
-                numberOfAccessLinesOnTargetPortBeforePreparation-sourceAccessLinesBeforePreparation.size());
+    int numberOfAccessLinesOnTargetPortAfterPreparation = accessLineRiRobot.getAccessLinesByPort(targetPort).size();
 
-        assertTrue(lineIdsBeforePreparation.size() == lineIdsAfterPreparation.size()
-                &&lineIdsBeforePreparation.containsAll(lineIdsAfterPreparation)
-                &&lineIdsAfterPreparation.containsAll(lineIdsBeforePreparation));
+    assertEquals(numberOfAccessLinesOnTargetPortAfterPreparation,
+            numberOfAccessLinesOnTargetPortBeforePreparation - sourceAccessLinesBeforePreparation.size());
+    assertTrue(targetAnpTagsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
+    assertTrue(targetOnuIdsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
+    accessLineRiRobot.compareLists(lineIdsBeforePreparation, lineIdsAfterPreparation);
+    accessLineRiRobot.compareLists(homeIdsBeforePreparation, homeIdsAfterPreparation);
+    accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterPreparation);
+    accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterPreparation);
+  }
 
-        assertTrue(homeIdsBeforePreparation.size() == homeIdsAfterPreparation.size()
-                &&homeIdsBeforePreparation.containsAll(homeIdsAfterPreparation)
-                &&homeIdsAfterPreparation.containsAll(homeIdsBeforePreparation));
+  @Test(dependsOnMethods = "networkSwitchingPreparationTest")
+  @TmsLink("DIGIHUB-121792")
+  @Description("Network Switching Commit")
+  public void networkSwitchingCommitTest() throws Exception {
 
-        assertTrue(sourceAnpTagsBeforePreparation.size() == sourceAnpTagsAfterPreparation.size()
-                &&sourceAnpTagsBeforePreparation.containsAll(sourceAnpTagsAfterPreparation)
-                &&sourceAnpTagsAfterPreparation.containsAll(sourceAnpTagsBeforePreparation));
+    List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
+    List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommit);
+    List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
 
-        assertTrue(sourceOnuIdsBeforePreparation.size() == sourceOnuIdsAfterPreparation.size()
-                &&sourceOnuIdsBeforePreparation.containsAll(sourceOnuIdsAfterPreparation)
-                &&sourceOnuIdsAfterPreparation.containsAll(sourceOnuIdsBeforePreparation));
+    List<String> usedHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.ASSIGNED);
+    List<String> usedLineIdsBeforeCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.ASSIGNED);
+    List<String> freeHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
+    List<String> wgLineIdsBeforeCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
+    List<String> freeLineIdsBeforeCommitOnTargetPort = accessLineRiRobot.getLineIdsByStatus(targetPort, LineIdStatus.FREE);
 
-        assertTrue(targetAnpTagsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
-        assertTrue(targetOnuIdsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
-    }
+    NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+    networkSwitchingPage.validateUrl();
+    networkSwitchingPage.clickSearchTab()
+            .searchPackagesByDevice(targetPort);
+    String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
+    networkSwitchingPage.startCommit(packageId)
+            .waitUntilNeededStatus("FINISHED", packageId);
+    assert (networkSwitchingPage.getPackageStatus().contains("FINISHED"));
 
-    @Test(dependsOnMethods = "networkSwitchingPreparationTest")
-    @TmsLink("DIGIHUB-121792")
-    @Description("Network Switching Commit")
-    public void networkSwitchingCommitTest() throws Exception {
+    List<AccessLineDto> sourceAccessLinesAfterCommit = accessLineRiRobot.getAccessLinesWithHomeId(targetPort);
+    List<Integer> targetAnpTagsAfterCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommit);
+    List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterCommit);
+    List<Integer> targetOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
+    List<String> usedHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(targetPort, HomeIdStatus.ASSIGNED);
+    List<String> usedLineIdsAfterCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(targetPort, AccessLineStatus.ASSIGNED);
+    List<String> freeHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
+    List<String> wgLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
+    List<String> freeLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByStatus(sourcePort, LineIdStatus.FREE);
 
-        List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
-        List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommit);
-        List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(sourcePort).size(), sourcePort.getAccessLinesCount().intValue());
+    assertEquals(accessLineRiRobot.getAccessLinesByPort(targetPort).size(), targetPort.getAccessLinesCount().intValue());
+    assertEquals(accessLineRiRobot.getHomeIdPool(sourcePort).size(), sourcePort.getHomeIdPool().intValue());
+    assertEquals(accessLineRiRobot.getLineIdPool(sourcePort).size(), sourcePort.getLineIdPool().intValue());
+    assertEquals(accessLineRiRobot.getHomeIdPool(targetPort).size(), targetPort.getHomeIdPool().intValue());
+    assertEquals(accessLineRiRobot.getLineIdPool(targetPort).size(), targetPort.getLineIdPool().intValue());
 
-        List<String> usedHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.ASSIGNED);
-        List<String> usedLineIdsBeforeCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.ASSIGNED);
-        List<String> freeHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
-        List<String> wgLineIdsBeforeCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
-        List<String> freeLineIdsBeforeCommitOnTargetPort = accessLineRiRobot.getLineIdsByStatus(targetPort, LineIdStatus.FREE);
+    assertTrue(targetAnpTagsAfterCommit.size() == targetAnpTagsBeforeCommit.size()
+            && targetAnpTagsBeforeCommit.containsAll(targetAnpTagsAfterCommit)
+            && targetAnpTagsAfterCommit.containsAll(targetAnpTagsBeforeCommit));
 
-        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
-        networkSwitchingPage.validateUrl();
-        networkSwitchingPage.clickSearchTab()
-                .searchPackagesByDevice(targetPort);
-        String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommit(packageId)
-                .waitUntilNeededStatus("FINISHED", packageId);
-        assert(networkSwitchingPage.getPackageStatus().contains("FINISHED"));
+    assertTrue(targetOnuIdsAfterCommit.size() == targetOnuIdsBeforeCommit.size()
+            && targetOnuIdsBeforeCommit.containsAll(targetOnuIdsAfterCommit)
+            && targetOnuIdsAfterCommit.containsAll(targetOnuIdsBeforeCommit));
 
-        List<AccessLineDto> sourceAccessLinesAfterCommit = accessLineRiRobot.getAccessLinesWithHomeId(targetPort);
-        List<Integer> targetAnpTagsAfterCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommit);
-        List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterCommit);
-        List<Integer> targetOnuIdsAfterCommit= accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
-        List<String> usedHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(targetPort, HomeIdStatus.ASSIGNED);
-        List<String> usedLineIdsAfterCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(targetPort, AccessLineStatus.ASSIGNED);
-        List<String> freeHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
-        List<String> wgLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
-        List<String> freeLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByStatus(sourcePort, LineIdStatus.FREE);
+    assertEquals(sourceOnuIdsAfterCommit.size(), 0);
+    assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+    assertTrue(usedHomeIdsAfterCommit.containsAll(usedHomeIdsBeforeCommit));
+    assertTrue(usedLineIdsAfterCommit.containsAll(usedLineIdsBeforeCommit));
+    assertTrue(freeHomeIdsAfterCommit.containsAll(freeHomeIdsBeforeCommit));
+    accessLineRiRobot.compareLists(wgLineIdsBeforeCommitOnSourcePort, wgLineIdsAfterCommitOnSourcePort);
+    accessLineRiRobot.compareLists(freeLineIdsBeforeCommitOnTargetPort, freeLineIdsAfterCommitOnSourcePort);
 
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(sourcePort).size(), sourcePort.getAccessLinesCount().intValue());
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(targetPort).size(), targetPort.getAccessLinesCount().intValue());
-        assertEquals(accessLineRiRobot.getHomeIdPool(sourcePort).size(), sourcePort.getHomeIdPool().intValue());
-        assertEquals(accessLineRiRobot.getLineIdPool(sourcePort).size(), sourcePort.getLineIdPool().intValue());
-        assertEquals(accessLineRiRobot.getHomeIdPool(targetPort).size(), targetPort.getHomeIdPool().intValue());
-        assertEquals(accessLineRiRobot.getLineIdPool(targetPort).size(), targetPort.getLineIdPool().intValue());
+  }
 
-        assertTrue(targetAnpTagsAfterCommit.size() == targetAnpTagsBeforeCommit.size()
-                &&targetAnpTagsBeforeCommit.containsAll(targetAnpTagsAfterCommit)
-                &&targetAnpTagsAfterCommit.containsAll(targetAnpTagsBeforeCommit));
+  @Test
+  @TmsLink("DIGIHUB-114664")
+  @Description("Network Switching Rollback")
+  public void networkSwitchingRollbackTest() throws Exception {
 
-        assertTrue(targetOnuIdsAfterCommit.size() == targetOnuIdsBeforeCommit.size()
-                &&targetOnuIdsBeforeCommit.containsAll(targetOnuIdsAfterCommit)
-                &&targetOnuIdsAfterCommit.containsAll(targetOnuIdsBeforeCommit));
+    List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePortForRollback);
+    List<AccessLineDto> targetAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesByPort(targetPortForRollback);
+    List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
+    List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePortForRollback, sourceAccessLinesBeforePreparation);
+    List<Integer> targetAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesBeforePreparation);
+    List<Integer> targetOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPortForRollback, targetAccessLinesBeforePreparation);
+    NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+    networkSwitchingPage.validateUrl();
+    networkSwitchingPage.startPreparation(sourcePortForRollback, targetPortForRollback);
+    String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+    networkSwitchingPage.clickPackageId()
+            .waitUntilNeededStatus("PREPARED", packageId);
 
-        assertTrue(sourceOnuIdsAfterCommit.size() == 0);
+    assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+    networkSwitchingPage.startRollback(packageId)
+            .waitUntilNeededStatus("ROLLBACKED", packageId);
+    assert (networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
 
-        assertTrue(usedHomeIdsAfterCommit.containsAll(usedHomeIdsBeforeCommit));
-        assertTrue(usedLineIdsAfterCommit.containsAll(usedLineIdsBeforeCommit));
-        assertTrue(freeHomeIdsAfterCommit.containsAll(freeHomeIdsBeforeCommit));
-        assertTrue(wgLineIdsAfterCommitOnSourcePort.size() == wgLineIdsBeforeCommitOnSourcePort.size()
-                &&wgLineIdsAfterCommitOnSourcePort.containsAll(wgLineIdsBeforeCommitOnSourcePort)
-                &&wgLineIdsBeforeCommitOnSourcePort.containsAll(wgLineIdsAfterCommitOnSourcePort));
-        assertTrue(freeLineIdsBeforeCommitOnTargetPort.size() == freeLineIdsAfterCommitOnSourcePort.size()
-                &&freeLineIdsBeforeCommitOnTargetPort.containsAll(freeLineIdsAfterCommitOnSourcePort)
-                &&freeLineIdsAfterCommitOnSourcePort.containsAll(freeLineIdsBeforeCommitOnTargetPort));
-    }
+    List<AccessLineDto> sourceAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesWithHomeId(sourcePortForRollback);
+    List<AccessLineDto> targetAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesByPort(targetPortForRollback);
+    List<Integer> sourceAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterRollback);
+    List<Integer> sourceOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePortForRollback, sourceAccessLinesAfterRollback);
+    List<Integer> targetAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollback);
+    List<Integer> targetOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPortForRollback, targetAccessLinesAfterRollback);
+    assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+    assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
+            && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size());
+    accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
+    accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
+    accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
+    accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+
+  }
 }
