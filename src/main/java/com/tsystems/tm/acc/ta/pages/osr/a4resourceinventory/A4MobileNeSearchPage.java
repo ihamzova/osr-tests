@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,8 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.url;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
 import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
@@ -47,6 +48,8 @@ public class A4MobileNeSearchPage {
     public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("tblResultNetworkElements");
     public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]");
 
+    public static final By VPSZ_VALUE_LOCATOR = By.id("vpszValue");
+
     @Step("Validate page")
     public A4MobileNeSearchPage validate() {
         $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
@@ -56,7 +59,7 @@ public class A4MobileNeSearchPage {
 
     @Step("Login")
     public static void login() {
-        URL url = new OCUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
         open(url, A4MobileNeSearchPage.class);
     }
 }

@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import cucumber.BaseSteps;
 import cucumber.TestContext;
 import io.cucumber.java.en.Then;
@@ -22,6 +23,13 @@ public class A4UiSearchPageSteps extends BaseSteps {
     }
 
     // -----=====[ WHENS ]=====-----
+
+    @When("the user navigates to (the )NEG search page")
+    public void whenUserNavigatesToNegSearchPage() {
+        // ACTION
+        a4ResInvSearch.openInventarSuchePage();
+        a4ResInvSearch.clickNetworkElementGroup();
+    }
 
     @When("the user navigates to (the )NE search page")
     public void whenUserNavigatesToNeSearchPage() {
@@ -44,13 +52,31 @@ public class A4UiSearchPageSteps extends BaseSteps {
         a4ResInvSearch.enterNeFsz(fsz);
     }
 
-    @When("(the user )/(she )clicks the submit button")
-    public void whenUserClicksSubmitButton() {
+    @When("(the user )/(she )clicks the NEG search submit button")
+    public void whenUserClicksNegSearchSubmitButton() {
+        // ACTION
+        a4ResInvSearch.clickNegSearchButton();
+    }
+
+    @When("(the user )/(she )clicks the NE search submit button")
+    public void whenUserClicksNeSearchSubmitButton() {
         // ACTION
         a4ResInvSearch.clickNeSearchButton();
     }
 
     // -----=====[ THENS ]=====-----
+
+    @Then("the/a/one/1 NEG in the search result list has name {string}")
+    public void thenXNEGsAreShownInSearchResultTable(String name) {
+        // ACTION
+        List<NetworkElementGroupDto> negFilteredlist = a4ResInvSearch.createNegListActualResult()
+                .stream()
+                .filter(neg -> Objects.equals(neg.getName(), name))
+                .collect(Collectors.toList());
+
+        assertEquals(negFilteredlist.size(), 1); // NEG with name is unique, there can be only one
+        assertEquals(negFilteredlist.get(0).getName(), name);
+    }
 
     @Then("the/a/one/1 NE in the search result list has VPSZ {string} and FSZ {string}")
     public void thenUserGetsSearchResultsWithVpszAndFszInTable(String vpsz, String fsz) {

@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -17,10 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
-import static org.testng.Assert.assertEquals;
 
 @Slf4j
 public class A4InventarSucheRobot {
+
+    public static final int numberOfColumnsNegList = 6;
+    public static final int numberOfColumnsNeList = 12;
 
     // helper method 'wait'
     public void waitForTableToFullyLoad(int numberOfElements) {
@@ -210,37 +213,64 @@ public class A4InventarSucheRobot {
         getNeElementsCollection().get(0).click();
     }
 
+    public List<NetworkElementGroupDto> createNegListActualResult() {
+        ElementsCollection elementsCollection = getNegElementsCollection();
+        return createNegListActualResult(elementsCollection);
+    }
+
+    public List<NetworkElementGroupDto> createNegListActualResult(ElementsCollection elementsCollection) {
+        List<NetworkElementGroupDto> negActualResultList = new ArrayList<>();
+
+        // read table from ui and fill list (actual result)
+        List<String> eList = elementsCollection.texts();
+        for (int i = 0; i < eList.size() / numberOfColumnsNegList; i++) {
+            NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
+            negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList));
+            negActualGeneric.setName(eList.get(i * numberOfColumnsNegList + 1));
+            negActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNegList + 2));
+            negActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNegList + 3));
+            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 4));
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 5));
+            negActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            negActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+            negActualResultList.add(negActualGeneric);
+        }
+
+        // sort
+        negActualResultList = negActualResultList
+                .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
+                .collect(Collectors.toList());
+
+        return negActualResultList;
+    }
+
     public List<NetworkElementDto> createNeListActualResult() {
         ElementsCollection elementsCollection = getNeElementsCollection();
         return createNeListActualResult(elementsCollection);
     }
 
     public List<NetworkElementDto> createNeListActualResult(ElementsCollection elementsCollection) {
-        final int numberOfColumnsNeList = 12;
-
-        // create empty list
         List<NetworkElementDto> neActualResultList = new ArrayList<>();
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
-            NetworkElementDto neActualGeneric = new NetworkElementDto();
-            neActualResultList.add(neActualGeneric);
-        }
 
         // read table from ui and fill list (actual result)
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
-            neActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList).getText());
-            neActualResultList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList + 1).getText());
-            neActualResultList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList + 2).getText());
-            neActualResultList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList + 3).getText());
-            neActualResultList.get(i).setType(elementsCollection.get(i * numberOfColumnsNeList + 4).getText());
-            neActualResultList.get(i).setZtpIdent(elementsCollection.get(i * numberOfColumnsNeList + 5).getText());
-            neActualResultList.get(i).setKlsId(elementsCollection.get(i * numberOfColumnsNeList + 6).getText());
-            neActualResultList.get(i).setPlanningDeviceName(elementsCollection.get(i * numberOfColumnsNeList + 7).getText());
-            neActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList + 8).getText());
-            neActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList + 9).getText());
-            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i * numberOfColumnsNeList + 10).getText());
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i * numberOfColumnsNeList + 11).getText());
-            neActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
-            neActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+        List<String> eList = elementsCollection.texts();
+        for (int i = 0; i < eList.size() / numberOfColumnsNeList; i++) {
+            NetworkElementDto neActualGeneric = new NetworkElementDto();
+            neActualGeneric.setUuid(eList.get(i * numberOfColumnsNeList));
+            neActualGeneric.setVpsz(eList.get(i * numberOfColumnsNeList + 1));
+            neActualGeneric.setFsz(eList.get(i * numberOfColumnsNeList + 2));
+            neActualGeneric.setCategory(eList.get(i * numberOfColumnsNeList + 3));
+            neActualGeneric.setType(eList.get(i * numberOfColumnsNeList + 4));
+            neActualGeneric.setZtpIdent(eList.get(i * numberOfColumnsNeList + 5));
+            neActualGeneric.setKlsId(eList.get(i * numberOfColumnsNeList + 6));
+            neActualGeneric.setPlanningDeviceName(eList.get(i * numberOfColumnsNeList + 7));
+            neActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNeList + 8));
+            neActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNeList + 9));
+            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 10));
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 11));
+            neActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            neActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+            neActualResultList.add(neActualGeneric);
         }
 
         // sort
