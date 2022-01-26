@@ -37,7 +37,7 @@ public class OltCommissioningRobot {
   private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
-  private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 32;
+  private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 16;
   private static final Integer LINE_ID_POOL_PER_PORT = 32;
   private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
@@ -137,10 +137,10 @@ public class OltCommissioningRobot {
     if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
       Assert.assertEquals(portList.size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
       portsCount = olt.getNumberOfPonPorts();
-      //for ADTRAN device provisioning (strategy 32 on demand)
+      //for ADTRAN device provisioning (strategy 16-4-4 on demand)
       accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
-      expectedFreeLineIdCountPerPort = 0;
-      expectedUsedLineIdCountPerPort = LINE_ID_POOL_PER_PORT;
+      expectedFreeLineIdCountPerPort = 16L;
+      expectedUsedLineIdCountPerPort = LINE_ID_POOL_PER_PORT - expectedFreeLineIdCountPerPort;
     } else {
       portsCount = portList.stream()
               .filter(port -> port.getPortType().equals(PortType.PON)).count();
