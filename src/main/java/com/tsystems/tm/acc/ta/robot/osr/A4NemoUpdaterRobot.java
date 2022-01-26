@@ -81,7 +81,7 @@ public class A4NemoUpdaterRobot {
      */
     public void checkLogicalResourceRequestToNemoWiremock(String uuid, String method, int count) {
         WireMockFactory.get()
-                .retrieve(
+                .verifyThat(
                         exactly(count),
                         newRequestPattern(
                                 RequestMethod.fromString(method),
