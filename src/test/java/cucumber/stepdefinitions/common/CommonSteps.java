@@ -17,7 +17,8 @@ import io.restassured.response.Response;
 
 import java.net.URL;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
@@ -55,10 +56,10 @@ public class CommonSteps extends BaseSteps {
 
         wiremock.getWireMock().resetRequests();
 
-        if(BROWSER_ACTIVE) {
-            destroySelenium();
-            closeWebDriver();
-        }
+//        if(BROWSER_ACTIVE) {
+//            destroySelenium();
+//            closeWebDriver();
+//        }
     }
 
     // -----=====[ GIVENS ]=====-----
