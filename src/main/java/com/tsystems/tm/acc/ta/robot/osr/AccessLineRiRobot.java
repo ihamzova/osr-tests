@@ -10,6 +10,15 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNetworkLineProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.FttbNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.L2BsaNspReferenceDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.OnuAccessIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ReferenceDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNetworkLineProfileDto;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -31,6 +40,7 @@ import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
   private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
+  private static final Integer LATENCY_FOR_RECONFIGURATION = 70_000;
 
   private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
   private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
@@ -128,9 +138,11 @@ public class AccessLineRiRobot {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
       timeoutBlock.setTimeoutInterval(15000);
-      Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).size() == port.getAccessLinesWG();
+      Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).stream()
+              .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN))
+              .collect(Collectors.toList()).size() == port.getAccessLinesWG();
       timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -173,7 +185,7 @@ public class AccessLineRiRobot {
       timeoutBlock.setTimeoutInterval(5000);
       Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(port).size() == expectedEthernetPortsCount;
       timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -189,7 +201,7 @@ public class AccessLineRiRobot {
       timeoutBlock.setTimeoutInterval(5000);
       Supplier<Boolean> checkGponPorts = () -> getGponPorts(port).size() == expectedGponPortsCount;
       timeoutBlock.addBlock(checkGponPorts); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -206,7 +218,7 @@ public class AccessLineRiRobot {
       timeoutBlock.setTimeoutInterval(5000);
       Supplier<Boolean> checkGfastPorts = () -> getGfastPorts(dpuDevice).size() == expectedGfastPortsCount;
       timeoutBlock.addBlock(checkGfastPorts); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -226,7 +238,7 @@ public class AccessLineRiRobot {
       timeoutBlock.setTimeoutInterval(5000);
       Supplier<Boolean> checkEthernetPorts = () -> getEthernetPorts(oltPort).size() == expectedEthernetPortsCount;
       timeoutBlock.addBlock(checkEthernetPorts); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -254,7 +266,7 @@ public class AccessLineRiRobot {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
       Supplier<Boolean> checkA4PreProvisioning = () -> getAccessLinesByPort(port).size() == 1;
       timeoutBlock.addBlock(checkA4PreProvisioning); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -281,7 +293,7 @@ public class AccessLineRiRobot {
       Supplier<Boolean> checkA4FttbPreProvisioning = () -> getAccessLinesByGfastPort(port).stream().
               filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count() == 1;
       timeoutBlock.addBlock(checkA4FttbPreProvisioning); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -307,7 +319,7 @@ public class AccessLineRiRobot {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
       Supplier<Boolean> checkFttbProvisioning = () -> getAccessLinesByPort(port).size() == numberOfAccessLinesForProvisioning;
       timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
-    } catch (Throwable e) {
+    } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
 
@@ -398,6 +410,34 @@ public class AccessLineRiRobot {
     List<L2BsaNspReference> actualL2bsaNspReferences =
             actualL2bsaNspReferenceDtos.stream().map(AccessLineRiRobot::mapToL2BsaNspReference).collect(Collectors.toList());
     assertTrue(actualL2bsaNspReferences.stream().allMatch(l2BsaNspReference -> l2BsaNspReference.equals(expectedL2bsaNspReference)), "L2BsaNSPReference is incorrect");
+  }
+
+  @Step("Check syncStatus after reconfiguration")
+  public void checkReconfigurationResult(String lineId) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_RECONFIGURATION); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(2000);
+      Supplier<Boolean> checkReconfigurationResult = () ->
+              getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus() == null
+                      &&getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus() == null
+                      &&getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus() == null
+                      &&getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus() == null;
+
+      timeoutBlock.addBlock(checkReconfigurationResult); // execute the runnable precondition
+    }  catch (Exception e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus());
+    assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus());
+
+    if (getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile() != null) {
+      assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus());
+    }
+
+    if (getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile() != null) {
+      assertNull(getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus());
+    }
   }
 
   @Step("Remove lines with id > 1008, change some port refs")
@@ -758,7 +798,7 @@ public class AccessLineRiRobot {
             .collect(Collectors.toList());
   }
 
-  @Step("Get AllocatedOnuIds")
+  @Step("Get AllocatedOnuIds by port")
   private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
     List<Integer> onuIds = accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
             .body(new SearchAllocatedOnuIdDto()
@@ -777,6 +817,18 @@ public class AccessLineRiRobot {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     return onuIdDtos;
+  }
+
+  @Step("Get AllocatedOnuIds by Device and LineId")
+  public List<Integer> getAllocatedOnuIdByDeviceAndLineId(PortProvisioning port, String lineId) {
+    return accessLineResourceInventory.allocatedOnuIdController()
+            .searchAllocatedOnuId()
+            .body(new SearchAllocatedOnuIdDto()
+                    .lineId(lineId)
+                    .oltEndSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
   }
 
   @Step("Get AllocatedOnuIds by AccessLines")
@@ -976,6 +1028,60 @@ public class AccessLineRiRobot {
     return accessLines.get(0).getLineId();
   }
 
+  @Step("Create AccessLine")
+  public void postAccessLine (AccessLineDto accessLineMigrated) {
+    accessLineResourceInventory.accessLineController()
+            .create()
+            .body(accessLineMigrated)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Create OnuId")
+  public void postOnuId (AllocatedOnuIdDto onuIdMigrated) {
+    accessLineResourceInventory.allocatedOnuIdController()
+            .createAllocatedOnuId()
+            .body(onuIdMigrated)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Create LineId")
+  public void postLineId (LineIdMigrated lineIdMigrated) {
+    accessLineResourceInventory.lineIdController()
+            .addLineIds()
+            .body(lineIdMigrated.getLineIdDtoList())
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  }
+
+  @Step("Change HomeId Status")
+  public String changeHomeIdStatus (HomeIdDto homeIdDto, HomeIdStatus homeIdStatus) {
+    homeIdDto.setStatus(homeIdStatus);
+    accessLineResourceInventory.homeIdController()
+            .updateHomeId()
+            .body(homeIdDto)
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    return homeIdDto.getHomeId();
+  }
+
+  @Step("Update HomeId on migrated AccessLine")
+  public void updateHomeIdOnMigratedAccessLine (String lineId, String homeId) {
+    List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto().lineId(lineId))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+    final AccessLineDto accessLineDto = accessLineDtoList.get(0);
+
+    if (accessLineDto != null) {
+      accessLineDto.setHomeId(homeId);
+
+      accessLineResourceInventory.accessLineController()
+              .update()
+              .body(accessLineDto)
+              .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    } else {
+      throw new RuntimeException("Access Line not found with lineId: " + lineId);
+    }
+  }
 }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {

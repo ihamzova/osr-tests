@@ -19,6 +19,7 @@ import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.AccessLineIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.DeviceDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.PortDto;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
@@ -139,6 +141,15 @@ public class WgAccessProvisioningRobot {
             .body(new DeviceDto()
                     .endSz(port.getEndSz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+  }
+
+  @Step("Start reconfiguration")
+  public void startReconfiguration(String lineId) {
+    wgAccessProvisioningClient.getClient()
+            .provisioningProcess()
+            .startUpdateLineProfiles()
+            .body(new AccessLineIdDto().lineId(lineId))
+            .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
   @Step("Collect wg-access-provisioning logs")
