@@ -56,10 +56,10 @@ public class CommonSteps extends BaseSteps {
 
         wiremock.getWireMock().resetRequests();
 
-        if(BROWSER_ACTIVE) {
-            destroySelenium();
+//        if(BROWSER_ACTIVE) {
+//            destroySelenium();
 //            closeWebDriver();
-        }
+//        }
     }
 
     // -----=====[ GIVENS ]=====-----

@@ -9,7 +9,6 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -23,63 +22,29 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot.numberOfColumnsNeList;
+import static com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot.numberOfColumnsNegList;
 import static org.testng.Assert.assertEquals;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
-
 @Slf4j
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS,A4_INVENTORY_IMPORTER_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_UI_MS, A4_RESOURCE_INVENTORY_BFF_PROXY_MS, A4_INVENTORY_IMPORTER_MS})
 @Epic("OS&R")
 
 public class A4InventarSuchePageTest extends GigabitTest {
     private final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
     private final OsrTestContext osrTestContext = OsrTestContext.get();
-    private final int numberOfColumnsNegList = 6;
     private A4NetworkElementGroup a4NetworkElementGroup;
 
-    // helper 'createActualResult NEG'
-    public List<NetworkElementGroupDto> createNegListActualResult ( ElementsCollection elementsCollection ){
-        // create empty list
-        List <NetworkElementGroupDto> negActualResultList = new ArrayList<>();
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNegList; i++) {
-            NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
-            negActualResultList.add(negActualGeneric);
-        }
-       // log.info("+++negActualResultList: "+negActualResultList.size());
-
-        // read table from ui and fill list (actual result)
-        for (int i = 0; i < elementsCollection.size() / numberOfColumnsNegList; i++){
-            negActualResultList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNegList).getText());
-            negActualResultList.get(i).setName(elementsCollection.get(i * numberOfColumnsNegList +1).getText());
-            negActualResultList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNegList +2).getText());
-            negActualResultList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNegList +3).getText());
-            OffsetDateTime creationTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNegList+4).getText());
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(elementsCollection.get(i*numberOfColumnsNegList+5).getText());
-            negActualResultList.get(i).setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
-            negActualResultList.get(i).setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
-        }
-        // sort
-        negActualResultList = negActualResultList
-                .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
-                .collect(Collectors.toList());
-        return negActualResultList;
-    }
-
     // helper 'compare ne'
-    public void compareExpectedResultWithActualResultNeList (List <NetworkElementDto>neFilteredList,
-                                                              List <NetworkElementDto>neActualResultList,
-                                                              int elementsCollectionSize ){
-        int numberOfColumnsNeList = 12;
+    public void compareExpectedResultWithActualResultNeList(List<NetworkElementDto> neFilteredList,
+                                                            List<NetworkElementDto> neActualResultList,
+                                                            int elementsCollectionSize) {
         for (int i = 0; i < elementsCollectionSize / numberOfColumnsNeList; i++) {
             assertEquals(neFilteredList.get(i).getUuid(), neActualResultList.get(i).getUuid());
             assertEquals(neFilteredList.get(i).getVpsz(), neActualResultList.get(i).getVpsz());
@@ -98,9 +63,9 @@ public class A4InventarSuchePageTest extends GigabitTest {
     }
 
     // helper 'compare neg'
-    public void compareExpectedResultWithActualResultNegList (List <NetworkElementGroupDto>negFilteredList,
-                                                              List <NetworkElementGroupDto>negActualResultList,
-                                                              int elementsCollectionSize ){
+    public void compareExpectedResultWithActualResultNegList(List<NetworkElementGroupDto> negFilteredList,
+                                                             List<NetworkElementGroupDto> negActualResultList,
+                                                             int elementsCollectionSize) {
         for (int i = 0; i < elementsCollectionSize / numberOfColumnsNegList; i++) {
             assertEquals(negFilteredList.get(i).getUuid(), negActualResultList.get(i).getUuid());
             assertEquals(negFilteredList.get(i).getName(), negActualResultList.get(i).getName());
@@ -184,7 +149,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNeList(neFilteredList, neActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -219,7 +184,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementDto> neFilteredList;
         neFilteredList = allNeList
                 .stream()
-                .filter(group -> group.getVpsz().equals("49/9715/0") && group.getCategory().equals("LEAF_SWITCH") )
+                .filter(group -> group.getVpsz().equals("49/9715/0") && group.getCategory().equals("LEAF_SWITCH"))
                 .collect(Collectors.toList());
         //log.info("+++ Anzahl NEs in Filterliste : "+neFilteredList.size());
 
@@ -233,7 +198,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNeList(neFilteredList, neActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -277,7 +242,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementDto> neFilteredList;
         neFilteredList = allNeList
                 .stream()
-                .filter(group -> group.getVpsz().equals("49/9715/0")  )
+                .filter(group -> group.getVpsz().equals("49/9715/0"))
                 .collect(Collectors.toList());
         //log.info("+++ Anzahl NEs in Filterliste : "+neFilteredList.size());
 
@@ -291,7 +256,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementDto> neActualResultList = a4InventarSucheRobot.createNeListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNeList (neFilteredList, neActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNeList(neFilteredList, neActualResultList, elementsCollection.size());
     }
 
     // tests neg
@@ -325,10 +290,10 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -361,10 +326,10 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -397,10 +362,10 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -433,10 +398,10 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -469,10 +434,10 @@ public class A4InventarSuchePageTest extends GigabitTest {
         //log.info("+++negFilteredList : "+negFilteredList.size());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 
     @Test
@@ -496,13 +461,13 @@ public class A4InventarSuchePageTest extends GigabitTest {
         List<NetworkElementGroupDto> negFilteredList;
         negFilteredList = allNegList
                 .stream()
-                .filter(group -> group.getName().equals(a4NetworkElementGroup.getName()) )
+                .filter(group -> group.getName().equals(a4NetworkElementGroup.getName()))
                 .collect(Collectors.toList());
 
         // create actual result
-        List<NetworkElementGroupDto> negActualResultList = createNegListActualResult(elementsCollection);
+        List<NetworkElementGroupDto> negActualResultList = a4InventarSucheRobot.createNegListActualResult(elementsCollection);
 
         // compare, expected and actual result
-        compareExpectedResultWithActualResultNegList (negFilteredList, negActualResultList, elementsCollection.size());
+        compareExpectedResultWithActualResultNegList(negFilteredList, negActualResultList, elementsCollection.size());
     }
 }
