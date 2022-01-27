@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import com.tsystems.tm.acc.ta.robot.osr.A10nspCheckRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.qameta.allure.Epic;
@@ -14,8 +13,6 @@ import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 /*@ServiceLog(A10NSP_INVENTORY_MS)
 @ServiceLog(OLT_RESOURCE_INVENTORY_MS)

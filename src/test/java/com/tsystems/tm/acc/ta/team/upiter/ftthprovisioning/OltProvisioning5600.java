@@ -50,14 +50,6 @@ public class OltProvisioning5600 extends GigabitTest {
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
 
-//  @AfterClass
-//  public void clearData() {
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(device5600.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v1.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v2.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(port5600.getEndSz());
-//  }
-
   @BeforeClass
   public void init() {
     accessLineRiRobot = new AccessLineRiRobot();
@@ -72,13 +64,6 @@ public class OltProvisioning5600 extends GigabitTest {
     port5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
-
-
-
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(device5600.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v1.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(card5600v2.getEndSz());
-//    osrSupportRobot.forceDeleteAccessLineByEndSz(port5600.getEndSz());
   }
 
   @Test

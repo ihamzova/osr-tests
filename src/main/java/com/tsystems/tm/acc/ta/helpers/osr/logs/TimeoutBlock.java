@@ -11,7 +11,7 @@ public class TimeoutBlock {
         this.timeoutMilliSeconds = timeoutMilliSeconds;
     }
 
-    public void addBlock(Supplier<Boolean> condition) throws Throwable {
+    public void addBlock(Supplier<Boolean> condition) throws Exception {
         long collectIntervals = 0;
         boolean result;
         do {
