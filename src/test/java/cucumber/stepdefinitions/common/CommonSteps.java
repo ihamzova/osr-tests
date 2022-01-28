@@ -46,7 +46,7 @@ public class CommonSteps extends BaseSteps {
     public void cleanup() {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-        final boolean BROWSER_ACTIVE = getScenarioContext().isContains(Context.BROWSER);
+//        final boolean BROWSER_ACTIVE = getScenarioContext().isContains(Context.BROWSER);
 
         // ACTION
         wiremock.close();
@@ -68,7 +68,7 @@ public class CommonSteps extends BaseSteps {
     public void givenUserWithPasswordIsLoggedInToUi(String user, String password, String ms) {
         // For some reason the usual way that GigabitTest takes care of setting the webdriver and doing the rhsso login
         // to the ui doesn't work with cucumber. Therefore doing it by hand...
-        
+
         // ACTION
 
         // This is work in progress, don't mind the dirtiness :)

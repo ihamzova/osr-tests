@@ -1,10 +1,13 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import cucumber.BaseSteps;
 import cucumber.TestContext;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -22,6 +25,16 @@ public class A4UiSearchPageSteps extends BaseSteps {
         super(testContext);
     }
 
+    // -----=====[ GIVENS ]=====-----
+
+    @Given("a (rhsso )user with Berlinium credentials")
+    public void givenAUserWithBerliniumCredentials() {
+        // ACTION
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+    }
+
     // -----=====[ WHENS ]=====-----
 
     @When("the user navigates to (the )NEG search page")
@@ -33,6 +46,18 @@ public class A4UiSearchPageSteps extends BaseSteps {
 
     @When("the user navigates to (the )NE search page")
     public void whenUserNavigatesToNeSearchPage() {
+
+
+        // runs into error:
+        // java.lang.AssertionError: Login or password are null. Please set them using setCredentials()
+        // Why? Credentials are set below!
+
+        // TODO Remove this when credentials problem is solved!
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
+
         // ACTION
         a4ResInvSearch.openInventarSuchePage();
         a4ResInvSearch.clickNetworkElement();
