@@ -73,21 +73,6 @@ public class A4NemoUpdaterRobot {
         checkLogicalResourceRequestToNemoWiremock(uuid, "DELETE", 1);
     }
 
-    @Step("Check if request to NEMO wiremock with logical resource has happened with delay")
-    /* Checks whether an HTTP-request has reached the Nemo-Wiremock
-     * @param uuid uuid of the LogicalResource to be checked
-     * @param method name of the HTTP-method to be used
-     * delay in mock 5 seconds
-     */
-    public void checkLogicalResourceRequestToNemoWiremockWithDelay(String uuid, String method, int count) {
-        WireMockFactory.get()
-                .retrieve(
-                        exactly(count),
-                        newRequestPattern(
-                                RequestMethod.fromString(method),
-                                urlPathEqualTo(NEMO_URL + "/" + uuid)));
-    }
-
     @Step("Check if request to NEMO wiremock with logical resource has happened")
     /* Checks whether an HTTP-request has reached the Nemo-Wiremock
      * @param uuid uuid of the LogicalResource to be checked
@@ -95,7 +80,7 @@ public class A4NemoUpdaterRobot {
      */
     public void checkLogicalResourceRequestToNemoWiremock(String uuid, String method, int count) {
         WireMockFactory.get()
-                .verifyThat(
+                .retrieve(
                         exactly(count),
                         newRequestPattern(
                                 RequestMethod.fromString(method),
