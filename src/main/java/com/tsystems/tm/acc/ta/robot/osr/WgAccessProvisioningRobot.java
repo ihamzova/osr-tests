@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
@@ -41,18 +42,18 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
 
 @Slf4j
 public class WgAccessProvisioningRobot {
-  private static final Integer LATENCY_FOR_PORT_PROVISIONING = 320_000;
   private static String CORRELATION_ID = UUID.randomUUID().toString();
   private ServiceLogExpectSince logExpect;
   private WgAccessProvisioningClient wgAccessProvisioningClient = new WgAccessProvisioningClient(authTokenProvider);
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
-  AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+  private UnleashClient unleashClient = new UnleashClient();
 
   private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
 
@@ -211,17 +212,6 @@ public class WgAccessProvisioningRobot {
     for (int i = 0; i < linesCount; i++) {
       ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto); //assigned linesCount
     }
-    try {
-      TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-      Supplier<Boolean> precondition = () -> {
-        List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port);
-        return accessLines.size() == port.getAccessLinesCount();
-      };
-
-      timeoutBlock.addBlock(precondition); // execute the runnable precondition
-    } catch (Throwable e) {
-      //catch the exception here . Which is block didn't execute within the time limit
-    }
   }
 
   @Step("Get PON Ports")
@@ -268,4 +258,15 @@ public class WgAccessProvisioningRobot {
     portBeforeProvisioning.setAccessLinesWG(port.getAccessLinesWG());
     return portBeforeProvisioning;
   }
+
+  @Step("Change feature toggle state")
+  public void changeFeatureToogleEnable64PonSplittingState(boolean toggleState) {
+    if (toggleState) {
+      unleashClient.enableToggle(FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING);
+    } else {
+      unleashClient.disableToggle(FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING);
+    }
+    log.info("toggleState for {} = {}", FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING, toggleState);
+  }
+
 }
