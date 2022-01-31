@@ -138,9 +138,11 @@ public class AccessLineRiRobot {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
       timeoutBlock.setTimeoutInterval(15000);
-      Supplier<Boolean> checkProvisioning = () -> getAccessLinesByPort(port).stream()
-              .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN))
-              .collect(Collectors.toList()).size() == port.getAccessLinesWG();
+      Supplier<Boolean> checkProvisioning = () ->
+              getAccessLinesByPort(port).stream().filter(accessLine ->
+                              accessLine.getStatus().equals(AccessLineStatus.WALLED_GARDEN))
+                      .collect(Collectors.toList()).size()
+                      == port.getAccessLinesWG();
       timeoutBlock.addBlock(checkProvisioning); // execute the runnable precondition
     } catch (Exception e) {
       //catch the exception here . Which is block didn't execute within the time limit
