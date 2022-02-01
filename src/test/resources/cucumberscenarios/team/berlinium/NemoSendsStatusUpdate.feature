@@ -11,6 +11,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Nemo Status Update Test
     And the NSP L2BSA lifecycleState is updated to "<NewLcState>" in the response
     And the NSP L2BSA operationalState is updated to "<NewOpState>" in the A4 resource inventory
     And the NSP L2BSA lifecycleState is updated to "<NewLcState>" in the A4 resource inventory
+    And 1 "PUT" NSP L2BSA update notification was sent to NEMO
 
     Examples:
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
