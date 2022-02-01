@@ -9,7 +9,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENT
 
 public class A4UiSecuritySteps {
 
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4UiSecuritySteps(TestContext testContext) {
         this.testContext = testContext;

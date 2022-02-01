@@ -31,7 +31,7 @@
         <parameter name="featureFolder" value="team/berlinium"/>
         <parameter name="tags" value="@berlinium"/>
         <classes>
-            <class name="cucumber.TestRunnerGigabitCucumberBerlinium"/>
+            <class name="cucumber.RunCucumberTestsBerlinium"/>
         </classes>
     </test>
 

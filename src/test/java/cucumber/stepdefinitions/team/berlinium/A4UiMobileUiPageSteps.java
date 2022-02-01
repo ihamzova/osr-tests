@@ -14,7 +14,7 @@ import static org.testng.Assert.assertEquals;
 public class A4UiMobileUiPageSteps {
 
     public final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4UiMobileUiPageSteps(TestContext testContext) {
         this.testContext = testContext;

@@ -18,7 +18,7 @@ import static org.testng.Assert.assertEquals;
 public class WiremockWgA4ProvisioningSteps {
 
     private final WgA4ProvisioningWiremockRobot a4ProvWiremock = new WgA4ProvisioningWiremockRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public WiremockWgA4ProvisioningSteps(TestContext testContext) {
         this.testContext = testContext;

@@ -1,14 +1,9 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.ta.cucumber.steps.AbstractCommonBrowserSteps;
-import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
-import com.tsystems.tm.acc.ta.test.SelenideConfigurationManagerFacade;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import cucumber.TestContext;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -18,23 +13,12 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4UiSearchPageSteps extends AbstractCommonBrowserSteps {
+public class A4UiSearchPageSteps {
     private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
-    public A4UiSearchPageSteps(TestContext testContext, SelenideConfigurationManagerFacade selenideConfigurationManagerFacade) {
-        super(selenideConfigurationManagerFacade);
+    public A4UiSearchPageSteps(TestContext testContext) {
         this.testContext = testContext;
-    }
-
-    // -----=====[ GIVENS ]=====-----
-
-    @Given("a (rhsso )user with Berlinium credentials")
-    public void givenAUserWithBerliniumCredentials() {
-        // ACTION
-        Credentials loginData = testContext.getOsrTestContext().getData().getCredentialsDataProvider()
-                .get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     // -----=====[ WHENS ]=====-----

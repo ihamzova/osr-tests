@@ -8,18 +8,16 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import cucumber.Context;
 import cucumber.TestContext;
-import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 public class A4ResInvServiceSteps {
 
-    final int SLEEP_TIMER = 5;
+    final int SLEEP_TIMER = 5; // in seconds
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4ResInvServiceSteps(TestContext testContext) {
         this.testContext = testContext;

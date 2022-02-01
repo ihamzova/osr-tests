@@ -24,7 +24,7 @@ import static org.testng.AssertJUnit.assertEquals;
 public class A4ResInvSteps {
 
     private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4ResInvSteps(TestContext testContext) {
         this.testContext = testContext;

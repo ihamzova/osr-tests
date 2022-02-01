@@ -1,7 +1,6 @@
 package cucumber;
 
 import com.tsystems.tm.acc.ta.cucumber.AbstractGigabitCucumberTest;
-import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
@@ -10,12 +9,11 @@ import io.cucumber.testng.CucumberOptions;
                 "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm",
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
-        glue = {
-                "com.tsystems.tm.acc.ta.cucumber.steps",
+        glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
                 "cucumber.stepdefinitions.team.berlinium",
-                "cucumber.stepdefinitions.common"
-        },
-        features = {"src/test/resources/cucumberscenarios/team/berlinium"},
-        tags = "@ui"
+                "cucumber.stepdefinitions.common"},
+        features = {"src/test/resources/cucumberscenarios/team/berlinium"}
+        , tags = "@ui"
 )
-public class BerliniumCucumberTests extends AbstractGigabitCucumberTest { }
+public class RunCucumberTestsBerlinium extends AbstractGigabitCucumberTest {
+}

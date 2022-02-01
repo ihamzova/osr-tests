@@ -10,7 +10,7 @@ public class A4QueueSteps {
 
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4QueueSteps(TestContext testContext) {
         this.testContext = testContext;

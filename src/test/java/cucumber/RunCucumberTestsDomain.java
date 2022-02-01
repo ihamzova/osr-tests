@@ -1,26 +1,17 @@
 package cucumber;
 
-import io.cucumber.testng.AbstractTestNGCucumberTests;
+import com.tsystems.tm.acc.ta.cucumber.AbstractGigabitCucumberTest;
 import io.cucumber.testng.CucumberOptions;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
-@Test
 @CucumberOptions(
         plugin = {"pretty",
                 "html:target/allure-results/cucumberscenarios.html",
                 "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm",
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
-        glue = {"cucumber.stepdefinitions"},
+        glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
+                "cucumber.stepdefinitions"},
         features = {"src/test/resources/cucumberscenarios/domain"}
 )
-public class RunCucumberTestsDomain extends AbstractTestNGCucumberTests {
-
-    @Override
-    @DataProvider()
-    public Object[][] scenarios() {
-        return super.scenarios();
-    }
-
+public class RunCucumberTestsDomain extends AbstractGigabitCucumberTest {
 }

@@ -12,7 +12,7 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 public class A4CommissioningSteps {
 
     private final WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public A4CommissioningSteps(TestContext testContext) {
         this.testContext = testContext;

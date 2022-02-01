@@ -10,7 +10,7 @@ import io.cucumber.java.en.Then;
 public class WiremockNemoSteps {
 
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
-    private TestContext testContext;
+    private final TestContext testContext;
 
     public WiremockNemoSteps(TestContext testContext) {
         this.testContext = testContext;
