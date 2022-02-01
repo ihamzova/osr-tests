@@ -11,6 +11,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
@@ -32,11 +33,15 @@ public class AccessProcessManagementUi extends GigabitTest {
     @BeforeClass
     public void init() {
         process = context.getData().getProcessDataProvider().get(ProcessCase.searchProcessByEndSz);
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.AccessProcessManagementUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
 
         today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
         System.out.println(today);
+    }
+
+    @BeforeMethod
+    void setup() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.AccessProcessManagementUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     @Test

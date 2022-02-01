@@ -10,7 +10,6 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -20,8 +19,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Epic("OS&R")
 @Feature("Import Network Element (Group) CSV file into A4 Resource Inventory")
@@ -45,9 +44,6 @@ public class A4ImportCsvTest extends GigabitTest {
 
     @BeforeClass
     public void init() {
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
 
         // Ensure that no old test data is in the way
@@ -56,6 +52,9 @@ public class A4ImportCsvTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
                 .addNemoMock()
                 .build();

@@ -20,6 +20,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
@@ -60,14 +61,18 @@ public class ProcessesSearchTest extends GigabitTest {
     ftthProcess = context.getData().getProcessDataProvider().get(ProcessCase.ftthFailedProcess);
     fttbProcess = context.getData().getProcessDataProvider().get(ProcessCase.fttbFailedProcess);
     processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(ftthProcess).toString();
-    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
-    setCredentials(loginData.getLogin(), loginData.getPassword());
     today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
     dayAgo = OffsetDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd MM"));
     weekAgo = OffsetDateTime.now().minusDays(8).format(DateTimeFormatter.ofPattern("dd MM"));
     threeHoursAgo = OffsetDateTime.now().minusHours(3).format(DateTimeFormatter.ofPattern("HH"));
     dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
     oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFailedFttbProvisioningTwistedPair);
+  }
+
+  @BeforeMethod
+  void setup() {
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
   }
 
   @AfterClass
