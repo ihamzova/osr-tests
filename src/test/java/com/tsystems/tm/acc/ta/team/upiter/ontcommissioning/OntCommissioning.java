@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
@@ -50,6 +51,7 @@ public class OntCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+  private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
   private AccessLine accessLineForCommissioning;
   private AccessLine accessLine;
   private AccessLine accessLineFor33LineCaseNew;
@@ -245,10 +247,13 @@ public class OntCommissioning extends GigabitTest {
   }
 
   @Test()
-  @TmsLink("DIGIHUB-42230")
-  @Description("Deprovisioning of the 33d AccessLine after termination")
+  @TmsLink("DIGIHUB-136262")
+  @Description("Deprovisioning of the 33d AccessLine after termination, feature toggle is off ")
   @Owner("DL_T-Magic.U-Piter@t-systems.com")
-  public void ontDecommissioning33LineTest() {
+  public void ontDecommissioning33LineToggleOffTest() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+
+    Thread.sleep(3000);
 
     // prepare test data
     List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
@@ -274,6 +279,50 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
             lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())
                     && lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
+            AccessLineStatus.ASSIGNED);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
+            accessLineFor33LineCaseOld.getHomeId());
+  }
+
+  @Test()
+  @TmsLink("DIGIHUB-136259")
+  @Description("Deprovisioning of the 33d AccessLine after termination, feature toggle is on ")
+  @Owner("DL_T-Magic.U-Piter@t-systems.com")
+  public void ontDecommissioning33LineToggleOnTest() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
+
+    Thread.sleep(3000);
+
+    // prepare test data
+    List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
+                    &&accessLineDto.getHomeId()!=null).collect(Collectors.toList());
+    accessLineFor33LineCaseOld.setLineId(accessLines.get(0).getLineId());
+    accessLineFor33LineCaseOld.setHomeId(accessLines.get(0).getHomeId());
+    accessLineFor33LineCaseNew.setLineId(accessLines.stream().filter(accessLine -> !accessLine.getLineId().equals(accessLineFor33LineCaseOld.getLineId()))
+            .collect(Collectors.toList()).get(0).getLineId());
+    accessLineFor33LineCaseNew.setHomeId(accessLineFor33LineCaseOld.getHomeId());
+    ontOltOrchestratorRobot.updateOntState(accessLineFor33LineCaseNew);
+
+    // test
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineFor33LineCaseNew);
+
+    // check callback
+    assertTrue(callback.getSuccess());
+    assertNull(callback.getError());
+    assertNull(callback.getResponse());
+
+    // check alri
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).size(), 1);
+    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseNew.getLineId()),
+            AccessLineStatus.WALLED_GARDEN);
+    assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
+            lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())
+                    && lineIdDto.getStatus().equals(LineIdStatus.USED)).collect(Collectors.toList()).size(), 1);
+    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).get(0).getHomeId(), accessLineFor33LineCaseNew.getHomeId());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).get(0).getDefaultNeProfile().getSubscriberNeProfile());
+
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),

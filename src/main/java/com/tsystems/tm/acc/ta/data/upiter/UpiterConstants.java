@@ -28,4 +28,7 @@ public interface UpiterConstants {
     String ONT_USAGE_SUPPLIER_UI ="ont-usage-supplier-ui";
     String ONT_USAGE_SUPPORT_UI ="ont-usage-support-ui";
     String NETWORK_SWITCHING_CONGIF_MGT_MS ="network-switching-config-mgt";
+
+    String FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING = "business.resource-order-resource-inventory.enable-64-pon-splitting";
+
 }
