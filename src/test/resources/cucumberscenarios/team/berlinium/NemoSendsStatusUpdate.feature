@@ -1,7 +1,7 @@
 Feature: [DIGIHUB-xxxxx][Berlinium] Nemo Status Update Test
 
-  @berlinium @domain
-    @a4-resource-inventory @a4-resource-inventory-service
+  @berlinium @domain @smoke
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service
   Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (L2BSA)
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
     And a NSP L2BSA with operationalState "<OldOpState>" and lifecycleState "<OldLcState>" is existing in A4 resource inventory

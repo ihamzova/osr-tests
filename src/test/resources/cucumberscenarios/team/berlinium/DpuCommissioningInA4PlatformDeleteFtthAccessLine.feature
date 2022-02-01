@@ -4,15 +4,15 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
 
   # X-Ray: DIGIHUB-127641
   @berlinium @domain
-  @a4-resource-inventory @a4-resource-inventory-service
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service
   Scenario: NEMO deletes non-existent Termination Point (idempotency test)
     Given no TP exists in A4 resource inventory
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
 
   # X-Ray: DIGIHUB-127643
-  @berlinium
-  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
+  @berlinium @smoke
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point without deprovisioning triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And no NSP FTTH exists in A4 resource inventory for the TP
@@ -23,8 +23,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
     And the TP does not exist in A4 resource inventory anymore
 
   # X-Ray: DIGIHUB-127854
-  @berlinium
-  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
+  @berlinium @smoke
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point with deprovisioning triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
@@ -42,7 +42,7 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
 
   # X-Ray: DIGIHUB-127642
   @berlinium @domain
-    @a4-resource-inventory-service
+    @ms:a4-resource-inventory-service
   Scenario Outline: NEMO deletes Termination Point with invalid types
     Given a TP with type "<Type>" is existing in A4 resource inventory
     When NEMO sends a delete TP request

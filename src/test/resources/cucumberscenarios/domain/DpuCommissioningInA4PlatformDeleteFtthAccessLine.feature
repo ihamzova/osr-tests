@@ -2,8 +2,8 @@ Feature: [DIGIHUB-118272][OS&R] DPU Commissioning in A4 platform - Delete FTTH A
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=396658649
 
   # X-Ray: DIGIHUB-132266
-  @domain
-  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-commissioning
+  @domain @smoke
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point with deprovisioning triggered
     Given a DPU preprovisioning was done earlier
     When NEMO sends a delete TP request

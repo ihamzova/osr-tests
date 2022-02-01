@@ -2,8 +2,8 @@ Feature: [DIGIHUB-35444][DIGIHUB-39620][OS&R] Receive and process Termination Po
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438
 
   # X-Ray: DIGIHUB-59383
-  @domain
-  @a4-resource-inventory @a4-resource-inventory-service @a4-queue-dispatcher @a4-carrier-management
+  @domain @smoke
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
   Scenario: NEMO creates Termination Point with preprovisioning triggered
     Given a NEP is existing in A4 resource inventory
     When NEMO sends a create TP request with type "PON_TP"

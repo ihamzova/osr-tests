@@ -12,8 +12,8 @@ import io.cucumber.testng.CucumberOptions;
         glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
                 "cucumber.stepdefinitions.team.berlinium",
                 "cucumber.stepdefinitions.common"},
-        features = {"src/test/resources/cucumberscenarios/team/berlinium"}
-        , tags = "@ui"
+        features = {"src/test/resources/cucumberscenarios/team/berlinium"},
+        tags = "@smoke"
 )
-public class RunCucumberTestsBerlinium extends AbstractGigabitCucumberTest {
+public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractGigabitCucumberTest {
 }

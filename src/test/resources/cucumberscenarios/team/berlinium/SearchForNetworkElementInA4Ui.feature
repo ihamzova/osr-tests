@@ -3,7 +3,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
   Background:
     Given a user with Berlinium credentials
 
-  @berlinium @domain @ui
+  @berlinium @domain @smoke @ui
     @ms:a4-resource-inventory-ui @ms:a4-resource-inventory-bff-proxy @ms:a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element
     Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
@@ -20,7 +20,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
       | "49/1234/0" | "7KH0" |
 
   @berlinium @domain @ui
-    @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
+    @ms:a4-resource-inventory-ui @ms:a4-resource-inventory-bff-proxy @ms:a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element; multiple results
     Given a NE with VPSZ <VPSZ> and FSZ "7KH0" is existing in A4 resource inventory
     And a NE with VPSZ <VPSZ> and FSZ "7KH1" is existing in A4 resource inventory
@@ -35,7 +35,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
       | "49/1234/0" |
 
   @berlinium @domain @ui
-  @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
+  @ms:a4-resource-inventory-ui @ms:a4-resource-inventory-bff-proxy @ms:a4-resource-inventory
   Scenario: User wants to look up a non-existing Network Element
     Given no NE exists in A4 resource inventory
     When the user navigates to NE search page
