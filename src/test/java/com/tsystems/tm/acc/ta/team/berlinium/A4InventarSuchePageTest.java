@@ -79,9 +79,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        //Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        //setCredentials(loginData.getLogin(), loginData.getPassword());
-
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         cleanUp();

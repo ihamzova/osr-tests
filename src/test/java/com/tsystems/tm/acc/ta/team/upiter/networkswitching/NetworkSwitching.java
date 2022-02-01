@@ -18,6 +18,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -56,13 +57,16 @@ public class NetworkSwitching extends GigabitTest {
     targetPort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.Target_49_911_1100_76H1);
     sourcePortForRollback = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.SourceRB_49_30_179_76H1);
     targetPortForRollback = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.TargetRB_49_911_1100_76H1);
-    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
-    setCredentials(loginData.getLogin(), loginData.getPassword());
     accessLineRiRobot.clearDatabase();
     networkSwitchingRobot.clearDatabase();
     Thread.sleep(2000);
     accessLineRiRobot.fillDatabaseForNetworkSwitching(sourcePort, targetPort);
+  }
 
+  @BeforeMethod
+  void setup() {
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
   }
 
   @Test

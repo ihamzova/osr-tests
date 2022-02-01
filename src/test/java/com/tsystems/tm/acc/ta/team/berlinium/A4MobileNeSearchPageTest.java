@@ -97,10 +97,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
-                .get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         a4NetworkElementGroup = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
 
@@ -130,6 +126,10 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
         robotRI.createNetworkElementGroup(a4NetworkElementGroup);
         a4NetworkElements.forEach((k, networkElement) -> robotRI.createNetworkElement(networkElement, a4NetworkElementGroup));
         robotRI.createNetworkElementPort(a4NetworkElementPortA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));

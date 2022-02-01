@@ -27,8 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
-import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_UI_MS, A4_RESOURCE_INVENTORY_BFF_PROXY_MS, A4_INVENTORY_IMPORTER_MS})
@@ -58,10 +60,6 @@ public class A4InbetriebnahmeTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
-                .get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         a4NetworkElements.put(A4_NE_OPERATING_BOR_02, osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -88,6 +86,10 @@ public class A4InbetriebnahmeTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+                .get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
         robotRI.createNetworkElementGroup(neg);
         a4NetworkElements.forEach((k, networkElement) -> robotRI.createNetworkElement(networkElement, neg));
         robotRI.createNetworkElementPort(nepA, a4NetworkElements.get(A4_NE_OPERATING_BOR_02));

@@ -14,6 +14,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
@@ -41,9 +42,6 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
@@ -70,6 +68,12 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementPort(nepDataB, neDataB);
         nelData.setUeWegId(uewegData.getUewegId());
         a4ResourceInventory.createNetworkElementLink(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
+    }
+
+    @BeforeMethod
+    void setup() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
     @AfterClass

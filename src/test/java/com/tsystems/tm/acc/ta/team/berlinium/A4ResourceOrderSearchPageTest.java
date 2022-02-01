@@ -27,6 +27,7 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Comparator;
@@ -37,8 +38,10 @@ import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP_PUBLIC_REFERENZ_NR;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
-import static org.testng.Assert.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_UI_MS, A4_RESOURCE_INVENTORY_BFF_PROXY_MS, A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
@@ -59,9 +62,6 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     @BeforeClass()
     public void init() {
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
 
@@ -113,6 +113,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         sendResourceOrder(ro);
     }
 
+    @BeforeMethod
+    void setup() {
+        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOA4InventoryUi);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+    }
 
     private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
         ResourceOrder resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
