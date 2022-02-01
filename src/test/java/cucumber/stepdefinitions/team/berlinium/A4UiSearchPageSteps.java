@@ -1,11 +1,12 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
+import com.tsystems.tm.acc.ta.cucumber.steps.AbstractCommonBrowserSteps;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
+import com.tsystems.tm.acc.ta.test.SelenideConfigurationManagerFacade;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
-import cucumber.BaseSteps;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -17,12 +18,13 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4UiSearchPageSteps extends BaseSteps {
-
+public class A4UiSearchPageSteps extends AbstractCommonBrowserSteps {
     private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
+    private TestContext testContext;
 
-    public A4UiSearchPageSteps(TestContext testContext) {
-        super(testContext);
+    public A4UiSearchPageSteps(TestContext testContext, SelenideConfigurationManagerFacade selenideConfigurationManagerFacade) {
+        super(selenideConfigurationManagerFacade);
+        this.testContext = testContext;
     }
 
     // -----=====[ GIVENS ]=====-----
@@ -30,7 +32,7 @@ public class A4UiSearchPageSteps extends BaseSteps {
     @Given("a (rhsso )user with Berlinium credentials")
     public void givenAUserWithBerliniumCredentials() {
         // ACTION
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
+        Credentials loginData = testContext.getOsrTestContext().getData().getCredentialsDataProvider()
                 .get(CredentialsCase.RHSSOA4InventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
     }
@@ -46,18 +48,6 @@ public class A4UiSearchPageSteps extends BaseSteps {
 
     @When("the user navigates to (the )NE search page")
     public void whenUserNavigatesToNeSearchPage() {
-
-
-        // runs into error:
-        // java.lang.AssertionError: Login or password are null. Please set them using setCredentials()
-        // Why? Credentials are set below!
-
-        // TODO Remove this when credentials problem is solved!
-        Credentials loginData = osrTestContext.getData().getCredentialsDataProvider()
-                .get(CredentialsCase.RHSSOA4InventoryUi);
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-
-
         // ACTION
         a4ResInvSearch.openInventarSuchePage();
         a4ResInvSearch.clickNetworkElement();

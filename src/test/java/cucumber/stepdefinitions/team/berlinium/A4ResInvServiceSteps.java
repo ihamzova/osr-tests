@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
-import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -16,14 +15,14 @@ import io.restassured.response.Response;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
-@ServiceLog({A4_RESOURCE_INVENTORY_SERVICE_MS})
-public class A4ResInvServiceSteps extends BaseSteps {
+public class A4ResInvServiceSteps {
 
     final int SLEEP_TIMER = 5;
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
+    private TestContext testContext;
 
     public A4ResInvServiceSteps(TestContext testContext) {
-        super(testContext);
+        this.testContext = testContext;
     }
 
     // -----=====[ WHENS ]=====-----
@@ -31,7 +30,7 @@ public class A4ResInvServiceSteps extends BaseSteps {
     @When("NEMO sends a delete TP request( to A4 resource inventory service)")
     public void whenNemoSendsADeleteTPRequest() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
         Response response = a4ResInvService.deleteLogicalResource(tp.getUuid());
@@ -40,16 +39,16 @@ public class A4ResInvServiceSteps extends BaseSteps {
         sleepForSeconds(SLEEP_TIMER);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        getScenarioContext().setContext(Context.RESPONSE, response);
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
     @When("NEMO sends a create TP request with type {string}")
     public void whenNemoSendsACreateTPRequestWithType(String tpType) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) getScenarioContext().getContext(Context.A4_NEP);
+        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
-        A4TerminationPoint tp = osrTestContext.getData().getA4TerminationPointDataProvider()
+        A4TerminationPoint tp = testContext.getOsrTestContext().getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         tp.setSubType(tpType);
         Response response = a4ResInvService.createTerminationPoint(tp, nep);
@@ -58,15 +57,15 @@ public class A4ResInvServiceSteps extends BaseSteps {
         sleepForSeconds(SLEEP_TIMER);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        getScenarioContext().setContext(Context.A4_TP, tp);
-        getScenarioContext().setContext(Context.RESPONSE, response);
+        testContext.getScenarioContext().setContext(Context.A4_TP, tp);
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
     @When("NEMO sends a request to change NSP L2BSA operationalState to {string}")
     public void whenNemoSendsOperationalStateUpdateForNspL2Bsa(String newOperationalState) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2 = (A4NetworkServiceProfileL2Bsa) getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-        final A4TerminationPoint tp = (A4TerminationPoint) getScenarioContext().getContext(Context.A4_TP);
+        final A4NetworkServiceProfileL2Bsa nspL2 = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
         final Response response = a4ResInvService.sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(nspL2, tp, newOperationalState);
@@ -75,8 +74,8 @@ public class A4ResInvServiceSteps extends BaseSteps {
         final A4NetworkServiceProfileL2Bsa resultNspL2 = mapLrToA4NspL2Bsa(lr);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        getScenarioContext().setContext(Context.RESPONSE, response);
-        getScenarioContext().setContext(Context.A4_NSP_L2BSA, resultNspL2);
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, resultNspL2);
     }
 
     // -----=====[ HELPERS ]=====-----

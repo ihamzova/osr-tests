@@ -5,10 +5,10 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Network Element search in A4 res-inv UI
     Given a user with Berlinium credentials
 
   @berlinium @domain @ui
-    @a4-resource-inventory-ui @a4-resource-inventory-bff-proxy @a4-resource-inventory
+    @ms:a4-resource-inventory-ui @ms:a4-resource-inventory-bff-proxy @ms:a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element
-    Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
-    And a NE with VPSZ <VPSZ> and FSZ "7KH1" is existing in A4 resource inventory
+    #Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory
+    #And a NE with VPSZ <VPSZ> and FSZ "7KH1" is existing in A4 resource inventory
     When the user navigates to NE search page
     And enters VPSZ <VPSZ> into the input fields
     And enters FSZ <FSZ> into the input field

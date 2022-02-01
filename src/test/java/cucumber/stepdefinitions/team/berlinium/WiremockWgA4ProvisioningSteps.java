@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
-import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
@@ -16,12 +15,13 @@ import io.cucumber.java.en.Then;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
-public class WiremockWgA4ProvisioningSteps extends BaseSteps {
+public class WiremockWgA4ProvisioningSteps {
 
     private final WgA4ProvisioningWiremockRobot a4ProvWiremock = new WgA4ProvisioningWiremockRobot();
+    private TestContext testContext;
 
     public WiremockWgA4ProvisioningSteps(TestContext testContext) {
-        super(testContext);
+        this.testContext = testContext;
     }
 
     // -----=====[ GIVENS ]=====-----
@@ -29,7 +29,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning preprovisioning mock will respond HTTP code {int} when called, and create the NSP")
     public void givenUPiterDpuPreprovWiremockWillRespondHTTPCodeWhenCalledAndCreateNsp(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
@@ -40,7 +40,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning preprovisioning mock will respond HTTP code {int} when called the 1st time")
     public void givenUPiterDpuPreprovWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
@@ -51,7 +51,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning preprovisioning mock will respond HTTP code {int} when called the 2nd time, and create the NSP")
     public void givenUPiterDpuPreprovWiremockWillRespondHTTPCodeWhenCalledSecondTimeAndCreateNsp(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
@@ -62,8 +62,8 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called, and delete the NSP")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledAndDeleteNsp(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
+        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
         wiremock
@@ -74,7 +74,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalled(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
@@ -85,7 +85,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the 1st time")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
@@ -96,8 +96,8 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the 2nd time, and delete the NSP")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledSecondTimeAndDeleteNsp(int httpCodeSecond) {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
+        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
         wiremock
@@ -123,7 +123,7 @@ public class WiremockWgA4ProvisioningSteps extends BaseSteps {
     public void thenADpuDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
         // ACTION
         final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
-        final A4AccessLineRequestDto erg = om.readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
+        final A4AccessLineRequestDto erg = testContext.getObjectMapper().readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
     }
 
