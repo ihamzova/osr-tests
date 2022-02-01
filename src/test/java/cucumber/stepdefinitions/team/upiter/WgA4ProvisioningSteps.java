@@ -1,17 +1,17 @@
 package cucumber.stepdefinitions.team.upiter;
 
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
-import cucumber.BaseSteps;
 import cucumber.TestContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 
-public class WgA4ProvisioningSteps extends BaseSteps {
+public class WgA4ProvisioningSteps {
 
     private final AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+    private TestContext testContext;
 
     public WgA4ProvisioningSteps(TestContext testContext) {
-        super(testContext);
+        this.testContext = testContext;
     }
 
     @Before

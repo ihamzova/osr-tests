@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import cucumber.BaseSteps;
 import cucumber.Context;
 import cucumber.TestContext;
 import de.telekom.it.t3a.kotlin.context.GlobalContextKt;
@@ -22,10 +21,11 @@ import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
-public class CommonSteps extends BaseSteps {
+public class CommonSteps {
+    private TestContext testContext;
 
     public CommonSteps(TestContext testContext) {
-        super(testContext);
+        this.testContext = testContext;
     }
 
     @Before
@@ -39,13 +39,13 @@ public class CommonSteps extends BaseSteps {
                 .publishedHook(attachStubsToAllureReport());
 
         // OUTPUT INTO SCENARIO CONTEXT
-        getScenarioContext().setContext(Context.WIREMOCK, wiremock);
+        testContext.getScenarioContext().setContext(Context.WIREMOCK, wiremock);
     }
 
     @After
     public void cleanup() {
         // INPUT FROM SCENARIO CONTEXT
-        WireMockMappingsContext wiremock = (WireMockMappingsContext) getScenarioContext().getContext(Context.WIREMOCK);
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 //        final boolean BROWSER_ACTIVE = getScenarioContext().isContains(Context.BROWSER);
 
         // ACTION
@@ -88,7 +88,7 @@ public class CommonSteps extends BaseSteps {
 
         final URL url = new GigabitUrlBuilder(ms).build();
         open(url);
-        getScenarioContext().setContext(Context.BROWSER, true);
+        testContext.getScenarioContext().setContext(Context.BROWSER, true);
 
         final SelenideElement usernameInput = $("#username");
         final SelenideElement passwordInput = $("#password");
@@ -103,7 +103,7 @@ public class CommonSteps extends BaseSteps {
     @Then("the (callback )request is responded/answered with HTTP( error) code {int}")
     public void thenTheRequestIsRespondedWithHTTPCode(int httpCode) {
         // INPUT FROM SCENARIO CONTEXT
-        Response response = (Response) getScenarioContext().getContext(Context.RESPONSE);
+        Response response = (Response) testContext.getScenarioContext().getContext(Context.RESPONSE);
 
         // ACTION
         assertEquals(response.getStatusCode(), httpCode);

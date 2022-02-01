@@ -1,19 +1,19 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
-import cucumber.BaseSteps;
 import cucumber.TestContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 
-public class A4QueueSteps extends BaseSteps {
+public class A4QueueSteps {
 
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
+    private TestContext testContext;
 
     public A4QueueSteps(TestContext testContext) {
-        super(testContext);
+        this.testContext = testContext;
     }
 
     @Before
