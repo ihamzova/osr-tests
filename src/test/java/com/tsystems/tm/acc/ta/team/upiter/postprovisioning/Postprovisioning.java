@@ -64,13 +64,7 @@ public class Postprovisioning extends GigabitTest {
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning32);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(14, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); //13 assigned lines
-
-//        assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning32).size(),
-//                portForPostprovisioning32.getAccessLinesCount().intValue());
-
-        //1 trigger postprovisioning
-        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); //13 + 1 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(15, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); //15 assigned lines
 
         portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning32.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);
@@ -80,25 +74,16 @@ public class Postprovisioning extends GigabitTest {
 
         // cycle for postprovisioning up to 32 AccessLines
         for (int i = portForPostprovisioning32.getAccessLinesCount(); i < 32; i = i + numberOfCreatedLines) {
-            wgAccessProvisioningRobot.prepareForPostprovisioning(3, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32));
+            wgAccessProvisioningRobot.prepareForPostprovisioning(4, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32));
 
-//            assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning32).size(),
-//                    portForPostprovisioning32.getAccessLinesCount().intValue());
-
-            //1 to trigger postprovisioning
-            wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32));
             portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + numberOfCreatedLines);
 
             accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
             accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning32);
         }
 
-        wgAccessProvisioningRobot.prepareForPostprovisioning(5, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); // 28 + 6 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(6, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); // 28 + 6 assigned lines
 
-//        assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning32).size(),
-//                portForPostprovisioning32.getAccessLinesCount().intValue());
-
-        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); //33 wg line creation
         portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + 1);
         portForPostprovisioning32.setLineIdPool(portForPostprovisioning32.getAccessLinesCount());
         portForPostprovisioning32.setAccessLinesWG(0);
@@ -115,13 +100,7 @@ public class Postprovisioning extends GigabitTest {
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning64);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning64);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(14, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64)); //13 assigned lines
-
-//        assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning64).size(),
-//                portForPostprovisioning64.getAccessLinesCount().intValue());
-
-        //1 trigger postprovisioning
-        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64)); //13 + 1 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(15, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64)); //15 assigned lines
 
         portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning64.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);
@@ -131,13 +110,7 @@ public class Postprovisioning extends GigabitTest {
 
         // cycle for postprovisioning up to 64 AccessLines
         for (int i = portForPostprovisioning64.getAccessLinesCount(); i < 64; i = i + numberOfCreatedLines) {
-            wgAccessProvisioningRobot.prepareForPostprovisioning(3, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));
-
-//            assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning64).size(),
-//                    portForPostprovisioning64.getAccessLinesCount().intValue());
-
-            //1 to trigger postprovisioning
-            wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));
+            wgAccessProvisioningRobot.prepareForPostprovisioning(4, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));
             portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + numberOfCreatedLines);
 
             if (portForPostprovisioning64.getAccessLinesCount() > 32) {
@@ -148,12 +121,8 @@ public class Postprovisioning extends GigabitTest {
             accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning64);
         }
 
-        wgAccessProvisioningRobot.prepareForPostprovisioning(5, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));  //58 + 6 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(6, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));  //58 + 6 assigned lines
 
-//        assertEquals(accessLineRiRobot.getAccessLinesByPort(portForPostprovisioning64).size(),
-//                portForPostprovisioning64.getAccessLinesCount().intValue());
-
-        wgAccessProvisioningRobot.prepareForPostprovisioning(1, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64)); //65 wg line creation
         portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + 1);
         portForPostprovisioning64.setLineIdPool(portForPostprovisioning64.getAccessLinesCount());
         portForPostprovisioning64.setAccessLinesWG(0);

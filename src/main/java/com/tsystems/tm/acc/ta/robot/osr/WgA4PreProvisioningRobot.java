@@ -25,6 +25,7 @@ import java.util.UUID;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static org.testng.Assert.assertTrue;
@@ -64,7 +65,7 @@ public class WgA4PreProvisioningRobot {
                         .toString())
                 .body(new A4AccessLineRequestDto()
                 .lineId(lineId))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
 
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
         new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), DeprovisioningResponseHolder.class);
