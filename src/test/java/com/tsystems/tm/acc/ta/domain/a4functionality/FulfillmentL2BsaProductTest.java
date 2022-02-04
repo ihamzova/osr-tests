@@ -27,6 +27,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -49,7 +50,7 @@ import static org.testng.Assert.*;
         A4_CARRIER_MANAGEMENT_MS,
         ACCESS_LINE_MANAGEMENT})
 
-public class FulfillmentL2BsaProduct extends GigabitTest {
+public class FulfillmentL2BsaProductTest extends GigabitTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
@@ -140,7 +141,7 @@ public class FulfillmentL2BsaProduct extends GigabitTest {
                 .add(calId);
     }
 
-    //@AfterClass
+    @AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
         a4Inventory.deleteA4TestDataRecursively(negData);

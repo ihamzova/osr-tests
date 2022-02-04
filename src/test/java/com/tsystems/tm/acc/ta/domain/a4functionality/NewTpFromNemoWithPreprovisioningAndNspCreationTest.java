@@ -17,6 +17,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -81,7 +82,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4Inventory.createNetworkElementPort(nepData, neData);
     }
 
-    //@AfterClass
+    @AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
         a4Inventory.deleteA4TestDataRecursively(negData);
