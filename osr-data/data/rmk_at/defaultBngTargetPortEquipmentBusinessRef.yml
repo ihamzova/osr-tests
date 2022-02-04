@@ -1,0 +1,8 @@
+name: defaultBngTargetPortEquipmentBusinessRef
+template: com.tsystems.tm.acc.ta.data.osr.models.BngTargetPortEquipmentBusinessRef
+values:
+  deviceType: "BNG"
+  endSz: "49/30/179/43G1"
+  portName: "ge-7/8/7"
+  portType: "ETHERNET"
+  slotName: "2"
