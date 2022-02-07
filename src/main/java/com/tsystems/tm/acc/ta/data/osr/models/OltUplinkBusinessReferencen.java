@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OltUplinkBusinessReferencen {
-    private BngSourcePortEquipmentBusinessRef bngSourcePortEquipmentBusinessRef;
-    private BngTargetPortEquipmentBusinessRef bngTargetPortEquipmentBusinessRef;
-    private OltPortEquipmentBusinessRef oltPortEquipmentBusinessRef;
+    private EquipmentBusinessRef bngSourcePortEquipmentBusinessRef;
+    private EquipmentBusinessRef bngTargetPortEquipmentBusinessRef;
+    private EquipmentBusinessRef oltPortEquipmentBusinessRef;
 }

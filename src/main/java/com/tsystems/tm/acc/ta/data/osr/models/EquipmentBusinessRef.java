@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OltPortEquipmentBusinessRef {
-    String deviceType;
-    String endSz;
-    String portName;
-    String portType;
-    String slotName;
+public class EquipmentBusinessRef {
+    private String deviceType;
+    private String endSz;
+    private String portName;
+    private String portType;
+    private String slotName;
 }

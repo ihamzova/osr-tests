@@ -4,6 +4,7 @@ package com.tsystems.tm.acc.ta.team.mercury.rmk_at;
 import com.tsystems.tm.acc.data.osr.models.oltuplinkbusinessreferencen.OltUplinkBusinessReferencenCase;
 import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.robot.osr.MpcSwitchRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
@@ -24,6 +25,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 public class MpcSwitchTest extends GigabitTest {
 
     private OltUplinkBusinessReferencen defaultOltUplinkBusinessReferencen;
+    private MpcSwitchRobot mpcSwitchRobot = new MpcSwitchRobot();
 
     @BeforeMethod
     public void init() {
@@ -32,6 +34,7 @@ public class MpcSwitchTest extends GigabitTest {
                 .getOltUplinkBusinessReferencenDataProvider()
                 .get(OltUplinkBusinessReferencenCase.OltUplinkSuccess);
 
+        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
     }
 
     @AfterClass
@@ -42,6 +45,11 @@ public class MpcSwitchTest extends GigabitTest {
     @Test(description = "DIGIHUB-127784 Check MPC Switch: happy case. BNG Port is free")
     public void changeBngPortBulkUplinkSuccess() {
         log.info("--- defaultOltUplinkBusinessReferencen = {}", defaultOltUplinkBusinessReferencen);
+
+        mpcSwitchRobot.fillDeviceInResourceInventory(defaultOltUplinkBusinessReferencen);
+        mpcSwitchRobot.changeBngPort(defaultOltUplinkBusinessReferencen);
+
+        //mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
     }
 
 
