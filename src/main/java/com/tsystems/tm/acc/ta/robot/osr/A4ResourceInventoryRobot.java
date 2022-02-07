@@ -17,8 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static org.testng.Assert.*;
@@ -149,7 +148,7 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check if Network Element is reset to PLANNING")
     public void checkNetworkElementIsResetToPlanning(String uuidNe) {
-        assertEquals(getExistingNetworkElement(uuidNe).getLifecycleState(), "PLANNING" );
+        assertEquals(getExistingNetworkElement(uuidNe).getLifecycleState(), "PLANNING");
         assertEquals(getExistingNetworkElement(uuidNe).getOperationalState(), "NOT_WORKING");
         assertNull(getExistingNetworkElement(uuidNe).getPlannedMatNumber());
         assertNull(getExistingNetworkElement(uuidNe).getKlsId());
@@ -211,6 +210,12 @@ public class A4ResourceInventoryRobot {
         nspList.forEach(nsp ->
                 deleteNetworkServiceProfileL2Bsa(nsp.getUuid())
         );
+    }
+
+    public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessByTerminationPoint(String uuidTp) {
+        List<NetworkServiceProfileFtthAccessDto> nspList = this.getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
+        Assert.assertEquals(nspList.size(), 1, "No NetworkServiceProfileFtthAccessDto found with TP-Uuid : " + uuidTp);
+        return nspList.get(0);
     }
 
     @Step("Get a list of Network Service Profiles FTTH Access by Termination Point UUID")
@@ -300,7 +305,7 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check if Termination Point exists")
     public void checkTerminationPointExists(String uuid) {
-         a4ResourceInventory
+        a4ResourceInventory
                 .terminationPoints()
                 .findTerminationPoint()
                 .uuidPath(uuid)
