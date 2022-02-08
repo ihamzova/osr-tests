@@ -26,6 +26,7 @@
             <class name="com.tsystems.tm.acc.ta.team.mercury.a10nsp.CheckLineIdTest"/>
             <class name="com.tsystems.tm.acc.ta.team.mercury.a10nsp.FindA10NspByEndSzList"/>
             <class name="com.tsystems.tm.acc.ta.team.mercury.migration.FTTHMigrationTest"/>
+            <class name="com.tsystems.tm.acc.ta.team.mercury.rmk_at.MpcSwitchTest"/>
         </classes>
     </test>
 </suite>

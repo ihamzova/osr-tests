@@ -1,7 +1,9 @@
 package com.tsystems.tm.acc.ta.team.mercury.rmk_at;
 
 
+import com.tsystems.tm.acc.data.osr.models.equipmentbusinessref.EquipmentBusinessRefCase;
 import com.tsystems.tm.acc.data.osr.models.oltuplinkbusinessreferencen.OltUplinkBusinessReferencenCase;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef;
 import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.MpcSwitchRobot;
@@ -25,6 +27,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 public class MpcSwitchTest extends GigabitTest {
 
     private OltUplinkBusinessReferencen defaultOltUplinkBusinessReferencen;
+    private EquipmentBusinessRef secondOltEquipmentBusinessRef;
     private MpcSwitchRobot mpcSwitchRobot = new MpcSwitchRobot();
 
     @BeforeMethod
@@ -34,23 +37,62 @@ public class MpcSwitchTest extends GigabitTest {
                 .getOltUplinkBusinessReferencenDataProvider()
                 .get(OltUplinkBusinessReferencenCase.OltUplinkSuccess);
 
+        secondOltEquipmentBusinessRef = OsrTestContext.get().getData()
+                .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.secondOltPortEquipmentBusinessRef);
+
         mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+        mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
     }
 
     @AfterClass
     public void teardown() {
-
+        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+        mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
     }
 
     @Test(description = "DIGIHUB-127784 Check MPC Switch: happy case. BNG Port is free")
     public void changeBngPortBulkUplinkSuccess() {
-        log.info("--- defaultOltUplinkBusinessReferencen = {}", defaultOltUplinkBusinessReferencen);
 
-        mpcSwitchRobot.fillDeviceInResourceInventory(defaultOltUplinkBusinessReferencen);
-        mpcSwitchRobot.changeBngPort(defaultOltUplinkBusinessReferencen);
+        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+        mpcSwitchRobot.fillDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
-        //mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.changeBngPortSuccess(defaultOltUplinkBusinessReferencen);
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+
+        //if the request is repeated, the response should also be HTTP 200
+        mpcSwitchRobot.changeBngPortSuccess(defaultOltUplinkBusinessReferencen);
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+
+        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+
     }
 
+    @Test(description = "DIGIHUB-127866 Check MPC Switch: unhappy case. bng port already in use")
+    public void changeBngPortBulkUplinkError() {
 
+        EquipmentBusinessRef secondBngEquipmentBusinessRef = OsrTestContext.get().getData()
+                .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.secondBngSourcePortEquipmentBusinessRef);
+
+        OltUplinkBusinessReferencen oltUplinkBusinessReferencen = OsrTestContext.get().getData()
+                .getOltUplinkBusinessReferencenDataProvider()
+                .get(OltUplinkBusinessReferencenCase.OltUplinkSuccess);
+        oltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(secondBngEquipmentBusinessRef); // BNG target port is already in use
+
+        mpcSwitchRobot.fillDeviceInResourceInventory(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
+        mpcSwitchRobot.fillDeviceInResourceInventory(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.changeBngPortError(oltUplinkBusinessReferencen);
+
+        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
+        mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
+    }
 }

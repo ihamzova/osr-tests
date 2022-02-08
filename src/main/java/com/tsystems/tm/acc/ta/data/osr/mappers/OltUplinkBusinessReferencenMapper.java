@@ -9,7 +9,7 @@ import java.util.List;
 
 public class OltUplinkBusinessReferencenMapper {
 
-    public List<ChangeBngPort> getChangeBngPorts(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
+    static public List<ChangeBngPort> getChangeBngPorts(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
 
         ArrayList<ChangeBngPort> changeBngPorts = new ArrayList<>();
 
@@ -43,6 +43,35 @@ public class OltUplinkBusinessReferencenMapper {
         changeBngPorts.add(changeBngPort);
         return changeBngPorts;
 
+    }
+
+
+    static public com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef getEquipmentBusinessRef(EquipmentBusinessRef equipmentBusinessRef) {
+
+        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEequipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
+        modelEequipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
+
+        modelEequipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
+        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEequipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
+        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEequipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
+
+        return modelEequipmentBusinessRef;
+    }
+
+    static public com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef getAncpEquipmentBusinessRef(com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.EquipmentBusinessRef equipmentBusinessRef) {
+
+        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEequipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
+        modelEequipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
+
+        modelEequipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
+        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEequipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
+        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEequipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
+
+        return modelEequipmentBusinessRef;
     }
 
 }
