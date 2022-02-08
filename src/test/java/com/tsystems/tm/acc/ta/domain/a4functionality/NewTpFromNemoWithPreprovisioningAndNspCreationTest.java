@@ -105,7 +105,6 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         // U-Piter checks
         assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 1, "There are > 1 AccessLines on the port");
         accessLineRi.checkHomeIdsCount(port);
-        accessLineRi.checkLineIdsCount(port);
         accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
     }
 
@@ -132,7 +131,6 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         accessLineRi.checkPhysicalResourceRefCountA4Ftth(portForDeprovisioning, 0);
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
         accessLineRi.checkHomeIdsCount(portForDeprovisioning);
-        accessLineRi.checkLineIdsCount(portForDeprovisioning);
     }
 
     // Deactivated for now because some U-Piter checks seem to happen dozens of times, under investigation
@@ -159,9 +157,7 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
 //        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData2.getUuid());
 //
 //        // U-Piter checks
-//        port.setLineIdPool(2);
 //        accessLineRi.checkHomeIdsCount(port);
-//        accessLineRi.checkLineIdsCount(port);
 //
 //        accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
 //        accessLineRi.checkA4LineParameters(port, tpFtthData2.getUuid());

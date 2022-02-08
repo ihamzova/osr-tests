@@ -9,10 +9,8 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkSwitchingRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.HomeIdStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.LineIdStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.HomeIdStatus;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -77,7 +75,6 @@ public class NetworkSwitching extends GigabitTest {
     List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
     List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
     List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesBeforePreparation);
-    List<String> lineIdsBeforePreparation = accessLineRiRobot.getLineIds(sourcePort);
     List<String> homeIdsBeforePreparation = accessLineRiRobot.getHomeIds(sourcePort);
 
     int numberOfAccessLinesOnTargetPortBeforePreparation = accessLineRiRobot.getAccessLinesByPort(targetPort).size();
@@ -92,7 +89,6 @@ public class NetworkSwitching extends GigabitTest {
     assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
 
     List<AccessLineDto> sourceAccessLinesAfterPreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
-    List<String> lineIdsAfterPreparation = accessLineRiRobot.getLineIds(sourcePort);
     List<String> homeIdsAfterPreparation = accessLineRiRobot.getHomeIds(sourcePort);
     List<Integer> sourceAnpTagsAfterPreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterPreparation);
     List<Integer> sourceOnuIdsAfterPreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterPreparation);
@@ -105,7 +101,6 @@ public class NetworkSwitching extends GigabitTest {
             numberOfAccessLinesOnTargetPortBeforePreparation - sourceAccessLinesBeforePreparation.size());
     assertTrue(targetAnpTagsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
     assertTrue(targetOnuIdsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size());
-    accessLineRiRobot.compareLists(lineIdsBeforePreparation, lineIdsAfterPreparation);
     accessLineRiRobot.compareLists(homeIdsBeforePreparation, homeIdsAfterPreparation);
     accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterPreparation);
     accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterPreparation);
@@ -121,10 +116,7 @@ public class NetworkSwitching extends GigabitTest {
     List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
 
     List<String> usedHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.ASSIGNED);
-    List<String> usedLineIdsBeforeCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.ASSIGNED);
     List<String> freeHomeIdsBeforeCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
-    List<String> wgLineIdsBeforeCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
-    List<String> freeLineIdsBeforeCommitOnTargetPort = accessLineRiRobot.getLineIdsByStatus(targetPort, LineIdStatus.FREE);
 
     NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
     networkSwitchingPage.validateUrl();
@@ -140,17 +132,12 @@ public class NetworkSwitching extends GigabitTest {
     List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(sourcePort, sourceAccessLinesAfterCommit);
     List<Integer> targetOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPort, sourceAccessLinesBeforeCommit);
     List<String> usedHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(targetPort, HomeIdStatus.ASSIGNED);
-    List<String> usedLineIdsAfterCommit = accessLineRiRobot.getLineIdsByAccessLinesStatus(targetPort, AccessLineStatus.ASSIGNED);
     List<String> freeHomeIdsAfterCommit = accessLineRiRobot.getHomeIdsByStatus(sourcePort, HomeIdStatus.FREE);
-    List<String> wgLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByAccessLinesStatus(sourcePort, AccessLineStatus.WALLED_GARDEN);
-    List<String> freeLineIdsAfterCommitOnSourcePort = accessLineRiRobot.getLineIdsByStatus(sourcePort, LineIdStatus.FREE);
 
     assertEquals(accessLineRiRobot.getAccessLinesByPort(sourcePort).size(), sourcePort.getAccessLinesCount().intValue());
     assertEquals(accessLineRiRobot.getAccessLinesByPort(targetPort).size(), targetPort.getAccessLinesCount().intValue());
     assertEquals(accessLineRiRobot.getHomeIdPool(sourcePort).size(), sourcePort.getHomeIdPool().intValue());
-    assertEquals(accessLineRiRobot.getLineIdPool(sourcePort).size(), sourcePort.getLineIdPool().intValue());
     assertEquals(accessLineRiRobot.getHomeIdPool(targetPort).size(), targetPort.getHomeIdPool().intValue());
-    assertEquals(accessLineRiRobot.getLineIdPool(targetPort).size(), targetPort.getLineIdPool().intValue());
 
     assertTrue(targetAnpTagsAfterCommit.size() == targetAnpTagsBeforeCommit.size()
             && targetAnpTagsBeforeCommit.containsAll(targetAnpTagsAfterCommit)
@@ -163,11 +150,7 @@ public class NetworkSwitching extends GigabitTest {
     assertEquals(sourceOnuIdsAfterCommit.size(), 0);
     assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
     assertTrue(usedHomeIdsAfterCommit.containsAll(usedHomeIdsBeforeCommit));
-    assertTrue(usedLineIdsAfterCommit.containsAll(usedLineIdsBeforeCommit));
     assertTrue(freeHomeIdsAfterCommit.containsAll(freeHomeIdsBeforeCommit));
-    accessLineRiRobot.compareLists(wgLineIdsBeforeCommitOnSourcePort, wgLineIdsAfterCommitOnSourcePort);
-    accessLineRiRobot.compareLists(freeLineIdsBeforeCommitOnTargetPort, freeLineIdsAfterCommitOnSourcePort);
-
   }
 
   @Test
@@ -206,6 +189,5 @@ public class NetworkSwitching extends GigabitTest {
     accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
     accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
     accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
-
   }
 }

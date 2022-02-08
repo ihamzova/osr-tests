@@ -10,14 +10,13 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -57,11 +56,6 @@ public class OltProvisioningAdtran extends GigabitTest {
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
         defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
         defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
-        accessLineRiRobot.clearDatabase();
-    }
-
-    @AfterClass
-    public void clearData() {
         accessLineRiRobot.clearDatabase();
     }
 
@@ -115,11 +109,8 @@ public class OltProvisioningAdtran extends GigabitTest {
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningForDpu, 1, 1);
 
         List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprovisioningForDpu);
-        List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprovisioningForDpu);
         long countHomeIDsFree = homeIds.stream().filter(HomeId -> HomeId.getStatus().getValue().equals(HomeIdLogicalStatus.FREE.getValue())).count();
-        long countLineIDsFree = lineIds.stream().filter(LineId -> LineId.getStatus().getValue().equals(LineIdStatus.FREE.getValue())).count();
         assertEquals(accessLineRiRobot.getBackHaulId(portDeprovisioningForDpu).get(0).getStatus(), BackhaulStatus.CONFIGURED);
         assertEquals(countHomeIDsFree, portDeprovisioningForDpu.getHomeIdPool().intValue());
-        assertEquals(countLineIDsFree, portDeprovisioningForDpu.getLineIdPool().intValue());
     }
 }

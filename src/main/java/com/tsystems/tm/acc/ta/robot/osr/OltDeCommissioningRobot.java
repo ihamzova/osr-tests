@@ -10,7 +10,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
 import io.qameta.allure.Step;
@@ -117,17 +117,12 @@ public class OltDeCommissioningRobot {
             .body(new SearchHomeIdDto().endSz(olt.getEndsz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
-    List<LineIdDto> lineIds = new ArrayList<>(accessLineResourceInventoryClient.getClient().lineIdController().searchLineIds()
-            .body(new SearchLineIdDto().endSz(olt.getEndsz()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
-
     List<BackhaulIdDto> backhaulIds = new ArrayList<>(accessLineResourceInventoryClient.getClient().backhaulIdController().searchBackhaulIds()
             .body(new SearchBackhaulIdDto().endSz(olt.getEndsz()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))));
 
     assertEquals(ftthAccessLines.size(), 0, "There are AccessLines left");
     assertEquals(homeIds.size(), 0, "There are HomeIds left");
-    assertEquals(lineIds.size(), 0, "There are LineIds left");
     assertEquals(backhaulIds.size(), 0, "There are BackhaulIds left");
   }
 
