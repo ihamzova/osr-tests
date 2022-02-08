@@ -18,7 +18,6 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -73,11 +72,6 @@ public class ProcessesSearchTest extends GigabitTest {
   void setup() {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-  }
-
-  @AfterClass
-  public void clearData() {
-    accessLineRiRobot.clearDatabase();
   }
 
   @Test
@@ -183,7 +177,6 @@ public class ProcessesSearchTest extends GigabitTest {
     Process restoredProcess = processSearchPage.getInfoForMainProcesses().get(0);
     processSearchPage.checkMainProcess(restoredProcess, initialProcess, today);
     processSearchPage.checkProcessStatus(restoredProcess.getState(), STATUS_RUNNING);
-
   }
 
   @Test(priority = 1)

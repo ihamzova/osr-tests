@@ -91,7 +91,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
     @TmsLink("DIGIHUB-123653")
     @Description("FTTB Provisioning for a Huawei Device, Coax, Feature Toggle Off")
     public void fttbDeviceProvisioningCoaxTest() {
-        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningCoax.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(oltDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioning);
         accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningCoax, numberOfAccessLinesForProvisioning);
@@ -101,7 +100,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
                 oltDeviceFttbProvisioningCoax,
                 numberOfAccessLinesForProvisioning,
                 1, 1);
-        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
         accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningCoax);
     }
 
@@ -115,7 +113,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
                 oltDeviceFttbProvisioningCoax,
                 0,
                 1, 1);
-        accessLineRiRobot.checkLineIdsCount(oltDeviceFttbProvisioningCoax);
         accessLineRiRobot.checkHomeIdsCount(oltDeviceFttbProvisioningCoax);
     }
 
@@ -123,7 +120,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
     @TmsLink("DIGIHUB-124170")
     @Description("FTTB Provisioning for a Device on Adtran, Twisted Pair, Feature Toggle Off")
     public void fttbDeviceProvisioningOnAdtranTpTest() {
-        accessLineRiRobot.checkLineIdsCount(adtranDeviceFttbProvisioningTwistedPair);
         wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(dpuDeviceFttbProvisioningonOnAdtranTwistedPair.getEndsz());
         accessLineRiRobot.checkFttbLineParameters(adtranDeviceFttbProvisioningTwistedPair, numberOfAccessLinesForProvisioning);
         accessLineRiRobot.checkAccessTransmissionMedium(dpuDeviceFttbProvisioningonOnAdtranTwistedPair, numberOfAccessLinesForProvisioning);
@@ -133,7 +129,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
                 adtranDeviceFttbProvisioningTwistedPair,
                 numberOfAccessLinesForProvisioning,
                 1, 1);
-        accessLineRiRobot.checkLineIdsCount(adtranDeviceFttbProvisioningTwistedPair);
         accessLineRiRobot.checkHomeIdsCount(adtranDeviceFttbProvisioningTwistedPair);
     }
 
@@ -147,7 +142,6 @@ public class WgFttbAccessProvisioningFeatureToggleOff extends GigabitTest {
                 adtranDeviceFttbProvisioningTwistedPair,
                 0,
                 1, 1);
-        accessLineRiRobot.checkLineIdsCount(adtranDeviceFttbProvisioningTwistedPair);
         accessLineRiRobot.checkHomeIdsCount(adtranDeviceFttbProvisioningTwistedPair);
     }
 }

@@ -22,7 +22,6 @@ values:
   slotNumber: "1"
   portNumber: "0"
   homeIdPool: 32
-  lineIdPool: 32
   accessLinesWG: 1
   defaultNEProfilesActive: 0
   defaultNetworkLineProfilesActive: 1

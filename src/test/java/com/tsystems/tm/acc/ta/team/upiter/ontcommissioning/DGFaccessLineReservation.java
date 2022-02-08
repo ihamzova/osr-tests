@@ -6,19 +6,16 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
-import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.HomeIdStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.LineIdStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.HomeIdStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -42,7 +39,6 @@ public class DGFaccessLineReservation extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
-    private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     private AccessLine accessLine;
     private BusinessInformation postprovisioningStart;
     private BusinessInformation postprovisioningEnd;
@@ -55,11 +51,6 @@ public class DGFaccessLineReservation extends GigabitTest {
         accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }
 
-    @AfterClass
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
-
     @Test
     @TmsLink("DIGIHUB-60469")
     @Description("DGF: Access Line Reservation by HomeID")
@@ -67,7 +58,6 @@ public class DGFaccessLineReservation extends GigabitTest {
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.DGFAccessLineRegistration);
         postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
         postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
-        //wgAccessProvisioningRobot.startWgAccessProvisioningLog();
         //Precondition port commissioning
         //Get 1 Free HomeId from pool
         accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
@@ -85,12 +75,10 @@ public class DGFaccessLineReservation extends GigabitTest {
 
         // get data from alri
         HomeIdStatus homeIdState = accessLineRiRobot.getHomeIdStateByHomeId(accessLine.getHomeId());
-        LineIdStatus lineIdState = accessLineRiRobot.getLineIdStateByLineId(accessLine.getLineId());
         AccessLineStatus accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
         // check alri
         assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
-        assertEquals(lineIdState, LineIdStatus.USED);
         assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
 
 /*        //Create temp List to check business data
