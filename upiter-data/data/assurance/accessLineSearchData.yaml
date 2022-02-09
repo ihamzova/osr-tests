@@ -4,7 +4,7 @@ values:
   endSz: "49/89/8000/76H2"
   slotNumber: "3"
   portNumber: "1"
-  lineId: "DEU.DTAG.T386"
+  lineId: "DEU.DTAG.T34"
   limit: 3
 ---
 name: AccessLineForSearchByDpu
