@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.data.osr.models.networklineprofiledata.NetworkLinePro
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.osr.RetryLoop;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -152,15 +153,11 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
     public void l2BsaProductActivationTest() {
         // WHEN / Action
         // check that preconditions are ok
-        try {
-            TimeoutBlock timeoutBlock = new TimeoutBlock(10000); // this means here for 10 attempts, not really timeout
-            timeoutBlock.setTimeoutInterval(1000); // this both works together
-            Supplier<Boolean> checkAvailableTp =
-                    () -> !a4Inventory.getNetworkServiceProfilesFtthAccessByTerminationPoint(tpFtthData.getUuid()).isEmpty();
-            timeoutBlock.addBlock(checkAvailableTp); // execute the runnable precondition
-        } catch (Throwable e) {
-            //catch the exception here . Which is block didn't execute within the time limit
-        }
+        new RetryLoop()
+                .withCondition(() -> !a4Inventory.getNetworkServiceProfilesFtthAccessByTerminationPoint(tpFtthData.getUuid()).isEmpty())
+                .assertMessage("Failed to get NspFtthAccessDto")
+                .run();
+
         NetworkServiceProfileFtthAccessDto generatedNspFtthAccess = a4Inventory.getNetworkServiceProfileFtthAccessByTerminationPoint(tpFtthData.getUuid());
         String lineIdNspFtthAccess = generatedNspFtthAccess.getLineId();
 

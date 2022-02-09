@@ -10,15 +10,6 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNetworkLineProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.FttbNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.L2BsaNspReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OnuAccessIdDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNetworkLineProfileDto;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -30,10 +21,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_WALLED_GARDEN;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
 import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.BackhaulStatus.CONFIGURED;
 import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.PortType.*;
 import static org.testng.Assert.*;
@@ -504,12 +493,7 @@ public class AccessLineRiRobot {
 
   @Step("Check home id count for port")
   public void checkHomeIdsCount(PortProvisioning port) {
-    List<HomeIdDto> homeIds = accessLineResourceInventory.homeIdController().searchHomeIds().body(new SearchHomeIdDto()
-            .endSz(port.getEndSz())
-            .slotNumber(port.getSlotNumber())
-            .portNumber(port.getPortNumber()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    assertEquals(homeIds.size(), port.getHomeIdPool().intValue(), "Home ids count");
+    assertEquals(getHomeIdPool(port).size(), port.getHomeIdPool().intValue(), "Home ids count");
   }
 
   @Step("Check BackhaulId count per port")
