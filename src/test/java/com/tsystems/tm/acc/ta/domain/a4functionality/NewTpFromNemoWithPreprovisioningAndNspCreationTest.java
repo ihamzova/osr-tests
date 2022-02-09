@@ -35,18 +35,16 @@ import static org.testng.Assert.assertEquals;
         A4_NEMO_UPDATER_MS,
         ACCESS_LINE_MANAGEMENT})
 public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitTest {
-
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final AccessLineRiRobot accessLineRi = new AccessLineRiRobot();
-
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
     private A4TerminationPoint tpFtthData;
-//    private A4TerminationPoint tpFtthData2;
+    //    private A4TerminationPoint tpFtthData2;
     private NetworkServiceProfileFtthAccessDto nspFtth;
     private PortProvisioning port;
     private PortProvisioning portForDeprovisioning;
@@ -67,10 +65,8 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
                 .get(PortProvisioningCase.a4Port);
         portForDeprovisioning = osrTestContext.getData().getPortProvisioningDataProvider()
                 .get(PortProvisioningCase.a4PortForDeprovisioning);
-
         // Ensure that no old test data is in the way
         cleanup();
-
         // Call test data setup method here. We cannot use @BeforeMethod because the two test cases here are dependent
         // on each other; we cannot cleanup and setup new data in between these tests.
         setup();
@@ -96,12 +92,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         // WHEN
         a4Nemo.createTerminationPoint(tpFtthData, nepData);
         sleepForSeconds(5);
-
         // THEN
         // Berlinium checks
         nspFtth = a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
-
         // U-Piter checks
         assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 1, "There are > 1 AccessLines on the port");
         accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
@@ -115,22 +109,20 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     public void deleteTpWithDeprovisioning() {
         // GIVEN
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 1, "There are > 1 AccessLines on the port");
-
         // WHEN
         a4Nemo.deleteLogicalResource(tpFtthData.getUuid());
         sleepForSeconds(5);
-
         // THEN
         // Berlinium checks
         a4Inventory.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
         a4Inventory.checkTerminationPointIsDeleted(tpFtthData.getUuid());
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspFtth.getUuid(), "DELETE", 1);
-
         // U-Piter checks
         accessLineRi.checkPhysicalResourceRefCountA4Ftth(portForDeprovisioning, 0);
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
     }
 
+    // TODO: please solve or it will removed next time !!!
     // Deactivated for now because some U-Piter checks seem to happen dozens of times, under investigation
 //    @Test(description = "DIGIHUB-XXXXXX NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")
 //    @Owner("bela.kovac@t-systems.com, Irina.Khamzova@t-systems.com")
@@ -161,5 +153,4 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
 //
 //        assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 2, "There are > 1 AccessLines on the port");
 //    }
-
 }
