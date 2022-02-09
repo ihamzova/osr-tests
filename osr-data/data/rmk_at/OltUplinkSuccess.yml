@@ -1,6 +1,9 @@
 name: OltUplinkSuccess
 template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen
 values:
+# "ge-5/2/5"
   bngSourcePortEquipmentBusinessRef: "@defaultBngSourcePortEquipmentBusinessRef"
+  # "ge-7/8/7"
   bngTargetPortEquipmentBusinessRef: "@defaultBngTargetPortEquipmentBusinessRef"
+  # "49/911/85/76H1"
   oltPortEquipmentBusinessRef: "@defaultOltPortEquipmentBusinessRef"

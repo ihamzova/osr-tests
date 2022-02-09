@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef;
 import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession;
+import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.ChangeBngPort;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.Uplink;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +35,10 @@ public class MpcSwitchRobot {
 
 
     @Step("change BNG Port success")
-    public void changeBngPortSuccess(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
+    public void changeBngPortSuccess(List<ChangeBngPort> changeBngPortList) {
 
         uplinkResourceInventoryManagementClient.getClient().uplink().changeBngPortBulkUplink()
-                .body(OltUplinkBusinessReferencenMapper.getChangeBngPorts(oltUplinkBusinessReferencen))
+                .body(changeBngPortList)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
     }
@@ -63,20 +64,20 @@ public class MpcSwitchRobot {
         List<Uplink> uplinkList = uplinkResourceInventoryManagementClient.getClient().uplink().listUplink()
                 .portsEquipmentBusinessRefEndSzQuery(oltEquipmentBusinessRef.getEndSz())
                 .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-        Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch endSz = " + oltEquipmentBusinessRef.getEndSz());
+        Assert.assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
         Uplink uplink = uplinkList.get(0);
-        Assert.assertEquals(uplink.getState(), "ACTIVE", "uplink not activ  endSz = " + oltEquipmentBusinessRef.getEndSz());
+        Assert.assertEquals(uplink.getState(), "ACTIVE", "uplink not activ, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
         List<com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.EquipmentBusinessRef> equipmentBusinessRefs = uplink.getPortsEquipmentBusinessRef();
         Assert.assertEquals(equipmentBusinessRefs.size(), 2L, "checkEquipmentBusinessRef EquipmentBusinessRef size missmatch");
         EquipmentBusinessRef equipmentBusinessRef1 = OltUplinkBusinessReferencenMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(0));
         EquipmentBusinessRef equipmentBusinessRef2 = OltUplinkBusinessReferencenMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(1));
 
         if (equipmentBusinessRef1.getDeviceType().equals("OLT")) {
-            Assert.assertEquals(equipmentBusinessRef1, oltEquipmentBusinessRef, "checkEquipmentBusinessRef1 OLT Ref missmatch");
-            Assert.assertEquals(equipmentBusinessRef2, bngEquipmentBusinessRef, "checkEquipmentBusinessRef2 BNG Ref missmatch");
+            Assert.assertEquals(equipmentBusinessRef1, oltEquipmentBusinessRef, "checkEquipmentBusinessRef1 OLT Ref missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
+            Assert.assertEquals(equipmentBusinessRef2, bngEquipmentBusinessRef, "checkEquipmentBusinessRef2 BNG Ref missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
         } else {
-            Assert.assertEquals(equipmentBusinessRef2, oltEquipmentBusinessRef, "checkEquipmentBusinessRef2 OLT Ref missmatch");
-            Assert.assertEquals(equipmentBusinessRef1, bngEquipmentBusinessRef, "checkEquipmentBusinessRef1 BNG Ref missmatch");
+            Assert.assertEquals(equipmentBusinessRef2, oltEquipmentBusinessRef, "checkEquipmentBusinessRef2 OLT Ref missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
+            Assert.assertEquals(equipmentBusinessRef1, bngEquipmentBusinessRef, "checkEquipmentBusinessRef1 BNG Ref missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
         }
 
         checkAncpSession(oltEquipmentBusinessRef, bngEquipmentBusinessRef);

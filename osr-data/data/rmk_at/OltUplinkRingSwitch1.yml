@@ -1,0 +1,9 @@
+name: OltUplinkRingSwitch1
+template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen
+values:
+  # "ge-7/8/7"
+  bngSourcePortEquipmentBusinessRef: "@defaultBngTargetPortEquipmentBusinessRef"
+  # "xe-0/0/1"
+  bngTargetPortEquipmentBusinessRef: "@secondBngTargetPortEquipmentBusinessRef"
+  # "49/911/85/76H2"
+  oltPortEquipmentBusinessRef: "@secondOltPortEquipmentBusinessRef"
