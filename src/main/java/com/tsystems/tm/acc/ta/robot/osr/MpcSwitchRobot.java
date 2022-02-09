@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AncpResourceInventoryManagementClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.UplinkResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.OltUplinkBusinessReferencenMapper;
@@ -11,6 +12,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef;
 import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.ChangeBngPort;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.Uplink;
 import io.qameta.allure.Step;
@@ -19,10 +21,10 @@ import org.testng.Assert;
 
 import java.util.List;
 
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 
 @Slf4j
@@ -31,6 +33,7 @@ public class MpcSwitchRobot {
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
     private UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient(authTokenProvider);
     private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProvider);
+    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
 
@@ -103,8 +106,12 @@ public class MpcSwitchRobot {
         Assert.assertEquals(bngEquipmentBusinessRef, bngDownlinkPortEquipmentBusinessRef, "bngDownlinkPortEquipmentBusinessRef mismatch");
     }
 
-    @Step("fill olt-resource-inventory database with test data")
-    public void fillDeviceInResourceInventory(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
+    @Step("create an OLT MA5600 Device in the inventory databases with test data")
+    public void createOltDeviceInResourceInventory(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
+
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 0L, "createOltDeviceInResourceInventory Device is present");
 
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
                 .deviceEmsNbiNameQuery(EMS_NBI_NAME_MA5600)
@@ -119,7 +126,26 @@ public class MpcSwitchRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Clear device in olt-resource-inventory database")
+    @Step("create an OLT SDX 6320-16 Device in the inventory databases with test data")
+    public void createAdtranOltDeviceInResourceInventory(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
+
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 0L, "createAdtranOltDeviceInResourceInventory Device is present");
+
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
+                .deviceEmsNbiNameQuery(EMS_NBI_NAME_SDX6320_16)
+                .deviceEndSzQuery(oltEquipmentBusinessRef.getEndSz())
+                .deviceKlsIdQuery("12377842")
+                .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
+                .uplinkEndSzQuery(bngEquipmentBusinessRef.getEndSz())
+                .uplinkTargetPortQuery(bngEquipmentBusinessRef.getPortName())
+                .uplinkAncpConfigurationQuery("1")
+                .executeSqlQuery("1")
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Clear device in inventory databases")
     public void clearResourceInventoryDataBase(String endSz) {
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));

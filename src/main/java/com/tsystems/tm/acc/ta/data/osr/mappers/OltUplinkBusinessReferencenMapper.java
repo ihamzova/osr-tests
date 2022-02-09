@@ -48,30 +48,30 @@ public class OltUplinkBusinessReferencenMapper {
 
     static public com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef getEquipmentBusinessRef(EquipmentBusinessRef equipmentBusinessRef) {
 
-        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEequipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
-        modelEequipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
+        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEquipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
+        modelEquipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
 
-        modelEequipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
-        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
-        modelEequipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
-        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
-        modelEequipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
+        modelEquipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
+        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEquipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
+        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEquipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
 
-        return modelEequipmentBusinessRef;
+        return modelEquipmentBusinessRef;
     }
 
     static public com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef getAncpEquipmentBusinessRef(com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.EquipmentBusinessRef equipmentBusinessRef) {
 
-        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEequipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
-        modelEequipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
+        com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEquipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
+        modelEquipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
 
-        modelEequipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
-        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
-        modelEequipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
-        modelEequipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
-        modelEequipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
+        modelEquipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
+        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEquipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
+        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
+        modelEquipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
 
-        return modelEequipmentBusinessRef;
+        return modelEquipmentBusinessRef;
     }
 
 }

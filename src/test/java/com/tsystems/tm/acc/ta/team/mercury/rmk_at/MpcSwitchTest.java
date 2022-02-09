@@ -63,7 +63,7 @@ public class MpcSwitchTest extends GigabitTest {
     @Test(description = "DIGIHUB-127784 Check MPC Switch: happy case. BNG Port is free")
     public void changeBngPortBulkUplinkSuccess() {
 
-        mpcSwitchRobot.fillDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+        mpcSwitchRobot.createOltDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
@@ -89,7 +89,7 @@ public class MpcSwitchTest extends GigabitTest {
         */
 
         // first uplink
-        mpcSwitchRobot.fillDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+        mpcSwitchRobot.createOltDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
@@ -100,7 +100,7 @@ public class MpcSwitchTest extends GigabitTest {
                 .getOltUplinkBusinessReferencenDataProvider()
                 .get(OltUplinkBusinessReferencenCase.OltUplinkRingSwitch1);
 
-        mpcSwitchRobot.fillDeviceInResourceInventory(secondOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+        mpcSwitchRobot.createOltDeviceInResourceInventory(secondOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 secondOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(secondOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
@@ -111,7 +111,7 @@ public class MpcSwitchTest extends GigabitTest {
                 .getOltUplinkBusinessReferencenDataProvider()
                 .get(OltUplinkBusinessReferencenCase.OltUplinkRingSwitch2);
 
-        mpcSwitchRobot.fillDeviceInResourceInventory(thirdOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+        mpcSwitchRobot.createOltDeviceInResourceInventory(thirdOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 thirdOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(thirdOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
@@ -134,6 +134,23 @@ public class MpcSwitchTest extends GigabitTest {
 
     }
 
+    @Test(description = "DIGIHUB-128041 Check MPC Switch: happy case. different ports")
+    public void changeBngPortBulkUplinkDifferentPortsSuccess() {
+        OltUplinkBusinessReferencen adtranOltUplinkBusinessReferencen = OsrTestContext.get().getData()
+                .getOltUplinkBusinessReferencenDataProvider()
+                .get(OltUplinkBusinessReferencenCase.OltUplinkDifferentPorts1);
+
+        mpcSwitchRobot.createAdtranOltDeviceInResourceInventory(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                adtranOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                adtranOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.changeBngPortSuccess(OltUplinkBusinessReferencenMapper.getChangeBngPorts(adtranOltUplinkBusinessReferencen));
+        mpcSwitchRobot.checkEquipmentBusinessRef(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                adtranOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+    }
+
 
     @Test(description = "DIGIHUB-127866 Check MPC Switch: unhappy case. bng port already in use")
     public void changeBngPortBulkUplinkError() {
@@ -146,8 +163,8 @@ public class MpcSwitchTest extends GigabitTest {
                 .get(OltUplinkBusinessReferencenCase.OltUplinkSuccess);
         oltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(secondBngEquipmentBusinessRef); // BNG target port is already in use
 
-        mpcSwitchRobot.fillDeviceInResourceInventory(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
-        mpcSwitchRobot.fillDeviceInResourceInventory(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+        mpcSwitchRobot.createOltDeviceInResourceInventory(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
+        mpcSwitchRobot.createOltDeviceInResourceInventory(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.changeBngPortError(oltUplinkBusinessReferencen);

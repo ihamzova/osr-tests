@@ -1,0 +1,8 @@
+name: adtranOltPortEquipmentBusinessRef
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef
+values:
+  deviceType: "OLT"
+  endSz: "49/911/85/76H5"
+  portName: "1"
+  portType: "ETHERNET"
+  slotName: null
