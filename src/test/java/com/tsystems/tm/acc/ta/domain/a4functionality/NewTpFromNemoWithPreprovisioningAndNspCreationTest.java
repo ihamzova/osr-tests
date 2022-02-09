@@ -98,8 +98,6 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
         // U-Piter checks
         assertEquals(accessLineRi.getAccessLinesByPort(port).size(), 1, "There are > 1 AccessLines on the port");
-        //new RetryLoop().withCondition(() -> !accessLineRi.getHomeIdPool(port).isEmpty()).run();
-        accessLineRi.checkHomeIdsCount(port);
         accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
     }
 
@@ -122,7 +120,6 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         // U-Piter checks
         accessLineRi.checkPhysicalResourceRefCountA4Ftth(portForDeprovisioning, 0);
         assertEquals(accessLineRi.getAccessLinesByPort(portForDeprovisioning).size(), 0, "There are AccessLines left on the port");
-        accessLineRi.checkHomeIdsCount(portForDeprovisioning);
     }
 
     // TODO: please solve or it will removed next time !!!
@@ -150,7 +147,6 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
 //        a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData2.getUuid());
 //
 //        // U-Piter checks
-//        accessLineRi.checkHomeIdsCount(port);
 //
 //        accessLineRi.checkA4LineParameters(port, tpFtthData.getUuid());
 //        accessLineRi.checkA4LineParameters(port, tpFtthData2.getUuid());
