@@ -37,7 +37,7 @@ public class A4UiSearchPageSteps {
         a4ResInvSearch.clickNetworkElement();
     }
 
-    @When("(the user )/(she )enters VPSZ {string} into the input fields")
+    @When("(the user )(she )enters VPSZ {string} into the input fields")
     public void whenUserentersVpszIntoFields(String vpsz) {
         // ACTION
         a4ResInvSearch.enterNeAkzByVpsz(vpsz);
@@ -45,19 +45,19 @@ public class A4UiSearchPageSteps {
         a4ResInvSearch.enterNeVkzByVpsz(vpsz);
     }
 
-    @When("(the user )/(she )enters FSZ {string} into the input field")
+    @When("(the user )(she )enters FSZ {string} into the input field")
     public void whenUserentersFszIntoField(String fsz) {
         // ACTION
         a4ResInvSearch.enterNeFsz(fsz);
     }
 
-    @When("(the user )/(she )clicks the NEG search submit button")
+    @When("(the user )(she )clicks the NEG search submit button")
     public void whenUserClicksNegSearchSubmitButton() {
         // ACTION
         a4ResInvSearch.clickNegSearchButton();
     }
 
-    @When("(the user )/(she )clicks the NE search submit button")
+    @When("(the user )(she )clicks the NE search submit button")
     public void whenUserClicksNeSearchSubmitButton() {
         // ACTION
         a4ResInvSearch.clickNeSearchButton();

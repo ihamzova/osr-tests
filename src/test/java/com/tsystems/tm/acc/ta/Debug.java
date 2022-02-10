@@ -1,8 +1,10 @@
 package com.tsystems.tm.acc.ta;
 
 import com.tsystems.tm.acc.ta.etcd.ETCDV3Client;
+import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.sql.Keys;
+import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import de.telekom.it.t3a.kotlin.kubernetes.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,13 @@ import static com.tsystems.tm.acc.ta.sftp.UtilsKt.getSftpDataDefault;
 import static com.tsystems.tm.acc.ta.sql.UtilsKt.getJdbcDataDefaultSpring;
 
 @Slf4j
-public class Debug {
+public class Debug extends GigabitTest {
+    @Test
+    public void debugUI() {
+        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        oltSearchPage.validateUrl();
+    }
+
     @Test
     public void debug() {
         ETCDV3Client client = new ETCDV3Client(new OCUrlBuilder("ont-etcd").withoutSuffix().withPort(443).buildUri());

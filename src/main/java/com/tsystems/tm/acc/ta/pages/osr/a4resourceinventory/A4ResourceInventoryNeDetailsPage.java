@@ -61,7 +61,7 @@ public class A4ResourceInventoryNeDetailsPage {
     public static final By NE_LastUpdateTime_FIELD_LOCATOR = By.id("lastUpdateTime");
 
     @Getter
-    //  public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.className("w3-table-all");
+    //  public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
     public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
 
     @Step("Validate page")
