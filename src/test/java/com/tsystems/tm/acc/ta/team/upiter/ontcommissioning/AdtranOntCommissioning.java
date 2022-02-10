@@ -126,7 +126,7 @@ public class AdtranOntCommissioning extends GigabitTest {
   public void adtranOntChange() {
     //check SN
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
     assertNull(callback.getError());

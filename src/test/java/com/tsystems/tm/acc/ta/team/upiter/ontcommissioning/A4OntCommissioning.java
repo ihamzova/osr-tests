@@ -156,7 +156,7 @@ public class A4OntCommissioning extends GigabitTest {
   @Description("A4 ONT Change test")
   public void a4OntChangeTest() {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
     assertNull(callback.getError());
@@ -391,7 +391,7 @@ public class A4OntCommissioning extends GigabitTest {
     AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
 
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), "DEFAULT");
 
     // check callback
     assertNull(callback.getError());

@@ -69,7 +69,7 @@ public class FtthMigration {
         List<HomeIdDto> homeIdPool = accessLineRiRobot.getHomeIdPool(migratedPort);
         String homeId = accessLineRiRobot.changeHomeIdStatus(homeIdPool.get(0), HomeIdStatus.ASSIGNED);
         assertEquals(accessLineRiRobot.getHomeIdStateByHomeId(homeId), HomeIdStatus.ASSIGNED);
-        accessLineRiRobot.updateHomeIdOnMigratedAccessLine(migratedAccessLine.getLineId(), homeId);
+        accessLineRiRobot.updateHomeIdOnAccessLine(migratedAccessLine.getLineId(), homeId);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(migratedAccessLine.getLineId()).get(0).getHomeId(), homeId);
 
         // Step 6. Optional reconfiguration of migrated access lines
