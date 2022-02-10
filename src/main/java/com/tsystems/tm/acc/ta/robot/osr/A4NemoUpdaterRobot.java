@@ -18,14 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
 
 @Slf4j
@@ -89,16 +86,12 @@ public class A4NemoUpdaterRobot {
 
     @Step("Check if PUT request to NEMO wiremock with network service profile FTTH Access has happened")
     public void checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(String uuidTp) {
-        List<NetworkServiceProfileFtthAccessDto> nspList = a4Inventory
-                .getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
-        Assert.assertEquals(nspList.size(), 1);
-
-        checkLogicalResourcePutRequestToNemoWiremock(nspList.get(0).getUuid());
+        checkLogicalResourcePutRequestToNemoWiremock(a4Inventory.getNetworkServiceProfileFtthAccessByTerminationPoint(uuidTp).getUuid());
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
     public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(A4TerminationPoint tpData) {
-        checkNetworkServiceProfileA10NspPutRequestToNemoWiremock (tpData, 1);
+        checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData, 1);
     }
 
     @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
@@ -175,20 +168,11 @@ public class A4NemoUpdaterRobot {
         //get UUIDs of the group
         //assumption is that NEG name is unique so that first element can be taken
         Optional<A4ImportCsvLine> firstCsvLine = csvData.getCsvLines().stream().findFirst();
-        if(firstCsvLine.isPresent()) {
+        if (firstCsvLine.isPresent()) {
             String negName = firstCsvLine.get().getNegName();
             uuidList.add(
                     a4Inventory.getNetworkElementGroupsByName(negName).get(0).getUuid()
             );
-
-            //check if requests reached Wiremock
-            //if so delivery by AMQ-consumer was successful
-//            uuidList.forEach(uuid -> {
-//                new Thread(() -> {
-//                checkLogicalResourcePutRequestToNemoWiremock(uuid);
-//                log.debug(uuid + "+++finish+++");
-//                });
-//            });
             uuidList.forEach(this::checkLogicalResourcePutRequestToNemoWiremock);
         }
     }

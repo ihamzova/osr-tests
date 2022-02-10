@@ -14,16 +14,15 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineTechnology;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -63,11 +62,6 @@ public class A4OntCommissioning extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
   private WireMockMappingsContext mappingsContext;
 
-  @AfterClass
-  public void clearData() {
-    accessLineRiRobot.clearDatabase();
-  }
-
   @BeforeClass
   public void init() throws InterruptedException {
     accessLineRiRobot.clearDatabase();
@@ -92,7 +86,7 @@ public class A4OntCommissioning extends GigabitTest {
   public void a4ReservationTest() {
     wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
     accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
-    accessLineForCommissioning.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLineForCommissioning));
+    accessLineForCommissioning.setHomeId("00B1Q7Z");
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLineForCommissioning.getOltDevice().getVpsz())
             .fachSz(accessLineForCommissioning.getOltDevice().getFsz())
@@ -162,7 +156,7 @@ public class A4OntCommissioning extends GigabitTest {
   @Description("A4 ONT Change test")
   public void a4OntChangeTest() {
     assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getAccessLinesByPort(a4port).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
     assertNull(callback.getError());
@@ -205,7 +199,7 @@ public class A4OntCommissioning extends GigabitTest {
             .fachSz(accessLineForCommissioning.getOltDevice().getFsz())
             .slotNumber(accessLineForCommissioning.getSlotNumber())
             .portNumber(accessLineForCommissioning.getPortNumber())
-            .homeId(accessLineRiRobot.getHomeIdByPort(accessLineForCommissioning));
+            .homeId("00B1Q82");
 
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
@@ -397,7 +391,7 @@ public class A4OntCommissioning extends GigabitTest {
     AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
 
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), "DEFAULT");
 
     // check callback
     assertNull(callback.getError());

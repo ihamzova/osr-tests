@@ -20,7 +20,7 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreationTest"/>
-            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.FulfillmentL2BsaProduct"/>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.FulfillmentL2BsaProductTest"/>
         </classes>
     </test>
     <test name="DPU-Commissioning cases (for SDX2221-16-TP device)" thread-count="1">

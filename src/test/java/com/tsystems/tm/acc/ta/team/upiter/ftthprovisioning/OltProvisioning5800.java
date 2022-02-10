@@ -12,14 +12,13 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -65,15 +64,7 @@ public class OltProvisioning5800 extends GigabitTest {
     port5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5800);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
-  }
 
-  @BeforeClass
-  public void prepareData() {
-    accessLineRiRobot.clearDatabase();
-  }
-
-  @AfterClass
-  public void clearData() {
     accessLineRiRobot.clearDatabase();
   }
 
@@ -99,9 +90,6 @@ public class OltProvisioning5800 extends GigabitTest {
             card5800v1.getSlotNumber(),
             cardBeforeProvisioning.getContainsPortsRefOrValue().get(1).getPortName(), card5800v1);
 
-    System.out.println(port);
-    System.out.println("card5800v1 = " + card5800v1);
-
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
@@ -122,9 +110,6 @@ public class OltProvisioning5800 extends GigabitTest {
             card5800v2.getSlotNumber(),
             cardBeforeProvisioning.getContainsPortsRefOrValue().get(0).getPortName(), card5800v2);
 
-    System.out.println(port);
-    System.out.println("card5800v2 = " + card5800v2);
-
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
@@ -144,9 +129,6 @@ public class OltProvisioning5800 extends GigabitTest {
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5800.getEndSz(),
             device.getEquipmentHolders().get(0).getSlotNumber(),
             device.getEquipmentHolders().get(0).getCard().getPorts().get(0).getPortNumber(), device5800);
-
-    System.out.println(port);
-    System.out.println("device5800 = " + device5800);
 
     assertNotNull(device);
     assertEquals(device.getEmsNbiName(), "MA5800-X7");

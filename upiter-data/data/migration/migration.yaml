@@ -1,5 +1,5 @@
 name: migratedAccessLine
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto
 values:
   anpTag: "@allocatedAnpTag"
   defaultNeProfile: "@defaultNeProfile"
@@ -13,7 +13,7 @@ values:
   technology: "GPON"
 ---
 name: migratedOnuId
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AllocatedOnuIdDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AllocatedOnuIdDto
 values:
   accessLine: "@migratedAccessLine"
   onuId: 0
@@ -34,7 +34,6 @@ values:
   slotNumber: "3"
   portNumber: "0"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1
   accessLinesWG: 15
   defaultNEProfilesActive: 15
@@ -42,13 +41,13 @@ values:
   accessLinesCount: 16
 ---
 name: allocatedAnpTag
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AllocatedAnpTagDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AllocatedAnpTagDto
 values:
   anpTag: 132
   reference: "@reference"
 ---
 name: defaultNeProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNeProfileDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNeProfileDto
 values:
   profileName: "RFS_AL_GPON"
   ontSerialNumber: "DEFAULT"
@@ -57,7 +56,7 @@ values:
   subscriberNeProfile: "@subscriberNeProfile"
 ---
 name: defaultNetworkLineProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNetworkLineProfileDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNetworkLineProfileDto
 values:
   authMethod: 1
   klsId: "14653"
@@ -73,7 +72,7 @@ values:
   syncStatus: "OUT_OF_SYNC"
 ---
 name: subscriberNeProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNeProfileDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto
 values:
   profileName: "RFS_AL_GPON"
   state: "ACTIVE"
@@ -82,7 +81,7 @@ values:
   syncStatus: "OUT_OF_SYNC"
 ---
 name: reference
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ReferenceDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto
 values:
   endSz: "49/30/179/76G0"
   slotNumber: "3"
@@ -90,7 +89,7 @@ values:
   portType: "PON"
 ---
 name: uplinkReference
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ReferenceDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto
 values:
   endSz: "49/30/179/76G0"
   slotNumber: "19"
@@ -98,7 +97,7 @@ values:
   portType: "ETHERNET"
 ---
 name: resourceAssociation
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ResourceAssociationDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ResourceAssociationDto
 values:
   partyId: "10001"
   resourceId: "ed861e3a-6fff-4cb2-9e71-046bc0591039"
