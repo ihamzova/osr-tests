@@ -26,7 +26,7 @@ public class NetworkSwitchingPage {
 
   private static final String APP = "network-switching-ui";
   private static final String ENDPOINT = "/network-switching-ui/port-to-port";
-  private static final long TIMEOUT_FOR_PREPARATION = 180000;
+  private static final long TIMEOUT_FOR_PREPARATION = 300000;
 
   private static final By PORT_TO_PORT_PREPARATION_TAB = byQaData("port-to-port-tab");
   private static final By SLOT_TO_SLOT_PREPARATION_TAB = byQaData("slot-to-slot-tab");
@@ -189,11 +189,19 @@ public class NetworkSwitchingPage {
     return $(PACKAGE_ID_SEARCH_TAB).getText();
   }
 
+  public WebElement getCommitButton() {
+    return $(COMMIT_BUTTON);
+  }
+
+  public WebElement getRollbackButton() {
+    return $(ROLLBACK_BUTTON);
+  }
+
   @Step("Wait until needed status")
-  public void waitUntilNeededStatus(String expectedStatus, String packageId) {
+  public NetworkSwitchingPage waitUntilNeededStatus(String expectedStatus, String packageId) {
     try {
       TimeoutBlock timeoutBlock = new TimeoutBlock(TIMEOUT_FOR_PREPARATION); //set timeout in milliseconds
-      timeoutBlock.setTimeoutInterval(5000);
+      timeoutBlock.setTimeoutInterval(1000);
       Supplier<Boolean> checkPackageStatus = () -> {
         Boolean result = false;
         try {
@@ -208,6 +216,8 @@ public class NetworkSwitchingPage {
     } catch (Throwable e) {
       //catch the exception here . Which is block didn't execute within the time limit
     }
+
+    return this;
   }
 
   public void safeJavaScriptClick(SelenideElement element) throws Exception {
