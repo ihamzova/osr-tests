@@ -201,19 +201,87 @@ public class MpcSwitchTest extends GigabitTest {
         EquipmentBusinessRef secondBngEquipmentBusinessRef = OsrTestContext.get().getData()
                 .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.secondBngSourcePortEquipmentBusinessRef);
 
-        OltUplinkBusinessReferencen oltUplinkBusinessReferencen = OsrTestContext.get().getData()
-                .getOltUplinkBusinessReferencenDataProvider()
-                .get(OltUplinkBusinessReferencenCase.OltUplinkSuccess);
-        oltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(secondBngEquipmentBusinessRef); // BNG target port is already in use
+        OltUplinkBusinessReferencen localOltUplinkBusinessReferencen = new OltUplinkBusinessReferencen();
+        localOltUplinkBusinessReferencen.setOltPortEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef());
+        localOltUplinkBusinessReferencen.setBngSourcePortEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+        localOltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(secondBngEquipmentBusinessRef); // BNG target port is already in use
 
         mpcSwitchRobot.createOltDeviceInResourceInventory(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
-        mpcSwitchRobot.createOltDeviceInResourceInventory(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
-                oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+        mpcSwitchRobot.createOltDeviceInResourceInventory(localOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                localOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
 
-        mpcSwitchRobot.changeBngPortError(oltUplinkBusinessReferencen);
+        mpcSwitchRobot.changeBngPortError(localOltUplinkBusinessReferencen);
 
         mpcSwitchRobot.checkEquipmentBusinessRef(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
+    }
+
+    @Test(description = "DIGIHUB-128085 Check MPC Switch: unhappy case. bng switch")
+    public void changeBngPortBulkBngSwitchError() {
+
+        /*
+                       OLT    EndSz       BNG       source            target
+               uplink:  49/911/85/76H1 ====    49/911/85/43G1 --> 49/911/85/43G2
+        */
+
+        EquipmentBusinessRef newBngTargetPortEquipmentBusinessRef = OsrTestContext.get().getData()
+                .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.secondBngBngTargetPortEquipmentBusinessRef);
+
+        OltUplinkBusinessReferencen localOltUplinkBusinessReferencen = new OltUplinkBusinessReferencen();
+        localOltUplinkBusinessReferencen.setOltPortEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef());
+        localOltUplinkBusinessReferencen.setBngSourcePortEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+        localOltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(newBngTargetPortEquipmentBusinessRef); // new BNG EndSz
+
+        mpcSwitchRobot.createOltDeviceInResourceInventory(localOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                localOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.changeBngPortError(localOltUplinkBusinessReferencen);
+    }
+
+    @Test(description = "DIGIHUB-128085 Check MPC Switch: unhappy case. two links (on different OLTs with same bngs) are to be switched on same target port")
+    public void changeBngPortBulkSameTargetPortError() {
+
+        /*
+                           OLT EndSz       BNG  source    target
+        first uplink:   49/911/85/76H1 ====   ge-5/2/5 -> ge-7/8/7
+        second uplink:  49/911/85/76H5 ====   xe-0/0/1 -> ge-7/8/7
+        */
+        // first uplink
+        mpcSwitchRobot.createOltDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        // second uplink
+        OltUplinkBusinessReferencen oltUplinkRingSwitch2Referencen = OsrTestContext.get().getData()
+                .getOltUplinkBusinessReferencenDataProvider()
+                .get(OltUplinkBusinessReferencenCase.OltUplinkRingSwitch2);
+
+        OltUplinkBusinessReferencen localOltUplinkBusinessReferencen = new OltUplinkBusinessReferencen();
+        localOltUplinkBusinessReferencen.setOltPortEquipmentBusinessRef(oltUplinkRingSwitch2Referencen.getOltPortEquipmentBusinessRef());
+        localOltUplinkBusinessReferencen.setBngSourcePortEquipmentBusinessRef(oltUplinkRingSwitch2Referencen.getBngSourcePortEquipmentBusinessRef());
+        // set second uplink to same target port
+        localOltUplinkBusinessReferencen.setBngTargetPortEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+
+        mpcSwitchRobot.createOltDeviceInResourceInventory(localOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                localOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        // check before switch
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(localOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                localOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        // prepare request
+        List<ChangeBngPort> changeBngPortList = OltUplinkBusinessReferencenMapper.getChangeBngPorts(defaultOltUplinkBusinessReferencen);
+        changeBngPortList.add(OltUplinkBusinessReferencenMapper.getChangeBngPorts(localOltUplinkBusinessReferencen).get(0));
+        mpcSwitchRobot.changeBngPortError(changeBngPortList);
+
+        // check
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(localOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                localOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
     }
 }

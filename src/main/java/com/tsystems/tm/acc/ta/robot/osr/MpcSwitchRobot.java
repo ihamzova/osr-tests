@@ -16,6 +16,8 @@ import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.ChangeBngPort;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.Uplink;
 import io.qameta.allure.Step;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
@@ -47,18 +49,34 @@ public class MpcSwitchRobot {
     }
 
     @Step("change BNG Port unhappy case scenarios")
+    public void changeBngPortError(List<ChangeBngPort> changeBngPortList) {
+
+        Response response = uplinkResourceInventoryManagementClient.getClient().uplink().changeBngPortBulkUplink()
+                .body(changeBngPortList)
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+
+        // To check for sub string presence get the Response body as a String.
+        String bodyAsString = response.getBody().asString();
+        Assert.assertTrue(bodyAsString.contains("code"), "Response body does not contains \"code\"");
+        Assert.assertTrue(bodyAsString.contains("reason"), "Response body does not contains \"reason\"");
+        Assert.assertTrue(bodyAsString.contains("message"), "Response body does not contains \"message\"");
+        Assert.assertTrue(bodyAsString.contains("status"), "Response body does not contains \"status\"");
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        log.info("reason received from Response " + jsonPathEvaluator.get("reason"));
+    }
+
+
+    @Step("change BNG Port unhappy case scenarios with checks")
     public void changeBngPortError(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
 
         checkEquipmentBusinessRef(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
-        uplinkResourceInventoryManagementClient.getClient().uplink().changeBngPortBulkUplink()
-                .body(OltUplinkBusinessReferencenMapper.getChangeBngPorts(oltUplinkBusinessReferencen))
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+        changeBngPortError(OltUplinkBusinessReferencenMapper.getChangeBngPorts(oltUplinkBusinessReferencen));
 
         checkEquipmentBusinessRef(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
-
     }
 
     @Step("check Equipment Business Referencen")
@@ -145,7 +163,7 @@ public class MpcSwitchRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("create an OLT SDX 6320-16 Device in the inventory databases with test data")
+    @Step("create a DPU SDX2221-08-TP Device in the inventory databases with test data")
     public void createDpuDeviceInResourceInventory(String endSz, EquipmentBusinessRef oltEquipmentBusinessRef) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
