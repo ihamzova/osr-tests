@@ -10,15 +10,6 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.DefaultNetworkLineProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.FttbNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.L2BsaNspReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.OnuAccessIdDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.ReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.SubscriberNetworkLineProfileDto;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -799,7 +790,6 @@ public class AccessLineRiRobot {
             .map(homeIdDto -> homeIdDto.getHomeId())
             .collect(Collectors.toList());
   }
-
   @Step("Get AllocatedOnuIds by port")
   private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
     List<Integer> onuIds = accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()

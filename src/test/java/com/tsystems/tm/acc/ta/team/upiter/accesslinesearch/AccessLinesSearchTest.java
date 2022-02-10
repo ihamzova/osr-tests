@@ -3,9 +3,11 @@ package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -42,6 +44,7 @@ public class AccessLinesSearchTest extends GigabitTest {
   private AccessLine accessLinesByEndSz;
   private AccessLine accessLinesByEndSzSlotPort;
   private AccessLine accessLine;
+  private PortProvisioning homeAndBackhaulIds;
   private DpuDevice dpuDevice;
   private Credentials loginData;
 
@@ -51,6 +54,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLine = new AccessLine();
     accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
     accessLinesByEndSzSlotPort = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSzSlotPort);
+    homeAndBackhaulIds = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.homeIdsByEndSz);
     dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDevice);
     accessLine = new AccessLine();
     accessLineRiRobot.clearDatabase();
@@ -295,4 +299,55 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
             "ACTIVE", "NULL");
   }
+
+  @Test
+  @TmsLink("DIGIHUB-60975")
+  @Description("Search for Home IDs by EndsZ in Access Management UI")
+  public void searchHomeIdsbyEndsZTest() {
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds).clickSearchButton();
+    accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
+    accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+    assertEquals(accessLineRiRobot.getHomeIdsByStatus(homeAndBackhaulIds, HomeIdStatus.ASSIGNED).size(), homeAndBackhaulIds.getHomeIdsCount().intValue());
+
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-60975")
+  @Description("Search for Home ID by Home ID in Access Management UI")
+  public void searchHomeIdbyHomeIDTest() {
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    accessLineSearchPage.searchHomeIdsbyHomeId(homeAndBackhaulIds).clickSearchButton();
+    accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
+    accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+    accessLineSearchPage.navigateToAlSearchPage().clickSearchButton();
+    assertEquals(accessLineRiRobot.getHomeIdsByStatus(homeAndBackhaulIds, HomeIdStatus.ASSIGNED).size(), homeAndBackhaulIds.getHomeIdsCount().intValue());
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-55323")
+  @Description("Search for Backhaul ID by EndSZ in Access Management UI")
+  public void searchBackhaulIDsByEndsZTest() {
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    accessLineSearchPage.searchBackhaulIDs(homeAndBackhaulIds).clickSearchButton();
+    accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
+    accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+    assertEquals(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getStatus(), BackhaulStatus.CONFIGURED);
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-55322")
+  @Description("Search for Backhaul ID by Backhaul ID in Access Management UI")
+  public void searchBackhaulIDByBackhaulIdTest() {
+    AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+    accessLineSearchPage.validateUrl();
+    accessLineSearchPage.searchBackhaulIDbyBackhaulId(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds)).clickSearchButton();
+    accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
+    accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+    assertEquals(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getStatus(), BackhaulStatus.CONFIGURED);
+  }
+
 }
