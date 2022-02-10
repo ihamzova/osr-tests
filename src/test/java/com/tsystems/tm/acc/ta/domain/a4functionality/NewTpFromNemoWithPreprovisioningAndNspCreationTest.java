@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.helpers.osr.RetryLoop;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -94,6 +95,10 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
         sleepForSeconds(5);
         // THEN
         // Berlinium checks
+        new RetryLoop()
+                .withCondition(() -> !a4Inventory.getNetworkServiceProfilesFtthAccessByTerminationPoint(tpFtthData.getUuid()).isEmpty())
+                .assertMessage("Failed to get NspFtthAccessDto")
+                .run();
         nspFtth = a4Inventory.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tpFtthData.getUuid(), 1);
         a4NemoUpdater.checkNetworkServiceProfileFtthAccessPutRequestToNemoWiremock(tpFtthData.getUuid());
         // U-Piter checks
