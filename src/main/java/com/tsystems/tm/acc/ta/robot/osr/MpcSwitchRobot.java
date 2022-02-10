@@ -100,7 +100,7 @@ public class MpcSwitchRobot {
         Assert.assertEquals(accessNodeEquipmentBusinessRef, oltEquipmentBusinessRef, "oltEquipmentBusinessRef mismatch");
 
         EquipmentBusinessRef oltUplinkPortEquipmentBusinessRef = OltUplinkBusinessReferencenMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getOltUplinkPortEquipmentBusinessRef());
-        Assert.assertEquals(accessNodeEquipmentBusinessRef, oltUplinkPortEquipmentBusinessRef, "oltUplinkPortEquipmentBusinessRef mismatch");
+        Assert.assertEquals(oltUplinkPortEquipmentBusinessRef, oltUplinkPortEquipmentBusinessRef, "oltUplinkPortEquipmentBusinessRef mismatch");
 
         EquipmentBusinessRef bngDownlinkPortEquipmentBusinessRef = OltUplinkBusinessReferencenMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getBngDownlinkPortEquipmentBusinessRef());
         Assert.assertEquals(bngEquipmentBusinessRef, bngDownlinkPortEquipmentBusinessRef, "bngDownlinkPortEquipmentBusinessRef mismatch");
@@ -110,7 +110,7 @@ public class MpcSwitchRobot {
     public void createOltDeviceInResourceInventory(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(deviceList.size(), 0L, "createOltDeviceInResourceInventory Device is present");
 
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
@@ -130,7 +130,7 @@ public class MpcSwitchRobot {
     public void createAdtranOltDeviceInResourceInventory(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(oltEquipmentBusinessRef.getEndSz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(deviceList.size(), 0L, "createAdtranOltDeviceInResourceInventory Device is present");
 
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
@@ -140,6 +140,26 @@ public class MpcSwitchRobot {
                 .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
                 .uplinkEndSzQuery(bngEquipmentBusinessRef.getEndSz())
                 .uplinkTargetPortQuery(bngEquipmentBusinessRef.getPortName())
+                .uplinkAncpConfigurationQuery("1")
+                .executeSqlQuery("1")
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("create an OLT SDX 6320-16 Device in the inventory databases with test data")
+    public void createDpuDeviceInResourceInventory(String endSz, EquipmentBusinessRef oltEquipmentBusinessRef) {
+
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(deviceList.size(), 0L, "createAdtranOltDeviceInResourceInventory Device is present");
+
+        deviceTestDataManagementClient.getClient().deviceTestDataManagement().createTestData()
+                .deviceEmsNbiNameQuery(EMS_NBI_NAME_SDX2221_08_TP)
+                .deviceEndSzQuery(endSz)
+                .deviceKlsIdQuery("12388842")
+                .deviceCompositePartyIdQuery(COMPOSITE_PARTY_ID_DTAG.toString())
+                .uplinkEndSzQuery(oltEquipmentBusinessRef.getEndSz())
+                .uplinkTargetPortQuery("3/2") // OLT downlink port
+                .deviceFiberOnLocationIdQuery("1000000085")
                 .uplinkAncpConfigurationQuery("1")
                 .executeSqlQuery("1")
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));

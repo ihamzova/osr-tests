@@ -33,6 +33,8 @@ public class MpcSwitchTest extends GigabitTest {
     private OltUplinkBusinessReferencen defaultOltUplinkBusinessReferencen;
     private EquipmentBusinessRef secondOltEquipmentBusinessRef;
     private EquipmentBusinessRef thirdOltEquipmentBusinessRef;
+    private EquipmentBusinessRef adtranOltEquipmentBusinessRef;
+    private EquipmentBusinessRef dpuEquipmentBusinessRef;
     private MpcSwitchRobot mpcSwitchRobot = new MpcSwitchRobot();
 
     @BeforeMethod
@@ -48,16 +50,26 @@ public class MpcSwitchTest extends GigabitTest {
         thirdOltEquipmentBusinessRef = OsrTestContext.get().getData()
                 .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.thirdOltPortEquipmentBusinessRef);
 
+        adtranOltEquipmentBusinessRef = OsrTestContext.get().getData()
+                .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.adtranOltPortEquipmentBusinessRef);
+
+        dpuEquipmentBusinessRef = OsrTestContext.get().getData()
+                .getEquipmentBusinessRefDataProvider().get(EquipmentBusinessRefCase.adtranDpuPortEquipmentBusinessRef);
+
+        mpcSwitchRobot.clearResourceInventoryDataBase(dpuEquipmentBusinessRef.getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(thirdOltEquipmentBusinessRef.getEndSz());
+        mpcSwitchRobot.clearResourceInventoryDataBase(adtranOltEquipmentBusinessRef.getEndSz());
     }
 
     @AfterClass
     public void teardown() {
+        mpcSwitchRobot.clearResourceInventoryDataBase(dpuEquipmentBusinessRef.getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
         mpcSwitchRobot.clearResourceInventoryDataBase(thirdOltEquipmentBusinessRef.getEndSz());
+        mpcSwitchRobot.clearResourceInventoryDataBase(adtranOltEquipmentBusinessRef.getEndSz());
     }
 
     @Test(description = "DIGIHUB-127784 Check MPC Switch: happy case. BNG Port is free")
@@ -134,21 +146,52 @@ public class MpcSwitchTest extends GigabitTest {
 
     }
 
-    @Test(description = "DIGIHUB-128041 Check MPC Switch: happy case. different ports")
-    public void changeBngPortBulkUplinkDifferentPortsSuccess() {
+    @Test(description = "DIGIHUB-128041 Check MPC Switch: happy case. different devices")
+    public void changeBngPortBulkUplinkDifferentDevicesSuccess() {
+
+        /*
+                       OLT Type    EndSz              BNG  source    target
+        first uplink:      ADTRAN  49/911/85/76H4 ====   ge-5/2/8 -> xe-0/0/1
+        second uplink:     HUAWEI  49/911/85/76H1 ====   ge-5/2/5 -> ge-7/8/7
+           DPU  49/911/85/76HC ====|
+        */
+
         OltUplinkBusinessReferencen adtranOltUplinkBusinessReferencen = OsrTestContext.get().getData()
                 .getOltUplinkBusinessReferencenDataProvider()
                 .get(OltUplinkBusinessReferencenCase.OltUplinkDifferentPorts1);
 
+        // Adtran OLT
         mpcSwitchRobot.createAdtranOltDeviceInResourceInventory(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 adtranOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
         mpcSwitchRobot.checkEquipmentBusinessRef(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 adtranOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
-        mpcSwitchRobot.changeBngPortSuccess(OltUplinkBusinessReferencenMapper.getChangeBngPorts(adtranOltUplinkBusinessReferencen));
+        //  OLT with DPU
+        mpcSwitchRobot.createOltDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.createDpuDeviceInResourceInventory(dpuEquipmentBusinessRef.getEndSz(),
+                defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkEquipmentBusinessRef(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkAncpSession(dpuEquipmentBusinessRef,
+                defaultOltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+
+        // prepare request
+        List<ChangeBngPort> changeBngPortList = OltUplinkBusinessReferencenMapper.getChangeBngPorts(adtranOltUplinkBusinessReferencen);
+        changeBngPortList.add(OltUplinkBusinessReferencenMapper.getChangeBngPorts(defaultOltUplinkBusinessReferencen).get(0));
+        mpcSwitchRobot.changeBngPortSuccess(changeBngPortList);
+
+        // check
         mpcSwitchRobot.checkEquipmentBusinessRef(adtranOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 adtranOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+
+        mpcSwitchRobot.checkAncpSession(dpuEquipmentBusinessRef,
+                defaultOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
+
     }
 
 
@@ -167,9 +210,10 @@ public class MpcSwitchTest extends GigabitTest {
         mpcSwitchRobot.createOltDeviceInResourceInventory(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
                 oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
 
+        mpcSwitchRobot.checkEquipmentBusinessRef(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
+
         mpcSwitchRobot.changeBngPortError(oltUplinkBusinessReferencen);
 
-        mpcSwitchRobot.clearResourceInventoryDataBase(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz());
-        mpcSwitchRobot.clearResourceInventoryDataBase(secondOltEquipmentBusinessRef.getEndSz());
+        mpcSwitchRobot.checkEquipmentBusinessRef(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
     }
 }

@@ -1,6 +1,6 @@
 name: OltUplinkDifferentPorts1
 template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen
 values:
-  bngSourcePortEquipmentBusinessRef: "@defaultBngSourcePortEquipmentBusinessRef"
-  bngTargetPortEquipmentBusinessRef: "@defaultBngTargetPortEquipmentBusinessRef"
+  bngSourcePortEquipmentBusinessRef: "@secondBngSourcePortEquipmentBusinessRef"
+  bngTargetPortEquipmentBusinessRef: "@secondBngTargetPortEquipmentBusinessRef"
   oltPortEquipmentBusinessRef: "@adtranOltPortEquipmentBusinessRef"
