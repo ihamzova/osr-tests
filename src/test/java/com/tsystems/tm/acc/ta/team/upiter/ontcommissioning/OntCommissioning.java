@@ -161,7 +161,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontChangeTest() {
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId()).getOntSerialNumber(),
             ontSerialNumber.getSerialNumber());
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
     assertNull(callback.getError());
@@ -334,7 +334,7 @@ public class OntCommissioning extends GigabitTest {
     assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntState(), OntState.ONLINE);
 
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), "DEFAULT");
 
     // check callback
     assertNull(callback.getError());

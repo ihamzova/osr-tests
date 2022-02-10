@@ -10,6 +10,15 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNetworkLineProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.FttbNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.L2BsaNspReferenceDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OnuAccessIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNetworkLineProfileDto;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -713,13 +722,41 @@ public class AccessLineRiRobot {
         return fttbAccessLinesFiltered;
     }
 
-    @Step("Get AccessLines with HomeIds")
-    public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
-        List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
-                .filter(accessLineDto -> (accessLineDto.getHomeId() != null)).collect(Collectors.toList());
-        assertTrue(accessLinesWithHomeIds.size() != 0, "There are no AccessLines with HomeIds");
-        return accessLinesWithHomeIds;
+  @Step("Get AccessLines with HomeIds")
+  public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
+    List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> (accessLineDto.getHomeId() != null)).collect(Collectors.toList());
+
+    if (accessLinesWithHomeIds.size()!=0) {
+      return accessLinesWithHomeIds;
+    } else {
+      throw new RuntimeException("There are no AccessLines with HomeIds on this port");
     }
+  }
+
+  @Step("Get AccessLines with NetworkSwitching Profiles")
+  public List<AccessLineDto> getAccessLinesWithSwitchingProfile(PortProvisioning port) {
+    List<AccessLineDto> accessLinesWithSwitchingProfile = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() != null)).collect(Collectors.toList());
+
+    if (accessLinesWithSwitchingProfile.size() != 0) {
+      return accessLinesWithSwitchingProfile;
+    } else {
+      throw new RuntimeException("There are no AccessLines with Switching Profiles");
+    }
+  }
+
+  @Step("Get AccessLines without NetworkSwitching Profiles")
+  public List<AccessLineDto> getAccessLinesWithoutSwitchingProfile(PortProvisioning port) {
+    List<AccessLineDto> accessLinesWithoutSwitchingProfile = getAccessLinesByPort(port).stream()
+            .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() == null)).collect(Collectors.toList());
+
+    if (accessLinesWithoutSwitchingProfile.size() != 0) {
+      return accessLinesWithoutSwitchingProfile;
+    } else {
+      throw new RuntimeException("There are no AccessLines without Switching Profiles");
+    }
+  }
 
     @Step("Get LineID Pool by Port")
     public List<LineIdDto> getLineIdPool(PortProvisioning port) {
@@ -796,19 +833,18 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get AllocatedOnuIds by AccessLines")
-    public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
-        List<Integer> allocatedOnunIds = accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
-                        .searchAllocatedOnuId()
-                        .body(new SearchAllocatedOnuIdDto()
-                                .oltEndSz(port.getEndSz())
-                                .slotNumber(port.getSlotNumber())
-                                .portNumber(port.getPortNumber())
-                                .lineId(accessLine.getLineId()))
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
-                .flatMap(List::stream).collect(Collectors.toList());
-        return allocatedOnunIds;
-    }
+  @Step("Get AllocatedOnuIds by AccessLines")
+  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
+    return accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+            .searchAllocatedOnuId()
+            .body(new SearchAllocatedOnuIdDto()
+                    .oltEndSz(port.getEndSz())
+                    .slotNumber(port.getSlotNumber())
+                    .portNumber(port.getPortNumber())
+                    .lineId(accessLine.getLineId()))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+            .flatMap(List::stream).collect(Collectors.toList());
+  }
 
     @Step("Get AllocatedAnpTags from AccessLines")
     public List<Integer> getAllocatedAnpTags(List<AccessLineDto> accessLines) {
@@ -1017,12 +1053,12 @@ public class AccessLineRiRobot {
         return homeIdDto.getHomeId();
     }
 
-    @Step("Update HomeId on migrated AccessLine")
-    public void updateHomeIdOnMigratedAccessLine(String lineId, String homeId) {
-        List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
-                .searchAccessLines()
-                .body(new SearchAccessLineDto().lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+  @Step("Update HomeId on migrated AccessLine")
+  public void updateHomeIdOnAccessLine(String lineId, String homeId) {
+    List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
+            .searchAccessLines()
+            .body(new SearchAccessLineDto().lineId(lineId))
+            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         final AccessLineDto accessLineDto = accessLineDtoList.get(0);
 

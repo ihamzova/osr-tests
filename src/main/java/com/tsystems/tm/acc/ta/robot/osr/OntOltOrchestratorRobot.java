@@ -201,7 +201,7 @@ public class OntOltOrchestratorRobot {
   }
 
   @Step("Change ONT serial number")
-  public OperationResultLineIdSerialNumberDto changeOntSerialNumber(AccessLine accessLine, String newSerialNumber) {
+  public OperationResultLineIdSerialNumberDto changeOntSerialNumber(String lineId, String newSerialNumber) {
     CORRELATION_ID = UUID.randomUUID().toString();
     ontOltOrchestratorClient
             .getClient()
@@ -216,7 +216,7 @@ public class OntOltOrchestratorRobot {
                     .withEndpoint(CONSUMER_ENDPOINT)
                     .build()
                     .toString())
-            .lineIdPath(accessLine.getLineId())
+            .lineIdPath(lineId)
             .newSerialNumberQuery(newSerialNumber)
             .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
     log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);

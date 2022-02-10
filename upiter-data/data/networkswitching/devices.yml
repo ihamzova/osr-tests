@@ -33,3 +33,23 @@ values:
   portNumber: "1"
   homeIdPool: 32
   accessLinesCount: 16
+---
+name: Source_49_30_179_76H1_Update
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "2"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesCount: 16
+---
+name: Target_49_911_1100_76H1_Update
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H1"
+  slotNumber: "1"
+  portNumber: "2"
+  homeIdPool: 32
+  lineIdPool: 32
+  accessLinesCount: 16
