@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import org.testng.annotations.BeforeClass;
@@ -59,7 +59,6 @@ public class FtthMigration {
         // Step 3. Put lineId to the DB
         accessLineRiRobot.postLineId(migratedLineId);
         assertEquals(accessLineRiRobot.getLineIdPool(migratedPort).size(), 1);
-        assertEquals(accessLineRiRobot.getLineIdStateByLineId(migratedLineId.getLineIdDtoList().get(0).getLineId()), LineIdStatus.USED);
 
         // Step 4. Preprovisioning
         wgAccessProvisioningRobot.startPortProvisioning(migratedPort);
@@ -70,7 +69,7 @@ public class FtthMigration {
         List<HomeIdDto> homeIdPool = accessLineRiRobot.getHomeIdPool(migratedPort);
         String homeId = accessLineRiRobot.changeHomeIdStatus(homeIdPool.get(0), HomeIdStatus.ASSIGNED);
         assertEquals(accessLineRiRobot.getHomeIdStateByHomeId(homeId), HomeIdStatus.ASSIGNED);
-        accessLineRiRobot.updateHomeIdOnMigratedAccessLine(migratedAccessLine.getLineId(), homeId);
+        accessLineRiRobot.updateHomeIdOnAccessLine(migratedAccessLine.getLineId(), homeId);
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(migratedAccessLine.getLineId()).get(0).getHomeId(), homeId);
 
         // Step 6. Optional reconfiguration of migrated access lines

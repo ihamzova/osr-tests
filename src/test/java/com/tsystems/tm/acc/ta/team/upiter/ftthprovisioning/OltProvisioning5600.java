@@ -7,11 +7,10 @@ import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.OsrSupportRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -40,7 +39,6 @@ import static org.testng.AssertJUnit.assertNotNull;
 public class OltProvisioning5600 extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot;
-  private OsrSupportRobot osrSupportRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private PortProvisioning device5600;
   private PortProvisioning card5600v1;
@@ -53,7 +51,6 @@ public class OltProvisioning5600 extends GigabitTest {
   @BeforeClass
   public void init() {
     accessLineRiRobot = new AccessLineRiRobot();
-    osrSupportRobot = new OsrSupportRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
 
     accessLineRiRobot.clearDatabase();
@@ -88,9 +85,6 @@ public class OltProvisioning5600 extends GigabitTest {
             card5600v1.getSlotNumber(),
             cardBeforeProvisioning.getContainsPortsRefOrValue().get(0).getPortName(), card5600v1);
 
-    System.out.println(port);
-    System.out.println("card5600v1 = " + card5600v1);
-
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 8);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v1).size(), 0);
@@ -107,13 +101,9 @@ public class OltProvisioning5600 extends GigabitTest {
   @Description("Card provisioning case with 1 card")
   public void oneCardProvisioning() {
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v2);
-    System.out.println(cardBeforeProvisioning);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v2.getEndSz(),
             card5600v2.getSlotNumber(),
             cardBeforeProvisioning.getContainsPortsRefOrValue().get(1).getPortName(), card5600v2);
-
-    System.out.println(port);
-    System.out.println("card5600v2 = " + card5600v2);
 
     assertNotNull(cardBeforeProvisioning);
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 3);
@@ -136,9 +126,6 @@ public class OltProvisioning5600 extends GigabitTest {
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
             device.getEquipmentHolders().get(1).getSlotNumber(),
             device.getEquipmentHolders().get(1).getCard().getPorts().get(0).getPortNumber(), device5600);
-
-    System.out.println(port);
-    System.out.println("device5600 = " + device5600);
 
     assertNotNull(device);
     assertEquals(device.getEmsNbiName(), "MA5600T");

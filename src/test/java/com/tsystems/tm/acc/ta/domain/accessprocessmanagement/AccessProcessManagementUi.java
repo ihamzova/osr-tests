@@ -33,9 +33,7 @@ public class AccessProcessManagementUi extends GigabitTest {
     @BeforeClass
     public void init() {
         process = context.getData().getProcessDataProvider().get(ProcessCase.searchProcessByEndSz);
-
         today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
-        System.out.println(today);
     }
 
     @BeforeMethod

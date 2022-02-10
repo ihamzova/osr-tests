@@ -14,8 +14,8 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -161,7 +161,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontChangeTest() {
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId()).getOntSerialNumber(),
             ontSerialNumber.getSerialNumber());
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning, ontSerialNumber.getNewSerialNumber());
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLineForCommissioning.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
     assertNull(callback.getError());
@@ -276,9 +276,6 @@ public class OntCommissioning extends GigabitTest {
 
     // check alri
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), true);
-    assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
-            lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())
-                    && lineIdDto.getStatus().equals(LineIdStatus.FREE)).collect(Collectors.toList()).size(), 1);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
@@ -317,9 +314,6 @@ public class OntCommissioning extends GigabitTest {
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).size(), 1);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseNew.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getLineIdPool(port).stream().filter(lineIdDto ->
-            lineIdDto.getLineId().equals(accessLineFor33LineCaseNew.getLineId())
-                    && lineIdDto.getStatus().equals(LineIdStatus.USED)).collect(Collectors.toList()).size(), 1);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).get(0).getHomeId(), accessLineFor33LineCaseNew.getHomeId());
     assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).get(0).getDefaultNeProfile().getSubscriberNeProfile());
 
@@ -340,7 +334,7 @@ public class OntCommissioning extends GigabitTest {
     assertNotNull(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
     assertEquals(accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntState(), OntState.ONLINE);
 
-    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine, "DEFAULT");
+    OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), "DEFAULT");
 
     // check callback
     assertNull(callback.getError());
@@ -440,7 +434,6 @@ public class OntCommissioning extends GigabitTest {
     assertTrue(operationResultEmsEventCallback.getSuccess());
     assertNull(operationResultEmsEventCallback.getError());
   }
-
 
   @Test
   @TmsLink("DIGIHUB-116324")

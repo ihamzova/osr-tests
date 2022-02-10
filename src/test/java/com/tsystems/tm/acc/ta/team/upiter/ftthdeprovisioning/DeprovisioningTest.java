@@ -6,12 +6,11 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -57,11 +56,6 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
   }
 
-  @AfterClass
-  public void clearData() {
-    accessLineRiRobot.clearDatabase();
-  }
-
   @Test
   @TmsLink("DIGIHUB-48518")
   @Description("Port deprovisioning case, deprovisioningForDpu = na ( = false)")
@@ -91,12 +85,9 @@ public class DeprovisioningTest extends GigabitTest {
     accessLineRiRobot.checkFtthPortParameters(portDeprForDpu);
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprForDpu, 1, 1);
     List<HomeIdDto> homeIds = accessLineRiRobot.getHomeIdPool(portDeprForDpu);
-    List<LineIdDto> lineIds = accessLineRiRobot.getLineIdPool(portDeprForDpu);
     long countHomeIDsFree = homeIds.stream().filter(HomeId -> HomeId.getStatus().getValue().equals(HomeIdLogicalStatus.FREE.getValue())).count();
-    long countLineIDsFree = lineIds.stream().filter(LineId -> LineId.getStatus().getValue().equals(LineIdStatus.FREE.getValue())).count();
     assertEquals(accessLineRiRobot.getBackHaulId(portDeprForDpu).get(0).getStatus(), BackhaulStatus.CONFIGURED);
     assertEquals(countHomeIDsFree, portDeprForDpu.getHomeIdPool().intValue());
-    assertEquals(countLineIDsFree, portDeprForDpu.getLineIdPool().intValue());
   }
 
   @Test

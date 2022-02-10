@@ -15,7 +15,6 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "5"
   portNumber: "0"
-  lineIdPool: 32
   accessLinesWG: 0
   fttbNEProfilesActive: 0
   defaultNetworkLineProfilesActive: 0

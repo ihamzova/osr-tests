@@ -5,7 +5,6 @@ values:
   slotNumber: "1"
   portNumber: "0"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16
@@ -18,7 +17,6 @@ values:
   endSz: "49/911/1100/76H1"
   slotNumber: "1"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16
@@ -31,7 +29,6 @@ values:
   endSz: "49/911/1100/76H2"
   slotNumber: "1"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16
@@ -43,7 +40,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H4"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16

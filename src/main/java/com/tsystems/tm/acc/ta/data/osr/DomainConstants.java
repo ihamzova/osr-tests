@@ -45,10 +45,10 @@ public interface DomainConstants {
     String PSL_TRANSFORMER_MS = "psl-transformer";
 
     // Activate this when using AMQ
-    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";
+//    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq";
 
     // Activate this when using AMQ-HA
-//    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq-ha";
+    String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq-ha";
 
     String A4_RESOURCE_ORDER_ORCHESTRATOR_MS = "a4-resource-order-orchestrator";
     String DECOUPLING_MS = "decoupling-component";

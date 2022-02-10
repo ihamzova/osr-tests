@@ -10,12 +10,11 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_25_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -46,19 +45,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
-    public void prepareData() throws InterruptedException {
-        accessLineRiRobot.clearDatabase();
-        Thread.sleep(3000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
-    }
-
-    @AfterClass
-    public void clearData() {
-        accessLineRiRobot.clearDatabase();
-    }
-
-    @BeforeClass
-    public void init() {
+    public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
@@ -66,13 +53,16 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
         portWithInActiveLines = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);
         defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
         defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+
+        accessLineRiRobot.clearDatabase();
+        Thread.sleep(3000);
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }
 
     @Test
     @TmsLink("DIGIHUB-40631")
     @Description("Port provisioning case when port is completely occupied")
-    public void portProvisioningFully() throws InterruptedException {
-        prepareData();
+    public void portProvisioningFully() {
         List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningFully);
         assertEquals(accessLinesBeforeProvisioning.size(), portProvisioningFully.getAccessLinesCount().intValue());
         wgAccessProvisioningRobot.startPortProvisioning(portProvisioningFully);
