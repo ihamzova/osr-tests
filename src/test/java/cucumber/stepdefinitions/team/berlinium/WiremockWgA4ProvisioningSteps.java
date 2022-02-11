@@ -87,6 +87,7 @@ public class WiremockWgA4ProvisioningSteps {
 
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the 1st time")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst) {
+        // ACTION
         givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstXTimes(httpCodeFirst, 1);
     }
 
@@ -105,7 +106,8 @@ public class WiremockWgA4ProvisioningSteps {
         wiremock.publish();
     }
 
-    @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the {int} (nd/rd/th) time, and delete the NSP")
+    // When using step parsing with Regexp, you can find some hints here: https://agileforall.com/just-enough-regular-expressions-for-cucumber/
+    @Given("^the wg-a4-provisioning deprovisioning mock will respond HTTP code (.*) when called the (.*)(?:nd|rd|th) time, and delete the NSP$")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledForthTimeAndDeleteNsp(int httpCode, int attempt) {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
@@ -121,6 +123,7 @@ public class WiremockWgA4ProvisioningSteps {
 
     @Then("a DPU preprovisioning request to wg-a4-provisioning mock was triggered")
     public void thenADpuPreprovisioningRequestToUPiterWasTriggered() {
+        // ACTION
         a4ProvWiremock.checkPostToPreprovisioningWiremock(1);
     }
 
