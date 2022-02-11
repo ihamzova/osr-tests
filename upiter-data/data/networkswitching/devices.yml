@@ -41,7 +41,6 @@ values:
   slotNumber: "3"
   portNumber: "2"
   homeIdPool: 32
-  lineIdPool: 32
   accessLinesCount: 16
 ---
 name: Target_49_911_1100_76H1_Update
@@ -51,5 +50,4 @@ values:
   slotNumber: "1"
   portNumber: "2"
   homeIdPool: 32
-  lineIdPool: 32
   accessLinesCount: 16

@@ -5,7 +5,6 @@ values:
   slotNumber: "${scope, global.a4Provisioning.slotNumber}"
   portNumber: "${scope, global.a4Provisioning.portNumber}"
   homeIdPool: 0
-  lineIdPool: 0
   accessLinesWG: 0
   defaultNEProfilesActive: 0
   defaultNetworkLineProfilesActive: 0

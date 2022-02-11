@@ -14,7 +14,6 @@ public class PortProvisioning {
     private String slotNumber;
     private String portNumber;
     private Integer homeIdPool;
-    private Integer lineIdPool;
     private Integer backhaulId;
     private Integer accessLinesWG;
     private Integer defaultNEProfilesActive;
