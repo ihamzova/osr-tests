@@ -91,6 +91,7 @@ public class AccessLinesManagementPage {
   public AccessLinesManagementPage clickBestätigenButton() {
     $(BESTAETIGEN_BUTTON).click();
     $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+    //closeNotificationButton();
     return this;
   }
 

@@ -309,7 +309,9 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds).clickSearchButton();
     accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    assertEquals(accessLineRiRobot.getHomeIdsByStatus(homeAndBackhaulIds, HomeIdStatus.ASSIGNED).size(), homeAndBackhaulIds.getHomeIdsCount().intValue());
+    accessLineSearchPage.setPageSize(100);
+    assertEquals(accessLineSearchPage.getTableRows().size(),32);
+
 
   }
 
@@ -319,11 +321,12 @@ public class AccessLinesSearchTest extends GigabitTest {
   public void searchHomeIdbyHomeIDTest() {
     AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
     accessLineSearchPage.validateUrl();
-    accessLineSearchPage.searchHomeIdsbyHomeId(homeAndBackhaulIds).clickSearchButton();
+    String homeId = accessLineRiRobot.getHomeIdsByStatus(homeAndBackhaulIds, HomeIdStatus.ASSIGNED).get(0);
+    accessLineSearchPage.searchHomeIdsbyHomeId(homeId).clickSearchButton();
     accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    accessLineSearchPage.navigateToAlSearchPage().clickSearchButton();
-    assertEquals(accessLineRiRobot.getHomeIdsByStatus(homeAndBackhaulIds, HomeIdStatus.ASSIGNED).size(), homeAndBackhaulIds.getHomeIdsCount().intValue());
+    accessLineSearchPage.navigateToAlSearchPage().clickSearchButton();//добавить проверку таблицы
+
   }
 
   @Test
@@ -342,9 +345,10 @@ public class AccessLinesSearchTest extends GigabitTest {
   @TmsLink("DIGIHUB-55322")
   @Description("Search for Backhaul ID by Backhaul ID in Access Management UI")
   public void searchBackhaulIDByBackhaulIdTest() {
+    String backhaulId = accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getBackhaulId();
     AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
     accessLineSearchPage.validateUrl();
-    accessLineSearchPage.searchBackhaulIDbyBackhaulId(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds)).clickSearchButton();
+    accessLineSearchPage.searchBackhaulIDbyBackhaulId(backhaulId).clickSearchButton();
     accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
     assertEquals(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getStatus(), BackhaulStatus.CONFIGURED);

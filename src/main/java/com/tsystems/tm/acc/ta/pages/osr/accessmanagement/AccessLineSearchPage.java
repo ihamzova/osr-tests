@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
@@ -34,7 +35,7 @@ public class AccessLineSearchPage {
   private static final String ENDPOINT = "/search";
   private static final long TIMEOUT = 30000;
 
-  private static final By DEVICE_TAB = byQaData("sc-port-address-tab-a");
+  private static final By DEVICE_TAB = byQaData("sc-port-address-tab-li");
   private static final By ENDSZ_INPUT = byQaData("pac-end-sz-input");
   private static final By SLOT_NUMBER_INPUT = byQaData("pac-slot-number-input");
   private static final By PORT_NUMBER_INPUT = byQaData("pac-port-number-input");
@@ -43,16 +44,26 @@ public class AccessLineSearchPage {
   private static final By WALLED_GARDEN_STATUS = byQaData("ucc-walled-garden-filter-label");
   private static final By INACTIVE_STATUS = byQaData("ucc-inactive-filter-label");
   private static final By ASSIGNED_SEAL_CONFIGURED_STATUS = byQaData("ucc-assigned-seal-filter-label");
-  private static final By HOMEID_TAB = byQaData("sc-home-id-tab-a");
+  private static final By HOMEID_TAB = byQaData("sc-home-id-tab-li");
   private static final By HOMEID_INPUT = byQaData("hic-home-id-input");
   private static final By SEARCH_BUTTON = byQaData("search-button");
-  private static final By LINEID_TAB = byQaData("sc-line-id-tab-a");
   private static final By LINEID_INPUT = byQaData("hic-line-id-input");
-  private static final By KLSID_TAB = byQaData("sc-kls-id-tab-a");
+  private static final By LINEID_TAB = byQaData("sc-line-id-tab-li");
   private static final By KLSID_INPUT = byQaData("hic-kls-id-input");
-  private static final By ONTSN_TAB = byQaData("sc-ont-sn-tab-a");
+  private static final By KLSID_TAB = byQaData("sc-kls-id-tab-li");
+  private static final By ONTSN_TAB = byQaData("sc-ont-sn-tab-li");
   private static final By ONTSN_INPUT = byQaData("hic-ont-sn-input");
   private static final By SORT_BY_STATUS = byQaData("sc-status-sort-header-td");
+  private static final By HOME_ID_DEVICE_SEARCH_TAB = byQaData("sc-home-ids-section-li");
+  private static final By HOME_ID_SEARCH_TAB = byQaData("sc-home-id-tab-li");
+  private static final By BACKHAUL_ID_DEVICE_SEARCH_TAB = byQaData("sc-backhaul-ids-section-li");
+  private static final By BACKHAUL_ID_SEARCH_TAB = byQaData("sc-backhaul-id-tab-li");
+  private static final By HOME_ID_ASSIGNED = byQaData("ucc-assigned-filter-label");
+  private static final By HOME_ID_RESERVED = byQaData("ucc-reserved-filter-label");
+  private static final By HOME_ID_FREE = byQaData("ucc-free-filter-label");
+  private static final By BACKHAUL_ID_INPUT= byQaData("hic-backhaul-id-input");
+  private static final By HOME_ID_INPUT= byQaData("hic-home-id-input");
+  private static final By HOME_ID_Link= byQaData("homeid-link-a");
 
   @Step("Open Access-line-Search page")
   public static AccessLineSearchPage openPage() {
@@ -90,6 +101,54 @@ public class AccessLineSearchPage {
     return this;
   }
 
+  @Step("Search HomeIds by EndsZ")
+  public AccessLineSearchPage searchHomeIdsbyEndsZ(PortProvisioning port) {
+    $(HOME_ID_DEVICE_SEARCH_TAB).click();
+    $(ENDSZ_INPUT).click();
+    $(ENDSZ_INPUT).val(port.getEndSz());
+    if (!port.getSlotNumber().isEmpty()) {
+      $(SLOT_NUMBER_INPUT).click();
+      $(SLOT_NUMBER_INPUT).val(port.getSlotNumber());
+    }
+    if (!port.getPortNumber().isEmpty()) {
+      $(PORT_NUMBER_INPUT).click();
+      $(PORT_NUMBER_INPUT).val(port.getPortNumber());
+    }
+    $(HOME_ID_ASSIGNED).click();
+    return this;
+  }
+  @Step("Search BackhaulIds by EndsZ")
+  public AccessLineSearchPage searchBackhaulIDs(PortProvisioning port) {
+    $(BACKHAUL_ID_DEVICE_SEARCH_TAB).click();
+    $(ENDSZ_INPUT).click();
+    $(ENDSZ_INPUT).val(port.getEndSz());
+    if (!port.getSlotNumber().isEmpty()) {
+      $(SLOT_NUMBER_INPUT).click();
+      $(SLOT_NUMBER_INPUT).val(port.getSlotNumber());
+    }
+    if (!port.getPortNumber().isEmpty()) {
+      $(PORT_NUMBER_INPUT).click();
+      $(PORT_NUMBER_INPUT).val(port.getPortNumber());
+    }
+    $(HOME_ID_ASSIGNED).click();
+    return this;
+  }
+  @Step("Search HomeId by HomeId")
+  public AccessLineSearchPage searchHomeIdsbyHomeId(String homeId) {
+    $(HOME_ID_DEVICE_SEARCH_TAB).click();
+    $(HOME_ID_SEARCH_TAB).click();
+    $(HOME_ID_INPUT).click();
+    $(HOME_ID_INPUT).val(homeId);
+    return this;
+  }
+  @Step("Search BackhaulId by BackhaulId")
+  public AccessLineSearchPage searchBackhaulIDbyBackhaulId(String backhaulIdD) {
+    $(BACKHAUL_ID_DEVICE_SEARCH_TAB).click();
+    $(BACKHAUL_ID_SEARCH_TAB).click();
+    $(BACKHAUL_ID_INPUT).click();
+    $(BACKHAUL_ID_INPUT).val(backhaulIdD);
+    return this;
+  }
   @Step("Search Access lines by LineID")
   public AccessLineSearchPage searchAccessLinesByLineID(String lineId) {
     $(LINEID_TAB).click();
@@ -113,7 +172,17 @@ public class AccessLineSearchPage {
     $(KLSID_INPUT).val(klsId);
     return this;
   }
-
+  @Step("Navigate to Al Search Page")
+  public AccessLineSearchPage navigateToAlSearchPage() {
+    $(HOME_ID_Link).click();
+    return this;
+  }
+  @Step("Check BackhaulIds table headers")
+  public void checkBackhaulIdsTableHeaders(List<String> tableHeaders) {
+    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Backhaul ID", "Status");
+    assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
+            supposedHeaders.toArray());
+  }
   @Step("Set Walled_Garden status")
   public AccessLineSearchPage setWalledGardenStatus() {
     $(WALLED_GARDEN_STATUS).click();
@@ -189,7 +258,7 @@ public class AccessLineSearchPage {
             .findAll(By.tagName("li"))
             .find(Condition.text(String.valueOf(pageSize)))
             .click();
-    $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHave(size(pageSize));
+   $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHave(size(pageSize));
     return this;
   }
 
@@ -208,7 +277,12 @@ public class AccessLineSearchPage {
     tds.get(10).shouldNotHave(text(status), Duration.ofMillis(TIMEOUT));
     return this;
   }
-
+  @Step("Check HomeIds table headers")
+  public void checkHomeIdsTableHeaders(List<String> tableHeaders) {
+    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Home ID", "Status", "Modification Date", "Access Line");
+    assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
+            supposedHeaders.toArray());
+  }
   @Step("Check presence of sortable icon in status column")
   public boolean sortIconIsPresentInStatusColumn() {
     return $(SORT_BY_STATUS).$("i").isDisplayed();
