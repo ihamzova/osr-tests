@@ -61,6 +61,9 @@ public class WiremockWgA4ProvisioningSteps {
 
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called, and delete the NSP")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledAndDeleteNsp(int httpCode) {
+        // It'd be great if wiremock could handle >1 webhooks, then it could delete the NSP _and_ send the callback.
+        // Unfortunately it isn't, therefore the callback has to be sent "by hand" in separate step method.
+
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
@@ -84,24 +87,33 @@ public class WiremockWgA4ProvisioningSteps {
 
     @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the 1st time")
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstTime(int httpCodeFirst) {
+        givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstXTimes(httpCodeFirst, 1);
+    }
+
+    @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the first {int} time(s)")
+    public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledFirstXTimes(int httpCode, int numberOfRetryAttempts) {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
-        wiremock
-                .add(new DeProvisioningStub().postDeProvAccessLineFirstTime(httpCodeFirst))
-                .publish();
+        wiremock.add(new DeProvisioningStub().postDeProvAccessLineFirstTime(httpCode));
+
+        for (int i = 1; i < numberOfRetryAttempts; i++) {
+            wiremock.add(new DeProvisioningStub().postDeProvAccessLineRetry(httpCode, i));
+        }
+
+        wiremock.publish();
     }
 
-    @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the 2nd time, and delete the NSP")
-    public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledSecondTimeAndDeleteNsp(int httpCodeSecond) {
+    @Given("the wg-a4-provisioning deprovisioning mock will respond HTTP code {int} when called the {int} (nd/rd/th) time, and delete the NSP")
+    public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledForthTimeAndDeleteNsp(int httpCode, int attempt) {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
         final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
         wiremock
-                .add(new DeProvisioningStub().postDeProvAccessLineSecondTimeWithNspDeletion(httpCodeSecond, nspFtth.getUuid()))
+                .add(new DeProvisioningStub().postDeProvAccessLineWithNspDeletion(httpCode, nspFtth.getUuid(), attempt))
                 .publish();
     }
 
@@ -113,31 +125,39 @@ public class WiremockWgA4ProvisioningSteps {
     }
 
     @Then("the DPU preprovisioning request to wg-a4-provisioning mock is repeated after {int} minutes")
-    public void thenDpuPreprovisioningRequestIsRepeatedAfterMinutes(int min) {
+    public void thenDpuPreprovisioningRequestIsRepeatedAfterMinutes(int minutes) {
         // ACTION
-        sleepForSeconds(min * 60);
+        sleepForSeconds(minutes * 60);
         a4ProvWiremock.checkPostToPreprovisioningWiremock(2);
     }
 
-    @Then("a DPU deprovisioning request to wg-a4-provisioning mock was triggered with Line ID {string}")
-    public void thenADpuDeprovisioningRequestToUPiterWasTriggeredWithLineID(String lineId) throws JsonProcessingException {
+    @Then("{int} DPU deprovisioning request(s) to wg-a4-provisioning mock was/were triggered with Line ID {string}")
+    public void thenADpuDeprovisioningRequestToUPiterWasTriggeredWithLineID(int countExpected, String lineId) throws JsonProcessingException {
         // ACTION
-        final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(1);
+        final String dpuCallbackBody = a4ProvWiremock.checkPostToDeprovisioningWiremock(countExpected);
         final A4AccessLineRequestDto erg = testContext.getObjectMapper().readValue(dpuCallbackBody, A4AccessLineRequestDto.class);
         assertEquals(erg.getLineId(), lineId);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.WIREMOCK_COUNT_WG_A4_DEPROV, countExpected);
     }
 
-    @Then("no DPU deprovisioning request to wg-a4-provisioning mock was triggered")
+    @Then("no/0 DPU deprovisioning request to wg-a4-provisioning mock was/were triggered")
     public void thenNoDpuDeprovisioningRequestToUPiterWasTriggered() {
         // ACTION
         a4ProvWiremock.checkPostToDeprovisioningWiremock(0);
     }
 
     @Then("the DPU deprovisioning request to wg-a4-provisioning mock is repeated after {int} minutes")
-    public void thenDpuDeprovisioningRequestIsRepeatedAfterMinutes(int min) {
+    public void thenDpuDeprovisioningRequestIsRepeatedAfterMinutes(int minutes) {
+        // INPUT FROM SCENARIO CONTEXT
+        final int count = (int) testContext.getScenarioContext().getContext(Context.WIREMOCK_COUNT_WG_A4_DEPROV);
+
         // ACTION
-        sleepForSeconds(min * 60);
-        a4ProvWiremock.checkPostToDeprovisioningWiremock(2);
+        sleepForSeconds(minutes * 60);
+        a4ProvWiremock.checkPostToDeprovisioningWiremock(count + 1);
+
+        sleepForSeconds(5); // give following processes chance to finish
     }
 
 }

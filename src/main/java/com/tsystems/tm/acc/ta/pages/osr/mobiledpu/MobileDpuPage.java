@@ -22,7 +22,7 @@ public class MobileDpuPage {
     private static final String APP = "mobile-dpu";
     private static final String ENDPOINT = "/workorder";
     private static final long TIMEOUT = 30000;
-    private static final By WO_WINDOW = By.className("wo-window");
+    private static final By WO_WINDOW = By.cssSelector(".wo-window");
     private static final By WO_STATUS = By.id("wo-status");
 
     SelenideElement woWindow = $(WO_WINDOW);

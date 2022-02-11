@@ -2,8 +2,10 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tsystems.tm.acc.ta.etcd.AggregatingKeyValuesWatchListenerRest;
 import com.tsystems.tm.acc.ta.etcd.ETCDV3Client;
 import com.tsystems.tm.acc.ta.etcd.ETCDV3RestClient;
+import com.tsystems.tm.acc.ta.etcd.WatchListenerGrpcImpl;
 import com.tsystems.tm.acc.ta.kubernetes.ServicePortForwarder;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import de.telekom.it.t3a.kotlin.kubernetes.KubernetesContext;
@@ -13,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class ETCDRobot {
 
     public void checkEtcdValuesWithRest(String key, List<String> values) {
         ETCDV3RestClient client = new ETCDV3RestClient(new OCUrlBuilder("ont-etcd").withoutSuffix().buildUri());
-        ETCDV3RestClient.AggregatingKeyValuesWatchListener listener = new ETCDV3RestClient.AggregatingKeyValuesWatchListener();
+        AggregatingKeyValuesWatchListenerRest listener = new AggregatingKeyValuesWatchListenerRest();
         client.watch(key, listener);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -66,7 +67,7 @@ public class ETCDRobot {
                             .filter(Objects::nonNull)
                             .map(event -> event.message)
                             .collect(Collectors.toList());
-                    values.forEach(value-> assertThat(value)
+                    values.forEach(value -> assertThat(value)
                             .matches(v -> events.stream().anyMatch(e -> e.contains(v)),
                                     "Should be one of: " + String.join(",", events)));
                     //assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));
@@ -75,7 +76,7 @@ public class ETCDRobot {
 
     private void checkEtcdValues(URI endpoint, String key, List<String> values) {
         ETCDV3Client client = new ETCDV3Client(endpoint);
-        ETCDV3Client.WatchListener listener = new ETCDV3Client.WatchListener();
+        WatchListenerGrpcImpl listener = new WatchListenerGrpcImpl();
         try (Watch.Watcher watcher = client.watch(key, listener)) {
             ObjectMapper mapper = new ObjectMapper();
             await().atMost(10, SECONDS).and().pollInterval(500, MILLISECONDS)
@@ -92,7 +93,7 @@ public class ETCDRobot {
                                 .filter(Objects::nonNull)
                                 .map(event -> event.message)
                                 .collect(Collectors.toList());
-                        values.forEach(value-> assertThat(value)
+                        values.forEach(value -> assertThat(value)
                                 .matches(v -> events.stream().anyMatch(e -> e.contains(v)),
                                         "Should be one of: " + String.join(",", events)));
                         //assertThat(values).allMatch(v -> events.stream().anyMatch(e -> e.contains(v)));

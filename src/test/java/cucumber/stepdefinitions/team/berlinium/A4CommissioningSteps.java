@@ -22,6 +22,9 @@ public class A4CommissioningSteps {
 
     @When("the wg-a4-provisioning mock sends the callback")
     public void whenUPiterMockSendsTheCallback() {
+        // This step is necessary because wiremock can only handle 1 webhook, which is used to create/delete the NSP.
+        // Therefore the callback itself cannot be handled via webhook but needs to be sent "by hand".
+
         // INPUT FROM SCENARIO CONTEXT
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
