@@ -28,8 +28,11 @@ public class OltSearchPage {
     //public static final String ENDPOINT = "/search";
     public static final String ENDPOINT = "/" + APP + "/search";
 
-    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchType");
-    public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-ENDSZ");
+    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD = byQaData("div-searchType");
+    public static final By ENDSZ_SEARCH_TYPE_VALUE_OLD = byQaData("div-ENDSZ");
+    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchtype");
+    public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-searchtype_option_0");
+
     public static final By OLT_AKZ_INPUT_LOCATOR = byQaData("input-akz");
     public static final By OLT_ONKZ_INPUT_LOCATOR = byQaData("input-nkz");
     public static final By OLT_VKZ_INPUT_LOCATOR = byQaData("input-vkz");
@@ -102,8 +105,14 @@ public class OltSearchPage {
 
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
-        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-        $(ENDSZ_SEARCH_TYPE_VALUE).click();
+
+        if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
+            $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
+            $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
+        } else {
+            $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
+            $(ENDSZ_SEARCH_TYPE_VALUE).click();
+        }
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSz[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();
@@ -116,8 +125,14 @@ public class OltSearchPage {
 
     private void inputDeviceParameters(String endSz) {
         String[] endSzn = endSz.split("/");
-        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-        $(ENDSZ_SEARCH_TYPE_VALUE).click();
+
+        if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
+            $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
+            $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
+        } else {
+            $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
+            $(ENDSZ_SEARCH_TYPE_VALUE).click();
+        }
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSzn[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();
