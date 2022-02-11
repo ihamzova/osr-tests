@@ -5,5 +5,4 @@ values:
   slotNumber: "3"
   portNumber: "3"
   homeIdPool: 32
-  lineIdPool: 32
   backhaulId: 1

@@ -17,7 +17,6 @@ import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.testng.Assert;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +39,6 @@ public class OltCommissioningRobot {
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
   private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 16;
-  private static final Integer LINE_ID_POOL_PER_PORT = 32;
   private static final Integer HOME_ID_POOL_PER_PORT = 32;
 
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
