@@ -42,6 +42,7 @@ public class MpcSwitchRobot {
     @Step("change BNG Port success")
     public void changeBngPortSuccess(List<ChangeBngPort> changeBngPortList) {
 
+        log.info("changeBngPortSuccess() changeBngPortList = {}", changeBngPortList);
         uplinkResourceInventoryManagementClient.getClient().uplink().changeBngPortBulkUplink()
                 .body(changeBngPortList)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
@@ -51,6 +52,7 @@ public class MpcSwitchRobot {
     @Step("change BNG Port unhappy case scenarios")
     public void changeBngPortError(List<ChangeBngPort> changeBngPortList) {
 
+        log.info("changeBngPortError() changeBngPortList = {}", changeBngPortList);
         Response response = uplinkResourceInventoryManagementClient.getClient().uplink().changeBngPortBulkUplink()
                 .body(changeBngPortList)
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));

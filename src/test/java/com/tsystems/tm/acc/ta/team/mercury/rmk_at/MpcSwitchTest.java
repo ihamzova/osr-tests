@@ -27,7 +27,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_UPLINK_MANAGEMENT_MS, OLT_RESOURCE_INVENTORY_MS})
 @Epic("OS&R")
 @Feature("Description MPC Switch: Bulk update in olt-uplink-management")
-@TmsLink("DIGIHUB-128147") // This is the Jira id of TestSet
+@TmsLink("DIGIHUB-138416") // This is the Jira id of TestSet
 public class MpcSwitchTest extends GigabitTest {
 
     private OltUplinkBusinessReferencen defaultOltUplinkBusinessReferencen;
@@ -72,7 +72,7 @@ public class MpcSwitchTest extends GigabitTest {
         mpcSwitchRobot.clearResourceInventoryDataBase(adtranOltEquipmentBusinessRef.getEndSz());
     }
 
-    @Test(description = "DIGIHUB-127784 Check MPC Switch: happy case. BNG Port is free")
+    @Test(description = "DIGIHUB-138412 Check MPC Switch: happy case. BNG Port is free")
     public void changeBngPortBulkUplinkSuccess() {
 
         mpcSwitchRobot.createOltDeviceInResourceInventory(defaultOltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
@@ -91,7 +91,7 @@ public class MpcSwitchTest extends GigabitTest {
                 defaultOltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef());
     }
 
-    @Test(description = "DIGIHUB-127885 Check MPC Switch: happy case. Ring-Switch")
+    @Test(description = "DIGIHUB-138490 Check MPC Switch: happy case. Ring-Switch")
     public void changeBngPortBulkUplinkRingSwitchSuccess() {
         /*
                            OLT EndSz       BNG  source    target
@@ -133,7 +133,6 @@ public class MpcSwitchTest extends GigabitTest {
         List<ChangeBngPort> changeBngPortList = OltUplinkBusinessReferencenMapper.getChangeBngPorts(defaultOltUplinkBusinessReferencen);
         changeBngPortList.add(OltUplinkBusinessReferencenMapper.getChangeBngPorts(secondOltUplinkBusinessReferencen).get(0));
         changeBngPortList.add(OltUplinkBusinessReferencenMapper.getChangeBngPorts(thirdOltUplinkBusinessReferencen).get(0));
-        log.info("MPC Ring Switch changeBngPortList = {}", changeBngPortList);
         mpcSwitchRobot.changeBngPortSuccess(changeBngPortList);
 
         // check
@@ -146,7 +145,7 @@ public class MpcSwitchTest extends GigabitTest {
 
     }
 
-    @Test(description = "DIGIHUB-128041 Check MPC Switch: happy case. different devices")
+    @Test(description = "DIGIHUB-138492 Check MPC Switch: happy case. different devices")
     public void changeBngPortBulkUplinkDifferentDevicesSuccess() {
 
         /*
@@ -195,7 +194,7 @@ public class MpcSwitchTest extends GigabitTest {
     }
 
 
-    @Test(description = "DIGIHUB-127866 Check MPC Switch: unhappy case. bng port already in use")
+    @Test(description = "DIGIHUB-138498 Check MPC Switch: unhappy case. bng port already in use")
     public void changeBngPortBulkUplinkError() {
 
         EquipmentBusinessRef secondBngEquipmentBusinessRef = OsrTestContext.get().getData()
@@ -217,7 +216,7 @@ public class MpcSwitchTest extends GigabitTest {
         mpcSwitchRobot.checkEquipmentBusinessRef(secondOltEquipmentBusinessRef, secondBngEquipmentBusinessRef);
     }
 
-    @Test(description = "DIGIHUB-128085 Check MPC Switch: unhappy case. bng switch")
+    @Test(description = "DIGIHUB-138499 Check MPC Switch: unhappy case. bng switch")
     public void changeBngPortBulkBngSwitchError() {
 
         /*
@@ -239,7 +238,7 @@ public class MpcSwitchTest extends GigabitTest {
         mpcSwitchRobot.changeBngPortError(localOltUplinkBusinessReferencen);
     }
 
-    @Test(description = "DIGIHUB-128085 Check MPC Switch: unhappy case. two links (on different OLTs with same bngs) are to be switched on same target port")
+    @Test(description = "DIGIHUB-138500 Check MPC Switch: unhappy case. two links (on different OLTs with same bngs) are to be switched on same target port")
     public void changeBngPortBulkSameTargetPortError() {
 
         /*
