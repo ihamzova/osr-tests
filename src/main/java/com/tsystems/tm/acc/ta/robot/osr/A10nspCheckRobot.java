@@ -39,7 +39,7 @@ public class A10nspCheckRobot {
     private static final Integer HTTP_CODE_ACCEPTED_202 = 202;
     private static final Integer HTTP_CODE_BAD_REQUEST_400 = 400;
     private static final Integer HTTP_CODE_NOT_FOUND_404 = 404;
-    private static final int WAIT_TIME_FOR_ASYNC_RESPONSE = 20_000;
+    private static final int WAIT_TIME_FOR_ASYNC_RESPONSE = 50_000;
 
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
