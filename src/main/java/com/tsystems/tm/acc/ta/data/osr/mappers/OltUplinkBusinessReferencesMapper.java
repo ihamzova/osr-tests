@@ -62,11 +62,9 @@ public class OltUplinkBusinessReferencesMapper {
 
         com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEquipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
         modelEquipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
-
         modelEquipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
         modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
         modelEquipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
-        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
         modelEquipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
 
         return modelEquipmentBusinessRef;
