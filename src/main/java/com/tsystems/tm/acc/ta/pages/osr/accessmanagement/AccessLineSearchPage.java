@@ -63,7 +63,7 @@ public class AccessLineSearchPage {
   private static final By HOME_ID_FREE = byQaData("ucc-free-filter-label");
   private static final By BACKHAUL_ID_INPUT = byQaData("hic-backhaul-id-input");
   private static final By HOME_ID_INPUT = byQaData("hic-home-id-input");
-  private static final By HOME_ID_Link = byQaData("homeid-link-a");
+  private static final By HOME_ID_LINK = byQaData("homeid-link-a");
 
   @Step("Open Access-line-Search page")
   public static AccessLineSearchPage openPage() {
@@ -183,7 +183,7 @@ public class AccessLineSearchPage {
 
   @Step("Navigate to Al Search Page")
   public AccessLineSearchPage navigateToAlSearchPage() {
-    $(HOME_ID_Link).click();
+    $(HOME_ID_LINK).click();
     switchTo().window(1);
     return new AccessLineSearchPage();
   }
