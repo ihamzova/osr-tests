@@ -313,7 +313,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
     accessLineSearchPage.setPageSize(50);
-    assertEquals(accessLineSearchPage.getTableRows().size(), 32);
+    accessLineSearchPage.getTableRows(32);
   }
 
   @Test

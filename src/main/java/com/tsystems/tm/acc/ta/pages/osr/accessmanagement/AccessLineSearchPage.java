@@ -249,7 +249,7 @@ public class AccessLineSearchPage {
   }
 
   @Step("Get table rows")
-  public List<SelenideElement> getTableRows() {
+  public ElementsCollection getTableRows() {
     return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
   }
 
