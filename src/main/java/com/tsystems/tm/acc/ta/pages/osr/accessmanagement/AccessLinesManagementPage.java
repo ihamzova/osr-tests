@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
-import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -92,10 +91,9 @@ public class AccessLinesManagementPage {
   public AccessLinesManagementPage clickBestätigenButton() {
     $(BESTAETIGEN_BUTTON).click();
     $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
-    closeNotificationButton();
+    //closeNotificationButton();
     return this;
   }
-
 
   @Step("Add Subscriber NE profile")
   public AccessLinesManagementPage addSubscriberNeProfile() {

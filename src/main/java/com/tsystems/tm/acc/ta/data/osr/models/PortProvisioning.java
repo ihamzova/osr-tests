@@ -21,4 +21,7 @@ public class PortProvisioning {
     private Integer fttbNEProfilesActive;
     private Integer nspReference;
     private Integer accessLinesCount;
+    private String homeId;
+    private Integer homeIdsCount;
+
 }
