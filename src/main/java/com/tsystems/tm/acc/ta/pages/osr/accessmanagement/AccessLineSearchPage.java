@@ -61,9 +61,9 @@ public class AccessLineSearchPage {
   private static final By HOME_ID_ASSIGNED = byQaData("ucc-assigned-filter-label");
   private static final By HOME_ID_RESERVED = byQaData("ucc-reserved-filter-label");
   private static final By HOME_ID_FREE = byQaData("ucc-free-filter-label");
-  private static final By BACKHAUL_ID_INPUT= byQaData("hic-backhaul-id-input");
-  private static final By HOME_ID_INPUT= byQaData("hic-home-id-input");
-  private static final By HOME_ID_Link= byQaData("homeid-link-a");
+  private static final By BACKHAUL_ID_INPUT = byQaData("hic-backhaul-id-input");
+  private static final By HOME_ID_INPUT = byQaData("hic-home-id-input");
+  private static final By HOME_ID_Link = byQaData("homeid-link-a");
 
   @Step("Open Access-line-Search page")
   public static AccessLineSearchPage openPage() {
@@ -114,9 +114,9 @@ public class AccessLineSearchPage {
       $(PORT_NUMBER_INPUT).click();
       $(PORT_NUMBER_INPUT).val(port.getPortNumber());
     }
-    $(HOME_ID_ASSIGNED).click();
     return this;
   }
+
   @Step("Search BackhaulIds by EndsZ")
   public AccessLineSearchPage searchBackhaulIDs(PortProvisioning port) {
     $(BACKHAUL_ID_DEVICE_SEARCH_TAB).click();
@@ -130,9 +130,15 @@ public class AccessLineSearchPage {
       $(PORT_NUMBER_INPUT).click();
       $(PORT_NUMBER_INPUT).val(port.getPortNumber());
     }
+    return this;
+  }
+
+  @Step("Set Assigned status to Home Id")
+  public AccessLineSearchPage setAssigneStatustoHomeID() {
     $(HOME_ID_ASSIGNED).click();
     return this;
   }
+
   @Step("Search HomeId by HomeId")
   public AccessLineSearchPage searchHomeIdsbyHomeId(String homeId) {
     $(HOME_ID_DEVICE_SEARCH_TAB).click();
@@ -141,6 +147,7 @@ public class AccessLineSearchPage {
     $(HOME_ID_INPUT).val(homeId);
     return this;
   }
+
   @Step("Search BackhaulId by BackhaulId")
   public AccessLineSearchPage searchBackhaulIDbyBackhaulId(String backhaulIdD) {
     $(BACKHAUL_ID_DEVICE_SEARCH_TAB).click();
@@ -149,6 +156,7 @@ public class AccessLineSearchPage {
     $(BACKHAUL_ID_INPUT).val(backhaulIdD);
     return this;
   }
+
   @Step("Search Access lines by LineID")
   public AccessLineSearchPage searchAccessLinesByLineID(String lineId) {
     $(LINEID_TAB).click();
@@ -172,17 +180,21 @@ public class AccessLineSearchPage {
     $(KLSID_INPUT).val(klsId);
     return this;
   }
+
   @Step("Navigate to Al Search Page")
   public AccessLineSearchPage navigateToAlSearchPage() {
     $(HOME_ID_Link).click();
-    return this;
+    switchTo().window(1);
+    return new AccessLineSearchPage();
   }
+
   @Step("Check BackhaulIds table headers")
   public void checkBackhaulIdsTableHeaders(List<String> tableHeaders) {
     List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Backhaul ID", "Status");
     assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
             supposedHeaders.toArray());
   }
+
   @Step("Set Walled_Garden status")
   public AccessLineSearchPage setWalledGardenStatus() {
     $(WALLED_GARDEN_STATUS).click();
@@ -241,14 +253,21 @@ public class AccessLineSearchPage {
     return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr"));
   }
 
+  @Step("Compare table rows with page size")
+  public List<SelenideElement> getTableRows(int pageSize) {
+    return $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHave(size(pageSize));
+  }
+
   @Step("Get paginator's sizes")
   public List<String> getPaginatorSizes() {
     $(P_SEARCH_TABLE).find(PAGINATOR_DROPDOWN).click();
-    return $(P_SEARCH_TABLE).find(PAGINATOR_DROPDOWN)
+    List<String> result = $(P_SEARCH_TABLE).find(PAGINATOR_DROPDOWN)
             .findAll(By.tagName("li"))
             .stream()
             .map(SelenideElement::text)
             .collect(Collectors.toList());
+    $(P_SEARCH_TABLE).find(PAGINATOR_DROPDOWN).click();
+    return result;
   }
 
   @Step("Set page size of paginator")
@@ -258,7 +277,6 @@ public class AccessLineSearchPage {
             .findAll(By.tagName("li"))
             .find(Condition.text(String.valueOf(pageSize)))
             .click();
-   $(P_SEARCH_TABLE).find(By.tagName("tbody")).findAll(By.tagName("tr")).shouldHave(size(pageSize));
     return this;
   }
 
@@ -277,12 +295,14 @@ public class AccessLineSearchPage {
     tds.get(10).shouldNotHave(text(status), Duration.ofMillis(TIMEOUT));
     return this;
   }
+
   @Step("Check HomeIds table headers")
   public void checkHomeIdsTableHeaders(List<String> tableHeaders) {
     List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Home ID", "Status", "Modification Date", "Access Line");
     assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
             supposedHeaders.toArray());
   }
+
   @Step("Check presence of sortable icon in status column")
   public boolean sortIconIsPresentInStatusColumn() {
     return $(SORT_BY_STATUS).$("i").isDisplayed();

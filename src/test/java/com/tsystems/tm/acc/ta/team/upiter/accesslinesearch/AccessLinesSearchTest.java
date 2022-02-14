@@ -96,6 +96,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.validateUrl();
     accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
     accessLineSearchPage.setPageSize(100);
+    accessLineSearchPage.getTableRows(100);
     accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getTableLines());
   }
 
@@ -176,6 +177,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
     accessLineSearchPage.sortAccessLinesByStatus()
             .setPageSize(10);
+    accessLineSearchPage.getTableRows(10);
     assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineStatus.INACTIVE, "Table wasn't sorted");
     AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
     accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
@@ -306,13 +308,12 @@ public class AccessLinesSearchTest extends GigabitTest {
   public void searchHomeIdsbyEndsZTest() {
     AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
     accessLineSearchPage.validateUrl();
-    accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds).clickSearchButton();
+    accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds);
+    accessLineSearchPage.setAssigneStatustoHomeID().clickSearchButton();
     accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    accessLineSearchPage.setPageSize(100);
-    assertEquals(accessLineSearchPage.getTableRows().size(),32);
-
-
+    accessLineSearchPage.setPageSize(50);
+    assertEquals(accessLineSearchPage.getTableRows().size(), 32);
   }
 
   @Test
@@ -325,7 +326,8 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.searchHomeIdsbyHomeId(homeId).clickSearchButton();
     accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    accessLineSearchPage.navigateToAlSearchPage().clickSearchButton();//добавить проверку таблицы
+    accessLineSearchPage.navigateToAlSearchPage().clickSearchButton();
+    accessLineSearchPage.checkBasicInformation();
 
   }
 
