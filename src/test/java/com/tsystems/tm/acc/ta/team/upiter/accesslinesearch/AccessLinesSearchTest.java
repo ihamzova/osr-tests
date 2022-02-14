@@ -340,7 +340,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.searchBackhaulIDs(homeAndBackhaulIds).clickSearchButton();
     accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    assertEquals(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getStatus(), BackhaulStatus.CONFIGURED);
+    assertEquals(accessLineSearchPage.getTableRows().size(), 1);
   }
 
   @Test
@@ -353,7 +353,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     accessLineSearchPage.searchBackhaulIDbyBackhaulId(backhaulId).clickSearchButton();
     accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
     accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    assertEquals(accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getStatus(), BackhaulStatus.CONFIGURED);
+    assertEquals(accessLineSearchPage.getTableRows().size(), 1);
   }
 
 }
