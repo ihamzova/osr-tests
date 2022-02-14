@@ -1,0 +1,8 @@
+name: adtranDpuPortEquipmentBusinessRef
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef
+values:
+  deviceType: "DPU"
+  endSz: "49/911/85/76G2"
+  portName: "1"
+  portType: "PON"
+  slotName: null

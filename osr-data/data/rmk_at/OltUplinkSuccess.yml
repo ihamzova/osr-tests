@@ -1,0 +1,6 @@
+name: OltUplinkSuccess
+template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferences
+values:
+  bngSourcePortEquipmentBusinessRef: "@defaultBngSourcePortEquipmentBusinessRef"
+  bngTargetPortEquipmentBusinessRef: "@defaultBngTargetPortEquipmentBusinessRef"
+  oltPortEquipmentBusinessRef: "@defaultOltPortEquipmentBusinessRef"

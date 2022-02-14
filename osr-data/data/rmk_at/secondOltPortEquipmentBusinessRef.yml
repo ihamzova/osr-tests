@@ -1,0 +1,8 @@
+name: secondOltPortEquipmentBusinessRef
+template: com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef
+values:
+  deviceType: "OLT"
+  endSz: "49/911/85/76H2"
+  portName: "0"
+  portType: "ETHERNET"
+  slotName: "19"
