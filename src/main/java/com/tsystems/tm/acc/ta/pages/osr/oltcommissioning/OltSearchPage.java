@@ -1,21 +1,15 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.codeborne.selenide.Condition;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
-import lombok.extern.slf4j.Slf4j;
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.Select;
 
 import java.net.URL;
 
-import static com.codeborne.selenide.Condition.appears;
-import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
@@ -106,6 +100,12 @@ public class OltSearchPage {
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
 
+        // Recognition of the old qa-data / will be removed later again
+        try {
+            Thread.sleep(5000L);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
         if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
             $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
             $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
@@ -126,6 +126,12 @@ public class OltSearchPage {
     private void inputDeviceParameters(String endSz) {
         String[] endSzn = endSz.split("/");
 
+        // Recognition of the old qa-data / will be removed later again
+        try {
+            Thread.sleep(5000L);
+        } catch (Exception e) {
+            log.error("Interrupted");
+        }
         if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
             $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
             $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
