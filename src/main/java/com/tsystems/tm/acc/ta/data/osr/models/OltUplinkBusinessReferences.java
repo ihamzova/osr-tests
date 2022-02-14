@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OltUplinkBusinessReferencen {
+public class OltUplinkBusinessReferences {
     private EquipmentBusinessRef bngSourcePortEquipmentBusinessRef;
     private EquipmentBusinessRef bngTargetPortEquipmentBusinessRef;
     private EquipmentBusinessRef oltPortEquipmentBusinessRef;

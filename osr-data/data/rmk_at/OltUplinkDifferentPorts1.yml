@@ -1,5 +1,5 @@
 name: OltUplinkDifferentPorts1
-template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen
+template: com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferences
 values:
   bngSourcePortEquipmentBusinessRef: "@secondBngSourcePortEquipmentBusinessRef"
   bngTargetPortEquipmentBusinessRef: "@secondBngTargetPortEquipmentBusinessRef"

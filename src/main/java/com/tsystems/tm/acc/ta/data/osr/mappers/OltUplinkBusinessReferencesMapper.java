@@ -1,38 +1,38 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
-import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
+import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferences;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.ChangeBngPort;
 import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.EquipmentBusinessRef;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OltUplinkBusinessReferencenMapper {
+public class OltUplinkBusinessReferencesMapper {
 
-    static public List<ChangeBngPort> getChangeBngPorts(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
+    static public List<ChangeBngPort> getChangeBngPorts(OltUplinkBusinessReferences oltUplinkBusinessReferences) {
 
         ArrayList<ChangeBngPort> changeBngPorts = new ArrayList<>();
 
         EquipmentBusinessRef oltPortEquipmentBusinessRef = new EquipmentBusinessRef()
-                .endSz(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getEndSz())
-                .deviceType(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getDeviceType())
-                .portName(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getPortName())
-                .portType(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getPortType())
-                .slotName(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef().getSlotName());
+                .endSz(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef().getEndSz())
+                .deviceType(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef().getDeviceType())
+                .portName(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef().getPortName())
+                .portType(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef().getPortType())
+                .slotName(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef().getSlotName());
 
         EquipmentBusinessRef bngSourcePortEquipmentBusinessRef = new EquipmentBusinessRef()
-                .endSz(oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef().getEndSz())
-                .deviceType(oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef().getDeviceType())
-                .portName(oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef().getPortName())
-                .portType(oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef().getPortType())
-                .slotName(oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef().getSlotName());
+                .endSz(oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef().getEndSz())
+                .deviceType(oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef().getDeviceType())
+                .portName(oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef().getPortName())
+                .portType(oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef().getPortType())
+                .slotName(oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef().getSlotName());
 
         EquipmentBusinessRef bngTargetPortEquipmentBusinessRef = new EquipmentBusinessRef()
-                .endSz(oltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef().getEndSz())
-                .deviceType(oltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef().getDeviceType())
-                .portName(oltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef().getPortName())
-                .portType(oltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef().getPortType())
-                .slotName(oltUplinkBusinessReferencen.getBngTargetPortEquipmentBusinessRef().getSlotName());
+                .endSz(oltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef().getEndSz())
+                .deviceType(oltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef().getDeviceType())
+                .portName(oltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef().getPortName())
+                .portType(oltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef().getPortType())
+                .slotName(oltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef().getSlotName());
 
 
         ChangeBngPort changeBngPort = new ChangeBngPort()
@@ -50,11 +50,9 @@ public class OltUplinkBusinessReferencenMapper {
 
         com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef modelEquipmentBusinessRef = new com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef();
         modelEquipmentBusinessRef.setEndSz(equipmentBusinessRef.getEndSz());
-
         modelEquipmentBusinessRef.setDeviceType(equipmentBusinessRef.getDeviceType());
         modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
         modelEquipmentBusinessRef.setPortType(equipmentBusinessRef.getPortType());
-        modelEquipmentBusinessRef.setPortName(equipmentBusinessRef.getPortName());
         modelEquipmentBusinessRef.setSlotName(equipmentBusinessRef.getSlotName());
 
         return modelEquipmentBusinessRef;

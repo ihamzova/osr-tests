@@ -7,9 +7,9 @@ import com.tsystems.tm.acc.ta.api.osr.AncpResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.UplinkResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.data.osr.mappers.OltUplinkBusinessReferencenMapper;
+import com.tsystems.tm.acc.ta.data.osr.mappers.OltUplinkBusinessReferencesMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentBusinessRef;
-import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferencen;
+import com.tsystems.tm.acc.ta.data.osr.models.OltUplinkBusinessReferences;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
@@ -70,15 +70,15 @@ public class MpcSwitchRobot {
 
 
     @Step("change BNG Port unhappy case scenarios with checks")
-    public void changeBngPortError(OltUplinkBusinessReferencen oltUplinkBusinessReferencen) {
+    public void changeBngPortError(OltUplinkBusinessReferences oltUplinkBusinessReferences) {
 
-        checkEquipmentBusinessRef(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
-                oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+        checkEquipmentBusinessRef(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef(),
+                oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef());
 
-        changeBngPortError(OltUplinkBusinessReferencenMapper.getChangeBngPorts(oltUplinkBusinessReferencen));
+        changeBngPortError(OltUplinkBusinessReferencesMapper.getChangeBngPorts(oltUplinkBusinessReferences));
 
-        checkEquipmentBusinessRef(oltUplinkBusinessReferencen.getOltPortEquipmentBusinessRef(),
-                oltUplinkBusinessReferencen.getBngSourcePortEquipmentBusinessRef());
+        checkEquipmentBusinessRef(oltUplinkBusinessReferences.getOltPortEquipmentBusinessRef(),
+                oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef());
     }
 
     @Step("check Equipment Business Referencen")
@@ -92,8 +92,8 @@ public class MpcSwitchRobot {
         Assert.assertEquals(uplink.getState(), "ACTIVE", "uplink not activ, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
         List<com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.EquipmentBusinessRef> equipmentBusinessRefs = uplink.getPortsEquipmentBusinessRef();
         Assert.assertEquals(equipmentBusinessRefs.size(), 2L, "checkEquipmentBusinessRef EquipmentBusinessRef size missmatch");
-        EquipmentBusinessRef equipmentBusinessRef1 = OltUplinkBusinessReferencenMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(0));
-        EquipmentBusinessRef equipmentBusinessRef2 = OltUplinkBusinessReferencenMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(1));
+        EquipmentBusinessRef equipmentBusinessRef1 = OltUplinkBusinessReferencesMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(0));
+        EquipmentBusinessRef equipmentBusinessRef2 = OltUplinkBusinessReferencesMapper.getEquipmentBusinessRef(equipmentBusinessRefs.get(1));
 
         if (equipmentBusinessRef1.getDeviceType().equals("OLT")) {
             Assert.assertEquals(equipmentBusinessRef1, oltEquipmentBusinessRef, "checkEquipmentBusinessRef1 OLT Ref missmatch, OLT endSz = " + oltEquipmentBusinessRef.getEndSz());
@@ -116,13 +116,13 @@ public class MpcSwitchRobot {
         Assert.assertEquals(ancpSessionList.size(), 1L, "ancpSessionList1.size missmatch");
         Assert.assertEquals(ancpSessionList.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
 
-        EquipmentBusinessRef accessNodeEquipmentBusinessRef = OltUplinkBusinessReferencenMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getAccessNodeEquipmentBusinessRef());
+        EquipmentBusinessRef accessNodeEquipmentBusinessRef = OltUplinkBusinessReferencesMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getAccessNodeEquipmentBusinessRef());
         Assert.assertEquals(accessNodeEquipmentBusinessRef, oltEquipmentBusinessRef, "oltEquipmentBusinessRef mismatch");
 
-        EquipmentBusinessRef oltUplinkPortEquipmentBusinessRef = OltUplinkBusinessReferencenMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getOltUplinkPortEquipmentBusinessRef());
+        EquipmentBusinessRef oltUplinkPortEquipmentBusinessRef = OltUplinkBusinessReferencesMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getOltUplinkPortEquipmentBusinessRef());
         Assert.assertEquals(oltUplinkPortEquipmentBusinessRef, oltUplinkPortEquipmentBusinessRef, "oltUplinkPortEquipmentBusinessRef mismatch");
 
-        EquipmentBusinessRef bngDownlinkPortEquipmentBusinessRef = OltUplinkBusinessReferencenMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getBngDownlinkPortEquipmentBusinessRef());
+        EquipmentBusinessRef bngDownlinkPortEquipmentBusinessRef = OltUplinkBusinessReferencesMapper.getAncpEquipmentBusinessRef(ancpSessionList.get(0).getBngDownlinkPortEquipmentBusinessRef());
         Assert.assertEquals(bngEquipmentBusinessRef, bngDownlinkPortEquipmentBusinessRef, "bngDownlinkPortEquipmentBusinessRef mismatch");
     }
 
