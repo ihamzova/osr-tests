@@ -24,5 +24,6 @@ public class A4NetworkElement {
     private String ztpIdent;
     private String creationTime;
     private String lastUpdateTime;
+    private String lastSuccessfulSyncTime;
 
 }

@@ -123,6 +123,7 @@ public class NemoStatusUpdateTest {
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData);
     }
 
 

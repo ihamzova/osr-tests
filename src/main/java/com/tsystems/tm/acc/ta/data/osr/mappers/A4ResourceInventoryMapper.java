@@ -47,7 +47,8 @@ public class A4ResourceInventoryMapper {
                 .type(neData.getType())
                 .creationTime(OffsetDateTime.now())
                 .plannedMatNumber(neData.getPlannedMatNr())
-                .lastUpdateTime(OffsetDateTime.now());
+                .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now());
     }
 
     public NetworkElementGroupDto getNetworkElementGroupDto(A4NetworkElementGroup negData) {
@@ -364,6 +365,7 @@ public class A4ResourceInventoryMapper {
         networkElementDto.setCreationTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
         networkElementDto.setDescription("string");
         networkElementDto.setLastUpdateTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
+        networkElementDto.lastSuccessfulSyncTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
         networkElementDto.setSpecificationVersion("string");
         networkElementDto.setAddress("Berlin");
         networkElementDto.setAdministrativeState(ACTIVATED);
