@@ -57,30 +57,35 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private final int SleeperInSec = 20; // workaround while performance problems
 
     private A4NetworkElementGroup negData;
+    private A4NetworkElement neData1;
+    private A4NetworkElement neData2;
+    private A4NetworkElement neData3;
+    private A4NetworkElementPort nepData1;
+    private A4NetworkElementPort nepData2;
+    private A4NetworkElementPort nepData3;
     private ResourceOrder ro;
-    A4NetworkElementLink nelData1;
 
     @BeforeClass()
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
 
-        A4NetworkElement neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementA10NspSwitch01);
-        A4NetworkElementPort nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
 
-        A4NetworkElement neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
-        A4NetworkElementPort nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
 
-        A4NetworkElement neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
+        neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementB);
-        A4NetworkElementPort nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
 
-        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
+        A4NetworkElementLink nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
         A4NetworkElementLink nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
@@ -133,7 +138,15 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData1);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData2);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData3);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData1);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData2);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData3);
+
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }
 

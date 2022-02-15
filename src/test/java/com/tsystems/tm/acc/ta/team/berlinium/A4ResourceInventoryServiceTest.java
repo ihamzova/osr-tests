@@ -74,7 +74,11 @@ public class A4ResourceInventoryServiceTest extends GigabitTest {
 
     @AfterMethod
     public void cleanup() {
-        a4Inventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4Inventory.deleteA4NetworkElementsRecursively(neData);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepDataA);
+        a4Inventory.deleteNspsL2BsaByLineId(nspL2Data.getLineId());
     }
 
     @Test(description = "DIGIHUB-57774 Create new network element in inventory and read it as logical resource")

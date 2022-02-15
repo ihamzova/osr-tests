@@ -92,7 +92,12 @@ public class A4CarrierManagementTest extends GigabitTest {
 
     @AfterMethod
     public void cleanup() {
-        a4Inventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4Inventory.deleteA4NetworkElementsRecursively(neData);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData);
+        a4Inventory.deleteNspFtthAccessByLineId(nspFtthAccess.getLineId());
+        a4Inventory.deleteNspsL2BsaByLineId(nspL2BsaData.getLineId());
     }
 
     @Test(description = "test allocateL2BsaNspTask")

@@ -111,7 +111,11 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        robotRI.deleteA4TestDataRecursively(neg);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        robotRI.deleteA4NetworkElementGroupsRecursively(neg);
+        a4NetworkElements.forEach((k, ne) -> robotRI.deleteA4NetworkElementsRecursively(ne));
+        robotRI.deleteA4NetworkElementPortsRecursively(nepA);
+        robotRI.deleteA4NetworkElementPortsRecursively(nepB);
     }
 
     @Test

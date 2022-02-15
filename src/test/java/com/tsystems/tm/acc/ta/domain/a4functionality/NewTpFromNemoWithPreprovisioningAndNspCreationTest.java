@@ -82,7 +82,11 @@ public class NewTpFromNemoWithPreprovisioningAndNspCreationTest extends GigabitT
     @AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
-        a4Inventory.deleteA4TestDataRecursively(negData);
+
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4Inventory.deleteA4NetworkElementsRecursively(neData);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData);
     }
 
     @Test(description = "DIGIHUB-59383 NEMO creates new Termination Point with Preprovisioning and new network service profile (FTTH Access) creation")

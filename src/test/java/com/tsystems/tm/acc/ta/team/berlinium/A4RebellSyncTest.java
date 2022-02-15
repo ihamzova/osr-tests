@@ -17,10 +17,10 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import org.testng.annotations.*;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
-
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_INVENTORY_IMPORTER_MS})
 @Epic("OS&R domain")
@@ -78,7 +78,12 @@ public class A4RebellSyncTest extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4Inventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data);
     }
 
     @Test
@@ -135,8 +140,8 @@ public class A4RebellSyncTest extends GigabitTest {
     }
 
     @DataProvider(name = "lifecycleStatesWithoutPlanning")
-    public static Object[] lifecycleStatesWithoutPlanning() {
-        return new Object[]{"INSTALLING", "OPERATING", "RETIRING"};
+    public static Object[][] lifecycleStatesWithoutPlanning() {
+        return new Object[][]{{"INSTALLING"}, {"OPERATING"}, {"RETIRING"}};
     }
 
     @Test(dataProvider = "lifecycleStatesWithoutPlanning",

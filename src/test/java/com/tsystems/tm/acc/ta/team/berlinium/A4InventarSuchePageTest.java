@@ -94,7 +94,8 @@ public class A4InventarSuchePageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventoryRobot.deleteA4TestDataRecursively(a4NetworkElementGroup);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(a4NetworkElementGroup);
     }
 
     // tests network element

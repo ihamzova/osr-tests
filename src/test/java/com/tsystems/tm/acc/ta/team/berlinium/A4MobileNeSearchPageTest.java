@@ -138,7 +138,11 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-        robotRI.deleteA4TestDataRecursively(a4NetworkElementGroup);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        robotRI.deleteA4NetworkElementGroupsRecursively(a4NetworkElementGroup);
+        a4NetworkElements.forEach((k, ne) -> robotRI.deleteA4NetworkElementsRecursively(ne));
+        robotRI.deleteA4NetworkElementPortsRecursively(a4NetworkElementPortA);
+        robotRI.deleteA4NetworkElementPortsRecursively(a4NetworkElementPortB);
     }
 
     @Test

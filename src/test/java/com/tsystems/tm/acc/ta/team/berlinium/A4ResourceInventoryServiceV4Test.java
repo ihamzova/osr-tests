@@ -19,6 +19,7 @@ import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
@@ -88,7 +89,15 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
 
     @AfterClass
     public void tearDown() {
-        a4ResourceInventoryRobot.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neDataA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neDataB);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB);
+        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataA.getLineId());
+        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataB.getLineId());
+        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataC.getLineId());
     }
 
     @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api")

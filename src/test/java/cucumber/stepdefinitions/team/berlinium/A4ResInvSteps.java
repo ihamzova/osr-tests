@@ -43,7 +43,7 @@ public class A4ResInvSteps {
 
         // ACTION
         if (NEG_PRESENT)
-            a4ResInv.deleteA4TestDataRecursively(neg);
+            a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
     }
 
     // -----=====[ GIVENS ]=====-----
@@ -74,6 +74,7 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkElementGroup neg = new A4NetworkElementGroup();
         neg.setUuid(UUID.randomUUID().toString());
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
@@ -118,6 +119,7 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkElement ne = new A4NetworkElement();
         ne.setUuid(UUID.randomUUID().toString());
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
@@ -204,6 +206,7 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
         nspFtth.setUuid(UUID.randomUUID().toString());
+        a4ResInv.deleteNspFtthAccessByLineId(nspFtth.getLineId());
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
