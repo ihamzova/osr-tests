@@ -19,11 +19,8 @@ import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 public class OltSearchPage {
 
     public static final String APP = "olt-resource-inventory-ui";
-    //public static final String ENDPOINT = "/search";
     public static final String ENDPOINT = "/" + APP + "/search";
 
-    public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD = byQaData("div-searchType");
-    public static final By ENDSZ_SEARCH_TYPE_VALUE_OLD = byQaData("div-ENDSZ");
     public static final By OLT_SEARCH_TYPE_SELECT_LOCATOR = byQaData("div-searchtype");
     public static final By ENDSZ_SEARCH_TYPE_VALUE = byQaData("div-searchtype_option_0");
 
@@ -35,8 +32,6 @@ public class OltSearchPage {
     public static final By AUTO_OLT_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-auto-commissioning");
     public static final By MANUAL_OLT_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-manual-commissioning");
     public static final By MANUAL_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("button-manual-dpu-commissioning");
-
-    private static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 60_000;
 
     @Step("Open OLT-Search page")
     public static OltSearchPage openSearchPage() {
@@ -100,19 +95,8 @@ public class OltSearchPage {
     private void inputOltParameters(OltDevice oltDevice) {
         String[] endSz = oltDevice.getVpsz().split("/");
 
-        // Recognition of the old qa-data / will be removed later again
-        try {
-            Thread.sleep(5000L);
-        } catch (Exception e) {
-            log.error("Interrupted");
-        }
-        if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
-            $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
-            $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
-        } else {
-            $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-            $(ENDSZ_SEARCH_TYPE_VALUE).click();
-        }
+        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
+        $(ENDSZ_SEARCH_TYPE_VALUE).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSz[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();
@@ -126,19 +110,8 @@ public class OltSearchPage {
     private void inputDeviceParameters(String endSz) {
         String[] endSzn = endSz.split("/");
 
-        // Recognition of the old qa-data / will be removed later again
-        try {
-            Thread.sleep(5000L);
-        } catch (Exception e) {
-            log.error("Interrupted");
-        }
-        if($(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).exists()) {
-            $(OLT_SEARCH_TYPE_SELECT_LOCATOR_OLD).click();
-            $(ENDSZ_SEARCH_TYPE_VALUE_OLD).click();
-        } else {
-            $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
-            $(ENDSZ_SEARCH_TYPE_VALUE).click();
-        }
+        $(OLT_SEARCH_TYPE_SELECT_LOCATOR).click();
+        $(ENDSZ_SEARCH_TYPE_VALUE).click();
         $(OLT_AKZ_INPUT_LOCATOR).click();
         $(OLT_AKZ_INPUT_LOCATOR).val(endSzn[0]);
         $(OLT_ONKZ_INPUT_LOCATOR).click();

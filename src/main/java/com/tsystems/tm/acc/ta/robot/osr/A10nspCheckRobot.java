@@ -1,17 +1,14 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.OltDto;
@@ -21,14 +18,11 @@ import org.testng.Assert;
 
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A10NSP_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_SCHEDULER_MS;
-import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.RebellStub.REBELL_UEWEG_URL;
 import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
 import static org.testng.Assert.*;
 
@@ -53,12 +47,22 @@ public class A10nspCheckRobot {
     @Step("Check if a carrierConnection is found for a given LineId")
     public void checkLineIdTestFound(A10nspCheckData checkLineIdA10nsp) {
 
-        CheckLineIdResult checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
-                .rahmenvertragsnummerQuery(checkLineIdA10nsp.getRahmenVertragsNr())
-                .xRequestIDHeader(checkLineIdA10nsp.getBngEndSz())
-                .body(checkLineIdA10nsp.getLineId())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        CheckLineIdResult checkLineIdResult = new CheckLineIdResult();
+        checkLineIdResult.setCarrierConnectionAvailable(false);
 
+        for (int i = 0; i < 3; ++i) {
+            checkLineIdResult = a10nspInventoryClient.getClient().a10nspInternalControllerV2().checkLineId()
+                    .rahmenvertragsnummerQuery(checkLineIdA10nsp.getRahmenVertragsNr())
+                    .xRequestIDHeader(checkLineIdA10nsp.getBngEndSz())
+                    .body(checkLineIdA10nsp.getLineId())
+                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+
+            if (checkLineIdResult.isCarrierConnectionAvailable()) {
+                break;
+            }
+            waitForAsyncResponse();
+        }
         assertTrue(checkLineIdResult.isCarrierConnectionAvailable());
     }
 
@@ -181,6 +185,12 @@ public class A10nspCheckRobot {
         // fill a10nsp-inventory database
         a10nspInventoryClient.getClient().inventoryController().refreshInventory()
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+
+        waitForAsyncResponse();
+    }
+
+    @Step("wait for async response")
+    private void waitForAsyncResponse() {
         try {
             Thread.sleep(WAIT_TIME_FOR_ASYNC_RESPONSE);   // Delay after calling the asynchronous request
         } catch (Exception e) {
