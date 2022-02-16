@@ -103,10 +103,10 @@ public class NemoStatusUpdateTest {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(negData);
         a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neData);
-        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB);
-        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspFtthData.getLineId());
-        a4ResourceInventoryRobot.deleteNspsL2BsaByLineId(nspL2Data.getLineId());
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA, neData);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB, neData);
+        a4ResourceInventoryRobot.deleteNspFtthAccess(nspFtthData);
+        a4ResourceInventoryRobot.deleteNspsL2Bsa(nspL2Data);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Group")

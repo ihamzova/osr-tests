@@ -93,11 +93,11 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(negData);
         a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neDataA);
         a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neDataB);
-        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA);
-        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB);
-        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataA.getLineId());
-        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataB.getLineId());
-        a4ResourceInventoryRobot.deleteNspFtthAccessByLineId(nspDataC.getLineId());
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA, neDataA);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB, neDataB);
+        a4ResourceInventoryRobot.deleteNspFtthAccess(nspDataA);
+        a4ResourceInventoryRobot.deleteNspFtthAccess(nspDataB);
+        a4ResourceInventoryRobot.deleteNspFtthAccess(nspDataC);
     }
 
     @Test(description = "DIGIHUB-xxx Read network element group from resource inventory service v4 api")

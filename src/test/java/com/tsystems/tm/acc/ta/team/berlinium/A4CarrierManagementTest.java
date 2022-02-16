@@ -23,6 +23,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Objects;
+
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_CARRIER_MANAGEMENT_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 
@@ -95,9 +97,9 @@ public class A4CarrierManagementTest extends GigabitTest {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(neData);
-        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData);
-        a4Inventory.deleteNspFtthAccessByLineId(nspFtthAccess.getLineId());
-        a4Inventory.deleteNspsL2BsaByLineId(nspL2BsaData.getLineId());
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
+        a4Inventory.deleteNspFtthAccess(nspFtthAccess);
+        a4Inventory.deleteNspsL2Bsa(nspL2BsaData);
     }
 
     @Test(description = "test allocateL2BsaNspTask")
@@ -112,8 +114,8 @@ public class A4CarrierManagementTest extends GigabitTest {
                         "Dienstvertrag");
 
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
-        Assert.assertEquals(allocatedL2BsaNSP.getLineId(),"Autotest-LineId");
-        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "1000");
+        Assert.assertEquals(allocatedL2BsaNSP.getLineId(), "Autotest-LineId");
+        Assert.assertEquals(Objects.requireNonNull(allocatedL2BsaNSP.getServiceBandwidth()).get(0).getDataRateDown(), "1000");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "100");
         Assert.assertEquals(allocatedL2BsaNSP.getL2CcId(), "Dienstvertrag");
     }
@@ -152,7 +154,7 @@ public class A4CarrierManagementTest extends GigabitTest {
         a4CarrierManagement.sendPostForReleaseL2BsaNsp(nspL2BsaData.getUuid());
         NetworkServiceProfileL2BsaDto allocatedL2BsaNSP = a4Inventory.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         Assert.assertNull(allocatedL2BsaNSP.getLineId());
-        Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateDown(), "undefined");
+        Assert.assertEquals(Objects.requireNonNull(allocatedL2BsaNSP.getServiceBandwidth()).get(0).getDataRateDown(), "undefined");
         Assert.assertEquals(allocatedL2BsaNSP.getServiceBandwidth().get(0).getDataRateUp(), "undefined");
         Assert.assertNull(allocatedL2BsaNSP.getL2CcId());
     }

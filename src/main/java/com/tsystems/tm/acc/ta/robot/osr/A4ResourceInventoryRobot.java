@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.ApiCli
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
+import org.testng.internal.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 import static org.testng.Assert.*;
 
 public class A4ResourceInventoryRobot {
@@ -620,22 +622,23 @@ public class A4ResourceInventoryRobot {
     @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
     public void deleteA4NetworkElementGroupsRecursively(String negName) {
         // NEG name has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
+
+        final List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
 
         negList.forEach(neg -> {
-            List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
+            final List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
 
             neList.forEach(this::deleteA4NetworkElementsRecursively);
 
-            deleteA4TerminationPointsRecursively(neg.getUuid());
+            deleteTerminationPointsRecursively(neg.getUuid());
             deleteNetworkElementGroup(neg.getUuid());
         });
     }
 
     private void deleteA4NetworkElementsRecursively(NetworkElementDto ne) {
-        List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(ne.getUuid());
 
-        nepList.forEach(this::deleteA4NetworkElementPortsRecursively);
+        nepList.forEach(this::deleteNetworkElementPortsRecursively);
 
         deleteNetworkElement(ne.getUuid());
     }
@@ -645,15 +648,15 @@ public class A4ResourceInventoryRobot {
         deleteA4NetworkElementGroupsRecursively(negData.getName());
     }
 
-    private void deleteA4NetworkElementPortsRecursively(NetworkElementPortDto nep) {
+    private void deleteNetworkElementPortsRecursively(NetworkElementPortDto nep) {
         deleteNetworkElementLinksConnectedToNePort(nep.getUuid());
-        deleteA4TerminationPointsRecursively(nep.getUuid());
+        deleteTerminationPointsRecursively(nep.getUuid());
         deleteNetworkElementPort(nep.getUuid());
     }
 
     @Step("Delete all Termination Points, including all connected NSPs (FtthAccess, A10Nsp, L2Bsa)")
-    public void deleteA4TerminationPointsRecursively(String uuid) {
-        List<TerminationPointDto> tpList = getTerminationPointsByNePort(uuid);
+    public void deleteTerminationPointsRecursively(String uuid) {
+        final List<TerminationPointDto> tpList = getTerminationPointsByNePort(uuid);
 
         tpList.forEach(tp -> {
             deleteNetworkServiceProfilesL2BsaConnectedToTerminationPoint(tp.getUuid());
@@ -665,55 +668,71 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete all Network Elements and Network Element Groups listed in the CSV")
     public void deleteA4TestDataRecursively(A4ImportCsvData csvData) {
-        List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
-
+        final List<String> negNameList = getDistinctListOfNegNamesFromCsvData(csvData);
         negNameList.forEach(
                 this::deleteA4NetworkElementGroupsRecursively
+        );
+
+        // Normally the above lines delete all NEs under the NEGs as well. However, there could be old NE test data
+        // with same VPSZ / FSZ in inventory, connected to other NEGs. To catch that situation as well, we also delete
+        // the NEs explicitly.
+        final List<Pair<String, String>> neEndszList = getDistinctListOfNeEndszsFromCsvData(csvData);
+        neEndszList.forEach(endsz ->
+                deleteA4NetworkElementsRecursively(endsz.first(), endsz.second())
         );
     }
 
     public void deleteA4NetworkElementsRecursively(A4NetworkElement ne) {
-        // NE endsz (VPSZ & FSZ) has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
     private void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
-        List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
-
+        final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
 
-    public void deleteA4NetworkElementPortsRecursively(A4NetworkElementPort nep) {
-        // NEP functional label (together with NE endsz) has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nep.getFunctionalPortLabel());
-
-        nepList.forEach(this::deleteA4NetworkElementPortsRecursively
-        );
+    public void deleteA4NetworkElementPortsRecursively(A4NetworkElementPort nep, A4NetworkElement ne) {
+        // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nep.getFunctionalPortLabel(), getEndsz(ne));
+        nepList.forEach(this::deleteNetworkElementPortsRecursively);
     }
 
-    public List<NetworkElementPortDto> getNetworkElementPortsByFunctionalLabel(String functionalLabel) {
+    public List<NetworkElementPortDto> getNetworkElementPortsByFunctionalLabel(String functionalLabel, String endsz) {
         return a4ResourceInventory
                 .networkElementPorts()
                 .findNetworkElementPorts()
                 .logicalLabelQuery(functionalLabel)
+                .endSzQuery(endsz)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void deleteNspFtthAccessByLineId(String lineId) {
-        // NSP lineId (together with lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        List<NetworkServiceProfileFtthAccessDto> nspFtthList = getNetworkServiceProfilesFtthAccessByLineId(lineId);
+    public void deleteNspFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthAccess) {
+        final String lineId = nspFtthAccess.getLineId();
+        final String ontSerialNo = nspFtthAccess.getOntSerialNumber();
+        List<NetworkServiceProfileFtthAccessDto> nspFtthList;
 
+        // NSP lineId (& lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        nspFtthList = getNetworkServiceProfilesFtthAccessByLineId(lineId);
         nspFtthList.forEach(nspFtth ->
-                deleteNspFtthAccessByLineId(nspFtth.getUuid())
+                deleteNetworkServiceProfileFtthAccess(nspFtth.getUuid())
+        );
+
+        // NSP ont serial number (& lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        nspFtthList = getNetworkServiceProfilesFtthAccessByOntSerialNumber(ontSerialNo);
+        nspFtthList.forEach(nspFtth ->
+                deleteNetworkServiceProfileFtthAccess(nspFtth.getUuid())
         );
     }
 
-    public void deleteNspsL2BsaByLineId(String lineId) {
-        // NSP lineId (together with lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
+    public void deleteNspsL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Bsa) {
+        // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
+
+        final String lineId = nspL2Bsa.getLineId();
+        final List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
 
         nspL2List.forEach(nspL2 ->
-                deleteNspFtthAccessByLineId(nspL2.getUuid())
+                deleteNetworkServiceProfileL2Bsa(nspL2.getUuid())
         );
     }
 
@@ -722,6 +741,14 @@ public class A4ResourceInventoryRobot {
                 .networkServiceProfilesFtthAccess()
                 .findNetworkServiceProfilesFtthAccess()
                 .lineIdQuery(lineId)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByOntSerialNumber(String ontSerialNo) {
+        return a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .findNetworkServiceProfilesFtthAccess()
+                .ontSerialNumberQuery(ontSerialNo)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -740,6 +767,16 @@ public class A4ResourceInventoryRobot {
                 .map(A4ImportCsvLine::getNegName)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    // NEs (by endsz) can appear in CSV multiple times. We only need to run through cleanup once per NE
+    private List<Pair<String, String>> getDistinctListOfNeEndszsFromCsvData(A4ImportCsvData csvData) {
+        List<Pair<String, String>> endszList = new ArrayList<>();
+        csvData.getCsvLines().forEach(csvLine ->
+                endszList.add(new Pair<>(csvLine.getNeVpsz(), csvLine.getNeFsz()))
+        );
+
+        return endszList.stream().distinct().collect(Collectors.toList());
     }
 
     @Step("Create new TerminationPoint in A4 resource inventory")

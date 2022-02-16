@@ -82,8 +82,8 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
         a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
-        a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data);
-        a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data, ne1Data);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data, ne2Data);
     }
 
     @Test

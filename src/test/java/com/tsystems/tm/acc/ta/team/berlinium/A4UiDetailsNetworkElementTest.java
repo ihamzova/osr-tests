@@ -81,8 +81,8 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neDataA);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataA);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataB);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataA, neDataA);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataB, neDataB);
     }
 
     @Test

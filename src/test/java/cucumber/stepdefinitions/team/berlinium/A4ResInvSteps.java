@@ -206,7 +206,7 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
         nspFtth.setUuid(UUID.randomUUID().toString());
-        a4ResInv.deleteNspFtthAccessByLineId(nspFtth.getLineId());
+        a4ResInv.deleteNspFtthAccess(nspFtth);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);

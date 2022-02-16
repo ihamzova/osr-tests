@@ -107,9 +107,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neOltData);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neDpuData);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neNotDpuOltData);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepOltData);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast01);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast02);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepOltData, neOltData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast01, neDpuData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast02, neDpuData);
 
         a4ResilienceRobot.changeRouteToMicroservice(nemoUpdaterRouteName, A4_NEMO_UPDATER_MS);
         a4ResilienceRobot.changeRouteToMicroservice(riPortSpecsRouteName, A4_RESOURCE_INVENTORY_MS);

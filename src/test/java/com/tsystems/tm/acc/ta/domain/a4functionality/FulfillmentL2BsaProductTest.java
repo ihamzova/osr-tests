@@ -150,8 +150,8 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(neData);
-        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData);
-        a4Inventory.deleteNspsL2BsaByLineId(nspL2BsaData.getLineId());
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
+        a4Inventory.deleteNspsL2Bsa(nspL2BsaData);
     }
 
     @Test(description = "Start with preprovisioning FTTH AccessLine and then perform activation of an A4 L2BSA Product")

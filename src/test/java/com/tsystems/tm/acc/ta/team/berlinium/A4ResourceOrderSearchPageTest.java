@@ -143,9 +143,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData1);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData2);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData3);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData1);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData2);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData3);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData1, neData1);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData2, neData2);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData3, neData3);
 
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
     }

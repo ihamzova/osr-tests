@@ -96,7 +96,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData);
-        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
 
         a4Resilience.changeRouteToA4ResourceInventoryService(routeName); //if this is not working check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
     }
