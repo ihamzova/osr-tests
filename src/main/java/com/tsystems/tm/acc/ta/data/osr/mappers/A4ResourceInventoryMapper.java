@@ -66,6 +66,7 @@ public class A4ResourceInventoryMapper {
                 .name(negData.getName())
                 .lifecycleState(negData.getLifecycleState())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .description("NEG created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
                 .centralOfficeNetworkOperator("neg_centOffNetOp_for_integration_test");
@@ -118,6 +119,7 @@ public class A4ResourceInventoryMapper {
                 .description("NEL for integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .lsz(NEL_LSZ)
                 .lifecycleState(nelData.getLifecycleState())
                 .operationalState(nelData.getOperationalState())
@@ -149,7 +151,8 @@ public class A4ResourceInventoryMapper {
                 .operationalState(nepData.getOperationalState())
                 .type(nepData.getType())
                 .creationTime(OffsetDateTime.now())
-                .lastUpdateTime(OffsetDateTime.now());
+                .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now());
     }
 
     public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, String uuid) {
@@ -192,6 +195,7 @@ public class A4ResourceInventoryMapper {
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointFtthAccessUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .description("NSP FTTH Access created during osr-test integration test")
                 .creationTime(OffsetDateTime.now());
     }
@@ -223,6 +227,7 @@ public class A4ResourceInventoryMapper {
                 .terminationPointFtthAccessUuid(tpData.getUuid())
                 .oltPortOntLastRegisteredOn(nepData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .description("NSP FTTH Access created during osr-test integration test")
                 .creationTime(OffsetDateTime.now());
     }
@@ -251,6 +256,7 @@ public class A4ResourceInventoryMapper {
                 .lifecycleState(nspData.getLifecycleState())
                 .terminationPointA10NspUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .description("NSP A10NSP created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
                 .mtuSize("1590")
@@ -291,6 +297,7 @@ public class A4ResourceInventoryMapper {
                 .l2CcId(nspData.getL2CcId())
                 .terminationPointL2BsaUuid(tpData.getUuid())
                 .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .description("NSP L2BSA created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
 //                .nspAccess("123") // skip this because optional

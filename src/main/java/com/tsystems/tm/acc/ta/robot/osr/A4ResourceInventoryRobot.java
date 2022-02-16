@@ -490,6 +490,13 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementGroupDto.getOperationalState(), expectedNewOperationalState);
     }
 
+    @Step("Check that lastSuccessfulSyncTime has been set for network element group")
+    public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementGroup negData,OffsetDateTime timeBeforeSync) {
+        NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
+
+        assertTrue(networkElementGroupDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+    }
+
     @Step("Check that lifecycle state and operational state have been updated for network element")
     public void checkNetworkElementIsUpdatedWithNewStates(A4NetworkElement neData, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
@@ -562,6 +569,13 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkElementPortDto.getDescription(), expectedNewDescription);
     }
 
+    @Step("Check that lastSuccessfulSyncTime has been set for network element port")
+    public void checkNetworkElementPortIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementPort nepData,OffsetDateTime timeBeforeSync) {
+        NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());
+
+        assertTrue(networkElementPortDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+    }
+
     @Step("Check that lifecycle state and operational state have been updated for network service profile (FTTH Access)")
     public void checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates(A4NetworkServiceProfileFtthAccess nspFtthData, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
@@ -569,6 +583,13 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkServiceProfileFtthAccessDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileFtthAccessDto.getOperationalState(), expectedNewOperationalState);
 
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network service profile FTTH Access")
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileFtthAccess nspFtthData,OffsetDateTime timeBeforeSync) {
+        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
+
+        assertTrue(networkServiceProfileFtthAccessDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
     }
 
     @Step("Check that lifecycle state, operational state and port reference have been updated for network service profile (FTTH Access)")
@@ -591,12 +612,27 @@ public class A4ResourceInventoryRobot {
         assertEquals(networkServiceProfileA10NspDto.getOperationalState(), expectedNewOperationalState);
     }
 
+    @Step("Check that lastSuccessfulSyncTime has been set for network service profile A10Nsp")
+    public void checkNetworkServiceProfileA10NspIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileA10Nsp nspA10Data,OffsetDateTime timeBeforeSync) {
+        NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = getExistingNetworkServiceProfileA10Nsp(nspA10Data.getUuid());
+
+        assertTrue(networkServiceProfileA10NspDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+    }
+
     @Step("Check that lifecycle state and operational state have been updated for network service profile (L2BSA)")
     public void checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(A4NetworkServiceProfileL2Bsa nspL2Data, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDto = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
 
         assertEquals(networkServiceProfileL2BsaDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkServiceProfileL2BsaDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network service profile L2BSA")
+    public void checkNetworkServiceProfileL2BsaIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileL2Bsa nspL2BsaData,OffsetDateTime timeBeforeSync) {
+        NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDto = getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+
+        assertTrue(networkServiceProfileL2BsaDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
     }
 
     @Step("Check for Network Service Profile (L2BSA) that no properties have changed values")
@@ -615,6 +651,14 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkElementLinkDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkElementLinkDto.getOperationalState(), expectedNewOperationalState);
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network element link")
+    public void checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementLink nelData,OffsetDateTime timeBeforeSync) {
+        NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
+
+        assertTrue(networkElementLinkDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+
     }
 
     @Step("Get a list of Network Element Groups by name")

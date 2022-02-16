@@ -18,4 +18,5 @@ public class A4NetworkServiceProfileFtthAccess {
     private String lifecycleState;
     private String oltPortOntLastRegisteredOn;
     private String terminationPointUuid;
+    private String lastSuccessfulSyncTime;
 }

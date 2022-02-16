@@ -15,5 +15,6 @@ public class A4NetworkElementPort {
     private String operationalState;
     private String functionalPortLabel;
     private String type;
+    private String lastSuccessfulSyncTime;
 
 }

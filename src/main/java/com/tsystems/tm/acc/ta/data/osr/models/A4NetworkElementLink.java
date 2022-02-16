@@ -16,5 +16,6 @@ public class A4NetworkElementLink {
     private String lbz;
     private String lifecycleState;
     private String operationalState;
+    private String lastSuccessfulSyncTime;
 
 }
