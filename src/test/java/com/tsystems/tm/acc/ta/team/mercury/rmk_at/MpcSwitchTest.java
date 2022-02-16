@@ -261,13 +261,13 @@ public class MpcSwitchTest extends GigabitTest {
                 defaultOltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef());
 
         // second uplink
-        OltUplinkBusinessReferences oltUplinkRingSwitch2Referencen = OsrTestContext.get().getData()
+        OltUplinkBusinessReferences oltUplinkRingSwitch2References = OsrTestContext.get().getData()
                 .getOltUplinkBusinessReferencesDataProvider()
                 .get(OltUplinkBusinessReferencesCase.OltUplinkRingSwitch2);
 
         OltUplinkBusinessReferences localOltUplinkBusinessReferences = new OltUplinkBusinessReferences();
-        localOltUplinkBusinessReferences.setOltPortEquipmentBusinessRef(oltUplinkRingSwitch2Referencen.getOltPortEquipmentBusinessRef());
-        localOltUplinkBusinessReferences.setBngSourcePortEquipmentBusinessRef(oltUplinkRingSwitch2Referencen.getBngSourcePortEquipmentBusinessRef());
+        localOltUplinkBusinessReferences.setOltPortEquipmentBusinessRef(oltUplinkRingSwitch2References.getOltPortEquipmentBusinessRef());
+        localOltUplinkBusinessReferences.setBngSourcePortEquipmentBusinessRef(oltUplinkRingSwitch2References.getBngSourcePortEquipmentBusinessRef());
         // set second uplink to same target port
         localOltUplinkBusinessReferences.setBngTargetPortEquipmentBusinessRef(defaultOltUplinkBusinessReferences.getBngTargetPortEquipmentBusinessRef());
 

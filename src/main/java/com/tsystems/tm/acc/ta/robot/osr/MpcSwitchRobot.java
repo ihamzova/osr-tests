@@ -81,7 +81,7 @@ public class MpcSwitchRobot {
                 oltUplinkBusinessReferences.getBngSourcePortEquipmentBusinessRef());
     }
 
-    @Step("check Equipment Business Referencen")
+    @Step("check Equipment Business References")
     public void checkEquipmentBusinessRef(EquipmentBusinessRef oltEquipmentBusinessRef, EquipmentBusinessRef bngEquipmentBusinessRef) {
 
         List<Uplink> uplinkList = uplinkResourceInventoryManagementClient.getClient().uplink().listUplink()
