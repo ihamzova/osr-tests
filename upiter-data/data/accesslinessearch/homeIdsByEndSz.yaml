@@ -1,0 +1,6 @@
+name: homeIdsByEndSz
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/89/8000/76H2"
+  slotNumber: "3"
+  portNumber: "1"

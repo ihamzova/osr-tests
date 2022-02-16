@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -495,6 +496,16 @@ public class A4ResourceInventoryRobot {
 
         assertEquals(networkElementDto.getLifecycleState(), expectedNewLifecycleState);
         assertEquals(networkElementDto.getOperationalState(), expectedNewOperationalState);
+        assertEquals(networkElementDto.getLastSuccessfulSyncTime().toString().substring(0,12),
+                OffsetDateTime.now().toString().substring(0,12));
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network element")
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData,OffsetDateTime timeBeforeSync) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
+
+        assertTrue(networkElementDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element")
