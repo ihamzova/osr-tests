@@ -387,7 +387,7 @@ public class A4OntCommissioning extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-128158")
   @Description("ONT Change, newSerialNumber = DEFAULT (Anbieterwechsel)")
-  public void ontDefaultChangeTest() {
+  public void anbieterwechselTest() {
     AccessLineDto a4AccessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
     accessLine.setLineId(a4AccessLine.getLineId());
 
@@ -401,6 +401,6 @@ public class A4OntCommissioning extends GigabitTest {
 
     // check alri
     assertEquals(AccessLineStatus.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
-    assertEquals("DEFAULT", accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
+    assertEquals(a4AccessLine.getNetworkServiceProfileReference().getNspOntSerialNumber(), accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber());
   }
 }

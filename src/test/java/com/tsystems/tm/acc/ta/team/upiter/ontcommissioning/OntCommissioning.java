@@ -326,7 +326,7 @@ public class OntCommissioning extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-63811")
   @Description("ONT Change, newSerialNumber = DEFAULT (Anbieterwechsel)")
-  public void ontDefaultChangeTest() {
+  public void anbieterwechselTest() {
 
     accessLine.setLineId(accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
             AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE).get(0).getLineId());
