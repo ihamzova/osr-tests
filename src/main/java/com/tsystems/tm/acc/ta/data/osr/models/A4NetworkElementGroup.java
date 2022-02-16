@@ -18,5 +18,6 @@ public class A4NetworkElementGroup {
     private String creationTime;
     private String lastUpdateTime;
     private String type;
+    private String lastSuccessfulSyncTime;
 
 }
