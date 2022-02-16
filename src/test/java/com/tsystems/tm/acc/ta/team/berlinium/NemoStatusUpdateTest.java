@@ -118,12 +118,14 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element")
     public void testNemoStatusUpdateForNe() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         nemo.sendStatusUpdateForNetworkElement(neData, negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
-        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData,timeBeforeNemoStatusUpdate);
     }
 
 
