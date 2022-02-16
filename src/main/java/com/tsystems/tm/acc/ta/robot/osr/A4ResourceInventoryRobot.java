@@ -215,6 +215,7 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+    @Step("Get list of NSP Ftth-Access by Termination Point reference")
     public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessByTerminationPoint(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = this.getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);
         Assert.assertEquals(nspList.size(), 1, "No NetworkServiceProfileFtthAccessDto found with TP-Uuid : " + uuidTp);
@@ -408,10 +409,12 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Check lifecycle state of NEL")
     public void checkLifecycleState(A4NetworkElementLink nelData, String lcs) {
         assertEquals(getExistingNetworkElementLink(nelData.getUuid()).getLifecycleState(), lcs);
     }
 
+    @Step("Check default value correctness of NSP A10NSP")
     public void checkDefaultValuesNsp(A4NetworkServiceProfileA10Nsp nspA10Nsp) {
         final String UNDEFINED = "undefined";
         final NetworkServiceProfileA10NspDto nsp = getExistingNetworkServiceProfileA10Nsp(nspA10Nsp.getUuid());
@@ -682,6 +685,7 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+    @Step("Delete NE by endsz, also recursively deletes as children")
     public void deleteA4NetworkElementsRecursively(A4NetworkElement ne) {
         // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
@@ -692,12 +696,14 @@ public class A4ResourceInventoryRobot {
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
 
+    @Step("Delete NEP by functional label, also recursively deletes as children")
     public void deleteA4NetworkElementPortsRecursively(A4NetworkElementPort nep, A4NetworkElement ne) {
         // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
         final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nep.getFunctionalPortLabel(), getEndsz(ne));
         nepList.forEach(this::deleteNetworkElementPortsRecursively);
     }
 
+    @Step("Get list of NEPs by functional label")
     public List<NetworkElementPortDto> getNetworkElementPortsByFunctionalLabel(String functionalLabel, String endsz) {
         return a4ResourceInventory
                 .networkElementPorts()
@@ -707,6 +713,7 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Delete NSP FTTH-Access by line id and by ont serial number")
     public void deleteNspFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthAccess) {
         final String lineId = nspFtthAccess.getLineId();
         final String ontSerialNo = nspFtthAccess.getOntSerialNumber();
@@ -725,6 +732,7 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+    @Step("Delete NSP L2BSA by line id")
     public void deleteNspsL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Bsa) {
         // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
@@ -736,6 +744,7 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+    @Step("Get list of NSP FTTH-Access by line id")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByLineId(String lineId) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
@@ -744,6 +753,7 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get list of NSP FTTH-Access by ont serial number")
     public List<NetworkServiceProfileFtthAccessDto> getNetworkServiceProfilesFtthAccessByOntSerialNumber(String ontSerialNo) {
         return a4ResourceInventory
                 .networkServiceProfilesFtthAccess()
@@ -752,6 +762,7 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Get list of NSP L2BSA by line id")
     public List<NetworkServiceProfileL2BsaDto> getNetworkServiceProfilesL2BsaByLineId(String lineId) {
         return a4ResourceInventory
                 .networkServiceProfilesL2Bsa()
