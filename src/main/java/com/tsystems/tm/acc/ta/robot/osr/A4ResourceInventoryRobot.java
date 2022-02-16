@@ -501,14 +501,11 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element")
-    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData) {
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData,OffsetDateTime timeBeforeSync) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
 
-        assertEquals(networkElementDto.getLastSuccessfulSyncTime().toString().substring(0,13),
-                OffsetDateTime.now().toString().substring(0,13));
-        System.out.println("lastSuccessfulSyncTime");
-        //System.out.println(networkElementDto.getLastSuccessfulSyncTime().toString().substring(0,16));
-        //System.out.println(OffsetDateTime.now().toString().substring(0,16));
+        assertTrue(networkElementDto.getLastSuccessfulSyncTime().isAfter(timeBeforeSync));
+
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element")
