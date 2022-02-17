@@ -79,6 +79,7 @@ public class OltDetailsPage {
     sleep(1000); //this is needed because occasionally an error occurs when switching to the card/port view.
     if($(UPLINK_ADD_BUTTON_LOCATOR).exists()) {
       log.info("openPortView UPLINK_ADD_BUTTON_LOCATOR exist");
+      $(CARDS_VIEW_TAB_LOCATOR).click();
     }
 
     if (slot != null && !slot.isEmpty()) {
