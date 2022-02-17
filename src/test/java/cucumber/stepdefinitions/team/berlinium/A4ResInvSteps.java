@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4Networ
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import cucumber.Context;
@@ -64,6 +65,18 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkElementGroup neg = setupDefaultNegTestData();
         neg.setName(name);
+        a4ResInv.createNetworkElementGroup(neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
+    }
+
+    @Given("a NEG with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    public void givenANEGWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
+        // ACTION
+        A4NetworkElementGroup neg = setupDefaultNegTestData();
+        neg.setOperationalState(ops);
+        neg.setLifecycleState(lcs);
         a4ResInv.createNetworkElementGroup(neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -250,6 +263,26 @@ public class A4ResInvSteps {
 
     // -----=====[ THENS ]=====-----
 
+    @Then("the (new )NEG operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNegOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // ACTION
+        final NetworkElementGroupDto neg = a4ResInv.getExistingNetworkElementGroup(negData.getUuid());
+        assertEquals(operationalState, neg.getOperationalState());
+    }
+
+    @Then("the (new )NEG lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNegLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // ACTION
+        final NetworkElementGroupDto neg = a4ResInv.getExistingNetworkElementGroup(negData.getUuid());
+        assertEquals(lifecycleState, neg.getLifecycleState());
+    }
+
     @Then("the TP does exist in A4 resource inventory")
     public void thenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
@@ -290,16 +323,7 @@ public class A4ResInvSteps {
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
-    @Then("the NSP L2BSA operationalState is (now )(updated to ){string}( in the response)")
-    public void thenTheNSPLBSAOperationalStateIs(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-
-        // ACTION
-        assertEquals(operationalState, nspL2Data.getOperationalState());
-    }
-
-    @Then("the NSP L2BSA operationalState is (now )(updated to ){string} in the A4 resource inventory")
+    @Then("the (new )NSP L2BSA operationalState is (now )(updated to ){string}( in the A4 resource inventory)")
     public void thenTheNSPLBSAOperationalStateIsUpdatedInA4ResInv(String operationalState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
@@ -309,16 +333,7 @@ public class A4ResInvSteps {
         assertEquals(operationalState, nspL2.getOperationalState());
     }
 
-    @Then("the NSP L2BSA lifecycleState is (now )(updated to ){string}( in the response)")
-    public void thenTheNSPLBSALifecycleStateIs(String lifecycleState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-
-        // ACTION
-        assertEquals(lifecycleState, nspL2Data.getLifecycleState());
-    }
-
-    @Then("the NSP L2BSA lifecycleState is (now )(updated to ){string} in the A4 resource inventory")
+    @Then("the (new )NSP L2BSA lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNSPLBSALifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);

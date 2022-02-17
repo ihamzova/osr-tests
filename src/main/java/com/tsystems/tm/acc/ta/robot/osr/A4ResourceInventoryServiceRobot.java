@@ -1,9 +1,5 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
@@ -25,8 +21,6 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getObjectMapper;
-import static org.testng.Assert.fail;
 
 public class A4ResourceInventoryServiceRobot {
 
@@ -69,6 +63,19 @@ public class A4ResourceInventoryServiceRobot {
                 .idPath(negData.getUuid())
                 .body(negLogicalResource)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    @Step("Send new operational state for Network Service Profile (L2BSA) without checks")
+    public Response sendStatusUpdateForNetworkElementGroupWithoutChecks(A4NetworkElementGroup negData, String newOperationalState) {
+        LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(negData, newOperationalState);
+
+        return a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(negData.getUuid())
+                .body(negLogicalResource)
+                .execute(voidCheck());
     }
 
     @Step("Send new operational state for Network Element")
@@ -163,9 +170,7 @@ public class A4ResourceInventoryServiceRobot {
                 .idPath(nspL2Data.getUuid())
                 .body(nspL2LogicalResource)
                 .execute(voidCheck());
-
     }
-
 
     @Step("Send PATCH request with logical resource")
     public void sendPatchForLogicalResource(String uuid, LogicalResourceUpdate logicalResource) {
@@ -234,41 +239,6 @@ public class A4ResourceInventoryServiceRobot {
 
         Assert.assertTrue(found);
         Assert.assertEquals(foundValue, expectedValue);
-    }
-
-    public LogicalResource getLogicalResourceObjectFromJsonString(String jsonString) {
-        final ObjectMapper objectMapper = getObjectMapper();
-
-        // action property in json is e.g. "add". Needs to be mapped to enum ADD("add")
-        objectMapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
-
-        // some @... properties like e.g. @BaseType cannot be mapped (to atBaseType). Don't fail, isn't tested here
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        // date-time comes in unix milliseconds. Need to be mapped to OffsetDateTime
-        objectMapper.registerModule(new JavaTimeModule());
-
-        try {
-            return objectMapper.readValue(jsonString, LogicalResource.class);
-        } catch (JsonProcessingException e) {
-            fail(e.getMessage());
-        }
-
-        return null;
-    }
-
-    public String getValueFromCharacteristic(String name, LogicalResource lr) {
-        List<ResourceCharacteristic> rcList = lr.getCharacteristic();
-
-        if (rcList != null) {
-            for (ResourceCharacteristic characteristic : rcList) {
-                if (Objects.equals(characteristic.getName(), name)) {
-                    return characteristic.getValue();
-                }
-            }
-        }
-
-        return null;
     }
 
 }
