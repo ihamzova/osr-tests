@@ -61,6 +61,8 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
     private final AccessLineRiRobot accessLineRi = new AccessLineRiRobot();
     private final NetworkLineProfileManagementRobot networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();
     private A4NetworkElementGroup negData;
+    private A4NetworkElement neData;
+    private A4NetworkElementPort nepData;
     private A4TerminationPoint tpFtthData;
     private A4NetworkServiceProfileL2Bsa nspL2BsaData;
     private PortProvisioning port;
@@ -77,9 +79,9 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
         long SLEEP_TIMER = 15000;
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        A4NetworkElement neData = osrTestContext.getData().getA4NetworkElementDataProvider()
+        neData = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.defaultNetworkElement);
-        A4NetworkElementPort nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
+        nepData = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         tpFtthData = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
@@ -144,7 +146,12 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
     @AfterClass
     public void cleanup() {
         accessLineRi.clearDatabase();
-        a4Inventory.deleteA4TestDataRecursively(negData);
+
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4Inventory.deleteA4NetworkElementsRecursively(neData);
+        a4Inventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
+        a4Inventory.deleteNspsL2Bsa(nspL2BsaData);
     }
 
     @Test(description = "Start with preprovisioning FTTH AccessLine and then perform activation of an A4 L2BSA Product")

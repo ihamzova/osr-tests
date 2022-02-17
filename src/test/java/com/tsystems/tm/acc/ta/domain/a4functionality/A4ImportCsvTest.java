@@ -73,6 +73,7 @@ public class A4ImportCsvTest extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
+        // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventoryRobot.deleteA4TestDataRecursively(csvData);
     }
 

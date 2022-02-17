@@ -17,13 +17,14 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -92,7 +93,10 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
 
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
 
         a4Resilience.changeRouteToA4ResourceInventoryService(routeName); //if this is not working check: https://gard.telekom.de/gardwiki/display/DGHB/Create+new+ingress+for+apigw-admin
     }

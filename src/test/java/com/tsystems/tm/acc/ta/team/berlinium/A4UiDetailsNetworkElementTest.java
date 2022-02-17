@@ -78,7 +78,11 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
 
     @AfterClass
     public void cleanUp() {
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);  // nel wird hier nicht gelöscht?
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neDataA);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataA, neDataA);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDataB, neDataB);
     }
 
     @Test

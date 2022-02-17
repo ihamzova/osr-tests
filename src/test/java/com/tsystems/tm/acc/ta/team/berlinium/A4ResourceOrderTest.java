@@ -166,14 +166,23 @@ public class A4ResourceOrderTest {
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
         wiremock.getWireMock().resetRequests();
-
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
-        a4ResourceOrder.deleteA4TestDataRecursively(ro);
         a4ResourceOrder.cleanCallbacksInWiremock();
+
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData1);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData2);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData3);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData1, neData1);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData2, neData2);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData3, neData3);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData4, neData2);
+
+        a4ResourceOrder.deleteA4TestDataRecursively(ro);
     }
 
     @DataProvider(name = "vlanRangeCombinations")
-    public static Object[] vlanRangeCombinations() {
+    public static Object[][] vlanRangeCombinations() {
         VlanRange vlanRange1 = new VlanRange()
                 .vlanRangeLower(null)
                 .vlanRangeUpper(null);
@@ -190,11 +199,11 @@ public class A4ResourceOrderTest {
                 .vlanRangeLower(null)
                 .vlanRangeUpper("4012");
 
-        return new Object[]{
-                vlanRange1,
-                vlanRange2,
-                vlanRange3,
-                vlanRange4};
+        return new Object[][]{
+                {vlanRange1},
+                {vlanRange2},
+                {vlanRange3},
+                {vlanRange4}};
     }
 
     @Test(dataProvider = "vlanRangeCombinations")
@@ -402,15 +411,15 @@ public class A4ResourceOrderTest {
     }
 
     @DataProvider(name = "characteristicNamesDelete")
-    public static Object[] characteristicNamesDeleteString() {
-        return new Object[]{
-                RAHMEN_VERTRAGS_NR,
-                CARRIER_BSA_REFERENCE,
-                VUEP_PUBLIC_REFERENZ_NR,
-                LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV,
-                MTU_SIZE,
-                VLAN_RANGE,
-                QOS_LIST};
+    public static Object[][] characteristicNamesDeleteString() {
+        return new Object[][]{
+                {RAHMEN_VERTRAGS_NR},
+                {CARRIER_BSA_REFERENCE},
+                {VUEP_PUBLIC_REFERENZ_NR},
+                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {MTU_SIZE},
+                {VLAN_RANGE},
+                {QOS_LIST}};
     }
 
     @Test(dataProvider = "characteristicNamesDelete")
@@ -487,13 +496,13 @@ public class A4ResourceOrderTest {
     }
 
     @DataProvider(name = "characteristicNamesEmptyString")
-    public static Object[] characteristicNamesEmptyString() {
-        return new Object[]{
-                RAHMEN_VERTRAGS_NR,
-                CARRIER_BSA_REFERENCE,
-                VUEP_PUBLIC_REFERENZ_NR,
-                LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV,
-                MTU_SIZE};
+    public static Object[][] characteristicNamesEmptyString() {
+        return new Object[][]{
+                {RAHMEN_VERTRAGS_NR},
+                {CARRIER_BSA_REFERENCE},
+                {VUEP_PUBLIC_REFERENZ_NR},
+                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {MTU_SIZE}};
     }
 
     @Test(dataProvider = "characteristicNamesEmptyString")
@@ -514,9 +523,8 @@ public class A4ResourceOrderTest {
     }
 
     @DataProvider(name = "characteristicNamesEmptyList")
-    public static Object[] characteristicNamesEmptyList() {
-        return new Object[]{
-                VLAN_RANGE};
+    public static Object[][] characteristicNamesEmptyList() {
+        return new Object[][]{{VLAN_RANGE}};
     }
 
     @Test(dataProvider = "characteristicNamesEmptyList")

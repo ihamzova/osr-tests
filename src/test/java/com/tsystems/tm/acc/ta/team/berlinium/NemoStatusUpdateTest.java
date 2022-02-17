@@ -100,7 +100,13 @@ public class NemoStatusUpdateTest {
 
     @AfterMethod
     public void cleanup() {
-        a4ResourceInventoryRobot.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neData);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA, neData);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB, neData);
+        a4ResourceInventoryRobot.deleteNspFtthAccess(nspFtthData);
+        a4ResourceInventoryRobot.deleteNspsL2Bsa(nspL2Data);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Group")
@@ -193,8 +199,8 @@ public class NemoStatusUpdateTest {
     }
 
     @DataProvider(name = "toBeChangedLcs")
-    public static Object[] toBeChangedLifefcycleStates() {
-        return new Object[]{"PLANNING", "INSTALLING"};
+    public static Object[][] toBeChangedLifefcycleStates() {
+        return new Object[][]{{"PLANNING"}, {"INSTALLING"}};
     }
 
     @Test(dataProvider = "toBeChangedLcs", description = "DIGIHUB-xxxxx NEMO sends a status update (WORKING) for A4 NSP L2BSA which also changes Lifecycle State")
@@ -215,8 +221,8 @@ public class NemoStatusUpdateTest {
     }
 
     @DataProvider(name = "toNotBeChangedLcs")
-    public static Object[] toNotBeChangedLiefcycleStates() {
-        return new Object[]{"OPERATING", "RETIRING"};
+    public static Object[][] toNotBeChangedLiefcycleStates() {
+        return new Object[][]{{"OPERATING"}, {"RETIRING"}};
     }
 
     @Test(dataProvider = "toNotBeChangedLcs", description = "DIGIHUB-xxxxx NEMO sends a status update (WORKING) for A4 NSP L2BSA which DOESN'T change Lifecycle State")

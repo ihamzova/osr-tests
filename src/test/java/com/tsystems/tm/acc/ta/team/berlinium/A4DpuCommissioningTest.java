@@ -102,7 +102,14 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
     @AfterMethod
     public void cleanup() throws IOException {
-        a4ResourceInventory.deleteA4TestDataRecursively(negData);
+        // Delete all A4 data which might provoke problems because of unique constraints
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neOltData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neDpuData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neNotDpuOltData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepOltData, neOltData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast01, neDpuData);
+        a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast02, neDpuData);
 
         a4ResilienceRobot.changeRouteToMicroservice(nemoUpdaterRouteName, A4_NEMO_UPDATER_MS);
         a4ResilienceRobot.changeRouteToMicroservice(riPortSpecsRouteName, A4_RESOURCE_INVENTORY_MS);
@@ -162,8 +169,10 @@ public class A4DpuCommissioningTest extends GigabitTest {
             Assert.assertEquals(nep.getOperationalState(), "NOT_WORKING");
             a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(nep.getUuid());
             index.getAndIncrement();
-            if ("GPON".equals(nep.getType())) {numberGponPorts.getAndIncrement();
-                    indexGponPort[0] = index.intValue();}
+            if ("GPON".equals(nep.getType())) {
+                numberGponPorts.getAndIncrement();
+                indexGponPort[0] = index.intValue();
+            }
             if ("G_FAST_TP".equals(nep.getType())) numberGfPorts.getAndIncrement();
         });
         Assert.assertEquals(numberGponPorts.intValue(), 1);
@@ -173,18 +182,18 @@ public class A4DpuCommissioningTest extends GigabitTest {
         List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
                 .getNetworkElementLinksByNePort(nepOltData.getUuid());
         String lbz = "DPU/1/" + existingOltEndSz + "/" + dpuEndSz;
-        int indexOfGponPort = indexGponPort[0]-1;
+        int indexOfGponPort = indexGponPort[0] - 1;
 
-        Assert.assertEquals(createdNeLinks.size(),1);
-        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
-        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
-        Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
-        Assert.assertEquals(createdNeLinks.get(0).getLsz(),"DPU");
-        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(),"1");
-        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingOltEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),dpuEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),nepOltData.getUuid());
-        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(),createdDpuPortList.
+        Assert.assertEquals(createdNeLinks.size(), 1);
+        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(), "INSTALLING");
+        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(), "NOT_WORKING");
+        Assert.assertEquals(createdNeLinks.get(0).getLbz(), lbz);
+        Assert.assertEquals(createdNeLinks.get(0).getLsz(), "DPU");
+        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(), "1");
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(), existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(), dpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(), nepOltData.getUuid());
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(), createdDpuPortList.
                 get(indexOfGponPort).getUuid());
 
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
@@ -332,8 +341,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
     }
 
     @DataProvider(name = "notValidRequestParameter")
-    public static Object[] isNotValidRequestParameter(){
-        return new Object[]{"","null",null};
+    public static Object[][] isNotValidRequestParameter() {
+        return new Object[][]{{""}, {"null"}, {null}};
     }
 
     @Test(dataProvider = "notValidRequestParameter", description = "test DPU-NE cannot created of validation error")
@@ -402,7 +411,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(updatedDpuNe.getOperationalState(), "NOT_WORKING");
         Assert.assertEquals(updatedDpuNe.getType(), "A4-DPU-4P-TP-v1");
 
-        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(neDpuData.getVpsz(),neDpuData.getFsz());
+        a4NemoUpdater.checkNetworkElementPutRequestToNemoWiremock(neDpuData.getVpsz(), neDpuData.getFsz());
 
         //check if missing Ports are created and attributes of already existing ports are not updated
         AtomicInteger numberGponPorts = new AtomicInteger(0);
@@ -436,15 +445,15 @@ public class A4DpuCommissioningTest extends GigabitTest {
         if (dpuPonPort.isPresent())
             dpuPortUuid = dpuPonPort.get().getUuid();
 
-        Assert.assertEquals(createdNeLinks.size(),1);
-        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(),"INSTALLING");
-        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(),"NOT_WORKING");
-        Assert.assertEquals(createdNeLinks.get(0).getLbz(),lbz);
-        Assert.assertEquals(createdNeLinks.get(0).getLsz(),"DPU");
-        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(),"1");
-        Assert.assertEquals(createdNeLinks.get(0).getEndszA(),existingOltEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getEndszB(),existingDpuEndSz);
-        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(),nepOltData.getUuid());
+        Assert.assertEquals(createdNeLinks.size(), 1);
+        Assert.assertEquals(createdNeLinks.get(0).getLifecycleState(), "INSTALLING");
+        Assert.assertEquals(createdNeLinks.get(0).getOperationalState(), "NOT_WORKING");
+        Assert.assertEquals(createdNeLinks.get(0).getLbz(), lbz);
+        Assert.assertEquals(createdNeLinks.get(0).getLsz(), "DPU");
+        Assert.assertEquals(createdNeLinks.get(0).getOrderNumber(), "1");
+        Assert.assertEquals(createdNeLinks.get(0).getEndszA(), existingOltEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getEndszB(), existingDpuEndSz);
+        Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortAUuid(), nepOltData.getUuid());
         Assert.assertEquals(createdNeLinks.get(0).getNetworkElementPortBUuid(), dpuPortUuid);
 
         a4NemoUpdater.checkLogicalResourcePutRequestToNemoWiremock(createdNeLinks.get(0).getUuid());
@@ -466,8 +475,8 @@ public class A4DpuCommissioningTest extends GigabitTest {
         String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
         A4NetworkElementLink nelDpuToOltData;
         nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-               .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        a4ResourceInventory.createNetworkElementLink(nelDpuToOltData,nepDpuData,nepOltData,neDpuData,neOltData);
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        a4ResourceInventory.createNetworkElementLink(nelDpuToOltData, nepDpuData, nepOltData, neDpuData, neOltData);
 
         // When / Action
         // call A4-DPU-Commissioning-Task for update
@@ -487,7 +496,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         Assert.assertEquals(existingNeLink.getLifecycleState(), "PLANNING");
         List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
                 .getNetworkElementLinksByNePort(existingOltPonPort);
-        Assert.assertEquals(createdNeLinks.size(),1);
+        Assert.assertEquals(createdNeLinks.size(), 1);
 
     }
 
@@ -508,7 +517,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementLink(invalidNel, nepDpuData, nepPodServer, neDpuData, neNotDpuOltData);
 
         // WHEN & THEN
-       // a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
+        // a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(comDpuTask);
         a4DpuCommissioning.sendPostForCommissioningDpuA4TasksBadRequest(
                 neDpuData.getVpsz() + "/" + neDpuData.getFsz(),
                 dpuSerialNumber,
