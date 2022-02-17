@@ -6,6 +6,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Sending Update Calls to Nemo
     Given a NEG is existing in A4 resource inventory
     When an update call to NEMO for the NEG is triggered
     Then 1 "PUT" NEG update notification was sent to NEMO
+    And the NEG lastSuccessfulSyncTime property was updated
 
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-queue-dispatcher

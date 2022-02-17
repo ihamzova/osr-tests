@@ -16,6 +16,7 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
@@ -325,6 +326,16 @@ public class A4ResInvSteps {
         // ACTION
         final NetworkServiceProfileL2BsaDto nspL2 = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
         assertEquals(lifecycleState, nspL2.getLifecycleState());
+    }
+
+    @Then("the NEG lastSuccessfulSyncTime property was updated")
+    public void thenTheNEGLastSuccessfulSyncTimePropertyWasUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final OffsetDateTime timeStamp = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.START_TIMESTAMP);
+
+        // ACTION
+        a4ResInv.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(neg, timeStamp);
     }
 
     // -----=====[ HELPERS ]=====-----

@@ -10,6 +10,8 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 
+import java.time.OffsetDateTime;
+
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
@@ -32,6 +34,7 @@ public class CommonSteps {
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.WIREMOCK, wiremock);
+        testContext.getScenarioContext().setContext(Context.START_TIMESTAMP, OffsetDateTime.now());
     }
 
     @After
