@@ -107,11 +107,14 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Group")
     public void testNemoStatusUpdateForNeg() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         nemo.sendStatusUpdateForNetworkElementGroup(negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithNewStates(negData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(negData,timeBeforeNemoStatusUpdate);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element")
@@ -133,24 +136,31 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Port")
     public void testNemoStatusUpdateForNep() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         final String NEW_DESCRIPTION = "DIGIHUB-77227 new description value";
         nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithNewStateAndDescription(nepDataA, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
+        a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithLastSuccessfulSyncTime(nepDataA,timeBeforeNemoStatusUpdate);
     }
 
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     public void testNemoStatusUpdateForNspFtth() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates
                 (nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithLastSuccessfulSyncTime
+                (nspFtthData,timeBeforeNemoStatusUpdate);
     }
 
     @Test(description = "DIGIHUB-75778 NEMO sends a status and port reference update for A4 Network Service Profile (FTTH Access)")
@@ -172,11 +182,14 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (A10NSP)")
     public void testNemoStatusUpdateForNspA10() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithLastSuccessfulSyncTime(nspA10Data,timeBeforeNemoStatusUpdate);
     }
 
     @DataProvider(name = "toBeChangedLcs")
@@ -188,7 +201,8 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
     public void testNemoStatusUpdateWorkingForNspL2WithChangedLcs(String oldLifecycleState) {
-        // GIVEN
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // Prepare existing NSP L2BSA to have lifecycle state 'oldLifecycleState'
         a4ResourceInventoryRobot.setLifecycleState(nspL2Data, oldLifecycleState);
 
@@ -197,6 +211,7 @@ public class NemoStatusUpdateTest {
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithLastSuccessfulSyncTime(nspL2Data,timeBeforeNemoStatusUpdate);
     }
 
     @DataProvider(name = "toNotBeChangedLcs")
@@ -332,11 +347,14 @@ public class NemoStatusUpdateTest {
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Link")
     public void testNemoStatusUpdateForNel() {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
         nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, OPERATIONAL_STATE_WORKING);
 
         // THEN
         a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData,timeBeforeNemoStatusUpdate);
     }
 
 }
