@@ -84,8 +84,8 @@ public class NetworkSwitching extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-121792")
-  @Description("Network Switching Preparation")
-  public void networkSwitchingPreparationTest() throws Exception {
+  @Description("Network Switching Preparation, full PON Port Switching")
+  public void networkSwitchingFullPortPreparationTest() throws Exception {
 
     List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(sourcePort);
     List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
@@ -96,7 +96,7 @@ public class NetworkSwitching extends GigabitTest {
 
     NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
     networkSwitchingPage.validateUrl();
-    networkSwitchingPage.startPreparation(sourcePort, targetPort);
+    networkSwitchingPage.startFullPortPreparation(sourcePort, targetPort);
     String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
     networkSwitchingPage.clickPackageId();
     assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
@@ -124,7 +124,7 @@ public class NetworkSwitching extends GigabitTest {
     accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterPreparation);
   }
 
-  @Test(dependsOnMethods = "networkSwitchingPreparationTest")
+  @Test(dependsOnMethods = "networkSwitchingFullPortPreparationTest")
   @TmsLink("DIGIHUB-121792")
   @Description("Network Switching Commit")
   public void networkSwitchingCommitTest() throws Exception {
@@ -181,7 +181,7 @@ public class NetworkSwitching extends GigabitTest {
     List<Integer> targetOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(targetPortForRollback, targetAccessLinesBeforePreparation);
     NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
     networkSwitchingPage.validateUrl();
-    networkSwitchingPage.startPreparation(sourcePortForRollback, targetPortForRollback);
+    networkSwitchingPage.startFullPortPreparation(sourcePortForRollback, targetPortForRollback);
     String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
     networkSwitchingPage.clickPackageId()
             .waitUntilNeededStatus("PREPARED", packageId);
@@ -214,7 +214,7 @@ public class NetworkSwitching extends GigabitTest {
   public void networkSwitchingUpdateSnTest() throws Exception {
     NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
     networkSwitchingPage.validateUrl();
-    networkSwitchingPage.startPreparation(sourcePortForUpdate, targetPortForUpdate);
+    networkSwitchingPage.startFullPortPreparation(sourcePortForUpdate, targetPortForUpdate);
     String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
     networkSwitchingPage.clickPackageId()
             .waitUntilNeededStatus("PREPARED", packageId);

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
@@ -31,9 +32,12 @@ public class NetworkSwitchingPage {
   private static final By PORT_TO_PORT_PREPARATION_TAB = byQaData("port-to-port-tab");
   private static final By SLOT_TO_SLOT_PREPARATION_TAB = byQaData("slot-to-slot-tab");
   private static final By SEARCH_TAB = byQaData("search-tab");
-  private static final By COMMIT_TAB = byQaData("commit-tab");
+  private static final By PAKETVERWALTUNG_TAB = byQaData("actions-tab");
 
-  private static final By PORT_TO_PORT_PREPARE_BUTTON = byQaData("port-to-port-btn");
+  private static final By PORT_TO_PORT_PREPARE_BUTTON = byQaData("port-to-port-options-btn");
+  private static final By GANZEN_PON_PORT_UMSCHALTEN = byText("Ganzen PON Port umsсhalten");
+  private static final By HOMEIDS_MANUELLE_AUSWAHL = byText("HomeIDs manuelle Auswahl");
+  private static final By CSV_IMPORT = byText("CSV Import");
   private static final By SHOW_DEVICE_BUTTON = byQaData("slot-to-slot-prepare-btn");
   private static final By ADD_ROW_BUTTON = byQaData("add-row-btn");
   private static final By DELETE_ROW_BUTTON = byQaData("delete-row-btn");
@@ -87,7 +91,7 @@ public class NetworkSwitchingPage {
   }
 
   @Step("Start preparation phase")
-  public NetworkSwitchingPage startPreparation(PortProvisioning sourcePort, PortProvisioning targetPort) throws Exception {
+  public NetworkSwitchingPage startFullPortPreparation(PortProvisioning sourcePort, PortProvisioning targetPort) throws Exception {
     safeJavaScriptClick($(SOURCE_ENDSZ_INPUT));
     $(SOURCE_ENDSZ_INPUT).val(sourcePort.getEndSz());
     safeJavaScriptClick($(SOURCE_SLOT_INPUT));
@@ -103,6 +107,7 @@ public class NetworkSwitchingPage {
     $(TARGET_PORT_INPUT).val(targetPort.getPortNumber());
 
     $(PORT_TO_PORT_PREPARE_BUTTON).click();
+    $(GANZEN_PON_PORT_UMSCHALTEN).click();
     $(NOTIFICATION).shouldHave(text("Die Vorbereitung für den Zielport hat begonnen"));
     closeNotificationButton();
     return this;
@@ -166,7 +171,7 @@ public class NetworkSwitchingPage {
 
   @Step("Click Paketverwaltung tab")
   public NetworkSwitchingPage clickPaketverwaltungTab() {
-    $(COMMIT_TAB).click();
+    $(PAKETVERWALTUNG_TAB).click();
     return this;
   }
 
