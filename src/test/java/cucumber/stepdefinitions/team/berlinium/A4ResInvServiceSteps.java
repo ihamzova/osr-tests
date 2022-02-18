@@ -1,11 +1,11 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.When;
@@ -24,6 +24,18 @@ public class A4ResInvServiceSteps {
     }
 
     // -----=====[ WHENS ]=====-----
+
+    @When("NEMO sends a request to change/update NEG operationalState to {string}")
+    public void nemoSendsARequestToChangeNEGOperationalStateTo(String ops) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // ACTION
+        final Response response = a4ResInvService.sendStatusUpdateForNetworkElementGroupWithoutChecks(neg, ops);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
 
     @When("NEMO sends a delete TP request( to A4 resource inventory service)")
     public void whenNemoSendsADeleteTPRequest() {
@@ -67,34 +79,9 @@ public class A4ResInvServiceSteps {
 
         // ACTION
         final Response response = a4ResInvService.sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(nspL2, tp, newOperationalState);
-        final String body = response.getBody().asString();
-        final LogicalResource lr = a4ResInvService.getLogicalResourceObjectFromJsonString(body);
-        final A4NetworkServiceProfileL2Bsa resultNspL2 = mapLrToA4NspL2Bsa(lr);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
-        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, resultNspL2);
-    }
-
-    // -----=====[ HELPERS ]=====-----
-
-    private A4NetworkServiceProfileL2Bsa mapLrToA4NspL2Bsa(LogicalResource lr) {
-        final String RESCHAR_KEY_OPSTATE = "operationalState";
-        final String RESCHAR_KEY_ADMMODE = "administrativeMode";
-        final String RESCHAR_KEY_LINEID = "lineId";
-        final String RESCHAR_KEY_L2CCID = "l2CcId";
-
-        A4NetworkServiceProfileL2Bsa nspL2 = new A4NetworkServiceProfileL2Bsa();
-        nspL2.setUuid(lr.getId());
-        nspL2.setLifecycleState(lr.getLifecycleState());
-        nspL2.setOperationalState(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_OPSTATE, lr));
-        nspL2.setAdministrativeMode(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_ADMMODE, lr));
-        nspL2.setLineId(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_LINEID, lr));
-        nspL2.setL2CcId(a4ResInvService.getValueFromCharacteristic(RESCHAR_KEY_L2CCID, lr));
-//        nspL2.setDataRateDown(xx);
-//        nspL2.setDataRateUp(xx);
-
-        return nspL2;
     }
 
 }
