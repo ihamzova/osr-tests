@@ -125,7 +125,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //OLT-NE with GPON Port exists
         //DPU- NetworkElement by dpuEndSz not yet exists
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
 
         // When / Action
         // call A4-DPU-Commissioning-Task
@@ -384,7 +384,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
 
         String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
 
 
         // When / Action
