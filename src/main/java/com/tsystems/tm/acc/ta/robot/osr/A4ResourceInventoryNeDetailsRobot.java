@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailsPage;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNepDetailsPage;
 import io.qameta.allure.Step;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,72 +26,71 @@ public class A4ResourceInventoryNeDetailsRobot {
 
     @Step("Read uuid ne")
     public String readNeUuid() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_UUID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_UUID_FIELD_LOCATOR).val();
     }
 
     @Step("Read vpsz ne")
     public String readNeVpsz() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_VPSZ_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_VPSZ_FIELD_LOCATOR).val();
     }
 
     @Step("Read fsz ne")
     public String readNeFsz() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_FSZ_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_FSZ_FIELD_LOCATOR).val();
     }
 
     @Step("Read category ne")
     public String readNeCategory() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_CATEGORY_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_CATEGORY_FIELD_LOCATOR).val();
     }
 
     @Step("Read type ne")
     public String readNeType() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_TYPE_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_TYPE_FIELD_LOCATOR).val();
     }
 
     @Step("Read PD Name ne")
     public String readNePlanningDeviceName() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_PlanningDeviceName_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_PlanningDeviceName_FIELD_LOCATOR).val();
     }
 
     @Step("Read kls-id ne")
     public String readNeKlsId() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_KLSID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_KLSID_FIELD_LOCATOR).val();
     }
 
     @Step("Read ztp ident ne")
     public String readNeZtpid() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_ZTPID_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_ZTPID_FIELD_LOCATOR).val();
     }
 
     @Step("Read ops ne")
     public String readNeOps() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_OPS_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_OPS_FIELD_LOCATOR).val();
     }
 
     @Step("Read lcs ne")
     public String readNeLcs() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_LCS_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_LCS_FIELD_LOCATOR).val();
     }
 
     @Step("Read creation time ne")
     public String readNeCreationTime() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_CreationTime_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_CreationTime_FIELD_LOCATOR).val();
     }
 
     @Step("Read last update time ne")
     public String readNeLastUpdateTime() {
-        return $(A4ResourceInventoryNeDetailsPage.getNE_LastUpdateTime_FIELD_LOCATOR()).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_LastUpdateTime_FIELD_LOCATOR).val();
     }
 
     @Step("Open UI, log in")
-    public void openRiNeDetailPage(){
-        A4ResourceInventoryNeDetailsPage.login();     // warum wird hier die Klasse verwendet?
+    public void openRiNeDetailPage() {
+        A4ResourceInventoryNeDetailsPage.login();     //TODO: warum wird hier die Klasse verwendet?
     }
 
     public ElementsCollection getNelElementsCollection() {
-        // waitForTableToFullyLoad(elementsCollection.size());
-        return $(A4ResourceInventoryNeDetailsPage.getNEL_SEARCH_RESULT_TABLE_LOCATOR())
+        return $(A4ResourceInventoryNeDetailsPage.NEL_SEARCH_RESULT_TABLE_LOCATOR)
                 .findAll(By.xpath("tr/td"));
     }
 
@@ -101,8 +99,6 @@ public class A4ResourceInventoryNeDetailsRobot {
         final A4InventarSucheRobot a4InventarSucheRobot = new A4InventarSucheRobot();
         final A4ResourceInventoryNeDetailsPage a4ResourceInventoryNeDetailsPage = new A4ResourceInventoryNeDetailsPage();
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData(nepDataA, nelData, neDataB);
-
-//        sleepForSeconds(10);
 
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         a4ResourceInventoryNeDetailsPage.validate();
