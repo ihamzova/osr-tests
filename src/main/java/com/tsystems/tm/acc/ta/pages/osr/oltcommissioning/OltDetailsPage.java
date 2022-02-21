@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
@@ -13,6 +12,7 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.sleep;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 import static org.testng.Assert.assertEquals;
@@ -76,6 +76,12 @@ public class OltDetailsPage {
   @Step("Open port view")
   public OltDetailsPage openPortView(String slot) {
     $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    sleep(1000); //this is needed because occasionally an error occurs when switching to the card/port view.
+    if($(UPLINK_ADD_BUTTON_LOCATOR).exists()) {
+      log.info("openPortView UPLINK_ADD_BUTTON_LOCATOR exist");
+      $(CARDS_VIEW_TAB_LOCATOR).click();
+    }
+
     if (slot != null && !slot.isEmpty()) {
       if (!($(byQaData(String.format(portLifeCycleStateLocator, slot, "0"))).isDisplayed())) {
         $(byQaData(String.format(slotPortViewLocator, slot))).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();

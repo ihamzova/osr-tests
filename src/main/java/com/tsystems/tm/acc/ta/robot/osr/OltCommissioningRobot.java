@@ -26,7 +26,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -45,7 +46,6 @@ public class OltCommissioningRobot {
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
   private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderOltBffProxy);
   private OltDiscoveryClient oltDiscoveryClient = new OltDiscoveryClient(authTokenProviderOltCommissioning);
   private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
   private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
@@ -121,6 +121,9 @@ public class OltCommissioningRobot {
     String oltEndSz = olt.getEndsz();
     long portsCount;
     long accessLinesPerPort = ACCESS_LINE_PER_PORT_MA5600;
+
+    AuthTokenProvider authTokenProviderWgAccessProvisioning = new RhssoClientFlowAuthTokenProvider(WG_ACCESS_PROVISIONING_MS, RhssoHelper.getSecretOfGigabitHub(WG_ACCESS_PROVISIONING_MS));
+    AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderWgAccessProvisioning);
 
     List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
             .endSzQuery(oltEndSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
