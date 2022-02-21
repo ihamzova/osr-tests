@@ -93,6 +93,13 @@
     </profiles>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/aspectj/aspectjrt -->
+        <dependency>
+            <groupId>aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+
         <dependency>
             <groupId>com.tsystems.tm.acc.tests</groupId>
             <artifactId>osr-models</artifactId>

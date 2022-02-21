@@ -18,14 +18,14 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 public class A4ImportPage {
 
     public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser/inventory-import";
-    public static final By A4_INVENTORY_IMPORTER_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
+    public static final By A4_UI_HEADER_LOCATOR = byXpath("/html/body/app-root/div/app-portal/app-page-header-v3");
     public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = byXpath("//input[@type=\"file\"]");
     public static final By A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR = By.id("btnUploadCSV");
     public static final By A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR = By.id("UploadMessage");
 
     @Step("Validate page")
     public A4ImportPage validate() {
-        $(A4_INVENTORY_IMPORTER_HEADER_LOCATOR).shouldBe(visible);
+        $(A4_UI_HEADER_LOCATOR).shouldBe(visible);
         assertContains(url(), ENDPOINT);
         return this;
     }

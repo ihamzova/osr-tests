@@ -16,16 +16,17 @@ public class A4ResourceInventoryBrowserRobot {
 
     @Step("Click 'Inventar Suche' button")
     public void clickInventorySearchButton() {
-        $(A4ResourceInventoryBrowserPage.getInventorySearchButton_Locator()).click();
+        $(A4ResourceInventoryBrowserPage.InventorySearchButton_Locator).click();
     }
 
     @Step("Click 'Inventar Import' button")
     public void clickInventoryImportButton() {
-        $(A4ResourceInventoryBrowserPage.getInventoryImportButton_Locator()).click();
+        $(A4ResourceInventoryBrowserPage.InventoryImportButton_Locator).click();
     }
+
     @Step("Click 'Mobile UI' button")
     public void clickMobilUiButton() {
-        $(A4ResourceInventoryBrowserPage.getMobilUiButton_Locator()).click();
+        $(A4ResourceInventoryBrowserPage.MobilUiButton_Locator).click();
     }
 
 }
