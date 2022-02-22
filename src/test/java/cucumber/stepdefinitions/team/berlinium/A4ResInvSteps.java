@@ -15,7 +15,6 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkS
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.After;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
@@ -292,7 +291,7 @@ public class A4ResInvSteps {
         assertTrue(neg.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + neg.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
-    @And("the NEG lastUpdateTime is not updated")
+    @Then("the NEG lastUpdateTime is not updated")
     public void thenTheNEGLastUpdateTimeIsNotUpdated() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
@@ -367,7 +366,7 @@ public class A4ResInvSteps {
         assertTrue(nep.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
-    @And("the NEP lastUpdateTime is not updated")
+    @Then("the NEP lastUpdateTime is not updated")
     public void thenTheNEPLastUpdateTimeIsNotUpdated() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
