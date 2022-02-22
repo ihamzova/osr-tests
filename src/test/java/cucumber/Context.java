@@ -6,7 +6,7 @@ public enum Context {
     // Global
     RESPONSE,
     WIREMOCK,
-    START_TIMESTAMP,
+    TIMESTAMP,
 
     // Berlinium
     A4_NEG,

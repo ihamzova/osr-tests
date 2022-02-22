@@ -65,16 +65,13 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
-    @Step("Send new operational state for Network Service Profile (L2BSA) without checks")
-    public Response sendStatusUpdateForNetworkElementGroupWithoutChecks(A4NetworkElementGroup negData, String newOperationalState) {
-        LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourceUpdate(negData, newOperationalState);
-
+    @Step("Send PATCH request for logical resource")
+    public Response sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(String uuid, LogicalResourceUpdate lru) {
         return a4ResourceInventoryService
                 .logicalResource()
                 .updateLogicalResourcePatch()
-                .idPath(negData.getUuid())
-                .body(negLogicalResource)
+                .idPath(uuid)
+                .body(lru)
                 .execute(voidCheck());
     }
 

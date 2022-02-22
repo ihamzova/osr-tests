@@ -1,22 +1,28 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
+import java.time.OffsetDateTime;
+
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 public class A4ResInvServiceSteps {
 
     final int SLEEP_TIMER = 5; // in seconds
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
+    private final A4ResourceInventoryServiceMapper a4ResInvServiceMapper = new A4ResourceInventoryServiceMapper();
     private final TestContext testContext;
 
     public A4ResInvServiceSteps(TestContext testContext) {
@@ -25,13 +31,36 @@ public class A4ResInvServiceSteps {
 
     // -----=====[ WHENS ]=====-----
 
-    @When("NEMO sends a request to change/update NEG operationalState to {string}")
+    @When("NEMO sends a request to change/update (the )NEG operationalState to {string}")
     public void nemoSendsARequestToChangeNEGOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
-        final Response response = a4ResInvService.sendStatusUpdateForNetworkElementGroupWithoutChecks(neg, ops);
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.getMinimalLogicalResourceUpdate(NEG);
+        a4ResInvServiceMapper.addCharacteristic(lru, CHAR_OPSTATE, ops);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(neg.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to change/update (the )NEG without operationalState( characteristic)")
+    public void whenNemoSendsARequestToUpdateNEGWithoutOperationalState() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.getMinimalLogicalResourceUpdate(NEG);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(neg.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
@@ -71,13 +100,19 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
-    @When("NEMO sends a request to change NSP L2BSA operationalState to {string}")
+    @When("NEMO sends a request to change/update (the )NSP L2BSA operationalState to {string}")
     public void whenNemoSendsOperationalStateUpdateForNspL2Bsa(String newOperationalState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileL2Bsa nspL2 = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.getMinimalLogicalResourceUpdate(NSP_L2BSA);
+        a4ResInvServiceMapper.addCharacteristic(lru, CHAR_OPSTATE, newOperationalState);
         final Response response = a4ResInvService.sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(nspL2, tp, newOperationalState);
 
         // OUTPUT INTO SCENARIO CONTEXT

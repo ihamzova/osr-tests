@@ -5,17 +5,30 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   Scenario Outline: NEMO sends a status patch for A4 Network Element Group
     Given a NEG with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
     When NEMO sends a request to update NEG operationalState to "<NewOpState>"
-    Then the NEG operationalState is updated to "<NewOpState>"
+    Then the request is responded with HTTP code 201
+    And the NEG operationalState is updated to "<NewOpState>"
     And the NEG lifecycleState is updated to "<NewLcState>"
+    And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState | NewLcState |
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
+      | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
       # Changed with DIGIHUB-80041:
-      | NOT_WORKING | PLANNING   | INSTALLING | INSTALLING |
-      | NOT_WORKING | INSTALLING | INSTALLING | INSTALLING |
-      | NOT_WORKING | OPERATING  | INSTALLING | OPERATING  |
-      | NOT_WORKING | RETIRING   | INSTALLING | RETIRING   |
+      | NOT_WORKING | PLANNING   | INSTALLING     | INSTALLING |
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service
+  Scenario: NEMO sends a status patch for A4 NEG without operational state characteristic
+    Given a NEG is existing in A4 resource inventory
+    When NEMO sends a request to update NEG without operationalState
+    Then the request is responded with HTTP code 500
+    And the NEG lastUpdateTime is not updated
+    And 0 "PUT" NEG update notifications were sent to NEMO
 
   @berlinium @domain
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service
@@ -26,6 +39,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     Then the request is responded with HTTP code 201
     And the NSP L2BSA operationalState is updated to "<NewOpState>"
     And the NSP L2BSA lifecycleState is updated to "<NewLcState>"
+    And the NSP L2BSA lastUpdateTime is updated
     And 1 "PUT" NSP L2BSA update notification was sent to NEMO
 
     Examples:
