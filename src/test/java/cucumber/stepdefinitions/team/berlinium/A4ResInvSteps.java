@@ -419,7 +419,7 @@ public class A4ResInvSteps {
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
-    @Then("the (new )NSP L2BSA operationalState is (now )(updated to ){string}( in the A4 resource inventory)")
+    @Then("the (new )NSP L2BSA operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNSPLBSAOperationalStateIsUpdatedInA4ResInv(String operationalState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);

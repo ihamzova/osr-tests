@@ -29,11 +29,13 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service
   Scenario: NEMO sends a status patch for A4 NEG without operational state characteristic
-    Given a NEG is existing in A4 resource inventory
+    Given a NEG with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
     When NEMO sends a request to update NEG without operationalState
-    Then the request is responded with HTTP code 500
-    And the NEG lastUpdateTime is not updated
-    And 0 "PUT" NEG update notifications were sent to NEMO
+    Then the request is responded with HTTP code 201
+    And the NEG operationalState is still "NOT_WORKING"
+    And the NEG lifecycleState is still "PLANNING"
+    And the NEG lastUpdateTime is updated
+    And 1 "PUT" NEG update notifications were sent to NEMO
 
 
   # ---------- PATCH NEP ----------
@@ -55,7 +57,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP description to "newDescr"
     Then the request is responded with HTTP code 201
-    And the NEP operationalState is deleted
+    And the NEP operationalState is still "NOT_WORKING"
     And the NEP description is updated to "newDescr"
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
@@ -77,7 +79,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP without operationalState nor description
     Then the request is responded with HTTP code 201
-    And the NEP operationalState is deleted
+    And the NEP operationalState is still "NOT_WORKING"
     And the NEP description is deleted
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
@@ -121,8 +123,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service
   Scenario: NEMO sends a status patch for A4 NSP L2BSA without operational state characteristic
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
-    And a NSP L2BSA with operationalState "<OldOpState>" and lifecycleState "<OldLcState>" is existing in A4 resource inventory
+    And a NSP L2BSA with operationalState "NOT_WORKING" and lifecycleState "PLANNING" is existing in A4 resource inventory
     When NEMO sends a request to update NSP L2BSA without operationalState
-    Then the request is responded with HTTP code 500
-    And the NSP L2BSA lastUpdateTime is not updated
-    And 0 "PUT" NSP L2BSA update notifications were sent to NEMO
+    Then the request is responded with HTTP code 201
+    And the NSP L2BSA operationalState is still "NOT_WORKING"
+    And the NSP L2BSA lifecycleState is still "PLANNING"
+    And the NSP L2BSA lastUpdateTime is updated
+    And 1 "PUT" NSP L2BSA update notifications were sent to NEMO
