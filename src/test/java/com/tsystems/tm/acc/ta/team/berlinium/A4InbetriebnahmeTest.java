@@ -63,7 +63,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
         neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         a4NetworkElements.put(A4_NE_OPERATING_BOR_02, osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementOperatingBor01));
+                .get(A4NetworkElementCase.networkElementOperatingBor02));
         a4NetworkElements.put(A4_NE_RETIRING_PODSERVER_01, osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01));
         a4NetworkElements.put(A4_NE_B, osrTestContext.getData().getA4NetworkElementDataProvider()
