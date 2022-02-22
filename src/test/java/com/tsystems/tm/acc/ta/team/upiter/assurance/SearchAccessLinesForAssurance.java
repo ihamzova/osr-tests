@@ -6,19 +6,22 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessTransmissionMedium;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.ACCESS_LINE_RESOURCE_INVENTORY_MS;
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 @ServiceLog(ACCESS_LINE_RESOURCE_INVENTORY_MS)
 
@@ -73,5 +76,129 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
             .getAccessLineEntitiesByDpu(accessLineForSearchByDpu.getDpuEndSz(), accessLineForSearchByDpu.getDpuPortNumber());
     assertEquals(response.get(0).getPortReferences().getDpuDownlinkPortReference().getEndSZ(), accessLineForSearchByDpu.getDpuEndSz());
     assertEquals(response.get(0).getPortReferences().getDpuDownlinkPortReference().getPortName(), accessLineForSearchByDpu.getDpuPortNumber());
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139281")
+  @Description("Search AccessLine entities by HomeId")
+  public void searchByHomeId() {
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine expectedAccessLine = accessLineRiRobot
+            .getAllAccessLineEntities().stream().filter(accessLine -> accessLine.getHomeId() != null).collect(Collectors.toList()).get(0);
+
+    List <com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> actualAccessLines =
+            accessLineRiRobot.getAccessLineEntitiesByHomeId(expectedAccessLine.getHomeId());
+
+    assertTrue(actualAccessLines.size() == 1);
+    assertEquals(actualAccessLines.get(0), expectedAccessLine);
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139582")
+  @Description("Search AccessLine entities by OntSerialNumber")
+  public void searchByOntSerialNumber() {
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine expectedAccessLine = accessLineRiRobot
+            .getAllAccessLineEntities().stream()
+            .filter(accessLine -> accessLine.getProfiles().getFtthNeProfile()!=null)
+            .filter(accessLine -> accessLine.getProfiles().getFtthNeProfile().getSubscriberNetworkElementProfile() != null)
+            .collect(Collectors.toList()).get(0);
+
+    List <com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> actualAccessLines =
+            accessLineRiRobot.getAccessLineEntitiesByOntSerialNumber(expectedAccessLine.getProfiles().getFtthNeProfile()
+                    .getSubscriberNetworkElementProfile().getOntSerialNumber());
+
+    assertTrue(actualAccessLines.size() == 1);
+    assertEquals(actualAccessLines.get(0), expectedAccessLine);
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139281")
+  @Description("Search AccessLine entities by Status")
+  public void searchByStatus() {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> response = accessLineRiRobot
+            .getAccessLineEntitiesByStatus(AccessLineStatus.ASSIGNED);
+    assertTrue(response.stream().allMatch(accessLine -> accessLine.getStatus().equals(AccessLineStatus.ASSIGNED)));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139282")
+  @Description("Search AccessLine entities by Technology")
+  public void searchByTechnology() {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> response = accessLineRiRobot
+            .getAccessLineEntitiesByTechnology(AccessLineTechnology.GPON);
+    assertTrue(response.stream().allMatch(accessLine -> accessLine.getTechnology().equals(AccessLineTechnology.GPON)));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139283")
+  @Description("Search AccessLine entities by modification date (greater than)")
+  public void searchByModificationDateGreaterThan() {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> accessLinesBeforeFiltering = accessLineRiRobot
+            .getAllAccessLineEntities();
+
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine filteredAccessLine = accessLinesBeforeFiltering.stream()
+            .sorted(Comparator.comparing(com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine::getModificationDate))
+            .collect(Collectors.toList())
+            .get(0);
+
+    OffsetDateTime offsetDateTime = filteredAccessLine.getModificationDate();
+
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> accessLinesAfterFiltering
+            = accessLineRiRobot.getAccessLineEntitiesByModificationDateGt(offsetDateTime);
+
+    assertEquals(accessLinesAfterFiltering.size(), accessLinesBeforeFiltering.size()-1);
+    assertFalse(accessLinesAfterFiltering.contains(filteredAccessLine));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139284")
+  @Description("Search AccessLine entities by modification date (less than)")
+  public void searchByModificationDateLessThan() {
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> accessLinesBeforeFiltering = accessLineRiRobot
+            .getAllAccessLineEntities();
+
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine filteredAccessLine = accessLinesBeforeFiltering.stream()
+            .sorted(Comparator.comparing(com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine::getModificationDate)
+                    .reversed())
+            .collect(Collectors.toList())
+            .get(0);
+
+    OffsetDateTime offsetDateTime = filteredAccessLine.getModificationDate();
+
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> accessLinesAfterFiltering =
+            accessLineRiRobot.getAccessLineEntitiesByModificationDateLt(offsetDateTime);
+
+    assertEquals(accessLinesAfterFiltering.size(), accessLinesBeforeFiltering.size()-1);
+    assertFalse(accessLinesAfterFiltering.contains(filteredAccessLine));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139285")
+  @Description("Search AccessLine entities with offset")
+  public void searchWithOffset() {
+    int offset = 1 + (int) (Math.random() * 119);
+
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> allAccessLines =
+            accessLineRiRobot.getAllAccessLineEntities();
+
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> excludedAccessLines =
+            allAccessLines.subList(0, offset);
+
+    List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> filteredAccessLines =
+            accessLineRiRobot.getAccessLineEntitiesWithOffset(offset);
+
+    assertEquals(filteredAccessLines.size(), allAccessLines.size()-offset);
+    assertFalse(filteredAccessLines.contains(excludedAccessLines));
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-139286")
+  @Description("Search AccessLine by id")
+  public void searchById() {
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine expectedAccessline = accessLineRiRobot
+            .getAllAccessLineEntities().get(0);
+    com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine actualAccessline =
+            accessLineRiRobot.getAccessLineEntitiesbyId(expectedAccessline.getId());
+
+    assertEquals(actualAccessline.getLineId(), expectedAccessline.getLineId());
   }
 }
