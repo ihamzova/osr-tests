@@ -26,7 +26,7 @@ public class A4ResourceInventoryServiceMapper {
         return generateNegLogicalResourceUpdate(negData, operationalState);
     }
 
-    public LogicalResourceUpdate getMinimalLogicalResourceUpdate(String elementType) {
+    public LogicalResourceUpdate createMinimalLogicalResourceUpdate(String elementType) {
 
         LogicalResourceUpdate lru = new LogicalResourceUpdate();
         lru.setAtType(elementType);

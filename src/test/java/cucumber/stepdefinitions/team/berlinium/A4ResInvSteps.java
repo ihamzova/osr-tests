@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPoint
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import cucumber.Context;
@@ -26,6 +27,7 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 public class A4ResInvSteps {
 
@@ -141,6 +143,21 @@ public class A4ResInvSteps {
     public void givenANEPIsExistingInA4ResourceInventory() {
         // ACTION
         A4NetworkElementPort nep = setupDefaultNepTestData();
+
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        a4ResInv.createNetworkElementPort(nep, ne);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEP, nep);
+    }
+
+    @Given("a NEP with operational state {string} and and description {string} is existing in A4 resource inventory")
+    public void givenANEPWithOperationalStateAndAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
+        // ACTION
+        A4NetworkElementPort nep = setupDefaultNepTestData();
+        nep.setOperationalState(opState);
+        nep.setDescription(descr);
 
         final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
 
@@ -298,6 +315,70 @@ public class A4ResInvSteps {
         a4ResInv.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(neg, timeStamp);
     }
 
+    @Then("the (new )NEP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNepOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertEquals(operationalState, nep.getOperationalState());
+    }
+
+    @Then("the (new )NEP operationalState is (now )deleted( in the A4 resource inventory)")
+    public void thenTheNepOperationalStateIsDeletedInA4ResInv() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertNull(nep.getOperationalState());
+    }
+
+    @Then("the (new )NEP description is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNEPDescriptionIsUpdatedTo(String newDescr) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertEquals(newDescr, nep.getDescription());
+    }
+
+    @Then("the (new )NEP description is (now )deleted( in the A4 resource inventory)")
+    public void thenTheNEPDescriptionIsDeleted() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertNull(nep.getDescription());
+    }
+
+    @Then("the NEP lastUpdateTime is updated")
+    public void thenTheNEPLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertNotNull(nep.getLastUpdateTime());
+        assertTrue(nep.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
+    @And("the NEP lastUpdateTime is not updated")
+    public void thenTheNEPLastUpdateTimeIsNotUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+        assertNotNull(nep.getLastUpdateTime());
+        assertTrue(nep.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
+    }
+
     @Then("the TP does exist in A4 resource inventory")
     public void thenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
@@ -368,6 +449,18 @@ public class A4ResInvSteps {
         final NetworkServiceProfileL2BsaDto nspL2Bsa = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         assertNotNull(nspL2Bsa.getLastUpdateTime());
         assertTrue(nspL2Bsa.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
+    @Then("the NSP L2BSA lastUpdateTime is not updated")
+    public void thenTheNSPLBSALastUpdateTimeIsNotUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileL2Bsa nspL2BsaData = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkServiceProfileL2BsaDto nspL2Bsa = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+        assertNotNull(nspL2Bsa.getLastUpdateTime());
+        assertTrue(nspL2Bsa.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
     // -----=====[ HELPERS ]=====-----
