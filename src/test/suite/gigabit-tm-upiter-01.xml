@@ -60,7 +60,7 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.ral.RalTest"/>
         </classes>
     </test>
-    <test thread-count="3" name="Search AccessLines For Assurance Test" parallel="methods">
+    <test thread-count="5" name="Search AccessLines For Assurance Test" parallel="methods">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.assurance.SearchAccessLinesForAssurance"/>
         </classes>

@@ -23,6 +23,7 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -917,6 +918,14 @@ public class AccessLineRiRobot {
         return line.get(0).getSubscriberNetworkLineProfile();
     }
 
+    @Step("Get all AccessLine entities")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAllAccessLineEntities() {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Get AccessLine entities by LineId for CA")
     public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
         return accessLineResourceInventoryCa
@@ -945,6 +954,88 @@ public class AccessLineRiRobot {
                 .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+    @Step("Get AccessLine entities by HomeId")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByHomeId(String homeId) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .homeIdQuery(homeId)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by OntSerialNumber")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByOntSerialNumber(String ontSerialNumber) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .profilesFtthNeProfileSubscriberNetworkElementProfileOntSerialNumberQuery(ontSerialNumber)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by Status")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByStatus(AccessLineStatus accesslineStatus) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .statusQuery(accesslineStatus)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by Technology")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByTechnology(AccessLineTechnology accessLineTechnology) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .technologyQuery(accessLineTechnology)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by Modification Date greater than")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateGt(OffsetDateTime offsetDateTime) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .modificationDateGtQuery(offsetDateTime.toString())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by Modification Date less than")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateLt(OffsetDateTime offsetDateTime) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .modificationDateLtQuery(offsetDateTime.toString())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities with offset")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesWithOffset(int offset) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .offsetQuery(offset)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities with fields")
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesWithFields(String fields) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .listAccessLine()
+                .fieldsQuery(fields)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get AccessLine entities by id")
+    public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine getAccessLineEntitiesbyId(Long id) {
+        return accessLineResourceInventoryCa
+                .accessLineControllerExternal()
+                .retrieveAccessLine()
+                .idPath(id)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
 
     @Step("Compare two Lists")
     public <T, U> boolean compareLists(List<T> sourceList, List<U> targetList) {
