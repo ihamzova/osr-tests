@@ -64,7 +64,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
     private final String dpuMaterialNumber = "MatNumberIntegrationTest";
     private final String dpuKlsId = "dpuKlsIdIntegrationTest";
     private final String dpuFiberOnLocationId = "dpuFiberOnLocationIdIntegrationTest";
-    private final String noExistingOltPonPort = "73817fee-9620-4796-8a20-53dc01c259f8";
+    private final String noExistingOltPonPort = "999999";
 
     @BeforeClass
     public void init() throws IOException {
@@ -311,7 +311,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         // and for dpuEndSz exists NetworkElement but it is not an DPU
         String existingNonDpuEndSz = neNotDpuOltData.getVpsz() + "/" + neNotDpuOltData.getFsz();
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
 
         // When / Action
         //Request for CommissioningDpuA4Task with existing OLT-NE for required oltEndSz
@@ -353,7 +353,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //Given
         // NE and NEG exists but in request-call one or more attributes are missing or null
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
 
         // When
         // several Requests for CommissioningDpuA4Task with request parameter that is empty or null
@@ -471,7 +471,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //NEL between DPU and OLT already exists but attributes are not in initial state
 
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
         String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
         A4NetworkElementLink nelDpuToOltData;
         nelDpuToOltData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
@@ -495,7 +495,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         NetworkElementLinkDto existingNeLink = a4ResourceInventory.getExistingNetworkElementLink(nelDpuToOltData.getUuid());
         Assert.assertEquals(existingNeLink.getLifecycleState(), "PLANNING");
         List<NetworkElementLinkDto> createdNeLinks = a4ResourceInventory
-                .getNetworkElementLinksByNePort(existingOltPonPort);
+                .getNetworkElementLinksByNePort(nepOltData.getUuid());
         Assert.assertEquals(createdNeLinks.size(), 1);
 
     }
@@ -537,7 +537,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         //GIVEN
         // NE and NEG exists but Nemo is not reachable
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
 
         a4ResilienceRobot.changeRouteToWiremock(nemoUpdaterRouteName);
 
@@ -563,7 +563,7 @@ public class A4DpuCommissioningTest extends GigabitTest {
         // but for find PortSpec-List Resource Inventory is not reachable
         String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
         String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getUuid();
+        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
         a4ResilienceRobot.changeRouteToWiremock(riPortSpecsRouteName);
 
         // WHEN & THEN
