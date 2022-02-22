@@ -26,6 +26,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
@@ -34,6 +35,8 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 @Epic("OS&R domain")
 @Feature("Status update requests from NEMO for different A4 network element types")
 public class NemoStatusUpdateTest {
+
+    private final long SLEEP_TIMER = 5; // in seconds
 
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventoryRobot = new A4ResourceInventoryRobot();
@@ -112,10 +115,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Group")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Group")
-    public void testNemoStatusUpdateForNeg() {
+    public void testNemoStatusUpdateForNeg() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElementGroup(negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
@@ -126,10 +130,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element")
-    public void testNemoStatusUpdateForNe() {
+    public void testNemoStatusUpdateForNe() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElement(neData, negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
@@ -141,10 +146,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Port")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Port")
-    public void testNemoStatusUpdateForNep() {
+    public void testNemoStatusUpdateForNep() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         final String NEW_DESCRIPTION = "DIGIHUB-77227 new description value";
         nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
 
@@ -156,10 +162,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (FTTH Access)")
-    public void testNemoStatusUpdateForNspFtth() {
+    public void testNemoStatusUpdateForNspFtth() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
@@ -187,10 +194,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Service Profile (A10NSP)")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (A10NSP)")
-    public void testNemoStatusUpdateForNspA10() {
+    public void testNemoStatusUpdateForNspA10() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
@@ -206,13 +214,14 @@ public class NemoStatusUpdateTest {
     @Test(dataProvider = "toBeChangedLcs", description = "DIGIHUB-xxxxx NEMO sends a status update (WORKING) for A4 NSP L2BSA which also changes Lifecycle State")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Service Profile (L2BSA)")
-    public void testNemoStatusUpdateWorkingForNspL2WithChangedLcs(String oldLifecycleState) {
+    public void testNemoStatusUpdateWorkingForNspL2WithChangedLcs(String oldLifecycleState) throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // Prepare existing NSP L2BSA to have lifecycle state 'oldLifecycleState'
         a4ResourceInventoryRobot.setLifecycleState(nspL2Data, oldLifecycleState);
 
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
@@ -352,10 +361,11 @@ public class NemoStatusUpdateTest {
     @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element Link")
     @Owner("bela.kovac@t-systems.com")
     @Description("NEMO sends a status update for A4 Network Element Link")
-    public void testNemoStatusUpdateForNel() {
+    public void testNemoStatusUpdateForNel() throws InterruptedException {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, OPERATIONAL_STATE_WORKING);
 
         // THEN
