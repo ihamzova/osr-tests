@@ -20,6 +20,7 @@ public class A4ResourceInventoryMapper {
     public static final String ACTIVATED = "ACTIVATED";
     public static final String INSTALLING = "INSTALLING";
     public static final String WORKING = "WORKING";
+    public static final String DATE_TIME = "2020-07-14T13:59:18+02:00";
 
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
         if (neData.getUuid().isEmpty())
@@ -139,9 +140,11 @@ public class A4ResourceInventoryMapper {
         if (nepData.getType().isEmpty())
             nepData.setType("GPON");
 
+        if (nepData.getDescription().isEmpty())
+            nepData.setOperationalState("NEP for integration test");
+
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
-                .description("NEP for integration test")
                 .networkElementUuid(neData.getUuid())
                 .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz()))
                 .logicalLabel(nepData.getFunctionalPortLabel())
@@ -309,23 +312,8 @@ public class A4ResourceInventoryMapper {
     }
 
     public List<NetworkServiceProfileFtthAccessDto> getListOfNspWithoutOntLastRegisteredOn() {
-        NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = new NetworkServiceProfileFtthAccessDto();
-        networkServiceProfileFtthAccessDto.setUuid(UUID.randomUUID().toString());
-        networkServiceProfileFtthAccessDto.setLifecycleState(INSTALLING);
-        networkServiceProfileFtthAccessDto.setOperationalState(WORKING);
-        networkServiceProfileFtthAccessDto.setDescription("A4 Stub without oltPortOntLastRegisteredOn");
-        networkServiceProfileFtthAccessDto.setAdministrativeMode("adm mode");
-        networkServiceProfileFtthAccessDto.setVirtualServiceProvider("virt serv prov");
-        networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
-        networkServiceProfileFtthAccessDto.setLineId("line id");
-        networkServiceProfileFtthAccessDto.setOntSerialNumber("serial no");
-        networkServiceProfileFtthAccessDto.setLastUpdateTime(OffsetDateTime.now());
-        networkServiceProfileFtthAccessDto.setCreationTime(OffsetDateTime.now().minusDays(1));
-        networkServiceProfileFtthAccessDto.setTerminationPointFtthAccessUuid(UUID.randomUUID().toString());
-        networkServiceProfileFtthAccessDto.setHref("href");
-
         List<NetworkServiceProfileFtthAccessDto> networkServiceProfileFtthAccessDtos = new ArrayList<>();
-        networkServiceProfileFtthAccessDtos.add(networkServiceProfileFtthAccessDto);
+        networkServiceProfileFtthAccessDtos.add(getNspWithoutOntLastRegisteredOn());
         return networkServiceProfileFtthAccessDtos;
     }
 
@@ -338,8 +326,8 @@ public class A4ResourceInventoryMapper {
         networkServiceProfileFtthAccessDto.setAdministrativeMode("adm mode");
         networkServiceProfileFtthAccessDto.setVirtualServiceProvider("virt serv prov");
         networkServiceProfileFtthAccessDto.setSpecificationVersion("14.1");
-        networkServiceProfileFtthAccessDto.setLineId("String");
-        networkServiceProfileFtthAccessDto.setOntSerialNumber("String");
+        networkServiceProfileFtthAccessDto.setLineId("line id");
+        networkServiceProfileFtthAccessDto.setOntSerialNumber("serial no");
         networkServiceProfileFtthAccessDto.setLastUpdateTime(OffsetDateTime.now());
         networkServiceProfileFtthAccessDto.setCreationTime(OffsetDateTime.now().minusDays(1));
         networkServiceProfileFtthAccessDto.setTerminationPointFtthAccessUuid(UUID.randomUUID().toString());
@@ -369,10 +357,10 @@ public class A4ResourceInventoryMapper {
     public NetworkElementDto getNetworkElementDto() {
         NetworkElementDto networkElementDto = new NetworkElementDto();
         networkElementDto.setUuid("444");
-        networkElementDto.setCreationTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
+        networkElementDto.setCreationTime(OffsetDateTime.parse(DATE_TIME));
         networkElementDto.setDescription("string");
-        networkElementDto.setLastUpdateTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
-        networkElementDto.lastSuccessfulSyncTime(OffsetDateTime.parse("2020-07-14T13:59:18+02:00"));
+        networkElementDto.setLastUpdateTime(OffsetDateTime.parse(DATE_TIME));
+        networkElementDto.lastSuccessfulSyncTime(OffsetDateTime.parse(DATE_TIME));
         networkElementDto.setSpecificationVersion("string");
         networkElementDto.setAddress("Berlin");
         networkElementDto.setAdministrativeState(ACTIVATED);
