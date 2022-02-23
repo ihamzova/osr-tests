@@ -256,8 +256,8 @@ public class OltCommissioningRobot {
   @Step("enable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
   public void enableFeatureToogleUiUplinkImport()
   {
-    boolean toggleState = unleashClient.enableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
-    log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
+    //boolean toggleState = unleashClient.enableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    //log.info("toggleState for {} = {}",SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT , toggleState);
   }
 
   @Step("disable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
