@@ -59,6 +59,10 @@ public class A4ResInvSteps {
     public void givenANEGIsExistingInA4ResourceInventory() {
         // ACTION
         A4NetworkElementGroup neg = setupDefaultNegTestData();
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
+
         a4ResInv.createNetworkElementGroup(neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -70,6 +74,10 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkElementGroup neg = setupDefaultNegTestData();
         neg.setName(name);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+
         a4ResInv.createNetworkElementGroup(neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -82,6 +90,10 @@ public class A4ResInvSteps {
         A4NetworkElementGroup neg = setupDefaultNegTestData();
         neg.setOperationalState(ops);
         neg.setLifecycleState(lcs);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+
         a4ResInv.createNetworkElementGroup(neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -106,6 +118,9 @@ public class A4ResInvSteps {
 
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
         a4ResInv.createNetworkElement(ne, neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -120,6 +135,9 @@ public class A4ResInvSteps {
         ne.setFsz(fsz);
 
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
 
         a4ResInv.createNetworkElement(ne, neg);
 
@@ -145,6 +163,9 @@ public class A4ResInvSteps {
 
         final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
 
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementPortsRecursively(nep, ne);
+
         a4ResInv.createNetworkElementPort(nep, ne);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -159,6 +180,9 @@ public class A4ResInvSteps {
         nep.setDescription(descr);
 
         final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementPortsRecursively(nep, ne);
 
         a4ResInv.createNetworkElementPort(nep, ne);
 
@@ -211,6 +235,9 @@ public class A4ResInvSteps {
 
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNspFtthAccess(nspFtth);
+
         a4ResInv.createNetworkServiceProfileFtthAccess(nspFtth, tp);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -236,6 +263,9 @@ public class A4ResInvSteps {
 
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
+
         a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -250,6 +280,9 @@ public class A4ResInvSteps {
         nspL2Bsa.setLifecycleState(lifecycleState);
 
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
 
         a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
 

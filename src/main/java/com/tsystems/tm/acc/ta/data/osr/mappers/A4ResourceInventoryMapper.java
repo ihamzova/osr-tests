@@ -23,10 +23,10 @@ public class A4ResourceInventoryMapper {
     public static final String DATE_TIME = "2020-07-14T13:59:18+02:00";
 
     public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        if (neData.getUuid().isEmpty())
+        if (neData.getUuid() == null || neData.getUuid().isEmpty())
             neData.setUuid(UUID.randomUUID().toString());
 
-        if (neData.getFsz().isEmpty())
+        if (neData.getFsz() == null || neData.getFsz().isEmpty())
             neData.setFsz(getRandomDigits(4)); // satisfy unique constraints
 
         return new NetworkElementDto()
@@ -53,10 +53,10 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementGroupDto getNetworkElementGroupDto(A4NetworkElementGroup negData) {
-        if (negData.getUuid().isEmpty() || negData.getUuid() == null)
+        if (negData.getUuid() == null || negData.getUuid().isEmpty())
             negData.setUuid(UUID.randomUUID().toString());
 
-        if (negData.getName().isEmpty() || negData.getName() == null)
+        if (negData.getName() == null || negData.getName().isEmpty())
             negData.setName("NEG-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkElementGroupDto()
@@ -92,7 +92,7 @@ public class A4ResourceInventoryMapper {
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB) {
         UewegData uewegData = new UewegData();
 
-        if (nelData.getUeWegId().isEmpty()) {
+        if (nelData.getUeWegId() == null || nelData.getUeWegId().isEmpty()) {
             uewegData.setUewegId(UUID.randomUUID().toString());
         } else {
             uewegData.setUewegId(nelData.getUeWegId());
@@ -102,10 +102,10 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
-        if (nelData.getUuid().isEmpty())
+        if (nelData.getUuid() == null || nelData.getUuid().isEmpty())
             nelData.setUuid(UUID.randomUUID().toString());
 
-        if (uewegData.getUewegId().isEmpty()) {
+        if (uewegData.getUewegId() == null || uewegData.getUewegId().isEmpty()) {
             uewegData.setUewegId(UUID.randomUUID().toString());
         }
 
@@ -131,16 +131,16 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementPortDto getNetworkElementPortDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
-        if (nepData.getUuid().isEmpty())
+        if (nepData.getUuid() == null || nepData.getUuid().isEmpty())
             nepData.setUuid(UUID.randomUUID().toString());
 
-        if (nepData.getFunctionalPortLabel().isEmpty())
+        if (nepData.getFunctionalPortLabel() == null || nepData.getFunctionalPortLabel().isEmpty())
             nepData.setFunctionalPortLabel("GPON_" + getRandomDigits(4));
 
-        if (nepData.getType().isEmpty())
+        if (nepData.getType() == null || nepData.getType().isEmpty())
             nepData.setType("GPON");
 
-        if (nepData.getDescription().isEmpty())
+        if (nepData.getDescription() == null || nepData.getDescription().isEmpty())
             nepData.setOperationalState("NEP for integration test");
 
         return new NetworkElementPortDto()
@@ -159,7 +159,7 @@ public class A4ResourceInventoryMapper {
     }
 
     public TerminationPointDto getTerminationPointDto(A4TerminationPoint tpData, String uuid) {
-        if (tpData.getUuid().isEmpty())
+        if (tpData.getUuid() == null || tpData.getUuid().isEmpty())
             tpData.setUuid(UUID.randomUUID().toString());
 
         return new TerminationPointDto()
@@ -177,13 +177,13 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkServiceProfileFtthAccessDto getNetworkServiceProfileFtthAccessDto(A4NetworkServiceProfileFtthAccess nspData, A4TerminationPoint tpData) {
-        if (nspData.getUuid().isEmpty())
+        if (nspData.getUuid() == null || nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
-        if (nspData.getLineId().isEmpty())
+        if (nspData.getLineId() == null || nspData.getLineId().isEmpty())
             nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
-        if (nspData.getOntSerialNumber().isEmpty())
+        if (nspData.getOntSerialNumber() == null || nspData.getOntSerialNumber().isEmpty())
             nspData.setOntSerialNumber("ONTSERIALNUMBER-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkServiceProfileFtthAccessDto()
@@ -208,13 +208,13 @@ public class A4ResourceInventoryMapper {
             A4TerminationPoint tpData,
             A4NetworkElementPort nepData) {
 
-        if (nspData.getUuid().isEmpty())
+        if (nspData.getUuid() == null || nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
-        if (nspData.getLineId().isEmpty())
+        if (nspData.getLineId() == null || nspData.getLineId().isEmpty())
             nspData.setLineId("LINEID-" + UUID.randomUUID().toString().substring(0, 6)); // satisfy unique constraints
 
-        if (nspData.getOntSerialNumber().isEmpty())
+        if (nspData.getOntSerialNumber() == null || nspData.getOntSerialNumber().isEmpty())
             nspData.setOntSerialNumber("ONTSERIALNUMBER-" + getRandomDigits(6)); // satisfy unique constraints
 
         return new NetworkServiceProfileFtthAccessDto()
@@ -236,7 +236,7 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkServiceProfileA10NspDto getNetworkServiceProfileA10NspDto(A4NetworkServiceProfileA10Nsp nspData, A4TerminationPoint tpData) {
-        if (nspData.getUuid().isEmpty())
+        if (nspData.getUuid() == null || nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
         VlanRangeDto vrDto = new VlanRangeDto();
@@ -278,7 +278,7 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkServiceProfileL2BsaDto getNetworkServiceProfileL2BsaDto(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
-        if (nspData.getUuid().isEmpty())
+        if (nspData.getUuid() == null || nspData.getUuid().isEmpty())
             nspData.setUuid(UUID.randomUUID().toString());
 
         ServiceBandwidthDto serviceBandwidthDto = new ServiceBandwidthDto();
