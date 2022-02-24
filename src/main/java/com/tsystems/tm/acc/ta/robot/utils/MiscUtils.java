@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
+import static org.testng.FileAssert.fail;
 
 public class MiscUtils {
 
@@ -26,14 +27,13 @@ public class MiscUtils {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+            Thread.currentThread().interrupt(); // make sonar happy
         }
     }
 
     public static String getRandomDigits(int numberOfDigits) {
-        return new Random().ints(0, 9)
-                .limit(numberOfDigits)
-                .mapToObj(Integer::toString)
-                .collect(Collectors.joining());
+        return RandomStringUtils.randomNumeric(numberOfDigits);
     }
 
     public static String getEndsz(A4NetworkElement neData) {
@@ -54,6 +54,10 @@ public class MiscUtils {
         objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper;
+    }
+
+    public static boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
     }
 
 }
