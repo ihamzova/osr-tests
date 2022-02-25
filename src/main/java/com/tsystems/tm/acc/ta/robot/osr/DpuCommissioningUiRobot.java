@@ -153,15 +153,13 @@ public class DpuCommissioningUiRobot {
     @Step("enable unleash feature toggle: dpu-lifecycle-uses-dpu-demands")
     public void enableFeatureToogleDpuDemand()
     {
-        boolean toggleState = unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-        log.info("toggleState for {} = {}",FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME , toggleState);
+        unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
     }
 
     @Step("disable unleash feature toggle: dpu-lifecycle-uses-dpu-demands")
     public void disableFeatureToogleDpuDemand()
     {
-        boolean toggleState = unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-        log.info("toggleState for {} = {}",FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME , toggleState);
+        unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
     }
 
     public boolean getFeatureToggleDpuDemandState() {
