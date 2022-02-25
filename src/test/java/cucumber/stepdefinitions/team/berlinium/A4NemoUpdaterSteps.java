@@ -6,6 +6,8 @@ import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.When;
 
+import java.time.OffsetDateTime;
+
 public class A4NemoUpdaterSteps {
 
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
@@ -23,6 +25,10 @@ public class A4NemoUpdaterSteps {
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
         a4NemoUpdater.triggerNemoUpdate(neg.getUuid());
     }
 
