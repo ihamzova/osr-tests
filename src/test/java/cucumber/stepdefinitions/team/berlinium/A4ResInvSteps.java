@@ -111,6 +111,24 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
 
+    @Given("a NE with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    public void givenANEWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
+        // ACTION
+        A4NetworkElement ne = setupDefaultNeTestData();
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        ne.setOperationalState(ops);
+        ne.setLifecycleState(lcs);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
+        a4ResInv.createNetworkElement(ne,neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
+
     @Given("a NE is existing in A4 resource inventory")
     public void givenANeIsExistingInA4ResourceInventory() {
         // ACTION

@@ -41,6 +41,27 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And 1 "PUT" NEG update notifications were sent to NEMO
 
 
+ # ---------- PATCH NE ----------
+
+  @berlinium @domain
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario Outline: NEMO sends a status patch for A4 Network Element
+    Given a NE with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
+    When NEMO sends a request to update NE operationalState to "<NewOpState>"
+    Then the request is responded with HTTP code 201
+    And the NE operationalState is updated to "<NewOpState>"
+    And the NE lifecycleState is updated to "<NewLcState>"
+    And the NE lastUpdateTime is updated
+    And 1 "PUT" NE update notification was sent to NEMO
+
+    Examples:
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
+      | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+
+
+
   # ---------- PATCH NEP ----------
 
   @berlinium @domain
