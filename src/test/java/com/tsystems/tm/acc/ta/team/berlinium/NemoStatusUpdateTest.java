@@ -119,10 +119,10 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElementGroup(negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithNewStates(negData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(negData,timeBeforeNemoStatusUpdate);
     }
@@ -134,10 +134,10 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElement(neData, negData, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData,timeBeforeNemoStatusUpdate);
     }
@@ -150,11 +150,11 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         final String NEW_DESCRIPTION = "DIGIHUB-77227 new description value";
         nemo.sendStatusUpdateForNetworkElementPort(nepDataA, neData, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithNewStateAndDescription(nepDataA, OPERATIONAL_STATE_WORKING, NEW_DESCRIPTION);
         a4ResourceInventoryRobot.checkNetworkElementPortIsUpdatedWithLastSuccessfulSyncTime(nepDataA,timeBeforeNemoStatusUpdate);
     }
@@ -166,10 +166,10 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileFtthAccess(nspFtthData, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithNewStates
                 (nspFtthData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkServiceProfileFtthAccessIsUpdatedWithLastSuccessfulSyncTime
@@ -198,10 +198,10 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileA10Nsp(nspA10Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithNewStates(nspA10Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkServiceProfileA10NspIsUpdatedWithLastSuccessfulSyncTime(nspA10Data,timeBeforeNemoStatusUpdate);
     }
@@ -221,10 +221,10 @@ public class NemoStatusUpdateTest {
         a4ResourceInventoryRobot.setLifecycleState(nspL2Data, oldLifecycleState);
 
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkServiceProfileL2Bsa(nspL2Data, tpFtthAccessData, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithNewStates(nspL2Data, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkServiceProfileL2BsaIsUpdatedWithLastSuccessfulSyncTime(nspL2Data,timeBeforeNemoStatusUpdate);
     }
@@ -365,10 +365,10 @@ public class NemoStatusUpdateTest {
         //GIVEN
         OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
         // WHEN
-        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit because StatusUpdate is maybe to fast
         nemo.sendStatusUpdateForNetworkElementLink(nelData, nepDataA, nepDataB, OPERATIONAL_STATE_WORKING);
 
         // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithNewStates(nelData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
         a4ResourceInventoryRobot.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData,timeBeforeNemoStatusUpdate);
     }
