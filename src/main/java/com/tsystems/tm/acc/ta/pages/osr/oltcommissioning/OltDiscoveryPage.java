@@ -39,8 +39,7 @@ public class OltDiscoveryPage {
     @Step("Make olt discovery")
     public OltDiscoveryPage makeOltDiscovery() {
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).click();
-         // sleep(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE);
-        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).should(appear,Duration.ofMillis(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE));
+        sleep(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE);
         $(UPDATE_HISTORY_BUTTON_LOCATOR).click();
 
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).shouldNotBe(disabled, Duration.ofMillis(TIMEOUT_FOR_OLT_DISCOVERY));
