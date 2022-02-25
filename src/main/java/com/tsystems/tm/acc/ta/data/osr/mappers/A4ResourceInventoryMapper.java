@@ -138,7 +138,7 @@ public class A4ResourceInventoryMapper {
             nepData.setType("GPON");
 
         if (isNullOrEmpty(nepData.getDescription()))
-            nepData.setOperationalState("NEP for integration test");
+            nepData.setDescription("NEP for integration test");
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
