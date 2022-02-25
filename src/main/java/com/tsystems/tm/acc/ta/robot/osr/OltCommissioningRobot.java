@@ -80,9 +80,7 @@ public class OltCommissioningRobot {
     OltDiscoveryPage oltDiscoveryPage = oltSearchPage.pressManualCommissionigButton();
 
     oltDiscoveryPage.validateUrl();
-    int successfullyDiscoveriesBeforeStart = oltDiscoveryPage.getSuccessfullyDiscoveriesCount();
     oltDiscoveryPage = oltDiscoveryPage.makeOltDiscovery();
-    assertEquals(oltDiscoveryPage.getSuccessfullyDiscoveriesCount(), successfullyDiscoveriesBeforeStart + 1, "Discovery result mismatch");
     oltDiscoveryPage = oltDiscoveryPage.saveDiscoveryResults();
 
     oltSearchPage = oltDiscoveryPage.openOltSearchPage();
