@@ -8,10 +8,7 @@ import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4Networ
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.After;
@@ -110,6 +107,24 @@ public class A4ResInvSteps {
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
+
+    @Given("a NE with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    public void givenANEWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
+        // ACTION
+        A4NetworkElement ne = setupDefaultNeTestData();
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        ne.setOperationalState(ops);
+        ne.setLifecycleState(lcs);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
+        a4ResInv.createNetworkElement(ne,neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
 
     @Given("a NE is existing in A4 resource inventory")
     public void givenANeIsExistingInA4ResourceInventory() {
@@ -345,6 +360,38 @@ public class A4ResInvSteps {
         // ACTION
         sleepForSeconds(2);
         a4ResInv.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(neg, timeStamp);
+    }
+
+    @Then("the (new )NE operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNeOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement neData = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+        final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+        assertEquals(operationalState, ne.getOperationalState());
+    }
+
+    @Then("the (new )NE lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNeLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement neData = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+        final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+        assertEquals(lifecycleState, ne.getLifecycleState());
+    }
+
+    @Then("the NE lastUpdateTime is updated")
+    public void thenTheNeLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement neData = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+        assertNotNull(ne.getLastUpdateTime());
+        assertTrue(ne.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + ne.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     @Then("the (new )NEP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
