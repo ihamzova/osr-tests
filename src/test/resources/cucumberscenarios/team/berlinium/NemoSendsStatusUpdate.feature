@@ -18,6 +18,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
       | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
       | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
 
       # Invalid operational state value shall be accepted
@@ -58,7 +59,12 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
       | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
       | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+      # Invalid operational state value shall be accepted
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      # Old values = new values; still counts as update
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
 
 
