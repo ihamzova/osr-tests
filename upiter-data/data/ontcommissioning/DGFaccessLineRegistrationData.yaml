@@ -1,9 +1,9 @@
 ---
-name: OLT_49_30_179_76H1
+name: OLT_49_30_179_76G2
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
   vpsz: "49/30/179"
-  fsz: "76H1"
+  fsz: "76G2"
   bngEndsz: "49/911/30/7ZJA"
   bngDownlinkPort: "ge-1/2/3"
   bngDownlinkSlot: "0"
@@ -20,6 +20,19 @@ values:
 name: DGFAccessLineRegistration
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine
 values:
-  oltDevice: "@OLT_49_30_179_76H1"
+  oltDevice: "@OLT_49_30_179_76G2"
   slotNumber: "3"
   portNumber: "0"
+---
+name: portForDgfReservation
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76G2"
+  slotNumber: "3"
+  portNumber: "0"
+  homeIdPool: 32
+  backhaulId: 1
+  accessLinesWG: 16
+  defaultNEProfilesActive: 16
+  defaultNetworkLineProfilesActive: 16
+  accessLinesCount: 16

@@ -8,15 +8,16 @@ import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineTechnology;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -53,6 +54,7 @@ public class A4OntCommissioning extends GigabitTest {
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   private WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
+  private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
   private PortProvisioning a4port;
   private AccessLine accessLineForCommissioning;
   private AccessLine accessLine;
@@ -86,7 +88,7 @@ public class A4OntCommissioning extends GigabitTest {
   public void a4ReservationTest() {
     wgA4PreProvisioningRobot.startPreProvisioning(tfRef);
     accessLineRiRobot.checkA4LineParameters(a4port, tfRef.getTpRef());
-    accessLineForCommissioning.setHomeId("00B1Q7Z");
+    accessLineForCommissioning.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLineForCommissioning.getOltDevice().getVpsz())
             .fachSz(accessLineForCommissioning.getOltDevice().getFsz())

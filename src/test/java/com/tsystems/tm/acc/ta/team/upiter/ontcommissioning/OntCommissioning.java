@@ -8,14 +8,15 @@ import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -52,6 +53,7 @@ public class OntCommissioning extends GigabitTest {
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+  private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
   private AccessLine accessLineForCommissioning;
   private AccessLine accessLine;
   private AccessLine accessLineFor33LineCaseNew;
@@ -84,7 +86,7 @@ public class OntCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-71918")
   @Description("ONT Access Line Reservation by HomeID")
   public void accessLineReservationByPortAndHomeIdTest() {
-    accessLineForCommissioning.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLineForCommissioning));
+    accessLineForCommissioning.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLineForCommissioning.getOltDevice().getVpsz())
             .fachSz(accessLineForCommissioning.getOltDevice().getFsz())
@@ -251,7 +253,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("Deprovisioning of the 33d AccessLine after termination, feature toggle is off ")
   @Owner("DL_T-Magic.U-Piter@t-systems.com")
   public void ontDecommissioning33LineToggleOffTest() throws InterruptedException {
-    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+//    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
     Thread.sleep(3000);
 
@@ -275,11 +277,13 @@ public class OntCommissioning extends GigabitTest {
     assertNull(callback.getResponse());
 
     // check alri
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), true);
     assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
             AccessLineStatus.ASSIGNED);
     assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
             accessLineFor33LineCaseOld.getHomeId());
+    Thread.sleep(2000);
+
+    assertEquals(true, accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty());
   }
 
   @Test()
