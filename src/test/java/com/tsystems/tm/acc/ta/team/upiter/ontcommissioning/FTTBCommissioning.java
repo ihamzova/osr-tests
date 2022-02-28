@@ -7,13 +7,14 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessTransmissionMedium;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.PortType;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessTransmissionMedium;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.PortType;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ProfileState;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultVoid;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
@@ -42,6 +43,7 @@ public class FTTBCommissioning extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+  private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
   private AccessLine accessLineTwistedPair;
   private AccessLine accessLineCoax;
   private UpiterTestContext context = UpiterTestContext.get();
@@ -79,7 +81,7 @@ public class FTTBCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-72719")
   @Description("Assign a FTTB Twisted Pair AccessLine")
   public void FTTBLineReservationTwistedPair() {
-    accessLineTwistedPair.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLineTwistedPair));
+    accessLineTwistedPair.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLineTwistedPair.getDpuDevice().getVpsz())
@@ -132,7 +134,7 @@ public class FTTBCommissioning extends GigabitTest {
   @TmsLink("DIGIHUB-72719")
   @Description("Assign a FTTB Coax AccessLine")
   public void FTTBLineReservationCoax() {
-    accessLineCoax.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLineCoax));
+    accessLineCoax.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
             .vpSz(accessLineCoax.getDpuDevice().getVpsz())

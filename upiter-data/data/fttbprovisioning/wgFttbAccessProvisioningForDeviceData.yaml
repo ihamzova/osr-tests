@@ -12,7 +12,7 @@ values:
   endSz: "49/89/8000/76H2"
   slotNumber: "1"
   portNumber: "0"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
 ---
 name: dpuDeviceForFttbProvisioningCoax
@@ -28,7 +28,7 @@ values:
   endSz: "49/911/1100/76H1"
   slotNumber: "1"
   portNumber: "0"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
 ---
 name: dpuDeviceForFttbProvisioningOnAdtranTwistedPair
@@ -43,7 +43,7 @@ template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H3"
   portNumber: "1"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
 ---
 name: dpuDeviceForFttbProvisioningOnAdtranCoax
@@ -58,7 +58,7 @@ template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H5"
   portNumber: "1"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
 ---
 name: standardDpuDeviceData

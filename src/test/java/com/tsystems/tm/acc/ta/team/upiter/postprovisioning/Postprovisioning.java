@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
@@ -17,7 +18,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
-import static org.testng.Assert.assertEquals;
 
 @ServiceLog({
         ACCESS_LINE_RESOURCE_INVENTORY_MS,
@@ -33,6 +33,7 @@ public class Postprovisioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+    private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
     private AccessLine accessLine32;
     private AccessLine accessLine64;
     private PortProvisioning portForPostprovisioning32;
@@ -62,9 +63,10 @@ public class Postprovisioning extends GigabitTest {
     public void postProvisioningTo33Test() {
         wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
         //precondition
+        accessLine32.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning32);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(15, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); //15 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(15, accessLine32); //15 assigned lines
 
         portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning32.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);
@@ -74,7 +76,7 @@ public class Postprovisioning extends GigabitTest {
 
         // cycle for postprovisioning up to 32 AccessLines
         for (int i = portForPostprovisioning32.getAccessLinesCount(); i < 32; i = i + numberOfCreatedLines) {
-            wgAccessProvisioningRobot.prepareForPostprovisioning(4, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32));
+            wgAccessProvisioningRobot.prepareForPostprovisioning(4, accessLine32);
 
             portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + numberOfCreatedLines);
 
@@ -82,7 +84,7 @@ public class Postprovisioning extends GigabitTest {
             accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning32);
         }
 
-        wgAccessProvisioningRobot.prepareForPostprovisioning(6, portForPostprovisioning32, getHomeIdFromAccessLine(accessLine32)); // 28 + 6 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(6, accessLine32); // 28 + 6 assigned lines
 
         portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + 1);
         portForPostprovisioning32.setAccessLinesWG(0);
@@ -95,11 +97,12 @@ public class Postprovisioning extends GigabitTest {
     @TmsLink("DIGIHUB-136260")
     @Description("OLT MA5600, postprovisioning up to 64 AccessLines + onDemand")
     public void postProvisioningTo65Test() {
+        accessLine64.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
         wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning64);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning64);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(15, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64)); //15 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(15, accessLine64); //15 assigned lines
 
         portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning64.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);
@@ -109,14 +112,14 @@ public class Postprovisioning extends GigabitTest {
 
         // cycle for postprovisioning up to 64 AccessLines
         for (int i = portForPostprovisioning64.getAccessLinesCount(); i < 64; i = i + numberOfCreatedLines) {
-            wgAccessProvisioningRobot.prepareForPostprovisioning(4, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));
+            wgAccessProvisioningRobot.prepareForPostprovisioning(4, accessLine64);
             portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + numberOfCreatedLines);
 
             accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning64);
             accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning64);
         }
 
-        wgAccessProvisioningRobot.prepareForPostprovisioning(6, portForPostprovisioning64, getHomeIdFromAccessLine(accessLine64));  //58 + 6 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(6, accessLine64);  //58 + 6 assigned lines
 
         portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + 1);
         portForPostprovisioning64.setAccessLinesWG(0);
@@ -126,7 +129,7 @@ public class Postprovisioning extends GigabitTest {
     }
 
     private HomeIdDto getHomeIdFromAccessLine(AccessLine accessLine) {
-        accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+        accessLine.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
         return new HomeIdDto().homeId(accessLine.getHomeId());
     }
 }

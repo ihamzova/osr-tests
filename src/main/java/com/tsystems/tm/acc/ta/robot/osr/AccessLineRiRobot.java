@@ -8,17 +8,8 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNetworkLineProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.FttbNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.L2BsaNspReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OnuAccessIdDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNetworkLineProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
@@ -31,10 +22,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.*;
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.BackhaulStatus.CONFIGURED;
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.PortType.*;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
+import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_WALLED_GARDEN;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.BackhaulStatus.CONFIGURED;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.PortType.*;
 import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
@@ -769,15 +762,6 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get LineIds from AccessLines by their status")
-    public List<String> getLineIdsByAccessLinesStatus(PortProvisioning port, AccessLineStatus accessLineStatus) {
-        List<String> lineIds = getAccessLinesByPort(port).stream()
-                .filter(accessLineDto -> accessLineStatus.equals(accessLineDto.getStatus()))
-                .map(accessLineDto -> accessLineDto.getLineId())
-                .collect(Collectors.toList());
-        return lineIds;
-    }
-
     @Step("Get HomeID Pool by Port")
     public List<HomeIdDto> getHomeIdPool(PortProvisioning port) {
         return accessLineResourceInventory.homeIdController().searchHomeIds().body(
@@ -873,17 +857,6 @@ public class AccessLineRiRobot {
         return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile()).collect(Collectors.toList());
     }
 
-    @Step("Get homeID from pool by port")
-    public String getHomeIdByPort(AccessLine accessLine) {
-        List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdController().searchHomeIds().body(new SearchHomeIdDto()
-                        .endSz(accessLine.getOltDevice().getEndsz())
-                        .slotNumber(accessLine.getSlotNumber())
-                        .portNumber(accessLine.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-        assertEquals(homeIdPool.size(), 32, "Home ids in a pool count");
-        return homeIdPool.get(0).getHomeId();
-    }
-
     @Step("Get homeID state")
     public HomeIdStatus getHomeIdStateByHomeId(String homeId) {
         List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdController()
@@ -930,7 +903,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get all AccessLine entities")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAllAccessLineEntities() {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAllAccessLineEntities() {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -938,14 +911,14 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by LineId for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Get AccessLine entities by oltEndSz, slot, port for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -957,7 +930,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by dpuEndSz, port for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -967,7 +940,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by HomeId")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByHomeId(String homeId) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByHomeId(String homeId) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -976,7 +949,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by OntSerialNumber")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByOntSerialNumber(String ontSerialNumber) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByOntSerialNumber(String ontSerialNumber) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -985,7 +958,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by Status")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByStatus(AccessLineStatus accesslineStatus) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByStatus(AccessLineStatus accesslineStatus) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -994,7 +967,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by Technology")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByTechnology(AccessLineTechnology accessLineTechnology) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByTechnology(AccessLineTechnology accessLineTechnology) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -1003,7 +976,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by Modification Date greater than")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateGt(OffsetDateTime offsetDateTime) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateGt(OffsetDateTime offsetDateTime) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -1012,7 +985,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by Modification Date less than")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateLt(OffsetDateTime offsetDateTime) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateLt(OffsetDateTime offsetDateTime) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -1021,7 +994,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities with offset")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesWithOffset(int offset) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesWithOffset(int offset) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -1030,7 +1003,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities with fields")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> getAccessLineEntitiesWithFields(String fields) {
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesWithFields(String fields) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .listAccessLine()
@@ -1039,7 +1012,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Get AccessLine entities by id")
-    public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine getAccessLineEntitiesbyId(Long id) {
+    public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine getAccessLineEntitiesbyId(Long id) {
         return accessLineResourceInventoryCa
                 .accessLineControllerExternal()
                 .retrieveAccessLine()
@@ -1111,7 +1084,7 @@ public class AccessLineRiRobot {
 
     @Owner("TMI")
     public String getLineIdByHomeId(String homeId) {
-        List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLine> accessLines =
+        List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> accessLines =
                 accessLineResourceInventory.accessLineControllerExternal()
                         .listAccessLine()
                         .homeIdQuery(homeId)

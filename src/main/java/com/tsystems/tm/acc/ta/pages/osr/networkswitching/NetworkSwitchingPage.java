@@ -137,8 +137,8 @@ public class NetworkSwitchingPage {
     getPackageInfo(packageId);
     getPackageStatus().contains("PREPARED");
     $(ROLLBACK_BUTTON).click();
-    $(NOTIFICATION).shouldHave(text("Der Rollback-Prozess für den Zielport hat begonnen"));
-    closeNotificationButton();
+//    $(NOTIFICATION).shouldHave(text("Der Rollback-Prozess für den Zielport hat begonnen"));
+//    closeNotificationButton();
     return this;
   }
 
