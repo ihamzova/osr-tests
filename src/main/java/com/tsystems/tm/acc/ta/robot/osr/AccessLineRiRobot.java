@@ -846,7 +846,18 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
             .flatMap(List::stream).collect(Collectors.toList());
   }
+    @Step("Get AllocatedOnuId by AccessLine")
+    public List<Integer> getAllocatedOnuIdFromAccessLine(AccessLineDto accessLine) {
+        return accessLineResourceInventory.allocatedOnuIdController()
+                .searchAllocatedOnuId()
+                .body(new SearchAllocatedOnuIdDto()
+                        .oltEndSz(accessLine.getReference().getEndSz())
+                        .lineId(accessLine.getLineId())
+                        .slotNumber(accessLine.getReference().getSlotNumber())
+                        .portNumber(accessLine.getReference().getPortNumber()))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
+    }
     @Step("Get AllocatedAnpTags from AccessLines")
     public List<Integer> getAllocatedAnpTags(List<AccessLineDto> accessLines) {
         return accessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag()).collect(Collectors.toList());
