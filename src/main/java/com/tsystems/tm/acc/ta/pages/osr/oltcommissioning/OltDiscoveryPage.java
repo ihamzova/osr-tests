@@ -1,17 +1,17 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
-import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.testng.Assert;
 
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.appear;
 import static com.codeborne.selenide.Condition.disabled;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.DISCOVERY_RESULT_SUCCESSFUL;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
@@ -36,36 +36,28 @@ public class OltDiscoveryPage {
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
     }
 
-    public int getSuccessfullyDiscoveriesCount() {
-        $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_OLT_DISCOVERY));
-        return $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).size();
-    }
-
     @Step("Make olt discovery")
     public OltDiscoveryPage makeOltDiscovery() {
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).click();
-        try {
-            Thread.sleep(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE);
-        } catch (Exception e) {
-            log.error("Interrupted");
-        }
+        sleep(WAITING_TIME_FOR_DISCOVERY_HISTORY_UPDATE);
         $(UPDATE_HISTORY_BUTTON_LOCATOR).click();
 
         $(OLT_DISCOVERY_PROCESS_START_BUTTON_LOCATOR).shouldNotBe(disabled, Duration.ofMillis(TIMEOUT_FOR_OLT_DISCOVERY));
+        //Check if the last discovery was successful
+        String resultText = $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).first().getText();
+        if(resultText.equals("Report aufrufen")) {  // Backward compatibility will be removed later
+            resultText = DISCOVERY_RESULT_SUCCESSFUL;
+        }
+        Assert.assertEquals(resultText, DISCOVERY_RESULT_SUCCESSFUL,  "Discovery Result Text missmatch");
         return this;
     }
 
     @Step("Show discovery result and save changes")
     public OltDiscoveryPage saveDiscoveryResults() {
-        $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).last().click();
+        $$(DISCOVERY_RESULT_SHOW_BUTTON_LOCATOR).first().click();
         $(DISCOVERY_RESULT_SAVE_BUTTON_LOCATOR).click();
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        sleep(10000);
         return this;
-
     }
 
     @Step("Open olt search page")
