@@ -253,7 +253,7 @@ public class OntCommissioning extends GigabitTest {
   @Description("Deprovisioning of the 33d AccessLine after termination, feature toggle is off ")
   @Owner("DL_T-Magic.U-Piter@t-systems.com")
   public void ontDecommissioning33LineToggleOffTest() throws InterruptedException {
-//    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
     Thread.sleep(3000);
 
