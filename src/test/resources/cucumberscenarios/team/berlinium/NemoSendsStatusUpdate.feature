@@ -41,6 +41,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
+ # TODO: Add scenario that only opState is patched, everything else not
+
 
  # ---------- PATCH NE ----------
 
@@ -66,6 +68,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
+  # TODO: Add scenario for PATCH NE without opState sent by NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else ignored
 
 
   # ---------- PATCH NEP ----------
@@ -114,7 +119,17 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
+  # TODO: Add scenario that only opState / description is patched, everything else not
+
+
+  # ---------- PATCH NEL ----------
+
+  # TODO: Add scenarios for NEL (equivalent to NE)
+
+
   # ---------- PATCH NSP FTTH-Access ----------
+
+  # TODO :Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
 
 
   # ---------- PATCH NSP L2BSA ----------
@@ -160,3 +175,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP L2BSA lifecycleState is still "PLANNING"
     And the NSP L2BSA lastUpdateTime is updated
     And 1 "PUT" NSP L2BSA update notifications were sent to NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else not
+
+
+  # ---------- PATCH NSP A10NSP ---------
+
+  # TODO: Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
