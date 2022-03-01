@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
@@ -204,6 +205,26 @@ public class A4ResInvSteps {
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NEP, nep);
     }
+
+
+    @Given("a NEL with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
+        // ACTION
+        A4NetworkElementLink nel = setupDefaultNelTestData();
+        final A4NetworkElementPort nepA = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final A4NetworkElementPort nepB = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP_B);
+        nel.setOperationalState(ops);
+        nel.setLifecycleState(lcs);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        //ToDo
+
+        a4ResInv.createNetworkElementLink(nel,nepA,nepB);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEL,nel);
+    }
+
 
     @Given("a TP is existing in A4 resource inventory")
     public void givenATPIsExistingInA4ResourceInventory() {
@@ -603,6 +624,26 @@ public class A4ResInvSteps {
         tp.setUuid(UUID.randomUUID().toString());
 
         return tp;
+    }
+
+    private A4NetworkElementLink setupDefaultNelTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP);
+        final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP_B);
+
+        // ACTION
+
+        // NEL needs to be connected to a NEP, so if no NEP present, create one
+        if (!NEP_A_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory();
+        if (!NEP_B_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory();
+
+        A4NetworkElementLink nel = testContext.getOsrTestContext().getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        nel.setUuid(UUID.randomUUID().toString());
+
+        return nel;
     }
 
     private A4NetworkServiceProfileFtthAccess setupDefaultNspFtthTestData() {

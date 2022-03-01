@@ -81,6 +81,23 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
+    @When("NEMO sends a request to change/update (the )NE without operationalState( characteristic)")
+    public void whenNemoSendsARequestToUpdateNeWithoutOperationalState() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NE);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(ne.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
     @When("NEMO sends a request to change/update (the )NEP operationalState to {string} and description to {string}")
     public void nemoSendsARequestToUpdateNEPOperationalStateToAndDescriptionTo(String opState, String descr) {
         // INPUT FROM SCENARIO CONTEXT
