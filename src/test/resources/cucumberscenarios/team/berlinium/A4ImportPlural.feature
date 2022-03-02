@@ -5,7 +5,7 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Receiving Inventory from Plural
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Receive new NE from Plural for a non-existing Network Element Group
 
-    Given no NEG with name "NEG-123456" is existing in resource inventory
+    #Given no NEG with name "NEG-123456" is existing in resource inventory
     #When request to plural for NEG-name was sent
 
     And response from plural for "NEG-123456" was received
