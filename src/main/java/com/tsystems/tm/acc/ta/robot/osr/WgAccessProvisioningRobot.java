@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.data.osr.models.Process;
@@ -17,7 +18,7 @@ import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
-import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.AccessLineIdDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.CardRequestDto;
 import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.DeviceDto;
@@ -32,16 +33,13 @@ import org.testng.Assert;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
-import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING;
-import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.WG_ACCESS_PROVISIONING_MS;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
 import static com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.client.model.Port.PortTypeEnum.PON;
 
@@ -206,9 +204,15 @@ public class WgAccessProvisioningRobot {
   }
 
   @Step("Prepare data for postprovisioning")
-  public void prepareForPostprovisioning(int linesCount, PortProvisioning port, HomeIdDto homeIdDto) {
+  public void prepareForPostprovisioning(int linesCount, AccessLine accessLine) {
     for (int i = 0; i < linesCount; i++) {
-      ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto); //assigned linesCount
+      ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(new PortAndHomeIdDto().homeId(accessLine.getHomeId())
+              .portNumber(accessLine.getPortNumber())
+              .slotNumber(accessLine.getSlotNumber())
+              .fachSz(accessLine.getOltDevice().getFsz())
+              .vpSz(accessLine.getOltDevice().getVpsz())
+              .homeId(accessLine.getHomeId())
+              .portType(PortAndHomeIdDto.PortTypeEnum.PON)); //assigned linesCount
     }
   }
 
@@ -256,7 +260,7 @@ public class WgAccessProvisioningRobot {
     return portBeforeProvisioning;
   }
 
-  @Step("Change feature toggle state")
+  @Step("enable-64-pon-splitting - сhange feature toggle state")
   public void changeFeatureToogleEnable64PonSplittingState(boolean toggleState) {
     if (toggleState) {
       unleashClient.enableToggle(FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING);
@@ -264,6 +268,16 @@ public class WgAccessProvisioningRobot {
       unleashClient.disableToggle(FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING);
     }
     log.info("toggleState for {} = {}", FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING, toggleState);
+  }
+
+  @Step(" - сhange feature toggle state")
+  public void changeFeatureToogleHomeIdPoolState(boolean toggleState) {
+    if (toggleState) {
+      unleashClient.enableToggle(FEATURE_TOGGLE_CREATE_HOME_ID_POOL);
+    } else {
+      unleashClient.disableToggle(FEATURE_TOGGLE_CREATE_HOME_ID_POOL);
+    }
+    log.info("toggleState for {} = {}", FEATURE_TOGGLE_CREATE_HOME_ID_POOL, toggleState);
   }
 
 }

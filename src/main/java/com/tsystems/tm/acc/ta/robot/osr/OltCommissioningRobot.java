@@ -12,7 +12,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltCommissioningPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.PortType;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import io.qameta.allure.Step;
@@ -26,8 +26,7 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -40,7 +39,7 @@ public class OltCommissioningRobot {
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
   private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 16;
-  private static final Integer HOME_ID_POOL_PER_PORT = 32;
+  private static final Integer HOME_ID_POOL_PER_PORT = 0;
 
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));

@@ -1,9 +1,6 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -27,6 +24,15 @@ public class WiremockNemoSteps {
 
         // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(neg.getUuid(), method, count);
+    }
+
+    @Then("{int} {string} NE update notification(s) was/were sent to NEMO")
+    public void thenANeUpdateNotificationWasSentToNemo(int count, String method) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(ne.getUuid(), method, count);
     }
 
     @Then("{int} {string} NEP update notification(s) was/were sent to NEMO")

@@ -2,14 +2,18 @@ package com.tsystems.tm.acc.ta.team.upiter.ontcommissioning;
 
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.businessinformation.BusinessInformationCase;
+import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.BusinessInformation;
+import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.HomeIdStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.HomeIdStatus;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -39,28 +43,34 @@ public class DGFaccessLineReservation extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
     private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+    private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
+    private WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     private AccessLine accessLine;
+    private PortProvisioning portProvisioning;
     private BusinessInformation postprovisioningStart;
     private BusinessInformation postprovisioningEnd;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() throws InterruptedException {
+        wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
         accessLineRiRobot.clearDatabase();
-        Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
+        Thread.sleep(5000);
+        portProvisioning = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portForDgfReservation);
     }
 
     @Test
     @TmsLink("DIGIHUB-60469")
     @Description("DGF: Access Line Reservation by HomeID")
     public void accessLineReservationByHomeId() {
+        wgAccessProvisioningRobot.startPortProvisioning(portProvisioning);
+        accessLineRiRobot.checkFtthPortParameters(portProvisioning);
         accessLine = context.getData().getAccessLineDataProvider().get(AccessLineCase.DGFAccessLineRegistration);
+        accessLine.setHomeId(accessLineRiRobot.getHomeIdPool(portProvisioning).get(0).getHomeId());
         postprovisioningStart = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningStartEvent);
         postprovisioningEnd = context.getData().getBusinessInformationDataProvider().get(BusinessInformationCase.PostprovisioningEndEvent);
         //Precondition port commissioning
         //Get 1 Free HomeId from pool
-        accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
         HomeIdDto homeIdDto = new HomeIdDto().homeId(accessLine.getHomeId());
 
         OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto);

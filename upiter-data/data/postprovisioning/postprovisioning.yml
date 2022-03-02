@@ -4,7 +4,7 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "6"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16
@@ -17,7 +17,7 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "7"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
   accessLinesWG: 16
   defaultNEProfilesActive: 16

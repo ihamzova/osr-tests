@@ -5,13 +5,14 @@ import com.tsystems.tm.acc.data.upiter.models.ont.OntCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
+import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ProfileState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -37,6 +38,7 @@ public class AdtranOntCommissioning extends GigabitTest {
 
   private final AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private final OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
+  private final HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
   private final UpiterTestContext context = UpiterTestContext.get();
   private AccessLine accessLine;
   private Ont ontSerialNumber;
@@ -55,7 +57,7 @@ public class AdtranOntCommissioning extends GigabitTest {
   @Description("Adtran Reservation ONT resource")
   public void adtranOntReservation() {
     //Get 1 Free HomeId from pool
-    accessLine.setHomeId(accessLineRiRobot.getHomeIdByPort(accessLine));
+    accessLine.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
 
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()

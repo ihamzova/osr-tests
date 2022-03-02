@@ -1,33 +1,33 @@
-name: migratedAccessLine
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineDto
+name: migratedAccessLineWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto
 values:
-  anpTag: "@allocatedAnpTag"
-  defaultNeProfile: "@defaultNeProfile"
+  anpTag: "@allocatedAnpTagWithHomeIdPool"
+  defaultNeProfile: "@defaultNeProfileWithHomeIdPool"
   defaultNetworkLineProfile: "@defaultNetworkLineProfile"
   lineId: "DEU.DTAG.SQA2096555"
   productionPlatform: "OLT_BNG"
-  reference: "@reference"
-  uplinkReference: "@uplinkReference"
-  resourceAssociation: "@resourceAssociation"
+  reference: "@referenceWithHomeIdPool"
+  uplinkReference: "@uplinkReferenceWithHomeIdPool"
+  resourceAssociation: "@resourceAssociationWithHomeIdPool"
   status: "ASSIGNED"
   technology: "GPON"
 ---
-name: migratedOnuId
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AllocatedOnuIdDto
+name: migratedOnuIdWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedOnuIdDto
 values:
-  accessLine: "@migratedAccessLine"
+  accessLine: "@migratedAccessLineWithHomeIdPool"
   onuId: 0
-  reference: "@reference"
+  reference: "@referenceWithHomeIdPool"
 ---
-name: migratedLineId
+name: migratedLineIdWithHomeIdPool
 template: com.tsystems.tm.acc.ta.data.osr.models.LineIdMigrated
 values:
   lineIdDtoList:
     - lineId: "DEU.DTAG.SQA2096555"
       status: "USED"
-      port: "@reference"
+      port: "@referenceWithHomeIdPool"
 ---
-name: migratedPort
+name: migratedPortWithHomeIdPool
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76G0"
@@ -40,23 +40,142 @@ values:
   defaultNetworkLineProfilesActive: 16
   accessLinesCount: 16
 ---
-name: allocatedAnpTag
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AllocatedAnpTagDto
+name: allocatedAnpTagWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedAnpTagDto
 values:
   anpTag: 132
-  reference: "@reference"
+  reference: "@referenceWithHomeIdPool"
 ---
-name: defaultNeProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNeProfileDto
+name: defaultNeProfileWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.DefaultNeProfileDto
 values:
   profileName: "RFS_AL_GPON"
   ontSerialNumber: "DEFAULT"
   state: "INACTIVE"
   ancpPartitionId: 2
-  subscriberNeProfile: "@subscriberNeProfile"
+  subscriberNeProfile: "@subscriberNeProfileWithHomeIdPool"
+---
+name: subscriberNeProfileWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.SubscriberNeProfileDto
+values:
+  profileName: "RFS_AL_GPON"
+  state: "ACTIVE"
+  ontSerialNumber: "1234567890123456"
+  ontState: "ONLINE"
+  syncStatus: "OUT_OF_SYNC"
+---
+name: referenceWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
+values:
+  endSz: "49/30/179/76G0"
+  slotNumber: "3"
+  portNumber: "0"
+  portType: "PON"
+---
+name: uplinkReferenceWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
+values:
+  endSz: "49/30/179/76G0"
+  slotNumber: "19"
+  portNumber: "0"
+  portType: "ETHERNET"
+---
+name: resourceAssociationWithHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ResourceAssociationDto
+values:
+  partyId: "10001"
+  resourceId: "ed861e3a-6fff-4cb2-9e71-046bc0591039"
+---
+name: migratedAccessLineWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto
+values:
+  anpTag: "@allocatedAnpTagWithoutHomeIdPool"
+  defaultNeProfile: "@defaultNeProfileWithoutHomeIdPool"
+  defaultNetworkLineProfile: "@defaultNetworkLineProfile"
+  lineId: "DEU.DTAG.SQA2096556"
+  productionPlatform: "OLT_BNG"
+  reference: "@referenceWithoutHomeIdPool"
+  uplinkReference: "@uplinkReferenceWithoutHomeIdPool"
+  resourceAssociation: "@resourceAssociationWithoutHomeIdPool"
+  status: "ASSIGNED"
+  technology: "GPON"
+---
+name: migratedOnuIdWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedOnuIdDto
+values:
+  accessLine: "@migratedAccessLineWithoutHomeIdPool"
+  onuId: 0
+  reference: "@referenceWithoutHomeIdPool"
+---
+name: migratedLineIdWithoutHomeIdPool
+template: com.tsystems.tm.acc.ta.data.osr.models.LineIdMigrated
+values:
+  lineIdDtoList:
+    - lineId: "DEU.DTAG.SQA2096556"
+      status: "USED"
+      port: "@referenceWithoutHomeIdPool"
+---
+name: migratedPortWithoutHomeIdPool
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76G0"
+  slotNumber: "3"
+  portNumber: "0"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 15
+  defaultNEProfilesActive: 15
+  defaultNetworkLineProfilesActive: 16
+  accessLinesCount: 16
+---
+name: allocatedAnpTagWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedAnpTagDto
+values:
+  anpTag: 132
+  reference: "@referenceWithoutHomeIdPool"
+---
+name: defaultNeProfileWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.DefaultNeProfileDto
+values:
+  profileName: "RFS_AL_GPON"
+  ontSerialNumber: "DEFAULT"
+  state: "INACTIVE"
+  ancpPartitionId: 2
+  subscriberNeProfile: "@subscriberNeProfileWithoutHomeIdPool"
+---
+name: subscriberNeProfileWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.SubscriberNeProfileDto
+values:
+  profileName: "RFS_AL_GPON"
+  state: "ACTIVE"
+  ontSerialNumber: "1234567890123456"
+  ontState: "ONLINE"
+  syncStatus: "OUT_OF_SYNC"
+---
+name: referenceWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
+values:
+  endSz: "49/30/179/76G0"
+  slotNumber: "3"
+  portNumber: "0"
+  portType: "PON"
+---
+name: uplinkReferenceWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
+values:
+  endSz: "49/30/179/76G0"
+  slotNumber: "19"
+  portNumber: "0"
+  portType: "ETHERNET"
+---
+name: resourceAssociationWithoutHomeIdPool
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ResourceAssociationDto
+values:
+  partyId: "10001"
+  resourceId: "ed861e3a-6fff-4cb2-9e71-046bc0591039"
 ---
 name: defaultNetworkLineProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.DefaultNetworkLineProfileDto
+template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.DefaultNetworkLineProfileDto
 values:
   authMethod: 1
   klsId: "14653"
@@ -70,34 +189,3 @@ values:
   accessNetworkType: "Ethernet"
   accessType: "FTTH"
   syncStatus: "OUT_OF_SYNC"
----
-name: subscriberNeProfile
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.SubscriberNeProfileDto
-values:
-  profileName: "RFS_AL_GPON"
-  state: "ACTIVE"
-  ontSerialNumber: "1234567890123456"
-  ontState: "ONLINE"
-  syncStatus: "OUT_OF_SYNC"
----
-name: reference
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto
-values:
-  endSz: "49/30/179/76G0"
-  slotNumber: "3"
-  portNumber: "0"
-  portType: "PON"
----
-name: uplinkReference
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ReferenceDto
-values:
-  endSz: "49/30/179/76G0"
-  slotNumber: "19"
-  portNumber: "0"
-  portType: "ETHERNET"
----
-name: resourceAssociation
-template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.ResourceAssociationDto
-values:
-  partyId: "10001"
-  resourceId: "ed861e3a-6fff-4cb2-9e71-046bc0591039"

@@ -15,7 +15,7 @@ template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H5"
   portNumber: "1"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
   accessLinesWG: 0
   defaultNEProfilesActive: 0

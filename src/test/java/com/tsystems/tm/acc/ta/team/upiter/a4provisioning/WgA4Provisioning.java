@@ -9,9 +9,9 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineProductionPlatform;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_34_0.client.model.AccessLineTechnology;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineProductionPlatform;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineTechnology;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -103,6 +103,7 @@ public class WgA4Provisioning extends GigabitTest {
         );
 
         accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh0, a4TerminationPoint.getUuid());
+        accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh0);
         accessLineRiRobot.checkDefaultNetworkLineProfiles(a4PortProvisioning7kh0, defaultNetworkLineProfileFtth, 1);
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh0, 1);
         assertNull(accessLineRiRobot.getGponPorts(a4PortProvisioning7kh0).get(0).getAccessTransmissionMedium());
@@ -121,6 +122,7 @@ public class WgA4Provisioning extends GigabitTest {
 
         wgA4PreProvisioningRobot.startAccessLineDeprovisioning(a4AccessLine.getLineId());
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortDeprovisioning, 0);
+        accessLineRiRobot.checkHomeIdsCount(a4PortDeprovisioning);
         assertTrue(accessLineRiRobot.getAccessLinesByPort(a4PortDeprovisioning).size() == 0, "There are AccessLines left on the port");
     }
 
@@ -143,6 +145,7 @@ public class WgA4Provisioning extends GigabitTest {
         accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh5, a4TerminationPoint.getUuid());
         accessLineRiRobot.checkDefaultNetworkLineProfiles(a4PortProvisioning7kh5, defaultNetworkLineProfileFtth, 1);
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh5, 1);
+        accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh5);
         assertNull(accessLineRiRobot.getGponPorts(a4PortProvisioning7kh5).get(0).getAccessTransmissionMedium());
     }
 
@@ -166,6 +169,7 @@ public class WgA4Provisioning extends GigabitTest {
         String lineId1 = accessLineRiRobot.getAccessLinesByPort(a4PortProvisioning7kh4).get(0).getLineId();
         accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh4, a4TerminationPoint.getUuid());
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh4, 1);
+        accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh4);
 
         wgA4PreProvisioningRobot.startPreProvisioning(
                 new TpRefDto()
@@ -182,6 +186,7 @@ public class WgA4Provisioning extends GigabitTest {
         assertEquals(lineId1, lineId2);
         accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh4, a4TerminationPoint.getUuid());
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh4, 1);
+        accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh4);
     }
 
     @Test
@@ -228,6 +233,7 @@ public class WgA4Provisioning extends GigabitTest {
                 "There are no AccessLines left on the port");
         accessLineRiRobot.checkA4LineParameters(a4PortProvisioning7kh1, tpUuid);
         accessLineRiRobot.checkPhysicalResourceRefCountA4Ftth(a4PortProvisioning7kh1, 1);
+        accessLineRiRobot.checkHomeIdsCount(a4PortProvisioning7kh1);
     }
 
     @Test
