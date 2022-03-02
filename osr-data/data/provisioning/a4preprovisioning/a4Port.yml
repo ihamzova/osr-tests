@@ -4,7 +4,7 @@ values:
   endSz: "${scope, global.a4Provisioning.vpsz}/${scope, global.a4Provisioning.fsz}"
   slotNumber: "${scope, global.a4Provisioning.slotNumber}"
   portNumber: "${scope, global.a4Provisioning.portNumber}"
-  homeIdPool: 32
+  homeIdPool: 0
   accessLinesWG: 1
   defaultNEProfilesActive: 0
   defaultNetworkLineProfilesActive: 1
