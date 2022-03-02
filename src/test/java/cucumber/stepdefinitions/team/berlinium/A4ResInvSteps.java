@@ -479,6 +479,38 @@ public class A4ResInvSteps {
         assertTrue(nep.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
+    @Then("the (new )NEL operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNelOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertEquals(operationalState, nel.getOperationalState());
+    }
+
+    @Then("the (new )NEL lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNelLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertEquals(lifecycleState, nel.getLifecycleState());
+    }
+
+    @Then("the NEL lastUpdateTime is updated")
+    public void thenTheNelLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertNotNull(nel.getLastUpdateTime());
+        assertTrue(nel.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nel.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
     @Then("the TP does exist in A4 resource inventory")
     public void thenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
