@@ -111,6 +111,18 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
 
+    @Given("no NEG with name {string} is existing in resource inventory")
+    public void noNEGWithNameIsExistingInResourceInventory(String name) {
+        // ACTION
+        A4NetworkElementGroup neg = new A4NetworkElementGroup();
+        neg.setName(name);
+
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
+    }
+
     @Given("a NE is existing in A4 resource inventory")
     public void givenANeIsExistingInA4ResourceInventory() {
         // ACTION
