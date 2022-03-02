@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -49,6 +50,9 @@ public class MiscUtils {
 
         // some @... properties like e.g. @BaseType cannot be mapped (to atBaseType). Don't fail, isn't tested here
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // Don't map null values
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         // date-time comes in unix milliseconds. Need to be mapped to OffsetDateTime
         objectMapper.registerModule(new JavaTimeModule());

@@ -41,6 +41,43 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
+  Scenario: Only state updated, nothing else
+    Given a NEG with the following properties is existing in A4 resource inventory:
+      | description                  | oldDesc                   |
+      | centralOfficeNetworkOperator | oldNegOp                  |
+      | specificationVersion         | oldSpecVer                |
+      | lifecycleState               | oldLcState                |
+      | lastSuccessfulSyncTime       | 2010-10-10T10:10:10+02:00 |
+      | type                         | oldType                   |
+      | creationTime                 | 2010-10-10T10:10:10+02:00 |
+      | operationalState             | oldOpState                |
+      | name                         | oldName                   |
+      | lastUpdateTime               | 2010-10-10T10:10:10+02:00 |
+#    When NEMO sends a request to update the NEG's following properties to:
+#      | description                  | newDesc                   |
+#      | centralOfficeNetworkOperator | newNegOp                  |
+#      | specificationVersion         | newSpecVer                |
+#      | lifecycleState               | newLcState                |
+#      | lastSuccessfulSyncTime       | 2022-02-22T22:22:22+02:00 |
+#      | type                         | newType                   |
+#      | creationTime                 | 2022-02-22T22:22:22+02:00 |
+#      | operationalState             | newOpState                |
+#      | name                         | newName                   |
+#      | lastUpdateTime               | 2022-02-22T22:22:22+02:00 |
+#    Then the request is responded with HTTP code 201
+    And the NEG now has the following properties:
+      | description                  | oldDesc    |
+      | centralOfficeNetworkOperator | oldNegOp   |
+      | specificationVersion         | oldSpecVer |
+      | lifecycleState               | oldLcState |
+      | type                         | oldType    |
+      | operationalState             | newOpState |
+      | name                         | oldName    |
+    And the NEG lastUpdateTime is updated
+    And the NEG creationTime is not updated
+    And the NEG lastSuccessfulSyncTime property was updated
+    And 1 "PUT" NEG update notification was sent to NEMO
+
 
  # ---------- PATCH NE ----------
 
@@ -65,7 +102,6 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
-
 
 
   # ---------- PATCH NEP ----------
