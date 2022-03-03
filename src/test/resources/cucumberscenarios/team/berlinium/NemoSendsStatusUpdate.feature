@@ -41,7 +41,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
-  Scenario: Only state updated, nothing else
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 NEG with _all_ properties changed to new values; only states are changed, everything else kept at old values
     Given a NEG with the following properties is existing in A4 resource inventory:
       | description                  | oldDesc                   |
       | centralOfficeNetworkOperator | oldNegOp                  |
@@ -53,18 +55,18 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | operationalState             | oldOpState                |
       | name                         | oldName                   |
       | lastUpdateTime               | 2010-10-10T10:10:10+02:00 |
-#    When NEMO sends a request to update the NEG's following properties to:
-#      | description                  | newDesc                   |
-#      | centralOfficeNetworkOperator | newNegOp                  |
-#      | specificationVersion         | newSpecVer                |
-#      | lifecycleState               | newLcState                |
-#      | lastSuccessfulSyncTime       | 2022-02-22T22:22:22+02:00 |
-#      | type                         | newType                   |
-#      | creationTime                 | 2022-02-22T22:22:22+02:00 |
-#      | operationalState             | newOpState                |
-#      | name                         | newName                   |
-#      | lastUpdateTime               | 2022-02-22T22:22:22+02:00 |
-#    Then the request is responded with HTTP code 201
+    When NEMO sends a request to update the NEG's following properties to:
+      | description                  | newDesc                   |
+      | centralOfficeNetworkOperator | newNegOp                  |
+      | specificationVersion         | newSpecVer                |
+      | lifecycleState               | newLcState                |
+      | lastSuccessfulSyncTime       | 2022-02-22T22:22:22+02:00 |
+      | type                         | newType                   |
+      | creationTime                 | 2022-02-22T22:22:22+02:00 |
+      | operationalState             | newOpState                |
+      | name                         | newName                   |
+      | lastUpdateTime               | 2022-02-22T22:22:22+02:00 |
+    Then the request is responded with HTTP code 201
     And the NEG now has the following properties:
       | description                  | oldDesc    |
       | centralOfficeNetworkOperator | oldNegOp   |
@@ -73,8 +75,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | type                         | oldType    |
       | operationalState             | newOpState |
       | name                         | oldName    |
-    And the NEG lastUpdateTime is updated
     And the NEG creationTime is not updated
+    And the NEG lastUpdateTime is updated
     And the NEG lastSuccessfulSyncTime property was updated
     And 1 "PUT" NEG update notification was sent to NEMO
 
