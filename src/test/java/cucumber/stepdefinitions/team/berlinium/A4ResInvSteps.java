@@ -126,7 +126,6 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
-
     @Given("a NE is existing in A4 resource inventory")
     public void givenANeIsExistingInA4ResourceInventory() {
         // ACTION
@@ -141,6 +140,23 @@ public class A4ResInvSteps {
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
+
+    @Given("a second NE is existing in A4 resource inventory")
+    public void givenASecondNeIsExistingInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElement ne = setupDefaultNeTestData();
+
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
+        a4ResInv.createNetworkElement(ne, neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE_B, ne);
     }
 
     @Given("a NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
@@ -188,6 +204,24 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEP, nep);
     }
 
+
+    @Given("a second NEP is existing in A4 resource inventory")
+    public void givenASecondNEPIsExistingInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElementPort nep = setupDefaultNepTestData();
+
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE_B);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementPortsRecursively(nep, ne);
+
+        a4ResInv.createNetworkElementPort(nep, ne);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEP_B, nep);
+    }
+
+
     @Given("a NEP with operational state {string} and and description {string} is existing in A4 resource inventory")
     public void givenANEPWithOperationalStateAndAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
         // ACTION
@@ -211,6 +245,8 @@ public class A4ResInvSteps {
     public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
         // ACTION
         A4NetworkElementLink nel = setupDefaultNelTestData();
+        final A4NetworkElement neA = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final A4NetworkElement neB = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE_B);
         final A4NetworkElementPort nepA = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
         final A4NetworkElementPort nepB = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP_B);
         nel.setOperationalState(ops);
@@ -219,7 +255,7 @@ public class A4ResInvSteps {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
         //ToDo
 
-        a4ResInv.createNetworkElementLink(nel,nepA,nepB);
+        a4ResInv.createNetworkElementLink(nel,nepA,nepB,neA,neB);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NEL,nel);
@@ -660,16 +696,22 @@ public class A4ResInvSteps {
 
     private A4NetworkElementLink setupDefaultNelTestData() {
         // INPUT FROM SCENARIO CONTEXT
+        final boolean NE_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE);
+        final boolean NE_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE_B);
         final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP);
         final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP_B);
 
         // ACTION
 
-        // NEL needs to be connected to a NEP, so if no NEP present, create one
+        // NEL needs to be connected to 2 NEP, so if no NEP present, create one
+        if (!NE_A_PRESENT)
+            givenANeIsExistingInA4ResourceInventory();
+        if (!NE_B_PRESENT)
+            givenASecondNeIsExistingInA4ResourceInventory();
         if (!NEP_A_PRESENT)
             givenANEPIsExistingInA4ResourceInventory();
         if (!NEP_B_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory();
+            givenASecondNEPIsExistingInA4ResourceInventory();
 
         A4NetworkElementLink nel = testContext.getOsrTestContext().getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
