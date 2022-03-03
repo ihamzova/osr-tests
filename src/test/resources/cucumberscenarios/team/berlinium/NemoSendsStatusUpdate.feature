@@ -105,8 +105,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
@@ -122,7 +124,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NE lastUpdateTime is updated
     And 1 "PUT" NE update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else is ignored
+  # Add scenario that only opState is patched, everything else is ignored
 
 
   # ---------- PATCH NEP ----------
@@ -171,7 +173,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  # TODO: Add scenario that only opState / description is patched, everything else not
+  # Add scenario that only opState / description is patched, everything else not
 
 
   # ---------- PATCH NEL ----------
@@ -195,11 +197,12 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
-
 
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
@@ -212,13 +215,12 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEL lastUpdateTime is updated
     And 1 "PUT" NEL update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else is ignored
-
+  # Add scenario that only opState is patched, everything else is ignored
 
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  # TODO :Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
+  # Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
 
 
   # ---------- PATCH NSP L2BSA ----------
@@ -265,9 +267,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP L2BSA lastUpdateTime is updated
     And 1 "PUT" NSP L2BSA update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else not
+  # Add scenario that only opState is patched, everything else not
 
 
   # ---------- PATCH NSP A10NSP ---------
 
-  # TODO: Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
+  # Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
