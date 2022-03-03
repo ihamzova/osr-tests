@@ -15,6 +15,7 @@ public class A4ResourceInventoryServiceMapper {
     public static final String NEG = "NetworkElementGroup";
     public static final String NE = "NetworkElement";
     public static final String NEP = "NetworkElementPort";
+    public static final String NEL = "NetworkElementLink";
     public static final String TP = "TerminationPoint";
     public static final String NSP_FTTH_ACCESS = "NspFtthAccess";
     public static final String NSP_A10NSP = "NspA10Nsp";
