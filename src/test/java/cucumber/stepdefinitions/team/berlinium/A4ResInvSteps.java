@@ -252,8 +252,6 @@ public class A4ResInvSteps {
         nel.setOperationalState(ops);
         nel.setLifecycleState(lcs);
 
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        //ToDo
 
         a4ResInv.createNetworkElementLink(nel,nepA,nepB,neA,neB);
 
