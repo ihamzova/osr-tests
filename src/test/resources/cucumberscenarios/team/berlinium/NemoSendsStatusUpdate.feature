@@ -20,6 +20,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
+      | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
 
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
@@ -98,12 +101,28 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
       | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
       | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
+      | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 NE without operational state characteristic
+    Given a NE with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
+    When NEMO sends a request to update NE without operationalState
+    Then the request is responded with HTTP code 201
+    And the NE operationalState is still "NOT_WORKING"
+    And the NE lifecycleState is still "PLANNING"
+    And the NE lastUpdateTime is updated
+    And 1 "PUT" NE update notifications were sent to NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else is ignored
 
 
   # ---------- PATCH NEP ----------
@@ -152,7 +171,54 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
+  # TODO: Add scenario that only opState / description is patched, everything else not
+
+
+  # ---------- PATCH NEL ----------
+
+  @berlinium @domain
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario Outline: NEMO sends a status patch for A4 Network Element Link
+    Given a NEL with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
+    When NEMO sends a request to update NEL operationalState to "<NewOpState>"
+    Then the request is responded with HTTP code 201
+    And the NEL operationalState is updated to "<NewOpState>"
+    And the NEL lifecycleState is updated to "<NewLcState>"
+    And the NEL lastUpdateTime is updated
+    And 1 "PUT" NEL update notification was sent to NEMO
+
+    Examples:
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
+      | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
+      | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+      # Invalid operational state value shall be accepted
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      # Old values = new values; still counts as update
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 NEL without operational state characteristic
+    Given a NEL with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
+    When NEMO sends a request to update NEL without operationalState
+    Then the request is responded with HTTP code 201
+    And the NEL operationalState is still "NOT_WORKING"
+    And the NEL lifecycleState is still "PLANNING"
+    And the NEL lastUpdateTime is updated
+    And 1 "PUT" NEL update notifications were sent to NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else is ignored
+
+
+
   # ---------- PATCH NSP FTTH-Access ----------
+
+  # TODO :Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
 
 
   # ---------- PATCH NSP L2BSA ----------
@@ -198,3 +264,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP L2BSA lifecycleState is still "PLANNING"
     And the NSP L2BSA lastUpdateTime is updated
     And 1 "PUT" NSP L2BSA update notifications were sent to NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else not
+
+
+  # ---------- PATCH NSP A10NSP ---------
+
+  # TODO: Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)

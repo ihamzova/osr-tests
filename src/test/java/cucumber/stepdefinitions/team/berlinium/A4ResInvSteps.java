@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
+import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
@@ -163,7 +164,6 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
-
     @Given("a NE is existing in A4 resource inventory")
     public void givenANeIsExistingInA4ResourceInventory() {
         // ACTION
@@ -178,6 +178,23 @@ public class A4ResInvSteps {
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
+
+    @Given("a second NE is existing in A4 resource inventory")
+    public void givenASecondNeIsExistingInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElement ne = setupDefaultNeTestData();
+
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
+        a4ResInv.createNetworkElement(ne, neg);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE_B, ne);
     }
 
     @Given("a NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
@@ -225,6 +242,24 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEP, nep);
     }
 
+
+    @Given("a second NEP is existing in A4 resource inventory")
+    public void givenASecondNEPIsExistingInA4ResourceInventory() {
+        // ACTION
+        A4NetworkElementPort nep = setupDefaultNepTestData();
+
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE_B);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteA4NetworkElementPortsRecursively(nep, ne);
+
+        a4ResInv.createNetworkElementPort(nep, ne);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEP_B, nep);
+    }
+
+
     @Given("a NEP with operational state {string} and and description {string} is existing in A4 resource inventory")
     public void givenANEPWithOperationalStateAndAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
         // ACTION
@@ -242,6 +277,26 @@ public class A4ResInvSteps {
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NEP, nep);
     }
+
+
+    @Given("a NEL with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
+        // ACTION
+        A4NetworkElementLink nel = setupDefaultNelTestData();
+        final A4NetworkElement neA = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final A4NetworkElement neB = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE_B);
+        final A4NetworkElementPort nepA = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final A4NetworkElementPort nepB = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP_B);
+        nel.setOperationalState(ops);
+        nel.setLifecycleState(lcs);
+
+
+        a4ResInv.createNetworkElementLink(nel,nepA,nepB,neA,neB);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEL,nel);
+    }
+
 
     @Given("a TP is existing in A4 resource inventory")
     public void givenATPIsExistingInA4ResourceInventory() {
@@ -528,6 +583,38 @@ public class A4ResInvSteps {
         assertTrue(nep.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
+    @Then("the (new )NEL operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNelOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertEquals(operationalState, nel.getOperationalState());
+    }
+
+    @Then("the (new )NEL lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNelLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertEquals(lifecycleState, nel.getLifecycleState());
+    }
+
+    @Then("the NEL lastUpdateTime is updated")
+    public void thenTheNelLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+        assertNotNull(nel.getLastUpdateTime());
+        assertTrue(nel.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nel.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
     @Then("the TP does exist in A4 resource inventory")
     public void thenTheTPDoesExistInA4ResourceInventory() {
         // INPUT FROM SCENARIO CONTEXT
@@ -672,6 +759,32 @@ public class A4ResInvSteps {
         tp.setUuid(UUID.randomUUID().toString());
 
         return tp;
+    }
+
+    private A4NetworkElementLink setupDefaultNelTestData() {
+        // INPUT FROM SCENARIO CONTEXT
+        final boolean NE_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE);
+        final boolean NE_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE_B);
+        final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP);
+        final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP_B);
+
+        // ACTION
+
+        // NEL needs to be connected to 2 NEP, so if no NEP present, create one
+        if (!NE_A_PRESENT)
+            givenANeIsExistingInA4ResourceInventory();
+        if (!NE_B_PRESENT)
+            givenASecondNeIsExistingInA4ResourceInventory();
+        if (!NEP_A_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory();
+        if (!NEP_B_PRESENT)
+            givenASecondNEPIsExistingInA4ResourceInventory();
+
+        A4NetworkElementLink nel = testContext.getOsrTestContext().getData().getA4NetworkElementLinkDataProvider()
+                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        nel.setUuid(UUID.randomUUID().toString());
+
+        return nel;
     }
 
     private A4NetworkServiceProfileFtthAccess setupDefaultNspFtthTestData() {

@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.ta.api.osr.NetworkLineProfileManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.AsyncResponseNotification;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.ResourceCharacteristicCallback;
@@ -34,23 +34,23 @@ import static org.testng.Assert.*;
 public class NetworkLineProfileManagementRobot {
 
     private static String CORRELATION_ID;
-    private NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider);
+    private final NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider);
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
 
 
     @Step("Performs actions with subscriberNetworklineProfile or l2SsaNspReference")
-    public void createResourceOrderRequest(ResourceOrder resourceOrder, AccessLine accessLine){
+    public void createResourceOrderRequest(ResourceOrder resourceOrder, AccessLine accessLine) {
         CORRELATION_ID = UUID.randomUUID().toString();
         networkLineProfileManagementClient
                 .getClient()
                 .networkLineProfile()
                 .updateLineProfile()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder("wiremock-acc")
+                .xCallbackUrlHeader(new GigabitUrlBuilder("wiremock-acc")
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder("wiremock-acc")
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder("wiremock-acc")
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
@@ -60,7 +60,7 @@ public class NetworkLineProfileManagementRobot {
 
         AsyncResponseNotification notification = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), AsyncResponseNotification.class);
-       assertNotNull(notification.getResponse(), "Cannot get callback");
+        assertNotNull(notification.getResponse(), "Cannot get callback");
         assertEquals(notification.getResponse()
                 .getEvent().getResourceOrder()
                 .getResourceOrderItems().get(0)

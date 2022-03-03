@@ -112,6 +112,7 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepData, neData);
         a4Inventory.createTerminationPoint(tpL2BsaData, negData);
+        nspL2BsaData.setLineId(null); // business process fills wit line id of later-created NSP FTTH-Access, so here it must not yet be set
         a4Inventory.createNetworkServiceProfileL2Bsa(nspL2BsaData, tpL2BsaData);
 
         //Start with a4 preprovisioning to create NEG, NE, NEP, TP, NSP-Ftth-Access
@@ -151,7 +152,6 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(neData);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nepData, neData);
-        a4Inventory.deleteNspsL2Bsa(nspL2BsaData);
     }
 
     @Test(description = "Start with preprovisioning FTTH AccessLine and then perform activation of an A4 L2BSA Product")

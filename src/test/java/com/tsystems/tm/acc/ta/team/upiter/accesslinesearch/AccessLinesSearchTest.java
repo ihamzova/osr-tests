@@ -51,7 +51,7 @@ public class AccessLinesSearchTest extends GigabitTest {
 
   @BeforeClass
   public void init() throws InterruptedException {
-    wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
+//    wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
     accessLineRiRobot = new AccessLineRiRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     accessLine = new AccessLine();
@@ -66,7 +66,7 @@ public class AccessLinesSearchTest extends GigabitTest {
             dpuDevice.getOltEndsz(), dpuDevice.getEndsz(), dpuDevice.getOltGponSlot(), dpuDevice.getOltGponPort());
 
     wgAccessProvisioningRobot.startPortProvisioning(homeAndBackhaulIds);
-    accessLineRiRobot.checkFtthPortParameters(homeAndBackhaulIds);
+  //  accessLineRiRobot.checkFtthPortParameters(homeAndBackhaulIds);
   }
 
     @BeforeMethod

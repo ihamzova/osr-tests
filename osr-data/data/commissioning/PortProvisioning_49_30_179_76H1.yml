@@ -4,5 +4,5 @@ values:
   endSz: "49/30/179/76H1"
   slotNumber: "3"
   portNumber: "3"
-  homeIdPool: 32
+  homeIdPool: 0
   backhaulId: 1
