@@ -239,7 +239,7 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
         LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEL);
-        a4ResInvServiceMapper.addCharacteristic(lru, CHAR_OPSTATE, ops);
+        addCharacteristic(lru, OP_STATE, ops);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nel.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
