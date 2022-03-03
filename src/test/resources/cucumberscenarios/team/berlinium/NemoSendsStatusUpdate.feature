@@ -18,6 +18,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
       | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
       | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
@@ -43,7 +44,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
- # TODO: Add scenario that only opState is patched, everything else is ignored
+ # TODO: Add scenario that only opState is patched, everything else not
 
 
  # ---------- PATCH NE ----------
@@ -72,6 +73,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
+  # TODO: Add scenario for PATCH NE without opState sent by NEMO
+
+  # TODO: Add scenario that only opState is patched, everything else ignored
 
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
@@ -132,6 +136,14 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP description is deleted
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
+
+  # TODO: Add scenario that only opState / description is patched, everything else not
+
+
+  # ---------- PATCH NEL ----------
+
+  # TODO: Add scenarios for NEL (equivalent to NE)
+
 
   # TODO: Add scenario that only opState / description is patched, everything else not
 

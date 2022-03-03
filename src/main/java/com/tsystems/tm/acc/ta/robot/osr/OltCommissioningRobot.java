@@ -39,7 +39,7 @@ public class OltCommissioningRobot {
   private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
   private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
   private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 16;
-  private static final Integer HOME_ID_POOL_PER_PORT = 32;
+  private static final Integer HOME_ID_POOL_PER_PORT = 0;
 
   private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS));
   private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));

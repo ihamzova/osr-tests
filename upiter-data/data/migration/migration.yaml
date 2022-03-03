@@ -92,7 +92,7 @@ values:
   anpTag: "@allocatedAnpTagWithoutHomeIdPool"
   defaultNeProfile: "@defaultNeProfileWithoutHomeIdPool"
   defaultNetworkLineProfile: "@defaultNetworkLineProfile"
-  lineId: "DEU.DTAG.SQA2096555"
+  lineId: "DEU.DTAG.SQA2096556"
   productionPlatform: "OLT_BNG"
   reference: "@referenceWithoutHomeIdPool"
   uplinkReference: "@uplinkReferenceWithoutHomeIdPool"
@@ -111,7 +111,7 @@ name: migratedLineIdWithoutHomeIdPool
 template: com.tsystems.tm.acc.ta.data.osr.models.LineIdMigrated
 values:
   lineIdDtoList:
-    - lineId: "DEU.DTAG.SQA2096555"
+    - lineId: "DEU.DTAG.SQA2096556"
       status: "USED"
       port: "@referenceWithoutHomeIdPool"
 ---
