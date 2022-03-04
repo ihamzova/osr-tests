@@ -1,16 +1,11 @@
 package com.tsystems.tm.acc.ta.data.osr.wiremock.mappings;
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
-import com.tsystems.tm.acc.ta.data.osr.mappers.PreProvisioningMapper;
-import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
 
-import javax.ws.rs.HttpMethod;
-import java.util.UUID;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_ACCEPTED_202;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 
 public class PluralStub extends AbstractStubMapping {
 
@@ -22,6 +17,19 @@ public class PluralStub extends AbstractStubMapping {
                  .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_ACCEPTED_202))
                 .atPriority(9);
     }
+
+    public MappingBuilder postPluralCallbackResponce() {
+
+        //aResponse().build().getBody().
+
+        return post(urlPathMatching(PLURAL_URL))
+                .willReturn(aDefaultResponseWithBody(null, HTTP_CODE_ACCEPTED_202))
+                .atPriority(9);
+    }
+
+
+
+
 
 
 
