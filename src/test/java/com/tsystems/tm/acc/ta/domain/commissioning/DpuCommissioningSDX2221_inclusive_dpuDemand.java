@@ -96,7 +96,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     @Test(description = "DPU creation and DPU-Commissioning incl DPU demand (device : SDX2221-04-CX) case")
     @TmsLink("DIGIHUB-127585")
     @Description("DPU creation and DPU-Commissioning (device : SDX2221-04-CX) case")
-    @Owner("DL-T-Magic.Mercury@telekom.de")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void dpuCommissioningDpuDemand() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -119,6 +119,17 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
         accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAcсessLines);
         dpuPlanningRobot.checkDpuDemandDomain(dpuPlanningRobot.findDpuDemandByFolIdDomain(dpuDemand));
+
+    }
+
+    @Test(dependsOnMethods = "dpuCommissioningDpuDemand", description = "DPU Decommissioning and DPU deletion incl DPU demand (device : SDX2221-04-CX) case")
+    @TmsLink("DIGIHUB-xxxxxxx")
+    @Description("(DPU Decommissioning incl DPU demand (device : SDX2221-04-CX) case")
+    @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
+    public void dpuDeommissioningDpuDemand() {
+        dpuCommissioningUiRobot.startDpuDeommissioning(dpuDevice);
+        dpuCommissioningUiRobot.checkDpuDeommissioningResult(dpuDevice);
+
 
     }
 }

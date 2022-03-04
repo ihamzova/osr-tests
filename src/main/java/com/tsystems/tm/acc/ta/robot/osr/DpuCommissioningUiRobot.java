@@ -116,6 +116,24 @@ public class DpuCommissioningUiRobot {
         assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState mismatch");
     }
 
+    @Step("Start DPU decommissioning process and DPU deletion")
+    public void startDpuDeommissioning(DpuDevice dpuDevice) {
+
+        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        oltSearchPage.validateUrl();
+        oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
+        DpuInfoPage dpuInfoPage = new DpuInfoPage();
+        dpuInfoPage.validateUrl();
+        dpuInfoPage.startDpuDecommissioning();
+
+
+    }
+
+    @Step("Checks data in ri after dpu decommissioning process")
+    public void checkDpuDeommissioningResult(DpuDevice dpuDevice) {
+
+    }
+
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()

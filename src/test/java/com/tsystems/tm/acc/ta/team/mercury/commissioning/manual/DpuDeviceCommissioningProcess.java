@@ -7,7 +7,6 @@ import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.OltResourceInventoryClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -69,16 +68,16 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
             .build()
             .publish();
 
-    clearResourceInventoryDataBase(dpuDevice);
-    prepareResourceInventoryDataBase(dpuDevice);
+    //clearResourceInventoryDataBase(dpuDevice);
+    //prepareResourceInventoryDataBase(dpuDevice);
   }
 
   @AfterClass
   public void cleanUp() {
 
     WireMockFactory.get().resetToDefaultMappings();
-    clearResourceInventoryDataBase(dpuDevice);
-    disableFeatureToogleDpuDemand();
+    //clearResourceInventoryDataBase(dpuDevice);
+    //disableFeatureToogleDpuDemand();
 
   }
 
@@ -90,7 +89,6 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     OsrTestContext context = OsrTestContext.get();
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    //dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
     String endSz = dpuDevice.getEndsz();
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -165,6 +163,27 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
     Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
+    Thread.sleep(20000);
+  }
+
+
+  //@Test(dependsOnMethods = "createDpu",description = "Decommissioning for DPU on team environment")
+  @Test(description = "Decommissioning for DPU on team environment")
+  public void deleteDpu() throws InterruptedException {
+
+    OsrTestContext context = OsrTestContext.get();
+    Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
+    setCredentials(loginData.getLogin(), loginData.getPassword());
+    //dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
+
+    String endSz = dpuDevice.getEndsz();
+    OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+    oltSearchPage.validateUrl();
+    oltSearchPage.searchDiscoveredByEndSz(endSz);
+    DpuInfoPage dpuInfoPage = new DpuInfoPage();
+    dpuInfoPage.validateUrl();
+    dpuInfoPage.startDpuDecommissioning();
+
     Thread.sleep(20000);
   }
 

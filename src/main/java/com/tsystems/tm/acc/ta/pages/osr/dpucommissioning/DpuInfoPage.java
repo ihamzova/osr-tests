@@ -32,6 +32,8 @@ public class DpuInfoPage {
 
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_commissioning_start");
     public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
+    public static final By START_DPU_DECOMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_decommissioning_start");
+    public static final By ETCD_DECOMMISSIONING_BUSINESS_KEY = byQaData("DPU_DECOMMISSIONING");
 
     public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
@@ -63,6 +65,18 @@ public class DpuInfoPage {
         businessKey = $(ETCD_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
         log.info("startDpuCommissioning() businessKey = {}", businessKey);
         $(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
+        log.info("get device life cycle state = {}", getDeviceLifeCycleState());
+        $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_DPU_COMMISSIONING));
+        return this;
+    }
+
+    @Step("Start dpu decommissioning")
+    public DpuInfoPage startDpuDecommissioning() {
+        $(START_DPU_DECOMMISSIONING_BUTTON_LOCATOR).click();
+        //check DPU COMMISSIONING PROCESS and catch businessKey
+       // todo: businessKey = $(ETCD_DECOMMISSIONING_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
+        log.info("startDpuDecommissioning() businessKey = {}", businessKey);
+        //$(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_DPU_COMMISSIONING));
         return this;
