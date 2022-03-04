@@ -68,8 +68,8 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
             .build()
             .publish();
 
-    //clearResourceInventoryDataBase(dpuDevice);
-    //prepareResourceInventoryDataBase(dpuDevice);
+    clearResourceInventoryDataBase(dpuDevice);
+    prepareResourceInventoryDataBase(dpuDevice);
   }
 
   @AfterClass
@@ -77,7 +77,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     WireMockFactory.get().resetToDefaultMappings();
     //clearResourceInventoryDataBase(dpuDevice);
-    //disableFeatureToogleDpuDemand();
+    disableFeatureToogleDpuDemand();
 
   }
 
@@ -95,13 +95,13 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     oltSearchPage.validateUrl();
 
     oltSearchPage.searchNotDiscoveredByEndSz(endSz);
-    Thread.sleep(1000);
+    Thread.sleep(100);
     DpuCreatePage dpuCreatePage = oltSearchPage.pressCreateDpuButton();
 
     dpuCreatePage.validateUrl();
     //dpuCreatePage.startDpuCreation(dpuDevice);
     dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
-    Thread.sleep(1000);
+    Thread.sleep(100);
 
     dpuCreatePage.openDpuInfoPage();
 
@@ -136,12 +136,12 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     //businessKey = dpuInfoPage.getBusinessKey();
     //Assert.assertNotNull(businessKey);
     //Assert.assertFalse(businessKey.isEmpty());
-    Thread.sleep(1000);
+    Thread.sleep(100);
 
     dpuInfoPage.openDpuConfiguraionTab();
     Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
 
-    Thread.sleep(1000);
+    Thread.sleep(100);
 
     dpuInfoPage.openDpuAccessLinesTab();
     dpuInfoPage.openDpuPortsTab();
@@ -161,14 +161,14 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     Assert.assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
     Device deviceAfterCommissioning = deviceList.get(0);
 
-    Assert.assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+    Assert.assertEquals(deviceAfterCommissioning.getKlsId(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
     Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
-    Thread.sleep(20000);
+    Thread.sleep(2000);
   }
 
 
-  //@Test(dependsOnMethods = "createDpu",description = "Decommissioning for DPU on team environment")
-  @Test(description = "Decommissioning for DPU on team environment")
+  @Test(dependsOnMethods = "createDpu",description = "Decommissioning for DPU on team environment")
+  //@Test(description = "Decommissioning for DPU on team environment")
   public void deleteDpu() throws InterruptedException {
 
     OsrTestContext context = OsrTestContext.get();
@@ -183,6 +183,9 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     DpuInfoPage dpuInfoPage = new DpuInfoPage();
     dpuInfoPage.validateUrl();
     dpuInfoPage.startDpuDecommissioning();
+
+    dpuInfoPage.openDpuDeletionDialog();
+    dpuInfoPage.deleteDvice();
 
     Thread.sleep(20000);
   }

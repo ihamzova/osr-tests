@@ -4,7 +4,9 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.UnleashClient;
-import com.tsystems.tm.acc.ta.api.osr.*;
+import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
+import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -108,7 +110,7 @@ public class DpuCommissioningUiRobot {
         assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
         Device deviceAfterCommissioning = deviceList.get(0);
 
-        assertEquals(deviceAfterCommissioning.getKlsId().toString(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
+        assertEquals(deviceAfterCommissioning.getKlsId(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
         assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
 
         // DIGIHUB-79622 check port and device lifecycle state
@@ -133,6 +135,21 @@ public class DpuCommissioningUiRobot {
     public void checkDpuDeommissioningResult(DpuDevice dpuDevice) {
 
     }
+
+    @Step("Manual deletion of the DPU device")
+    public void deleteDpuDevice(DpuDevice dpuDevice) {
+        DpuInfoPage dpuInfoPage = new DpuInfoPage();
+        dpuInfoPage.validateUrl();
+        dpuInfoPage.openDpuDeletionDialog();
+        dpuInfoPage.deleteDvice();
+    }
+
+    @Step("Checks DPU Device deletion")
+    public void checkDpuDeviceDelationResult(DpuDevice dpuDevice) {
+
+    }
+
+
 
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {

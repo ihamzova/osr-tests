@@ -1,6 +1,5 @@
 package com.tsystems.tm.acc.ta.pages.osr.dpucommissioning;
 
-import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
@@ -19,6 +18,7 @@ public class DpuInfoPage {
 
     public static final String APP = "olt-resource-inventory-ui";
     public static final String ENDPOINT = "/detail";
+    public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 2000;  // rendering delay
     public static final Integer MAX_LATENCY_FOR_LIFECYCLE_CHANGE = 5000;
     private static final Integer TIMEOUT_FOR_DPU_COMMISSIONING = 10 * 60_000;
 
@@ -33,12 +33,14 @@ public class DpuInfoPage {
     public static final By START_DPU_COMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_commissioning_start");
     public static final By ETCD_BUSINESS_KEY = byQaData("DPU_COMMISSIONING");
     public static final By START_DPU_DECOMMISSIONING_BUTTON_LOCATOR = byQaData("dpu_decommissioning_start");
-    public static final By ETCD_DECOMMISSIONING_BUSINESS_KEY = byQaData("DPU_DECOMMISSIONING");
+    public static final By ETCD_DECOMMISSIONING_BUSINESS_KEY = byQaData("DPU_DE_COMMISSIONING");
 
     public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR_0 = byQaData("device_functions_option_0");
+    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR_1 = byQaData("device_functions_option_1");
     public static final By START_EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
+    public static final By DELETE_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_delete_perform");
 
     private String businessKey; // check etcd values
 
@@ -74,7 +76,7 @@ public class DpuInfoPage {
     public DpuInfoPage startDpuDecommissioning() {
         $(START_DPU_DECOMMISSIONING_BUTTON_LOCATOR).click();
         //check DPU COMMISSIONING PROCESS and catch businessKey
-       // todo: businessKey = $(ETCD_DECOMMISSIONING_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
+        businessKey = $(ETCD_DECOMMISSIONING_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
         log.info("startDpuDecommissioning() businessKey = {}", businessKey);
         //$(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
         log.info("get device life cycle state = {}", getDeviceLifeCycleState());
@@ -103,14 +105,25 @@ public class DpuInfoPage {
     @Step("DPU editieren")
     public DpuInfoPage openDpuEditPage() {
         $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
-        if($(EDIT_DPU_DEVICE_BUTTON_LOCATOR_0).exists()) {
-            $(EDIT_DPU_DEVICE_BUTTON_LOCATOR_0).click();
-        }  else {
-            $(EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
-        }
+        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR_0).click();
         $(START_EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
         return this;
     }
+
+    @Step("open DPU deletion dialog")
+    public DpuInfoPage openDpuDeletionDialog() {
+        $(DEVICE_FUNCTION_BUTTON_LOCATOR).click();
+        $(EDIT_DPU_DEVICE_BUTTON_LOCATOR_1).click();
+        $(START_EDIT_DPU_DEVICE_BUTTON_LOCATOR).click();
+        return this;
+    }
+
+    public DpuInfoPage deleteDvice() {
+        $(DELETE_DPU_DEVICE_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+        return this;
+    }
+
+
 
     @Step("Get device life cycle state")
     public static String getDeviceLifeCycleState() {
