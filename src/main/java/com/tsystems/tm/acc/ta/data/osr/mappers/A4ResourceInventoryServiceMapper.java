@@ -20,7 +20,20 @@ public class A4ResourceInventoryServiceMapper {
     public static final String NSP_FTTH_ACCESS = "NspFtthAccess";
     public static final String NSP_A10NSP = "NspA10Nsp";
     public static final String NSP_L2BSA = "NspL2Bsa";
-    public static final String CHAR_OPSTATE = "operationalState";
+    public static final String LOGICAL_RESOURCE = "LogicalResource";
+    public static final String OP_STATE = "operationalState";
+    public static final String CREATION_TIME = "creationTime";
+    public static final String UPDATE_TIME = "lastUpdateTime";
+    public static final String SYNC_TIME = "lastSuccessfulSyncTime";
+    public static final String CORRELATION_ID = "correlationId";
+    public static final String TYPE_NAME = "neTypeName";
+    public static final String CENTRAL_NET_OPERATOR = "centralOfficeNetworkOperator";
+    public static final String LACP_ACTIVE = "lacpActive";
+    public static final String SUB_TYPE = "subType";
+    public static final String STATE = "state";
+    public static final String LOCKED_NSP_USAGE = "lockedForNspUsage";
+    public static final String SUPPORTED_DIAG_NAMES = "supportedDiagnosesName";
+    public static final String SUPPORTED_DIAG_VERSION = "supportedDiagnosesSpecificationVersion";
 
     // Create logicalResource representation of network element group with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
@@ -45,34 +58,15 @@ public class A4ResourceInventoryServiceMapper {
         return generateNepLogicalResourceUpdate(nepData, neData, operationalState, description);
     }
 
-    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        if (tpData.getUuid().isEmpty())
-            tpData.setUuid(UUID.randomUUID().toString());
+    public static void addCharacteristic(LogicalResourceUpdate lru, String charName, String charValue) {
+        ResourceCharacteristic c = new ResourceCharacteristic();
+        c.setName(charName);
+        c.setValue(charValue);
 
-        return generateGenericLogicalResourceUpdate(tpData.getUuid())
-                .atType(TP)
-                .version("1")
-                .description("TP for integration test")
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("subType")
-                        .value(tpData.getSubType()))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("state")
-                        .value("state"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("lockedForNspUsage")
-                        .value("true"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("supportedDiagnosesName")
-                        .value("(Diagnose1,Diagnose2)"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("supportedDiagnosesSpecificationVersion")
-                        .value("(V1,V2)"))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(nepData.getUuid())
-                                .type(NEP))
-                );
+        if (lru.getCharacteristic() == null)
+            lru.setCharacteristic(new ArrayList<>());
+
+        lru.getCharacteristic().add(c);
     }
 
     // Create logicalResource representation of network service profile (FTTH Access) with manually set operational state
@@ -88,6 +82,7 @@ public class A4ResourceInventoryServiceMapper {
                                                           A4NetworkElementPort nepData) {
         return generateNspFtthLogicalResourceUpdate(nspFtthData, tpData, operationalState, nepData);
     }
+
     // Create logicalResource representation of network service profile (A10NSP) with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
         return generateNspA10NspLogicalResourceUpdate(nspA10Data, tpData, operationalState);
@@ -103,158 +98,153 @@ public class A4ResourceInventoryServiceMapper {
         return generateNelLogicalResourceUpdate(nelData, nepDataA, nepDataB, operationalState);
     }
 
-    public void addCharacteristic(LogicalResourceUpdate lru, String charName, String charValue) {
-        ResourceCharacteristic c = new ResourceCharacteristic();
-        c.setName(charName);
-        c.setValue(charValue);
+    public static void addResourceRelationship(LogicalResourceUpdate lru, String type, String uuid) {
+        ResourceRef rr = new ResourceRef();
+        rr.setType(type);
+        rr.setId(uuid);
 
-        if (lru.getCharacteristic() == null)
-            lru.setCharacteristic(new ArrayList<>());
+        ResourceRelationship rrs = new ResourceRelationship();
+        rrs.setResourceRef(rr);
 
-        lru.getCharacteristic().add(c);
+        if (lru.getResourceRelationship() == null)
+            lru.setResourceRelationship(new ArrayList<>());
+
+        lru.getResourceRelationship().add(rrs);
+    }
+
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+
+        // Is this really necessary?
+        if (tpData.getUuid().isEmpty())
+            tpData.setUuid(UUID.randomUUID().toString());
+
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(tpData.getUuid());
+        lru.setAtType(TP);
+        lru.setDescription("TP for integration test");
+        lru.setVersion("1");
+
+        addCharacteristic(lru, SUB_TYPE, tpData.getSubType());
+        addCharacteristic(lru, STATE, "status");
+        addCharacteristic(lru, LOCKED_NSP_USAGE, "true");
+        addCharacteristic(lru, SUPPORTED_DIAG_NAMES, "(Diagnose1,Diagnose2)");
+        addCharacteristic(lru, SUPPORTED_DIAG_VERSION, "(V1,V2");
+        addResourceRelationship(lru, NEP, nepData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNegLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
-        return generateGenericLogicalResourceUpdate(negData.getUuid())
-                .atType(NEG)
-                .name(negData.getName())
-                .description("NEG for integration test")
-                .lifecycleState(negData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("centralOfficeNetworkOperator")
-                        .value("CONO"))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("neTypeName")
-                        .value("POD"));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(negData.getUuid());
+        lru.setAtType(NEG);
+        lru.setName(negData.getName());
+        lru.setDescription("NEG for integration test");
+        lru.setLifecycleState(negData.getLifecycleState());
+
+        addCharacteristic(lru, CENTRAL_NET_OPERATOR, "CONO");
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addCharacteristic(lru, TYPE_NAME, "POD");
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNeLogicalResourceUpdate(A4NetworkElement neData, A4NetworkElementGroup negData, String operationalState) {
-        return generateGenericLogicalResourceUpdate(neData.getUuid())
-                .atType(NE)
-                .description("NE for integration test")
-                .lifecycleState(neData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(negData.getUuid())
-                                .type(NEG)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(neData.getUuid());
+        lru.setAtType(NE);
+        lru.setDescription("NE for integration test");
+        lru.setLifecycleState(neData.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, NEG, negData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNepLogicalResourceUpdate(A4NetworkElementPort nepData, A4NetworkElement neData, String operationalState, String description) {
-        return generateGenericLogicalResourceUpdate(nepData.getUuid())
-                .atType(NEP)
-                .description(description)
-                // NEPs do not have a lifecycle state
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(neData.getUuid())
-                                .type(NE)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nepData.getUuid());
+        lru.setAtType(NEP);
+        lru.setDescription(description);
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, NE, neData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNspFtthLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData, A4TerminationPoint tpData, String operationalState) {
-        return generateGenericLogicalResourceUpdate(nspFtthData.getUuid())
-                .atType(NSP_FTTH_ACCESS)
-                .description("NSP-FTTH-ACCESS for integration test")
-                .lifecycleState(nspFtthData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(tpData.getUuid())
-                                .type(TP)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspFtthData.getUuid());
+        lru.setAtType(NSP_FTTH_ACCESS);
+        lru.setDescription("NSP-FTTH-ACCESS for integration test");
+        lru.setLifecycleState(nspFtthData.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, TP, tpData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNspFtthLogicalResourceUpdate(A4NetworkServiceProfileFtthAccess nspFtthData,
                                                                        A4TerminationPoint tpData,
                                                                        String operationalState,
                                                                        A4NetworkElementPort nepData) {
-        return generateGenericLogicalResourceUpdate(nspFtthData.getUuid())
-                .atType(NSP_FTTH_ACCESS)
-                .description("NSP-FTTH-ACCESS with Port Ref for integration test")
-                .lifecycleState(nspFtthData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(tpData.getUuid())
-                                .type(TP)))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(nepData.getUuid())
-                                .type(NEP)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspFtthData.getUuid());
+        lru.setAtType(NSP_FTTH_ACCESS);
+        lru.setDescription("NSP-FTTH-ACCESS with Port Ref for integration test");
+        lru.setLifecycleState(nspFtthData.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, TP, tpData.getUuid());
+        addResourceRelationship(lru, NEP, nepData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
-        return generateGenericLogicalResourceUpdate(nspA10Data.getUuid())
-                .atType(NSP_A10NSP)
-                .description("NSP-A10NSP for integration test")
-                .lifecycleState(nspA10Data.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("lacpActive")
-                        .value("false"))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(tpData.getUuid())
-                                .type(TP)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspA10Data.getUuid());
+        lru.setAtType(NSP_A10NSP);
+        lru.setDescription("NSP-A10NSP for integration test");
+        lru.setLifecycleState(nspA10Data.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addCharacteristic(lru, LACP_ACTIVE, "false");
+        addResourceRelationship(lru, TP, tpData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNspL2BsaLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
-        return generateGenericLogicalResourceUpdate(nspL2Data.getUuid())
-                .atType(NSP_L2BSA)
-                .description("NSP-L2BSA for integration test")
-                .lifecycleState(nspL2Data.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(tpData.getUuid())
-                                .type(TP)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspL2Data.getUuid());
+        lru.setAtType(NSP_L2BSA);
+        lru.setDescription("NSP-L2BSA for integration test");
+        lru.setLifecycleState(nspL2Data.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, TP, tpData.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateNelLogicalResourceUpdate(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, String operationalState) {
-        return generateGenericLogicalResourceUpdate(nelData.getUuid())
-                .atType("NetworkElementLink")
-                .description("NEL for integration test")
-                .lifecycleState(nelData.getLifecycleState())
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name(CHAR_OPSTATE)
-                        .value(operationalState))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(nepDataA.getUuid())
-                                .type(NEP)))
-                .addResourceRelationshipItem(new ResourceRelationship()
-                        .resourceRef(new ResourceRef()
-                                .id(nepDataB.getUuid())
-                                .type(NEP)));
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nelData.getUuid());
+        lru.setAtType(NEL);
+        lru.setDescription("NEL for integration test");
+        lru.setLifecycleState(nelData.getLifecycleState());
+
+        addCharacteristic(lru, OP_STATE, operationalState);
+        addResourceRelationship(lru, NEP, nepDataA.getUuid());
+        addResourceRelationship(lru, NEP, nepDataB.getUuid());
+
+        return lru;
     }
 
     private LogicalResourceUpdate generateGenericLogicalResourceUpdate(String uuid) {
-        return new LogicalResourceUpdate()
-                .atBaseType("LogicalResource")
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("creationTime")
-                        .value(OffsetDateTime.now().toString()))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("lastUpdateTime")
-                        .value(OffsetDateTime.now().toString()))
-                .addCharacteristicItem(new ResourceCharacteristic()
-                        .name("correlationId")
-                        .value(uuid));
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
+        lru.setAtBaseType(LOGICAL_RESOURCE);
+
+        addCharacteristic(lru, CREATION_TIME, OffsetDateTime.now().toString());
+        addCharacteristic(lru, UPDATE_TIME, OffsetDateTime.now().toString());
+        addCharacteristic(lru, CORRELATION_ID, uuid);
+
+        return lru;
     }
 
 }

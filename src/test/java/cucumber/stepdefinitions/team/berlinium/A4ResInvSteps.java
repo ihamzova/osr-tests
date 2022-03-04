@@ -1,5 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
@@ -7,24 +9,29 @@ import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElement
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import cucumber.Context;
 import cucumber.TestContext;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNull;
+import static org.testng.FileAssert.fail;
 
 public class A4ResInvSteps {
 
@@ -39,16 +46,12 @@ public class A4ResInvSteps {
     public void cleanup() {
         // ATTENTION: If at any time more than 1 NEG is used for tests, the additional ones have to be added here!
 
-        A4NetworkElementGroup neg = null;
-
-        // INPUT FROM SCENARIO CONTEXT
         final boolean NEG_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEG);
-        if (NEG_PRESENT)
-            neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        if (NEG_PRESENT) {
+            A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+            a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+        }
 
-        // ACTION
-        if (NEG_PRESENT)
-            a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
     }
 
     // -----=====[ GIVENS ]=====-----
@@ -98,6 +101,41 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
 
+    /**
+     * Creates a NEG in a4 resource inventory, each property filled with default test data.
+     * If any NEG with colliding unique constraint (property 'name') already exists, then the old NEG is deleted first.
+     *
+     * @param table Contains explicit properties and values with which the default test data is overwritten
+     */
+    @Given("a NEG with the following properties is existing in A4 resource inventory:")
+    public void givenANEGWithTheFollowingProperties(DataTable table) {
+        final Map<String, String> negMap = table.asMap();
+        final ObjectMapper om = testContext.getObjectMapper();
+        final TokenBuffer buffer = new TokenBuffer(om, false);
+
+        // First create a new NEG default test data set...
+        final A4NetworkElementGroup negData = setupDefaultNegTestData();
+        final NetworkElementGroupDto negDtoDefault = new A4ResourceInventoryMapper().getNetworkElementGroupDto(negData);
+
+        try {
+            // ... then overwrite default data set with data provided in given-step data table
+            om.writeValue(buffer, negMap);
+            final NetworkElementGroupDto negDto = om.readerForUpdating(negDtoDefault).readValue(buffer.asParser());
+
+            // Make sure no old test data is in the way (to avoid colliding unique constraints)
+            a4ResInv.deleteA4NetworkElementGroupsRecursively(negDtoDefault.getName());
+
+            // Do the actual NEG creation
+            a4ResInv.createNetworkElementGroup(negDto);
+
+            // OUTPUT INTO SCENARIO CONTEXT
+            testContext.getScenarioContext().setContext(Context.A4_NEG, mapDtoToNeg(negDto));
+
+        } catch (IOException e) {
+            fail("Unexpected mapping error: " + e.getMessage());
+        }
+    }
+
     @Given("no NEG exists in A4 resource inventory")
     public void givenNoNEGExistsInA4ResourceInventory() {
         // ACTION
@@ -120,7 +158,7 @@ public class A4ResInvSteps {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
         a4ResInv.deleteA4NetworkElementsRecursively(ne);
 
-        a4ResInv.createNetworkElement(ne,neg);
+        a4ResInv.createNetworkElement(ne, neg);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
@@ -382,6 +420,18 @@ public class A4ResInvSteps {
         assertEquals(lifecycleState, neg.getLifecycleState());
     }
 
+    @Then("the NEG creationTime is not updated")
+    public void thenTheNEGCreationTimeIsNotUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementGroupDto neg = a4ResInv.getExistingNetworkElementGroup(negData.getUuid());
+        assertNotNull(neg.getCreationTime());
+        assertTrue(neg.getCreationTime().isBefore(oldDateTime), "creationTime (" + neg.getCreationTime() + ") is newer than " + oldDateTime + "!");
+    }
+
     @Then("the NEG lastUpdateTime is updated")
     public void thenTheNEGLastUpdateTimeIsUpdated() {
         // INPUT FROM SCENARIO CONTEXT
@@ -415,6 +465,26 @@ public class A4ResInvSteps {
         // ACTION
         sleepForSeconds(2);
         a4ResInv.checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(neg, timeStamp);
+    }
+
+    @Then("the NEG now has the following properties:")
+    public void thenTheNEGNowHasTheFollowingProperties(DataTable table) {
+        final Map<String, String> negMap = table.asMap();
+
+        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementGroupDto negDtoActual = a4ResInv.getExistingNetworkElementGroup(neg.getUuid());
+
+        final ObjectMapper om = testContext.getObjectMapper();
+
+        // https://stackoverflow.com/questions/34957051/how-to-get-rid-of-type-safety-unchecked-cast-from-object-to-mapstring-string
+        @SuppressWarnings("unchecked")
+        Map<String, Object> negMapActual = om.convertValue(negDtoActual, Map.class);
+
+        negMap.keySet().forEach(k -> {
+                    System.out.println("+++ Property '" + k + "': Expected: '" + negMap.get(k) + "'; Actual: '" + negMapActual.get(k).toString() + '"');
+                    assertEquals("Property '" + k + "' differs!", negMap.get(k), negMapActual.get(k).toString());
+                }
+        );
     }
 
     @Then("the (new )NE operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
@@ -636,7 +706,6 @@ public class A4ResInvSteps {
         A4NetworkElementGroup neg = testContext.getOsrTestContext().getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         neg.setUuid(UUID.randomUUID().toString());
-        neg.setName("neg integration test name " + getRandomDigits(6));
 
         return neg;
     }
@@ -752,6 +821,20 @@ public class A4ResInvSteps {
         nspL2Bsa.setUuid(UUID.randomUUID().toString());
 
         return nspL2Bsa;
+    }
+
+    private A4NetworkElementGroup mapDtoToNeg(NetworkElementGroupDto negDto) {
+        A4NetworkElementGroup neg = new A4NetworkElementGroup();
+        neg.setUuid(negDto.getUuid());
+        neg.setType(negDto.getType());
+        neg.setName(negDto.getName());
+        neg.setOperationalState(negDto.getOperationalState());
+        neg.setLifecycleState(negDto.getLifecycleState());
+        neg.setCreationTime(Objects.requireNonNull(negDto.getCreationTime()).toString());
+        neg.setLastUpdateTime(Objects.requireNonNull(negDto.getLastUpdateTime()).toString());
+        neg.setLastSuccessfulSyncTime(Objects.requireNonNull(negDto.getLastSuccessfulSyncTime()).toString());
+
+        return neg;
     }
 
     private A4NetworkServiceProfileFtthAccess mapDtoToA4NspFtth(NetworkServiceProfileFtthAccessDto nspFtthDto) {

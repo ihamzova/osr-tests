@@ -44,7 +44,44 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
- # TODO: Add scenario that only opState is patched, everything else not
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 NEG with _all_ properties changed to new values; only states are changed, everything else kept at old values
+    Given a NEG with the following properties is existing in A4 resource inventory:
+      | description                  | oldDesc                   |
+      | centralOfficeNetworkOperator | oldNegOp                  |
+      | specificationVersion         | oldSpecVer                |
+      | lifecycleState               | oldLcState                |
+      | lastSuccessfulSyncTime       | 2010-10-10T10:10:10+02:00 |
+      | type                         | oldType                   |
+      | creationTime                 | 2010-10-10T10:10:10+02:00 |
+      | operationalState             | oldOpState                |
+      | name                         | oldName                   |
+      | lastUpdateTime               | 2010-10-10T10:10:10+02:00 |
+    When NEMO sends a request to update the NEG's following properties to:
+      | description                  | newDesc                   |
+      | centralOfficeNetworkOperator | newNegOp                  |
+      | specificationVersion         | newSpecVer                |
+      | lifecycleState               | newLcState                |
+      | lastSuccessfulSyncTime       | 2022-02-22T22:22:22+02:00 |
+      | type                         | newType                   |
+      | creationTime                 | 2022-02-22T22:22:22+02:00 |
+      | operationalState             | newOpState                |
+      | name                         | newName                   |
+      | lastUpdateTime               | 2022-02-22T22:22:22+02:00 |
+    Then the request is responded with HTTP code 201
+    And the NEG now has the following properties:
+      | description                  | oldDesc    |
+      | centralOfficeNetworkOperator | oldNegOp   |
+      | specificationVersion         | oldSpecVer |
+      | lifecycleState               | oldLcState |
+      | type                         | oldType    |
+      | operationalState             | newOpState |
+      | name                         | oldName    |
+    And the NEG creationTime is not updated
+    And the NEG lastUpdateTime is updated
+    And the NEG lastSuccessfulSyncTime property was updated
+    And 1 "PUT" NEG update notification was sent to NEMO
 
 
  # ---------- PATCH NE ----------
@@ -68,8 +105,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
@@ -85,7 +124,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NE lastUpdateTime is updated
     And 1 "PUT" NE update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else is ignored
+  # Add scenario that only opState is patched, everything else is ignored
 
 
   # ---------- PATCH NEP ----------
@@ -134,7 +173,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  # TODO: Add scenario that only opState / description is patched, everything else not
+  # Add scenario that only opState / description is patched, everything else not
 
 
   # ---------- PATCH NEL ----------
@@ -158,11 +197,12 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
-
 
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
@@ -175,13 +215,12 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEL lastUpdateTime is updated
     And 1 "PUT" NEL update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else is ignored
-
+  # Add scenario that only opState is patched, everything else is ignored
 
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  # TODO :Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
+  # Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
 
 
   # ---------- PATCH NSP L2BSA ----------
@@ -228,9 +267,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP L2BSA lastUpdateTime is updated
     And 1 "PUT" NSP L2BSA update notifications were sent to NEMO
 
-  # TODO: Add scenario that only opState is patched, everything else not
+  # Add scenario that only opState is patched, everything else not
 
 
   # ---------- PATCH NSP A10NSP ---------
 
-  # TODO: Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
+  # Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
