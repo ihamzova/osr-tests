@@ -143,7 +143,7 @@ public class A4ResInvSteps {
     }
 
 
-    @Given("a second NE is existing in A4 resource inventory")
+    @Given("a second/another NE is existing in A4 resource inventory")
     public void givenASecondNeIsExistingInA4ResourceInventory() {
         // ACTION
         A4NetworkElement ne = setupDefaultNeTestData();
@@ -205,7 +205,7 @@ public class A4ResInvSteps {
     }
 
 
-    @Given("a second NEP is existing in A4 resource inventory")
+    @Given("a second/another NEP is existing in A4 resource inventory")
     public void givenASecondNEPIsExistingInA4ResourceInventory() {
         // ACTION
         A4NetworkElementPort nep = setupDefaultNepTestData();
