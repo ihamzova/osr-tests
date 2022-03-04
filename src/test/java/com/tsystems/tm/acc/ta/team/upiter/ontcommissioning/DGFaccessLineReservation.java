@@ -53,7 +53,7 @@ public class DGFaccessLineReservation extends GigabitTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
-        wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
+        wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLineRiRobot.clearDatabase();
         Thread.sleep(5000);
         portProvisioning = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portForDgfReservation);

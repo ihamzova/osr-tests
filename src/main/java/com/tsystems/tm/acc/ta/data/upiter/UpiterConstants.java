@@ -30,6 +30,6 @@ public interface UpiterConstants {
     String NETWORK_SWITCHING_CONGIF_MGT_MS ="network-switching-config-mgt";
 
     String FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING = "business.resource-order-resource-inventory.enable-64-pon-splitting";
-    String FEATURE_TOGGLE_CREATE_HOME_ID_POOL = "business.resource-order-resource-inventory.enable-home-id-pools-creation";
+    String FEATURE_TOGGLE_CREATE_HOME_ID_POOL = "business.resource-order-resource-inventory.disable-home-id-pools-creation";
 
 }
