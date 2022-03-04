@@ -108,7 +108,7 @@ public class A4ResInvSteps {
      * @param table Contains explicit properties and values with which the default test data is overwritten
      */
     @Given("a NEG with the following properties is existing in A4 resource inventory:")
-    public void aNEGWithTheFollowingProperties(DataTable table) {
+    public void givenANEGWithTheFollowingProperties(DataTable table) {
         final Map<String, String> negMap = table.asMap();
         final ObjectMapper om = testContext.getObjectMapper();
         final TokenBuffer buffer = new TokenBuffer(om, false);
@@ -468,7 +468,7 @@ public class A4ResInvSteps {
     }
 
     @Then("the NEG now has the following properties:")
-    public void theNEGNowHasTheFollowingProperties(DataTable table) {
+    public void thenTheNEGNowHasTheFollowingProperties(DataTable table) {
         final Map<String, String> negMap = table.asMap();
 
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);

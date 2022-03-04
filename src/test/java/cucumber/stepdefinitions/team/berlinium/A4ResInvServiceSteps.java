@@ -72,7 +72,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update the NEG's following properties to:")
-    public void nemoSendsARequestToUpdateTheNEGSFollowingPropertiesTo(DataTable table) {
+    public void whenNemoSendsARequestToUpdateTheNEGSFollowingPropertiesTo(DataTable table) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
