@@ -99,7 +99,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to change/update (the )NEP operationalState to {string} and description to {string}")
-    public void nemoSendsARequestToUpdateNEPOperationalStateToAndDescriptionTo(String opState, String descr) {
+    public void whenNemoSendsARequestToUpdateNEPOperationalStateToAndDescriptionTo(String opState, String descr) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
@@ -118,7 +118,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update/change (the )NEP description to {string}")
-    public void nemoSendsARequestToUpdateNEPDescriptionTo(String descr) {
+    public void whenNemoSendsARequestToUpdateNEPDescriptionTo(String descr) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
@@ -136,7 +136,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update/change (the )NEP operational state to {string}")
-    public void nemoSendsARequestToUpdateNEPOperationalStateTo(String opState) {
+    public void whenNemoSendsARequestToUpdateNEPOperationalStateTo(String opState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
@@ -154,7 +154,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update NEP without operationalState nor description")
-    public void nemoSendsARequestToUpdateNEPWithoutOperationalStateNorDescription() {
+    public void whenNemoSendsARequestToUpdateNEPWithoutOperationalStateNorDescription() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
@@ -171,7 +171,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to change/update (the )NEL operationalState to {string}")
-    public void nemoSendsARequestToChangeNELOperationalStateTo(String ops) {
+    public void whenNemoSendsARequestToChangeNELOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
