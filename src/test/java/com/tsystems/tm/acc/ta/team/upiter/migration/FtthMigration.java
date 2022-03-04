@@ -64,7 +64,7 @@ public class FtthMigration {
     @Description("Migration of an Assigned AccessLine with a subscriber_ne_profile, homeIdPool is created")
     public void ftthMigrationWithHomeIdPool() {
 
-        wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
+        wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
 
         //Step 1. Send access lines' DTOs to access-line-resource-inventory
         accessLineRiRobot.postAccessLine(migratedAccessLineWithHomeIdPool);
@@ -99,10 +99,10 @@ public class FtthMigration {
     }
 
     @Test
-    @Description("Migration of an Assigned AccessLine with a subscriber_ne_profile, homeIdPool is created")
+    @Description("Migration of an Assigned AccessLine with a subscriber_ne_profile, homeIdPool is not created")
     public void ftthMigrationWithoutHomeIdPool() {
 
-        wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(false);
+        wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(true);
 
         //Step 1. Send access lines' DTOs to access-line-resource-inventory
         accessLineRiRobot.postAccessLine(migratedAccessLineWithoutHomeIdPool);
@@ -111,7 +111,7 @@ public class FtthMigration {
         // Step 2. Assign onu Id to the line
         accessLineRiRobot.postOnuId(migratedOnuIdWithoutHomeIdPool);
         List<Integer> onuIds = accessLineRiRobot.getAllocatedOnuIdByDeviceAndLineId(migratedPortWithoutHomeIdPool,
-                migratedAccessLineWithHomeIdPool.getLineId());
+                migratedAccessLineWithoutHomeIdPool.getLineId());
         assertEquals(onuIds.size(), 1);
         assertEquals(onuIds.get(0), migratedOnuIdWithoutHomeIdPool.getOnuId());
 
