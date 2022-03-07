@@ -28,8 +28,9 @@ import static org.testng.Assert.fail;
 public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
-    String queueAuthenticate = "a4_user";
-    String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
+    static final String QUEUE_USER = "a4_user";
+    static final String QUEUE_PW = "a4_queue_pw";
+    final String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
 
     @Step("Get RedeliveryDelay time")
     public long getRedeliveryDelayNemoUpdater() throws IOException {
@@ -182,7 +183,7 @@ public class A4ResilienceRobot {
     }
 
     private String sendRequestToQueueAndGetResponse(String url) {
-        Client client = ClientBuilder.newClient().register(new Authenticator(queueAuthenticate, queueAuthenticate));
+        Client client = ClientBuilder.newClient().register(new Authenticator(QUEUE_USER, QUEUE_PW));
         WebTarget resource = client.target(url);
         Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
         Response response = request.get();
