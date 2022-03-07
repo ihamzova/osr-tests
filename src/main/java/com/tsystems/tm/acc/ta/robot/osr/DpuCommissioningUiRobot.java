@@ -4,9 +4,7 @@ import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.UnleashClient;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
-import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
-import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
+import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -14,9 +12,9 @@ import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.DeviceType;
-import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.LifeCycleState;
+import com.tsystems.tm.acc.tests.osr.ancp.resource.inventory.management.v5_0_0.client.model.AncpSession;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.uplink.resource.inventory.management.v5_2_1_client.model.Uplink;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
@@ -26,6 +24,7 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME;
@@ -35,7 +34,6 @@ import static org.testng.Assert.assertEquals;
 @Slf4j
 public class DpuCommissioningUiRobot {
 
-    private static final Integer HTTP_CODE_OK_200 = 200;
     private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
     private static final String OLT_EMS_CONFIGURATION_STATE = "ACTIVE";
     private static final String DPU_EMS_CONFIGURATION_STATE = "ACTIVE";
@@ -43,6 +41,8 @@ public class DpuCommissioningUiRobot {
     private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
 
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+    private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+    private UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient(authTokenProviderOltBffProxy);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
     private String businessKey;
@@ -104,7 +104,7 @@ public class DpuCommissioningUiRobot {
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(dpuDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
         assertEquals(deviceList.get(0).getDeviceType(), DeviceType.DPU, "DPU DeviceType mismatch");
         assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
@@ -119,7 +119,7 @@ public class DpuCommissioningUiRobot {
     }
 
     @Step("Start DPU decommissioning process and DPU deletion")
-    public void startDpuDeommissioning(DpuDevice dpuDevice) {
+    public void startDpuDecommissioning(DpuDevice dpuDevice) {
 
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
@@ -128,12 +128,34 @@ public class DpuCommissioningUiRobot {
         dpuInfoPage.validateUrl();
         dpuInfoPage.startDpuDecommissioning();
 
-
+        assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Device LifeCycleState after decom. mismatch");
+        assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Port LifeCycleState after decom. mismatch");
     }
 
     @Step("Checks data in ri after dpu decommissioning process")
     public void checkDpuDeommissioningResult(DpuDevice dpuDevice) {
 
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
+        assertEquals(deviceList.get(0).getDeviceType(), DeviceType.DPU, "DPU DeviceType mismatch");
+        assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
+
+        List<DpuEmsConfiguration> dpuEmsConfigurationList = deviceResourceInventoryManagementClient.getClient().dpuEmsConfiguration().listDpuEmsConfiguration()
+                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        assertEquals(dpuEmsConfigurationList.size(), 0L, "DpuEmsConfiguration exist after decommissioning");
+
+        List<DpuOltConfiguration> dpuOltConfigurationList = deviceResourceInventoryManagementClient.getClient().dpuOltConfiguration().listDpuOltConfiguration()
+                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        assertEquals(dpuOltConfigurationList.size(), 0L, "DpuOltConfiguration exist after decommissioning");
+
+        List<AncpSession> ancpSessionList = ancpResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
+                .accessNodeEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(ancpSessionList.size(), 0L, "AncpSession exist after decommissioning");
+
+        List<Uplink> uplinkList = uplinkResourceInventoryManagementClient.getClient().uplink().listUplink()
+                .portsEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(uplinkList.size(), 0L, "Uplink exist after decommissioning");
     }
 
     @Step("Manual deletion of the DPU device")
@@ -141,15 +163,15 @@ public class DpuCommissioningUiRobot {
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
         dpuInfoPage.openDpuDeletionDialog();
-        dpuInfoPage.deleteDvice();
+        dpuInfoPage.deleteDevice();
     }
 
     @Step("Checks DPU Device deletion")
     public void checkDpuDeviceDelationResult(DpuDevice dpuDevice) {
-
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        assertEquals(deviceList.size(), 0L, "DPU exist after deletion");
     }
-
-
 
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {

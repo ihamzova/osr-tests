@@ -10,7 +10,8 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
-import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
+import static com.codeborne.selenide.Selenide.sleep;
+import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
 @Slf4j
@@ -36,7 +37,6 @@ public class DpuInfoPage {
     public static final By ETCD_DECOMMISSIONING_BUSINESS_KEY = byQaData("DPU_DE_COMMISSIONING");
 
     public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
-    public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR_0 = byQaData("device_functions_option_0");
     public static final By EDIT_DPU_DEVICE_BUTTON_LOCATOR_1 = byQaData("device_functions_option_1");
     public static final By START_EDIT_DPU_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_action");
@@ -56,8 +56,8 @@ public class DpuInfoPage {
 
     @Step("Validate Url")
     public void validateUrl() {
-        assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
-        assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
+        assertUrlContainsWithTimeout(APP,  CommonHelper.commonTimeout.intValue());
+        assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout.intValue());
     }
 
     @Step("Start dpu commissioning")
@@ -78,8 +78,9 @@ public class DpuInfoPage {
         //check DPU COMMISSIONING PROCESS and catch businessKey
         businessKey = $(ETCD_DECOMMISSIONING_BUSINESS_KEY).should(exist, Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE)).getValue();
         log.info("startDpuDecommissioning() businessKey = {}", businessKey);
-        //$(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.INSTALLING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
-        log.info("get device life cycle state = {}", getDeviceLifeCycleState());
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        //$(DEVICE_LIFE_CYCLE_STATE_LOCATOR).should(exactTextCaseSensitive(DevicePortLifeCycleStateUI.RETIRING.toString()), Duration.ofMillis(MAX_LATENCY_FOR_LIFECYCLE_CHANGE));
+        log.info("dpu decommissioning get device life cycle state = {}", getDeviceLifeCycleState());
         $(START_DPU_COMMISSIONING_BUTTON_LOCATOR).should(appear, Duration.ofMillis(TIMEOUT_FOR_DPU_COMMISSIONING));
         return this;
     }
@@ -118,8 +119,9 @@ public class DpuInfoPage {
         return this;
     }
 
-    public DpuInfoPage deleteDvice() {
+    public DpuInfoPage deleteDevice() {
         $(DELETE_DPU_DEVICE_BUTTON_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+        sleep(2000); // waiting to save in the inventory database
         return this;
     }
 

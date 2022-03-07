@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
@@ -17,6 +18,7 @@ import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -51,6 +53,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
   private DpuDevice dpuDevice;
   private WireMockMappingsContext mappingsContext;
   private UnleashClient unleashClient = new UnleashClient();
+  private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
 
   @BeforeClass
   public void init() {
@@ -136,12 +139,9 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     //businessKey = dpuInfoPage.getBusinessKey();
     //Assert.assertNotNull(businessKey);
     //Assert.assertFalse(businessKey.isEmpty());
-    Thread.sleep(100);
 
     dpuInfoPage.openDpuConfiguraionTab();
     Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
-
-    Thread.sleep(100);
 
     dpuInfoPage.openDpuAccessLinesTab();
     dpuInfoPage.openDpuPortsTab();
@@ -163,7 +163,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     Assert.assertEquals(deviceAfterCommissioning.getKlsId(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
     Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
-    Thread.sleep(2000);
+    Thread.sleep(200);
   }
 
 
@@ -176,18 +176,37 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
     //dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_8571_0_71G4_SDX2221);
 
-    String endSz = dpuDevice.getEndsz();
+
+    // for team level test only
+    List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+            .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
+    Device patchDevice = deviceList.get(0);
+
+    log.info("+++ set lifeCycleState");
+    deviceResourceInventoryManagementClient.getClient().device().patchDevice()
+            .idPath(patchDevice.getId())
+            .body(Collections.singletonList(new JsonPatchOperation().op(JsonPatchOperation.OpEnum.REPLACE)
+                    .from("string")
+                    .path("/lifeCycleState")
+                    .value("NOT_OPERATING")))
+            .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+    // ----
+
+    //dpuCommissioningUiRobot.startDpuDecommissioning(dpuDevice);
     OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
     oltSearchPage.validateUrl();
-    oltSearchPage.searchDiscoveredByEndSz(endSz);
+    oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
     DpuInfoPage dpuInfoPage = new DpuInfoPage();
     dpuInfoPage.validateUrl();
     dpuInfoPage.startDpuDecommissioning();
+    Thread.sleep(1000);
+    WebDriverRunner.getWebDriver().navigate().refresh();
 
-    dpuInfoPage.openDpuDeletionDialog();
-    dpuInfoPage.deleteDvice();
+    dpuCommissioningUiRobot.checkDpuDeommissioningResult(dpuDevice);
 
-    Thread.sleep(20000);
+    dpuCommissioningUiRobot.deleteDpuDevice(dpuDevice);
+    dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
   }
 
   public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
