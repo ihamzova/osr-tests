@@ -272,8 +272,8 @@ public class A4ResInvSteps {
     }
 
 
-    @Given("a NEP with operational state {string} and and description {string} is existing in A4 resource inventory")
-    public void givenANEPWithOperationalStateAndAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
+    @Given("a NEP with operational state {string} and description {string} is existing in A4 resource inventory")
+    public void givenANEPWithOperationalStateAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
         // ACTION
         A4NetworkElementPort nep = setupDefaultNepTestData();
         nep.setOperationalState(opState);
