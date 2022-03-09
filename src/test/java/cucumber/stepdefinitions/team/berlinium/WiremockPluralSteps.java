@@ -1,11 +1,8 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
+import com.tsystems.tm.acc.ta.data.osr.models.PluralTnpData;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PluralStub;
-import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub;
+import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -14,13 +11,16 @@ import cucumber.TestContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class WiremockPluralSteps {
 
+    private PluralTnpData pluralTnpData;
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4InventoryImporterRobot a4InventoryImporter = new A4InventoryImporterRobot();
     private final TestContext testContext;
-
+    private OsrTestContext osrTestContext;
+    private final A4InventoryImporterRobot a4Importer = new A4InventoryImporterRobot();
     public WiremockPluralSteps(TestContext testContext) {
         this.testContext = testContext;
     }
@@ -32,10 +32,19 @@ public class WiremockPluralSteps {
     public void PluralWiremockWillRespondHTTPCode200WhenCalled() {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
+        pluralTnpData = new PluralTnpData();
+       // uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
+       // pluralTnpData = osrTestContext.getData().getPluralTnpDataDataProvider().get(PluralTnpDataCase.defaultPluralTnp);
+        pluralTnpData.setNegName("testnegname");
+        pluralTnpData.setVpsz("testvpsz");
+        pluralTnpData.setFachsz("testfsz");
+
 
         // ACTION
         wiremock
-                .add(new PluralStub().postPluralResponce())
+                //.add(new PluralStub().postPluralResponce())
+                //.add(new PluralStub().postPluralResponce200(pluralTnpData))
+                .add(new PluralStub().postPluralResponce200(pluralTnpData))
                 .publish();
     }
 
@@ -56,6 +65,38 @@ public class WiremockPluralSteps {
 
 // response from plural for NEG-name was received
 
+
+
+    @Given("Mock negname {string}")
+    public void PluralMock(String negName) {
+        // GIVEN / ARRANGE
+        //A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
+        //UewegData negName = osrTestContext.getData().getA4ImportCsvDataDataProvider().get(UewegDataCase.defaultUeweg);
+
+        // INPUT FROM SCENARIO CONTEXT
+        WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
+
+        wiremock
+                .add(new PluralStub().postPluralCallbackResponce(negName))
+               // .add(new PluralStub().postPlural)
+
+                .publish();
+
+    }
+
+    @When("Import negname {string}")
+    public void importNegname(String negName) {
+        // WHEN
+        a4Importer.doPluralImport(negName);
+    }
+
+    @Then("Assert negname {string}")
+    public void PluralAssert(String negName) {
+        // THEN
+        System.out.println("+++ Assert zu NEGname: "+negName);
+        //a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+        //a4Inventory.getExistingNetworkElementLink(nelData.getUuid());
+    }
 
 
 

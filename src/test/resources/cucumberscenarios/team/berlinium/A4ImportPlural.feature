@@ -7,19 +7,20 @@ Feature: [DIGIHUB-xxxxx][Berlinium] Receiving Inventory from Plural
 
     Given no NEG with name "NEG-123456" is existing in resource inventory
     #When request to plural for NEG-name was sent
-
+    And Mock negname "NEG-123456"
 
 
     # UI Endpoint als Aufruf integrieren "/pluralAlignment"
     # Beispiel: /pluralAlignment?nameNEG=49/30/111/POD/02
-    And response from plural for "NEG-123456" was received
+    #And response from plural for "NEG-123456" was received
+    #When Import negname "NEG-123456"
 
 
-
-    And the plural mock will respond HTTP code 202 when called
-    And the program say hello
+    And the plural mock will respond HTTP code 200 when called
+    #And the program say hello
     #Then ri was updated with neg and ne
     #Then 1 NEG update notification was sent to NEMO
+    Then Assert negname "NEG-123456"
 
 
 #  @berlinium @domain

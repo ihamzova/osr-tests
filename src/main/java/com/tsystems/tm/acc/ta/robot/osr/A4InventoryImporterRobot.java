@@ -34,6 +34,27 @@ public class A4InventoryImporterRobot {
                 .body(srl)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+    @Step("import ne list of neg from Plural")
+    public void doPluralImport(String negName) {
+
+        System.out.println("+++ A4InventoryImporterRobot: habe NEGname bekommen: "+negName);
+        // auf Plural-Import anpassen!
+        /*
+        SyncRebellLinks srl = new SyncRebellLinks();
+        srl.setVpsz(neData.getVpsz());
+        srl.setFsz(neData.getFsz());
+
+        a4RebellSync
+                .syncRebellLinks()
+                .syncRebellLinks()
+                .body(srl)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+         */
+    }
+
+    /*
     @Step("Plural")
     public void doPluralImport(A4NetworkElement neData) {
         SyncRebellLinks srl = new SyncRebellLinks();
@@ -46,5 +67,7 @@ public class A4InventoryImporterRobot {
                 .body(srl)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+
+     */
 
 }
