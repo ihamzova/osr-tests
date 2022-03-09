@@ -28,14 +28,14 @@ public class WiremockPluralSteps {
     // -----=====[ GIVEN ]=====-----
 
     // test
-    @Given("the plural mock will respond HTTP code 202 when called")
-    public void PluralWiremockWillRespondHTTPCode202WhenCalled() {
+    @Given("the plural mock will respond HTTP code 200 when called")
+    public void PluralWiremockWillRespondHTTPCode200WhenCalled() {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         // ACTION
         wiremock
-                .add(new PluralStub().postPluralCallbackResponce202())
+                .add(new PluralStub().postPluralResponce())
                 .publish();
     }
 

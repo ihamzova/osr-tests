@@ -1,9 +1,6 @@
 package com.tsystems.tm.acc.ta.data.osr.wiremock;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
-import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
+import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -22,6 +19,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
   public OsrWireMockMappingsContextBuilder(WireMockMappingsContext context) {
     super(context);
+  }
+
+  public OsrWireMockMappingsContextBuilder addPluralTnpMock(PluralTnpData pluralTnpData) {
+    context.add(new PluralStub().postPluralResponce200(pluralTnpData));
+    return this;
   }
 
   public OsrWireMockMappingsContextBuilder addRebellMock(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
@@ -91,7 +93,7 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
   }
 
   public OsrWireMockMappingsContextBuilder addPluralMock() {
-    context.add(new PluralStub().postPluralCallbackResponce202());
+    context.add(new PluralStub().postPluralResponce());
     return this;
   }
 
