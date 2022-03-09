@@ -35,7 +35,7 @@ import static org.testng.Assert.assertTrue;
 public class WgA4PreProvisioningRobot {
 
     private ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient(authTokenProvider).getClient();
-    private com.tsystems.tm.acc.tests.osr.a4.commissioning.client.invoker.ApiClient a4CommissioningClient = new A4CommissioningClient(authTokenProvider).getClient();
+    private final com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.ApiClient a4CommissioningClient = new A4CommissioningClient(authTokenProvider).getClient();
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
     private static String CORRELATION_ID;
 
@@ -86,10 +86,10 @@ public class WgA4PreProvisioningRobot {
     public Response startCallBackA4AccessLineDeprovisioningWithoutChecks(String tpUuid) {
         return a4CommissioningClient
                 .callback()
-                .callbackDeprovisioning()
+                .callbackDeprovisioningWithUuid()
+                .uuidPath(tpUuid)
                 .xCallbackCorrelationIdHeader(tpUuid)
-                .body(new DeprovisioningResponseHolder())
-
+                .body(new com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.DeprovisioningResponseHolder())
                 .execute(voidCheck());
     }
 

@@ -5,10 +5,9 @@ import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-
-import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.invoker.GsonObjectMapper;
-import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.GsonObjectMapper;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.JSON;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
