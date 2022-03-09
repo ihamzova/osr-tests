@@ -123,7 +123,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     }
 
     @Test(dependsOnMethods = "dpuCommissioningDpuDemand", description = "DPU Decommissioning and DPU deletion incl DPU demand (device : SDX2221-04-CX) case")
-    @TmsLink("DIGIHUB-xxxxxxx")
+    @TmsLink("DIGIHUB-142189")
     @Description("(DPU Decommissioning incl DPU demand (device : SDX2221-04-CX) case")
     @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void dpuDeommissioningDpuDemand() {
