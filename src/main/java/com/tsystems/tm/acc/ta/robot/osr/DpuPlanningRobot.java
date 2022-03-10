@@ -69,9 +69,13 @@ public class DpuPlanningRobot {
 
     @Step("Validate DPU Demand")
     public void checkDpuDemandDomain(DpuDemand dpuDemandToValidate) {
-
         assertNotNull(dpuDemandToValidate.getDpuEndSz());
         assertEquals(String.valueOf(dpuDemandToValidate.getState()), "FULFILLED");
+    }
+
+    @Step("Validate DPU Demand after deletion")
+    public void checkDpuDemandAfterDeletionDomain(DpuDemand dpuDemandToValidate) {
+        assertNull(dpuDemandToValidate.getDpuEndSz());
     }
 
     @Step("Create DPU Demand: 400 error code")

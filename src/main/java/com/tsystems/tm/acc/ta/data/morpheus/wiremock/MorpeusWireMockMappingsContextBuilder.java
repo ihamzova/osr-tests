@@ -520,6 +520,8 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
         context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
         context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
         context.add(new PonInventoryStub().getLlcForDomainWithDpuDemands200(dpu));
+        context.add(new SealStub().postDomainDpuDpuDeconfiguration202(dpu));
+        context.add(new SealStub().postDomainDpuOltDeconfiguration202(dpu));
         return this;
     }
 
