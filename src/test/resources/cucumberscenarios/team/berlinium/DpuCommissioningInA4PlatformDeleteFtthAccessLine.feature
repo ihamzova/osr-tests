@@ -63,8 +63,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
     And the wg-a4-provisioning deprovisioning mock will respond HTTP code 202 when called the 2nd time, and delete the NSP
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
-    And 1 DPU deprovisioning request to wg-a4-provisioning mock was triggered with Line ID "DEU.DTAG.12345"
-    And the DPU deprovisioning request to wg-a4-provisioning mock is repeated after 3 minutes
+#    And 1 DPU deprovisioning request to wg-a4-provisioning mock was triggered with Line ID "DEU.DTAG.12345"
+#    And the DPU deprovisioning request to wg-a4-provisioning mock is repeated after 3 minutes
     When the wg-a4-provisioning mock sends the callback
     Then the NSP FTTH does not exist in A4 resource inventory anymore
     And the TP does not exist in A4 resource inventory anymore

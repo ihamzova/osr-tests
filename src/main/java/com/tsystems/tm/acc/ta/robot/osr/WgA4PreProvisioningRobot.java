@@ -4,17 +4,16 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.osr.A4CommissioningClient;
 import com.tsystems.tm.acc.ta.api.osr.WgA4ProvisioningClient;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.model.DeprovisioningResponseHolder;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.A4AccessLineRequestDto;
-import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_10_0.client.model.TpRefDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.A4AccessLineRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +33,7 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class WgA4PreProvisioningRobot {
 
-    private ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient(authTokenProvider).getClient();
-    private final com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.ApiClient a4CommissioningClient = new A4CommissioningClient(authTokenProvider).getClient();
+    private final ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient(authTokenProvider).getClient();
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
     private static String CORRELATION_ID;
 
@@ -55,11 +53,11 @@ public class WgA4PreProvisioningRobot {
                 .deprovisioningProcess()
                 .startA4AccessLineDeprovisioning()
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
@@ -84,7 +82,7 @@ public class WgA4PreProvisioningRobot {
     }
 
     public Response startCallBackA4AccessLineDeprovisioningWithoutChecks(String tpUuid) {
-        return a4CommissioningClient
+        return wgA4ProvisioningClient
                 .callback()
                 .callbackDeprovisioningWithUuid()
                 .uuidPath(tpUuid)
