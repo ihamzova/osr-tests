@@ -4,6 +4,7 @@ import com.tsystems.tm.acc.domain.osr.csv.A4ResourceInventoryEntry;
 import com.tsystems.tm.acc.ta.csv.CsvStream;
 import com.tsystems.tm.acc.ta.data.osr.generators.A4ImportCsvDataGenerator;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ImportPage;
 import io.qameta.allure.Step;
 
 import java.io.File;
@@ -23,6 +24,11 @@ public class A4ImportCsvRobot {
         } catch (IOException e) {
             throw new RuntimeException("cant build csv", e);
         }
+    }
+    @Step("open ui, log in, and goTo import-page")
+    public void openImportPage() {
+        A4ImportPage
+                .login();
     }
 
 }

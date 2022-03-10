@@ -1,10 +1,13 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.tsystems.tm.acc.data.osr.models.pluraltnpdata.PluralTnpDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PluralTnpData;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PluralStub;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4PluralImporterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -12,63 +15,40 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.response.Response;
+
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 public class WiremockPluralSteps {
 
     private PluralTnpData pluralTnpData;
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4InventoryImporterRobot a4InventoryImporter = new A4InventoryImporterRobot();
+    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final TestContext testContext;
     private OsrTestContext osrTestContext;
-    private final A4InventoryImporterRobot a4Importer = new A4InventoryImporterRobot();
+    private final A4PluralImporterRobot a4Importer = new A4PluralImporterRobot();
     public WiremockPluralSteps(TestContext testContext) {
         this.testContext = testContext;
     }
 
     // -----=====[ GIVEN ]=====-----
 
-    // test
-    @Given("the plural mock will respond HTTP code 200 when called")
-    public void PluralWiremockWillRespondHTTPCode200WhenCalled() {
-        // INPUT FROM SCENARIO CONTEXT
+    @Given("the plural mock will respond HTTP code 201 when called")
+    public void PluralWiremockWillRespondHTTPCode201WhenCalled() {
+
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
         pluralTnpData = new PluralTnpData();
-       // uewegData = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.defaultUeweg);
-       // pluralTnpData = osrTestContext.getData().getPluralTnpDataDataProvider().get(PluralTnpDataCase.defaultPluralTnp);
-        pluralTnpData.setNegName("testnegname");
-        pluralTnpData.setVpsz("testvpsz");
-        pluralTnpData.setFachsz("testfsz");
+        pluralTnpData = testContext.getOsrTestContext().getData().getPluralTnpDataDataProvider().get(PluralTnpDataCase.defaultPluralTnp);
 
-
-        // ACTION
         wiremock
-                //.add(new PluralStub().postPluralResponce())
-                //.add(new PluralStub().postPluralResponce200(pluralTnpData))
-                .add(new PluralStub().postPluralResponce200(pluralTnpData))
+                .add(new PluralStub().postPluralResponce201(pluralTnpData))
                 .publish();
     }
 
 
-    @Given("the program say hello")
-    public void sayHello() {
-        // ACTION
-        System.out.println("+++ Hello!");
-    }
-
-    @And("response from plural for {string} was received")
-    public void responseFromPluralForWasReceived(String arg0) {
-        // json an inventory-importer übergeben
-        System.out.println("+++ Hi, I need a json-file!");
-        //a4InventoryImporter.
-    }
-
-
-// response from plural for NEG-name was received
-
-
-
-    @Given("Mock negname {string}")
-    public void PluralMock(String negName) {
+    @Given("create Mock")
+    public void createPluralMock() {
         // GIVEN / ARRANGE
         //A4NetworkElementGroup neg = osrTestContext.getData().getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
         //UewegData negName = osrTestContext.getData().getA4ImportCsvDataDataProvider().get(UewegDataCase.defaultUeweg);
@@ -77,7 +57,7 @@ public class WiremockPluralSteps {
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 
         wiremock
-                .add(new PluralStub().postPluralCallbackResponce(negName))
+                .add(new PluralStub().postPluralResponce())
                // .add(new PluralStub().postPlural)
 
                 .publish();
@@ -96,9 +76,32 @@ public class WiremockPluralSteps {
         System.out.println("+++ Assert zu NEGname: "+negName);
         //a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
         //a4Inventory.getExistingNetworkElementLink(nelData.getUuid());
+        sleepForSeconds(10);
     }
 
+    @When("trigger auto-import request to importer")
+    public void triggerAutoImportRequestToImporter() {
+        //a4Importer.doPluralImport(pluralTnpData.getNegName());
+        final Response response = a4Importer.doPluralImport(pluralTnpData.getNegName());
 
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+
+    }
+
+    @And("delete neg in ri")
+    public void deleteNegInRi() {
+        a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(pluralTnpData.getNegName());
+    }
+
+    @Then("positive response from importer received")
+    public void positiveResponseFromImporterReceived() {
+
+        Response foundresponse = (Response) testContext.getScenarioContext().getContext(Context.RESPONSE);
+        System.out.println("+++ foundresponse: "+foundresponse);
+
+
+    }
 
 
     // -----=====[ THENS ]=====-----

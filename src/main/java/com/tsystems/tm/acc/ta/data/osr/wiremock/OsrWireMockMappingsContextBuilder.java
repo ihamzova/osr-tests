@@ -22,7 +22,7 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
   }
 
   public OsrWireMockMappingsContextBuilder addPluralTnpMock(PluralTnpData pluralTnpData) {
-    context.add(new PluralStub().postPluralResponce200(pluralTnpData));
+    context.add(new PluralStub().postPluralResponce201(pluralTnpData));
     return this;
   }
 

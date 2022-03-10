@@ -21,6 +21,7 @@ public class A4InventoryImporterRobot {
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS));
 
     private final ApiClient a4RebellSync = new A4RebellSyncClient(authTokenProvider).getClient();
+   // private final ApiClient a4Importer = new A4InventoryImporterClient().getClient();
 
     @Step("Sync all NELs for NE (identified by VPSZ & FSZ) with Links from REBELL")
     public void doRebellSync(A4NetworkElement neData) {
@@ -34,40 +35,26 @@ public class A4InventoryImporterRobot {
                 .body(srl)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
-
+/*
     @Step("import ne list of neg from Plural")
     public void doPluralImport(String negName) {
 
-        System.out.println("+++ A4InventoryImporterRobot: habe NEGname bekommen: "+negName);
-        // auf Plural-Import anpassen!
-        /*
-        SyncRebellLinks srl = new SyncRebellLinks();
-        srl.setVpsz(neData.getVpsz());
-        srl.setFsz(neData.getFsz());
+        System.out.println("+++ A4InventoryImporter: frage folgende NEG bei Plural an: "+negName);
+        //  request an Importer
+        // /pluralAlignment?nameNeg=49/6808/1/POD/01
+        // https://a4-inventory-importer-app-berlinium-03.priv.cl01.tmagic-dev.telekom.de/pluralAlignment?nameNEG=49/30/111/POD/02
 
-        a4RebellSync
+        a4Plural
                 .syncRebellLinks()
                 .syncRebellLinks()
-                .body(srl)
+                .
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
-         */
-    }
 
-    /*
-    @Step("Plural")
-    public void doPluralImport(A4NetworkElement neData) {
-        SyncRebellLinks srl = new SyncRebellLinks();
-        srl.setVpsz(neData.getVpsz());
-        srl.setFsz(neData.getFsz());
+ */
 
-        a4RebellSync
-                .syncRebellLinks()
-                .syncRebellLinks()
-                .body(srl)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
 
-     */
+
+
 
 }
