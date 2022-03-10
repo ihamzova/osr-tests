@@ -9,13 +9,12 @@ import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.a4.commissioning.client.model.DeprovisioningResponseHolder;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.A4AccessLineRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.DeprovisioningResponseHolder;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.TpRefDto;
 import io.qameta.allure.Step;
-import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -23,7 +22,8 @@ import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
@@ -79,16 +79,6 @@ public class WgA4PreProvisioningRobot {
         log.info("Callback: " + requests);
         assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
-    }
-
-    public Response startCallBackA4AccessLineDeprovisioningWithoutChecks(String tpUuid) {
-        return wgA4ProvisioningClient
-                .callback()
-                .callbackDeprovisioningWithUuid()
-                .uuidPath(tpUuid)
-                .xCallbackCorrelationIdHeader(tpUuid)
-                .body(new com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_11_0.client.model.DeprovisioningResponseHolder())
-                .execute(voidCheck());
     }
 
 }
