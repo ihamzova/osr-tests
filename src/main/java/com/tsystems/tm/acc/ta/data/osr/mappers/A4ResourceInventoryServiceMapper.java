@@ -34,6 +34,7 @@ public class A4ResourceInventoryServiceMapper {
     public static final String LOCKED_NSP_USAGE = "lockedForNspUsage";
     public static final String SUPPORTED_DIAG_NAMES = "supportedDiagnosesName";
     public static final String SUPPORTED_DIAG_VERSION = "supportedDiagnosesSpecificationVersion";
+    public static final String OLT_PORT_ONT_LAST_REGISTERED_ON = "oltPortOntLastRegisteredOn";
 
     // Create logicalResource representation of network element group with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElementGroup negData, String operationalState) {
