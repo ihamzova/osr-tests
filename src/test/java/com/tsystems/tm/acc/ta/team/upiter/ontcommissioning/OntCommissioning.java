@@ -453,4 +453,14 @@ public class OntCommissioning extends GigabitTest {
     assertNotNull(attenuationMeasurementsCallback.getResponse().getTransmittedPowerAtOltToAllOnus());
     assertNotNull(attenuationMeasurementsCallback.getResponse().getTransmittedPowerOnu());
   }
+  @Test
+  @TmsLink("DIGIHUB-64806")
+  @Description("Search Access Line information by criteria in OOO")
+  public void getAccessLineInformation() {
+    AccessLineDto accessLine = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+                    AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
+            .get(0);
+    List<com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.AccessLineInformationDto> actualInfo = ontOltOrchestratorRobot.getAccessLineInformation(accessLine);
+    actualInfo.contains(accessLine);
+  }
 }
