@@ -51,7 +51,7 @@ public class AccessLinesSearchTest extends GigabitTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
-//    wgAccessProvisioningRobot.changeFeatureToogleHomeIdPoolState(true);
+    wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         accessLine = new AccessLine();
