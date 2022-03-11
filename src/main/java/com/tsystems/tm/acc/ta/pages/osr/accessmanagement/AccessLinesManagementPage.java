@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -168,15 +167,15 @@ public class AccessLinesManagementPage {
 
     @Step("Change Default NE Profile State to Inactive")
     public AccessLinesManagementPage changeDefaultProfileStateToInactive() {
-        $(NE_DEFAULT_PROFILE_STATE_INPUT).click();
-        $(INACTIVE_STATE).click();
+        $(NE_DEFAULT_PROFILE_STATE_INPUT).scrollIntoView(true).click();
+        $(INACTIVE_STATE).hover().shouldBe(visible).click();
         return this;
     }
 
     @Step("Change Default NL Profile State to Inactive")
     public AccessLinesManagementPage changeDefaultNLProfileStateToInactive() {
-        $(NL_DEFAULT_PROFILE_STATE_INPUT).click();
-        $(INACTIVE_STATE).click();
+        $(NL_DEFAULT_PROFILE_STATE_INPUT).scrollIntoView(true).click();
+        $(INACTIVE_STATE).hover().shouldBe(visible).click();
         return this;
     }
 
