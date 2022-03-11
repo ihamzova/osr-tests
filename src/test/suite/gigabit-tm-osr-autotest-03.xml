@@ -22,12 +22,12 @@
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreationTest"/>
             <class name="com.tsystems.tm.acc.ta.domain.a4functionality.FulfillmentL2BsaProductTest"/>
         </classes>
-    </test>
+    </test-->
     <test name="DPU-Commissioning cases (for SDX2221-16-TP device)" thread-count="1">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221"/>
         </classes>
-    </test-->
+    </test>
     <test name="DPU creation and DPU-Commissioning incl DPU demand (device : SDX2221-04-CX) case" thread-count="1">
         <classes>
             <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221_inclusive_dpuDemand"/>
