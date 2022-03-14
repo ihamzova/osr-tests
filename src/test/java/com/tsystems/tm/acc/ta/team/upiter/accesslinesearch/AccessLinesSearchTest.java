@@ -51,9 +51,9 @@ public class AccessLinesSearchTest extends GigabitTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
-    wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
-        accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+        accessLineRiRobot = new AccessLineRiRobot();
+        wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLine = new AccessLine();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
         accessLinesByEndSzSlotPort = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSzSlotPort);
@@ -370,7 +370,6 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkNLProfiles("ACTIVE", "NULL");
         accessLinesManagementPage.clickEditButton().startA4ConnectivityTest();
-
     }
 
     @Test
@@ -389,11 +388,14 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .changeOntStateToOffline()
                 .waitUntilNeededStatus("OFFLINE")
                 .clickEditButton()
-                .startConnectivityTest().waitUntilNeededStatus("ONLINE").closeCurrentTab();
+                .startConnectivityTest()
+                .closeNotificationButton()
+                .clickAbbrechenButton();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
                 .searchAccessLinesByLineID(accessLine.getLineId())
                 .clickSearchButton()
-                .clickMagnifyingGlassForLine(0);
+                .clickMagnifyingGlassForLine(0)
+                .waitUntilNeededStatus("ONLINE");
         accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
                 "INACTIVE", "ACTIVE");
         assertEquals(accessLinesManagementPage.getOntState(), OntState.ONLINE.toString());
