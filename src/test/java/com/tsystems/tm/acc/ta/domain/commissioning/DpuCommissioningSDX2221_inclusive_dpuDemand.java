@@ -133,6 +133,13 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         dpuCommissioningUiRobot.deleteDpuDevice(dpuDevice);
         dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
         dpuPlanningRobot.checkDpuDemandAfterDeletionDomain(dpuPlanningRobot.findDpuDemandByFolIdDomain(dpuDemand));
+        accessLineRiRobot.checkFttbLineParameters(oltDevice, 0);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDevice,
+                oltDevice,
+                0,
+                1, 1);
+        accessLineRiRobot.checkFtthPortParameters(oltDevice);
+
 
     }
 }
