@@ -685,7 +685,7 @@ public class A4ResourceInventoryRobot {
         // NEG name has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
         final List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
-
+System.out.println("+++ Größe der NEG-Liste: "+negList.size());
         negList.forEach(neg -> {
             final List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
 

@@ -71,4 +71,12 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspL2Bsa.getUuid(), method, count);
     }
 
+    @Then("update notifications was sent to NEMO")
+    public void updateNotificationsWasSentToNEMO() {
+        // checks for 1xNEG, 1xNE, 20xNEP
+        thenANegUpdateNotificationWasSentToNemo(1, "PUT");
+        thenANeUpdateNotificationWasSentToNemo(1, "PUT");
+        thenANepUpdateNotificationWasSentToNemo(20, "PUT");
+        System.out.println("+++ Nemo-Check NEG ok!");
+    }
 }

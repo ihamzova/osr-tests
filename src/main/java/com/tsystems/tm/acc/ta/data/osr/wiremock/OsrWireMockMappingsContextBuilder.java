@@ -21,10 +21,16 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     super(context);
   }
 
+  /*
   public OsrWireMockMappingsContextBuilder addPluralTnpMock(PluralTnpData pluralTnpData) {
     context.add(new PluralStub().postPluralResponce201(pluralTnpData));
     return this;
   }
+  public OsrWireMockMappingsContextBuilder addPluralMock() {
+    context.add(new PluralStub().postPluralResponce());
+    return this;
+  }
+   */
 
   public OsrWireMockMappingsContextBuilder addRebellMock(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
     context.add(new RebellStub().getUeweg200(uewegData, neA, neB));
@@ -89,11 +95,6 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
   public OsrWireMockMappingsContextBuilder addNemoMock() {
     context.add(new NemoStub().putNemoUpdate201());
     context.add(new NemoStub().deleteNemoUpdate204());
-    return this;
-  }
-
-  public OsrWireMockMappingsContextBuilder addPluralMock() {
-    context.add(new PluralStub().postPluralResponce());
     return this;
   }
 

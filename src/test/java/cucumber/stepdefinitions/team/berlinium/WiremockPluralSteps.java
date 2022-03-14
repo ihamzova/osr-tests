@@ -1,5 +1,6 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.data.osr.models.pluraltnpdata.PluralTnpDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.PluralTnpData;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PluralStub;
@@ -9,6 +10,9 @@ import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4PluralImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.And;
@@ -16,8 +20,13 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static org.testng.Assert.assertEquals;
 
 public class WiremockPluralSteps {
 
@@ -45,8 +54,7 @@ public class WiremockPluralSteps {
                 .add(new PluralStub().postPluralResponce201(pluralTnpData))
                 .publish();
     }
-
-
+/*
     @Given("create Mock")
     public void createPluralMock() {
         // GIVEN / ARRANGE
@@ -63,6 +71,8 @@ public class WiremockPluralSteps {
                 .publish();
 
     }
+
+ */
 
     @When("Import negname {string}")
     public void importNegname(String negName) {
@@ -89,19 +99,61 @@ public class WiremockPluralSteps {
 
     }
 
-    @And("delete neg in ri")
-    public void deleteNegInRi() {
+
+    @And("delete neg in ri recursively")
+    public void deleteNegInRiRecursively() {
         a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(pluralTnpData.getNegName());
     }
 
     @Then("positive response from importer received")
-    public void positiveResponseFromImporterReceived() {
+    public void positiveResponseFromImporterReceived() throws JsonProcessingException {
 
         Response foundresponse = (Response) testContext.getScenarioContext().getContext(Context.RESPONSE);
-        System.out.println("+++ foundresponse: "+foundresponse);
+        System.out.println("+++ foundresponse: "+foundresponse.getBody().prettyPrint());
 
+        String str = "["+foundresponse.getBody().prettyPrint()+"]";
+        JSONArray array = new JSONArray(str);
+        for(int i=0; i < array.length(); i++)
+        {
+            JSONObject object = array.getJSONObject(i);
+            System.out.println("+++ "+object.getString("numberCreatedNetworkElementPorts"));
+            assertEquals(object.getString("numberCreatedNetworkElementPorts"), "20");
+            System.out.println("+++ "+object.getString("numberNemoUpdateTasks"));
+            assertEquals(object.getString("numberNemoUpdateTasks"), "22");
+            System.out.println("+++ "+object.getString("numberCreatedNetworkElements"));
+            assertEquals(object.getString("numberCreatedNetworkElements"), "1");
+        }
 
     }
+
+
+
+    @Then("ri was created with neg and ne and neps")
+    public void riWasCreatedWithNegAndNeAndNeps() {
+        /*
+                A4riRobot:
+                getNetworkElementGroupsByName
+                getNetworkElementsByNegUuid
+                getNetworkElementPortsByNetworkElement
+         */
+
+        List<NetworkElementGroupDto> networkElementGroupDtoList = a4ResourceInventory.getNetworkElementGroupsByName(pluralTnpData.getNegName());
+        assertEquals(networkElementGroupDtoList.size(), 1);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NEG, networkElementGroupDtoList.get(0).getUuid());
+
+        List<NetworkElementDto> networkElementDtoList = a4ResourceInventory.getNetworkElementsByNegUuid(networkElementGroupDtoList.get(0).getUuid());
+        assertEquals(networkElementDtoList.size(), 1);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE, networkElementDtoList.get(0).getUuid());
+
+        List<NetworkElementPortDto> networkElementPortDtoList = a4ResourceInventory.getNetworkElementPortsByNetworkElement(networkElementDtoList.get(0).getUuid());
+        assertEquals(networkElementPortDtoList.size(), 20);
+
+    }
+
 
 
     // -----=====[ THENS ]=====-----
