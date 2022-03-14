@@ -728,6 +728,15 @@ public class AccessLineRiRobot {
     }
   }
 
+  public List<AccessLineDto> getAccessLinesByHomeIds(List<String> homeIds) {
+        return homeIds.stream().map(homeId -> accessLineResourceInventory.accessLineController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto()
+                        .homeId(homeId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                .flatMap(List::stream).collect(Collectors.toList());
+  }
+
   @Step("Get AccessLines with NetworkSwitching Profiles")
   public List<AccessLineDto> getAccessLinesWithSwitchingProfile(PortProvisioning port) {
     List<AccessLineDto> accessLinesWithSwitchingProfile = getAccessLinesByPort(port).stream()
@@ -830,6 +839,7 @@ public class AccessLineRiRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
             .flatMap(List::stream).collect(Collectors.toList());
   }
+
     @Step("Get AllocatedOnuId by AccessLine")
     public List<Integer> getAllocatedOnuIdFromAccessLine(AccessLineDto accessLine) {
         return accessLineResourceInventory.allocatedOnuIdController()
@@ -850,6 +860,11 @@ public class AccessLineRiRobot {
     @Step("Get AllocatedAnpTags from the NetworkSwitchingProfiles")
     public List<Integer> getAllocatedAnpTagsFromNsProfile(List<AccessLineDto> accessLines) {
         return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile().getAnpTag().getAnpTag()).collect(Collectors.toList());
+    }
+
+    @Step("Get AllocatedAnpTags from the NetworkSwitchingProfiles")
+    public List<AllocatedAnpTagDto> getAllocatedAnpTagsFromNsProfileV2(List<AccessLineDto> accessLines) {
+        return accessLines.stream().map(accessLineDto -> accessLineDto.getNetworkSwitchingProfile().getAnpTag()).collect(Collectors.toList());
     }
 
     @Step("Get NetworkSwitchingProfiles")

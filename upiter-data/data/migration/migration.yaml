@@ -118,7 +118,7 @@ values:
 name: migratedPortWithoutHomeIdPool
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  endSz: "49/30/179/76G0"
+  endSz: "49/30/179/76G1"
   slotNumber: "3"
   portNumber: "0"
   homeIdPool: 0
@@ -155,7 +155,7 @@ values:
 name: referenceWithoutHomeIdPool
 template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
 values:
-  endSz: "49/30/179/76G0"
+  endSz: "49/30/179/76G1"
   slotNumber: "3"
   portNumber: "0"
   portType: "PON"
@@ -163,7 +163,7 @@ values:
 name: uplinkReferenceWithoutHomeIdPool
 template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ReferenceDto
 values:
-  endSz: "49/30/179/76G0"
+  endSz: "49/30/179/76G1"
   slotNumber: "19"
   portNumber: "0"
   portType: "ETHERNET"

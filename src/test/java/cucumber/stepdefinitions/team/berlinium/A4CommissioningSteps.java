@@ -1,7 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4CommissioningRobot;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.When;
@@ -11,7 +11,7 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 public class A4CommissioningSteps {
 
-    private final WgA4PreProvisioningRobot wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
+    private final A4CommissioningRobot a4Commissioning = new A4CommissioningRobot();
     private final TestContext testContext;
 
     public A4CommissioningSteps(TestContext testContext) {
@@ -29,7 +29,7 @@ public class A4CommissioningSteps {
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
-        final Response response = wgA4PreProvisioningRobot.startCallBackA4AccessLineDeprovisioningWithoutChecks(tp.getUuid());
+        final Response response = a4Commissioning.startCallBackA4AccessLineDeprovisioningWithoutChecks(tp.getUuid());
 
         // Add a bit of waiting time here, to give process the chance to complete
         sleepForSeconds(2);

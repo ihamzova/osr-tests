@@ -44,6 +44,15 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nep.getUuid(), method, count);
     }
 
+    @Then("{int} {string} NEL update notification(s) was/were sent to NEMO")
+    public void thenANelUpdateNotificationWasSentToNemo(int count, String method) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+
+        // ACTION
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nel.getUuid(), method, count);
+    }
+
     @Then("{int} {string} NSP FTTH update notification(s) was/were sent to NEMO")
     public void thenANspFtthUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT

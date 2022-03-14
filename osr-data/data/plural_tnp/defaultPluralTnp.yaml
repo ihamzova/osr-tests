@@ -1,0 +1,6 @@
+name: defaultUeweg
+template: com.tsystems.tm.acc.ta.data.osr.models.PluralTnpData
+values:
+  negName: "49/${randomLong, 1000, 9999}/1/POD/01"
+  vpsz: "49/${randomLong, 1000, 9999}/1"
+  fachsz: "7KH0"

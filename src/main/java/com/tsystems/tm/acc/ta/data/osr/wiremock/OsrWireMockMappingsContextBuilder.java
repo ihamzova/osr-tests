@@ -90,6 +90,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
+  public OsrWireMockMappingsContextBuilder addPluralMock() {
+    context.add(new PluralStub().postPluralCallbackResponce202());
+    return this;
+  }
+
   public OsrWireMockMappingsContextBuilder addMerlinMock() {
     context.add(new MerlinStub().postMerlinCallbackResponce202());
     return this;

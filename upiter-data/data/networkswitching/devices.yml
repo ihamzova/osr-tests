@@ -1,4 +1,4 @@
-name: Source_49_30_179_76H1
+name: EndSz_49_30_179_76H1_3_0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76H1"
@@ -7,7 +7,7 @@ values:
   homeIdPool: 32
   accessLinesCount: 16
 ---
-name: Target_49_911_1100_76H1
+name: EndSz_49_911_1100_76H1_1_0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H1"
@@ -16,7 +16,7 @@ values:
   homeIdPool: 32
   accessLinesCount: 32
 ---
-name: SourceRB_49_30_179_76H1
+name: EndSz_49_30_179_76H1_3_1
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76H1"
@@ -25,7 +25,7 @@ values:
   homeIdPool: 32
   accessLinesCount: 16
 ---
-name: TargetRB_49_911_1100_76H1
+name: EndSz_49_911_1100_76H1_1_1
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H1"
@@ -34,7 +34,7 @@ values:
   homeIdPool: 32
   accessLinesCount: 16
 ---
-name: Source_49_30_179_76H1_Update
+name: EndSz_49_30_179_76H1_3_2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76H1"
@@ -43,7 +43,7 @@ values:
   homeIdPool: 32
   accessLinesCount: 16
 ---
-name: Target_49_911_1100_76H1_Update
+name: EndSz_49_911_1100_76H1_1_2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/911/1100/76H1"

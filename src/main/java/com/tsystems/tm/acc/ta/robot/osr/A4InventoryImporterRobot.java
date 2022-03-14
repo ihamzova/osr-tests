@@ -34,5 +34,17 @@ public class A4InventoryImporterRobot {
                 .body(srl)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
+    @Step("Plural")
+    public void doPluralImport(A4NetworkElement neData) {
+        SyncRebellLinks srl = new SyncRebellLinks();
+        srl.setVpsz(neData.getVpsz());
+        srl.setFsz(neData.getFsz());
+
+        a4RebellSync
+                .syncRebellLinks()
+                .syncRebellLinks()
+                .body(srl)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
 
 }

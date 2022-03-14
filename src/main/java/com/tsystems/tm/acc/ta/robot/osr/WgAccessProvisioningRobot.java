@@ -270,8 +270,8 @@ public class WgAccessProvisioningRobot {
     log.info("toggleState for {} = {}", FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING, toggleState);
   }
 
-  @Step(" - сhange feature toggle state")
-  public void changeFeatureToogleHomeIdPoolState(boolean toggleState) {
+  @Step("disable-home-id-pools-creation - сhange feature toggle state")
+  public void changeFeatureToggleHomeIdPoolState(boolean toggleState) {
     if (toggleState) {
       unleashClient.enableToggle(FEATURE_TOGGLE_CREATE_HOME_ID_POOL);
     } else {
