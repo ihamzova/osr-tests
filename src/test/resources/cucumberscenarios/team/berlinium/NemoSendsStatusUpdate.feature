@@ -261,7 +261,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     Given a NSP FTTH-Access with operational state "NOT_WORKING" and oltPortOntLastRegisteredOn "oldPortUuid" is existing in A4 resource inventory
     When NEMO sends a request to update NSP FTTH-Access without operationalState nor oltPortOntLastRegisteredOn
     Then the request is responded with HTTP code 201
-    And the NSP Ftth-Access operationalState is still "NOT_WORKING"
+    And the NSP FTTH-Access operationalState is still "NOT_WORKING"
     And the NSP FTTH-Access oltPortOntLastRegisteredOn is still "oldPortUuid"
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO

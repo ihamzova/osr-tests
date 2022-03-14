@@ -677,14 +677,14 @@ public class A4ResInvSteps {
     }
 
     @Then("the (new )NSP FTTH-Access oltPortOntLastRegisteredOn is (now )(updated to )(still ){string}( in the A4 resource inventory)")
-    public void thenTheNspFtthAccessOltPortOntLastRegisteredOnIsUpdatedTo(String newPortUuid) {
+    public void thenTheNspFtthAccessOltPortOntLastRegisteredOnIsUpdatedTo(String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
         // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
-        assertEquals(newPortUuid, nspFtthAccess.getOltPortOntLastRegisteredOn());
+        assertEquals(portUuid, nspFtthAccess.getOltPortOntLastRegisteredOn());
     }
 
     @Then("the NSP FTTH-Access lastUpdateTime is updated")
