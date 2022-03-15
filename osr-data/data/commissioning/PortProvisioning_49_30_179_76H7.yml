@@ -6,3 +6,4 @@ values:
   portNumber: "3"
   homeIdPool: 0
   backhaulId: 1
+  accessLinesWG: 16
