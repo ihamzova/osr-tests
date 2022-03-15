@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedOnuIdDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.HomeIdDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.HomeIdStatus;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import org.testng.annotations.BeforeClass;
@@ -21,9 +22,17 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.assertEquals;
 
 @Epic("FTTH 1.7 Migration")
+@ServiceLog({
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        WG_ACCESS_PROVISIONING_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        ACCESS_LINE_PROFILE_CATALOG_MS
+})
 public class FtthMigration {
 
     private AccessLineRiRobot accessLineRiRobot;
@@ -62,9 +71,10 @@ public class FtthMigration {
 
     @Test
     @Description("Migration of an Assigned AccessLine with a subscriber_ne_profile, homeIdPool is created")
-    public void ftthMigrationWithHomeIdPool() {
+    public void ftthMigrationWithHomeIdPool() throws InterruptedException {
 
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
+        Thread.sleep(5000);
 
         //Step 1. Send access lines' DTOs to access-line-resource-inventory
         accessLineRiRobot.postAccessLine(migratedAccessLineWithHomeIdPool);
@@ -100,9 +110,10 @@ public class FtthMigration {
 
     @Test
     @Description("Migration of an Assigned AccessLine with a subscriber_ne_profile, homeIdPool is not created")
-    public void ftthMigrationWithoutHomeIdPool() {
+    public void ftthMigrationWithoutHomeIdPool() throws InterruptedException {
 
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(true);
+        Thread.sleep(5000);
 
         //Step 1. Send access lines' DTOs to access-line-resource-inventory
         accessLineRiRobot.postAccessLine(migratedAccessLineWithoutHomeIdPool);

@@ -34,6 +34,7 @@ public class AccessLinesManagementPage {
     private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
     private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
     private static final By TERMINATION_BUTTON = byQaData("btn-terminate");
+    private static final By ABBRECHEN_BUTTON = byQaData("btn-cancel-edit");
 
     private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
     private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
@@ -99,9 +100,24 @@ public class AccessLinesManagementPage {
         return this;
     }
 
+    @Step("Click Abbrechen Button")
+    public AccessLinesManagementPage clickAbbrechenButton() {
+        $(ABBRECHEN_BUTTON).click();
+        return this;
+    }
+
+    @Step("Click termination button")
+    public AccessLinesManagementPage clickTerminationButton() {
+        $(TERMINATION_BUTTON).click();
+        $(BESTAETIGEN_TERMINATION_BUTTON).click();
+        $(NOTIFICATION).shouldHave(text("Der Kündigungsprozess wird gestartet. Das wird einige Zeit dauern. Bitte aktualisieren Sie die Seite einige Minuten später"));
+        closeNotificationButton();
+        return this;
+    }
+
     @Step("Get ONT State from NE Profile")
     public String getOntState() {
-        return $$(ONT_STATE).get(0).getValue();
+        return $(ONT_STATE).getValue();
     }
 
     @Step("Get ONT State from NE Profile")
@@ -224,8 +240,9 @@ public class AccessLinesManagementPage {
             Supplier<Boolean> checkOntStatus = () -> {
                 Boolean result = false;
                 try {
-                    getOntState();
-                    result = getOntState().contains(expectedStatus);
+                    refresh();
+                    result = getOntState()
+                            .contains(expectedStatus);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -334,16 +351,8 @@ public class AccessLinesManagementPage {
     }
 
     @Step("Close Notification button")
-    public void closeNotificationButton() {
+    public AccessLinesManagementPage closeNotificationButton() {
         $(CLOSE_NOTIFICATION_BUTTON).click();
-    }
-
-    @Step("Click termination button")
-    public AccessLinesManagementPage clickTerminationButton() {
-        $(TERMINATION_BUTTON).click();
-        $(BESTAETIGEN_TERMINATION_BUTTON).click();
-        $(NOTIFICATION).shouldHave(text("Der Kündigungsprozess wird gestartet. Das wird einige Zeit dauern. Bitte aktualisieren Sie die Seite einige Minuten später"));
-        closeNotificationButton();
         return this;
     }
 }
