@@ -130,7 +130,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         oltDevice.setAccessLinesWG(16);
 
         dpuCommissioningUiRobot.startDpuDecommissioning(dpuDevice);
-        dpuCommissioningUiRobot.checkDpuDeommissioningResult(dpuDevice);
+        dpuCommissioningUiRobot.checkDpuDecommissioningResult(dpuDevice);
 
         dpuCommissioningUiRobot.deleteDpuDevice(dpuDevice);
         dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);

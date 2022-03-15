@@ -123,6 +123,7 @@ public class DpuCommissioningUiRobot {
                 .bngDownlinkPortEquipmentBusinessRefEndSzQuery(dpuDevice.getBngEndsz())
                 .bngDownlinkPortEquipmentBusinessRefPortNameQuery(dpuDevice.getBngDownlinkPort())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+        Assert.assertEquals(ancpIpSubnetList.size(), 2L, "AncpIpSubnet size missmatch exist after commissioning");
     }
 
     @Step("Start DPU decommissioning process")
@@ -140,7 +141,7 @@ public class DpuCommissioningUiRobot {
     }
 
     @Step("Checks data in ri after dpu decommissioning process")
-    public void checkDpuDeommissioningResult(DpuDevice dpuDevice) {
+    public void checkDpuDecommissioningResult(DpuDevice dpuDevice) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
                 .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
@@ -165,7 +166,7 @@ public class DpuCommissioningUiRobot {
                 .bngDownlinkPortEquipmentBusinessRefPortNameQuery(dpuDevice.getBngDownlinkPort())
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
         Assert.assertEquals(ancpIpSubnetList.size(), 1L, "AncpIpSubnet size missmatch exist after decommissioning");
-        Assert.assertEquals(ancpIpSubnetList.get(0).getAncpIpSubnetType(), AncpIpSubnetType.OLT, "AncpIpSubnetType not OLT after decommissioning");
+        Assert.assertEquals(ancpIpSubnetList.get(0).getAncpIpSubnetType(), AncpIpSubnetType.OLT.toString(), "AncpIpSubnetType not OLT after decommissioning");
 
         List<Uplink> uplinkList = uplinkResourceInventoryManagementClient.getClient().uplink().listUplink()
                 .portsEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));

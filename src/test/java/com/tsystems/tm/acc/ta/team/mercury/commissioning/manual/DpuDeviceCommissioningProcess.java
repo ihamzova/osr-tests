@@ -203,7 +203,7 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
     Thread.sleep(1000);
     WebDriverRunner.getWebDriver().navigate().refresh();
 
-    dpuCommissioningUiRobot.checkDpuDeommissioningResult(dpuDevice);
+    dpuCommissioningUiRobot.checkDpuDecommissioningResult(dpuDevice);
 
     dpuCommissioningUiRobot.deleteDpuDevice(dpuDevice);
     dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
