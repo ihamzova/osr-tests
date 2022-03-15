@@ -22,6 +22,7 @@ public class A4ImportPage {
     public static final By A4_INVENTORY_IMPORTER_DATEI_AUSWAEHLEN_BUTTON_LOCATOR = byXpath("//input[@type=\"file\"]");
     public static final By A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR = By.id("btnUploadCSV");
     public static final By A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR = By.id("UploadMessage");
+    public static final By A4_INVENTORY_IMPORTER_PLURAL_FIELD_LOCATOR = By.id("inputNEG");
 
     @Step("Validate page")
     public A4ImportPage validate() {
@@ -29,6 +30,9 @@ public class A4ImportPage {
         assertContains(url(), ENDPOINT);
         return this;
     }
+
+
+
 
     @Step("Login")
     public static A4ImportPage login() {
