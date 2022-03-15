@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.networkswitching;
 
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
@@ -10,14 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
 
 import java.net.URL;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selectors.byXpath;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
@@ -37,6 +39,7 @@ public class NetworkSwitchingPage {
   private static final By PORT_TO_PORT_PREPARE_BUTTON = byQaData("port-to-port-options-btn");
   private static final By GANZEN_PON_PORT_UMSCHALTEN = byText("Ganzen PON Port umsсhalten");
   private static final By HOMEIDS_MANUELLE_AUSWAHL = byText("HomeIDs manuelle Auswahl");
+  private static final By VORBETEITUNG_STARTEN  = byQaData("port-to-port-btn");
   private static final By CSV_IMPORT = byText("CSV Import");
   private static final By SHOW_DEVICE_BUTTON = byQaData("slot-to-slot-prepare-btn");
   private static final By ADD_ROW_BUTTON = byQaData("add-row-btn");
@@ -77,6 +80,9 @@ public class NetworkSwitchingPage {
   private static final By PACKAGE_ID_PREPARATION_TAB = byXpath("//*[@class='package-polling--id']//a");
   private static final By PACKAGE_ID_SEARCH_TAB = byXpath("//*[@class='p-element p-treetable-tbody']//a");
 
+  private static final By HOMEIDS_SUBMIT_SECTION = byXpath("//*[@class='submit-section__homeids']");
+  private static final By HOMEIDS = byClassName("submit-section__homeid");
+
   @Step("Open Network Switching page")
   public static NetworkSwitchingPage openPage() {
     URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
@@ -110,6 +116,47 @@ public class NetworkSwitchingPage {
     $(GANZEN_PON_PORT_UMSCHALTEN).click();
     $(NOTIFICATION).shouldHave(text("Die Vorbereitung für den Zielport hat begonnen"));
     closeNotificationButton();
+    return this;
+  }
+
+  @Step("Get HomeIds for partial port to port preparation")
+  public NetworkSwitchingPage clickPartialPortPreparation(PortProvisioning sourcePort, PortProvisioning targetPort) throws Exception {
+    safeJavaScriptClick($(SOURCE_ENDSZ_INPUT));
+    $(SOURCE_ENDSZ_INPUT).val(sourcePort.getEndSz());
+    safeJavaScriptClick($(SOURCE_SLOT_INPUT));
+    $(SOURCE_SLOT_INPUT).val(sourcePort.getSlotNumber());
+    safeJavaScriptClick($(SOURCE_PORT_INPUT));
+    $(SOURCE_PORT_INPUT).val(sourcePort.getPortNumber());
+
+    safeJavaScriptClick($(TARGET_ENDSZ_INPUT));
+    $(TARGET_ENDSZ_INPUT).val(targetPort.getEndSz());
+    safeJavaScriptClick($(TARGET_SLOT_INPUT));
+    $(TARGET_SLOT_INPUT).val(targetPort.getSlotNumber());
+    safeJavaScriptClick($(TARGET_PORT_INPUT));
+    $(TARGET_PORT_INPUT).val(targetPort.getPortNumber());
+
+    $(PORT_TO_PORT_PREPARE_BUTTON).click();
+    $(HOMEIDS_MANUELLE_AUSWAHL).click();
+    return this;
+  }
+
+  @Step("Collect HomeIds for partial switching")
+  public ElementsCollection collectHomeIds() {
+    $$(HOMEIDS).shouldHave(CollectionCondition.size(16));
+    return $$(HOMEIDS);
+  }
+
+  @Step("Select HomeIds for partial switching")
+  public List<String> selectHomeIdsForPreparation(int numberOfHomeIds) {
+    ElementsCollection homeIdElements = collectHomeIds();
+    for (int i = homeIdElements.size()-1; i >= numberOfHomeIds; i--) {
+      homeIdElements.get(i).click();
+    }
+    return homeIdElements.stream().map(homeIdElement -> homeIdElement.getText()).collect(Collectors.toList()).subList(0, numberOfHomeIds);
+  }
+
+  public NetworkSwitchingPage clickPrepareButton() {
+    $(VORBETEITUNG_STARTEN).click();
     return this;
   }
 

@@ -132,7 +132,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port
-    Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
+    Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP operationalState to "INSTALLING" and description to "newDescr"
     Then the request is responded with HTTP code 201
     And the NEP operationalState is updated to "INSTALLING"
@@ -143,7 +143,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without operational state
-    Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
+    Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP description to "newDescr"
     Then the request is responded with HTTP code 201
     And the NEP operationalState is still "NOT_WORKING"
@@ -154,7 +154,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without description
-    Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
+    Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP operational state to "WORKING"
     Then the request is responded with HTTP code 201
     And the NEP operationalState is updated to "WORKING"
@@ -165,7 +165,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without operationalState nor description
-    Given a NEP with operational state "NOT_WORKING" and and description "OldDescr" is existing in A4 resource inventory
+    Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
     When NEMO sends a request to update NEP without operationalState nor description
     Then the request is responded with HTTP code 201
     And the NEP operationalState is still "NOT_WORKING"
@@ -220,7 +220,53 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  # Add scenarios for PATCH NSP FTTH-ACCESS (equivalent to NEP, but use ontLastRegisteredOn instead of description)
+  # -- NemoStatusUpdate does not check, if NEP refernce is a real existing ONT- Port
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access
+    Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP FTTH-Access operationalState to "INSTALLING" and NEP reference to "newPortUuid"
+    Then the request is responded with HTTP code 201
+    And the NSP FTTH-Access operationalState is updated to "INSTALLING"
+    And the NSP FTTH-Access NEP reference is updated to "newPortUuid"
+    And the NSP FTTH-Access lastUpdateTime is updated
+    And 1 "PUT" NSP FTTH update notification was sent to NEMO
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without operational state
+    Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP FTTH-Access NEP reference to "newPortUuid"
+    Then the request is responded with HTTP code 201
+    And the NSP FTTH-Access operationalState is still "NOT_WORKING"
+    And the NSP FTTH-Access NEP reference is updated to "newPortUuid"
+    And the NSP FTTH-Access lastUpdateTime is updated
+    And 1 "PUT" NSP FTTH update notification was sent to NEMO
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without NEP reference
+    Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP FTTH-Access operational state to "WORKING"
+    Then the request is responded with HTTP code 201
+    And the NSP FTTH-Access operationalState is updated to "WORKING"
+    And the NSP FTTH-Access NEP reference is still "oldPortUuid"
+    And the NSP FTTH-Access lastUpdateTime is updated
+    And 1 "PUT" NSP FTTH update notification was sent to NEMO
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without operationalState nor NEP reference
+    Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP FTTH-Access without operationalState nor NEP reference
+    Then the request is responded with HTTP code 201
+    And the NSP FTTH-Access operationalState is still "NOT_WORKING"
+    And the NSP FTTH-Access NEP reference is still "oldPortUuid"
+    And the NSP FTTH-Access lastUpdateTime is updated
+    And 1 "PUT" NSP FTTH update notification was sent to NEMO
+
+  # Add scenario that only opState / oltPortOntLastRegisteredOn is patched, everything else not
 
 
   # ---------- PATCH NSP L2BSA ----------
