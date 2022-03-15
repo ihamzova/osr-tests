@@ -25,8 +25,6 @@ Feature: [DIGIHUB-142105][Berlinium] Receiving Inventory from Plural
 
 
 
-
-
 #  @berlinium @domain
  # @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
  # Scenario: create NEG in ri
