@@ -2,6 +2,8 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.data.osr.models.pluraltnpdata.PluralTnpDataCase;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.data.osr.models.PluralTnpData;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PluralStub;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
@@ -96,7 +98,12 @@ public class WiremockPluralSteps {
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+        A4NetworkElementGroup a4NetworkElementGroup = new A4NetworkElementGroup();
+        a4NetworkElementGroup.setName(pluralTnpData.getNegName());
+        testContext.getScenarioContext().setContext(Context.A4_NEG, a4NetworkElementGroup);
 
+        //A4NetworkElementGroup a4negTest= (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        //System.out.println("+++ NEG-Test: "+a4negTest);
     }
 
 
@@ -141,13 +148,21 @@ public class WiremockPluralSteps {
         assertEquals(networkElementGroupDtoList.size(), 1);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NEG, networkElementGroupDtoList.get(0).getUuid());
+        A4NetworkElementGroup a4neg = new A4NetworkElementGroup();
+        a4neg.setUuid(networkElementGroupDtoList.get(0).getUuid());
+        a4neg.setName(networkElementGroupDtoList.get(0).getName());
+        testContext.getScenarioContext().setContext(Context.A4_NEG, a4neg);
 
         List<NetworkElementDto> networkElementDtoList = a4ResourceInventory.getNetworkElementsByNegUuid(networkElementGroupDtoList.get(0).getUuid());
         assertEquals(networkElementDtoList.size(), 1);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NE, networkElementDtoList.get(0).getUuid());
+       // testContext.getScenarioContext().setContext(Context.A4_NE, networkElementDtoList.get(0).getUuid());
+        A4NetworkElement a4ne = new A4NetworkElement();
+        a4ne.setUuid(networkElementDtoList.get(0).getUuid());
+        testContext.getScenarioContext().setContext(Context.A4_NE, a4ne);
+
+
 
         List<NetworkElementPortDto> networkElementPortDtoList = a4ResourceInventory.getNetworkElementPortsByNetworkElement(networkElementDtoList.get(0).getUuid());
         assertEquals(networkElementPortDtoList.size(), 20);

@@ -31,19 +31,20 @@ public class A4UiImportPageSteps {
 
     @Then("positive response from importer at ui is received")
     public void positiveResponseFromImporterAtUiIsReceived() {
-       assertTrue(a4Import.readMessage().contains("500"));
-       System.out.println("+++ 500er Check ok!");
+       assertTrue(a4Import.readMessage().contains("22"));
+       System.out.println("+++ 22er Check ok!");
 
     }
 
     @And("insert neg name")
     public void insertNegName() {
-        a4Import.insertNegName("blabla\n");
-        System.out.println("+++ Drücke gleich Knopf!");
+        // negName=49/6808/1/POD/01, vpsz=49/4149/1, fachsz=7KH0
+        a4Import.insertNegName("49/6808/1/POD/01\n"); // pluralTnpData.getNegName() oder "blablabla\n"
+        //System.out.println("+++ Drücke gleich Knopf!");
         a4Import.pressEnterButton();
-        System.out.println("+++ Habe Knopf gedrückt!");
+        System.out.println("+++ Plural-Import gestartet!");
         sleepForSeconds(6);
-        System.out.println("+++ 6s später!");
+
     }
 
 }
