@@ -297,6 +297,86 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
+
+    @When("NEMO sends a request to change/update (the )NSP FTTH-Access operationalState to {string} and NEP reference to {string}")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndNepReferenceTo(String opState, String portUuid) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+                                                                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        addCharacteristic(lru, OP_STATE, opState);
+        addResourceRelationship(lru, NEP, portUuid);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to update/change (the )NSP FTTH-Access operational state to {string}")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateTo(String opState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        addCharacteristic(lru, OP_STATE, opState);
+        final Response response = a4ResInvService
+                .sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to update/change (the )NSP FTTH-Access NEP reference to {string}")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessNepReferenceTo(String portUuid) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        addResourceRelationship(lru,NEP,portUuid);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to update NSP FTTH-Access without operationalState nor NEP reference")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessWithoutOperationalStateNorNepReference() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+
     @When("NEMO sends a request to change/update (the )NSP L2BSA operationalState to {string}")
     public void whenNemoSendsOperationalStateUpdateForNspL2Bsa(String newOperationalState) {
         // INPUT FROM SCENARIO CONTEXT

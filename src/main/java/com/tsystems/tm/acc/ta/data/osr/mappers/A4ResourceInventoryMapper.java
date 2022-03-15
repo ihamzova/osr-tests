@@ -188,6 +188,7 @@ public class A4ResourceInventoryMapper {
                 .href("HREF?")
                 .ontSerialNumber(nspData.getOntSerialNumber())
                 .lineId(nspData.getLineId())
+                .oltPortOntLastRegisteredOn(nspData.getOltPortOntLastRegisteredOn())
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
                 .administrativeMode(ACTIVATED)

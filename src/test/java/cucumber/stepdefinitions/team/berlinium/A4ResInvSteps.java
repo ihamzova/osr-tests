@@ -271,9 +271,8 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEP_B, nep);
     }
 
-
-    @Given("a NEP with operational state {string} and and description {string} is existing in A4 resource inventory")
-    public void givenANEPWithOperationalStateAndAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
+    @Given("a NEP with operational state {string} and description {string} is existing in A4 resource inventory")
+    public void givenANEPWithOperationalStateAndDescriptionIsExistingInAResourceInventory(String opState, String descr) {
         // ACTION
         A4NetworkElementPort nep = setupDefaultNepTestData();
         nep.setOperationalState(opState);
@@ -374,6 +373,25 @@ public class A4ResInvSteps {
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
+
+    @Given("a NSP FTTH-Access with operational state {string} and NEP reference {string} is existing in A4 resource inventory")
+    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String opState, String portUuid) {
+        // ACTION
+        A4NetworkServiceProfileFtthAccess nspFtthAccess = setupDefaultNspFtthTestData();
+        nspFtthAccess.setOperationalState(opState);
+        nspFtthAccess.setOltPortOntLastRegisteredOn(portUuid);
+
+        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
+
+        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess,tp);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
+    }
+
 
     @Given("a NSP L2BSA with operationalState {string} is existing in A4 resource inventory")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState) {
@@ -644,6 +662,45 @@ public class A4ResInvSteps {
         // ACTION
         a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
     }
+
+
+    @Then("the (new )NSP FTTH-Access operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNspFtthAccessOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+                                                                    .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        // ACTION
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+                            .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+        assertEquals(operationalState, nspFtthAccess.getOperationalState());
+    }
+
+    @Then("the (new )NSP FTTH-Access NEP reference is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNspFtthAccessNepReferenceIsUpdatedTo(String portUuid) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        // ACTION
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+                .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+        assertEquals(portUuid, nspFtthAccess.getOltPortOntLastRegisteredOn());
+    }
+
+    @Then("the NSP FTTH-Access lastUpdateTime is updated")
+    public void thenTheNspFtthAccessLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+                .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+        assertNotNull(nspFtthAccess.getLastUpdateTime());
+        assertTrue(nspFtthAccess.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspFtthAccess.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
 
     @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory")
     public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory() {
