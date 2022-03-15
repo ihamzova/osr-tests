@@ -374,8 +374,8 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
-    @Given("a NSP FTTH-Access with operational state {string} and oltPortOntLastRegisteredOn {string} is existing in A4 resource inventory")
-    public void givenANspFtthAccessWithOperationalStateAndOltPortOntLastRegisteredOnIsExistingInAResourceInventory(String opState, String portUuid) {
+    @Given("a NSP FTTH-Access with operational state {string} and NEP reference {string} is existing in A4 resource inventory")
+    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String opState, String portUuid) {
         // ACTION
         A4NetworkServiceProfileFtthAccess nspFtthAccess = setupDefaultNspFtthTestData();
         nspFtthAccess.setOperationalState(opState);
@@ -676,8 +676,8 @@ public class A4ResInvSteps {
         assertEquals(operationalState, nspFtthAccess.getOperationalState());
     }
 
-    @Then("the (new )NSP FTTH-Access oltPortOntLastRegisteredOn is (now )(updated to )(still ){string}( in the A4 resource inventory)")
-    public void thenTheNspFtthAccessOltPortOntLastRegisteredOnIsUpdatedTo(String portUuid) {
+    @Then("the (new )NSP FTTH-Access NEP reference is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNspFtthAccessNepReferenceIsUpdatedTo(String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);

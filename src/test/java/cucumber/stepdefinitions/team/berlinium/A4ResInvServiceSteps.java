@@ -298,8 +298,8 @@ public class A4ResInvServiceSteps {
     }
 
 
-    @When("NEMO sends a request to change/update (the )NSP FTTH-Access operationalState to {string} and oltPortOntLastRegisteredOn to {string}")
-    public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndOltPortOntLastRegisteredOnTo(String opState, String portUuid) {
+    @When("NEMO sends a request to change/update (the )NSP FTTH-Access operationalState to {string} and NEP reference to {string}")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndNepReferenceTo(String opState, String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
                                                                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
@@ -311,7 +311,7 @@ public class A4ResInvServiceSteps {
 
         LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
         addCharacteristic(lru, OP_STATE, opState);
-        addCharacteristic(lru, OLT_PORT_ONT_LAST_REGISTERED_ON, portUuid);
+        addResourceRelationship(lru, NEP, portUuid);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -339,8 +339,8 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
-    @When("NEMO sends a request to update/change (the )NSP FTTH-Access oltPortOntLastRegisteredOn to {string}")
-    public void whenNemoSendsARequestToUpdateNspFtthAccessOltPortOntLastRegisteredOnTo(String portUuid) {
+    @When("NEMO sends a request to update/change (the )NSP FTTH-Access NEP reference to {string}")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessNepReferenceTo(String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
@@ -351,15 +351,15 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
         LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
-        addCharacteristic(lru, OLT_PORT_ONT_LAST_REGISTERED_ON, portUuid);
+        addResourceRelationship(lru,NEP,portUuid);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
-    @When("NEMO sends a request to update NSP FTTH-Access without operationalState nor oltPortOntLastRegisteredOn")
-    public void whenNemoSendsARequestToUpdateNspFtthAccessWithoutOperationalStateNorOltPortOntLastRegisteredOn() {
+    @When("NEMO sends a request to update NSP FTTH-Access without operationalState nor NEP reference")
+    public void whenNemoSendsARequestToUpdateNspFtthAccessWithoutOperationalStateNorNepReference() {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
