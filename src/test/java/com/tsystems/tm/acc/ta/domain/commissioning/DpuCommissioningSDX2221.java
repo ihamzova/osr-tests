@@ -108,31 +108,6 @@ public class DpuCommissioningSDX2221 extends GigabitTest {
         dpuCommissioningUiRobot.startDpuCommissioning(dpuDevice, false);
         accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAcсessLines);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
-        List<String> values = Arrays.asList(
-                "EXECUTED successfully [Read DPU device data]",
-                "EXECUTED successfully [update LifecycleStatus of DPU to INSTALLING]",
-                "EXECUTED successfully [update LifecycleStatus of DPU.uplinkPort to INSTALLING]",
-                "EXECUTED successfully [Read OltPonPort Data]",
-                "EXECUTED successfully [Read OltUpLinkPortData]",
-                "EXECUTED successfully [Get Unique OnuId for DPU]",
-                "EXECUTED successfully [Read BackhaulId]",
-                "EXECUTED successfully [Read BackhaulId]",
-                "EXECUTED successfully [Deprovision FTTH on PonPort][call]",
-                "EXECUTED successfully [Deprovision FTTH on PonPort][callback]",
-                "EXECUTED successfully [Configure ANCP on BNG][call]",
-                "EXECUTED successfully [Configure ANCP on BNG][callback]",
-                "EXECUTED successfully [Read ANCP Info]",
-                "EXECUTED successfully [Create DpuAtOltConfiguration If Missing]",
-                "EXECUTED successfully [Configure DPU at OLT][call]",
-                "EXECUTED successfully [Configure DPU at OLT][callback]",
-                "EXECUTED successfully [Set DpuAtOltConfiguration.configurationState to active]",
-                "EXECUTED successfully [Create DpuEmsConfiguration If Missing]",
-                "EXECUTED successfully [Configure DPU Ems][call]",
-                "EXECUTED successfully [Configure DPU Ems][callback]",
-                "EXECUTED successfully [Set DpuEmsConfiguration.configurationState to active]",
-                "EXECUTED successfully [Provision FTTB access provisioning on DPU][call]",
-                "EXECUTED successfully [Provision FTTB access provisioning on DPU][callback]");
-        etcdRobot.checkEtcdValues(dpuCommissioningUiRobot.getBusinessKey(), Collections.emptyList());
 
     }
 }

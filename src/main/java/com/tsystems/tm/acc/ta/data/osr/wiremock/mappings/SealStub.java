@@ -61,6 +61,22 @@ public class SealStub extends AbstractStubMapping {
             .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuConfigurationOltRequest(true))));
   }
 
+  public MappingBuilder postDomainDpuDpuDeconfiguration202(DpuDevice dpu) {
+    return post(urlPathEqualTo(DPU_DPU_DECONFIGURATION_TASK_URL))
+            .withName("postDomainDpuDpuDeconfiguration202")
+            .willReturn(aDefaultResponseWithBody("", 202))
+            .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s')]", dpu.getEndsz().replace("/", "_"))))
+            .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuDeconfigurationMcpRequest(true))));
+  }
+
+  public MappingBuilder postDomainDpuOltDeconfiguration202(DpuDevice dpu) {
+    return post(urlPathEqualTo(DPU_OLT_DECONFIGURATION_TASK_URL))
+            .withName("postDpuOltDeconfiguration202")
+            .willReturn(aDefaultResponseWithBody("", 202))
+            .withRequestBody(matchingJsonPath(String.format("$[?(@.dpuName=='%s')]", dpu.getEndsz().replace("/", "_"))))
+            .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1DpuDeconfigurationOltRequest(true))));
+  }
+
   public MappingBuilder postDpuDpuConfiguration202CallbackError(Dpu dpu) {
     return post(urlPathEqualTo(DPU_DPU_CONFIGURATION_TASK_URL))
             .withName("postDpuDpuConfiguration202CallbackError")
