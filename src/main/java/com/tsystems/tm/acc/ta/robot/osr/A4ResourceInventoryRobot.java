@@ -543,7 +543,7 @@ public class A4ResourceInventoryRobot {
             //if neg with name was found, name was correct, additional check is
             //that only and exactly this one group with this name was found
             assertEquals(networkElementGroupDtoListUnderTest.get().size(), 1);
-            //assertEquals(networkElementDtoUnderTest.get().getDescription(), a4ImportCsvLine.getNeDescription());
+            //assertEquals(networkElementDtoUnderTest.get().getDescription(), a4ImportCsvLine.getNeDescription());  // empty at plural-import
             assertEquals(networkElementDtoUnderTest.get().getVpsz(), a4ImportCsvLine.getNeVpsz());
         });
     }

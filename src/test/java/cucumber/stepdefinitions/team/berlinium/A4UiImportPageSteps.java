@@ -35,8 +35,8 @@ public class A4UiImportPageSteps {
     @And("insert neg name")
     public void insertNegName() {
         A4ImportCsvData csvData = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
-        a4Import.insertNegName(csvData.getCsvLines().get(0).getNegName()+"\n"); // inkl. ENTER
-       // a4Import.pressEnterButton();
+        a4Import.insertNegName(csvData.getCsvLines().get(0).getNegName());
+        a4Import.pressEnterButton();
         System.out.println("+++ NEG-Name auf UI eingegeben!");
 
     }

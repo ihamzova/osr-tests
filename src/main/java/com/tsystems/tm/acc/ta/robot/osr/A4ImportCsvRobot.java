@@ -34,7 +34,7 @@ public class A4ImportCsvRobot {
     }
     @Step("press enter button")
     public void pressEnterButton() {
-        $(A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR);
+        $(A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR).click();
     }
     @Step("read message")
     public String readMessage() {
