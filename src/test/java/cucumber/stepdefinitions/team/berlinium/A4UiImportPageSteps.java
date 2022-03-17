@@ -1,49 +1,43 @@
 package cucumber.stepdefinitions.team.berlinium;
 
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.robot.osr.A4ImportCsvRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
+import cucumber.Context;
+import cucumber.TestContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.Assert.assertTrue;
 
 public class A4UiImportPageSteps {
-    private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
-    private final A4ImportCsvRobot a4Import = new A4ImportCsvRobot();
 
+    private final A4ImportCsvRobot a4Import = new A4ImportCsvRobot();
+    private final TestContext testContext;
+    public A4UiImportPageSteps(TestContext testContext) {
+        this.testContext = testContext;
+    }
 
     @When("open import-ui")
     public void whenUserNavigatesToImportPage() {
-        // ACTION
         a4Import.openImportPage();
-
-
     }
-    /*
-    @When("read message")
-    public void readMessage() {
-        // ACTION
-        a4Import.readMessage();
-    }
-     */
 
     @Then("positive response from importer at ui is received")
     public void positiveResponseFromImporterAtUiIsReceived() {
-       assertTrue(a4Import.readMessage().contains("22"));
-       System.out.println("+++ 22er Check ok!");
-
-    }
+        A4ImportCsvData csvData = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
+        // check: "numberCreatedNetworkElements": "2"     --> funktioniert nicht zuverlässig
+        System.out.println("+++ Check UI Ausgabe startet");
+       assertTrue(a4Import.readMessage().contains("\"numberCreatedNetworkElements\": \""+csvData.getCsvLines().size()+"\""));
+       System.out.println("+++ Check UI Ausgabe ok");
+       }
 
     @And("insert neg name")
     public void insertNegName() {
-        // negName=49/6808/1/POD/01, vpsz=49/4149/1, fachsz=7KH0
-        a4Import.insertNegName("49/6808/1/POD/01\n"); // pluralTnpData.getNegName() oder "blablabla\n"
-        //System.out.println("+++ Drücke gleich Knopf!");
-        a4Import.pressEnterButton();
-        System.out.println("+++ Plural-Import gestartet!");
-        sleepForSeconds(6);
+        A4ImportCsvData csvData = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
+        a4Import.insertNegName(csvData.getCsvLines().get(0).getNegName()+"\n"); // inkl. ENTER
+       // a4Import.pressEnterButton();
+        System.out.println("+++ NEG-Name auf UI eingegeben!");
 
     }
 

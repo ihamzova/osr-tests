@@ -30,22 +30,16 @@ public class A4ImportCsvRobot {
     }
     @Step("insert neg name")
     public void insertNegName(String value) {
-
         $(A4_INVENTORY_IMPORTER_PLURAL_FIELD_LOCATOR).val(value);
     }
     @Step("press enter button")
     public void pressEnterButton() {
-
         $(A4_INVENTORY_IMPORTER_SENDEN_BUTTON_LOCATOR);
     }
     @Step("read message")
     public String readMessage() {
-System.out.println("+++ csv-Robot: lese Message:  "+$(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).getText());
        return $(A4_INVENTORY_IMPORTER_UPLOAD_MESSAGE_LOCATOR).getText();
     }
-
-
-
 
     @Step("open ui, log in, and goTo import-page")
     public void openImportPage() {
