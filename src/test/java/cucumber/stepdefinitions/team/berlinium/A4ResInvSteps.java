@@ -51,7 +51,11 @@ public class A4ResInvSteps {
             A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
             a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
         }
-
+        final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
+        if (CSV_PRESENT) {
+            A4ImportCsvData csv = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
+            a4ResInv.deleteA4TestDataRecursively(csv);
+        }
     }
 
     // -----=====[ GIVENS ]=====-----
