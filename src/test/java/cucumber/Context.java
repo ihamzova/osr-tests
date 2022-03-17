@@ -18,6 +18,7 @@ public enum Context {
     A4_TP,
     A4_NSP_FTTH,
     A4_NSP_L2BSA,
+    A4_NSP_A10NSP,
     WIREMOCK_COUNT_WG_A4_DEPROV,
 
     // U-Piter

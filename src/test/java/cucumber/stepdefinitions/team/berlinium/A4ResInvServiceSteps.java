@@ -413,4 +413,43 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
+
+    @When("NEMO sends a request to change/update (the )NSP A10NSP operationalState to {string}")
+    public void whenNemoSendsOperationalStateUpdateForNspA10Nsp(String newOperationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nsp = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_A10NSP);
+        addCharacteristic(lru, OP_STATE, newOperationalState);
+        final Response response = a4ResInvService
+                .sendStatusUpdateForNetworkServiceProfileA10NspWithoutChecks(nspA10nsp, tp, newOperationalState);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to change/update (the )NSP A10NSP without operationalState")
+    public void whenNemoSendsOperationalStateUpdateForNspA10Nsp() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nsp = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_A10NSP);
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspA10nsp.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
 }
