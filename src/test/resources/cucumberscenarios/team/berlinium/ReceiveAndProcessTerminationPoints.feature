@@ -1,9 +1,15 @@
-Feature: [DIGIHUB-35444][Berlinium] Receive and process Termination Points
+@DIGIHUB-35444
+Feature: Receive and process Termination Points
+  This is some description of what happens.
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438
 
+  #@PRECOND_DIGIHUB-143499
   Background:
     Given a NEP is existing in A4 resource inventory
 
+  @id:1
+  @DIGIHUB-35444
+  @DIGIHUB-143497
   @berlinium @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
   Scenario: NEMO creates Termination Point with preprovisioning triggered
@@ -14,6 +20,8 @@ Feature: [DIGIHUB-35444][Berlinium] Receive and process Termination Points
     And a DPU preprovisioning request to wg-a4-provisioning mock was triggered
     And a NSP FTTH connected to the TP does exist in A4 resource inventory
 
+  @id:2
+  @REQ_DIGIHUB-35444
   @berlinium
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
   Scenario: Triggered preprovisioning - U-Piter not reachable; retry

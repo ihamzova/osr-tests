@@ -1,4 +1,4 @@
-@REG_DIGIHUB-118272
+@REQ_DIGIHUB-118272
 Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
   # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=396658649
 
@@ -90,7 +90,7 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
 
     Examples:
       | HTTPCode |
-      | 500      |
+      | 503      |
 
   # DIGIHUB-121769, scenario #6
   @berlinium
@@ -106,7 +106,7 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
     Examples:
       | HTTPCode |
       | 400      |
-      | 401      |
+      | 501      |
 
   # TODO Complete/fix this scenario
   # DIGIHUB-118971, scenario #4
