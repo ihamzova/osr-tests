@@ -48,11 +48,6 @@ public class A4ImportCsvTest extends GigabitTest {
         csvData = context.getData().getA4ImportCsvDataDataProvider().get(A4ImportCsvDataCase.defaultCsvFile);
         // Ensure that no old test data is in the way
         cleanup();
-
-        csvData.getCsvLines().forEach((csvLine) -> {
-            String bla = csvLine.getNeVpsz();
-            String blubb = csvLine.getNeFsz();
-        });
     }
 
     @BeforeMethod
