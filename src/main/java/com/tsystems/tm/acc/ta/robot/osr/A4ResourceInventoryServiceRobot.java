@@ -169,6 +169,19 @@ public class A4ResourceInventoryServiceRobot {
                 .execute(voidCheck());
     }
 
+    @Step("Send new operational state for Network Service Profile (A10NSP) without checks")
+    public Response sendStatusUpdateForNetworkServiceProfileA10NspWithoutChecks(A4NetworkServiceProfileA10Nsp nspA10nspData, A4TerminationPoint tpData, String newOperationalState) {
+        LogicalResourceUpdate nspA10nspLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(nspA10nspData, tpData, newOperationalState);
+
+        return a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePatch()
+                .idPath(nspA10nspData.getUuid())
+                .body(nspA10nspLogicalResource)
+                .execute(voidCheck());
+    }
+
     @Step("Send PATCH request with logical resource")
     public void sendPatchForLogicalResource(String uuid, LogicalResourceUpdate logicalResource) {
         a4ResourceInventoryService
