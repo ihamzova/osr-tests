@@ -3,7 +3,7 @@ Feature: [DIGIHUB-142105][Berlinium] Receiving Inventory from Plural
   Background:
     Given a user with Berlinium credentials
 
-  @berlinium @domain @ui @heiko
+  @berlinium @domain @ui
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Receive new NE from Plural for a non-existing Network Element Group on ui
 
