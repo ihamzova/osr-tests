@@ -1,7 +1,8 @@
-Feature: [DIGIHUB-142105][Berlinium] Receiving Inventory from Plural
+@DIGIHUB-117772
+Feature: Receiving Inventory from Plural
+  Some great description of what this feature is about.
 
-
-  @berlinium @domain
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Receive new NE from Plural for a non-existing Network Element Group
 
@@ -11,6 +12,3 @@ Feature: [DIGIHUB-142105][Berlinium] Receiving Inventory from Plural
     Then positive response from importer received
     And ri was created with neg and ne and neps
     And update notifications was sent to NEMO
-
-
-

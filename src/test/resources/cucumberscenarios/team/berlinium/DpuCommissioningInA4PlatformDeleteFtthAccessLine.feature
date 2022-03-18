@@ -1,17 +1,17 @@
-@REQ_DIGIHUB-118272
-Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
-  # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=396658649
+@DIGIHUB-118272
+Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
+  See https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=396658649 for details.
 
-  # X-Ray: DIGIHUB-127641
-  @berlinium @domain
+  @DIGIHUB-127641
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service
   Scenario: NEMO deletes non-existent Termination Point (idempotency test)
     Given no TP exists in A4 resource inventory
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
 
-  # X-Ray: DIGIHUB-127643
-  @berlinium @smoke
+  @DIGIHUB-127643
+  @team:berlinium @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point without deprovisioning triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -21,8 +21,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
     And no DPU deprovisioning request to wg-a4-provisioning mock was triggered
     And the TP does not exist in A4 resource inventory anymore
 
-  # X-Ray: DIGIHUB-127854
-  @berlinium @smoke
+  @DIGIHUB-127854
+  @team:berlinium @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point with deprovisioning triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -39,8 +39,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
   # TODO: Create this scenario
   # DIGIHUB-121769, scenario #3
 
-  # X-Ray: DIGIHUB-127642
-  @berlinium @domain
+  @DIGIHUB-127642
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory-service
   Scenario Outline: NEMO deletes Termination Point with invalid types
     Given a TP with type "<Type>" is existing in A4 resource inventory
@@ -55,7 +55,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
       | L2BSA_TP  |
 
   # DIGIHUB-121769, scenario #4, and #5
-  @berlinium
+  @team:berlinium
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; retry (Decoupling Component gives up instantly)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
@@ -74,7 +75,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
       | 403      |
       | 408      |
 
-  @berlinium
+  @team:berlinium
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; retry (Decoupling Component retries 2 times)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
@@ -93,7 +95,8 @@ Feature: [DIGIHUB-118272][Berlinium] DPU Commissioning in A4 platform - Delete F
       | 503      |
 
   # DIGIHUB-121769, scenario #6
-  @berlinium
+  @team:berlinium
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; give up
     Given a TP with type "PON_TP" is existing in A4 resource inventory
     And a NSP FTTH with Line ID "DEU.DTAG.12345" is existing in A4 resource inventory for the TP
