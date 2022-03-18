@@ -360,3 +360,4 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP A10NSP lastUpdateTime is updated
     And 1 "PUT" NSP A10NSP update notifications were sent to NEMO
 
+  # Add scenario that only opState is patched, everything else not

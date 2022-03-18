@@ -14,6 +14,7 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
+import com.tsystems.tm.acc.tests.osr.workorder.model.Workorder;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.datatable.DataTable;
@@ -787,6 +788,44 @@ public class A4ResInvSteps {
         final NetworkServiceProfileL2BsaDto nspL2Bsa = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
         assertNotNull(nspL2Bsa.getLastUpdateTime());
         assertTrue(nspL2Bsa.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
+    }
+
+    @Then("the (new )NSP A10NSP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNspA10nspOperationalStateIsUpdatedInA4ResInv(String operationalState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+
+        // ACTION
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+        assertEquals(operationalState, nspA10nsp.getOperationalState());
+    }
+
+    @Then("the (new )NSP A10NSP lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheNspA10nspLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+
+        // ACTION
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+        assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
+    }
+
+    @Then("the NSP A10NSP lastUpdateTime is updated")
+    public void thenTheNspA10nspLastUpdateTimeIsUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+        assertNotNull(nspA10nsp.getLastUpdateTime());
+        assertTrue(nspA10nsp.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspA10nsp.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     // -----=====[ HELPERS ]=====-----

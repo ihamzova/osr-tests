@@ -72,6 +72,16 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspL2Bsa.getUuid(), method, count);
     }
 
+    @Then("{int} {string} NSP A10NSP update notification(s) was/were sent to NEMO")
+    public void thenANspA10nspUpdateNotificationWasSentToNemo(int count, String method) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkServiceProfileA10Nsp nspA10nsp = (A4NetworkServiceProfileA10Nsp) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+
+        // ACTION
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspA10nsp.getUuid(), method, count);
+    }
+
     @Then("update notifications was sent to NEMO")
     public void updateNotificationsWasSentToNEMO() {
         // checks for NEG, NE, NEP
