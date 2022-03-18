@@ -14,7 +14,6 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
-import com.tsystems.tm.acc.tests.osr.workorder.model.Workorder;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.datatable.DataTable;
