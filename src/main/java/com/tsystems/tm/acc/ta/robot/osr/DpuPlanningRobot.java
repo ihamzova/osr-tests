@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.util.TestSettings;
 import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand;
 import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemandCreate;
 import com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.apache.commons.io.FileUtils;
 
@@ -174,6 +175,14 @@ public class DpuPlanningRobot {
         return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
                 .klsIdQuery(dpuDemandToRead.getKlsId())
                 .executeAs(validatedWith(shouldBeCode(200))).get(0);
+    }
+
+    @Owner("TMI")
+    @Step("Find all DPU Demand by klsId and check Response")
+    public List<DpuDemand> findDpuDemandsByKlsId(String klsId) {
+        return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
+                .klsIdQuery(klsId)
+                .executeAs(validatedWith(shouldBeCode(200)));
     }
 
     @Step("Read DPU Demand by numberOfNeededDpuPorts and check Response")

@@ -6,8 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.osr.RetryLoop;
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ImportPage;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryImporterUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -57,8 +55,6 @@ public class A4ImportCsvTest extends GigabitTest {
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4ImportCsvTest"))
                 .addNemoMock()
                 .build();
-        new RetryLoop().withCondition(() -> A4ImportPage.login().validate() != null).assertMessage("Import page not available");
-        A4ImportPage.login().validate();
         mappingsContext.publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
@@ -80,6 +76,7 @@ public class A4ImportCsvTest extends GigabitTest {
     @Description("Import Network Element (Group) CSV file into A4 Resource Inventory")
     public void testImportCsvFile() {
         // When / Action
+        a4ResourceInventoryImporterUiRobot.openImportPage();
         a4ResourceInventoryImporterUiRobot.importCsvFileViaUi(csvData);
 
         // Then / Assert

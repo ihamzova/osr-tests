@@ -318,4 +318,46 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NSP A10NSP ---------
 
-  # Add scenarios for NSP A10NSP (equivalent to NSP L2BSA)
+  @berlinium @domain
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (A10NSP)
+    Given a TP with type "A10NSP_TP" is existing in A4 resource inventory
+    And a NSP A10NSP with operationalState "<OldOpState>" and lifecycleState "<OldLcState>" is existing in A4 resource inventory
+    When NEMO sends a request to change NSP A10NSP operationalState to "<NewOpState>"
+    Then the request is responded with HTTP code 201
+    And the NSP A10NSP operationalState is updated to "<NewOpState>"
+    And the NSP A10NSP lifecycleState is updated to "<NewLcState>"
+    And the NSP A10NSP lastUpdateTime is updated
+    And 1 "PUT" NSP A10NSP update notification was sent to NEMO
+
+    Examples:
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
+      | NOT_WORKING | OPERATING  | WORKING        | OPERATING  |
+      | NOT_WORKING | RETIRING   | WORKING        | RETIRING   |
+      | NOT_WORKING | PLANNING   | INSTALLING     | PLANNING   |
+      | NOT_WORKING | PLANNING   | NOT_MANAGEABLE | PLANNING   |
+      | NOT_WORKING | PLANNING   | FAILED         | PLANNING   |
+      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
+      | NOT_WORKING | PLANNING   | DEACTIVATING   | PLANNING   |
+
+      # Old values = new values; still counts as update
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+
+      # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
+  @berlinium @domain
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 NSP A10NSP without operational state characteristic
+    Given a TP with type "A10NSP_TP" is existing in A4 resource inventory
+    And a NSP A10NSP with operationalState "NOT_WORKING" and lifecycleState "PLANNING" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP A10NSP without operationalState
+    Then the request is responded with HTTP code 201
+    And the NSP A10NSP operationalState is still "NOT_WORKING"
+    And the NSP A10NSP lifecycleState is still "PLANNING"
+    And the NSP A10NSP lastUpdateTime is updated
+    And 1 "PUT" NSP A10NSP update notifications were sent to NEMO
+
+  # Add scenario that only opState is patched, everything else not
