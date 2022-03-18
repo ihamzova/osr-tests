@@ -19,6 +19,7 @@ public enum Context {
     A4_NSP_FTTH,
     A4_NSP_L2BSA,
     A4_NSP_A10NSP,
+    A4_CSV,
     WIREMOCK_COUNT_WG_A4_DEPROV,
 
     // U-Piter

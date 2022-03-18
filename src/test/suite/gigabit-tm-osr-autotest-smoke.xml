@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Domain test suites" verbose="1">
+    <test thread-count="1" name="Preconditions">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.PreTest"/>
+        </classes>
+    </test>
+    <test name="Olt-CommissioningDecommissioning cases" thread-count="2" parallel="methods">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.OltCommissioningDecommissioning5600"/>
+        </classes>
+    </test>
+    <test thread-count="1" name="A4 functionality">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.A4ImportCsvTest"/>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.NewTpFromNemoWithPreprovisioningAndNspCreationTest"/>
+            <class name="com.tsystems.tm.acc.ta.domain.a4functionality.FulfillmentL2BsaProductTest"/>
+        </classes>
+    </test>
+    <test name="DPU creation and DPU-Commissioning incl DPU demand (device : SDX2221-04-CX) case" thread-count="1">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.commissioning.DpuCommissioningSDX2221_inclusive_dpuDemand"/>
+        </classes>
+    </test>
+    <test thread-count="1" name="A10nsp test cases">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.domain.a10nsp.CheckLineIdTest"/>
+        </classes>
+    </test>
+</suite>
