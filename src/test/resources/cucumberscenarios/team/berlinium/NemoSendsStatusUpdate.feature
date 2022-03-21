@@ -23,6 +23,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+      | WORKING     | OPERATING  | NOT_MANAGEABLE | OPERATING  |
+      | NOT_MANAGEABLE | OPERATING | WORKING      | OPERATING  |
+      | NOT_MANAGEABLE | OPERATING | NOT_WORKING  | OPERATING  |
 
       # Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
@@ -106,8 +109,9 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
       | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
 
-      # Invalid operational state value shall be accepted
+      # Invalid operational state value and FAILED shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      | invalidOpState | INSTALLING | WORKING     | OPERATING  |
 
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
@@ -225,10 +229,10 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access
-    Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
-    When NEMO sends a request to update NSP FTTH-Access operationalState to "INSTALLING" and NEP reference to "newPortUuid"
+    Given a NSP FTTH-Access with operational state "WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
+    When NEMO sends a request to update NSP FTTH-Access operationalState to "ACTIVATING" and NEP reference to "newPortUuid"
     Then the request is responded with HTTP code 201
-    And the NSP FTTH-Access operationalState is updated to "INSTALLING"
+    And the NSP FTTH-Access operationalState is updated to "ACTIVATING"
     And the NSP FTTH-Access NEP reference is updated to "newPortUuid"
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
