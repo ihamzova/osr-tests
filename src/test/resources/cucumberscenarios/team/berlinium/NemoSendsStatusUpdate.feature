@@ -224,7 +224,36 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  # -- NemoStatusUpdate does not check, if NEP refernce is a real existing ONT- Port
+  @berlinium @domain
+    @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (FTTH-Access)
+    Given a TP with type "PON_TP" is existing in A4 resource inventory
+    And a NSP FTTH-Access with operationalState "<OldOpState>" and lifecycleState "<OldLcState>" is existing in A4 resource inventory
+    When NEMO sends a request to change NSP FTTH-Access operational state to "<NewOpState>"
+    Then the request is responded with HTTP code 201
+    And the NSP FTTH-Access operationalState is updated to "<NewOpState>"
+    And the NSP FTTH-Access lifecycleState is updated to "<NewLcState>"
+    And the NSP FTTH-Access lastUpdateTime is updated
+    And 1 "PUT" NSP FTTH update notification was sent to NEMO
+
+    Examples:
+      | OldOpState  | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
+      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | WORKING        | OPERATING  |
+
+      # Old values = new values; still counts as update
+      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+
+      # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
+      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+
 
   @berlinium @domain
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
@@ -233,6 +262,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     When NEMO sends a request to update NSP FTTH-Access operationalState to "ACTIVATING" and NEP reference to "newPortUuid"
     Then the request is responded with HTTP code 201
     And the NSP FTTH-Access operationalState is updated to "ACTIVATING"
+    # -- NemoStatusUpdate does not check, if NEP refernce is a real existing ONT- Port
     And the NSP FTTH-Access NEP reference is updated to "newPortUuid"
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
@@ -244,6 +274,7 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     When NEMO sends a request to update NSP FTTH-Access NEP reference to "newPortUuid"
     Then the request is responded with HTTP code 201
     And the NSP FTTH-Access operationalState is still "NOT_WORKING"
+    # -- NemoStatusUpdate does not check, if NEP refernce is a real existing ONT- Port
     And the NSP FTTH-Access NEP reference is updated to "newPortUuid"
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
@@ -289,15 +320,16 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
     Examples:
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
-      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
-      | NOT_WORKING | OPERATING  | WORKING        | OPERATING  |
-      | NOT_WORKING | RETIRING   | WORKING        | RETIRING   |
-      | NOT_WORKING | PLANNING   | INSTALLING     | PLANNING   |
-      | NOT_WORKING | PLANNING   | NOT_MANAGEABLE | PLANNING   |
-      | NOT_WORKING | PLANNING   | FAILED         | PLANNING   |
       | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
-      | NOT_WORKING | PLANNING   | DEACTIVATING   | PLANNING   |
+      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING  | RETIRING   | WORKING        | RETIRING   |
+      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
@@ -336,15 +368,16 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
     Examples:
       | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
-      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
-      | NOT_WORKING | OPERATING  | WORKING        | OPERATING  |
-      | NOT_WORKING | RETIRING   | WORKING        | RETIRING   |
-      | NOT_WORKING | PLANNING   | INSTALLING     | PLANNING   |
-      | NOT_WORKING | PLANNING   | NOT_MANAGEABLE | PLANNING   |
-      | NOT_WORKING | PLANNING   | FAILED         | PLANNING   |
       | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
-      | NOT_WORKING | PLANNING   | DEACTIVATING   | PLANNING   |
+      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING  | RETIRING   | WORKING        | RETIRING   |
+      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
+      | FAILED      | PLANNING   | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
