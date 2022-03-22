@@ -1,11 +1,12 @@
 @DIGIHUB-117772
-Feature: Receiving Inventory from Plural
+Feature: Send "Knoten" request to PLURAL and import the returning data into A4 resource inventory
   Some great description of what this feature is about.
 
-  #@DIGIHUB-xxxxx
+  #@DIGIHUB-144188
   Background:
     Given a user with Berlinium credentials
 
+  @DIGIHUB-144187
   @team:berlinium @domain:osr @ui
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Receive new NE from Plural for a non-existing Network Element Group on ui
@@ -17,6 +18,7 @@ Feature: Receiving Inventory from Plural
     And ri was created with neg and ne and neps
     And update notifications was sent to NEMO
 
+#  @DIGIHUB-144187
 #  @team:berlinium @domain:osr @ui
 #  @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
 #  Scenario: Import a NEG, some NEGs and NEPs from Plural via UI
@@ -36,5 +38,5 @@ Feature: Receiving Inventory from Plural
 #    And 1 "PUT" update notification was sent to NEMO for the NEG with name "bla"
 #    And 1 "PUT" update notification was sent to NEMO for the NE with VPSZ "1" and FSZ "2"
 #    And 1 "PUT" update notification was sent to NEMO for the NE with VPSZ "3" and FSZ "4"
-#    And 1 "PUT" update notification was sent to NEMO for each of the 23 NEPs connected to the NE with VPSZ "1" and ENDSZ "2"
-#    And 1 "PUT" update notification was sent to NEMO for each of the 17 NEPs connected to the NE with VPSZ "3" and ENDSZ "4"
+#    And 1 "PUT" update notification was sent to NEMO for each of the 23 NEPs connected to the NE with VPSZ "1" and FSZ "2"
+#    And 1 "PUT" update notification was sent to NEMO for each of the 17 NEPs connected to the NE with VPSZ "3" and FSZ "4"

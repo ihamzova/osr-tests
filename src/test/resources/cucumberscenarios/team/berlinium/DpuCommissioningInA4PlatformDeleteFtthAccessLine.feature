@@ -54,8 +54,8 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | A10NSP_TP |
       | L2BSA_TP  |
 
-  # DIGIHUB-121769, scenario #4, and #5
-  @team:berlinium
+  @DIGIHUB-144191
+    @team:berlinium
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; retry (Decoupling Component gives up instantly)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -75,7 +75,8 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | 403      |
       | 408      |
 
-  @team:berlinium
+  @DIGIHUB-144192
+    @team:berlinium
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; retry (Decoupling Component retries 2 times)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -94,8 +95,8 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | HTTPCode |
       | 503      |
 
-  # DIGIHUB-121769, scenario #6
-  @team:berlinium
+  @DIGIHUB-144193
+    @team:berlinium
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario Outline: Triggered deprovisioning - U-Piter not reachable; give up
     Given a TP with type "PON_TP" is existing in A4 resource inventory
