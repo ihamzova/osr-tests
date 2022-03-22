@@ -1,9 +1,11 @@
-Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
+@DIGIHUB-90382
+Feature: Nemo Status Update Test
+  Some great description of what this feature is about.
 
   # ---------- PATCH NEG ----------
 
-  # X-Ray: DIGIHUB-140170
-  @berlinium @domain @smoke
+  @DIGIHUB-140170
+    @team:berlinium @domain:osr @smoke
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Element Group
     Given a NEG with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
@@ -36,7 +38,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # Changed with DIGIHUB-80041:
       | NOT_WORKING | PLANNING   | INSTALLING     | INSTALLING |
 
-  @berlinium @domain
+  @DIGIHUB-144194
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NEG without operational state characteristic
     Given a NEG with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
@@ -47,7 +50,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEG lastUpdateTime is updated
     And 1 "PUT" NEG update notifications were sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144195
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NEG with _all_ properties changed to new values; only states are changed, everything else kept at old values
     Given a NEG with the following properties is existing in A4 resource inventory:
@@ -89,7 +93,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
  # ---------- PATCH NE ----------
 
-  @berlinium @domain
+  @DIGIHUB-144196
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Element
     Given a NE with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
@@ -116,8 +121,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
-
-  @berlinium @domain
+  @DIGIHUB-144197
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NE without operational state characteristic
     Given a NE with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
@@ -133,7 +138,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NEP ----------
 
-  @berlinium @domain
+  @DIGIHUB-144198
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port
     Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
@@ -144,7 +150,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144199
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without operational state
     Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
@@ -155,7 +162,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144200
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without description
     Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
@@ -166,7 +174,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144202
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port without operationalState nor description
     Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
@@ -182,7 +191,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NEL ----------
 
-  @berlinium @domain
+  @DIGIHUB-144203
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Element Link
     Given a NEL with operational state "<OldOpState>" and lifecycle state "<OldLcState>" is existing in A4 resource inventory
@@ -208,7 +218,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # Old values = new values; still counts as update
       | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
 
-  @berlinium @domain
+  @DIGIHUB-144204
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NEL without operational state characteristic
     Given a NEL with operational state "NOT_WORKING" and lifecycle state "PLANNING" is existing in A4 resource inventory
@@ -255,7 +266,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
 
 
-  @berlinium @domain
+  @DIGIHUB-144205
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access
     Given a NSP FTTH-Access with operational state "WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
@@ -267,7 +279,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144206
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without operational state
     Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
@@ -279,7 +292,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144207
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without NEP reference
     Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
@@ -290,7 +304,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
     And the NSP FTTH-Access lastUpdateTime is updated
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
 
-  @berlinium @domain
+  @DIGIHUB-144208
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access without operationalState nor NEP reference
     Given a NSP FTTH-Access with operational state "NOT_WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
@@ -306,7 +321,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NSP L2BSA ----------
 
-  @berlinium @domain
+  @DIGIHUB-144209
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (L2BSA)
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
@@ -337,7 +353,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
 
-  @berlinium @domain
+  @DIGIHUB-144210
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NSP L2BSA without operational state characteristic
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
@@ -354,7 +371,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
 
   # ---------- PATCH NSP A10NSP ---------
 
-  @berlinium @domain
+  @DIGIHUB-144211
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (A10NSP)
     Given a TP with type "A10NSP_TP" is existing in A4 resource inventory
@@ -385,7 +403,8 @@ Feature: [DIGIHUB-xxxxx][DIGIHUB-90382][Berlinium] Nemo Status Update Test
       # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
       | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
 
-  @berlinium @domain
+  @DIGIHUB-144212
+  @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NSP A10NSP without operational state characteristic
     Given a TP with type "A10NSP_TP" is existing in A4 resource inventory

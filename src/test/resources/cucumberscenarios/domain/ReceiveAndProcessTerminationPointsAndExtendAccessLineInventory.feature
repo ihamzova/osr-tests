@@ -1,8 +1,9 @@
-Feature: [DIGIHUB-35444][DIGIHUB-39620][OS&R] Receive and process Termination Points and extend AccessLine inventory
-  # https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438
+@DIGIHUB-35444 @DIGIHUB-39620
+Feature: Receive and process Termination Points and extend AccessLine inventory
+  See https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=326048438 for details.
 
-  # X-Ray: DIGIHUB-59383
-  @domain @smoke
+  @DIGIHUB-59383
+  @domain:osr @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
   Scenario: NEMO creates Termination Point with preprovisioning triggered
     Given a NEP is existing in A4 resource inventory
