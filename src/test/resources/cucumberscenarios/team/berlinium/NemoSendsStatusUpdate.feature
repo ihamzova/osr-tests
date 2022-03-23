@@ -17,26 +17,26 @@ Feature: Nemo Status Update Test
     And 1 "PUT" NEG update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
-      | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
-      | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
-      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
-      | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
-      | WORKING     | OPERATING  | NOT_MANAGEABLE | OPERATING  |
-      | NOT_MANAGEABLE | OPERATING | WORKING      | OPERATING  |
-      | NOT_MANAGEABLE | OPERATING | NOT_WORKING  | OPERATING  |
+      | OldOpState     | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING    | INSTALLING | INSTALLING     | INSTALLING |
+      | NOT_WORKING    | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING    | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING    | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING    | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING    | INSTALLING | WORKING        | OPERATING  |
+      | INSTALLING     | INSTALLING | WORKING        | OPERATING  |
+      | WORKING        | OPERATING  | NOT_MANAGEABLE | OPERATING  |
+      | NOT_MANAGEABLE | OPERATING  | WORKING        | OPERATING  |
+      | NOT_MANAGEABLE | OPERATING  | NOT_WORKING    | OPERATING  |
 
       # Invalid operational state value shall be accepted
-      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      | NOT_WORKING    | PLANNING   | invalidOpState | PLANNING   |
 
       # Old values = new values; still counts as update
-      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING    | PLANNING   | NOT_WORKING    | PLANNING   |
 
       # Changed with DIGIHUB-80041:
-      | NOT_WORKING | PLANNING   | INSTALLING     | INSTALLING |
+      | NOT_WORKING    | PLANNING   | INSTALLING     | INSTALLING |
 
   @DIGIHUB-144194
   @team:berlinium @domain:osr
@@ -106,20 +106,20 @@ Feature: Nemo Status Update Test
     And 1 "PUT" NE update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | INSTALLING | INSTALLING     | INSTALLING |
-      | NOT_WORKING | OPERATING  | INSTALLING     | OPERATING  |
-      | NOT_WORKING | RETIRING   | INSTALLING     | RETIRING   |
-      | NOT_WORKING | PLANNING   | WORKING        | OPERATING  |
-      | NOT_WORKING | INSTALLING | WORKING        | OPERATING  |
-      | INSTALLING  | INSTALLING | WORKING        | OPERATING  |
+      | OldOpState     | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING    | INSTALLING | INSTALLING     | INSTALLING |
+      | NOT_WORKING    | OPERATING  | INSTALLING     | OPERATING  |
+      | NOT_WORKING    | RETIRING   | INSTALLING     | RETIRING   |
+      | NOT_WORKING    | PLANNING   | WORKING        | OPERATING  |
+      | NOT_WORKING    | INSTALLING | WORKING        | OPERATING  |
+      | INSTALLING     | INSTALLING | WORKING        | OPERATING  |
 
       # Invalid operational state value and FAILED shall be accepted
-      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
-      | invalidOpState | INSTALLING | WORKING     | OPERATING  |
+      | NOT_WORKING    | PLANNING   | invalidOpState | PLANNING   |
+      | invalidOpState | INSTALLING | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
-      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING    | PLANNING   | NOT_WORKING    | PLANNING   |
 
   @DIGIHUB-144197
   @team:berlinium @domain:osr
@@ -235,7 +235,8 @@ Feature: Nemo Status Update Test
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  @berlinium @domain
+  # add test issue DIGIHUB-xxxxx here after export
+  @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (FTTH-Access)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
@@ -248,28 +249,27 @@ Feature: Nemo Status Update Test
     And 1 "PUT" NSP FTTH update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
-      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
-      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
-      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
-      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
-      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
-      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | WORKING        | OPERATING  |
+      | OldOpState   | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING  | PLANNING   | ACTIVATING     | PLANNING   |
+      | ACTIVATING   | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING   | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING   | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING   | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
-      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING  | PLANNING   | NOT_WORKING    | PLANNING   |
 
       # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
-      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
-
+      | NOT_WORKING  | PLANNING   | invalidOpState | PLANNING   |
 
   @DIGIHUB-144205
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
-  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access
+  Scenario: NEMO sends a status patch for A4 Network Service Profile FTTH-Access with both NEP reference and operational state
     Given a NSP FTTH-Access with operational state "WORKING" and NEP reference "oldPortUuid" is existing in A4 resource inventory
     When NEMO sends a request to update NSP FTTH-Access operationalState to "ACTIVATING" and NEP reference to "newPortUuid"
     Then the request is responded with HTTP code 201
@@ -335,23 +335,23 @@ Feature: Nemo Status Update Test
     And 1 "PUT" NSP L2BSA update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
-      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
-      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
-      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
-      | ACTIVATING  | RETIRING   | WORKING        | RETIRING   |
-      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
-      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
-      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | WORKING        | OPERATING  |
+      | OldOpState   | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING  | PLANNING   | ACTIVATING     | PLANNING   |
+      | ACTIVATING   | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING   | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING   | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING   | RETIRING   | WORKING        | RETIRING   |
+      | ACTIVATING   | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
-      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING  | PLANNING   | NOT_WORKING    | PLANNING   |
 
       # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
-      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      | NOT_WORKING  | PLANNING   | invalidOpState | PLANNING   |
 
   @DIGIHUB-144210
   @team:berlinium @domain:osr
@@ -385,23 +385,23 @@ Feature: Nemo Status Update Test
     And 1 "PUT" NSP A10NSP update notification was sent to NEMO
 
     Examples:
-      | OldOpState  | OldLcState | NewOpState     | NewLcState |
-      | NOT_WORKING | PLANNING   | ACTIVATING     | PLANNING   |
-      | ACTIVATING  | PLANNING   | WORKING        | OPERATING  |
-      | ACTIVATING  | INSTALLING | WORKING        | OPERATING  |
-      | ACTIVATING  | OPERATING  | WORKING        | OPERATING  |
-      | ACTIVATING  | RETIRING   | WORKING        | RETIRING   |
-      | ACTIVATING  | PLANNING   | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | DEACTIVATING   | PLANNING   |
-      | DEACTIVATING | PLANNING  | NOT_WORKING    | PLANNING   |
-      | DEACTIVATING | PLANNING  | FAILED         | PLANNING   |
-      | FAILED      | PLANNING   | WORKING        | OPERATING  |
+      | OldOpState   | OldLcState | NewOpState     | NewLcState |
+      | NOT_WORKING  | PLANNING   | ACTIVATING     | PLANNING   |
+      | ACTIVATING   | PLANNING   | WORKING        | OPERATING  |
+      | ACTIVATING   | INSTALLING | WORKING        | OPERATING  |
+      | ACTIVATING   | OPERATING  | WORKING        | OPERATING  |
+      | ACTIVATING   | RETIRING   | WORKING        | RETIRING   |
+      | ACTIVATING   | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | DEACTIVATING   | PLANNING   |
+      | DEACTIVATING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | DEACTIVATING | PLANNING   | FAILED         | PLANNING   |
+      | FAILED       | PLANNING   | WORKING        | OPERATING  |
 
       # Old values = new values; still counts as update
-      | NOT_WORKING | PLANNING   | NOT_WORKING    | PLANNING   |
+      | NOT_WORKING  | PLANNING   | NOT_WORKING    | PLANNING   |
 
       # X-Ray: DIGIHUB-94384: Invalid operational state value shall be accepted
-      | NOT_WORKING | PLANNING   | invalidOpState | PLANNING   |
+      | NOT_WORKING  | PLANNING   | invalidOpState | PLANNING   |
 
   @DIGIHUB-144212
   @team:berlinium @domain:osr
