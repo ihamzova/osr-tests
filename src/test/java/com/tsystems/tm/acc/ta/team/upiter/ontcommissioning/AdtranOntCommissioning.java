@@ -68,14 +68,14 @@ public class AdtranOntCommissioning extends GigabitTest {
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertNotNull(callback.getResponse().getLineId());
-    assertEquals(callback.getResponse().getHomeId(), accessLine.getHomeId());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNotNull(callback.getResponse().getLineId(), "Callback didn't return a LineId");
+    assertEquals("HomeId returned in the callback is incorrect", callback.getResponse().getHomeId(), accessLine.getHomeId());
 
     // check alri
     accessLine.setLineId(callback.getResponse().getLineId());
-    assertEquals(AccessLineStatus.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
+    assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED, accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()));
   }
 
   @Test(dependsOnMethods = "adtranOntReservation")
@@ -85,17 +85,17 @@ public class AdtranOntCommissioning extends GigabitTest {
     OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.registerOnt(accessLine, ontSerialNumber);
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertEquals(accessLine.getLineId(), callback.getResponse().getLineId());
-    assertEquals(ontSerialNumber.getSerialNumber(), callback.getResponse().getSerialNumber());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertEquals("LineId returned in the callback is incorrect", accessLine.getLineId(), callback.getResponse().getLineId());
+    assertEquals("ONT S/N returned in the callback is incorrect", ontSerialNumber.getSerialNumber(), callback.getResponse().getSerialNumber());
 
     // check alri
     SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-    assertNotNull(subscriberNEProfile);
-    assertEquals(subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
-    assertEquals(subscriberNEProfile.getState(), ProfileState.ACTIVE);
-    assertEquals(subscriberNEProfile.getOntState(), OntState.UNKNOWN);
+    assertNotNull(subscriberNEProfile, "");
+    assertEquals("ONT S/N on the AccessLine is incorrect", subscriberNEProfile.getOntSerialNumber(), ontSerialNumber.getSerialNumber());
+    assertEquals("SubscriberNeProfile state is incorrect", subscriberNEProfile.getState(), ProfileState.ACTIVE);
+    assertEquals("SubscriberNeProfile ONT state is incorrect", subscriberNEProfile.getOntState(), OntState.UNKNOWN);
   }
 
   @Test(dependsOnMethods = {"adtranOntReservation", "adtranOntRegistration"})
@@ -106,20 +106,21 @@ public class AdtranOntCommissioning extends GigabitTest {
     OperationResultOntTestDto callback = ontOltOrchestratorRobot.testOnt(accessLine.getLineId());
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertNotNull(callback.getResponse().getLastDownCause());
-    assertNotNull(callback.getResponse().getLastDownTime());
-    assertNotNull(callback.getResponse().getLastUpTime());
-    assertEquals(com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntState.ONLINE, callback.getResponse().getActualRunState());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNotNull(callback.getResponse().getLastDownCause(), "Callback didn't return LastDownCause");
+    assertNotNull(callback.getResponse().getLastDownTime(), "Callback didn't return LastDownTime");
+    assertNotNull(callback.getResponse().getLastUpTime(), "Callback didn't return LastUpTime");
+    assertEquals("ActualRunState returned in the callback is incorrect",
+            com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OntState.ONLINE, callback.getResponse().getActualRunState());
     //todo add check for onuid
 
     ontOltOrchestratorRobot.updateOntState(accessLine);
 
     // check alri
     SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-    assertNotNull(subscriberNEProfile);
-    assertEquals(subscriberNEProfile.getOntState(), OntState.ONLINE);
+    assertNotNull(subscriberNEProfile, "SubscriberNeProfile is not present");
+    assertEquals("Ont State on the AccessLine is incorrect", subscriberNEProfile.getOntState(), OntState.ONLINE);
   }
 
   @Test(dependsOnMethods = {"adtranOntReservation", "adtranOntRegistration", "adtranOntTest"})
@@ -127,17 +128,20 @@ public class AdtranOntCommissioning extends GigabitTest {
   @Description("Adtran Change ONT serial number")
   public void adtranOntChange() {
     //check SN
-    assertEquals(ontSerialNumber.getSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
+    assertEquals("ONT S/N on the AccessLine is incorrect",
+            ontSerialNumber.getSerialNumber(),
+            accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
     OperationResultLineIdSerialNumberDto callback = ontOltOrchestratorRobot.changeOntSerialNumber(accessLine.getLineId(), ontSerialNumber.getNewSerialNumber());
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertEquals(accessLine.getLineId(), callback.getResponse().getLineId());
-    assertEquals(ontSerialNumber.getNewSerialNumber(), callback.getResponse().getSerialNumber());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertEquals("LineId returned in the callback is incorrect", accessLine.getLineId(), callback.getResponse().getLineId());
+    assertEquals("ONT S/N returned in the callback is incorrect", ontSerialNumber.getNewSerialNumber(), callback.getResponse().getSerialNumber());
 
     // check alri
-    assertEquals(ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
+    assertEquals("New ONT S/N on the AccessLine is incorrect",
+            ontSerialNumber.getNewSerialNumber(), accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber());
 
   }
 
@@ -148,17 +152,17 @@ public class AdtranOntCommissioning extends GigabitTest {
     OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLine);
 
     // check callback
-    assertTrue(callback.getSuccess());
-    assertNull(callback.getError());
-    assertNull(callback.getResponse());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNull("Callback returned an error", callback.getError());
+    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
+    assertEquals("AccessLine state in incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getHomeId(),
             accessLine.getHomeId());
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
+    assertEquals("DefaultNeProfile state is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getDefaultNeProfile().getState(),
             ProfileState.ACTIVE);
     SubscriberNeProfileDto subscriberNEProfile = accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId());
-    assertNull(subscriberNEProfile);
+    assertNull("SubscriberNeProfile was not deleted", subscriberNEProfile);
   }
 }

@@ -92,23 +92,24 @@ public class FTTBCommissioning extends GigabitTest {
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertNotNull(callback.getResponse().getLineId());
-    assertEquals(accessLineTwistedPair.getHomeId(), callback.getResponse().getHomeId());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNotNull(callback.getResponse().getLineId(), "Callback didn't return a LineId");
+    assertEquals("HomeId in the callback is incorrect", accessLineTwistedPair.getHomeId(), callback.getResponse().getHomeId());
     accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
 
     // check alri
     accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
     String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId();
-    assertEquals(accessLineTwistedPair.getHomeId(), actualHomeId);
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair.getHomeId(), actualHomeId);
     ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
     ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt();
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
+    assertEquals("AccessLine state is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
             AccessLineStatus.ASSIGNED);
-    assertEquals(actualStateMosaic, ProfileState.ACTIVE);
-    assertEquals(actualStateOlt, ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
+    assertEquals("StateMosaic is incorrect", actualStateMosaic, ProfileState.ACTIVE);
+    assertEquals("StateOlt is incorrect", actualStateOlt, ProfileState.ACTIVE);
+    assertEquals("PortType is incorrect",
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
   }
 
   @Test(dependsOnMethods = {"FTTBLineReservationTwistedPair"})
@@ -118,15 +119,17 @@ public class FTTBCommissioning extends GigabitTest {
     OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair);
 
     // check callback
-    assertTrue(callback.getSuccess());
-    assertNull(callback.getError());
-    assertNull(callback.getResponse());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNull("Callback returned an error", callback.getError());
+    assertNull("Callback returned a response body", callback.getResponse());
 
     //check alri
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
+    assertEquals("AccessLine state is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId(),
+    assertEquals("StateMosaic is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
+    assertEquals("StateOlt is incorrect",
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt(), ProfileState.ACTIVE);
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId(),
             accessLineTwistedPair.getHomeId());
   }
 
@@ -145,10 +148,10 @@ public class FTTBCommissioning extends GigabitTest {
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
-    assertNull(callback.getError());
-    assertTrue(callback.getSuccess());
-    assertNotNull(callback.getResponse().getLineId());
-    assertEquals(accessLineCoax.getHomeId(), callback.getResponse().getHomeId());
+    assertNull("Callback returned an error", callback.getError());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNotNull(callback.getResponse().getLineId(), "Callbac didn't return a LineId");
+    assertEquals("HomeId returned in the callback is incorrect", accessLineCoax.getHomeId(), callback.getResponse().getHomeId());
     accessLineCoax.setLineId(callback.getResponse().getLineId());
 
     // check alri
@@ -157,11 +160,12 @@ public class FTTBCommissioning extends GigabitTest {
     assertEquals(actualHomeId, accessLineCoax.getHomeId());
     ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
     ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateOlt();
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
+    assertEquals("AccessLine state is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
             AccessLineStatus.ASSIGNED);
-    assertEquals(actualStateMosaic, ProfileState.ACTIVE);
-    assertEquals(actualStateOlt, ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
+    assertEquals("StateMosaic is incorrect", actualStateMosaic, ProfileState.ACTIVE);
+    assertEquals("StateOlt is incorrect", actualStateOlt, ProfileState.ACTIVE);
+    assertEquals("PortType is incorrect",
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getDpuReference().getPortType(), PortType.GFAST);
   }
 
   @Test(dependsOnMethods = {"FTTBLineReservationCoax"})
@@ -171,15 +175,18 @@ public class FTTBCommissioning extends GigabitTest {
     OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineCoax);
 
     // check callback
-    assertTrue(callback.getSuccess());
-    assertNull(callback.getError());
-    assertNull(callback.getResponse());
+    assertTrue(callback.getSuccess(), "Callback returned an error");
+    assertNull("Callback returned an error", callback.getError());
+    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
+    assertEquals("AccessLine state is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()),
             AccessLineStatus.WALLED_GARDEN);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId(),
+    assertEquals("StateMosaic is incorrect",
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic(), ProfileState.ACTIVE);
+    assertEquals("StateOlt is incorrect",
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateOlt(), ProfileState.ACTIVE);
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId(),
             accessLineCoax.getHomeId());
   }
 }
