@@ -2,7 +2,7 @@
 Feature: Upload CSV file in A4 ui which results in importing NEGs, NEs and NEPs into A4 resource inventory
   Some great description of what this feature is about.
 
-  #@DIGIHUB-xxxxx
+  #@DIGIHUB-144621
   Background:
     Given a user with Berlinium credentials
 
