@@ -235,8 +235,8 @@ Feature: Nemo Status Update Test
 
   # ---------- PATCH NSP FTTH-Access ----------
 
-  # add test issue DIGIHUB-xxxxx here after export
-  @team:berlinium @domain:osr
+  @DIGIHUB-144617
+    @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO sends a status patch for A4 Network Service Profile (FTTH-Access)
     Given a TP with type "PON_TP" is existing in A4 resource inventory
