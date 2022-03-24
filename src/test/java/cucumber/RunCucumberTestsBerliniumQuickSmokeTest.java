@@ -13,7 +13,7 @@ import io.cucumber.testng.CucumberOptions;
                 "cucumber.stepdefinitions.team.berlinium",
                 "cucumber.stepdefinitions.common"},
         features = {"src/test/resources/cucumberscenarios/team/berlinium"},
-        tags = "@test"
+        tags = "@smoke"
 )
 public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractGigabitCucumberTest {
 }

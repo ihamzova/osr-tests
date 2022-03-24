@@ -7,7 +7,7 @@ Feature: Send "Knoten" request to PLURAL and import the returning data into A4 r
     Given a user with Berlinium credentials
 
   @DIGIHUB-144187
-  @team:berlinium @domain:osr @ui @test
+  @team:berlinium @domain:osr @ui
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Import a NEG, some NEGs and NEPs from Plural via UI
     Given no NEG with name "49/1111/1/POD/01" is existing in A4 resource inventory
