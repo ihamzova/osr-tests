@@ -197,6 +197,41 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
+    /**
+     * Creates a NE in a4 resource inventory, each property filled with default test data.
+     * If any NE with colliding unique constraint (property 'ztpIdent') already exists, then the old NE is deleted first.
+     *
+     * @param table Contains explicit properties and values with which the default test data is overwritten
+     */
+    @Given("a NE with the following properties is existing in A4 resource inventory:")
+    public void givenANeWithTheFollowingProperties(DataTable table) {
+        final Map<String, String> neMap = table.asMap();
+        final ObjectMapper om = testContext.getObjectMapper();
+        final TokenBuffer buffer = new TokenBuffer(om, false);
+
+        // First create a new NE default test data set...
+        final A4NetworkElement neData = setupDefaultNeTestData();
+        final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementDto neDtoDefault = new A4ResourceInventoryMapper().getNetworkElementDto(neData,negData);
+
+        try {
+            // ... then overwrite default data set with data provided in given-step data table
+            om.writeValue(buffer, neMap);
+            final NetworkElementDto neDto = om.readerForUpdating(neDtoDefault).readValue(buffer.asParser());
+
+            // Make sure no old test data is in the way (to avoid colliding unique constraints)
+            a4ResInv.deleteA4NetworkElementsRecursively(neData);
+
+            // Do the actual NE creation
+            a4ResInv.createNetworkElement(neData, negData);
+
+            // OUTPUT INTO SCENARIO CONTEXT
+            testContext.getScenarioContext().setContext(Context.A4_NE, mapDtoToNe(neDto));
+
+        } catch (IOException e) {
+            fail("Unexpected mapping error: " + e.getMessage());
+        }
+    }
 
     @Given("a second/another NE is existing in A4 resource inventory")
     public void givenASecondNeIsExistingInA4ResourceInventory() {
@@ -1015,6 +1050,22 @@ public class A4ResInvSteps {
 
         return neg;
     }
+
+
+    private A4NetworkElement mapDtoToNe(NetworkElementDto neDto) {
+        A4NetworkElement ne = new A4NetworkElement();
+        ne.setUuid(neDto.getUuid());
+        ne.setType(neDto.getType());
+        ne.setPlannedMatNr(neDto.getPlannedMatNumber());
+        ne.setOperationalState(neDto.getOperationalState());
+        ne.setLifecycleState(neDto.getLifecycleState());
+        ne.setCreationTime(Objects.requireNonNull(neDto.getCreationTime()).toString());
+        ne.setLastUpdateTime(Objects.requireNonNull(neDto.getLastUpdateTime()).toString());
+        ne.setLastSuccessfulSyncTime(Objects.requireNonNull(neDto.getLastSuccessfulSyncTime()).toString());
+
+        return ne;
+    }
+
 
     private A4NetworkServiceProfileFtthAccess mapDtoToA4NspFtth(NetworkServiceProfileFtthAccessDto nspFtthDto) {
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
