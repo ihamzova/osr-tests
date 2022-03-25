@@ -613,6 +613,26 @@ public class A4ResInvSteps {
         );
     }
 
+
+    @Then("the NE now has the following properties:")
+    public void thenTheNENowHasTheFollowingProperties(DataTable table) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+        final Map<String, String> neMap = table.asMap();
+        final NetworkElementDto neDtoActual = a4ResInv.getExistingNetworkElement(ne.getUuid());
+        final ObjectMapper om = testContext.getObjectMapper();
+
+        // https://stackoverflow.com/questions/34957051/how-to-get-rid-of-type-safety-unchecked-cast-from-object-to-mapstring-string
+        @SuppressWarnings("unchecked")
+        Map<String, Object> neMapActual = om.convertValue(neDtoActual, Map.class);
+
+        neMap.keySet().forEach(k ->
+                assertEquals("Property '" + k + "' differs!", neMap.get(k), neMapActual.get(k).toString())
+        );
+    }
+
     @Then("a/one/1 NE with VPSZ {string} and FSZ {string} does exist( in A4 resource inventory)")
     public void aNEWithVPSZAndFSZDoesExistInAResourceInventory(String vpsz, String fsz) {
         // ACTION
@@ -651,6 +671,30 @@ public class A4ResInvSteps {
         assertNotNull(ne.getLastUpdateTime());
         assertTrue(ne.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + ne.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
+
+    @Then("the NE lastSuccessfulSyncTime property was updated")
+    public void thenTheNELastSuccessfulSyncTimePropertyWasUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final OffsetDateTime timeStamp = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        sleepForSeconds(2);
+        a4ResInv.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(ne,timeStamp);
+    }
+
+    @Then("the NE creationTime is not updated")
+    public void thenTheNECreationTimeIsNotUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement neData = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+        assertNotNull(ne.getCreationTime());
+        assertTrue(ne.getCreationTime().isBefore(oldDateTime), "creationTime (" + ne.getCreationTime() + ") is newer than " + oldDateTime + "!");
+    }
+
 
     @Then("{int} NEP(s) connected to the NE with VPSZ {string} and FSZ {string} do/does exist( in A4 resource inventory)")
     public void thenXNepsConnectedToTheNEWithVPSZAndFSZDoExistInAResourceInventory(int count, String vpsz, String fsz) {
@@ -1089,17 +1133,23 @@ public class A4ResInvSteps {
         return neg;
     }
 
-
     private A4NetworkElement mapDtoToNe(NetworkElementDto neDto) {
         A4NetworkElement ne = new A4NetworkElement();
         ne.setUuid(neDto.getUuid());
+        ne.setDescription(neDto.getDescription());
+        ne.setAddress(neDto.getAddress());
+        ne.setKlsId(neDto.getKlsId());
+        ne.setFiberOnLocationId(neDto.getFiberOnLocationId());
+        ne.setSpecificationVersion(neDto.getSpecificationVersion());
         ne.setType(neDto.getType());
+        ne.setRoles(neDto.getRoles());
+        ne.setPlannedRackId(neDto.getPlannedRackId());
+        ne.setPlannedRackPosition(neDto.getPlannedRackPosition());
         ne.setPlannedMatNr(neDto.getPlannedMatNumber());
+        ne.setPlanningDeviceName(neDto.getPlanningDeviceName());
         ne.setOperationalState(neDto.getOperationalState());
         ne.setLifecycleState(neDto.getLifecycleState());
-        ne.setCreationTime(Objects.requireNonNull(neDto.getCreationTime()).toString());
-        ne.setLastUpdateTime(Objects.requireNonNull(neDto.getLastUpdateTime()).toString());
-        ne.setLastSuccessfulSyncTime(Objects.requireNonNull(neDto.getLastSuccessfulSyncTime()).toString());
+        ne.setAdministrativeState(neDto.getAdministrativeState());
 
         return ne;
     }
