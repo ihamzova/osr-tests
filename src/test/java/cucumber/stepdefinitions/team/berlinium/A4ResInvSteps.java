@@ -23,6 +23,7 @@ import io.cucumber.java.en.Then;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -52,6 +53,7 @@ public class A4ResInvSteps {
             A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
             a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
         }
+
         final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
         if (CSV_PRESENT) {
             A4ImportCsvData csv = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
@@ -152,7 +154,7 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
 
-    @Given("no NEG with name {string} is existing in resource inventory")
+    @Given("no NEG with name {string} is existing in A4 resource inventory")
     public void noNEGWithNameIsExistingInResourceInventory(String name) {
         // ACTION
         A4NetworkElementGroup neg = new A4NetworkElementGroup();
@@ -272,6 +274,19 @@ public class A4ResInvSteps {
         // ACTION
         A4NetworkElement ne = new A4NetworkElement();
         ne.setUuid(UUID.randomUUID().toString());
+        a4ResInv.deleteA4NetworkElementsRecursively(ne);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NE, ne);
+    }
+
+    @Given("no NE with VPSZ {string} and FSZ {string} is existing in A4 resource inventory")
+    public void noNEWithVPSZAndFSZIsExistingInA4ResourceInventory(String vpsz, String fsz) {
+        // ACTION
+        A4NetworkElement ne = new A4NetworkElement();
+        ne.setUuid(UUID.randomUUID().toString());
+        ne.setVpsz(vpsz);
+        ne.setFsz(fsz);
         a4ResInv.deleteA4NetworkElementsRecursively(ne);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -497,7 +512,7 @@ public class A4ResInvSteps {
 
         final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
 
-        a4ResInv.createNetworkServiceProfileA10Nsp(nspA10nsp,tp);
+        a4ResInv.createNetworkServiceProfileA10Nsp(nspA10nsp, tp);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_A10NSP, nspA10nsp);
@@ -505,6 +520,13 @@ public class A4ResInvSteps {
 
 
     // -----=====[ THENS ]=====-----
+
+    @Then("a/one/1 NEG with name {string} does exist( in A4 resource inventory)")
+    public void thenANegWithNameDoesExistInAResourceInventory(String negName) {
+        // ACTION
+        final List<NetworkElementGroupDto> negList = a4ResInv.getNetworkElementGroupsByName(negName);
+        assertEquals(1, negList.size());
+    }
 
     @Then("the (new )NEG operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNegOperationalStateIsUpdatedInA4ResInv(String operationalState) {
@@ -552,7 +574,6 @@ public class A4ResInvSteps {
 
     @Then("the NEG lastUpdateTime is not updated")
     public void thenTheNEGLastUpdateTimeIsNotUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
 
@@ -575,22 +596,28 @@ public class A4ResInvSteps {
 
     @Then("the NEG now has the following properties:")
     public void thenTheNEGNowHasTheFollowingProperties(DataTable table) {
-        final Map<String, String> negMap = table.asMap();
-
+        // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
-        final NetworkElementGroupDto negDtoActual = a4ResInv.getExistingNetworkElementGroup(neg.getUuid());
 
+        // ACTION
+        final Map<String, String> negMap = table.asMap();
+        final NetworkElementGroupDto negDtoActual = a4ResInv.getExistingNetworkElementGroup(neg.getUuid());
         final ObjectMapper om = testContext.getObjectMapper();
 
         // https://stackoverflow.com/questions/34957051/how-to-get-rid-of-type-safety-unchecked-cast-from-object-to-mapstring-string
         @SuppressWarnings("unchecked")
         Map<String, Object> negMapActual = om.convertValue(negDtoActual, Map.class);
 
-        negMap.keySet().forEach(k -> {
-                    System.out.println("+++ Property '" + k + "': Expected: '" + negMap.get(k) + "'; Actual: '" + negMapActual.get(k).toString() + '"');
-                    assertEquals("Property '" + k + "' differs!", negMap.get(k), negMapActual.get(k).toString());
-                }
+        negMap.keySet().forEach(k ->
+                assertEquals("Property '" + k + "' differs!", negMap.get(k), negMapActual.get(k).toString())
         );
+    }
+
+    @Then("a/one/1 NE with VPSZ {string} and FSZ {string} does exist( in A4 resource inventory)")
+    public void aNEWithVPSZAndFSZDoesExistInAResourceInventory(String vpsz, String fsz) {
+        // ACTION
+        final List<NetworkElementDto> neList = a4ResInv.getNetworkElementsByVpszFsz(vpsz, fsz);
+        assertEquals(1, neList.size());
     }
 
     @Then("the (new )NE operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
@@ -623,6 +650,16 @@ public class A4ResInvSteps {
         final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
         assertNotNull(ne.getLastUpdateTime());
         assertTrue(ne.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + ne.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
+    }
+
+    @Then("{int} NEP(s) connected to the NE with VPSZ {string} and FSZ {string} do/does exist( in A4 resource inventory)")
+    public void thenXNepsConnectedToTheNEWithVPSZAndFSZDoExistInAResourceInventory(int count, String vpsz, String fsz) {
+        // ACTION
+        final List<NetworkElementDto> neList = a4ResInv.getNetworkElementsByVpszFsz(vpsz, fsz);
+        assertEquals(1, neList.size());
+
+        final List<NetworkElementPortDto> nepList = a4ResInv.getNetworkElementPortsByNetworkElement(neList.get(0).getUuid());
+        assertEquals(count, nepList.size());
     }
 
     @Then("the (new )NEP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
@@ -757,6 +794,7 @@ public class A4ResInvSteps {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
         // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());

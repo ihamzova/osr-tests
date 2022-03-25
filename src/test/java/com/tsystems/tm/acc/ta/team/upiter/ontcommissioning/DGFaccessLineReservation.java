@@ -76,10 +76,10 @@ public class DGFaccessLineReservation extends GigabitTest {
         OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineTask(homeIdDto);
 
         //check callback
-        assertNull(callback.getError());
-        assertTrue(callback.getSuccess());
-        assertNotNull(callback.getResponse().getLineId());
-        assertEquals(accessLine.getHomeId(), callback.getResponse().getHomeId());
+        assertNull("Callback returned an error", callback.getError());
+        assertTrue(callback.getSuccess(), "Callback returned an error");
+        assertNotNull(callback.getResponse().getLineId(), "Callback didn't return a LineId");
+        assertEquals("HomeId in the callback is incorrect", accessLine.getHomeId(), callback.getResponse().getHomeId());
 
         accessLine.setLineId(callback.getResponse().getLineId());
 
@@ -88,8 +88,8 @@ public class DGFaccessLineReservation extends GigabitTest {
         AccessLineStatus accesslineState = accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId());
 
         // check alri
-        assertEquals(homeIdState, HomeIdStatus.ASSIGNED);
-        assertEquals(AccessLineStatus.ASSIGNED, accesslineState);
+        assertEquals("HomeId state is incorrect", homeIdState, HomeIdStatus.ASSIGNED);
+        assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED, accesslineState);
 
 /*        //Create temp List to check business data
         List<BusinessInformation> businessInformationList = new ArrayList<>();

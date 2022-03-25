@@ -2,15 +2,23 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Then;
 
+import java.util.List;
+
+import static org.testng.AssertJUnit.assertEquals;
+
 public class WiremockNemoSteps {
 
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
     private final TestContext testContext;
-    private final A4NemoUpdaterRobot a4NemoUpdaterRobot = new A4NemoUpdaterRobot();
 
     public WiremockNemoSteps(TestContext testContext) {
         this.testContext = testContext;
@@ -27,6 +35,14 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(neg.getUuid(), method, count);
     }
 
+    @Then("{int} {string} update notification(s) was/were sent to NEMO for the NEG with name {string}")
+    public void thenXUpdateNotificationsWereSentToNEMOForTheNEGWithName(int count, String method, String negName) {
+        // ACTION
+        final List<NetworkElementGroupDto> negList = a4ResInv.getNetworkElementGroupsByName(negName);
+        assertEquals(1, negList.size());
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(negList.get(0).getUuid(), method, count);
+    }
+
     @Then("{int} {string} NE update notification(s) was/were sent to NEMO")
     public void thenANeUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT
@@ -36,6 +52,14 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(ne.getUuid(), method, count);
     }
 
+    @Then("{int} {string} update notification(s) was/were sent to NEMO for the NE with VPSZ {string} and FSZ {string}")
+    public void thenXUpdateNotificationsereSentToNEMOForTheNEWithVPSZAndFSZ(int count, String method, String vpsz, String fsz) {
+        // ACTION
+        final List<NetworkElementDto> neList = a4ResInv.getNetworkElementsByVpszFsz(vpsz, fsz);
+        assertEquals(1, neList.size());
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(neList.get(0).getUuid(), method, count);
+    }
+
     @Then("{int} {string} NEP update notification(s) was/were sent to NEMO")
     public void thenANepUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT
@@ -43,6 +67,17 @@ public class WiremockNemoSteps {
 
         // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nep.getUuid(), method, count);
+    }
+
+    @Then("{int} {string} update notification(s) was/were sent to NEMO for each NEP connected to the NE with VPSZ {string} and FSZ {string}")
+    public void thenXUpdateNotificationsWereSentToNEMOForEachNEPConnectedToTheNEWithVPSZAndFSZ(int countNemo, String method, String vpsz, String fsz) {
+        // ACTION
+        final List<NetworkElementDto> neList = a4ResInv.getNetworkElementsByVpszFsz(vpsz, fsz);
+        assertEquals(1, neList.size());
+
+        final List<NetworkElementPortDto> nepList = a4ResInv.getNetworkElementPortsByNetworkElement(neList.get(0).getUuid());
+        nepList.forEach(nep ->
+                a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nep.getUuid(), method, countNemo));
     }
 
     @Then("{int} {string} NEL update notification(s) was/were sent to NEMO")
@@ -82,17 +117,4 @@ public class WiremockNemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspA10nsp.getUuid(), method, count);
     }
 
-    @Then("update notifications was sent to NEMO")
-    public void updateNotificationsWasSentToNEMO() {
-        // checks for NEG, NE, NEP
-        System.out.println("+++ Start Nemo-Update-Checks !");
-        A4ImportCsvData csvData = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
-        a4NemoUpdaterRobot.checkAsyncNemoUpdatePutRequests(csvData);
-        System.out.println("+++ Ende Nemo-Update-Checks !");
-        /*
-        thenANegUpdateNotificationWasSentToNemo(1, "PUT");
-        thenANeUpdateNotificationWasSentToNemo(1, "PUT");
-        thenANepUpdateNotificationWasSentToNemo(20, "PUT");
-         */
-    }
 }
