@@ -240,7 +240,6 @@ public class DpuPlanningRobot {
         NotificationHelper helper = NotificationHelper.forClient(DPU_PLANNING,
                 RhssoHelper.getSecretOfGigabitHub(DPU_PLANNING),
                 TestSettings.get().getApiGwApplicationName());
-        helper.getTokenProvider().revokeToken();
 
         List<String> notifications = helper.getNotifications(DPU_PLANNING_PUBSUB_TOPIC);
         assertEquals(notifications.size(), expectedSize);
