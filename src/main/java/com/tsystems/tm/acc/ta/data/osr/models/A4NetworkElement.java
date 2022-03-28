@@ -18,9 +18,17 @@ public class A4NetworkElement {
     private String category;
     private String operationalState;
     private String lifecycleState;
+    private String administrativeState;
+    private String description;
+    private String address;
+    private String specificationVersion;
     private String type;
+    private String roles;
+    private String plannedRackId;
+    private String plannedRackPosition;
     private String plannedMatNr;
     private String planningDeviceName;
+    private String fiberOnLocationId;
     private String ztpIdent;
     private String creationTime;
     private String lastUpdateTime;

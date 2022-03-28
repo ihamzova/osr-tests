@@ -199,6 +199,41 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
 
+    /**
+     * Creates a NE in a4 resource inventory, each property filled with default test data.
+     * If any NE with colliding unique constraint (property 'ztpIdent') already exists, then the old NE is deleted first.
+     *
+     * @param table Contains explicit properties and values with which the default test data is overwritten
+     */
+    @Given("a NE with the following properties is existing in A4 resource inventory:")
+    public void givenANeWithTheFollowingProperties(DataTable table) {
+        final Map<String, String> neMap = table.asMap();
+        final ObjectMapper om = testContext.getObjectMapper();
+        final TokenBuffer buffer = new TokenBuffer(om, false);
+
+        // First create a new NE default test data set...
+        final A4NetworkElement neData = setupDefaultNeTestData();
+        final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementDto neDtoDefault = new A4ResourceInventoryMapper().getNetworkElementDto(neData,negData);
+
+        try {
+            // ... then overwrite default data set with data provided in given-step data table
+            om.writeValue(buffer, neMap);
+            final NetworkElementDto neDto = om.readerForUpdating(neDtoDefault).readValue(buffer.asParser());
+
+            // Make sure no old test data is in the way (to avoid colliding unique constraints)
+            a4ResInv.deleteA4NetworkElementsRecursively(neData);
+
+            // Do the actual NE creation
+            a4ResInv.createNetworkElement(neData, negData);
+
+            // OUTPUT INTO SCENARIO CONTEXT
+            testContext.getScenarioContext().setContext(Context.A4_NE, mapDtoToNe(neDto));
+
+        } catch (IOException e) {
+            fail("Unexpected mapping error: " + e.getMessage());
+        }
+    }
 
     @Given("a second/another NE is existing in A4 resource inventory")
     public void givenASecondNeIsExistingInA4ResourceInventory() {
@@ -578,6 +613,26 @@ public class A4ResInvSteps {
         );
     }
 
+
+    @Then("the NE now has the following properties:")
+    public void thenTheNENowHasTheFollowingProperties(DataTable table) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+        final Map<String, String> neMap = table.asMap();
+        final NetworkElementDto neDtoActual = a4ResInv.getExistingNetworkElement(ne.getUuid());
+        final ObjectMapper om = testContext.getObjectMapper();
+
+        // https://stackoverflow.com/questions/34957051/how-to-get-rid-of-type-safety-unchecked-cast-from-object-to-mapstring-string
+        @SuppressWarnings("unchecked")
+        Map<String, Object> neMapActual = om.convertValue(neDtoActual, Map.class);
+
+        neMap.keySet().forEach(k ->
+                assertEquals("Property '" + k + "' differs!", neMap.get(k), neMapActual.get(k).toString())
+        );
+    }
+
     @Then("a/one/1 NE with VPSZ {string} and FSZ {string} does exist( in A4 resource inventory)")
     public void aNEWithVPSZAndFSZDoesExistInAResourceInventory(String vpsz, String fsz) {
         // ACTION
@@ -616,6 +671,30 @@ public class A4ResInvSteps {
         assertNotNull(ne.getLastUpdateTime());
         assertTrue(ne.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + ne.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
+
+    @Then("the NE lastSuccessfulSyncTime property was updated")
+    public void thenTheNELastSuccessfulSyncTimePropertyWasUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final OffsetDateTime timeStamp = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        sleepForSeconds(2);
+        a4ResInv.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(ne,timeStamp);
+    }
+
+    @Then("the NE creationTime is not updated")
+    public void thenTheNECreationTimeIsNotUpdated() {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement neData = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
+
+        // ACTION
+        final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+        assertNotNull(ne.getCreationTime());
+        assertTrue(ne.getCreationTime().isBefore(oldDateTime), "creationTime (" + ne.getCreationTime() + ") is newer than " + oldDateTime + "!");
+    }
+
 
     @Then("{int} NEP(s) connected to the NE with VPSZ {string} and FSZ {string} do/does exist( in A4 resource inventory)")
     public void thenXNepsConnectedToTheNEWithVPSZAndFSZDoExistInAResourceInventory(int count, String vpsz, String fsz) {
@@ -1053,6 +1132,28 @@ public class A4ResInvSteps {
 
         return neg;
     }
+
+    private A4NetworkElement mapDtoToNe(NetworkElementDto neDto) {
+        A4NetworkElement ne = new A4NetworkElement();
+        ne.setUuid(neDto.getUuid());
+        ne.setDescription(neDto.getDescription());
+        ne.setAddress(neDto.getAddress());
+        ne.setKlsId(neDto.getKlsId());
+        ne.setFiberOnLocationId(neDto.getFiberOnLocationId());
+        ne.setSpecificationVersion(neDto.getSpecificationVersion());
+        ne.setType(neDto.getType());
+        ne.setRoles(neDto.getRoles());
+        ne.setPlannedRackId(neDto.getPlannedRackId());
+        ne.setPlannedRackPosition(neDto.getPlannedRackPosition());
+        ne.setPlannedMatNr(neDto.getPlannedMatNumber());
+        ne.setPlanningDeviceName(neDto.getPlanningDeviceName());
+        ne.setOperationalState(neDto.getOperationalState());
+        ne.setLifecycleState(neDto.getLifecycleState());
+        ne.setAdministrativeState(neDto.getAdministrativeState());
+
+        return ne;
+    }
+
 
     private A4NetworkServiceProfileFtthAccess mapDtoToA4NspFtth(NetworkServiceProfileFtthAccessDto nspFtthDto) {
         A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();

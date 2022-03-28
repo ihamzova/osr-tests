@@ -27,8 +27,17 @@ public class A4ResInvServiceSteps {
     private static final String DESCRIPTION = "description";
     private static final String NAME = "name";
     private static final String TYPE = "type";
+    private static final String ROLES = "roles";
     private static final String LC_STATE = "lifecycleState";
+    private static final String ADMIN_STATE = "administrativeState";
     private static final String SPEC_VERSION = "specificationVersion";
+    private static final String ADDRESS = "address";
+    private static final String KLS_ID = "klsId";
+    private static final String FIBER_ON_LOC_ID = "fiberOnLocationId";
+    private static final String PLANNED_RACK_ID = "plannedRackId";
+    private static final String PLANNED_RACK_POS = "plannedRackPosition";
+    private static final String PLANNED_DEV_NAME = "plannedDeviceName";
+    private static final String PLANNED_MAT_NUM = "plannedMatNumber";
 
     public A4ResInvServiceSteps(TestContext testContext) {
         this.testContext = testContext;
@@ -116,6 +125,69 @@ public class A4ResInvServiceSteps {
             addCharacteristic(lru, SYNC_TIME, negMap.get(SYNC_TIME));
 
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(neg.getUuid(), lru);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+    }
+
+    @When("NEMO sends a request to update the NE's following properties to:")
+    public void whenNemoSendsARequestToUpdateTheNEsFollowingPropertiesTo(DataTable table) {
+        // INPUT FROM SCENARIO CONTEXT
+        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+
+        // ACTION
+
+        // Datetime has to be put into scenario context _before_ the actual request happens
+        testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+
+        final Map<String, String> neMap = table.asMap();
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
+        lru.setAtType(NE);
+
+        if (neMap.containsKey(DESCRIPTION))
+            lru.setDescription(neMap.get(DESCRIPTION));
+
+        if (neMap.containsKey(LC_STATE))
+            lru.setLifecycleState(neMap.get(LC_STATE));
+
+        if (neMap.containsKey(SPEC_VERSION))
+            lru.setVersion(neMap.get(SPEC_VERSION));
+
+        if (neMap.containsKey(TYPE))
+            addCharacteristic(lru, TYPE_NAME, neMap.get(TYPE));
+
+        if (neMap.containsKey(ROLES))
+            addCharacteristic(lru, ROLES, neMap.get(ROLES));
+
+        if (neMap.containsKey(OP_STATE))
+            addCharacteristic(lru, OP_STATE, neMap.get(OP_STATE));
+
+        if (neMap.containsKey(ADMIN_STATE))
+            addCharacteristic(lru, ADMIN_STATE, neMap.get(ADMIN_STATE));
+
+        if (neMap.containsKey(KLS_ID))
+            addCharacteristic(lru, KLS_ID, neMap.get(KLS_ID));
+
+        if (neMap.containsKey(FIBER_ON_LOC_ID))
+            addCharacteristic(lru, FIBER_ON_LOC_ID, neMap.get(FIBER_ON_LOC_ID));
+
+        if (neMap.containsKey(ADDRESS))
+            addCharacteristic(lru, ADDRESS, neMap.get(ADDRESS));
+
+        if (neMap.containsKey(PLANNED_RACK_ID))
+            addCharacteristic(lru, PLANNED_RACK_ID, neMap.get(PLANNED_RACK_ID));
+
+        if (neMap.containsKey(PLANNED_RACK_POS))
+            addCharacteristic(lru, PLANNED_RACK_POS, neMap.get(PLANNED_RACK_POS));
+
+        if (neMap.containsKey(PLANNED_DEV_NAME))
+            addCharacteristic(lru, PLANNED_DEV_NAME, neMap.get(PLANNED_DEV_NAME));
+
+        if (neMap.containsKey(PLANNED_MAT_NUM))
+            addCharacteristic(lru, PLANNED_MAT_NUM, neMap.get(PLANNED_MAT_NUM));
+
+
+        final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(ne.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
