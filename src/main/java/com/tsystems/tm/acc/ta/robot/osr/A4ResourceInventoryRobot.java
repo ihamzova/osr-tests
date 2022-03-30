@@ -61,17 +61,22 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Create new Network Element in A4 resource inventory")
-    public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
-        NetworkElementDto neDto = new A4ResourceInventoryMapper()
-                .getNetworkElementDto(neData, negData);
-
+    @Step("Create new Network Element in A4 resource inventory based on NE DTO")
+    public void createNetworkElement(NetworkElementDto neDto) {
         a4ResourceInventory
                 .networkElements()
                 .createOrUpdateNetworkElement()
                 .body(neDto)
                 .uuidPath(neDto.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new Network Element in A4 resource inventory")
+    public void createNetworkElement(A4NetworkElement neData, A4NetworkElementGroup negData) {
+        NetworkElementDto neDto = new A4ResourceInventoryMapper()
+                .getNetworkElementDto(neData, negData);
+
+        createNetworkElement(neDto);
     }
 
     @Step("Delete existing Network Element from A4 resource inventory")

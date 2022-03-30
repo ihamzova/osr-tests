@@ -144,7 +144,7 @@ Feature: Nemo Status Update Test
       | lifecycleState               | oldLcState                |
       | plannedRackId                | oldPlannedRackId          |
       | plannedRackPosition          | oldPlannedRackPosition    |
-      | plannedDeviceName            | oldPlannedDeviceName      |
+      | planningDeviceName           | oldPlanningDeviceName     |
       | plannedMatNumber             | 111111111                 |
       | type                         | oldType                   |
       | roles                        | oldRoles                  |
@@ -159,7 +159,7 @@ Feature: Nemo Status Update Test
       | lifecycleState               | newLcState                |
       | plannedRackId                | newPlannedRackId          |
       | plannedRackPosition          | newPlannedRackPosition    |
-      | plannedDeviceName            | newPlannedDeviceName      |
+      | planningDeviceName           | newPlanningDeviceName     |
       | plannedMatNumber             | 222222222                 |
       | type                         | newType                   |
       | roles                        | newRoles                  |
@@ -175,7 +175,7 @@ Feature: Nemo Status Update Test
       | lifecycleState               | oldLcState                |
       | plannedRackId                | oldPlannedRackId          |
       | plannedRackPosition          | oldPlannedRackPosition    |
-      | plannedDeviceName            | oldPlannedDeviceName      |
+      | planningDeviceName           | oldPlanningDeviceName     |
       | plannedMatNumber             | 111111111                 |
       | type                         | oldType                   |
       | roles                        | oldRoles                  |
