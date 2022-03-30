@@ -214,7 +214,7 @@ public class A4ResInvSteps {
         // First create a new NE default test data set...
         final A4NetworkElement neData = setupDefaultNeTestData();
         final A4NetworkElementGroup negData = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
-        final NetworkElementDto neDtoDefault = new A4ResourceInventoryMapper().getNetworkElementDto(neData,negData);
+        final NetworkElementDto neDtoDefault = new A4ResourceInventoryMapper().getNetworkElementDto(neData, negData);
 
         try {
             // ... then overwrite default data set with data provided in given-step data table
@@ -357,10 +357,10 @@ public class A4ResInvSteps {
         nel.setLifecycleState(lcs);
 
 
-        a4ResInv.createNetworkElementLink(nel,nepA,nepB,neA,neB);
+        a4ResInv.createNetworkElementLink(nel, nepA, nepB, neA, neB);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NEL,nel);
+        testContext.getScenarioContext().setContext(Context.A4_NEL, nel);
     }
 
 
@@ -441,7 +441,7 @@ public class A4ResInvSteps {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
         a4ResInv.deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
 
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess,tp);
+        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess, tp);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
@@ -461,7 +461,7 @@ public class A4ResInvSteps {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
         a4ResInv.deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
 
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess,tp);
+        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess, tp);
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
@@ -608,8 +608,11 @@ public class A4ResInvSteps {
         @SuppressWarnings("unchecked")
         Map<String, Object> negMapActual = om.convertValue(negDtoActual, Map.class);
 
-        negMap.keySet().forEach(k ->
-                assertEquals("Property '" + k + "' differs!", negMap.get(k), negMapActual.get(k).toString())
+        negMap.keySet().forEach(k -> {
+                    if (negMap.get(k) != null && negMapActual.get(k) == null)
+                        fail("Expected property '" + k + "' is not present in updated NEG!");
+                    assertEquals("Property '" + k + "' differs!", negMap.get(k), negMapActual.get(k).toString());
+                }
         );
     }
 
@@ -628,8 +631,11 @@ public class A4ResInvSteps {
         @SuppressWarnings("unchecked")
         Map<String, Object> neMapActual = om.convertValue(neDtoActual, Map.class);
 
-        neMap.keySet().forEach(k ->
-                assertEquals("Property '" + k + "' differs!", neMap.get(k), neMapActual.get(k).toString())
+        neMap.keySet().forEach(k -> {
+                    if (neMap.get(k) != null && neMapActual.get(k) == null)
+                        fail("Expected property '" + k + "' is not present in updated NE!");
+                    assertEquals("Property '" + k + "' differs!", neMap.get(k), neMapActual.get(k).toString());
+                }
         );
     }
 
@@ -680,7 +686,7 @@ public class A4ResInvSteps {
 
         // ACTION
         sleepForSeconds(2);
-        a4ResInv.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(ne,timeStamp);
+        a4ResInv.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(ne, timeStamp);
     }
 
     @Then("the NE creationTime is not updated")
@@ -825,11 +831,11 @@ public class A4ResInvSteps {
     public void thenTheNspFtthAccessOperationalStateIsUpdatedInA4ResInv(String operationalState) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
-                                                                    .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
-        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
-                            .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
+                .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
         assertEquals(operationalState, nspFtthAccess.getOperationalState());
     }
 
@@ -840,7 +846,7 @@ public class A4ResInvSteps {
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
-        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
         assertEquals(portUuid, nspFtthAccess.getOltPortOntLastRegisteredOn());
     }
@@ -852,7 +858,7 @@ public class A4ResInvSteps {
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
-        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
         assertEquals(lifecycleState, nspFtthAccess.getLifecycleState());
     }
@@ -866,7 +872,7 @@ public class A4ResInvSteps {
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
 
         // ACTION
-        final NetworkServiceProfileFtthAccessDto nspFtthAccess =a4ResInv
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
         assertNotNull(nspFtthAccess.getLastUpdateTime());
         assertTrue(nspFtthAccess.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspFtthAccess.getLastUpdateTime() + ") is older than " + oldDateTime + "!");

@@ -691,16 +691,12 @@ public class A4ResourceInventoryRobot {
         // NEG name has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
         final List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
-        System.out.println("+++ Größe der NEG-Liste: "+negList.size());
         negList.forEach(neg -> {
             final List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
 
             neList.forEach(this::deleteA4NetworkElementsRecursively);
-            System.out.println("+++ Starte Löschung TP's ");
             deleteTerminationPointsRecursively(neg.getUuid());
-            System.out.println("+++ Starte Löschung NEG ");
             deleteNetworkElementGroup(neg.getUuid());
-            System.out.println("+++ Ende Löschung NEG ");
         });
     }
 
