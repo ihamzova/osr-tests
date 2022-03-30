@@ -38,6 +38,7 @@ public class A4ResInvServiceSteps {
     private static final String PLANNED_RACK_POS = "plannedRackPosition";
     private static final String PLANNED_DEV_NAME = "plannedDeviceName";
     private static final String PLANNED_MAT_NUM = "plannedMatNumber";
+    private static final String NEG_UUID = "networkElementGroupUuid";
 
     public A4ResInvServiceSteps(TestContext testContext) {
         this.testContext = testContext;
@@ -186,6 +187,17 @@ public class A4ResInvServiceSteps {
         if (neMap.containsKey(PLANNED_MAT_NUM))
             addCharacteristic(lru, PLANNED_MAT_NUM, neMap.get(PLANNED_MAT_NUM));
 
+        if (neMap.containsKey(CREATION_TIME))
+            addCharacteristic(lru, CREATION_TIME, neMap.get(CREATION_TIME));
+
+        if (neMap.containsKey(UPDATE_TIME))
+            addCharacteristic(lru, UPDATE_TIME, neMap.get(UPDATE_TIME));
+
+        if (neMap.containsKey(SYNC_TIME))
+            addCharacteristic(lru, SYNC_TIME, neMap.get(SYNC_TIME));
+
+        if (neMap.containsKey(NEG_UUID))
+            addResourceRelationship(lru, NEG, neMap.get(NEG_UUID));
 
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(ne.getUuid(), lru);
 
@@ -374,7 +386,7 @@ public class A4ResInvServiceSteps {
     public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndNepReferenceTo(String opState, String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
-                                                                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
+                .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
 
@@ -423,7 +435,7 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
         LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
-        addResourceRelationship(lru,NEP,portUuid);
+        addResourceRelationship(lru, NEP, portUuid);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT

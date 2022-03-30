@@ -74,6 +74,16 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    @Step("Create new Network Element in A4 resource inventory based on NE DTO")
+    public void createNetworkElement(NetworkElementDto neDto) {
+        a4ResourceInventory
+                .networkElements()
+                .createOrUpdateNetworkElement()
+                .body(neDto)
+                .uuidPath(neDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Delete existing Network Element from A4 resource inventory")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
@@ -686,16 +696,12 @@ public class A4ResourceInventoryRobot {
         // NEG name has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
         final List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
-        System.out.println("+++ Größe der NEG-Liste: "+negList.size());
         negList.forEach(neg -> {
             final List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
 
             neList.forEach(this::deleteA4NetworkElementsRecursively);
-            System.out.println("+++ Starte Löschung TP's ");
             deleteTerminationPointsRecursively(neg.getUuid());
-            System.out.println("+++ Starte Löschung NEG ");
             deleteNetworkElementGroup(neg.getUuid());
-            System.out.println("+++ Ende Löschung NEG ");
         });
     }
 
