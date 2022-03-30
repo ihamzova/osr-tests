@@ -225,7 +225,7 @@ public class A4ResInvSteps {
             a4ResInv.deleteA4NetworkElementsRecursively(neData);
 
             // Do the actual NE creation
-            a4ResInv.createNetworkElement(neData, negData);
+            a4ResInv.createNetworkElement(neDto);
 
             // OUTPUT INTO SCENARIO CONTEXT
             testContext.getScenarioContext().setContext(Context.A4_NE, mapDtoToNe(neDto));
