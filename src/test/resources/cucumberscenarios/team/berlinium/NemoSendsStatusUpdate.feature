@@ -1,4 +1,4 @@
-@DIGIHUB-90382
+@DIGIHUB-90382 @DIGIHUB-144049
 Feature: Nemo Status Update Test
   Some great description of what this feature is about.
 
@@ -223,7 +223,7 @@ Feature: Nemo Status Update Test
     When NEMO sends a request to update NEP operational state to "WORKING"
     Then the request is responded with HTTP code 201
     And the NEP operationalState is updated to "WORKING"
-    And the NEP description is deleted
+    And the NEP description is still "OldDescr"
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
@@ -235,7 +235,7 @@ Feature: Nemo Status Update Test
     When NEMO sends a request to update NEP without operationalState nor description
     Then the request is responded with HTTP code 201
     And the NEP operationalState is still "NOT_WORKING"
-    And the NEP description is deleted
+    And the NEP description is still "OldDescr"
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
