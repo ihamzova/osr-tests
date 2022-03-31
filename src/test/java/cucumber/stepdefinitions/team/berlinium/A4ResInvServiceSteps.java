@@ -56,7 +56,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEG);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, ops);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(neg.getUuid(), lru);
 
@@ -74,7 +74,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEG);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(neg.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -82,7 +82,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update the NEG's following properties to:")
-    public void whenNemoSendsARequestToUpdateTheNEGSFollowingPropertiesTo(DataTable table) {
+    public void whenNemoSendsARequestToUpdateNEGSFollowingPropertiesTo(DataTable table) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
@@ -132,7 +132,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to update the NE's following properties to:")
-    public void whenNemoSendsARequestToUpdateTheNEsFollowingPropertiesTo(DataTable table) {
+    public void whenNemoSendsARequestToUpdateNEsFollowingPropertiesTo(DataTable table) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
 
@@ -215,7 +215,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NE);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, ops);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(ne.getUuid(), lru);
 
@@ -233,7 +233,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NE);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(ne.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -250,7 +250,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         lru.setDescription(descr);
         addCharacteristic(lru, OP_STATE, opState);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nep.getUuid(), lru);
@@ -269,7 +269,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         lru.setDescription(descr);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nep.getUuid(), lru);
 
@@ -287,7 +287,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, opState);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nep.getUuid(), lru);
 
@@ -305,7 +305,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nep.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -313,7 +313,7 @@ public class A4ResInvServiceSteps {
     }
 
     @When("NEMO sends a request to change/update (the )NEL operationalState to {string}")
-    public void whenNemoSendsARequestToChangeNELOperationalStateTo(String ops) {
+    public void whenNemoSendsARequestToUpdateNELOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
         final A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
@@ -322,7 +322,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEL);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, ops);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nel.getUuid(), lru);
 
@@ -340,7 +340,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NEL);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nel.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -393,7 +393,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, opState);
         addResourceRelationship(lru, NEP, portUuid);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
@@ -414,7 +414,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, opState);
         final Response response = a4ResInvService
                 .sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
@@ -434,7 +434,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addResourceRelationship(lru, NEP, portUuid);
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
 
@@ -453,7 +453,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_FTTH_ACCESS);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspFtthAccess.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -472,7 +472,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_L2BSA);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, newOperationalState);
         final Response response = a4ResInvService.sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(nspL2, tp, newOperationalState);
 
@@ -490,7 +490,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_L2BSA);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspL2.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -510,7 +510,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_A10NSP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         addCharacteristic(lru, OP_STATE, newOperationalState);
         final Response response = a4ResInvService
                 .sendStatusUpdateForNetworkServiceProfileA10NspWithoutChecks(nspA10nsp, tp, newOperationalState);
@@ -530,7 +530,7 @@ public class A4ResInvServiceSteps {
         // Datetime has to be put into scenario context _before_ the actual request happens
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
 
-        LogicalResourceUpdate lru = a4ResInvServiceMapper.createMinimalLogicalResourceUpdate(NSP_A10NSP);
+        LogicalResourceUpdate lru = new LogicalResourceUpdate();
         final Response response = a4ResInvService.sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(nspA10nsp.getUuid(), lru);
 
         // OUTPUT INTO SCENARIO CONTEXT
