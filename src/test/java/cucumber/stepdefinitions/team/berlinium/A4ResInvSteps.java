@@ -742,16 +742,6 @@ public class A4ResInvSteps {
         assertEquals(newDescr, nep.getDescription());
     }
 
-    @Then("the (new )NEP description is (now )deleted( in the A4 resource inventory)")
-    public void thenTheNEPDescriptionIsDeleted() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nepData = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
-
-        // ACTION
-        final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
-        assertNull(nep.getDescription());
-    }
-
     @Then("the NEP lastUpdateTime is updated")
     public void thenTheNEPLastUpdateTimeIsUpdated() {
         // INPUT FROM SCENARIO CONTEXT
