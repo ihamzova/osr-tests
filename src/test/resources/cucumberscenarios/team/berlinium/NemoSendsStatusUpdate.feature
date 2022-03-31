@@ -133,7 +133,7 @@ Feature: Nemo Status Update Test
     And the NE lastUpdateTime is updated
     And 1 "PUT" NE update notifications were sent to NEMO
 
-  # Add DIGIHUB-XXX after export to Jira
+  @DIGIHUB-145629
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 NE with _all_ properties changed to new values; only states are changed, everything else kept at old values
@@ -215,7 +215,7 @@ Feature: Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
-  # Add @DIGIHUB-xxxx if exported
+  @DIGIHUB-145630
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: NEMO sends a status patch for A4 Network Element Port with empty description
