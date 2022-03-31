@@ -215,6 +215,17 @@ Feature: Nemo Status Update Test
     And the NEP lastUpdateTime is updated
     And 1 "PUT" NEP update notification was sent to NEMO
 
+  # Add @DIGIHUB-xxxx if exported
+  @team:berlinium @domain:osr
+  @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
+  Scenario: NEMO sends a status patch for A4 Network Element Port with empty description
+    Given a NEP with operational state "NOT_WORKING" and description "OldDescr" is existing in A4 resource inventory
+    When NEMO sends a request to update NEP description to ""
+    Then the request is responded with HTTP code 201
+    And the NEP description is updated to ""
+    And the NEP lastUpdateTime is updated
+    And 1 "PUT" NEP update notification was sent to NEMO
+
   @DIGIHUB-144200
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
