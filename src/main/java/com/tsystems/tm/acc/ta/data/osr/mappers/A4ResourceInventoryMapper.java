@@ -142,6 +142,7 @@ public class A4ResourceInventoryMapper {
 
         return new NetworkElementPortDto()
                 .uuid(nepData.getUuid())
+                .description(nepData.getDescription())
                 .networkElementUuid(neData.getUuid())
                 .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz()))
                 .logicalLabel(nepData.getFunctionalPortLabel())
