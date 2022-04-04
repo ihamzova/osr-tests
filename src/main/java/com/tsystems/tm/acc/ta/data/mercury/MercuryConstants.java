@@ -12,7 +12,9 @@ public interface MercuryConstants {
 
     String APIGW = "apigw";
 
+    // featute toggles
     String SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT = "service.olt-resource-inventory-ui.uplink-import";
 
+    // check discovery result
     String DISCOVERY_RESULT_SUCCESSFUL = "Inventory abgleichen";
 }
