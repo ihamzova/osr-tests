@@ -134,6 +134,11 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.8</version>
         </dependency>
+        <dependency>
+            <groupId>com.tsystems.tm.api.client</groupId>
+            <artifactId>olt-commissioning</artifactId>
+            <version>3.1.7.0</version>
+        </dependency>
     </dependencies>
 
     <build>

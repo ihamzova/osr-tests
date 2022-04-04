@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
+import com.tsystems.tm.acc.ta.api.osr.OltCommissioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.ztcommissioning.OltInstallationPage;
@@ -27,6 +28,7 @@ public class ZtCommissioningRobot {
     //private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProvider);
     private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+    private OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
 
     @Step("Starts zero touch commissioning process")
     public void startZtCommissioning(OltDevice oltDevice, String acid) {
@@ -40,11 +42,12 @@ public class ZtCommissioningRobot {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
-        log.info("oltZtcConfigurations = {}", oltZtcConfigurations);
         if(oltZtcConfigurations.size() > 0) {
-            //deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().deleteOltZtcConfiguration()
-            //                .idPath(oltZtcConfigurations.get(0).getId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-
+            log.info("delete oltZtcConfigurations = {}", oltZtcConfigurations.get(0));
+            deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().deleteOltZtcConfiguration()
+                            .idPath(oltZtcConfigurations.get(0).getId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+            oltCommissioningClient.getClient().oltZtCommissioning().deleteZtCommissioning()
+                            .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
         }
     }
 
