@@ -40,14 +40,6 @@ public class A4ResourceInventoryServiceMapper {
         return generateNegLogicalResourceUpdate(negData, operationalState);
     }
 
-    public LogicalResourceUpdate createMinimalLogicalResourceUpdate(String elementType) {
-
-        LogicalResourceUpdate lru = new LogicalResourceUpdate();
-        lru.setAtType(elementType);
-
-        return lru;
-    }
-
     // Create logicalResource representation of network element with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkElement neData, A4NetworkElementGroup negData, String operationalState) {
         return generateNeLogicalResourceUpdate(neData, negData, operationalState);
