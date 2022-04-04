@@ -300,6 +300,29 @@ public class A4ResourceInventoryRobot {
         return networkElementDtoList.get(0);
     }
 
+
+    @Step("Get a list of Network Elements by by ztpIdent")
+    // As VPSZ & FSZ are together a unique constraint, the list will have either 0 or 1 entries
+    public List<NetworkElementDto> getNetworkElementsByZtpIdent(String ztpIdent) {
+        return a4ResourceInventory
+                .networkElements()
+                .listNetworkElements()
+                .ztpIdentQuery(ztpIdent)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Get an existing Network Elements by ztpIdent")
+    public NetworkElementDto getExistingNetworkElementByZtpIdent(String ztpIdent) {
+        List<NetworkElementDto> networkElementDtoList = getNetworkElementsByZtpIdent(ztpIdent);
+
+        // List has only size 1, return uuid of element
+        // If list has not size 1 an error occurred
+        assertEquals(networkElementDtoList.size(), 1);
+
+        return networkElementDtoList.get(0);
+    }
+
+
     @Step("Get a list of Network Element Ports by Network Element")
     public List<NetworkElementPortDto> getNetworkElementPortsByNetworkElement(String networkElementUuid) {
         return a4ResourceInventory
@@ -747,14 +770,19 @@ public class A4ResourceInventoryRobot {
         );
     }
 
-    @Step("Delete NE by endsz, also recursively deletes as children")
+    @Step("Delete NE by all unique constraints ztpIdent and endsz, also recursively deletes as children")
     public void deleteA4NetworkElementsRecursively(A4NetworkElement ne) {
         // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        deleteA4NetworkElementsRecursively(ne.getZtpIdent());
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
     private void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
         final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
+        neList.forEach(this::deleteA4NetworkElementsRecursively);
+    }
+    private void deleteA4NetworkElementsRecursively(String ztpIdent) {
+        final List<NetworkElementDto> neList = getNetworkElementsByZtpIdent(ztpIdent);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
 

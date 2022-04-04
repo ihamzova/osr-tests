@@ -201,7 +201,7 @@ public class A4ResInvSteps {
 
     /**
      * Creates a NE in a4 resource inventory, each property filled with default test data.
-     * If any NE with colliding unique constraint (property 'ztpIdent') already exists, then the old NE is deleted first.
+     * If any NE with colliding unique constraint ('ztpIdent' and 'EndSz') already exists, then the old NE is deleted first.
      *
      * @param table Contains explicit properties and values with which the default test data is overwritten
      */
