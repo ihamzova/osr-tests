@@ -58,7 +58,6 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
 
     @BeforeClass
     public void init() {
-        dpuCommissioningUiRobot.enableFeatureToogleDpuDemand();
 
         dpuCommissioningUiRobot.restoreOsrDbState();
 
@@ -69,11 +68,7 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         expectedDefaultNlProfile = context.getData().getDefaultNetworkLineProfileDataProvider()
                 .get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
 
-        if (dpuCommissioningUiRobot.getFeatureToggleDpuDemandState()) {
-            numberOfAcсessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
-        } else {
-            numberOfAcсessLines = dpuDevice.getNumberOfAccessLines();
-        }
+        numberOfAcсessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
         DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
@@ -88,7 +83,6 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
         mappingsContext
                 .eventsHook(saveEventsToDefaultDir())
                 .eventsHook(attachEventsToAllureReport());
-        dpuCommissioningUiRobot.disableFeatureToogleDpuDemand();
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
     }

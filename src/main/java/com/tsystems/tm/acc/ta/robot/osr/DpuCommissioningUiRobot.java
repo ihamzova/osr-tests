@@ -3,7 +3,6 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
@@ -29,7 +28,6 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 import static org.testng.Assert.assertEquals;
 
@@ -48,8 +46,6 @@ public class DpuCommissioningUiRobot {
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
     private String businessKey;
-
-    private UnleashClient unleashClient = new UnleashClient();
 
     @Step("Start automatic dpu creation and commissioning process")
     public void startDpuCommissioning(DpuDevice dpuDevice, boolean withDpuDemand) {
@@ -220,21 +216,5 @@ public class DpuCommissioningUiRobot {
     @Step("get businessKey")
     public String getBusinessKey() {
         return businessKey;
-    }
-
-    @Step("enable unleash feature toggle: dpu-lifecycle-uses-dpu-demands")
-    public void enableFeatureToogleDpuDemand()
-    {
-        unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-    }
-
-    @Step("disable unleash feature toggle: dpu-lifecycle-uses-dpu-demands")
-    public void disableFeatureToogleDpuDemand()
-    {
-        unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-    }
-
-    public boolean getFeatureToggleDpuDemandState() {
-        return unleashClient.isToggleEnabled(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
     }
 }
