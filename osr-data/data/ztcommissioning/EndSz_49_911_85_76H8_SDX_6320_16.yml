@@ -8,6 +8,7 @@ values:
   bngDownlinkSlot: "2"
   lsz: "4Z2"
   orderNumber: "0124456789"
+  vst: "@DefaultVst"
   oltPort: "1"
   tplnr: "000049-008571-000-002-001-001"
   bezeichnung: "SDX 6320-16"

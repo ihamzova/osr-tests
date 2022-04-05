@@ -3,10 +3,8 @@ package com.tsystems.tm.acc.ta.data.mercury.wiremock.mappings;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.wiremock.AbstractStubMapping;
-import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -53,7 +51,7 @@ public class RebellUewegeStub  extends AbstractStubMapping {
                         .getResourceAsStream(PATH_TO_MOCK)), Charset.defaultCharset()))
                 .lines()
                 .collect(Collectors.joining("\n"))
-                /*   return FileUtils.readFileToString(new File(getClass()
+                /*   return FileUtils.(new File(getClass()
                            .getResourceAsStream(PATH_TO_MOCK).getFile()), Charset.defaultCharset())*/
                 .replace("$oltEndSz", oltDevice.getEndsz().replace("/", "_"))
                 .replace("$olt_akz", oltEndSz[0])
