@@ -5,7 +5,6 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
@@ -42,7 +41,6 @@ import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 
 @Slf4j
@@ -52,13 +50,11 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
   private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
   private DpuDevice dpuDevice;
   private WireMockMappingsContext mappingsContext;
-  private UnleashClient unleashClient = new UnleashClient();
   private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
 
   @BeforeClass
   public void init() {
 
-    enableFeatureToogleDpuDemand();
     deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
     OsrTestContext context = OsrTestContext.get();
@@ -80,8 +76,6 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
     WireMockFactory.get().resetToDefaultMappings();
     //clearResourceInventoryDataBase(dpuDevice);
-    disableFeatureToogleDpuDemand();
-
   }
 
   @Test(description = "DIGIHUB-53694 Manual commissioning for MA5800 with DTAG user on team environment")
@@ -228,15 +222,5 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
             .uplinkAncpConfigurationQuery("1")
             .executeSqlQuery("1")
             .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-  }
-
-  public void enableFeatureToogleDpuDemand()
-  {
-    unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-  }
-
-  public void disableFeatureToogleDpuDemand()
-  {
-    unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
   }
 }
