@@ -66,11 +66,11 @@ public class A4ResourceOrderRobot {
         a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
-                .xCallbackCorrelationIdHeader(correlationId)
-                .xCallbackUrlHeader(cbUrl)
-                .xCallbackIdHeader("1")
+//                .xCallbackCorrelationIdHeader(correlationId)
+//                .xCallbackUrlHeader(cbUrl)
+//                .xCallbackIdHeader("1")
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));  // soll 201 sein!?
     }
 
     public ResourceOrder buildResourceOrder() {
