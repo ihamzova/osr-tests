@@ -26,10 +26,8 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS, OLT_COMMISSIONING_MS})
 public class AdtranOltZtCommissioning extends GigabitTest {
 
-  private final String ACID = "21212";
-
   private OsrTestContext context;
-  private ZtCommissioningRobot ztCommissioningRobot = new ZtCommissioningRobot();
+  private final ZtCommissioningRobot ztCommissioningRobot = new ZtCommissioningRobot();
   private OltDevice oltDevice;
 
   private WireMockMappingsContext mappingsContextOsr;
@@ -42,10 +40,14 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
     ztCommissioningRobot.clearZtCommisioningData(oltDevice.getEndsz());
 
+    //WireMockFactory.get().resetToDefaultMappings();
+
     mappingsContextOsr = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "AdtranOltZtCommissioning"))
             .addSealMock(oltDevice)
             .addPslMock(oltDevice)
             .addPslMockXML(oltDevice)
+            .addDhcp4oltGetOltMock(oltDevice)
+            .addDhcp4oltGetBngMock(oltDevice)
             .build()
             .publish()
             .publishedHook(savePublishedToDefaultDir())
@@ -81,9 +83,17 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   @Description("Perform zero touch commissioning for not discovered SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningDTAG() {
 
+    final String ACID = "21212";
+
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
+
+    try {
+      Thread.sleep(2200);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
   }
 }

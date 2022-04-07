@@ -23,18 +23,20 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
 @Slf4j
 public class ZtCommissioningRobot {
 
+    private static final Integer TIMEOUT_FOR_ZTC_COMMISSIONING = 2 * 60_000;
+
     private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
     //private UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient(authTokenProvider);
     //private AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProvider);
-    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
-    private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
-    private OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
+    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
+    private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+    private final OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
 
     @Step("Starts zero touch commissioning process")
     public void startZtCommissioning(OltDevice oltDevice, String acid) {
         OltInstallationPage.openInstallationPage(acid)
                 .validateUrl()
-                .startZtCommisioningProcess(oltDevice);
+                .startZtCommisioningProcess(oltDevice, TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     @Step("Clear zero touch commisioning process data")

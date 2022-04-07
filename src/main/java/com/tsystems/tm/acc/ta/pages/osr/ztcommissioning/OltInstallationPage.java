@@ -8,8 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 
 @Slf4j
@@ -28,6 +31,8 @@ public class OltInstallationPage {
     public static final By START_BUTTON = By.cssSelector("button[type=submit]");
     //public static final By START_BUTTON = By.cssSelector("button.ui.icon.button");
 
+    public static final By CONTINUE = By.cssSelector("p:nth-child(7)");
+
     @Step("Open OLT-Installation page")
     public static OltInstallationPage openInstallationPage(String acid) {
         URL url = new GigabitUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", acid).buildExternal();
@@ -37,21 +42,21 @@ public class OltInstallationPage {
 
     @Step("ZTC Validate Url")
     public OltInstallationPage validateUrl() {
-        assertUrlContainsWithTimeout(APP,  CommonHelper.commonTimeout.intValue());
+        assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout.intValue());
         assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout.intValue());
         return this;
     }
 
     @Step("Start zero touch commissioning process")
-    public OltInstallationPage startZtCommisioningProcess(OltDevice oltDevice)
-    {
+    public OltInstallationPage startZtCommisioningProcess(OltDevice oltDevice, Integer timeout) {
         inputDeviceParameters(oltDevice.getEndsz());
         $(SERIALNUMBER_INPUT_LOCATOR).click();
         $(SERIALNUMBER_INPUT_LOCATOR).val(oltDevice.getSeriennummer());
         $(PARTNUMBER_INPUT_LOCATOR).click();
         $(PARTNUMBER_INPUT_LOCATOR).val(oltDevice.getTkz());
         $(START_BUTTON).click();
-        sleep(12000L);
+        // wait for "install OLT and connect to BNG port"
+        $(CONTINUE).should(exist , Duration.ofMillis(timeout));
         return this;
     }
 

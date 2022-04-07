@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.data.osr.wiremock;
 
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
+import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
+import com.tsystems.tm.acc.ta.data.osr.models.UewegData;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.*;
 import com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -148,6 +151,16 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
   }
   public OsrWireMockMappingsContextBuilder addNoDeviceFromA4RiMock() {
     context.add(new A4ResourceInventoryStub().getA4NoNetworkElements());
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addDhcp4oltGetOltMock(OltDevice oltDevice) {
+    context.add(new Dhcp4oltStub().getOlt200(oltDevice));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addDhcp4oltGetBngMock(OltDevice oltDevice) {
+    context.add(new Dhcp4oltStub().getBng200(oltDevice));
     return this;
   }
 }
