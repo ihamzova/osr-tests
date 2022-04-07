@@ -44,8 +44,10 @@ public class FTTBCommissioning extends GigabitTest {
   private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private OntOltOrchestratorRobot ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
   private HomeIdManagementRobot homeIdManagementRobot = new HomeIdManagementRobot();
-  private AccessLine accessLineTwistedPair;
-  private AccessLine accessLineCoax;
+  private AccessLine accessLineTwistedPair1;
+  private AccessLine accessLineCoax1;
+  private AccessLine accessLineTwistedPair2;
+  private AccessLine accessLineCoax2;
   private UpiterTestContext context = UpiterTestContext.get();
   private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
   private PortProvisioning oltDeviceFttbProvisioningCoax;
@@ -67,57 +69,59 @@ public class FTTBCommissioning extends GigabitTest {
             oltDeviceFttbProvisioningTwistedPair.getSlotNumber(),
             oltDeviceFttbProvisioningTwistedPair.getPortNumber());
 
-    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000,
+    accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 10000, 10000,
             oltDeviceFttbProvisioningCoax.getEndSz(),
             dpuDeviceFttbProvisioningCoax.getEndsz(),
             oltDeviceFttbProvisioningCoax.getSlotNumber(),
             oltDeviceFttbProvisioningCoax.getPortNumber());
 
-    accessLineTwistedPair = context.getData().getAccessLineDataProvider().get(AccessLineCase.FTTBCommissioningTwistedPair);
-    accessLineCoax = context.getData().getAccessLineDataProvider().get(AccessLineCase.FTTBCommissioningCoax);
+    accessLineTwistedPair1 = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineTpPort1);
+    accessLineCoax1 = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineCoaxPort1);
+    accessLineTwistedPair2 = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineTpPort2);
+    accessLineCoax2 = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineCoaxPort2);
   }
 
   @Test
   @TmsLink("DIGIHUB-72719")
   @Description("Assign a FTTB Twisted Pair AccessLine")
   public void FttbLineReservationTwistedPair() {
-    accessLineTwistedPair.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
+    accessLineTwistedPair1.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-            .vpSz(accessLineTwistedPair.getDpuDevice().getVpsz())
-            .fachSz(accessLineTwistedPair.getDpuDevice().getFsz())
-            .portNumber(accessLineTwistedPair.getDpuPortNumber())
-            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineTwistedPair.getDpuPortType()))
-            .homeId(accessLineTwistedPair.getHomeId());
+            .vpSz(accessLineTwistedPair1.getDpuDevice().getVpsz())
+            .fachSz(accessLineTwistedPair1.getDpuDevice().getFsz())
+            .portNumber(accessLineTwistedPair1.getDpuPortNumber())
+            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineTwistedPair1.getDpuPortType()))
+            .homeId(accessLineTwistedPair1.getHomeId());
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
     assertNull("Callback returned an error", callback.getError());
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNotNull(callback.getResponse().getLineId(), "Callback didn't return a LineId");
-    assertEquals("HomeId in the callback is incorrect", accessLineTwistedPair.getHomeId(), callback.getResponse().getHomeId());
-    accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
+    assertEquals("HomeId in the callback is incorrect", accessLineTwistedPair1.getHomeId(), callback.getResponse().getHomeId());
+    accessLineTwistedPair1.setLineId(callback.getResponse().getLineId());
 
     // check alri
-    accessLineTwistedPair.setLineId(callback.getResponse().getLineId());
-    String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId();
-    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair.getHomeId(), actualHomeId);
-    ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
-    ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt();
+    accessLineTwistedPair1.setLineId(callback.getResponse().getLineId());
+    String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getHomeId();
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair1.getHomeId(), actualHomeId);
+    ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
+    ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getFttbNeProfile().getStateOlt();
 
     assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED,
-            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()));
+            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair1.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE, actualStateMosaic);
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE, actualStateOlt);
     assertEquals("PortType is incorrect", PortType.GFAST,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getDpuReference().getPortType());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getDpuReference().getPortType());
   }
 
   @Test(dependsOnMethods = {"FttbLineReservationTwistedPair"})
   @TmsLink("DIGIHUB-75824")
   @Description("Terminate FTTB Twisted Pair AccessLine: general case, rollbackToREservation is not filled")
   public void FttbLineDecommissioningTwistedPair() {
-    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair);
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineTwistedPair1);
 
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
@@ -126,55 +130,55 @@ public class FTTBCommissioning extends GigabitTest {
 
     //check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
-            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()));
+            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair1.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt());
-    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair.getHomeId(),
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getFttbNeProfile().getStateOlt());
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair1.getHomeId(),
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair1.getLineId()).get(0).getHomeId());
   }
 
   @Test
   @TmsLink("DIGIHUB-72719")
   @Description("Assign a FTTB Coax AccessLine")
   public void FttbLineReservationCoax() {
-    accessLineCoax.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
+    accessLineCoax1.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-            .vpSz(accessLineCoax.getDpuDevice().getVpsz())
-            .fachSz(accessLineCoax.getDpuDevice().getFsz())
-            .portNumber(accessLineCoax.getDpuPortNumber())
-            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineCoax.getDpuPortType()))
-            .homeId(accessLineCoax.getHomeId());
+            .vpSz(accessLineCoax1.getDpuDevice().getVpsz())
+            .fachSz(accessLineCoax1.getDpuDevice().getFsz())
+            .portNumber(accessLineCoax1.getDpuPortNumber())
+            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineCoax1.getDpuPortType()))
+            .homeId(accessLineCoax1.getHomeId());
     OperationResultLineIdDto callback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
     assertNull("Callback returned an error", callback.getError());
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNotNull(callback.getResponse().getLineId(), "Callback didn't return a LineId");
-    assertEquals("HomeId returned in the callback is incorrect", accessLineCoax.getHomeId(), callback.getResponse().getHomeId());
-    accessLineCoax.setLineId(callback.getResponse().getLineId());
+    assertEquals("HomeId returned in the callback is incorrect", accessLineCoax1.getHomeId(), callback.getResponse().getHomeId());
+    accessLineCoax1.setLineId(callback.getResponse().getLineId());
 
     // check alri
-    accessLineCoax.setLineId(callback.getResponse().getLineId());
-    String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId();
-    assertEquals(actualHomeId, accessLineCoax.getHomeId());
-    ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
-    ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateOlt();
+    accessLineCoax1.setLineId(callback.getResponse().getLineId());
+    String actualHomeId = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getHomeId();
+    assertEquals(actualHomeId, accessLineCoax1.getHomeId());
+    ProfileState actualStateMosaic = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getFttbNeProfile().getStateMosaic();
+    ProfileState actualStateOlt = accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getFttbNeProfile().getStateOlt();
     assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED,
-            accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()));
+            accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax1.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE, actualStateMosaic);
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE, actualStateOlt);
     assertEquals("PortType is incorrect", PortType.GFAST,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getDpuReference().getPortType());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getDpuReference().getPortType());
   }
 
   @Test(dependsOnMethods = {"FttbLineReservationCoax"})
   @TmsLink("DIGIHUB-75824")
   @Description("Terminate FTTB Coax AccessLine: general case, rollbackToReservation is not filled")
   public void FttbLineDecommissioningCoax() {
-    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineCoax);
+    OperationResultVoid callback = ontOltOrchestratorRobot.decommissionOnt(accessLineCoax1);
 
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
@@ -183,38 +187,38 @@ public class FTTBCommissioning extends GigabitTest {
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
-            accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()));
+            accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax1.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateOlt());
-    assertEquals("HomeId on the AccessLine is incorrect", accessLineCoax.getHomeId(),
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getFttbNeProfile().getStateOlt());
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineCoax1.getHomeId(),
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax1.getLineId()).get(0).getHomeId());
   }
 
   @Test
   @TmsLink("DIGIHUB-146275")
   @Description("Terminate FTTB Twisted Pair AccessLine, rollbackToReservation = true")
   public void FttbLineDecommissioningRollbackTrue() {
-    accessLineTwistedPair.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
+    accessLineTwistedPair2.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-            .vpSz(accessLineTwistedPair.getDpuDevice().getVpsz())
-            .fachSz(accessLineTwistedPair.getDpuDevice().getFsz())
-            .portNumber(accessLineTwistedPair.getDpuPortNumber())
-            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineTwistedPair.getDpuPortType()))
-            .homeId(accessLineTwistedPair.getHomeId());
+            .vpSz(accessLineTwistedPair2.getDpuDevice().getVpsz())
+            .fachSz(accessLineTwistedPair2.getDpuDevice().getFsz())
+            .portNumber(accessLineTwistedPair2.getDpuPortNumber())
+            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineTwistedPair2.getDpuPortType()))
+            .homeId(accessLineTwistedPair2.getHomeId());
     OperationResultLineIdDto reservationCallback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
     assertNull("Callback returned an error", reservationCallback.getError());
     assertTrue(reservationCallback.getSuccess(), "Callback returned an error");
     assertNotNull(reservationCallback.getResponse().getLineId(), "Callback didn't return a LineId");
-    assertEquals("HomeId returned in the callback is incorrect", accessLineTwistedPair.getHomeId(), reservationCallback.getResponse().getHomeId());
-    accessLineTwistedPair.setLineId(reservationCallback.getResponse().getLineId());
+    assertEquals("HomeId returned in the callback is incorrect", accessLineTwistedPair2.getHomeId(), reservationCallback.getResponse().getHomeId());
+    accessLineTwistedPair2.setLineId(reservationCallback.getResponse().getLineId());
 
 
-    OperationResultVoid terminationCallback = ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineTwistedPair, true);
+    OperationResultVoid terminationCallback = ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineTwistedPair2, true);
 
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
@@ -223,38 +227,38 @@ public class FTTBCommissioning extends GigabitTest {
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED,
-            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair.getLineId()));
+            accessLineRiRobot.getAccessLineStateByLineId(accessLineTwistedPair2.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair2.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getFttbNeProfile().getStateOlt());
-    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair.getHomeId(),
-            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair.getLineId()).get(0).getHomeId());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair2.getLineId()).get(0).getFttbNeProfile().getStateOlt());
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineTwistedPair2.getHomeId(),
+            accessLineRiRobot.getAccessLinesByLineId(accessLineTwistedPair2.getLineId()).get(0).getHomeId());
   }
 
   @Test
   @TmsLink("DIGIHUB-146276")
   @Description("Terminate FTTB Coax AccessLine, rollbackToReservation = false")
   public void FttbLineDecommissioningRollbackFalse() {
-    accessLineCoax.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
+    accessLineCoax2.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
     //Start access line registration
     PortAndHomeIdDto portAndHomeIdDto = new PortAndHomeIdDto()
-            .vpSz(accessLineCoax.getDpuDevice().getVpsz())
-            .fachSz(accessLineCoax.getDpuDevice().getFsz())
-            .portNumber(accessLineCoax.getDpuPortNumber())
-            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineCoax.getDpuPortType()))
-            .homeId(accessLineCoax.getHomeId());
+            .vpSz(accessLineCoax2.getDpuDevice().getVpsz())
+            .fachSz(accessLineCoax2.getDpuDevice().getFsz())
+            .portNumber(accessLineCoax2.getDpuPortNumber())
+            .portType(PortAndHomeIdDto.PortTypeEnum.valueOf(accessLineCoax2.getDpuPortType()))
+            .homeId(accessLineCoax2.getHomeId());
     OperationResultLineIdDto reservationCallback = ontOltOrchestratorRobot.reserveAccessLineByPortAndHomeId(portAndHomeIdDto);
 
     // check callback
     assertNull("Callback returned an error", reservationCallback.getError());
     assertTrue(reservationCallback.getSuccess(), "Callback returned an error");
     assertNotNull(reservationCallback.getResponse().getLineId(), "Callback didn't return a LineId");
-    assertEquals("HomeId returned in the callback is incorrect", accessLineCoax.getHomeId(), reservationCallback.getResponse().getHomeId());
-    accessLineCoax.setLineId(reservationCallback.getResponse().getLineId());
+    assertEquals("HomeId returned in the callback is incorrect", accessLineCoax2.getHomeId(), reservationCallback.getResponse().getHomeId());
+    accessLineCoax2.setLineId(reservationCallback.getResponse().getLineId());
 
 
-    OperationResultVoid terminationCallback = ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineCoax, false);
+    OperationResultVoid terminationCallback = ontOltOrchestratorRobot.decommissionOntWithRollback(accessLineCoax2, false);
 
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
@@ -262,12 +266,12 @@ public class FTTBCommissioning extends GigabitTest {
     assertNull("Callback returned a response body", terminationCallback.getResponse());
 
     // check alri
-    assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN, accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax.getLineId()));
+    assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN, accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax2.getLineId()));
     assertEquals("StateMosaic is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax2.getLineId()).get(0).getFttbNeProfile().getStateMosaic());
     assertEquals("StateOlt is incorrect", ProfileState.ACTIVE,
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getFttbNeProfile().getStateOlt());
-    assertEquals("HomeId on the AccessLine is incorrect", accessLineCoax.getHomeId(),
-            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax.getLineId()).get(0).getHomeId());
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax2.getLineId()).get(0).getFttbNeProfile().getStateOlt());
+    assertEquals("HomeId on the AccessLine is incorrect", accessLineCoax2.getHomeId(),
+            accessLineRiRobot.getAccessLinesByLineId(accessLineCoax2.getLineId()).get(0).getHomeId());
   }
 }
