@@ -7,6 +7,42 @@ values:
   homeIdPool: 32
   accessLinesCount: 16
 ---
+name: EndSz_49_30_179_76H2_3_0
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H2"
+  slotNumber: "3"
+  portNumber: "0"
+  homeIdPool: 32
+  accessLinesCount: 16
+---
+name: EndSz_49_30_179_76H2_3_1
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H2"
+  slotNumber: "3"
+  portNumber: "1"
+  homeIdPool: 32
+  accessLinesCount: 16
+---
+name: EndSz_49_911_1100_76H2_1_0
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H2"
+  slotNumber: "1"
+  portNumber: "0"
+  homeIdPool: 32
+  accessLinesCount: 32
+---
+name: EndSz_49_911_1100_76H2_1_1
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H2"
+  slotNumber: "1"
+  portNumber: "1"
+  homeIdPool: 32
+  accessLinesCount: 32
+---
 name: EndSz_49_911_1100_76H1_1_0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
