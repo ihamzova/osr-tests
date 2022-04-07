@@ -39,6 +39,11 @@ public class ZtCommissioningRobot {
                 .startZtCommisioningProcess(oltDevice, TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
+    @Step("Manually continue the zero touch commissioning process")
+    public void continueZtCommissioning() {
+        new OltInstallationPage().continueZtCommisioningProcess(TIMEOUT_FOR_ZTC_COMMISSIONING);
+    }
+
     @Step("Clear zero touch commisioning process data")
     public void clearZtCommisioningData(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
@@ -51,6 +56,11 @@ public class ZtCommissioningRobot {
             oltCommissioningClient.getClient().oltZtCommissioning().deleteZtCommissioning()
                             .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
         }
+    }
+
+    public void sendZtCommisioningSealEvent(String endSz) {
+
+
     }
 
     @Step("Clear device in inventory databases")

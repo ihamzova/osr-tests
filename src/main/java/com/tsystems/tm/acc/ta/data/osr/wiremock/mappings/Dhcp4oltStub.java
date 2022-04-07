@@ -17,7 +17,7 @@ public class Dhcp4oltStub extends AbstractStubMapping {
         return get(urlPathMatching(DHCP_CONFIGURATION_PATTERN + "olt"))
                 .withName("getOlt200")
                 .willReturn(aDefaultResponseWithBody(serialize(new Dhcp4oltMapper().getOLTGetResponse(oltDevice)), HTTP_CODE_OK_200))
-                .withQueryParam("endsz", equalTo((oltDevice.getEndsz()).replace("/", "_")));
+                .withQueryParam("endsz_olt", equalTo((oltDevice.getEndsz()).replace("/", "_")));
     }
 
     public MappingBuilder getBng200(OltDevice oltDevice) {

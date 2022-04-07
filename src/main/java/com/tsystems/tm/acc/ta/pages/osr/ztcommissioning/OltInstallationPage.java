@@ -32,6 +32,9 @@ public class OltInstallationPage {
     //public static final By START_BUTTON = By.cssSelector("button.ui.icon.button");
 
     public static final By CONTINUE = By.cssSelector("p:nth-child(7)");
+    public static final By CONTINUE_TEXT = By.linkText("hier");
+    public static final By CONTINUE_BUTTON = By.cssSelector("button[type=button]");
+    public static final By POSITIVE_MESSAGE = By.cssSelector("div.ui.visible.positive.icon.message");
 
     @Step("Open OLT-Installation page")
     public static OltInstallationPage openInstallationPage(String acid) {
@@ -57,6 +60,14 @@ public class OltInstallationPage {
         $(START_BUTTON).click();
         // wait for "install OLT and connect to BNG port"
         $(CONTINUE).should(exist , Duration.ofMillis(timeout));
+        return this;
+    }
+
+    @Step("Manually continue zero touch commissioning process")
+    public OltInstallationPage continueZtCommisioningProcess(Integer timeout) {
+        $(CONTINUE_TEXT).click();
+        $(CONTINUE_BUTTON).should(exist , Duration.ofMillis(1000)).click();
+        $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(timeout));
         return this;
     }
 

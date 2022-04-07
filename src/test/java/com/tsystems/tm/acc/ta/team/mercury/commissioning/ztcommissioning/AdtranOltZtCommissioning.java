@@ -88,9 +88,11 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
+    //ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz());
+    ztCommissioningRobot.continueZtCommissioning();  // manual triggered
 
     try {
-      Thread.sleep(2200);
+      Thread.sleep(22000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
