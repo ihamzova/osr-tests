@@ -16,9 +16,12 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
+//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
+//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,8 +38,7 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getObjectMapper;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 @Slf4j
 public class A4ResourceOrderRobot {
@@ -48,12 +50,19 @@ public class A4ResourceOrderRobot {
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); //this will be merlin's service in the future
 
+    private static final AuthTokenProvider getAuthTokenProviderOrchestratorQueue =
+            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
+                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); // A4_RESOURCE_ORDER_ORCHESTRATOR_MS
+
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
 
-    private final ApiClient a4ResourceOrder = new A4ResourceOrderClient(authTokenProviderDispatcher).getClient();
-    private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
+    private final ApiClient a4ResourceOrder =
+            new A4ResourceOrderClient(getAuthTokenProviderOrchestratorQueue).getClient();
+
+    private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator
+            .client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
             new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
 
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
@@ -70,7 +79,8 @@ public class A4ResourceOrderRobot {
 //                .xCallbackUrlHeader(cbUrl)
 //                .xCallbackIdHeader("1")
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));  // soll 201 sein!?
+               // .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));  // soll 201 sein!?
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));  // soll 201 sein!?
     }
 
     public ResourceOrder buildResourceOrder() {
@@ -148,6 +158,19 @@ public class A4ResourceOrderRobot {
         return null;
     }
 
+    public ResourceOrderItemDto getResourceOrderItemByOrderItemDtoId(String orderItemId, List<ResourceOrderItemDto> roiList) {
+        //List<ResourceOrderItemDto> roiList = ro.getOrderItem();
+
+        if (roiList != null) {
+            for (ResourceOrderItemDto resourceOrderItem : roiList) {
+                if (resourceOrderItem.getId().equals(orderItemId))
+                    return resourceOrderItem;
+            }
+        }
+
+        return null;
+    }
+
     private ResourceOrder getResourceOrderFromCallback() {
         List<LoggedRequest> ergList = WireMockFactory.get()
                 .retrieve(
@@ -156,7 +179,7 @@ public class A4ResourceOrderRobot {
                                 urlPathEqualTo(CB_PATH)));
 
         String response = ergList.get(0).getBodyAsString();
-
+System.out.println("+++ response"+response);
         return getResourceOrderObjectFromJsonString(response);
     }
 
@@ -228,6 +251,15 @@ public class A4ResourceOrderRobot {
                 .as(ResourceOrderDto.class);
     }
 
+    public List <ResourceOrderMainDataDto> getResourceOrdersFromDb() {
+        return a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .listResourceOrders()
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                ;
+
+    }
+
     public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
@@ -243,6 +275,51 @@ public class A4ResourceOrderRobot {
         if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
             assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
+    public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro) {
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());;
+        System.out.println("+++ selektiertes roDb: "+roDb);
+        assertNotNull(roDb); // passende RO gefunden
+        ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
+        assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
+
+        // vollständige RO holen (ResourceOrderDto)
+        ResourceOrderDto roDbDto = getResourceOrderFromDb(roDb.getId());
+        if (roDbDto.getOrderItem() != null && !roDbDto.getOrderItem().isEmpty())
+            assertEquals(roDbDto.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
+    }
+    public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());;
+        System.out.println("+++ selektiertes roDb: "+roDb);
+        assertNotNull(roDb); // passende RO gefunden
+        ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
+        assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
+    }
+
+    public void checkResourceOrderItemHasCorrectState(String roId, String orderItemId, ResourceOrderItemStateType state) {
+        ResourceOrderDto roDbDto = getResourceOrderFromDb(roId);
+        //ResourceOrder roFromCb = getResourceOrderFromCallback();
+
+        if (roDbDto != null) {
+            ResourceOrderItemDto roi = getResourceOrderItemByOrderItemDtoId(orderItemId, roDbDto.getOrderItem());
+            assertEquals(roi.getState(), state.toString());
+        } else
+            fail("No callback resource order to check");
+    }
+
+    public ResourceOrderMainDataDto searchCorrectRoInDb (String externalId) {
+
+        List <ResourceOrderMainDataDto> roDbList = getResourceOrdersFromDb();
+        ResourceOrderMainDataDto roDb = null;
+        System.out.println("+++ gesuchte externe ID: "+externalId);
+        System.out.println("+++ prüfe Liste: "+roDbList);
+        for (ResourceOrderMainDataDto mainDataDto : roDbList){
+            if (Objects.equals(mainDataDto.getExternalId(), externalId))
+                roDb = mainDataDto;
+
+        }
+        return roDb;
+    }
+
 
 
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")

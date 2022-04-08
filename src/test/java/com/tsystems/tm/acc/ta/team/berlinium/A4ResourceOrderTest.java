@@ -13,8 +13,9 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.ResourceOrder;
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.VlanRange;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderItemStateType;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.VlanRange;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -219,8 +220,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -253,8 +257,16 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+
+        A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
+
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+
+        //a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -270,8 +282,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+//        a4ResourceOrder.checkResourceOrderIsRejected();
+  //      a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -287,8 +302,10 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+        //a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -303,13 +320,20 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
+       // a4ResourceOrder.checkResourceOrderIsCompleted();
+       // System.out.println("+++ checkResourceOrderIsCompleted beendet");
 
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+      //  System.out.println("+++ checkOrderItemIsCompleted beendet");
+
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        System.out.println("+++ getResourceOrderFromDbAndCheckIfCompleted beendet");
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+        System.out.println("+++ checkSyncRequestToRebellWiremock beendet");
+
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
+        System.out.println("+++ checkSyncRequestToA10nspA4Wiremock beendet");
     }
 
     @Test
@@ -397,8 +421,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
     @DataProvider(name = "characteristicNamesDelete")
@@ -427,8 +454,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        //a4ResourceOrder.checkResourceOrderIsRejected();
     }
 
     @Test
@@ -443,8 +473,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
     }
 
 
@@ -462,9 +495,13 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsRejected();
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkOrderItemIsRejected(roiId2);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), roiId2, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkResourceOrderIsRejected();
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        //a4ResourceOrder.checkOrderItemIsRejected(roiId2);
     }
 
     @Test
@@ -509,8 +546,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+       // a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+       // a4ResourceOrder.checkResourceOrderIsRejected();
     }
 
     @DataProvider(name = "characteristicNamesEmptyList")
@@ -531,8 +571,11 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkResourceOrderIsRejected();
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+        //a4ResourceOrder.checkOrderItemIsRejected(DEFAULT_ORDER_ITEM_ID);
+        //a4ResourceOrder.checkResourceOrderIsRejected();
     }
 
 }
