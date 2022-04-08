@@ -40,8 +40,6 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
     ztCommissioningRobot.clearZtCommisioningData(oltDevice.getEndsz());
 
-    //WireMockFactory.get().resetToDefaultMappings();
-
     mappingsContextOsr = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "AdtranOltZtCommissioning"))
             .addSealMock(oltDevice)
             .addPslMock(oltDevice)
@@ -88,14 +86,18 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
-    //ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz());
+    ztCommissioningRobot.getZtCommisioningState(oltDevice.getEndsz());
+    //ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz()); // event triggered
     ztCommissioningRobot.continueZtCommissioning();  // manual triggered
+    ztCommissioningRobot.getZtCommisioningState(oltDevice.getEndsz());
 
-    try {
-      Thread.sleep(22000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    for (int i = 0; i < 10; ++i) {
+      try {
+        Thread.sleep(10000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      ztCommissioningRobot.getZtCommisioningState(oltDevice.getEndsz());
     }
-
   }
 }

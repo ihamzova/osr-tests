@@ -27,14 +27,16 @@ public class OltInstallationPage {
     public static final By OLT_FSZ_INPUT_LOCATOR = By.id("fszInput");
     public static final By SERIALNUMBER_INPUT_LOCATOR = By.id("serialNumberInput");
     public static final By PARTNUMBER_INPUT_LOCATOR = By.id("partNumberInput");
-
     public static final By START_BUTTON = By.cssSelector("button[type=submit]");
-    //public static final By START_BUTTON = By.cssSelector("button.ui.icon.button");
 
     public static final By CONTINUE = By.cssSelector("p:nth-child(7)");
     public static final By CONTINUE_TEXT = By.linkText("hier");
+    public static final By OPEN_FORCE_PROCEED_LINK = By.id("open-force-proceed");
     public static final By CONTINUE_BUTTON = By.cssSelector("button[type=button]");
+    public static final By FORCE_PROCEED_BUTTON = By.id("force-proceed");
     public static final By POSITIVE_MESSAGE = By.cssSelector("div.ui.visible.positive.icon.message");
+
+    public static final By FINISHED_BACKWARD_BUTTON  = By.id("process-finished-backward");
 
     @Step("Open OLT-Installation page")
     public static OltInstallationPage openInstallationPage(String acid) {
