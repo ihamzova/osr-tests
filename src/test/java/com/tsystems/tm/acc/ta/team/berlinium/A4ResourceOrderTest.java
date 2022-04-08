@@ -240,8 +240,14 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
+
+        //a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
     }
 
     @Test
@@ -327,13 +333,13 @@ public class A4ResourceOrderTest {
       //  System.out.println("+++ checkOrderItemIsCompleted beendet");
 
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
-        System.out.println("+++ getResourceOrderFromDbAndCheckIfCompleted beendet");
+
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
-        System.out.println("+++ checkSyncRequestToRebellWiremock beendet");
+
 
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
-        System.out.println("+++ checkSyncRequestToA10nspA4Wiremock beendet");
+
     }
 
     @Test
@@ -349,9 +355,18 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
+       // a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
+        A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
+
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), SECOND_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+
+        //a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        //a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
         a4ResourceOrder.getResourceOrderFromDbAndCheckIfCompleted(ro);
     }
 
@@ -371,8 +386,11 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
         a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
 
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+       // a4ResourceOrder.checkResourceOrderIsCompleted();
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
 
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1);
@@ -402,9 +420,12 @@ public class A4ResourceOrderTest {
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1, 2);
 
-        a4ResourceOrder.checkResourceOrderIsCompleted();
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), SECOND_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+       // a4ResourceOrder.checkResourceOrderIsCompleted();
+       // a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+       // a4ResourceOrder.checkOrderItemIsCompleted(SECOND_ORDER_ITEM_ID);
     }
 
     @Test(description = "DIGIHUB-119735 a10-ro delete, prevalidation, action check")
@@ -518,9 +539,12 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
 
         // THEN
-        a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
-        a4ResourceOrder.checkOrderItemIsCompleted(roiId2);
-        a4ResourceOrder.checkResourceOrderIsCompleted();
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), roiId2, ResourceOrderItemStateType.COMPLETED);
+        //a4ResourceOrder.checkOrderItemIsCompleted(DEFAULT_ORDER_ITEM_ID);
+        //a4ResourceOrder.checkOrderItemIsCompleted(roiId2);
+        //a4ResourceOrder.checkResourceOrderIsCompleted();
     }
 
     @DataProvider(name = "characteristicNamesEmptyString")

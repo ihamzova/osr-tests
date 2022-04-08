@@ -18,16 +18,13 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
-//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
-//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
@@ -70,17 +67,13 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public void sendPostResourceOrder(ResourceOrder resourceOrder) {
-        final String correlationId = UUID.randomUUID().toString();
+      //  final String correlationId = UUID.randomUUID().toString();
 
         a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
-//                .xCallbackCorrelationIdHeader(correlationId)
-//                .xCallbackUrlHeader(cbUrl)
-//                .xCallbackIdHeader("1")
                 .body(resourceOrder)
-               // .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));  // soll 201 sein!?
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));  // soll 201 sein!?
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
     }
 
     public ResourceOrder buildResourceOrder() {
@@ -133,7 +126,6 @@ public class A4ResourceOrderRobot {
                 }
             }
         }
-
         return null;
     }
 
@@ -154,20 +146,16 @@ public class A4ResourceOrderRobot {
                     return resourceOrderItem;
             }
         }
-
         return null;
     }
 
     public ResourceOrderItemDto getResourceOrderItemByOrderItemDtoId(String orderItemId, List<ResourceOrderItemDto> roiList) {
-        //List<ResourceOrderItemDto> roiList = ro.getOrderItem();
-
         if (roiList != null) {
             for (ResourceOrderItemDto resourceOrderItem : roiList) {
                 if (resourceOrderItem.getId().equals(orderItemId))
                     return resourceOrderItem;
             }
         }
-
         return null;
     }
 
@@ -203,7 +191,6 @@ System.out.println("+++ response"+response);
         } catch (JsonProcessingException e) {
             fail(e.getMessage());
         }
-
         return null;
     }
 
@@ -255,9 +242,7 @@ System.out.println("+++ response"+response);
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
-                ;
-
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))) ;
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
@@ -276,8 +261,7 @@ System.out.println("+++ response"+response);
             assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro) {
-        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());;
-        System.out.println("+++ selektiertes roDb: "+roDb);
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNotNull(roDb); // passende RO gefunden
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
@@ -288,8 +272,7 @@ System.out.println("+++ response"+response);
             assertEquals(roDbDto.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
-        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());;
-        System.out.println("+++ selektiertes roDb: "+roDb);
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNotNull(roDb); // passende RO gefunden
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
@@ -297,7 +280,6 @@ System.out.println("+++ response"+response);
 
     public void checkResourceOrderItemHasCorrectState(String roId, String orderItemId, ResourceOrderItemStateType state) {
         ResourceOrderDto roDbDto = getResourceOrderFromDb(roId);
-        //ResourceOrder roFromCb = getResourceOrderFromCallback();
 
         if (roDbDto != null) {
             ResourceOrderItemDto roi = getResourceOrderItemByOrderItemDtoId(orderItemId, roDbDto.getOrderItem());
@@ -310,8 +292,6 @@ System.out.println("+++ response"+response);
 
         List <ResourceOrderMainDataDto> roDbList = getResourceOrdersFromDb();
         ResourceOrderMainDataDto roDb = null;
-        System.out.println("+++ gesuchte externe ID: "+externalId);
-        System.out.println("+++ prüfe Liste: "+roDbList);
         for (ResourceOrderMainDataDto mainDataDto : roDbList){
             if (Objects.equals(mainDataDto.getExternalId(), externalId))
                 roDb = mainDataDto;
@@ -320,14 +300,11 @@ System.out.println("+++ response"+response);
         return roDb;
     }
 
-
-
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
     public void deleteA4TestDataRecursively(ResourceOrder ro) {
         if (ro != null)
             deleteA4TestDataRecursively(ro.getId());
     }
-
 
     @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
@@ -336,7 +313,6 @@ System.out.println("+++ response"+response);
                 .deleteResourceOrder()
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-
     }
 
     public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {
@@ -350,5 +326,4 @@ System.out.println("+++ response"+response);
     private void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
-
 }
