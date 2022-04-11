@@ -22,8 +22,8 @@ import static com.codeborne.selenide.Selenide.$;
 @Slf4j
 public class A4InventarSucheRobot {
 
-    public static final int numberOfColumnsNegList = 6;
-    public static final int numberOfColumnsNeList = 12;
+    public static final int numberOfColumnsNegList = 8;
+    public static final int numberOfColumnsNeList = 13;
 
     // helper method 'wait'
     public void waitForTableToFullyLoad(int numberOfElements) {
@@ -104,10 +104,7 @@ public class A4InventarSucheRobot {
         $(A4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value);
     }
 
-    @Step("Enter category")
-    public void enterNeCategory(String value) {
-        $(A4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value);
-    }
+
 
     @Step("Click ne search button")
     public void clickNeSearchButton() {
@@ -223,16 +220,23 @@ public class A4InventarSucheRobot {
 
         // read table from ui and fill list (actual result)
         List<String> eList = elementsCollection.texts();
+        System.out.println("eList.size: " + eList.size());
+        System.out.println("numberOfColumnsNegList: " + numberOfColumnsNegList);
         for (int i = 0; i < eList.size() / numberOfColumnsNegList; i++) {
             NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
-            negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList));
-            negActualGeneric.setName(eList.get(i * numberOfColumnsNegList + 1));
-            negActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNegList + 2));
-            negActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNegList + 3));
-            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 4));
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 5));
+            negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList+ 1));
+            negActualGeneric.setName(eList.get(i * numberOfColumnsNegList + 2));
+            negActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNegList + 3));
+            negActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNegList + 4));
+            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 5));
             negActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 6));
             negActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+
+            if (!(eList.get(i * numberOfColumnsNegList + 7)).isEmpty()) {
+                OffsetDateTime lastSuccessfulSyncTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 7));
+                negActualGeneric.setLastSuccessfulSyncTime(lastSuccessfulSyncTime); // wegen Formatproblem String-OffsetDateTime
+            }
             negActualResultList.add(negActualGeneric);
         }
 

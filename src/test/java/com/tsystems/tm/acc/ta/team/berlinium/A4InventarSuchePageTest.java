@@ -112,8 +112,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
         a4InventarSucheRobot.enterNeVkz("13");    // dev-01: 104,  dev-03: 13
         //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
 
-        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        a4InventarSucheRobot.enterNeCategory("OLT");  // dropdown mit selectOptionByValue
         a4InventarSucheRobot.checkboxNotWorking();
         a4InventarSucheRobot.checkboxLifeInstalling();
 
@@ -163,8 +161,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
         a4InventarSucheRobot.enterNeVkz("0");    // dev-01: 104,  dev-03: 13
         a4InventarSucheRobot.enterNeFsz("7KE0");   // nicht unbedingt notwendig,  7KDA
 
-        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        a4InventarSucheRobot.enterNeCategory("LEAF_SWITCH");  // dropdown mit selectOptionByValue
 
         a4InventarSucheRobot.clickNeSearchButton();
 
