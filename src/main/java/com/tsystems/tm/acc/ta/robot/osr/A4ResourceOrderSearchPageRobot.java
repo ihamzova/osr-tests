@@ -42,7 +42,7 @@ public class A4ResourceOrderSearchPageRobot {
 
 
     public void clickFirstRowInSearchResultTable() {
-        getRoElementsCollection().get(2).click();
+        getRoElementsCollection().get(0).click();
     }
 
 
