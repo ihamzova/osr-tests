@@ -22,6 +22,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
@@ -49,10 +50,62 @@ public class AccessLinesSearchTest extends GigabitTest {
     private DpuDevice dpuDevice;
     private Credentials loginData;
 
+    private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
+    private PortProvisioning adtranDeviceFttbProvisioningCoax;
+    private PortProvisioning oltDeviceFttbProvisioningCoax;
+    private PortProvisioning adtranDeviceFttbProvisioningTwistedPair;
+    private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
+    private DpuDevice dpuDeviceFttbProvisioningOnAdtranCoax;
+    private DpuDevice dpuDeviceFttbProvisioningCoax;
+    private DpuDevice dpuDeviceFttbProvisioningonOnAdtranTwistedPair;
+
+
+    @BeforeSuite
+    public void beforeSuite() {
+        accessLineRiRobot = new AccessLineRiRobot();
+
+        accessLineRiRobot.clearDatabaseByOlt("49/89/8000/76H2");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H1");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H3");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/76G3");
+
+//        accessLineRiRobot.clearDatabase();
+
+        dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
+        dpuDeviceFttbProvisioningOnAdtranCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranCoax);
+        oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
+        adtranDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningCoax);
+        dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
+        dpuDeviceFttbProvisioningonOnAdtranTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranTwistedPair);
+        oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
+        adtranDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningTwistedPair);
+
+
+//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, oltDeviceFttbProvisioningTwistedPair.getEndSz(),
+//                dpuDeviceFttbProvisioningTwistedPair.getEndsz(), "1", "0");
+//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000, oltDeviceFttbProvisioningCoax.getEndSz(),
+//                dpuDeviceFttbProvisioningCoax.getEndsz(), "1", "0");
+//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 2000, 2000, adtranDeviceFttbProvisioningTwistedPair.getEndSz(),
+//                dpuDeviceFttbProvisioningonOnAdtranTwistedPair.getEndsz(), "null", "0");
+//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 3000, 3000, adtranDeviceFttbProvisioningCoax.getEndSz(),
+//                dpuDeviceFttbProvisioningOnAdtranCoax.getEndsz(), "1", "0");
+
+
+        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, "49/89/8000/76H2",
+                "49/812/179/71G0", "1", "0");
+        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 10000, 10000, "49/911/1100/76H1",
+                "49/812/179/71G1", "1", "0");
+        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 20000, 20000, "49/911/1100/76H3",
+                "49/812/179/71G2", "null", "0");
+        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 30000, 30000, "49/911/1100/76H5",
+                "49/812/179/71G3", "1", "0");
+    }
+
     @BeforeClass
     public void init() throws InterruptedException {
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
-        accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLine = new AccessLine();
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
@@ -60,11 +113,6 @@ public class AccessLinesSearchTest extends GigabitTest {
         homeAndBackhaulIds = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.homeIdsByEndSz);
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDevice);
         accessLine = new AccessLine();
-        accessLineRiRobot.clearDatabase();
-        Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1,
-                dpuDevice.getOltEndsz(), dpuDevice.getEndsz(), dpuDevice.getOltGponSlot(), dpuDevice.getOltGponPort());
-
         wgAccessProvisioningRobot.startPortProvisioning(homeAndBackhaulIds);
         //accessLineRiRobot.checkFtthPortParameters(homeAndBackhaulIds);
     }

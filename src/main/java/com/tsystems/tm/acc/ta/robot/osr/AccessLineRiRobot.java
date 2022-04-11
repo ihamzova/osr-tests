@@ -55,6 +55,15 @@ public class AccessLineRiRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void clearDatabaseByOlt(String endSz) {
+        accessLineResourceInventoryFillDbClient
+                .getClient()
+                .fillDatabase()
+                .removeOlt()
+                .END_SZQuery(endSz)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2, default values")
     public void fillDatabaseForOltCommissioningV2(int HOME_ID_SEQ, int LINE_ID_SEQ) {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase()

@@ -19,7 +19,6 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -59,7 +58,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);
         defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
         defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
-        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
     }
 
     @Test
@@ -67,7 +66,7 @@ public class OltProvisioningAdtran extends GigabitTest {
     @Description("Port Provisioning with 32 WG Lines on SDX 6320")
     public void portProvisioning() {
         List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portEmptyAdtran);
-        Assert.assertEquals(accessLinesBeforeProvisioning.size(), 0);
+        assertEquals(accessLinesBeforeProvisioning.size(), 0);
 
         wgAccessProvisioningRobot.startPortProvisioning(portEmptyAdtran);
         accessLineRiRobot.checkFtthPortParameters(portEmptyAdtran);
@@ -99,7 +98,7 @@ public class OltProvisioningAdtran extends GigabitTest {
         wgAccessProvisioningRobot.startPortDeprovisioning(portDeprovisioningAdtran,true);
         accessLineRiRobot.checkFtthPortParameters(portDeprovisioningAdtran);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDeprovisioningAdtran, 0, 1);
-        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
     }
 
     @Test(dependsOnMethods = "deviceProvisioning", priority = 3)
