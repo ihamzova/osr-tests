@@ -37,9 +37,11 @@ import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHM
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getObjectMapper;
 import static org.testng.Assert.*;
 
+
 @Slf4j
 public class A4ResourceOrderRobot {
 
+    private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     public static final String CB_PATH = "/test_url";
     private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + CB_PATH; // Wiremock for merlin MS
 
@@ -66,14 +68,26 @@ public class A4ResourceOrderRobot {
     private final A10nspA4DtoMapper a10Mapper = new A10nspA4DtoMapper();
 
     @Step("Send POST for A10nsp Resource Order")
-    public void sendPostResourceOrder(ResourceOrder resourceOrder) {
+    public String sendPostResourceOrder(ResourceOrder resourceOrder) {
       //  final String correlationId = UUID.randomUUID().toString();
+
+        return a4ResourceOrder
+                .resourceOrder()
+                .createResourceOrder()
+                .body(resourceOrder)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString()
+
+        ;
+    }
+
+    @Step("Send POST for A10nsp Resource Order - Error")
+    public void sendPostResourceOrderError400(ResourceOrder resourceOrder) {
 
         a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)))  ;
     }
 
     public ResourceOrder buildResourceOrder() {
@@ -260,9 +274,10 @@ System.out.println("+++ response"+response);
         if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
             assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
-    public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro) {
+    public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNotNull(roDb); // passende RO gefunden
+        assertEquals(roDb.getId(), roUuid);
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
 
@@ -271,11 +286,18 @@ System.out.println("+++ response"+response);
         if (roDbDto.getOrderItem() != null && !roDbDto.getOrderItem().isEmpty())
             assertEquals(roDbDto.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
+
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNotNull(roDb); // passende RO gefunden
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
+    }
+
+    public void getResourceOrdersFromDbAndCheckIfNotInDb(ResourceOrder ro) {
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+        System.out.println("+++ roDb null? "+roDb);
+        assertNull(roDb); // RO nicht in DB
     }
 
     public void checkResourceOrderItemHasCorrectState(String roId, String orderItemId, ResourceOrderItemStateType state) {

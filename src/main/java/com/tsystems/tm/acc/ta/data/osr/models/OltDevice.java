@@ -41,6 +41,7 @@ public class OltDevice {
     private Integer matNumber;
     private String klsId;
     private int compositePartyId;
+    private String tkz;
 
     @Override
     public String toString() {
