@@ -31,9 +31,10 @@ public class NetworkSwitchingPage {
     private static final String ENDPOINT = "/network-switching-ui/port-to-port";
     private static final long TIMEOUT_FOR_PREPARATION = 300000;
 
-    private static final By PORT_TO_PORT_PREPARATION_TAB = byQaData("port-to-port-tab");
+    private static final By NE3_UMSCHALTUNG_TAB = byText("NE3 Umschaltung");
+    private static final By NE2_UMSCHALTUNG_TAB = byText("NE2 Umschaltung");
     private static final By SLOT_TO_SLOT_PREPARATION_TAB = byQaData("slot-to-slot-tab");
-    private static final By SEARCH_TAB = byQaData("search-tab");
+    private static final By SEARCH_TAB = byText("Paket suchen");
     private static final By PAKETVERWALTUNG_TAB = byQaData("actions-tab");
 
     private static final By PORT_TO_PORT_PREPARE_BUTTON = byQaData("port-to-port-options-btn");
@@ -130,6 +131,7 @@ public class NetworkSwitchingPage {
 
     @Step("Start preparation phase for card")
     public NetworkSwitchingPage startCardPreparation(PortProvisioning sourcePort1, PortProvisioning sourcePort2, PortProvisioning targetPort1, PortProvisioning targetPort2) throws Exception {
+        $(NE3_UMSCHALTUNG_TAB).click();
         $(SLOT_TO_SLOT_PREPARATION_TAB).click();
         safeJavaScriptClick($(SOURCE_ENDSZ_INPUT));
         $(SOURCE_ENDSZ_INPUT).val(sourcePort1.getEndSz());
@@ -259,6 +261,7 @@ public class NetworkSwitchingPage {
 
     @Step("Click Paketverwaltung tab")
     public NetworkSwitchingPage clickPaketverwaltungTab() {
+        $(NE3_UMSCHALTUNG_TAB).click();
         $(PAKETVERWALTUNG_TAB).click();
         return this;
     }
