@@ -18,6 +18,8 @@ import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeo
 @Slf4j
 public class OltInstallationPage {
 
+    public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 1000;
+
     public static final String APP = "portal-proxy";
     public static final String ENDPOINT = "/auftragnehmerportal-mui/olt-installation/";
 
@@ -29,13 +31,9 @@ public class OltInstallationPage {
     public static final By PARTNUMBER_INPUT_LOCATOR = By.id("partNumberInput");
     public static final By START_BUTTON = By.cssSelector("button[type=submit]");
 
-    public static final By CONTINUE = By.cssSelector("p:nth-child(7)");
-    public static final By CONTINUE_TEXT = By.linkText("hier");
     public static final By OPEN_FORCE_PROCEED_LINK = By.id("open-force-proceed");
-    public static final By CONTINUE_BUTTON = By.cssSelector("button[type=button]");
     public static final By FORCE_PROCEED_BUTTON = By.id("force-proceed");
-    public static final By POSITIVE_MESSAGE = By.cssSelector("div.ui.visible.positive.icon.message");
-
+    public static final By POSITIVE_MESSAGE = By.cssSelector("div.ui.positive.icon.message");
     public static final By FINISHED_BACKWARD_BUTTON  = By.id("process-finished-backward");
 
     @Step("Open OLT-Installation page")
@@ -61,15 +59,25 @@ public class OltInstallationPage {
         $(PARTNUMBER_INPUT_LOCATOR).val(oltDevice.getTkz());
         $(START_BUTTON).click();
         // wait for "install OLT and connect to BNG port"
-        $(CONTINUE).should(exist , Duration.ofMillis(timeout));
+        $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
         return this;
     }
 
     @Step("Manually continue zero touch commissioning process")
-    public OltInstallationPage continueZtCommisioningProcess(Integer timeout) {
-        $(CONTINUE_TEXT).click();
-        $(CONTINUE_BUTTON).should(exist , Duration.ofMillis(1000)).click();
-        $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(timeout));
+    public OltInstallationPage continueZtCommisioningProcess() {
+        $(OPEN_FORCE_PROCEED_LINK).click();
+        $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+        return this;
+    }
+
+    @Step("Wait until the zero touch commissioning process is finished")
+    public OltInstallationPage waitZtCommisioningProcessFinishedSuccess(Integer timeout) {
+        //  check "Die Installation vor Ort ist abgeschlossen und die Betriebsstelle kann nun verlassen werden."
+        $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(5 * MAX_LATENCY_FOR_ELEMENT_APPEARS));
+        // wait for backward button
+        $(FINISHED_BACKWARD_BUTTON).should(exist , Duration.ofMillis(timeout)).click();
+        $(START_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS));
+
         return this;
     }
 
