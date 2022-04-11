@@ -28,8 +28,8 @@ import static org.testng.Assert.fail;
 public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
-    static final String QUEUE_USER = "a4_user";
-    static final String QUEUE_PW = "a4_password";
+    static final String QUEUE_USER = "a4_user_autotest";
+    static final String QUEUE_PW = "a4_password_autotest";
     final String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
 
     @Step("Get RedeliveryDelay time")
