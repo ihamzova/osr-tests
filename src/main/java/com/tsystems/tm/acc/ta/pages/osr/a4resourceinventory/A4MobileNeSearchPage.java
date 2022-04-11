@@ -46,7 +46,7 @@ public class A4MobileNeSearchPage {
     //
     public static final By RADIO_BUTTON_LOCATOR = By.id("radioAuswahl");
     public static final By SEARCH_RESULT_TABLE_LOCATOR = By.id("tblResultNetworkElements");
-    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[6]");
+    public static final By ZTPI_INPUT_FIELD_LOCATOR = By.xpath("//table/tr[1]/td[5]");
 
     public static final By VPSZ_VALUE_LOCATOR = By.id("vpszValue");
 
