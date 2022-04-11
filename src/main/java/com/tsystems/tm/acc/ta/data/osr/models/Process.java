@@ -18,6 +18,7 @@ public class Process {
     private String startTime;
     private String endTime;
     private String duration;
+    private String traceId;
     private String state;
     private String processId;
 }

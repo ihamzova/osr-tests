@@ -190,7 +190,11 @@ public class ProcessesSearchTest extends GigabitTest {
             .sortByStartTimeAscending();
     Process oldestProcess = processSearchPage.getInfoForMainProcesses().get(0);
     String oldestHour = processSearchPage.parseStartTimeFromUI(oldestProcess);
-    assertTrue(processSearchPage.compareTime(oldestProcess, oldestHour, threeHoursAgo, today));
+    System.out.println("expected threeHoursAgo = " + threeHoursAgo);
+    System.out.println("expected today = " + today);
+    System.out.println("actual oldestProcess = " + oldestProcess);
+    System.out.println("actual oldestHour = " + oldestProcess);
+    assertTrue(processSearchPage.compareTime(oldestProcess, oldestHour, threeHoursAgo, today), "Oldest start time is not correct");
   }
 
   @Test(priority = 1)
@@ -203,7 +207,7 @@ public class ProcessesSearchTest extends GigabitTest {
             .clickSearchButton()
             .sortByStartTimeAscending();
     String oldestDate = processSearchPage.parseStartDateFromUi(processSearchPage.getInfoForMainProcesses().get(0));
-    assertTrue(processSearchPage.compareDates(oldestDate, dayAgo));
+    assertTrue(processSearchPage.compareDates(oldestDate, dayAgo), "Oldest start time is not correct");
   }
 
   @Test(priority = 1)
@@ -216,6 +220,6 @@ public class ProcessesSearchTest extends GigabitTest {
             .clickSearchButton()
             .sortByStartTimeAscending();
     String oldestDate = processSearchPage.parseStartDateFromUi(processSearchPage.getInfoForMainProcesses().get(0));
-    assertTrue(processSearchPage.compareDates(oldestDate, weekAgo));
+    assertTrue(processSearchPage.compareDates(oldestDate, weekAgo), "Oldest start time is not correct");
   }
 }

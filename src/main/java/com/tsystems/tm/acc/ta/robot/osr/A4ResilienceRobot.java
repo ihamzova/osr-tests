@@ -29,7 +29,7 @@ public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
     static final String QUEUE_USER = "a4_user";
-    static final String QUEUE_PW = "a4_queue_pw";
+    static final String QUEUE_PW = "a4_user";//"a4_queue_pw";
     final String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
 
     @Step("Get RedeliveryDelay time")

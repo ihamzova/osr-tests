@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
-import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
+//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.model.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,8 @@ public class A4ResourceOrderMapper {
                 .externalId("merlin_id_" + getRandomDigits(4))
                 .description("resource order of osr-tests")
                 .name("resource order name")
-                .id(UUID.randomUUID().toString());
+         //       .id(UUID.randomUUID().toString())
+               ;
     }
 
     public List<Characteristic> buildResourceCharacteristicList() {

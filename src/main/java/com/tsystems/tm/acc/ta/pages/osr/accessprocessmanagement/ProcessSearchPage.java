@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selectors.byCssSelector;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -174,7 +175,7 @@ public class ProcessSearchPage {
 
   @Step("Get table headers")
   public List<String> getTableHeaders() {
-    $(SEARCH_TABLE).findAll(By.tagName("th")).shouldHave(size(10));
+    $(SEARCH_TABLE).findAll(By.tagName("th")).shouldHave(size(11));
     return $(SEARCH_TABLE).findAll(By.tagName("th")).stream()
             .map(SelenideElement::text)
             .collect(Collectors.toList());
@@ -208,8 +209,9 @@ public class ProcessSearchPage {
               processList.setLineId(tds.get(4).getText());
               processList.setStartTime(tds.get(5).getText());
               processList.setEndTime(tds.get(6).getText());
-              processList.setDuration(tds.get(7).getText());
-              processList.setState(tds.get(8).getText());
+              processList.setTraceId(tds.get(7).getText());
+              processList.setDuration(tds.get(8).getText());
+              processList.setState(tds.get(9).getText());
               return processList;
             })
             .collect(Collectors.toList());
@@ -218,37 +220,37 @@ public class ProcessSearchPage {
   @Step("Check table headers")
   public void checkTableHeaders(List<String> tableHeaders) {
     List<String> supposedHeaders = Arrays.asList("Prozessname", "EndSZ", "Slot", "Port", "Line ID", "Startzeitpunkt", "Endezeitpunkt",
-            "Dauer", "Status", "Aktion");
+            "Dauer", "Trace ID", "Status", "Aktion");
     assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
-            supposedHeaders.toArray());
+            supposedHeaders.toArray(), "Table headers are not correct");
   }
 
   @Step("Check table message")
   public void checkTableMessagePattern(String tableMessage) {
     String expectedPattern = "\\d+ Prozesse? wurden? gefunden";
-    assertTrue(Pattern.matches(expectedPattern, tableMessage));
+    assertTrue(Pattern.matches(expectedPattern, tableMessage), "Table message is not correct");
   }
 
   @Step("Check main process")
   public void checkMainProcess(Process actualProcess, Process expectedProcess, String expectedDate) {
     String actualDate = parseStartDateFromUi(actualProcess);
 
-    assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()));
-    assertTrue(actualProcess.getEndSz().equals(expectedProcess.getEndSz()));
-    assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()));
-    assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()));
-    assertTrue(actualProcess.getLineId().equals(expectedProcess.getLineId()));
-    assertTrue(actualDate.equals(expectedDate));
+    assertTrue(actualProcess.getProcessName().equals(expectedProcess.getProcessName()), "ProcessName in the result table is not correct");
+    assertTrue(actualProcess.getEndSz().equals(expectedProcess.getEndSz()), "EndSz in the result table is not correct");
+    assertTrue(actualProcess.getSlotNumber().equals(expectedProcess.getSlotNumber()), "SlotNumber in the result table is not correct");
+    assertTrue(actualProcess.getPortNumber().equals(expectedProcess.getPortNumber()), "PortNumber in the result table is not correct");
+    assertTrue(actualProcess.getLineId().equals(expectedProcess.getLineId()), "LineId in the result table is not correct");
+    assertTrue(actualDate.equals(expectedDate), "Start date is not correct");
   }
 
   @Step("Check process status")
   public void checkProcessStatus(String actualStatus, String expectedStatus) {
-    assertEquals(actualStatus, expectedStatus);
+    assertEquals(actualStatus, expectedStatus, "Process status is not correct");
   }
 
   @Step("Check subprocesses")
   public void checkSubprocesses(List<SelenideElement> subprocesses) {
-    assertTrue(subprocesses.size() > 0);
+    assertTrue(subprocesses.size() > 0, "Subprocesses are not displayed");
   }
 
   @Step("Check confirmation dialog")
