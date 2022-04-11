@@ -187,8 +187,8 @@ public class NetworkSwitching extends GigabitTest {
 
         assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
         networkSwitchingPage.startRollback(packageId);
-        assertTrue(networkSwitchingPage.getRollbackButton().isEnabled());
-        assertFalse(networkSwitchingPage.getCommitButton().isEnabled());
+//        assertTrue(networkSwitchingPage.getRollbackButton().isEnabled());
+//        assertFalse(networkSwitchingPage.getCommitButton().isEnabled());
         networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
         assert (networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
 
