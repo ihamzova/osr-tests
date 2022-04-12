@@ -1,7 +1,6 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
-import cucumber.TestContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
@@ -10,10 +9,8 @@ public class A4QueueSteps {
 
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
-    private final TestContext testContext;
 
-    public A4QueueSteps(TestContext testContext) {
-        this.testContext = testContext;
+    public A4QueueSteps() {
     }
 
     @Before

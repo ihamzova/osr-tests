@@ -36,7 +36,12 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
   @BeforeClass
   public void init() throws InterruptedException {
     accessLineRiRobot = new AccessLineRiRobot();
-    accessLineRiRobot.clearDatabase();
+    accessLineRiRobot.clearDatabaseByOlt("49/89/8000/76H2");
+    accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H1");
+    accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H3");
+    accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
+    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
+    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76G3");
     Thread.sleep(1000);
     accessLineForSearchByOlt = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByOlt);
     accessLineForSearchByDpu = context.getData().getAccessLineDataProvider().get(AccessLineCase.AccessLineForSearchByDpu);

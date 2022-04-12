@@ -52,7 +52,10 @@ public class WgFttbAccessProvisioningFeatureToggleOn extends GigabitTest {
         wgFttbAccessProvisioningRobot.changeFeatureToogleDpuDemandState(true);
 
         accessLineRiRobot = new AccessLineRiRobot();
-        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.clearDatabaseByOlt("49/89/8000/76H2");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H1");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H3");
+        accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
         Thread.sleep(1000);
         UpiterTestContext context = UpiterTestContext.get();
 

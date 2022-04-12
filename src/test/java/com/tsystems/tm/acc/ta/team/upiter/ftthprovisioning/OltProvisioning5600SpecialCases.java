@@ -54,7 +54,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
         defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
         defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
 
-        accessLineRiRobot.clearDatabase();
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
         Thread.sleep(3000);
         accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
     }

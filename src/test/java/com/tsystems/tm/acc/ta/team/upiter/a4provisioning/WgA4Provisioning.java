@@ -63,9 +63,14 @@ public class WgA4Provisioning extends GigabitTest {
         accessLineRiRobot = new AccessLineRiRobot();
         wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
 
-        accessLineRiRobot.clearDatabase();
-        Thread.sleep(1000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH0");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH1");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH5");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH6");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH7");
+        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH7");
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1000, 1000);
 
         a4OltDevice7kh0 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.A4OltDevice7KH0);
         a4OltDevice7kh1 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.A4OltDevice7KH1);
@@ -151,7 +156,7 @@ public class WgA4Provisioning extends GigabitTest {
 
     @Test
     @TmsLink("DIGIHUB-87375")
-    @Description("A4 FTTH AccessLine provisioning, a WALLED_GARDEN AccessLine with tpRef exists")
+    @Description("A4 FTTB AccessLine provisioning, a WALLED_GARDEN AccessLine with tpRef exists")
     public void a4FtthProvisioningSameTpRef() {
         a4TerminationPoint.setUuid(UUID.randomUUID().toString());
 
