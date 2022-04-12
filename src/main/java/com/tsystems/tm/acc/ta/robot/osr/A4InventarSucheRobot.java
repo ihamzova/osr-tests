@@ -206,8 +206,14 @@ public class A4InventarSucheRobot {
         clickNeSearchButton();
     }
 
-    public void clickFirstRowInSearchResultTable() {
-        getNeElementsCollection().get(0).click();
+    public void clickDetailLinkForFirstNEInSearchResultTable() {
+
+       // getNeElementsCollection().get(0).click();
+
+        $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
+                .toWebElement().findElement(A4InventarSuchePage.NE_DETAIL_LINK_LOCATOR_1).click();
+        // NE_DETAIL_LINK_LOCATOR_1 + 0
+        // first column of the first row has the link
     }
 
     public List<NetworkElementGroupDto> createNegListActualResult() {
@@ -220,8 +226,6 @@ public class A4InventarSucheRobot {
 
         // read table from ui and fill list (actual result)
         List<String> eList = elementsCollection.texts();
-        System.out.println("eList.size: " + eList.size());
-        System.out.println("numberOfColumnsNegList: " + numberOfColumnsNegList);
         for (int i = 0; i < eList.size() / numberOfColumnsNegList; i++) {
             NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
             negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList+ 1));
@@ -260,20 +264,26 @@ public class A4InventarSucheRobot {
         List<String> eList = elementsCollection.texts();
         for (int i = 0; i < eList.size() / numberOfColumnsNeList; i++) {
             NetworkElementDto neActualGeneric = new NetworkElementDto();
-            neActualGeneric.setUuid(eList.get(i * numberOfColumnsNeList));
-            neActualGeneric.setVpsz(eList.get(i * numberOfColumnsNeList + 1));
-            neActualGeneric.setFsz(eList.get(i * numberOfColumnsNeList + 2));
-            neActualGeneric.setCategory(eList.get(i * numberOfColumnsNeList + 3));
-            neActualGeneric.setType(eList.get(i * numberOfColumnsNeList + 4));
-            neActualGeneric.setZtpIdent(eList.get(i * numberOfColumnsNeList + 5));
-            neActualGeneric.setKlsId(eList.get(i * numberOfColumnsNeList + 6));
-            neActualGeneric.setPlanningDeviceName(eList.get(i * numberOfColumnsNeList + 7));
+            neActualGeneric.setUuid(eList.get(i * numberOfColumnsNeList + 1));
+            neActualGeneric.setVpsz(eList.get(i * numberOfColumnsNeList + 2));
+            neActualGeneric.setFsz(eList.get(i * numberOfColumnsNeList + 3));
+            neActualGeneric.setCategory(eList.get(i * numberOfColumnsNeList + 4));
+            neActualGeneric.setType(eList.get(i * numberOfColumnsNeList + 5));
+            neActualGeneric.setZtpIdent(eList.get(i * numberOfColumnsNeList + 6));
+            neActualGeneric.setKlsId(eList.get(i * numberOfColumnsNeList + 7));
             neActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNeList + 8));
             neActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNeList + 9));
             OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 10));
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 11));
             neActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 11));
             neActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+
+            if (!(eList.get(i * numberOfColumnsNegList + 7)).isEmpty()) {
+                OffsetDateTime  lastSuccessfulSyncTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 12));
+                neActualGeneric.setLastSuccessfulSyncTime(lastSuccessfulSyncTime); // wegen Formatproblem String-OffsetDateTime
+            }
+
             neActualResultList.add(neActualGeneric);
         }
 

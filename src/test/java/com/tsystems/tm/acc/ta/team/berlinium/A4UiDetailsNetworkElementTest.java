@@ -92,7 +92,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPage() {
         // WHEN
         a4InventarSuche.searchForNetworkElement(neDataA);
-        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // THEN
         a4ResourceInventoryNeDetails.checkNeDetailsAndTableContents(neDataA, nepDataA, nelData, neDataB);
@@ -105,7 +105,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickOppositeNe() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
-        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
         a4ResourceInventoryNeDetails.clickGegenStelleIcon();
@@ -122,7 +122,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickNepButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
-        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
         a4ResourceInventoryNeDetails.clickNepIcon();
@@ -138,7 +138,7 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickNelButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
-        a4InventarSuche.clickFirstRowInSearchResultTable();
+        a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
         a4ResourceInventoryNeDetails.clickNelIcon();

@@ -199,7 +199,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
         assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
-        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
+        a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
         // the list consists of MainDto without items, so we need to load the ro itself again with full data
@@ -263,7 +263,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
         assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
-        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
+        a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
 
@@ -328,7 +328,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
         assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
-        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
+        a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
 
@@ -391,7 +391,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
         assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
 
-        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
+        a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
 
@@ -439,7 +439,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(roCollection.get(2).innerText(), ro.getExternalId()); // ext ID
         assertEquals(roCollection.get(3).innerText(), vuep); // vuep
 
-        a4ResourceOrderSearchPageRobot.clickFirstRowInSearchResultTable();
+        a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
         // the list consists of MainDto without items, so we need to load the ro itself again with full data
