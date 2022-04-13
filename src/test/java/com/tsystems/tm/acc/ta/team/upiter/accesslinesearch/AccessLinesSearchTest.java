@@ -59,7 +59,6 @@ public class AccessLinesSearchTest extends GigabitTest {
     private DpuDevice dpuDeviceFttbProvisioningCoax;
     private DpuDevice dpuDeviceFttbProvisioningonOnAdtranTwistedPair;
 
-
     @BeforeSuite
     public void beforeSuite() {
         accessLineRiRobot = new AccessLineRiRobot();
@@ -70,9 +69,10 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineRiRobot.clearDatabaseByOlt("49/911/1100/76H5");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/76G3");
+    }
 
-//        accessLineRiRobot.clearDatabase();
-
+    @BeforeClass
+    public void init() throws InterruptedException {
         dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
         dpuDeviceFttbProvisioningOnAdtranCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranCoax);
         oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
@@ -82,29 +82,9 @@ public class AccessLinesSearchTest extends GigabitTest {
         oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
         adtranDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningTwistedPair);
 
-
-//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, oltDeviceFttbProvisioningTwistedPair.getEndSz(),
-//                dpuDeviceFttbProvisioningTwistedPair.getEndsz(), "1", "0");
-//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000, oltDeviceFttbProvisioningCoax.getEndSz(),
-//                dpuDeviceFttbProvisioningCoax.getEndsz(), "1", "0");
-//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 2000, 2000, adtranDeviceFttbProvisioningTwistedPair.getEndSz(),
-//                dpuDeviceFttbProvisioningonOnAdtranTwistedPair.getEndsz(), "null", "0");
-//        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 3000, 3000, adtranDeviceFttbProvisioningCoax.getEndSz(),
-//                dpuDeviceFttbProvisioningOnAdtranCoax.getEndsz(), "1", "0");
-
-
         accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, "49/89/8000/76H2",
                 "49/812/179/71G0", "1", "0");
-        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 10000, 10000, "49/911/1100/76H1",
-                "49/812/179/71G1", "1", "0");
-        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 20000, 20000, "49/911/1100/76H3",
-                "49/812/179/71G2", "null", "0");
-        accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 30000, 30000, "49/911/1100/76H5",
-                "49/812/179/71G3", "1", "0");
-    }
 
-    @BeforeClass
-    public void init() throws InterruptedException {
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLine = new AccessLine();
