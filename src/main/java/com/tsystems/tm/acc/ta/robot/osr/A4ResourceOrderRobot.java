@@ -53,12 +53,16 @@ public class A4ResourceOrderRobot {
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); // A4_RESOURCE_ORDER_ORCHESTRATOR_MS
 
+    private static final AuthTokenProvider getAuthTokenProviderA4ResourceOrder =
+            new RhssoClientFlowAuthTokenProvider(WIREMOCK_MS_NAME,
+                    RhssoHelper.getSecretOfGigabitHub(WIREMOCK_MS_NAME));
+
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
 
     private final ApiClient a4ResourceOrder =
-            new A4ResourceOrderClient(getAuthTokenProviderOrchestratorQueue).getClient();
+            new A4ResourceOrderClient(getAuthTokenProviderA4ResourceOrder).getClient();
 
     private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator
             .client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
@@ -69,7 +73,6 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-      //  final String correlationId = UUID.randomUUID().toString();
 
         return a4ResourceOrder
                 .resourceOrder()
@@ -279,7 +282,7 @@ System.out.println("+++ response"+response);
         assertNotNull(roDb); // passende RO gefunden
         assertEquals(roDb.getId(), roUuid);
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
-        assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
+        assertEquals(roDb.getState(), ResourceOrderStateType.COMPLETED.toString());
 
         // vollständige RO holen (ResourceOrderDto)
         ResourceOrderDto roDbDto = getResourceOrderFromDb(roDb.getId());
