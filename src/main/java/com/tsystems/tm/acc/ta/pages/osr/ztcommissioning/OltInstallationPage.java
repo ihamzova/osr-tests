@@ -72,6 +72,13 @@ public class OltInstallationPage {
         return this;
     }
 
+    @Step("Check force proceed link exist")
+    public OltInstallationPage chekcForceProceedLinkExist() {
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        $(OPEN_FORCE_PROCEED_LINK).should(exist);
+        return this;
+    }
+
     @Step("Manually continue zero touch commissioning process")
     public OltInstallationPage continueZtCommisioningProcess() {
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);

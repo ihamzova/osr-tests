@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
 import com.tsystems.tm.acc.ta.robot.osr.ZtCommissioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.ta.ui.selenide.SelenideScreenshotServiceKt;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
@@ -20,6 +21,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
@@ -27,46 +31,48 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS, OLT_COMMISSIONING_MS})
 public class AdtranOltZtCommissioning extends GigabitTest {
 
-
+  final String STUB_GROUP_ID = "AdtranOltZtCommissioning";
   final String ACID = "21212";
   final Integer STATE_INSTALL_OLT = 201358588;
   final Integer STATE_FINISHED_SUCCESS = 268434685;
 
-  private OsrTestContext context;
   private final ZtCommissioningRobot ztCommissioningRobot = new ZtCommissioningRobot();
   private final OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
-  private OltDevice oltDevice;
 
-  private WireMockMappingsContext mappingsContextOsr;
-  private WireMockMappingsContext mappingsContextTeam;
+  private OsrTestContext context = OsrTestContext.get();
+  private OltDevice oltDevice_76H8 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H8_SDX_6320);
+  private OltDevice oltDevice_76H9 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H9_SDX_6320);
+
+  private final WireMockMappingsContext mappingsContextOsr = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
+  private final WireMockMappingsContext mappingsContextTeam = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
   private WireMockMappingsContext mappingsContext; // Dynamic creation and deletion of wiremock stubs during test execution
 
   @BeforeClass
   public void init() {
    // WireMockFactory.get().resetToDefaultMappings();
+    List<OltDevice> olts = Arrays.asList(oltDevice_76H8, oltDevice_76H9);
 
-    context = OsrTestContext.get();
-    oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H8_SDX_6320);
-
-    mappingsContextOsr = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "AdtranOltZtCommissioning"))
-            .addSealMock(oltDevice)
-            .addPslMock(oltDevice)
-            .addPslMockXML(oltDevice)
-            .addDhcp4oltGetOltMock(oltDevice)
-            .addDhcp4oltGetBngMock(oltDevice)
-            .build()
-            .publish()
-            .publishedHook(savePublishedToDefaultDir())
-            .publishedHook(attachStubsToAllureReport());
-
-    mappingsContextTeam = new MercuryWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "AdtranOltZtCommissioning"))
-            .addPonInventoryMock(oltDevice)
-            .addRebellUewegeMock(oltDevice)
-            .build()
-            .publish()
-            .publishedHook(savePublishedToDefaultDir())
-            .publishedHook(attachStubsToAllureReport());
-
+    olts.forEach(olt ->
+            new OsrWireMockMappingsContextBuilder(mappingsContextOsr)
+                    .addSealMock(olt)
+                    .addPslMock(olt)
+                    .addPslMockXML(olt)
+                    .addDhcp4oltGetOltMock(olt)
+                    .addDhcp4oltGetBngMock(olt)
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport())
+    );
+    olts.forEach(olt ->
+            new MercuryWireMockMappingsContextBuilder(mappingsContextTeam)
+                    .addPonInventoryMock(olt)
+                    .addRebellUewegeMock(olt)
+                    .build()
+                    .publish()
+                    .publishedHook(savePublishedToDefaultDir())
+                    .publishedHook(attachStubsToAllureReport())
+    );
   }
 
   @AfterClass
@@ -81,6 +87,13 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     mappingsContextTeam
             .eventsHook(saveEventsToDefaultDir())
             .eventsHook(attachEventsToAllureReport());
+
+    if (mappingsContext != null) {
+      mappingsContext.close();
+      mappingsContext
+              .eventsHook(saveEventsToDefaultDir())
+              .eventsHook(attachEventsToAllureReport());
+    }
   }
 
 
@@ -89,27 +102,28 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningManualTriggered() {
 
-    ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice.getEndsz());
+    ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76H8.getEndsz());
+    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76H8.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.startZtCommissioning(oltDevice_76H8, ACID);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT);
 
-    addOltBasicConfigurationMock(oltDevice, false);  // Missing connection between OTL and EMS.
+    addOltBasicConfigurationMock(oltDevice_76H8, false);  // Missing connection between OTL and EMS.
     ztCommissioningRobot.continueZtCommissioningWaitForError();  // manual triggered oltBasicConfiguration step
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT | 2);
+    SelenideScreenshotServiceKt.takeScreenshot();
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT | 2);
     mappingsContext.close();
 
-    addOltBasicConfigurationMock(oltDevice, true);
+    addOltBasicConfigurationMock(oltDevice_76H8, true);
     ztCommissioningRobot.continueZtCommissioning();  // Repetition of the oltBasicConfiguration step from the Mobile-UI
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     mappingsContext.close();
 
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(), STATE_FINISHED_SUCCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(), STATE_FINISHED_SUCCESS);
 
-    oltCommissioningRobot.checkUplink(oltDevice);
+    oltCommissioningRobot.checkUplink(oltDevice_76H8);
 
   }
 
@@ -118,31 +132,33 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningEventTriggered() {
 
-    ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice.getEndsz());
+    ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76H9.getEndsz());
+    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76H9.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
-    ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT);
-    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz()); // event triggered oltBasicConfiguration
+    ztCommissioningRobot.startZtCommissioning(oltDevice_76H9, ACID);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
+    ztCommissioningRobot.chekcForceProceedLinkExist();
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(), STATE_FINISHED_SUCCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS);
 
-    oltCommissioningRobot.checkUplink(oltDevice);
+    oltCommissioningRobot.checkUplink(oltDevice_76H9);
   }
 
   private void addOltBasicConfigurationMock(OltDevice oltDevice, boolean success) {
-
     if (success) {
-      mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfiguration"))
+      mappingsContext = new OsrWireMockMappingsContextBuilder( new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfiguration"))
               .addOltBasicConfigurationMock(oltDevice)
               .build()
               .publish()
               .publishedHook(savePublishedToDefaultDir())
               .publishedHook(attachStubsToAllureReport());
     } else {
-      mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfigurationError"))
+      mappingsContext= new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfiguration"))
               .addOltBasicConfigurationErrorMock(oltDevice)
               .build()
               .publish()

@@ -45,11 +45,18 @@ public class ZtCommissioningRobot {
                 .validateUrl()
                 .startZtCommisioningProcess(oltDevice, TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
+
+    @Step("Check force proceed link exist")
+    public void chekcForceProceedLinkExist() {
+        new OltInstallationPage().chekcForceProceedLinkExist();
+    }
+
     @Step("Manually continue the zero touch commissioning process. Wait until an error is displayed in the UI")
     public void continueZtCommissioningWaitForError() {
         new OltInstallationPage()
                 .continueZtCommisioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
+
     @Step("Manually continue the zero touch commissioning process")
     public void continueZtCommissioning() {
         new OltInstallationPage()
@@ -67,31 +74,31 @@ public class ZtCommissioningRobot {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
-        if(oltZtcConfigurations.size() > 0) {
+        if (oltZtcConfigurations.size() > 0) {
             log.info("delete oltZtcConfigurations = {}", oltZtcConfigurations.get(0));
             deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().deleteOltZtcConfiguration()
-                            .idPath(oltZtcConfigurations.get(0).getId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                    .idPath(oltZtcConfigurations.get(0).getId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
             oltCommissioningClient.getClient().oltZtCommissioning().deleteZtCommissioning()
-                            .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                    .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
         }
     }
 
-    public void sendZtCommisioningSealEvent(String endSz) {
+    public void sendZtCommisioningSealEvent(String endSz, String objectState) {
         oltCommissioningEventListenerClient.getClient().eventListener()
                 .deviceEventCallback().body(
                         new Event().data(
-                                new EventData()
-                                        .eventTime(OffsetDateTime.now())
-                                        .meName(endSz.replace("/","_"))
-                                        .message("netconf Session established")
-                                        .objectState("online"))
+                                        new EventData()
+                                                .eventTime(OffsetDateTime.now())
+                                                .meName(endSz.replace("/", "_"))
+                                                .message("netconf Session established")
+                                                .objectState(objectState))
                                 .datacontenttype("application/json")
                                 .id(UUID.randomUUID())
-                                .source("'http://seal.telekom.de/device/" + endSz.replace("/","_"))
+                                .source("'http://seal.telekom.de/device/" + endSz.replace("/", "_"))
                                 .specversion("1")
                                 .time(OffsetDateTime.now())
                                 .type("de.telekom.seal.device.olt.stateChanged.v1"))
-                                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Get the oltZtcConfiguration.state from olt-ri")
@@ -99,7 +106,7 @@ public class ZtCommissioningRobot {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
-        if(oltZtcConfigurations.size() > 0) {
+        if (oltZtcConfigurations.size() > 0) {
             log.info("oltZtcConfigurations state = {}", oltZtcConfigurations.get(0).getState());
             return oltZtcConfigurations.get(0).getState();
         }
@@ -108,7 +115,7 @@ public class ZtCommissioningRobot {
 
     @Step("Verify the oltZtcConfiguration.state.")
     public void verifyZtCommisioningState(String endSz, Integer expectedState) {
-        Assert.assertEquals( getZtCommisioningState(endSz), expectedState, "oltZtcConfiguration.state missmatch");
+        Assert.assertEquals(getZtCommisioningState(endSz), expectedState, "oltZtcConfiguration.state missmatch");
     }
 
     @Step("Clear device in inventory databases")
