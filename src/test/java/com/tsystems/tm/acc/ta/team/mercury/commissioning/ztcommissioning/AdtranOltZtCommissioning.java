@@ -30,7 +30,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
 
   final String ACID = "21212";
   final Integer STATE_INSTALL_OLT = 201358588;
-  final Integer STATE_FINISHED_SUCESS = 268434685;
+  final Integer STATE_FINISHED_SUCCESS = 268434685;
 
   private OsrTestContext context;
   private final ZtCommissioningRobot ztCommissioningRobot = new ZtCommissioningRobot();
@@ -39,9 +39,12 @@ public class AdtranOltZtCommissioning extends GigabitTest {
 
   private WireMockMappingsContext mappingsContextOsr;
   private WireMockMappingsContext mappingsContextTeam;
+  private WireMockMappingsContext mappingsContext; // Dynamic creation and deletion of wiremock stubs during test execution
 
   @BeforeClass
   public void init() {
+   // WireMockFactory.get().resetToDefaultMappings();
+
     context = OsrTestContext.get();
     oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H8_SDX_6320);
 
@@ -83,7 +86,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
 
   @Test(description = "DIGIHUB-xxxx Zero touch commissioning process for SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-xxxxx") // Jira Id for this test in Xray
-  @Description("Perform thr zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
+  @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningManualTriggered() {
 
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
@@ -93,15 +96,26 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT);
-    ztCommissioningRobot.continueZtCommissioning();  // manual triggered
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_FINISHED_SUCESS);
+
+    addOltBasicConfigurationMock(oltDevice, false);  // Missing connection between OTL and EMS.
+    ztCommissioningRobot.continueZtCommissioningWaitForError();  // manual triggered oltBasicConfiguration step
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT | 2);
+    mappingsContext.close();
+
+    addOltBasicConfigurationMock(oltDevice, true);
+    ztCommissioningRobot.continueZtCommissioning();  // Repetition of the oltBasicConfiguration step from the Mobile-UI
+    ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
+    mappingsContext.close();
+
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(), STATE_FINISHED_SUCCESS);
 
     oltCommissioningRobot.checkUplink(oltDevice);
+
   }
 
   @Test(description = "DIGIHUB-xxxx Zero touch commissioning process for SDX 6320-16 device as DTAG user")
   @TmsLink("DIGIHUB-xxxxx") // Jira Id for this test in Xray
-  @Description("Perform thr zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
+  @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningEventTriggered() {
 
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice.getEndsz());
@@ -111,10 +125,29 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice, ACID);
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_INSTALL_OLT);
-    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz()); // event triggered
+    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice.getEndsz()); // event triggered oltBasicConfiguration
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(),STATE_FINISHED_SUCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice.getEndsz(), STATE_FINISHED_SUCCESS);
 
     oltCommissioningRobot.checkUplink(oltDevice);
+  }
+
+  private void addOltBasicConfigurationMock(OltDevice oltDevice, boolean success) {
+
+    if (success) {
+      mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfiguration"))
+              .addOltBasicConfigurationMock(oltDevice)
+              .build()
+              .publish()
+              .publishedHook(savePublishedToDefaultDir())
+              .publishedHook(attachStubsToAllureReport());
+    } else {
+      mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "OltBasicConfigurationError"))
+              .addOltBasicConfigurationErrorMock(oltDevice)
+              .build()
+              .publish()
+              .publishedHook(savePublishedToDefaultDir())
+              .publishedHook(attachStubsToAllureReport());
+    }
   }
 }

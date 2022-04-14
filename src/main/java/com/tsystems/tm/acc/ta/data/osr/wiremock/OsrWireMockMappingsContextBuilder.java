@@ -163,4 +163,14 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     context.add(new Dhcp4oltStub().getBng200(oltDevice));
     return this;
   }
+
+  public OsrWireMockMappingsContextBuilder addOltBasicConfigurationMock(OltDevice oltDevice) {
+    context.add(new SealStub().postOltBasicConfiguration202CallbackSuccess(oltDevice));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addOltBasicConfigurationErrorMock(OltDevice oltDevice) {
+    context.add(new SealStub().postOltBasicConfiguration202CallbackError(oltDevice, true));
+    return this;
+  }
 }

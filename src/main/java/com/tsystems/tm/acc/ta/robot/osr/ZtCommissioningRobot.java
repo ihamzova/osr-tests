@@ -45,12 +45,15 @@ public class ZtCommissioningRobot {
                 .validateUrl()
                 .startZtCommisioningProcess(oltDevice, TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
-
+    @Step("Manually continue the zero touch commissioning process. Wait until an error is displayed in the UI")
+    public void continueZtCommissioningWaitForError() {
+        new OltInstallationPage()
+                .continueZtCommisioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
+    }
     @Step("Manually continue the zero touch commissioning process")
     public void continueZtCommissioning() {
         new OltInstallationPage()
-                .continueZtCommisioningProcess()
-                .waitZtCommisioningProcessFinishedSuccess(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .continueZtCommisioningProcess();
     }
 
     @Step("Wait until the process is finished")
@@ -87,7 +90,7 @@ public class ZtCommissioningRobot {
                                 .source("'http://seal.telekom.de/device/" + endSz.replace("/","_"))
                                 .specversion("1")
                                 .time(OffsetDateTime.now())
-                                .type("de.telekom.seal.device.olt.stateChanged.online.v1"))
+                                .type("de.telekom.seal.device.olt.stateChanged.v1"))
                                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 

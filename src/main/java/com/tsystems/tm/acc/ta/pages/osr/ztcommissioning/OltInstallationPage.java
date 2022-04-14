@@ -11,8 +11,7 @@ import java.net.URL;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 
 @Slf4j
@@ -63,8 +62,19 @@ public class OltInstallationPage {
         return this;
     }
 
+    @Step("Manually continue zero touch commissioning process and wait for error callback")
+    public OltInstallationPage continueZtCommisioningProcessCallbackError(Integer timeout) {
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        $(OPEN_FORCE_PROCEED_LINK).click();
+        $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
+        return this;
+    }
+
     @Step("Manually continue zero touch commissioning process")
     public OltInstallationPage continueZtCommisioningProcess() {
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).click();
         $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
         return this;
@@ -77,7 +87,6 @@ public class OltInstallationPage {
         // wait for backward button
         $(FINISHED_BACKWARD_BUTTON).should(exist , Duration.ofMillis(timeout)).click();
         $(START_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS));
-
         return this;
     }
 
