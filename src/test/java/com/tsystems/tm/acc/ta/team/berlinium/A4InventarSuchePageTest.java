@@ -53,7 +53,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
             assertEquals(neFilteredList.get(i).getType(), neActualResultList.get(i).getType());
             //assertEquals(neFilteredList.get(i).getZtpIdent(), neActualResultList.get(i).getZtpIdent()); // null
             assertEquals(neFilteredList.get(i).getKlsId(), neActualResultList.get(i).getKlsId());
-            assertEquals(neFilteredList.get(i).getPlanningDeviceName(), neActualResultList.get(i).getPlanningDeviceName());
             assertEquals(neFilteredList.get(i).getLifecycleState(), neActualResultList.get(i).getLifecycleState());
             assertEquals(neFilteredList.get(i).getOperationalState(), neActualResultList.get(i).getOperationalState());
             assertEquals(neFilteredList.get(i).getCreationTime().toString(), neActualResultList.get(i).getCreationTime().toString());
@@ -112,8 +111,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
         a4InventarSucheRobot.enterNeVkz("13");    // dev-01: 104,  dev-03: 13
         //a4InventarSucheRobot.enterNeFsz("7KDA");   // nicht unbedingt notwendig,  7KDA
 
-        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        a4InventarSucheRobot.enterNeCategory("OLT");  // dropdown mit selectOptionByValue
         a4InventarSucheRobot.checkboxNotWorking();
         a4InventarSucheRobot.checkboxLifeInstalling();
 
@@ -163,8 +160,6 @@ public class A4InventarSuchePageTest extends GigabitTest {
         a4InventarSucheRobot.enterNeVkz("0");    // dev-01: 104,  dev-03: 13
         a4InventarSucheRobot.enterNeFsz("7KE0");   // nicht unbedingt notwendig,  7KDA
 
-        // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
-        a4InventarSucheRobot.enterNeCategory("LEAF_SWITCH");  // dropdown mit selectOptionByValue
 
         a4InventarSucheRobot.clickNeSearchButton();
 

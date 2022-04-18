@@ -88,7 +88,6 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
             assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
             assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
             assertTrue(concat.contains(a4NetworkElement.getCategory()), a4NetworkElement.getCategory());
-            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
             assertTrue(concat.contains(a4NetworkElement.getLifecycleState()), a4NetworkElement.getLifecycleState());
         });
 
@@ -200,7 +199,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
 
         // check ui
         ElementsCollection elementsCollection = robotMobileUi.getNeElementsCollection();
-        assertEquals(elementsCollection.get(6).getText(), STATE_PLANNING);
+        assertEquals(elementsCollection.get(5).getText(), STATE_PLANNING);
 
         // check NEMO Update
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(a4NetworkElements.get(ne)
