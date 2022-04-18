@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
 @Slf4j
@@ -26,62 +27,64 @@ public class A4ResourceInventoryNeDetailsRobot {
 
     @Step("Read uuid ne")
     public String readNeUuid() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_UUID_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_UUID_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read vpsz ne")
     public String readNeVpsz() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_VPSZ_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_VPSZ_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read fsz ne")
     public String readNeFsz() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_FSZ_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_FSZ_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read category ne")
     public String readNeCategory() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_CATEGORY_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_CATEGORY_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read type ne")
     public String readNeType() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_TYPE_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_TYPE_FIELD_LOCATOR).innerHtml();
     }
 
-    @Step("Read PD Name ne")
-    public String readNePlanningDeviceName() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_PlanningDeviceName_FIELD_LOCATOR).val();
-    }
 
     @Step("Read kls-id ne")
     public String readNeKlsId() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_KLSID_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_KLSID_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read ztp ident ne")
     public String readNeZtpid() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_ZTPID_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_ZTPID_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read ops ne")
     public String readNeOps() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_OPS_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_OPS_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read lcs ne")
     public String readNeLcs() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_LCS_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_LCS_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read creation time ne")
     public String readNeCreationTime() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_CreationTime_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_CreationTime_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Read last update time ne")
     public String readNeLastUpdateTime() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_LastUpdateTime_FIELD_LOCATOR).val();
+        return $(A4ResourceInventoryNeDetailsPage.NE_LastUpdateTime_FIELD_LOCATOR).innerHtml();
+    }
+
+
+    @Step("Read last sync time ne")
+    public String readNeLastSuccessfulSyncTime() {
+        return $(A4ResourceInventoryNeDetailsPage.NE_LastSuccessfulSync_FIELD_LOCATOR).innerHtml();
     }
 
     @Step("Open UI, log in")
@@ -109,14 +112,15 @@ public class A4ResourceInventoryNeDetailsRobot {
         assertEquals(readNeFsz(), neDataA.getFsz());
         assertEquals(readNeCategory(), neDataA.getCategory());
         assertEquals(readNeType(), neDataA.getType());
-        assertEquals(readNePlanningDeviceName(), neDataA.getPlanningDeviceName());
         assertEquals(readNeKlsId(), neDataA.getKlsId());
         assertEquals(readNeOps(), neDataA.getOperationalState());
         assertEquals(readNeLcs(), neDataA.getLifecycleState());
 
         // check port, link and gegenstelle data in table
-        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeElementsCollection();
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeDetailsCollection();
+        sleepForSeconds(4);  // wait for result
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+        sleepForSeconds(4);  // wait for result
         assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
     }
 

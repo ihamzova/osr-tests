@@ -114,9 +114,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceInventory.createNetworkElementLink(nelData2, nepData1, nepData3, neData1, neData3, uewegData2);
         a4ResourceInventory.createTerminationPoint(tpData1, nepData1);
         a4ResourceInventory.createNetworkServiceProfileA10Nsp(nspA10Data1, tpData1);
-
         ro = initResourceOrder(nelData1);
-        sendResourceOrder(ro);
+        String roId = sendResourceOrder(ro);
+        ro.setId(roId);
+
     }
 
     @BeforeMethod
@@ -132,9 +133,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         return resourceOrder;
     }
 
-    private void sendResourceOrder(ResourceOrder resourceOrder) {
-        a4ResourceOrderRobot.sendPostResourceOrder(resourceOrder); // case-sensitive problem
+    private String sendResourceOrder(ResourceOrder resourceOrder) {
+        String roId = a4ResourceOrderRobot.sendPostResourceOrder(resourceOrder); // case-sensitive problem
         sleepForSeconds(10);
+        return roId;
     }
 
     @AfterClass
@@ -331,6 +333,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
 
+        System.out.println("sortedRoList.get(0).getId(): " +  sortedRoList.get(0).getId());
 
         // the list consists of MainDto without items, so we need to load the ro itself again with full data
         ResourceOrderDto resourceOrderDto = a4ResourceOrderRobot.getResourceOrderFromDb(sortedRoList.get(0).getId());
@@ -358,7 +361,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
-        sleepForSeconds(8);// wait for result
+        sleepForSeconds(18);// wait for result
 
         // read ui
         ElementsCollection roCollection = a4ResourceOrderSearchPageRobot.getRoElementsCollection();
@@ -421,8 +424,11 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         //creating a RO with wrong LBZ to provoke RO status = rejected
         assertNotNull(ro.getOrderItem());
         Objects.requireNonNull(ro.getOrderItem().get(0).getResource()).setName("x");
-        sendResourceOrder(ro);
 
+        ro.setId(null);
+        String roId = sendResourceOrder(ro);
+
+        ro.setId(roId);
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
         a4ResourceOrderSearchPageRobot.selectInProgress();

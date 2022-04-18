@@ -26,13 +26,13 @@ public class A4ResourceInventoryNeDetailsPage {
     public static final By NE_FSZ_FIELD_LOCATOR = By.id("fsz");
     public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");
     public static final By NE_TYPE_FIELD_LOCATOR = By.id("type");
-    public static final By NE_PlanningDeviceName_FIELD_LOCATOR = By.id("planningDeviceName");
     public static final By NE_KLSID_FIELD_LOCATOR = By.id("klsId");
     public static final By NE_ZTPID_FIELD_LOCATOR = By.id("ztpIdent");
     public static final By NE_OPS_FIELD_LOCATOR = By.id("operationalState");
     public static final By NE_LCS_FIELD_LOCATOR = By.id("lifecycleState");
     public static final By NE_CreationTime_FIELD_LOCATOR = By.id("creationTime");
     public static final By NE_LastUpdateTime_FIELD_LOCATOR = By.id("lastUpdateTime");
+    public static final By NE_LastSuccessfulSync_FIELD_LOCATOR = By.id("lastSuccessfulSyncTime");
     public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
 
     @Step("Validate page")

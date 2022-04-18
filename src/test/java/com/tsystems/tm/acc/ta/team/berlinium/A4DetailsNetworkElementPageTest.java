@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
@@ -12,18 +13,23 @@ import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 @ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_UI_MS,A4_RESOURCE_INVENTORY_BFF_PROXY_MS})
 @Epic("OS&R")
 @Feature("Test detail-view for found NEs in UI")
 @TmsLink("DIGIHUB-xxxxx")
-public class A4UiDetailsNetworkElementTest extends GigabitTest {
+public class A4DetailsNetworkElementPageTest extends GigabitTest {
 
     private final A4InventarSucheRobot a4InventarSuche = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
@@ -91,7 +97,13 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     @Description("Test for Network Element Detail page")
     public void testA4NeDetailPage() {
         // WHEN
+//        WebDriverWait wait = new WebDriverWait(driver, 5000);
         a4InventarSuche.searchForNetworkElement(neDataA);
+
+        WebDriver driver = WebDriverRunner.getWebDriver();
+        driver.manage().window().maximize();
+        sleepForSeconds(4);  // wait for result
+
         a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // THEN
@@ -105,6 +117,9 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickOppositeNe() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
+        WebDriver driver = WebDriverRunner.getWebDriver();
+        driver.manage().window().maximize();
+        sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
@@ -122,6 +137,9 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickNepButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
+        WebDriver driver = WebDriverRunner.getWebDriver();
+        driver.manage().window().maximize();
+        sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
@@ -138,6 +156,9 @@ public class A4UiDetailsNetworkElementTest extends GigabitTest {
     public void testA4NeDetailPageAndClickNelButton() {
         // GIVEN
         a4InventarSuche.searchForNetworkElement(neDataA);
+        WebDriver driver = WebDriverRunner.getWebDriver();
+        driver.manage().window().maximize();
+        sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 
         // WHEN
