@@ -1,0 +1,12 @@
+name: deviceTopas
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/8571/0/76Z7"
+  slotNumber: "4"
+  portNumber: "0"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 16
+  defaultNEProfilesActive: 16
+  defaultNetworkLineProfilesActive: 16
+  accessLinesCount: 16
