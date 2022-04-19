@@ -444,6 +444,21 @@ public class AccessLineRiRobot {
         }
     }
 
+    @Step("Check partyId")
+    public void checkPartyId(PortProvisioning port, Long expectedPartyId) {
+        List<Long> actualPartyIds = getAccessLinesByPort(port)
+                .stream().map(AccessLineDto::getResourceAssociation)
+                .map(ResourceAssociationDto::getPartyId).collect(Collectors.toList());
+        assertTrue(actualPartyIds.stream().allMatch(partyId -> partyId.equals(expectedPartyId)), "PartyId is incorrect");
+    }
+
+    @Step("Check LineId Prefix")
+    public void checkLineIdPrefix(PortProvisioning port, String expectedPrefix){
+        List<String> actualPrefixes =
+                getLineIdsByPort(port).stream().map(AccessLineRiRobot::getLineIdPrefix).collect(Collectors.toList());
+        assertTrue(actualPrefixes.stream().allMatch(prefix -> prefix.equals(expectedPrefix)), "LineId prefixes are incorrect");
+    }
+
     @Step("Remove lines with id > 1008, change some port refs")
     public void prepareTestDataToDeprovisioning(PortProvisioning port) {
         // delete extra lines
@@ -790,17 +805,15 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get HomeIDs from the Port")
-    public List<String> getHomeIds(PortProvisioning port) {
-        return getHomeIdPool(port).stream().map(homeIdDto -> homeIdDto.getHomeId()).collect(Collectors.toList());
+    @Step("Get LineIds by Port")
+    public List<String> getLineIdsByPort(PortProvisioning port) {
+        return getAccessLinesByPort(port).stream().map(accessLineDto -> accessLineDto.getLineId()).collect(Collectors.toList());
     }
 
-    @Step("Get HomeIDs from Port by Status")
-    public List<String> getHomeIdsByStatus(PortProvisioning port, HomeIdStatus homeIdStatus) {
-        return getHomeIdPool(port).stream()
-                .filter(homeIdDto -> (homeIdStatus.equals(homeIdDto.getStatus())))
-                .map(homeIdDto -> homeIdDto.getHomeId())
-                .collect(Collectors.toList());
+    @Step("Get LineId Prefix")
+    public static String getLineIdPrefix(String lineId) {
+        String[] parts = lineId.split("\\.");
+        return parts[1];
     }
 
     @Step("Get AllocatedOnuIds by port")
