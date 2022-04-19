@@ -43,7 +43,23 @@ public class ZtCommissioningRobot {
     public void startZtCommissioning(OltDevice oltDevice, String acid) {
         OltInstallationPage.openInstallationPage(acid)
                 .validateUrl()
-                .startZtCommisioningProcess(oltDevice, TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .startZtCommisioningProcess(oltDevice)
+                .chekcForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
+    }
+
+    @Step("Waiting on the process until the force proceed link exist")
+    public void startZtCommissioningWithError(OltDevice oltDevice, String acid) {
+        OltInstallationPage.openInstallationPage(acid)
+                .validateUrl()
+                .startZtCommisioningProcess(oltDevice)
+                .waitZtCommisioningProcessErrorMessage();
+    }
+
+    @Step("Restart zero touch commissioning process")
+    public void restartZtCommissioning(OltDevice oltDevice) {
+        new OltInstallationPage()
+                .startZtCommisioningProcess(oltDevice)
+                .chekcForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     @Step("Check force proceed link exist")
@@ -106,6 +122,7 @@ public class ZtCommissioningRobot {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
+        log.info("oltZtcConfigurations state size = {}", oltZtcConfigurations.size());
         if (oltZtcConfigurations.size() > 0) {
             log.info("oltZtcConfigurations state = {}", oltZtcConfigurations.get(0).getState());
             return oltZtcConfigurations.get(0).getState();

@@ -18,6 +18,7 @@ import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeo
 public class OltInstallationPage {
 
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 1000;
+    public static final Integer WAIT_FOR_MESSAGE = 5000;
 
     public static final String APP = "portal-proxy";
     public static final String ENDPOINT = "/auftragnehmerportal-mui/olt-installation/";
@@ -33,6 +34,7 @@ public class OltInstallationPage {
     public static final By OPEN_FORCE_PROCEED_LINK = By.id("open-force-proceed");
     public static final By FORCE_PROCEED_BUTTON = By.id("force-proceed");
     public static final By POSITIVE_MESSAGE = By.cssSelector("div.ui.positive.icon.message");
+    public static final By NEGATIVE_MESSAGE = By.cssSelector("div.ui.negative.message");
     public static final By FINISHED_BACKWARD_BUTTON  = By.id("process-finished-backward");
 
     @Step("Open OLT-Installation page")
@@ -50,15 +52,26 @@ public class OltInstallationPage {
     }
 
     @Step("Start zero touch commissioning process")
-    public OltInstallationPage startZtCommisioningProcess(OltDevice oltDevice, Integer timeout) {
+    public OltInstallationPage startZtCommisioningProcess(OltDevice oltDevice) {
         inputDeviceParameters(oltDevice.getEndsz());
         $(SERIALNUMBER_INPUT_LOCATOR).click();
         $(SERIALNUMBER_INPUT_LOCATOR).val(oltDevice.getSeriennummer());
         $(PARTNUMBER_INPUT_LOCATOR).click();
         $(PARTNUMBER_INPUT_LOCATOR).val(oltDevice.getTkz());
         $(START_BUTTON).click();
-        // wait for "install OLT and connect to BNG port"
-        $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
+        return this;
+    }
+
+    @Step("Waiting on the process until the force proceed link exist")
+     public OltInstallationPage chekcForceProceedLinkExist( Integer timeout) {
+         $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
+         return this;
+     }
+
+    @Step("Check force proceed link exist")
+    public OltInstallationPage chekcForceProceedLinkExist() {
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        $(OPEN_FORCE_PROCEED_LINK).should(exist);
         return this;
     }
 
@@ -69,13 +82,6 @@ public class OltInstallationPage {
         $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
-        return this;
-    }
-
-    @Step("Check force proceed link exist")
-    public OltInstallationPage chekcForceProceedLinkExist() {
-        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
-        $(OPEN_FORCE_PROCEED_LINK).should(exist);
         return this;
     }
 
@@ -90,10 +96,16 @@ public class OltInstallationPage {
     @Step("Wait until the zero touch commissioning process is finished")
     public OltInstallationPage waitZtCommisioningProcessFinishedSuccess(Integer timeout) {
         //  check "Die Installation vor Ort ist abgeschlossen und die Betriebsstelle kann nun verlassen werden."
-        $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(5 * MAX_LATENCY_FOR_ELEMENT_APPEARS));
+        $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(WAIT_FOR_MESSAGE));
         // wait for backward button
         $(FINISHED_BACKWARD_BUTTON).should(exist , Duration.ofMillis(timeout)).click();
         $(START_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS));
+        return this;
+    }
+
+    @Step("Wait until the zero touch commissioning process is finished")
+    public OltInstallationPage waitZtCommisioningProcessErrorMessage() {
+        $(NEGATIVE_MESSAGE).should(exist, Duration.ofMillis(5 * WAIT_FOR_MESSAGE));
         return this;
     }
 
