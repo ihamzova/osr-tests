@@ -15,6 +15,8 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.AfterClass;
@@ -29,11 +31,16 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 
 @Slf4j
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS, OLT_COMMISSIONING_MS})
+@Epic("OS&R")
+@Feature("Description Adtran OLT zero touch commissioning on Mercury team-environment")
+@TmsLink("DIGIHUB-148150") // This is the Jira id of TestSet
 public class AdtranOltZtCommissioning extends GigabitTest {
 
   final String STUB_GROUP_ID = "AdtranOltZtCommissioning";
   final String ACID = "21212";
   final Integer STATE_BIT_ERROR = 2;
+
+  final Integer STATE_BIT_MASK = 0xFFFFFFF;
   final Integer STATE_INSTALL_OLT = 201358588;
   final Integer OLT_COMMISSIONING_STARTED =  209714428;
   final Integer STATE_FINISHED_SUCCESS = 268434685;
@@ -100,8 +107,8 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   }
 
 
-  @Test(description = "DIGIHUB-xxxx Zero touch commissioning process for SDX 6320-16 device as DTAG user")
-  @TmsLink("DIGIHUB-xxxxx") // Jira Id for this test in Xray
+  @Test(description = "DIGIHUB-148144 Zero touch commissioning process for SDX 6320-16 device as DTAG user")
+  @TmsLink("DIGIHUB-148144") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningManualTriggered() {
 
@@ -111,29 +118,28 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H8, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
 
     addOltBasicConfigurationMock(oltDevice_76H8, false);  // Missing connection between OTL and EMS.
     ztCommissioningRobot.continueZtCommissioningWaitForError();  // manual triggered oltBasicConfiguration step
     SelenideScreenshotServiceKt.takeScreenshot();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_ERROR);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_ERROR, STATE_BIT_MASK);
     mappingsContext.close();
 
     addOltBasicConfigurationMock(oltDevice_76H8, true);
     ztCommissioningRobot.continueZtCommissioning();  // Repetition of the oltBasicConfiguration step from the Mobile-UI
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     mappingsContext.close();
-
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(), STATE_FINISHED_SUCCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
 
     oltCommissioningRobot.checkUplink(oltDevice_76H8);
 
   }
 
-  @Test(description = "DIGIHUB-xxxx Zero touch commissioning process for SDX 6320-16 device as DTAG user")
-  @TmsLink("DIGIHUB-xxxxx") // Jira Id for this test in Xray
+  @Test(description = "DIGIHUB-148145 Zero touch commissioning process for SDX 6320-16 device as DTAG user")
+  @TmsLink("DIGIHUB-148145") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
-  public void adtranOltZtCommissioningEventTriggered() {
+  public void adtranOltZtCommissioningEventTriggered() throws InterruptedException{
 
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76H9.getEndsz());
     ztCommissioningRobot.clearZtCommisioningData(oltDevice_76H9.getEndsz());
@@ -141,20 +147,22 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H9, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
     ztCommissioningRobot.chekcForceProceedLinkExist();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
+    Thread.sleep(5000);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),OLT_COMMISSIONING_STARTED, STATE_BIT_MASK);
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
 
     oltCommissioningRobot.checkUplink(oltDevice_76H9);
   }
 
 
-  @Test(dependsOnMethods = "adtranOltZtCommissioningManualTriggered", description = "DIGIHUB-xxxx Zero touch commissioning process for SDX 6320-16 device as DTAG user")
-  @TmsLink("DIGIHUB-xxxxx") // Jira Id for this test in Xray
+  @Test(/*dependsOnMethods = "adtranOltZtCommissioningManualTriggered",*/ description = "DIGIHUB-148146 Zero touch commissioning process for SDX 6320-16 device as DTAG user")
+  @TmsLink("DIGIHUB-148146") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningSerialNumberExist()
   {
@@ -166,14 +174,13 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     String serialNumber =  oltDevice_76HA.getSeriennummer();
     oltDevice_76HA.setSeriennummer(oltDevice_76H8.getSeriennummer()); // Serial number already exists in olt-ri
     ztCommissioningRobot.startZtCommissioningWithError(oltDevice_76HA, ACID);
-    ztCommissioningRobot.getZtCommisioningState(oltDevice_76HA.getEndsz());
     SelenideScreenshotServiceKt.takeScreenshot();
     oltDevice_76HA.setSeriennummer(serialNumber);
     ztCommissioningRobot.restartZtCommissioning(oltDevice_76HA);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(),STATE_INSTALL_OLT);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76HA.getEndsz(), "online"); // event triggered oltBasicConfiguration
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(), STATE_FINISHED_SUCCESS);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
 
     oltCommissioningRobot.checkUplink(oltDevice_76HA);
   }

@@ -131,8 +131,9 @@ public class ZtCommissioningRobot {
     }
 
     @Step("Verify the oltZtcConfiguration.state.")
-    public void verifyZtCommisioningState(String endSz, Integer expectedState) {
-        Assert.assertEquals(getZtCommisioningState(endSz), expectedState, "oltZtcConfiguration.state missmatch");
+    public void verifyZtCommisioningState(String endSz, Integer expectedState, Integer bitmask) {
+        Integer state =  getZtCommisioningState(endSz) & bitmask;
+        Assert.assertEquals(state, expectedState, "oltZtcConfiguration.state missmatch");
     }
 
     @Step("Clear device in inventory databases")
