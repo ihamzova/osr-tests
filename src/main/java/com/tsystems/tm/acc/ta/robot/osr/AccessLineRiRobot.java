@@ -740,50 +740,50 @@ public class AccessLineRiRobot {
         return fttbAccessLinesFiltered;
     }
 
-  @Step("Get AccessLines with HomeIds")
-  public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
-    List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
-            .filter(accessLineDto -> (accessLineDto.getHomeId() != null)).collect(Collectors.toList());
+    @Step("Get AccessLines with HomeIds")
+    public List<AccessLineDto> getAccessLinesWithHomeId(PortProvisioning port) {
+        List<AccessLineDto> accessLinesWithHomeIds = getAccessLinesByPort(port).stream()
+                .filter(accessLineDto -> (accessLineDto.getHomeId() != null)).collect(Collectors.toList());
 
-    if (accessLinesWithHomeIds.size()!=0) {
-      return accessLinesWithHomeIds;
-    } else {
-      throw new RuntimeException("There are no AccessLines with HomeIds on this port");
+        if (accessLinesWithHomeIds.size() != 0) {
+            return accessLinesWithHomeIds;
+        } else {
+            throw new RuntimeException("There are no AccessLines with HomeIds on this port");
+        }
     }
-  }
 
-  public List<AccessLineDto> getAccessLinesByHomeIds(List<String> homeIds) {
+    public List<AccessLineDto> getAccessLinesByHomeIds(List<String> homeIds) {
         return homeIds.stream().map(homeId -> accessLineResourceInventory.accessLineController()
-                .searchAccessLines()
-                .body(new SearchAccessLineDto()
-                        .homeId(homeId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                        .searchAccessLines()
+                        .body(new SearchAccessLineDto()
+                                .homeId(homeId))
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
                 .flatMap(List::stream).collect(Collectors.toList());
-  }
-
-  @Step("Get AccessLines with NetworkSwitching Profiles")
-  public List<AccessLineDto> getAccessLinesWithSwitchingProfile(PortProvisioning port) {
-    List<AccessLineDto> accessLinesWithSwitchingProfile = getAccessLinesByPort(port).stream()
-            .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() != null)).collect(Collectors.toList());
-
-    if (accessLinesWithSwitchingProfile.size() != 0) {
-      return accessLinesWithSwitchingProfile;
-    } else {
-      throw new RuntimeException("There are no AccessLines with Switching Profiles");
     }
-  }
 
-  @Step("Get AccessLines without NetworkSwitching Profiles")
-  public List<AccessLineDto> getAccessLinesWithoutSwitchingProfile(PortProvisioning port) {
-    List<AccessLineDto> accessLinesWithoutSwitchingProfile = getAccessLinesByPort(port).stream()
-            .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() == null)).collect(Collectors.toList());
+    @Step("Get AccessLines with NetworkSwitching Profiles")
+    public List<AccessLineDto> getAccessLinesWithSwitchingProfile(PortProvisioning port) {
+        List<AccessLineDto> accessLinesWithSwitchingProfile = getAccessLinesByPort(port).stream()
+                .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() != null)).collect(Collectors.toList());
 
-    if (accessLinesWithoutSwitchingProfile.size() != 0) {
-      return accessLinesWithoutSwitchingProfile;
-    } else {
-      throw new RuntimeException("There are no AccessLines without Switching Profiles");
+        if (accessLinesWithSwitchingProfile.size() != 0) {
+            return accessLinesWithSwitchingProfile;
+        } else {
+            throw new RuntimeException("There are no AccessLines with Switching Profiles");
+        }
     }
-  }
+
+    @Step("Get AccessLines without NetworkSwitching Profiles")
+    public List<AccessLineDto> getAccessLinesWithoutSwitchingProfile(PortProvisioning port) {
+        List<AccessLineDto> accessLinesWithoutSwitchingProfile = getAccessLinesByPort(port).stream()
+                .filter(accessLineDto -> (accessLineDto.getNetworkSwitchingProfile() == null)).collect(Collectors.toList());
+
+        if (accessLinesWithoutSwitchingProfile.size() != 0) {
+            return accessLinesWithoutSwitchingProfile;
+        } else {
+            throw new RuntimeException("There are no AccessLines without Switching Profiles");
+        }
+    }
 
     @Step("Get LineID Pool by Port")
     public List<LineIdDto> getLineIdPool(PortProvisioning port) {
@@ -849,18 +849,18 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-  @Step("Get AllocatedOnuIds by AccessLines")
-  public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
-    return accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
-            .searchAllocatedOnuId()
-            .body(new SearchAllocatedOnuIdDto()
-                    .oltEndSz(port.getEndSz())
-                    .slotNumber(port.getSlotNumber())
-                    .portNumber(port.getPortNumber())
-                    .lineId(accessLine.getLineId()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
-            .flatMap(List::stream).collect(Collectors.toList());
-  }
+    @Step("Get AllocatedOnuIds by AccessLines")
+    public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
+        return accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+                        .searchAllocatedOnuId()
+                        .body(new SearchAllocatedOnuIdDto()
+                                .oltEndSz(port.getEndSz())
+                                .slotNumber(port.getSlotNumber())
+                                .portNumber(port.getPortNumber())
+                                .lineId(accessLine.getLineId()))
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                .flatMap(List::stream).collect(Collectors.toList());
+    }
 
     @Step("Get AllocatedOnuId by AccessLine")
     public List<Integer> getAllocatedOnuIdFromAccessLine(AccessLineDto accessLine) {
@@ -874,6 +874,7 @@ public class AccessLineRiRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
     }
+
     @Step("Get AllocatedAnpTags from AccessLines")
     public List<Integer> getAllocatedAnpTags(List<AccessLineDto> accessLines) {
         return accessLines.stream().map(accessLineDto -> accessLineDto.getAnpTag().getAnpTag()).collect(Collectors.toList());
@@ -1165,12 +1166,12 @@ public class AccessLineRiRobot {
         return homeIdDto.getHomeId();
     }
 
-  @Step("Update HomeId on migrated AccessLine")
-  public void updateHomeIdOnAccessLine(String lineId, String homeId) {
-    List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
-            .searchAccessLines()
-            .body(new SearchAccessLineDto().lineId(lineId))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    @Step("Update HomeId on migrated AccessLine")
+    public void updateHomeIdOnAccessLine(String lineId, String homeId) {
+        List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
+                .searchAccessLines()
+                .body(new SearchAccessLineDto().lineId(lineId))
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
 
         final AccessLineDto accessLineDto = accessLineDtoList.get(0);
 

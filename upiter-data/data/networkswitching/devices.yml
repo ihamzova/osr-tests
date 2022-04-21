@@ -13,8 +13,12 @@ values:
   endSz: "49/30/179/76H2"
   slotNumber: "3"
   portNumber: "0"
-  homeIdPool: 32
+  homeIdPool: 0
+  backhaulId: 0
   accessLinesCount: 16
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
 ---
 name: EndSz_49_30_179_76H2_3_1
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -22,8 +26,12 @@ values:
   endSz: "49/30/179/76H2"
   slotNumber: "3"
   portNumber: "1"
-  homeIdPool: 32
+  homeIdPool: 0
+  backhaulId: 0
   accessLinesCount: 16
+  accessLinesWG: 0
+  defaultNEProfilesActive: 0
+  defaultNetworkLineProfilesActive: 0
 ---
 name: EndSz_49_911_1100_76H2_1_0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning

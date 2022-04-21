@@ -81,7 +81,9 @@
     </test>
     <test thread-count="1" name="Network Switching Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.NetworkSwitching"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.CardToCardNetworkSwitching"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.PortToPortNetworkSwitching"/>
+
         </classes>
     </test>
     <test thread-count="1" name="FTTH 1.7 Migration">

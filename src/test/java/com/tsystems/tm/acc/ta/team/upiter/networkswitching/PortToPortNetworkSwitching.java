@@ -36,7 +36,7 @@ import static org.testng.Assert.*;
 })
 
 @Epic("Network Switching")
-public class NetworkSwitching extends GigabitTest {
+public class PortToPortNetworkSwitching extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private NetworkSwitchingRobot networkSwitchingRobot;
@@ -51,10 +51,6 @@ public class NetworkSwitching extends GigabitTest {
     private PortProvisioning endSz_49_911_1100_76H1_1_0;
     private PortProvisioning endSz_49_911_1100_76H1_1_1;
     private PortProvisioning endSz_49_911_1100_76H1_1_2;
-    private PortProvisioning endSz_49_30_179_76H2_3_0;
-    private PortProvisioning endSz_49_30_179_76H2_3_1;
-    private PortProvisioning endSz_49_911_1100_76H2_1_0;
-    private PortProvisioning endSz_49_911_1100_76H2_1_1;
     private Ont ont;
 
     @BeforeClass
@@ -71,10 +67,6 @@ public class NetworkSwitching extends GigabitTest {
         endSz_49_911_1100_76H1_1_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H1_1_0);
         endSz_49_911_1100_76H1_1_1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H1_1_1);
         endSz_49_911_1100_76H1_1_2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H1_1_2);
-        endSz_49_30_179_76H2_3_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H2_3_0);
-        endSz_49_30_179_76H2_3_1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H2_3_1);
-        endSz_49_911_1100_76H2_1_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H2_1_0);
-        endSz_49_911_1100_76H2_1_1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H2_1_1);
         ont = new Ont();
         ont = ontUsageRobot.randomizeSerialNumber(ont);
 
@@ -362,115 +354,4 @@ public class NetworkSwitching extends GigabitTest {
         assertNull(accessLineDto.getNetworkSwitchingProfile());
         assertEquals(targetAccessLinesAfterUpdate.size(), targetAccessLinesBeforeUpdate.size());
     }
-
-    @Test
-    @TmsLink("DIGIHUB-128414")
-    @Description("Network Switching Preparation, Card to Card Switching")
-    public void networkSwitchingCardtoCardPreparationTest() throws Exception {
-        accessLineRiRobot.clearDatabase();
-        networkSwitchingRobot.clearDatabase();
-        Thread.sleep(2000);
-        accessLineRiRobot.fillDatabaseForNetworkSwitching(endSz_49_30_179_76H2_3_0, endSz_49_911_1100_76H2_1_0);
-
-        List<AccessLineDto> sourceAccessLinesBeforePreparationPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
-        List<AccessLineDto> sourceAccessLinesBeforePreparationPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
-
-        List<Integer> sourceAnpTagsBeforePreparationPort1 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparationPort1);
-        List<Integer> sourceAnpTagsBeforePreparationPort2 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparationPort2);
-        List<Integer> sourceOnuIdsBeforePreparationPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_0, sourceAccessLinesBeforePreparationPort1);
-        List<Integer> sourceOnuIdsBeforePreparationPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_1, sourceAccessLinesBeforePreparationPort2);
-
-        int numberOfAccessLinesOnTargetPort1BeforePreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size();
-        int numberOfAccessLinesOnTargetPort2BeforePreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size();
-
-        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
-        networkSwitchingPage.validateUrl();
-        networkSwitchingPage.startCardPreparation(endSz_49_30_179_76H2_3_0, endSz_49_30_179_76H2_3_1, endSz_49_911_1100_76H2_1_0, endSz_49_911_1100_76H2_1_1);
-        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
-        networkSwitchingPage.clickPackageId();
-        assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
-        assertTrue(networkSwitchingPage.getRollbackButton().isEnabled());
-
-        networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
-
-        assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
-
-        List<AccessLineDto> sourceAccessLinesAfterPreparationPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
-        List<AccessLineDto> sourceAccessLinesAfterPreparationPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
-        List<Integer> sourceAnpTagsAfterPreparationPort1 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterPreparationPort1);
-        List<Integer> sourceAnpTagsAfterPreparationPort2 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterPreparationPort2);
-
-        List<Integer> sourceOnuIdsAfterPreparationPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_0, sourceAccessLinesAfterPreparationPort1);
-        List<Integer> sourceOnuIdsAfterPreparationPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_1, sourceAccessLinesAfterPreparationPort2);
-        List<Integer> targetAnpTagsAfterPreparationPort1 = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesAfterPreparationPort1);
-        List<Integer> targetAnpTagsAfterPreparationPort2 = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesAfterPreparationPort2);
-        List<Integer> targetOnuIdsAfterPreparationPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_0, sourceAccessLinesAfterPreparationPort1);
-        List<Integer> targetOnuIdsAfterPreparationPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_1, sourceAccessLinesAfterPreparationPort2);
-        int numberOfAccessLinesOnTargetPort1AfterPreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size();
-        int numberOfAccessLinesOnTargetPort2AfterPreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size();
-
-        assertEquals(numberOfAccessLinesOnTargetPort1AfterPreparation,
-                numberOfAccessLinesOnTargetPort1BeforePreparation - sourceAccessLinesBeforePreparationPort1.size());
-        assertEquals(numberOfAccessLinesOnTargetPort2AfterPreparation,
-                numberOfAccessLinesOnTargetPort2BeforePreparation - sourceAccessLinesBeforePreparationPort2.size());
-        assertTrue(targetAnpTagsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size());
-        assertTrue(targetAnpTagsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size());
-
-        assertTrue(targetOnuIdsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size());
-        assertTrue(targetOnuIdsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size());
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterPreparationPort1);
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterPreparationPort2);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterPreparationPort1);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort2, sourceOnuIdsAfterPreparationPort2);
-    }
-
-    @Test(dependsOnMethods = "networkSwitchingCardtoCardPreparationTest")
-    @TmsLink("DIGIHUB-128425")
-    @Description("Network Switching Commit")
-    public void networkSwitchingCardCommitTest() throws Exception {
-        List<AccessLineDto> sourceAccessLinesBeforeCommitPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
-        List<AccessLineDto> sourceAccessLinesBeforeCommitPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
-        List<Integer> targetAnpTagsBeforeCommitPort1 = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommitPort1);
-        List<Integer> targetAnpTagsBeforeCommitPort2 = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommitPort2);
-        List<Integer> targetOnuIdsBeforeCommitPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_0, sourceAccessLinesBeforeCommitPort1);
-        List<Integer> targetOnuIdsBeforeCommitPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_1, sourceAccessLinesBeforeCommitPort2);
-
-        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
-        networkSwitchingPage.validateUrl();
-        networkSwitchingPage.clickSearchTab()
-                .searchPackagesByDevice(endSz_49_911_1100_76H2_1_0);
-        String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommit(packageId);
-        assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
-        assertFalse(networkSwitchingPage.getRollbackButton().isEnabled());
-        networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
-        assert (networkSwitchingPage.getPackageStatus().contains("FINISHED"));
-
-        List<AccessLineDto> sourceAccessLinesAfterCommitPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_911_1100_76H2_1_0);
-        List<AccessLineDto> sourceAccessLinesAfterCommitPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_911_1100_76H2_1_1);
-        List<Integer> targetAnpTagsAfterCommitPort1 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommitPort1);
-        List<Integer> targetAnpTagsAfterCommitPort2 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommitPort2);
-        List<Integer> sourceOnuIdsAfterCommitPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_0, sourceAccessLinesAfterCommitPort1);
-        List<Integer> sourceOnuIdsAfterCommitPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H2_3_1, sourceAccessLinesAfterCommitPort2);
-        List<Integer> targetOnuIdsAfterCommitPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_0, sourceAccessLinesBeforeCommitPort1);
-        List<Integer> targetOnuIdsAfterCommitPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_1, sourceAccessLinesBeforeCommitPort2);
-
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H2_3_0).size(), endSz_49_30_179_76H2_3_0.getAccessLinesCount().intValue());
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H2_3_1).size(), endSz_49_30_179_76H2_3_1.getAccessLinesCount().intValue());
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size(), 32);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size(), 32);
-
-
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort1, targetAnpTagsBeforeCommitPort1);
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort2, targetAnpTagsBeforeCommitPort2);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort1, targetOnuIdsBeforeCommitPort1);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort2, targetOnuIdsBeforeCommitPort2);
-
-        assertEquals(sourceOnuIdsAfterCommitPort1.size(), 0);
-        assertEquals(sourceOnuIdsAfterCommitPort2.size(), 0);
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-    }
-
 }
-
