@@ -40,7 +40,7 @@ public class OltInstallationPage {
     @Step("Open OLT-Installation page")
     public static OltInstallationPage openInstallationPage(String acid) {
         URL url = new GigabitUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", acid).buildExternal();
-        log.info("ZTC Opening url " + url);
+        log.info("OLT Mobile UI Opening url " + url);
         return open(url, OltInstallationPage.class);
     }
 
@@ -104,8 +104,8 @@ public class OltInstallationPage {
     }
 
     @Step("Wait until the zero touch commissioning process is finished")
-    public OltInstallationPage waitZtCommisioningProcessErrorMessage() {
-        $(NEGATIVE_MESSAGE).should(exist, Duration.ofMillis(5 * WAIT_FOR_MESSAGE));
+    public OltInstallationPage waitZtCommisioningProcessErrorMessage(Integer timeout) {
+        $(NEGATIVE_MESSAGE).should(exist, Duration.ofMillis(timeout));
         return this;
     }
 
