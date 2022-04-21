@@ -72,20 +72,20 @@ public class ZtCommissioningRobot {
         new OltInstallationPage().chekcForceProceedLinkExist();
     }
 
-    @Step("Manually continue the zero touch commissioning process and wait for error message.")
+    //@Step("Manually continue the zero touch commissioning process and wait for a error message.")
     public void continueZtCommissioningWithErrorCallback() {
         new OltInstallationPage()
                 .continueZtCommisioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    @Step("Manually continue the zero touch commissioning process and wait for error message.")
+    //@Step("Manually continue the zero touch commissioning process and wait for error message.")
     public void continueZtCommissioningWithError() {
         new OltInstallationPage()
                 .continueZtCommisioningProcess()
                 .waitZtCommisioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    @Step("Manually continue the zero touch commissioning process")
+    //@Step("Manually continue the zero touch commissioning process")
     public void continueZtCommissioning() {
         new OltInstallationPage()
                 .continueZtCommisioningProcess();
@@ -111,6 +111,7 @@ public class ZtCommissioningRobot {
         }
     }
 
+    @Step("Send seal event.")
     public void sendZtCommisioningSealEvent(String endSz, String objectState) {
         oltCommissioningEventListenerClient.getClient().eventListener()
                 .deviceEventCallback().body(
@@ -129,7 +130,6 @@ public class ZtCommissioningRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    //@Step("Get the oltZtcConfiguration.state from olt-resource-inventory")
     public Integer getZtCommisioningState(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
@@ -140,7 +140,7 @@ public class ZtCommissioningRobot {
         return -1;
     }
 
-    @Step("Verify the oltZtcConfiguration.state.")
+    @Step("Verify the oltZtcConfiguration state.")
     public void verifyZtCommisioningState(String endSz, Integer expectedState, Integer bitmask) {
         Integer state =  getZtCommisioningState(endSz) & bitmask;
         Assert.assertEquals(state, expectedState, "oltZtcConfiguration.state missmatch");

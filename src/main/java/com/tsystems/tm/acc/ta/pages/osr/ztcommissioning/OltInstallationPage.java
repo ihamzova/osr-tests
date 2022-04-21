@@ -75,7 +75,7 @@ public class OltInstallationPage {
         return this;
     }
 
-    @Step("Manually continue zero touch commissioning process and wait for error callback")
+    @Step("Manually continue zero touch commissioning process and wait for a error message")
     public OltInstallationPage continueZtCommisioningProcessCallbackError(Integer timeout) {
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).click();
