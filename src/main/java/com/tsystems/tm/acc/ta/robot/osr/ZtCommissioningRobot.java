@@ -67,31 +67,26 @@ public class ZtCommissioningRobot {
                 .chekcForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    @Step("Check force proceed link exist")
     public void chekcForceProceedLinkExist() {
         new OltInstallationPage().chekcForceProceedLinkExist();
     }
 
-    //@Step("Manually continue the zero touch commissioning process and wait for a error message.")
     public void continueZtCommissioningWithErrorCallback() {
         new OltInstallationPage()
                 .continueZtCommisioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    //@Step("Manually continue the zero touch commissioning process and wait for error message.")
     public void continueZtCommissioningWithError() {
         new OltInstallationPage()
                 .continueZtCommisioningProcess()
                 .waitZtCommisioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    //@Step("Manually continue the zero touch commissioning process")
     public void continueZtCommissioning() {
         new OltInstallationPage()
                 .continueZtCommisioningProcess();
     }
 
-    //@Step("Wait until the process is finished.")
     public void waitZtCommissioningProcessIsFinished() {
         new OltInstallationPage()
                 .waitZtCommisioningProcessFinishedSuccess(TIMEOUT_FOR_ZTC_COMMISSIONING);

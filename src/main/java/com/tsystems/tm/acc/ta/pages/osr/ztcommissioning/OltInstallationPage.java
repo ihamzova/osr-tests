@@ -103,7 +103,7 @@ public class OltInstallationPage {
         return this;
     }
 
-    @Step("Wait until the zero touch commissioning process is finished")
+    @Step("Wait until an error message is displayed")
     public OltInstallationPage waitZtCommisioningProcessErrorMessage(Integer timeout) {
         $(NEGATIVE_MESSAGE).should(exist, Duration.ofMillis(timeout));
         return this;

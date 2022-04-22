@@ -107,7 +107,6 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     }
   }
 
-
   @Test(description = "DIGIHUB-148144 Zero touch commissioning process. OLT installation manual triggered.")
   @TmsLink("DIGIHUB-148144") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
@@ -153,7 +152,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.chekcForceProceedLinkExist();
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
-    Thread.sleep(5000);
+    Thread.sleep(5000); // Waiting time until the process has started the OltCommisioning
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED, STATE_BIT_MASK);
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
@@ -161,7 +160,6 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76H9);
     oltCommissioningRobot.checkUplink(oltDevice_76H9);
   }
-
 
   @Test(dependsOnMethods = "adtranOltZtCommissioningEventTriggered", description = "DIGIHUB-148146 Zero touch commissioning process. Unhappy case: OLT serial number exist.")
   @TmsLink("DIGIHUB-148146") // Jira Id for this test in Xray
@@ -187,7 +185,6 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76HA);
     oltCommissioningRobot.checkUplink(oltDevice_76HA);
   }
-
 
   @Test(description = "DIGIHUB-148147 Zero touch commissioning process. Unhappy case: Uplink can not be created.")
   @TmsLink("DIGIHUB-148146") // Jira Id for this test in Xray
