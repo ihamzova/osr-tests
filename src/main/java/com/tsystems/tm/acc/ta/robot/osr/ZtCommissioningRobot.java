@@ -121,7 +121,7 @@ public class ZtCommissioningRobot {
                                 .source("'http://seal.telekom.de/device/" + endSz.replace("/", "_"))
                                 .specversion("1")
                                 .time(OffsetDateTime.now())
-                                .type("de.telekom.seal.device.olt.stateChanged.v1"))
+                                .type("de.telekom.seal.device.olt.statechanged.v1"))
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 

@@ -154,6 +154,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
+  public OsrWireMockMappingsContextBuilder addDhcp4oltGetOltNotFoundMock(OltDevice oltDevice) {
+    context.add(new Dhcp4oltStub().getOlt200OltNotFound(oltDevice));
+    return this;
+  }
+
   public OsrWireMockMappingsContextBuilder addDhcp4oltGetOltMock(OltDevice oltDevice) {
     context.add(new Dhcp4oltStub().getOlt200(oltDevice));
     return this;

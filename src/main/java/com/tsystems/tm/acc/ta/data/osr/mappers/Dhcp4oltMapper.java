@@ -7,6 +7,7 @@ import com.tsystems.tm.api.client.dhcp4olt.model.OLT;
 import com.tsystems.tm.api.client.dhcp4olt.model.OLTGetResponse;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class Dhcp4oltMapper {
@@ -33,6 +34,15 @@ public class Dhcp4oltMapper {
                 .rangeEnd("151.130.120.60")
                 .subnetMask("255.255.255.192");
    }
+
+    public OLTGetResponse getOLTGetResponseOltNotFound() {
+        return new OLTGetResponse()
+                .page(0)
+                .pageCount(0)
+                .results(0)
+                .resultsPerPage(50)
+                .data(new ArrayList<>());
+    }
 
    public OLTGetResponse getOLTGetResponse(OltDevice oltDevice) {
         return new OLTGetResponse()

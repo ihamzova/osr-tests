@@ -40,7 +40,9 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   final String ACID = "21212";
 
   final Integer STATE_BIT_MASK = 0xFFFFFFF;
-  final Integer STATE_BIT_ERROR = 2;
+  final Integer STATE_BIT_ERROR = ((int) Math.pow(2,1));
+  final Integer STATE_BIT_CREATE_OLT_DHCP_STARTED =  ((int) Math.pow(2,8));
+  final Integer STATE_BIT_CREATE_OLT_DHCP_DONE =  ((int) Math.pow(2,9));
   final Integer STATE_INSTALL_OLT = 201358588;
   final Integer STATE_OLT_COMMISSIONING_STARTED =  209714428;
   final Integer STATE_FINISHED_SUCCESS = 268434685;
@@ -48,11 +50,11 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   private final ZtCommissioningRobot ztCommissioningRobot = new ZtCommissioningRobot();
   private final OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
 
-  private OsrTestContext context = OsrTestContext.get();
-  private OltDevice oltDevice_76H8 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H8_SDX_6320);
-  private OltDevice oltDevice_76H9 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H9_SDX_6320);
-  private OltDevice oltDevice_76HA = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76HA_SDX_6320);
-  private OltDevice oltDevice_76HB = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76HB_SDX_6320);
+  private final OsrTestContext context = OsrTestContext.get();
+  private final OltDevice oltDevice_76H8 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H8_SDX_6320);
+  private final OltDevice oltDevice_76H9 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76H9_SDX_6320);
+  private final OltDevice oltDevice_76HA = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76HA_SDX_6320);
+  private final OltDevice oltDevice_76HB = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_85_76HB_SDX_6320);
 
   private final WireMockMappingsContext mappingsContextOsr = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
   private final WireMockMappingsContext mappingsContextTeam = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
@@ -146,16 +148,28 @@ public class AdtranOltZtCommissioning extends GigabitTest {
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
+
+    //stub with no device so that the step Create OLT in DHCP4OLT is executed by the process
+    mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "adtranOltZtCommissioningEventTriggered"))
+            .addDhcp4oltGetOltNotFoundMock(oltDevice_76H9)
+            .build()
+            .publish()
+            .publishedHook(savePublishedToDefaultDir())
+            .publishedHook(attachStubsToAllureReport());
+
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H9, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
+
+    mappingsContext.close(); // remove stub with no device
+
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
     ztCommissioningRobot.chekcForceProceedLinkExist();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
     Thread.sleep(5000); // Waiting time until the process has started the OltCommisioning
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
 
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76H9);
     oltCommissioningRobot.checkUplink(oltDevice_76H9);
