@@ -13,6 +13,14 @@ public class Dhcp4oltStub extends AbstractStubMapping {
 
     public static final String DHCP_CONFIGURATION_PATTERN =  "/((resource-order-resource-inventory/v1/oltDhcpConfiguration/)?)";
 
+    public MappingBuilder getOlt200OltNotFound(OltDevice oltDevice) {
+        return get(urlPathMatching(DHCP_CONFIGURATION_PATTERN + "olt"))
+                .withName("getOlt200")
+                .atPriority(3)
+                .willReturn(aDefaultResponseWithBody(serialize(new Dhcp4oltMapper().getOLTGetResponseOltNotFound()), HTTP_CODE_OK_200))
+                .withQueryParam("endsz_olt", equalTo((oltDevice.getEndsz()).replace("/", "_")));
+    }
+
     public MappingBuilder getOlt200(OltDevice oltDevice) {
         return get(urlPathMatching(DHCP_CONFIGURATION_PATTERN + "olt"))
                 .withName("getOlt200")

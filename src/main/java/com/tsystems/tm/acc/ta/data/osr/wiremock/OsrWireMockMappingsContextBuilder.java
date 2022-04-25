@@ -154,6 +154,11 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
+  public OsrWireMockMappingsContextBuilder addDhcp4oltGetOltNotFoundMock(OltDevice oltDevice) {
+    context.add(new Dhcp4oltStub().getOlt200OltNotFound(oltDevice));
+    return this;
+  }
+
   public OsrWireMockMappingsContextBuilder addDhcp4oltGetOltMock(OltDevice oltDevice) {
     context.add(new Dhcp4oltStub().getOlt200(oltDevice));
     return this;
@@ -161,6 +166,16 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
 
   public OsrWireMockMappingsContextBuilder addDhcp4oltGetBngMock(OltDevice oltDevice) {
     context.add(new Dhcp4oltStub().getBng200(oltDevice));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addOltBasicConfigurationMock(OltDevice oltDevice) {
+    context.add(new SealStub().postOltBasicConfiguration202CallbackSuccess(oltDevice));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addOltBasicConfigurationErrorMock(OltDevice oltDevice) {
+    context.add(new SealStub().postOltBasicConfiguration202CallbackError(oltDevice, true));
     return this;
   }
 }

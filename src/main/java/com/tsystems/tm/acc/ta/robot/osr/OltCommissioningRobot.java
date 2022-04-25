@@ -26,7 +26,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -197,7 +198,7 @@ public class OltCommissioningRobot {
   }
 
 
-  @Step("check uplink and ancp-session data from olt-ressource-inventory")
+  @Step("Check uplink and ancp-session data from olt-uplink-management and ancp-configuration")
   public void checkUplink(OltDevice oltDevice) {
 
     // check uplink state

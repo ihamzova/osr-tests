@@ -20,6 +20,7 @@ public class SealStub extends AbstractStubMapping {
   public static final String ONT_PON_DETECTION_IN_SEAL = "/resource-order-resource-inventory/v1/ontPonDetection/?";
   public static final String CONFIGURATION_ACCESS_NODES_3SCALE_URL = "/resource-order-resource-inventory/v1/inventory-retrieval";
   public static final String CONFIGURATION_ACCESS_NODES_UNIVERSAL_URL = String.format("(%s|%s)/{name}/?", CONFIGURATION_ACCESS_NODES_URL, CONFIGURATION_ACCESS_NODES_3SCALE_URL);
+  public static final String OLT_BASIC_CONFIGURATION_TASK_URL = "/(resource-order-resource-inventory|configuration)/v1/olt/(oltBasicConfigurationTask)";
 
   public MappingBuilder postOltDpuConfiguration202(Dpu dpu) {
     return post(urlPathEqualTo(OLT_DPU_CONFIGURATION_TASK_URL))
@@ -130,6 +131,24 @@ public class SealStub extends AbstractStubMapping {
             .willReturn(aDefaultResponseWithBody("", 202))
             .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackGetEmptyListOfEmsEventsFromSeal(true))))
             .atPriority(0);
+  }
+
+  public MappingBuilder postOltBasicConfiguration202CallbackSuccess(OltDevice oltDevice) {
+    return post(urlPathMatching(OLT_BASIC_CONFIGURATION_TASK_URL))
+            .atPriority(4)
+            .withName("postOltBasicConfiguration202CallbackSuccess")
+            .willReturn(aDefaultResponseWithBody("", 202))
+            .withRequestBody(matchingJsonPath( "$.oltName", containing(String.format("%s", oltDevice.getEndsz().replace("/", "_")))))
+            .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1OltOltBasicConfigurationTaskRequestSuccess())));
+
+  }
+
+  public MappingBuilder postOltBasicConfiguration202CallbackError(OltDevice oltDevice, boolean netconf) {
+    return post(urlPathMatching(OLT_BASIC_CONFIGURATION_TASK_URL))
+            .withName("postOltBasicConfiguration202CallbackError")
+            .willReturn(aDefaultResponseWithBody("", 202))
+            .withRequestBody(matchingJsonPath( "$.oltName", containing(String.format("%s", oltDevice.getEndsz().replace("/", "_")))))
+            .withPostServeAction(WebhookPostServeAction.NAME, aDefaultWebhookWithBody(serialize(new SealMapper().getCallbackV1OltOltBasicConfigurationTaskRequestError(netconf))));
   }
 
   private String serialize(Object obj) {
