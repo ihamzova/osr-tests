@@ -52,7 +52,7 @@ public class OltInstallationPage {
     }
 
     @Step("Start zero touch commissioning process")
-    public OltInstallationPage startZtCommisioningProcess(OltDevice oltDevice) {
+    public OltInstallationPage startZtCommissioningProcess(OltDevice oltDevice) {
         inputDeviceParameters(oltDevice.getEndsz());
         $(SERIALNUMBER_INPUT_LOCATOR).click();
         $(SERIALNUMBER_INPUT_LOCATOR).val(oltDevice.getSeriennummer());
@@ -63,20 +63,20 @@ public class OltInstallationPage {
     }
 
     @Step("Waiting on the process until the force proceed link exist")
-     public OltInstallationPage chekcForceProceedLinkExist( Integer timeout) {
+     public OltInstallationPage checkForceProceedLinkExist(Integer timeout) {
          $(OPEN_FORCE_PROCEED_LINK).should(exist , Duration.ofMillis(timeout));
          return this;
      }
 
     @Step("Check force proceed link exist")
-    public OltInstallationPage chekcForceProceedLinkExist() {
+    public OltInstallationPage checkForceProceedLinkExist() {
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).should(exist);
         return this;
     }
 
     @Step("Manually continue zero touch commissioning process and wait for a error message")
-    public OltInstallationPage continueZtCommisioningProcessCallbackError(Integer timeout) {
+    public OltInstallationPage continueZtCommissioningProcessCallbackError(Integer timeout) {
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).click();
         $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
@@ -86,7 +86,7 @@ public class OltInstallationPage {
     }
 
     @Step("Manually continue zero touch commissioning process")
-    public OltInstallationPage continueZtCommisioningProcess() {
+    public OltInstallationPage continueZtCommissioningProcess() {
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
         $(OPEN_FORCE_PROCEED_LINK).click();
         $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
@@ -94,7 +94,7 @@ public class OltInstallationPage {
     }
 
     @Step("Wait until the zero touch commissioning process is finished")
-    public OltInstallationPage waitZtCommisioningProcessFinishedSuccess(Integer timeout) {
+    public OltInstallationPage waitZtCommissioningProcessFinishedSuccess(Integer timeout) {
         //  check "Die Installation vor Ort ist abgeschlossen und die Betriebsstelle kann nun verlassen werden."
         $(POSITIVE_MESSAGE).should(exist , Duration.ofMillis(WAIT_FOR_MESSAGE));
         // wait for backward button
@@ -104,7 +104,7 @@ public class OltInstallationPage {
     }
 
     @Step("Wait until an error message is displayed")
-    public OltInstallationPage waitZtCommisioningProcessErrorMessage(Integer timeout) {
+    public OltInstallationPage waitZtCommissioningProcessErrorMessage(Integer timeout) {
         $(NEGATIVE_MESSAGE).should(exist, Duration.ofMillis(timeout));
         return this;
     }

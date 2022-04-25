@@ -115,24 +115,24 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   public void adtranOltZtCommissioningManualTriggered() {
 
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76H8.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76H8.getEndsz());
+    ztCommissioningRobot.clearZtCommissioningData(oltDevice_76H8.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H8, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
 
     addOltBasicConfigurationMock(oltDevice_76H8, false);  // Missing connection between OTL and EMS.
     ztCommissioningRobot.continueZtCommissioningWithErrorCallback();  // manual triggered oltBasicConfiguration step
     SelenideScreenshotServiceKt.takeScreenshot();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_ERROR, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H8.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_ERROR, STATE_BIT_MASK);
     mappingsContext.close();
 
     addOltBasicConfigurationMock(oltDevice_76H8, true);
     ztCommissioningRobot.continueZtCommissioning();  // Repetition of the oltBasicConfiguration step from the Mobile-UI
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     mappingsContext.close();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H8.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H8.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
 
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76H8);
     oltCommissioningRobot.checkUplink(oltDevice_76H8);
@@ -144,7 +144,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   public void adtranOltZtCommissioningEventTriggered() throws InterruptedException{
 
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76H9.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76H9.getEndsz());
+    ztCommissioningRobot.clearZtCommissioningData(oltDevice_76H9.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -158,18 +158,18 @@ public class AdtranOltZtCommissioning extends GigabitTest {
             .publishedHook(attachStubsToAllureReport());
 
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H9, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
 
     mappingsContext.close(); // remove stub with no device
 
-    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
-    ztCommissioningRobot.chekcForceProceedLinkExist();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
-    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
-    Thread.sleep(10000); // Waiting time until the process has started the OltCommisioning
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
+    ztCommissioningRobot.sendZtCommissioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
+    ztCommissioningRobot.checkForceProceedLinkExist();
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
+    ztCommissioningRobot.sendZtCommissioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
+    Thread.sleep(10000); // Waiting time until the process has started the OltCommissioning
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
 
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76H9);
     oltCommissioningRobot.checkUplink(oltDevice_76H9);
@@ -181,7 +181,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   public void adtranOltZtCommissioningSerialNumberExist()
   {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76HA.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76HA.getEndsz());
+    ztCommissioningRobot.clearZtCommissioningData(oltDevice_76HA.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -191,10 +191,10 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     SelenideScreenshotServiceKt.takeScreenshot();
     oltDevice_76HA.setSeriennummer(serialNumber);
     ztCommissioningRobot.restartZtCommissioning(oltDevice_76HA);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
-    ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76HA.getEndsz(), "online"); // event triggered oltBasicConfiguration
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HA.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
+    ztCommissioningRobot.sendZtCommissioningSealEvent(oltDevice_76HA.getEndsz(), "online"); // event triggered oltBasicConfiguration
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HA.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HA.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
 
     ztCommissioningRobot.verifyDeviceSDX3620(oltDevice_76HA);
     oltCommissioningRobot.checkUplink(oltDevice_76HA);
@@ -205,15 +205,15 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningUplinkCreationError() {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76HB.getEndsz());
-    ztCommissioningRobot.clearZtCommisioningData(oltDevice_76HB.getEndsz());
+    ztCommissioningRobot.clearZtCommissioningData(oltDevice_76HB.getEndsz());
 
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     ztCommissioningRobot.startZtCommissioning(oltDevice_76HB, ACID);
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HB.getEndsz(), STATE_INSTALL_OLT, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HB.getEndsz(), STATE_INSTALL_OLT, STATE_BIT_MASK);
     ztCommissioningRobot.continueZtCommissioningWithError();  // manual triggered oltBasicConfiguration step
     SelenideScreenshotServiceKt.takeScreenshot();
-    ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76HB.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_ERROR, STATE_BIT_MASK);
+    ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HB.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_ERROR, STATE_BIT_MASK);
   }
 
   private void addOltBasicConfigurationMock(OltDevice oltDevice, boolean success) {

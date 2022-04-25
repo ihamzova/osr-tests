@@ -48,52 +48,52 @@ public class ZtCommissioningRobot {
     public void startZtCommissioning(OltDevice oltDevice, String acid) {
         OltInstallationPage.openInstallationPage(acid)
                 .validateUrl()
-                .startZtCommisioningProcess(oltDevice)
-                .chekcForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .startZtCommissioningProcess(oltDevice)
+                .checkForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     @Step("Start the zero touch commissioning process and wait for error message.")
     public void startZtCommissioningWithError(OltDevice oltDevice, String acid) {
         OltInstallationPage.openInstallationPage(acid)
                 .validateUrl()
-                .startZtCommisioningProcess(oltDevice)
-                .waitZtCommisioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .startZtCommissioningProcess(oltDevice)
+                .waitZtCommissioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     @Step("Restart the zero touch commissioning process")
     public void restartZtCommissioning(OltDevice oltDevice) {
         new OltInstallationPage()
-                .startZtCommisioningProcess(oltDevice)
-                .chekcForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .startZtCommissioningProcess(oltDevice)
+                .checkForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    public void chekcForceProceedLinkExist() {
-        new OltInstallationPage().chekcForceProceedLinkExist();
+    public void checkForceProceedLinkExist() {
+        new OltInstallationPage().checkForceProceedLinkExist();
     }
 
     public void continueZtCommissioningWithErrorCallback() {
         new OltInstallationPage()
-                .continueZtCommisioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .continueZtCommissioningProcessCallbackError(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     public void continueZtCommissioningWithError() {
         new OltInstallationPage()
-                .continueZtCommisioningProcess()
-                .waitZtCommisioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .continueZtCommissioningProcess()
+                .waitZtCommissioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     public void continueZtCommissioning() {
         new OltInstallationPage()
-                .continueZtCommisioningProcess();
+                .continueZtCommissioningProcess();
     }
 
     public void waitZtCommissioningProcessIsFinished() {
         new OltInstallationPage()
-                .waitZtCommisioningProcessFinishedSuccess(TIMEOUT_FOR_ZTC_COMMISSIONING);
+                .waitZtCommissioningProcessFinishedSuccess(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
-    @Step("Clear old zero touch commisioning process data")
-    public void clearZtCommisioningData(String endSz) {
+    @Step("Clear old zero touch commissioning process data")
+    public void clearZtCommissioningData(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
 
@@ -107,7 +107,7 @@ public class ZtCommissioningRobot {
     }
 
     @Step("Send seal event.")
-    public void sendZtCommisioningSealEvent(String endSz, String objectState) {
+    public void sendZtCommissioningSealEvent(String endSz, String objectState) {
         oltCommissioningEventListenerClient.getClient().eventListener()
                 .deviceEventCallback().body(
                         new Event().data(
@@ -125,7 +125,7 @@ public class ZtCommissioningRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public Integer getZtCommisioningState(String endSz) {
+    public Integer getZtCommissioningState(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
                 .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
         if (oltZtcConfigurations.size() > 0) {
@@ -136,9 +136,9 @@ public class ZtCommissioningRobot {
     }
 
     @Step("Verify the oltZtcConfiguration state.")
-    public void verifyZtCommisioningState(String endSz, Integer expectedState, Integer bitmask) {
-        Integer state =  getZtCommisioningState(endSz) & bitmask;
-        Assert.assertEquals(state, expectedState, "oltZtcConfiguration.state missmatch");
+    public void verifyZtCommissioningState(String endSz, Integer expectedState, Integer bitmask) {
+        Integer state =  getZtCommissioningState(endSz) & bitmask;
+        Assert.assertEquals(state, expectedState, "oltZtcConfiguration.state mismatch");
     }
 
     @Step("Verify the OLT device in olt-resource-inventory.")
@@ -148,14 +148,14 @@ public class ZtCommissioningRobot {
 
         Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
         Device device = deviceList.get(0);
-        Assert.assertEquals(device.getEndSz(), oltDevice.getEndsz(), "OLT EndSz missmatch");
+        Assert.assertEquals(device.getEndSz(), oltDevice.getEndsz(), "OLT EndSz mismatch");
 
-        Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name missmatch");
-        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType missmatch");
-        Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "composite partyId DTAG missmatch");
+        Assert.assertEquals(device.getEmsNbiName(), EMS_NBI_NAME_SDX6320_16, "EMS NBI name mismatch");
+        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType mismatch");
+        Assert.assertEquals(device.getRelatedParty().get(0).getId(), COMPOSITE_PARTY_ID_DTAG.toString(), "composite partyId DTAG mismatch");
 
         assertEquals(device.getLifeCycleState(), LifeCycleState.OPERATING, "Device LifeCycleState is not in operating state");
-        assertEquals(device.getSerialNumber(), oltDevice.getSeriennummer(), "Serial number missmatch");
+        assertEquals(device.getSerialNumber(), oltDevice.getSeriennummer(), "Serial number mismatch");
     }
 
     @Step("Clear device in olt-resource-inventory databases")
