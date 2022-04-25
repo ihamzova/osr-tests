@@ -186,7 +186,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltMobileUi);
     setCredentials(loginData.getLogin(), loginData.getPassword());
     String serialNumber =  oltDevice_76HA.getSeriennummer();
-    oltDevice_76HA.setSeriennummer(oltDevice_76H8.getSeriennummer()); // Serial number already exists in olt-ri
+    oltDevice_76HA.setSeriennummer(oltDevice_76H9.getSeriennummer()); // Serial number already exists in olt-ri
     ztCommissioningRobot.startZtCommissioningWithError(oltDevice_76HA, ACID);
     SelenideScreenshotServiceKt.takeScreenshot();
     oltDevice_76HA.setSeriennummer(serialNumber);
@@ -201,7 +201,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   }
 
   @Test(description = "DIGIHUB-148147 Zero touch commissioning process. Unhappy case: Uplink can not be created.")
-  @TmsLink("DIGIHUB-148146") // Jira Id for this test in Xray
+  @TmsLink("DIGIHUB-148147") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
   public void adtranOltZtCommissioningUplinkCreationError() {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76HB.getEndsz());
