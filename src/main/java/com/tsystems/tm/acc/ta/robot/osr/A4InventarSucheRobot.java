@@ -2,6 +2,8 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
@@ -10,6 +12,8 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkE
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -18,12 +22,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 @Slf4j
 public class A4InventarSucheRobot {
 
-    public static final int numberOfColumnsNegList = 6;
-    public static final int numberOfColumnsNeList = 12;
+    public static final int numberOfColumnsNegList = 8;
+    public static final int numberOfColumnsNeList = 13;
 
     // helper method 'wait'
     public void waitForTableToFullyLoad(int numberOfElements) {
@@ -53,6 +58,22 @@ public class A4InventarSucheRobot {
             return null;
         }
     }
+
+
+
+    public ElementsCollection getNeDetailsCollection() {
+        // waitForTableToFullyLoad(elementsCollection.size());
+        try {
+            Thread.sleep(2000);
+            return $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
 
     // network element
@@ -104,10 +125,7 @@ public class A4InventarSucheRobot {
         $(A4InventarSuchePage.getNE_FSZ_FIELD_LOCATOR()).val(value);
     }
 
-    @Step("Enter category")
-    public void enterNeCategory(String value) {
-        $(A4InventarSuchePage.getNE_CATEGORY_FIELD_LOCATOR()).selectOptionByValue(value);
-    }
+
 
     @Step("Click ne search button")
     public void clickNeSearchButton() {
@@ -209,8 +227,21 @@ public class A4InventarSucheRobot {
         clickNeSearchButton();
     }
 
-    public void clickFirstRowInSearchResultTable() {
-        getNeElementsCollection().get(0).click();
+    public void clickDetailLinkForFirstNEInSearchResultTable() {
+
+       // getNeElementsCollection().get(0).click();
+
+        /*
+        $( A4InventarSuchePage.getNE_DETAIL_LINK_LOCATOR_1()).click();
+*/
+        sleepForSeconds(2);
+        WebElement element = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
+                .toWebElement().findElement(A4InventarSuchePage.NE_DETAIL_LINK_LOCATOR_1);
+        sleepForSeconds(2);
+        element.click();
+
+        // NE_DETAIL_LINK_LOCATOR_1 + 0
+        // first column of the first row has the link
     }
 
     public List<NetworkElementGroupDto> createNegListActualResult() {
@@ -225,14 +256,19 @@ public class A4InventarSucheRobot {
         List<String> eList = elementsCollection.texts();
         for (int i = 0; i < eList.size() / numberOfColumnsNegList; i++) {
             NetworkElementGroupDto negActualGeneric = new NetworkElementGroupDto();
-            negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList));
-            negActualGeneric.setName(eList.get(i * numberOfColumnsNegList + 1));
-            negActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNegList + 2));
-            negActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNegList + 3));
-            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 4));
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 5));
+            negActualGeneric.setUuid(eList.get(i * numberOfColumnsNegList+ 1));
+            negActualGeneric.setName(eList.get(i * numberOfColumnsNegList + 2));
+            negActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNegList + 3));
+            negActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNegList + 4));
+            OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 5));
             negActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 6));
             negActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+
+            if (!(eList.get(i * numberOfColumnsNegList + 7)).isEmpty()) {
+                OffsetDateTime lastSuccessfulSyncTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNegList + 7));
+                negActualGeneric.setLastSuccessfulSyncTime(lastSuccessfulSyncTime); // wegen Formatproblem String-OffsetDateTime
+            }
             negActualResultList.add(negActualGeneric);
         }
 
@@ -256,20 +292,26 @@ public class A4InventarSucheRobot {
         List<String> eList = elementsCollection.texts();
         for (int i = 0; i < eList.size() / numberOfColumnsNeList; i++) {
             NetworkElementDto neActualGeneric = new NetworkElementDto();
-            neActualGeneric.setUuid(eList.get(i * numberOfColumnsNeList));
-            neActualGeneric.setVpsz(eList.get(i * numberOfColumnsNeList + 1));
-            neActualGeneric.setFsz(eList.get(i * numberOfColumnsNeList + 2));
-            neActualGeneric.setCategory(eList.get(i * numberOfColumnsNeList + 3));
-            neActualGeneric.setType(eList.get(i * numberOfColumnsNeList + 4));
-            neActualGeneric.setZtpIdent(eList.get(i * numberOfColumnsNeList + 5));
-            neActualGeneric.setKlsId(eList.get(i * numberOfColumnsNeList + 6));
-            neActualGeneric.setPlanningDeviceName(eList.get(i * numberOfColumnsNeList + 7));
+            neActualGeneric.setUuid(eList.get(i * numberOfColumnsNeList + 1));
+            neActualGeneric.setVpsz(eList.get(i * numberOfColumnsNeList + 2));
+            neActualGeneric.setFsz(eList.get(i * numberOfColumnsNeList + 3));
+            neActualGeneric.setCategory(eList.get(i * numberOfColumnsNeList + 4));
+            neActualGeneric.setType(eList.get(i * numberOfColumnsNeList + 5));
+            neActualGeneric.setZtpIdent(eList.get(i * numberOfColumnsNeList + 6));
+            neActualGeneric.setKlsId(eList.get(i * numberOfColumnsNeList + 7));
             neActualGeneric.setOperationalState(eList.get(i * numberOfColumnsNeList + 8));
             neActualGeneric.setLifecycleState(eList.get(i * numberOfColumnsNeList + 9));
             OffsetDateTime creationTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 10));
-            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 11));
             neActualGeneric.setCreationTime(creationTime); // wegen Formatproblem String-OffsetDateTime
+
+            OffsetDateTime lastUpdateTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 11));
             neActualGeneric.setLastUpdateTime(lastUpdateTime); // wegen Formatproblem String-OffsetDateTime
+
+            if (!(eList.get(i * numberOfColumnsNegList + 7)).isEmpty()) {
+                OffsetDateTime  lastSuccessfulSyncTime = OffsetDateTime.parse(eList.get(i * numberOfColumnsNeList + 12));
+                neActualGeneric.setLastSuccessfulSyncTime(lastSuccessfulSyncTime); // wegen Formatproblem String-OffsetDateTime
+            }
+
             neActualResultList.add(neActualGeneric);
         }
 

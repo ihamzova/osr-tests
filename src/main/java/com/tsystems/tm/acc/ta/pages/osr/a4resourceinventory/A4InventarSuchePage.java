@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory;
 
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,8 +84,13 @@ public class A4InventarSuchePage {
     public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
     @Getter
-    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
-    //public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
+    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
+    @Getter
+    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
+    public static final By NE_DETAILS_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
+
+
 
     @Getter
     public static final By NE_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
@@ -104,6 +108,11 @@ public class A4InventarSuchePage {
 
     @Getter
     public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElementGroup");
+
+
+    @Getter
+    public static final By NE_DETAIL_LINK_LOCATOR_1 = By.id("linkNe0");
+
 
 
     // common

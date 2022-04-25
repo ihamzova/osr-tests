@@ -44,6 +44,7 @@ public class OltProvisioning5600 extends GigabitTest {
   private PortProvisioning card5600v1;
   private PortProvisioning card5600v2;
   private PortProvisioning port5600;
+  private PortProvisioning portTopas;
   private DefaultNeProfile defaultNeProfile;
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private UpiterTestContext context = UpiterTestContext.get();
@@ -53,14 +54,17 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot = new AccessLineRiRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
 
+    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
     accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H2");
     accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H3");
-    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H3");
+    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H4");
+    accessLineRiRobot.clearDatabaseByOlt("49/8571/0/76Z7");
 
     device5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5600);
     card5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v1);
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
     port5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
+    portTopas = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceTopas);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
   }
@@ -76,6 +80,8 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkDefaultNeProfiles(port5600, defaultNeProfile, port5600.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600, defaultNetworkLineProfile, port5600.getAccessLinesCount());
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600, 1, 1);
+    accessLineRiRobot.checkPartyId(port5600, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port5600, "DTAG");
   }
 
   @Test(priority = 1)
@@ -96,6 +102,8 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v1.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
+    accessLineRiRobot.checkPartyId(port, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port, "DTAG");
   }
 
   @Test(priority = 1)
@@ -117,8 +125,9 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v2.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5600v2.getAccessLinesCount());
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
+    accessLineRiRobot.checkPartyId(port, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port, "DTAG");
   }
-
 
   @Test(priority = 1)
   @TmsLink("DIGIHUB-29667")
@@ -140,5 +149,22 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, device5600.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, device5600.getAccessLinesCount());
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
+    accessLineRiRobot.checkPartyId(port, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port, "DTAG");
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-74001")
+  @Description("Port provisioning case when port is completely free, Topas")
+  public void portProvisioningTopas() {
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portTopas);
+    assertEquals(accessLinesBeforeProvisioning.size(), 0);
+    wgAccessProvisioningRobot.startPortProvisioning(portTopas);
+    accessLineRiRobot.checkFtthPortParameters(portTopas);
+    accessLineRiRobot.checkDefaultNeProfiles(portTopas, defaultNeProfile, portTopas.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portTopas, defaultNetworkLineProfile, portTopas.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portTopas, 1, 1);
+    accessLineRiRobot.checkPartyId(portTopas, 10000L);
+    accessLineRiRobot.checkLineIdPrefix(portTopas, "GFNW");
   }
 }

@@ -275,7 +275,6 @@ public class A4MobileUiRobot {
             assertTrue(concat.contains(a4NetworkElement.getVpsz()), a4NetworkElement.getVpsz());
             assertTrue(concat.contains(a4NetworkElement.getFsz()), a4NetworkElement.getFsz());
             assertTrue(concat.contains(a4NetworkElement.getType()), a4NetworkElement.getType());
-            assertTrue(concat.contains(a4NetworkElement.getPlanningDeviceName()), a4NetworkElement.getPlanningDeviceName());
             // Check for planned mat number has to be done with psl wiremock equip data, because A4NetworkElement doesn't have this property
             assertTrue(concat.contains(equipmentData.getSubmt()), equipmentData.getSubmt());
             assertTrue(concat.contains(a4NetworkElement.getOperationalState()), a4NetworkElement.getOperationalState());

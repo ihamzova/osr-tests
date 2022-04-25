@@ -92,6 +92,7 @@ public class NetworkSwitchingPage {
 
     private static final By HOMEIDS_SUBMIT_SECTION = byXpath("//*[@class='submit-section__homeids']");
     private static final By HOMEIDS = byClassName("submit-section__homeid");
+    private static final By PORTDEPROVISIONING = byText("Portdeprovisionierung");
 
     @Step("Open Network Switching page")
     public static NetworkSwitchingPage openPage() {
@@ -207,6 +208,19 @@ public class NetworkSwitchingPage {
     public NetworkSwitchingPage clickPackageId() {
         $(PACKAGE_ID_PREPARATION_TAB).click();
         $(GET_PACKAGE_DATA_BUTTON).shouldBe(visible);
+        return this;
+    }
+
+    @Step("Start commit phase with deprovisioning")
+    public NetworkSwitchingPage startCommitWithDeprovisioning(String packageId) throws Exception {
+        clickPaketverwaltungTab();
+        getPackageInfo(packageId);
+        getPackageStatus().contains("PREPARED");
+        $(ACTIONS_DROPDOWN).click();
+        $(PORTDEPROVISIONING).click();
+        $(COMMIT_BUTTON).click();
+        $(NOTIFICATION).shouldHave(text("Der Commit-Prozess wurde gestartet"));
+        closeNotificationButton();
         return this;
     }
 

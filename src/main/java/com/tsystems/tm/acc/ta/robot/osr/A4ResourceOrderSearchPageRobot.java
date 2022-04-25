@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 
 import com.codeborne.selenide.ElementsCollection;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceOrderSearchPage;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
@@ -41,8 +42,11 @@ public class A4ResourceOrderSearchPageRobot {
     }
 
 
-    public void clickFirstRowInSearchResultTable() {
-        getRoElementsCollection().get(2).click();
+    public void clickDetailLinkForFirstROInSearchResultTable() {
+        // getRoElementsCollection().get(0).click();
+
+        $(A4ResourceOrderSearchPage.getRO_SEARCH_RESULT_TABLE_LOCATOR())
+                .toWebElement().findElement(A4ResourceOrderSearchPage.RO_DETAIL_LINK_LOCATOR_1).click();
     }
 
 
