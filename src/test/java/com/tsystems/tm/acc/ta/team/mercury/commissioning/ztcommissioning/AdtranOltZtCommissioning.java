@@ -166,7 +166,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.chekcForceProceedLinkExist();
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
     ztCommissioningRobot.sendZtCommisioningSealEvent(oltDevice_76H9.getEndsz(), "online"); // event triggered oltBasicConfiguration
-    Thread.sleep(5000); // Waiting time until the process has started the OltCommisioning
+    Thread.sleep(10000); // Waiting time until the process has started the OltCommisioning
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_OLT_COMMISSIONING_STARTED | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     ztCommissioningRobot.verifyZtCommisioningState(oltDevice_76H9.getEndsz(), STATE_FINISHED_SUCCESS | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
