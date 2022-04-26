@@ -5,9 +5,7 @@ import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
 import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
-//import com.tsystems.tm.acc.tests.osr.a4.resource.queue.dispatcher.client.invoker.GsonObjectMapper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.GsonObjectMapper;
 import lombok.Getter;
 
@@ -27,8 +25,10 @@ public class A4ResourceOrderClient implements Resetable {
                 )
         ));
     }
+
     @Override
     public void reset() {
-
+        // Is empty. Why?
     }
+
 }
