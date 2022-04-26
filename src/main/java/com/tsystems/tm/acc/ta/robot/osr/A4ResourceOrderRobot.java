@@ -1,9 +1,6 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
@@ -13,7 +10,6 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
@@ -21,6 +17,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -28,30 +25,19 @@ import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getObjectMapper;
 import static org.testng.Assert.*;
 
 
 @Slf4j
 public class A4ResourceOrderRobot {
 
-    private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     public static final String CB_PATH = "/test_url";
-    private final String cbUrl = new GigabitUrlBuilder(WIREMOCK_MS_NAME).buildUri() + CB_PATH; // Wiremock for merlin MS
-
-    private static final AuthTokenProvider authTokenProviderDispatcher =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); //this will be merlin's service in the future
-
-    private static final AuthTokenProvider getAuthTokenProviderOrchestratorQueue =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_ORDER_ORCHESTRATOR_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_ORDER_ORCHESTRATOR_MS)); // A4_RESOURCE_ORDER_ORCHESTRATOR_MS
 
     private static final AuthTokenProvider getAuthTokenProviderA4ResourceOrder =
             new RhssoClientFlowAuthTokenProvider(WIREMOCK_MS_NAME,
@@ -73,14 +59,20 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-
         return a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString()
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString();
+    }
 
-        ;
+    @Step("Send POST for A10nsp Resource Order")
+    public Response sendPostResourceOrderWithoutChecks(ResourceOrder resourceOrder) {
+        return a4ResourceOrder
+                .resourceOrder()
+                .createResourceOrder()
+                .body(resourceOrder)
+                .execute(voidCheck());
     }
 
     @Step("Send POST for A10nsp Resource Order - Error")
@@ -90,7 +82,7 @@ public class A4ResourceOrderRobot {
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)))  ;
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
     }
 
     public ResourceOrder buildResourceOrder() {
@@ -169,23 +161,11 @@ public class A4ResourceOrderRobot {
     public ResourceOrderItemDto getResourceOrderItemByOrderItemDtoId(String orderItemId, List<ResourceOrderItemDto> roiList) {
         if (roiList != null) {
             for (ResourceOrderItemDto resourceOrderItem : roiList) {
-                if (resourceOrderItem.getId().equals(orderItemId))
+                if (Objects.equals(resourceOrderItem.getId(), orderItemId))
                     return resourceOrderItem;
             }
         }
         return null;
-    }
-
-    private ResourceOrder getResourceOrderFromCallback() {
-        List<LoggedRequest> ergList = WireMockFactory.get()
-                .retrieve(
-                        newRequestPattern(
-                                RequestMethod.fromString("POST"),
-                                urlPathEqualTo(CB_PATH)));
-
-        String response = ergList.get(0).getBodyAsString();
-System.out.println("+++ response"+response);
-        return getResourceOrderObjectFromJsonString(response);
     }
 
     public void cleanCallbacksInWiremock() {
@@ -200,51 +180,6 @@ System.out.println("+++ response"+response);
                                 urlPathEqualTo(path)));
     }
 
-    private ResourceOrder getResourceOrderObjectFromJsonString(String jsonString) {
-        final ObjectMapper objectMapper = getObjectMapper();
-
-        try {
-            return objectMapper.readValue(jsonString, ResourceOrder.class);
-        } catch (JsonProcessingException e) {
-            fail(e.getMessage());
-        }
-        return null;
-    }
-
-    public void checkResourceOrderIsCompleted() {
-        checkResourceOrderHasState(ResourceOrderStateType.COMPLETED);
-    }
-
-    public void checkResourceOrderIsRejected() {
-        checkResourceOrderHasState(ResourceOrderStateType.REJECTED);
-    }
-
-    private void checkResourceOrderHasState(ResourceOrderStateType state) {
-        ResourceOrder roFromCb = getResourceOrderFromCallback();
-        if (roFromCb != null)
-            assertEquals(roFromCb.getState(), state);
-        else
-            fail("No callback resource order to check");
-    }
-
-    public void checkOrderItemIsCompleted(String orderItemId) {
-        checkResourceOrderItemHasState(orderItemId, ResourceOrderItemStateType.COMPLETED);
-    }
-
-    public void checkOrderItemIsRejected(String orderItemId) {
-        checkResourceOrderItemHasState(orderItemId, ResourceOrderItemStateType.REJECTED);
-    }
-
-    private void checkResourceOrderItemHasState(String orderItemId, ResourceOrderItemStateType state) {
-        ResourceOrder roFromCb = getResourceOrderFromCallback();
-
-        if (roFromCb != null) {
-            ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, roFromCb);
-            assertEquals(roi.getState(), state);
-        } else
-            fail("No callback resource order to check");
-    }
-
     public ResourceOrderDto getResourceOrderFromDb(String id) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
@@ -255,11 +190,19 @@ System.out.println("+++ response"+response);
                 .as(ResourceOrderDto.class);
     }
 
-    public List <ResourceOrderMainDataDto> getResourceOrdersFromDb() {
+    public void checkResourceOrderDoesntExist(String id) {
+        a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .getResourceOrder()
+                .uuidPath(id)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
+    public List<ResourceOrderMainDataDto> getResourceOrdersFromDb() {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))) ;
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
@@ -277,6 +220,7 @@ System.out.println("+++ response"+response);
         if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
             assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
+
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNotNull(roDb); // passende RO gefunden
@@ -299,7 +243,6 @@ System.out.println("+++ response"+response);
 
     public void getResourceOrdersFromDbAndCheckIfNotInDb(ResourceOrder ro) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        System.out.println("+++ roDb null? "+roDb);
         assertNull(roDb); // RO nicht in DB
     }
 
@@ -313,14 +256,12 @@ System.out.println("+++ response"+response);
             fail("No callback resource order to check");
     }
 
-    public ResourceOrderMainDataDto searchCorrectRoInDb (String externalId) {
-
-        List <ResourceOrderMainDataDto> roDbList = getResourceOrdersFromDb();
+    public ResourceOrderMainDataDto searchCorrectRoInDb(String externalId) {
+        List<ResourceOrderMainDataDto> roDbList = getResourceOrdersFromDb();
         ResourceOrderMainDataDto roDb = null;
-        for (ResourceOrderMainDataDto mainDataDto : roDbList){
+        for (ResourceOrderMainDataDto mainDataDto : roDbList) {
             if (Objects.equals(mainDataDto.getExternalId(), externalId))
                 roDb = mainDataDto;
-
         }
         return roDb;
     }
@@ -348,7 +289,7 @@ System.out.println("+++ response"+response);
         return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);
     }
 
-    private void deleteA4TestDataRecursively(String roUuid) {
+    public void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
 }

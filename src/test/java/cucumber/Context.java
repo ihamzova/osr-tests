@@ -21,6 +21,7 @@ public enum Context {
     A4_NSP_A10NSP,
     A4_CSV,
     WIREMOCK_COUNT_WG_A4_DEPROV,
+    A4_RES_ORDER_ID,
 
     // U-Piter
     TP_REF

@@ -29,7 +29,7 @@ public class WiremockNemoSteps {
     @Then("{int} {string} NEG update notification(s) was/were sent to NEMO")
     public void thenANegUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(neg.getUuid(), method, count);

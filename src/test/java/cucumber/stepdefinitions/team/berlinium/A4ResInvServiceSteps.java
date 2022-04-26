@@ -1,7 +1,6 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
-import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
@@ -21,7 +20,6 @@ public class A4ResInvServiceSteps {
 
     final int SLEEP_TIMER = 5; // in seconds
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
-    private final A4ResourceInventoryServiceMapper a4ResInvServiceMapper = new A4ResourceInventoryServiceMapper();
     private final TestContext testContext;
 
     private static final String DESCRIPTION = "description";
@@ -43,6 +41,7 @@ public class A4ResInvServiceSteps {
     public A4ResInvServiceSteps(TestContext testContext) {
         this.testContext = testContext;
     }
+
 
     // -----=====[ WHENS ]=====-----
 
@@ -536,4 +535,5 @@ public class A4ResInvServiceSteps {
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
+
 }

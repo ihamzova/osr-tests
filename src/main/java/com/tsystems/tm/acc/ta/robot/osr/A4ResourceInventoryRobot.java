@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
 
@@ -35,16 +36,16 @@ public class A4ResourceInventoryRobot {
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient(authTokenProvider).getClient();
 
     @Step("Create new Network Element Group in A4 resource inventory")
-    public void createNetworkElementGroup(A4NetworkElementGroup negData) {
+    public Response createNetworkElementGroup(A4NetworkElementGroup negData) {
         NetworkElementGroupDto negDto = new A4ResourceInventoryMapper()
                 .getNetworkElementGroupDto(negData);
 
-        createNetworkElementGroup(negDto);
+        return createNetworkElementGroup(negDto);
     }
 
     @Step("Create new Network Element Group in A4 resource inventory based on NEG DTO")
-    public void createNetworkElementGroup(NetworkElementGroupDto negDto) {
-        a4ResourceInventory
+    public Response createNetworkElementGroup(NetworkElementGroupDto negDto) {
+        return a4ResourceInventory
                 .networkElementGroups()
                 .createOrUpdateNetworkElementGroup()
                 .body(negDto)
@@ -311,18 +312,6 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get an existing Network Elements by ztpIdent")
-    public NetworkElementDto getExistingNetworkElementByZtpIdent(String ztpIdent) {
-        List<NetworkElementDto> networkElementDtoList = getNetworkElementsByZtpIdent(ztpIdent);
-
-        // List has only size 1, return uuid of element
-        // If list has not size 1 an error occurred
-        assertEquals(networkElementDtoList.size(), 1);
-
-        return networkElementDtoList.get(0);
-    }
-
-
     @Step("Get a list of Network Element Ports by Network Element")
     public List<NetworkElementPortDto> getNetworkElementPortsByNetworkElement(String networkElementUuid) {
         return a4ResourceInventory
@@ -532,6 +521,13 @@ public class A4ResourceInventoryRobot {
     @Step("Check that lastSuccessfulSyncTime has been set for network element group")
     public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementGroup negData,OffsetDateTime timeBeforeSync) {
         NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
+
+        assertTrue(Objects.requireNonNull(networkElementGroupDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network element group")
+    public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(String uuid, OffsetDateTime timeBeforeSync) {
+        NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(uuid);
 
         assertTrue(Objects.requireNonNull(networkElementGroupDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
     }
