@@ -59,6 +59,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   private final WireMockMappingsContext mappingsContextOsr = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
   private final WireMockMappingsContext mappingsContextTeam = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
   private WireMockMappingsContext mappingsContext; // Dynamic creation and deletion of wiremock stubs during test execution
+  private WireMockMappingsContext mappingsContext2; // Dynamic creation and deletion of wiremock stubs during test execution
 
   @BeforeClass
   public void init() {
@@ -107,6 +108,15 @@ public class AdtranOltZtCommissioning extends GigabitTest {
               .eventsHook(saveEventsToDefaultDir())
               .eventsHook(attachEventsToAllureReport());
     }
+
+    if (mappingsContext2 != null) {
+      mappingsContext2.close();
+      mappingsContext2
+              .eventsHook(saveEventsToDefaultDir())
+              .eventsHook(attachEventsToAllureReport());
+    }
+
+
   }
 
   @Test(description = "DIGIHUB-148144 Zero touch commissioning process. OLT installation manual triggered.")
@@ -150,7 +160,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     setCredentials(loginData.getLogin(), loginData.getPassword());
 
     //stub with no device so that the step Create OLT in DHCP4OLT is executed by the process
-    mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "adtranOltZtCommissioningEventTriggered"))
+    mappingsContext2 = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "adtranOltZtCommissioningEventTriggered"))
             .addDhcp4oltGetOltNotFoundMock(oltDevice_76H9)
             .build()
             .publish()
@@ -160,7 +170,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     ztCommissioningRobot.startZtCommissioning(oltDevice_76H9, ACID);
     ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76H9.getEndsz(),STATE_INSTALL_OLT | STATE_BIT_CREATE_OLT_DHCP_STARTED | STATE_BIT_CREATE_OLT_DHCP_DONE, STATE_BIT_MASK);
 
-    mappingsContext.close(); // remove stub with no device
+    mappingsContext2.close(); // remove stub with no device
 
     ztCommissioningRobot.sendZtCommissioningSealEvent(oltDevice_76H9.getEndsz(), "offline");
     ztCommissioningRobot.checkForceProceedLinkExist();
