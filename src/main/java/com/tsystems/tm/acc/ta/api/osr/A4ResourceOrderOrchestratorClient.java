@@ -28,6 +28,7 @@ public class A4ResourceOrderOrchestratorClient implements Resetable {
 
     @Override
     public void reset() {
-
+        // Is empty. Why?
     }
+
 }

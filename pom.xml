@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>2896.0</version>
+    <version>2897.0</version>
 
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
@@ -16,7 +16,7 @@
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>3.0.0.156</osr.models.version>
+        <osr.models.version>3.0.0.157</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
@@ -148,6 +148,11 @@
             <groupId>com.tsystems.tm.api.client</groupId>
             <artifactId>dhcp4olt</artifactId>
             <version>3.1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tsystems.tm.api.client</groupId>
+            <artifactId>seal</artifactId>
+            <version>3.1.10.0</version>
         </dependency>
     </dependencies>
 

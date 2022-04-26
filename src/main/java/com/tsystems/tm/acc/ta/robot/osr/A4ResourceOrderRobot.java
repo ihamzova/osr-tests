@@ -77,7 +77,6 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order - Error")
     public void sendPostResourceOrderError400(ResourceOrder resourceOrder) {
-
         a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
@@ -292,4 +291,5 @@ public class A4ResourceOrderRobot {
     public void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
+
 }

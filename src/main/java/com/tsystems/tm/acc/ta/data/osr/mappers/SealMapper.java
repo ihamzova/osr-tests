@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.model.Callback
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_2_01.client.model.CallbackV1DpuDeconfigurationOltRequest;
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_7_1.client.model.CallbackV1OntPonDetectionRequest;
 import com.tsystems.tm.acc.tests.osr.seal.external.v1_7_1.client.model.Callbackv1ontpondetectionrequestEvents;
+import com.tsystems.tm.api.client.seal.external.model.CallbackV1OltOltBasicConfigurationTaskRequest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -215,4 +216,26 @@ public class SealMapper<CallbackGetEmptyListOfEmsEventsRequest> {
   }
 
   public List<Callbackv1ontpondetectionrequestEvents> callbackv1ontpondetectionrequestEvents = new ArrayList<>();
+
+  public CallbackV1OltOltBasicConfigurationTaskRequest getCallbackV1OltOltBasicConfigurationTaskRequestSuccess() {
+      return new CallbackV1OltOltBasicConfigurationTaskRequest()
+              .status(BigDecimal.valueOf(2000))
+              .statustype("SUCCESS")
+              .message("job successfully executed");
+    }
+
+  public CallbackV1OltOltBasicConfigurationTaskRequest getCallbackV1OltOltBasicConfigurationTaskRequestError(boolean netconf) {
+    if (netconf) {
+      // SEAL callback in case of missing connection between OTL and EMS
+      return new CallbackV1OltOltBasicConfigurationTaskRequest()
+              .status(BigDecimal.valueOf(5112))
+              .statustype("ERROR")
+              .message("precondition failed: netconf-session to OLT not established");
+    } else {
+      return new CallbackV1OltOltBasicConfigurationTaskRequest()
+              .status(BigDecimal.valueOf(5100))
+              .statustype("ERROR")
+              .message("Missing param name");
+    }
+  }
 }
