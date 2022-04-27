@@ -925,6 +925,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createTerminationPoint(TerminationPointDto tpData) {
+        a4ResourceInventory
+                .terminationPoints()
+                .createOrUpdateTerminationPoint()
+                .body(tpData)
+                .uuidPath(tpData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new TerminationPoint in A4 resource inventory")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementGroup negData) {
         TerminationPointDto tpDto = new A4ResourceInventoryMapper()
@@ -948,6 +957,15 @@ public class A4ResourceInventoryRobot {
                 .createOrUpdateNetworkElementLink()
                 .body(nelDto)
                 .uuidPath(nelData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void createNetworkElementLink(NetworkElementLinkDto nel) {
+        a4ResourceInventory
+                .networkElementLinks()
+                .createOrUpdateNetworkElementLink()
+                .body(nel)
+                .uuidPath(nel.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 

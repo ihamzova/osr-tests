@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.Arrays;
@@ -38,6 +39,10 @@ public class MiscUtils {
     }
 
     public static String getEndsz(A4NetworkElement neData) {
+        return getEndsz(neData.getVpsz(), neData.getFsz());
+    }
+
+    public static String getEndsz(NetworkElementDto neData) {
         return getEndsz(neData.getVpsz(), neData.getFsz());
     }
 

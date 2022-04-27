@@ -129,7 +129,46 @@ public class A4ResourceInventoryMapper {
         return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
     }
 
+    public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, NetworkElementPortDto nepDataA, NetworkElementPortDto nepDataB, NetworkElementDto neDataA, NetworkElementDto neDataB) {
+        UewegData uewegData = new UewegData();
+
+        if (isNullOrEmpty(nelData.getUeWegId()))
+            uewegData.setUewegId(UUID.randomUUID().toString());
+        else
+            uewegData.setUewegId(nelData.getUeWegId());
+
+        return getNetworkElementLinkDto(nelData, nepDataA, nepDataB, neDataA, neDataB, uewegData);
+    }
+
     public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, A4NetworkElementPort nepDataA, A4NetworkElementPort nepDataB, A4NetworkElement neDataA, A4NetworkElement neDataB, UewegData uewegData) {
+        if (isNullOrEmpty(nelData.getUuid()))
+            nelData.setUuid(UUID.randomUUID().toString());
+
+        if (isNullOrEmpty(uewegData.getUewegId()))
+            uewegData.setUewegId(UUID.randomUUID().toString());
+
+        nelData.setLbz(NEL_LSZ + "/" + NEL_ORDER_NUMBER + "-" + getEndsz(neDataA) + "-" + getEndsz(neDataB)); // LBZ is unique constraint!
+
+        return new NetworkElementLinkDto()
+                .uuid(nelData.getUuid())
+                .networkElementPortAUuid(nepDataA.getUuid())
+                .endszA(neDataA.getVpsz() + "/" + neDataA.getFsz())
+                .networkElementPortBUuid(nepDataB.getUuid())
+                .endszB(neDataB.getVpsz() + "/" + neDataB.getFsz())
+                .description("NEL for integration test")
+                .creationTime(OffsetDateTime.now())
+                .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
+                .lsz(NEL_LSZ)
+                .lifecycleState(nelData.getLifecycleState())
+                .operationalState(nelData.getOperationalState())
+                .orderNumber(NEL_ORDER_NUMBER)
+                .pluralId("2")
+                .ueWegId(uewegData.getUewegId())
+                .lbz(nelData.getLbz());
+    }
+
+    public NetworkElementLinkDto getNetworkElementLinkDto(A4NetworkElementLink nelData, NetworkElementPortDto nepDataA, NetworkElementPortDto nepDataB, NetworkElementDto neDataA, NetworkElementDto neDataB, UewegData uewegData) {
         if (isNullOrEmpty(nelData.getUuid()))
             nelData.setUuid(UUID.randomUUID().toString());
 

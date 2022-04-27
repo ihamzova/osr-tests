@@ -384,85 +384,135 @@ public class A4ResInvSteps {
         persistNep(nepAlias, nep, neAlias);
     }
 
-    @Given("a NEL is existing in A4 resource inventory")
+    @Given("a NEL( is existing)( in A4 resource inventory)")
     public void givenANELIsExistingInA4ResourceInventory() {
-        // ACTION
-        A4NetworkElementLink nel = setupDefaultNelTestData();
-        final NetworkElementDto neA = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, DEFAULT);
-        final NetworkElementDto neB = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, DEFAULT_B);
-        final NetworkElementPortDto nepA = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, DEFAULT);
-        final NetworkElementPortDto nepB = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, DEFAULT_B);
-
-//        a4ResInv.createNetworkElementLink(nel, nepA, nepB, neA, neB);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NEL, nel);
+        createNel(DEFAULT, DEFAULT, DEFAULT);
     }
 
-    private void createNel() {
+    @Given("a/another NEL \\(called {string})( is existing)( in A4 resource inventory)")
+    public void givenANELIsExistingInA4ResourceInventory(String nelAlias) {
+        createNel(nelAlias, DEFAULT, DEFAULT);
+    }
+
+    @Given("a/another NEL connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELIsExistingInA4ResourceInventory(String nepAlias1, String nepAlias2) {
+        createNel(DEFAULT, nepAlias1, nepAlias2);
+    }
+
+    @Given("a/another NEL \\(called {string}) connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELIsExistingInA4ResourceInventory(String nelAlias, String nepAlias1, String nepAlias2) {
+        createNel(nelAlias, nepAlias1, nepAlias2);
+    }
+
+    private void createNel(String nelAlias, String nepAlias1, String nepAlias2) {
         NetworkElementLinkDto nel = setupDefaultNelTestData(nepAlias1, nepAlias2);
 
         persistNel(nelAlias, nel);
     }
 
-    private void persistNel() {
-        a4ResInv.createNetworkElementLink(nel, nepA, nepB, neA, neB);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NEL, nel);
+    private void persistNel(String nelAlias, NetworkElementLinkDto nel) {
+        a4ResInv.createNetworkElementLink(nel);
+        testContext.getScenarioContext().setContext(Context.A4_NEL, nelAlias, nel);
     }
 
-    @Given("a NEL with operational state {string} and lifecycle state {string} is existing in A4 resource inventory")
+    @Given("a NEL with operational state {string} and lifecycle state {string}( is existing)( in A4 resource inventory)")
     public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
-        // ACTION
-        A4NetworkElementLink nel = setupDefaultNelTestData();
-        final NetworkElementDto neA = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, DEFAULT);
-        final NetworkElementDto neB = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, DEFAULT_B);
-        final NetworkElementPortDto nepA = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, DEFAULT);
-        final NetworkElementPortDto nepB = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, DEFAULT_B);
-        nel.setOperationalState(ops);
-        nel.setLifecycleState(lcs);
-
-//        a4ResInv.createNetworkElementLink(nel, nepA, nepB, neA, neB);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NEL, nel);
+        createNelWithStates(DEFAULT, ops, lcs, DEFAULT, DEFAULT);
     }
 
-    @Given("a TP is existing in A4 resource inventory")
+    @Given("a/another NEL with operational state {string} and lifecycle state {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs, String nepAlias1, String nepAlias2) {
+        createNelWithStates(DEFAULT, ops, lcs, nepAlias1, nepAlias2);
+    }
+
+    @Given("a/another NEL \\(called {string}) with operational state {string} and lifecycle state {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String nelAlias, String ops, String lcs, String nepAlias1, String nepAlias2) {
+        createNelWithStates(nelAlias, ops, lcs, nepAlias1, nepAlias2);
+    }
+
+    private void createNelWithStates(String nelAlias, String opState, String lcState, String nepAlias1, String nepAlias2) {
+        NetworkElementLinkDto nel = setupDefaultNelTestData(nepAlias1, nepAlias2);
+        nel.setOperationalState(opState);
+        nel.setLifecycleState(lcState);
+
+        persistNel(nelAlias, nel);
+    }
+
+    @Given("a NEL with ueweg id {string}( is existing)( in A4 resource inventory)")
+    public void givenANELWithUewegIdIsExistingInA4ResourceInventory(String uewegId) {
+        createNel(DEFAULT, uewegId, DEFAULT, DEFAULT);
+    }
+
+    @Given("a/another NEL with ueweg id {string} connected to NEPs {string}and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELWithUewegIdIsExistingInA4ResourceInventory(String uewegId, String nepAlias1, String nepAlias2) {
+        createNel(DEFAULT, uewegId, nepAlias1, nepAlias2);
+    }
+
+    @Given("a/another NEL \\(called {string}) with ueweg id {string} connected to NEPs {string}and {string}( is existing)( in A4 resource inventory)")
+    public void givenANELWithUewegIdIsExistingInA4ResourceInventory(String nelAlias, String uewegId, String nepAlias1, String nepAlias2) {
+        createNel(nelAlias, uewegId, nepAlias1, nepAlias2);
+    }
+
+    private void createNel(String nelAlias, String uewegId, String nepAlias1, String nepAlias2) {
+        NetworkElementLinkDto nel = setupDefaultNelTestData(nepAlias1, nepAlias2);
+        nel.setUeWegId(uewegId);
+
+        persistNel(nelAlias, nel);
+    }
+
+    @Given("a TP( connected to the NEP)( is existing)( in A4 resource inventory)")
     public void givenATPIsExistingInA4ResourceInventory() {
-        // ACTION
-        A4TerminationPoint tp = setupDefaultTpTestData();
-
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
-
-        a4ResInv.createTerminationPoint(tp, nep);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_TP, tp);
+        createTpForNep(DEFAULT, DEFAULT);
     }
 
-    @Given("a TP with type {string} is existing in A4 resource inventory")
+    @Given("a/another TP connected to NEP {string}( is existing)( in A4 resource inventory)")
+    public void givenATPIsExistingInA4ResourceInventory(String nepAlias) {
+        createTpForNep(DEFAULT, nepAlias);
+    }
+
+    @Given("a/another TP \\(called {string}) connected to NEP {string}( is existing)( in A4 resource inventory)")
+    public void givenATPIsExistingInA4ResourceInventory(String tpAlias, String nepAlias) {
+        createTpForNep(tpAlias, nepAlias);
+    }
+
+    private void createTpForNep(String tpAlias, String nepAlias) {
+        TerminationPointDto tp = setupDefaultTpTestData(nepAlias);
+
+        persistTp(tpAlias, tp);
+    }
+
+    private void persistTp(String tpAlias, TerminationPointDto tp) {
+        a4ResInv.createTerminationPoint(tp);
+        testContext.getScenarioContext().setContext(Context.A4_TP, tpAlias, tp);
+    }
+
+    @Given("a TP with type {string}( connected to the NEP)( is existing)( in A4 resource inventory)")
     public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpType) {
-        // ACTION
-        A4TerminationPoint tp = setupDefaultTpTestData();
-        tp.setSubType(tpType);
+        createTpForNep(DEFAULT, tpType, DEFAULT);
+    }
 
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+    @Given("a/another TP with type {string} connected to NEP {string}( is existing)( in A4 resource inventory)")
+    public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpType, String nepAlias) {
+        createTpForNep(DEFAULT, tpType, nepAlias);
+    }
 
-        a4ResInv.createTerminationPoint(tp, nep);
+    @Given("a/another TP \\(called {string}) with type {string} connected to NEP {string}( is existing)( in A4 resource inventory)")
+    public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpAlias, String tpType, String nepAlias) {
+        createTpForNep(tpAlias, tpType, nepAlias);
+    }
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_TP, tp);
+    private void createTpForNep(String tpAlias, String type, String nepAlias) {
+        TerminationPointDto tp = setupDefaultTpTestData(nepAlias);
+        tp.setType(type);
+
+        persistTp(tpAlias, tp);
     }
 
     @Given("no TP exists in A4 resource inventory")
     public void givenNoTPExistsInA4ResourceInventory() {
-        // ACTION
         A4TerminationPoint tp = new A4TerminationPoint();
         tp.setUuid(UUID.randomUUID().toString());
 
-        // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_TP, tp);
     }
 
@@ -1112,47 +1162,42 @@ public class A4ResInvSteps {
         return a4ResInvMapper.getNetworkElementPortDto(nep, ne);
     }
 
-    private A4TerminationPoint setupDefaultTpTestData() {
-        // INPUT FROM SCENARIO CONTEXT
-        final boolean NEP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP);
-
-        // ACTION
+    private TerminationPointDto setupDefaultTpTestData(String nepAlias) {
+        final boolean NEP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias);
 
         // TP needs to be connected to a NEP, so if no NEP present, create one
         if (!NEP_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory();
+            givenANEPIsExistingInA4ResourceInventory(nepAlias);
+
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias);
 
         A4TerminationPoint tp = testContext.getOsrTestContext().getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
         tp.setUuid(UUID.randomUUID().toString());
 
-        return tp;
+        return a4ResInvMapper.getTerminationPointDto(tp, nep.getUuid());
     }
 
     private NetworkElementLinkDto setupDefaultNelTestData(String nepAlias1, String nepAlias2) {
-        // INPUT FROM SCENARIO CONTEXT
-        final boolean NE_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE, DEFAULT);
-        final boolean NE_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NE, DEFAULT_B);
         final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias1);
         final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias2);
 
-        // ACTION
-
-        // NEL needs to be connected to 2 NEP, so if no NEP present, create one
-        if (!NE_A_PRESENT)
-            givenANeIsExistingInA4ResourceInventory();
-        if (!NE_B_PRESENT)
-            givenANeWithAliasIsExistingInA4ResourceInventory(DEFAULT_B);
+        // NEL needs to be connected to 2 NEPs, so if no NEPs present, create them
         if (!NEP_A_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory(DEFAULT);
+            givenANEPIsExistingInA4ResourceInventory(nepAlias1, DEFAULT);
         if (!NEP_B_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory(DEFAULT_B, DEFAULT_B);
+            givenANEPIsExistingInA4ResourceInventory(nepAlias2, DEFAULT_B);
+
+        final NetworkElementPortDto nep1 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias1);
+        final NetworkElementPortDto nep2 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias2);
+        final NetworkElementDto ne1 = a4ResInv.getExistingNetworkElement(nep1.getNetworkElementUuid());
+        final NetworkElementDto ne2 = a4ResInv.getExistingNetworkElement(nep2.getNetworkElementUuid());
 
         A4NetworkElementLink nel = testContext.getOsrTestContext().getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
         nel.setUuid(UUID.randomUUID().toString());
 
-        return a4ResInvMapper.getNetworkElementLinkDto(nel);
+        return a4ResInvMapper.getNetworkElementLinkDto(nel, nep1, nep2, ne1, ne2);
     }
 
     private A4NetworkServiceProfileFtthAccess setupDefaultNspFtthTestData() {
