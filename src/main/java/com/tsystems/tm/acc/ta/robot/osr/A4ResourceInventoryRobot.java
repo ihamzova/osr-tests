@@ -12,6 +12,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
+import sun.nio.ch.Net;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -80,6 +81,14 @@ public class A4ResourceInventoryRobot {
         createNetworkElement(neDto);
     }
 
+    @Step("Create new Network Element in A4 resource inventory")
+    public void createNetworkElement(A4NetworkElement neData, NetworkElementGroupDto neg) {
+        NetworkElementDto neDto = new A4ResourceInventoryMapper()
+                .getNetworkElementDto(neData, neg);
+
+        createNetworkElement(neDto);
+    }
+
     @Step("Delete existing Network Element from A4 resource inventory")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
@@ -94,6 +103,16 @@ public class A4ResourceInventoryRobot {
         NetworkElementPortDto nepDto = new A4ResourceInventoryMapper()
                 .getNetworkElementPortDto(nepData, neData);
 
+        a4ResourceInventory
+                .networkElementPorts()
+                .createOrUpdateNetworkElementPort()
+                .body(nepDto)
+                .uuidPath(nepDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new Network Element Port in A4 resource inventory")
+    public void createNetworkElementPort(NetworkElementPortDto nepDto) {
         a4ResourceInventory
                 .networkElementPorts()
                 .createOrUpdateNetworkElementPort()
@@ -544,10 +563,14 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element")
     public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData,OffsetDateTime timeBeforeSync) {
-        NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
+        checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData.getUuid(), timeBeforeSync);
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network element")
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(String neUuid,OffsetDateTime timeBeforeSync) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(neUuid);
 
         assertTrue(Objects.requireNonNull(networkElementDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
-
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element")
@@ -773,6 +796,13 @@ public class A4ResourceInventoryRobot {
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
+    @Step("Delete NE by all unique constraints ztpIdent and endsz, also recursively deletes as children")
+    public void deleteA4NetworkElementsRecursivelyDto(NetworkElementDto ne) {
+        // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        deleteA4NetworkElementsRecursively(ne.getZtpIdent());
+        deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
+    }
+
     private void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
         final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
@@ -785,7 +815,13 @@ public class A4ResourceInventoryRobot {
     @Step("Delete NEP by functional label, also recursively deletes as children")
     public void deleteA4NetworkElementPortsRecursively(A4NetworkElementPort nep, A4NetworkElement ne) {
         // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nep.getFunctionalPortLabel(), getEndsz(ne));
+        deleteA4NetworkElementPortsRecursively(nep.getFunctionalPortLabel(), ne.getVpsz(), ne.getFsz());
+    }
+
+    @Step("Delete NEP by functional label, also recursively deletes as children")
+    public void deleteA4NetworkElementPortsRecursively(String nepFunctionalLabel, String neVpsz, String neFsz) {
+        // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nepFunctionalLabel, getEndsz(neVpsz, neFsz));
         nepList.forEach(this::deleteNetworkElementPortsRecursively);
     }
 

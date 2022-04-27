@@ -7,9 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
+
 public class ScenarioContext {
 
-    private static final String DEFAULT = "default";
     public Table<String, String, Object> scenarioContext;
 
     public ScenarioContext() {

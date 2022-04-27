@@ -38,7 +38,11 @@ public class MiscUtils {
     }
 
     public static String getEndsz(A4NetworkElement neData) {
-        return neData.getVpsz() + "/" + neData.getFsz();
+        return getEndsz(neData.getVpsz(), neData.getFsz());
+    }
+
+    public static String getEndsz(String vpsz, String fsz) {
+        return vpsz + "/" + fsz;
     }
 
     // Get configured object mapper that supports TMF quirks

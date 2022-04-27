@@ -7,8 +7,8 @@ Feature: Receive and process Resource Orders for A10NSP
     Given a NEG with type "POD" is existing in A4 resource inventory
     And a NE (called "NE#1") with type "" and category "" is existing in A4 resource inventory
     And another NE (called "NE#2") with type "" and category "" is existing in A4 resource inventory
-    And a NEP (called "NEP#1") with type "100G_ETHERNET_PORT" and functional label "100G_001" connected NE "NE#1" is existing in A4 resource inventory
-    And another NEP (called "NEP#2") with type "" and functional label "" connected NE "NE#2" is existing in A4 resource inventory
+    And a NEP (called "NEP#1") with type "100G_ETHERNET_PORT" and functional label "100G_001" connected to NE "NE#1" is existing in A4 resource inventory
+    And another NEP (called "NEP#2") with type "" and functional label "" connected to NE "NE#2" is existing in A4 resource inventory
     And a NEL connected to NEP "NEP#1" and NEP "NEP#2" is existing in A4 resource inventory
 
   # Add DIGIHUB xray ticket here
@@ -17,6 +17,7 @@ Feature: Receive and process Resource Orders for A10NSP
     Then the request is responded with HTTP error code 201
     And the response contains a resource order ID
     And the resource order state is "COMPLETED"
+    And ...
 
   # Add DIGIHUB xray ticket here
   Scenario: Receive RO - Rainy Day, resource order ID is sent

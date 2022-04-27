@@ -3,6 +3,9 @@ package cucumber.stepdefinitions.team.berlinium;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -48,7 +51,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NEG operationalState to {string}")
     public void nemoSendsARequestToChangeNEGOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
 
@@ -66,7 +69,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NEG without operationalState( characteristic)")
     public void whenNemoSendsARequestToUpdateNEGWithoutOperationalState() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
 
@@ -83,7 +86,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update the NEG's following properties to:")
     public void whenNemoSendsARequestToUpdateNEGSFollowingPropertiesTo(DataTable table) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementGroup neg = (A4NetworkElementGroup) testContext.getScenarioContext().getContext(Context.A4_NEG);
+        final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG);
 
         // ACTION
 
@@ -133,7 +136,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update the NE's following properties to:")
     public void whenNemoSendsARequestToUpdateNEsFollowingPropertiesTo(DataTable table) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE);
 
         // ACTION
 
@@ -207,7 +210,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NE operationalState to {string}")
     public void nemoSendsARequestToChangeNEOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE);
 
         // ACTION
 
@@ -225,7 +228,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NE without operationalState( characteristic)")
     public void whenNemoSendsARequestToUpdateNeWithoutOperationalState() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE);
 
         // ACTION
 
@@ -242,7 +245,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NEP operationalState to {string} and description to {string}")
     public void whenNemoSendsARequestToUpdateNEPOperationalStateToAndDescriptionTo(String opState, String descr) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
 

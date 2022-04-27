@@ -46,7 +46,7 @@ public class WiremockNemoSteps {
     @Then("{int} {string} NE update notification(s) was/were sent to NEMO")
     public void thenANeUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElement ne = (A4NetworkElement) testContext.getScenarioContext().getContext(Context.A4_NE);
+        final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE);
 
         // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(ne.getUuid(), method, count);
@@ -63,7 +63,7 @@ public class WiremockNemoSteps {
     @Then("{int} {string} NEP update notification(s) was/were sent to NEMO")
     public void thenANepUpdateNotificationWasSentToNemo(int count, String method) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nep.getUuid(), method, count);

@@ -51,6 +51,36 @@ public class A4ResourceInventoryMapper {
                 .lastSuccessfulSyncTime(OffsetDateTime.now());
     }
 
+    public NetworkElementDto getNetworkElementDto(A4NetworkElement neData, NetworkElementGroupDto neg) {
+        if (isNullOrEmpty(neData.getUuid()))
+            neData.setUuid(UUID.randomUUID().toString());
+
+        if (isNullOrEmpty(neData.getFsz()))
+            neData.setFsz(getRandomDigits(4)); // satisfy unique constraints
+
+        return new NetworkElementDto()
+                .uuid(neData.getUuid())
+                .networkElementGroupUuid(neg.getUuid())
+                .description("NE for integration test")
+                .address("address")
+                .administrativeState(ACTIVATED)
+                .lifecycleState(neData.getLifecycleState())
+                .operationalState(neData.getOperationalState())
+                .category(neData.getCategory())
+                .fsz(neData.getFsz())
+                .vpsz(neData.getVpsz())
+                .klsId(neData.getKlsId())
+                .plannedRackId("rackid")
+                .plannedRackPosition("rackpos")
+                .planningDeviceName(neData.getPlanningDeviceName())
+                .roles("role")
+                .type(neData.getType())
+                .creationTime(OffsetDateTime.now())
+                .plannedMatNumber(neData.getPlannedMatNr())
+                .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now());
+    }
+
     public NetworkElementGroupDto getNetworkElementGroupDto(A4NetworkElementGroup negData) {
         if (isNullOrEmpty(negData.getUuid()))
             negData.setUuid(UUID.randomUUID().toString());
@@ -128,6 +158,35 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementPortDto getNetworkElementPortDto(A4NetworkElementPort nepData, A4NetworkElement neData) {
+        if (isNullOrEmpty(nepData.getUuid()))
+            nepData.setUuid(UUID.randomUUID().toString());
+
+        if (isNullOrEmpty(nepData.getFunctionalPortLabel()))
+            nepData.setFunctionalPortLabel("GPON_" + getRandomDigits(4));
+
+        if (isNullOrEmpty(nepData.getType()))
+            nepData.setType("GPON");
+
+        if (isNullOrEmpty(nepData.getDescription()))
+            nepData.setDescription("NEP for integration test");
+
+        return new NetworkElementPortDto()
+                .uuid(nepData.getUuid())
+                .description(nepData.getDescription())
+                .networkElementUuid(neData.getUuid())
+                .networkElementEndsz(this.getEndszFromVpszAndFsz(neData.getVpsz(), neData.getFsz()))
+                .logicalLabel(nepData.getFunctionalPortLabel())
+                .portNumber(getPortNumberByFunctionalPortLabel(nepData.getFunctionalPortLabel()))
+                .accessNetworkOperator("NetOp")
+                .administrativeState(ACTIVATED)
+                .operationalState(nepData.getOperationalState())
+                .type(nepData.getType())
+                .creationTime(OffsetDateTime.now())
+                .lastUpdateTime(OffsetDateTime.now())
+                .lastSuccessfulSyncTime(OffsetDateTime.now());
+    }
+
+    public NetworkElementPortDto getNetworkElementPortDto(A4NetworkElementPort nepData, NetworkElementDto neData) {
         if (isNullOrEmpty(nepData.getUuid()))
             nepData.setUuid(UUID.randomUUID().toString());
 
