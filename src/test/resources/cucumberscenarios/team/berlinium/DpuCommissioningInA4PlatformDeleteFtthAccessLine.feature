@@ -15,7 +15,7 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
   Scenario: NEMO deletes Termination Point without deprovisioning triggered
     Given a TP with type "PON_TP" is existing in A4 resource inventory
-    And no NSP FTTH exists in A4 resource inventory for the TP
+    And no NSP FTTH exists in A4 resource inventory
     When NEMO sends a delete TP request
     Then the request is responded with HTTP code 202
     And no DPU deprovisioning request to wg-a4-provisioning mock was triggered

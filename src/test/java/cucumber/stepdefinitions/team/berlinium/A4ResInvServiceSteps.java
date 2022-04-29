@@ -1,8 +1,6 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
@@ -14,7 +12,6 @@ import io.restassured.response.Response;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
@@ -381,7 +378,6 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.A4_TP, tp);
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
-
 
     @When("NEMO sends a request to change/update (the )NSP FTTH-Access operationalState to {string} and NEP reference to {string}")
     public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndNepReferenceTo(String opState, String portUuid) {

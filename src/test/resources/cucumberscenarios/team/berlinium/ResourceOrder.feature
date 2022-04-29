@@ -4,6 +4,7 @@ Feature: Receive and process Resource Orders for A10NSP
 
   #@DIGIHUB-xxxx
   Background:
+    Work in progress!
     Given a NEG with type "POD" is existing in A4 resource inventory
     And a NE (called "NE#1") with type "" and category "" is existing in A4 resource inventory
     And another NE (called "NE#2") with type "" and category "" is existing in A4 resource inventory
