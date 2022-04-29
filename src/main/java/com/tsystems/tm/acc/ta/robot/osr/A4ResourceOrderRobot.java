@@ -101,8 +101,12 @@ public class A4ResourceOrderRobot {
     }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {
+        addOrderItem(orderItemId, actionType, nelData.getLbz(), ro);
+    }
+
+    public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro) {
         ResourceRefOrValue resource = new ResourceRefOrValue()
-                .name(nelData.getLbz())
+                .name(nelLbz)
                 .resourceCharacteristic(resourceOrderMapper.buildResourceCharacteristicList());
 
         ResourceOrderItem orderItem = new ResourceOrderItem()

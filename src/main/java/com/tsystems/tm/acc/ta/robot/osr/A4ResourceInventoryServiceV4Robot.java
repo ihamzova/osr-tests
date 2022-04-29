@@ -19,8 +19,8 @@ import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.CA_INTEGRATION;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPortNumberByFunctionalPortLabel;
+import static org.testng.Assert.*;
 
 public class A4ResourceInventoryServiceV4Robot {
 
@@ -31,26 +31,10 @@ public class A4ResourceInventoryServiceV4Robot {
     private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client(authTokenProvider).getClient();
 
     @Step("Read all Network Elements as list from v4 API")
-    public List<NetworkElement> getAllNetworkElementsV4() {
-        return a4ResourceInventoryService.networkElement()
-                .listNetworkElement()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("Read all Network Elements as list from v4 API")
     public List<NetworkElement> getNetworkElementsV4ByEndsz(String endsz) {
         return a4ResourceInventoryService.networkElement()
                 .listNetworkElement()
                 .endszQuery(endsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("Read one NetworkElement from v4 API")
-    public NetworkElement getNetworkElementV4(String uuid) {
-        return a4ResourceInventoryService
-                .networkElement()
-                .retrieveNetworkElement()
-                .idPath(uuid)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -101,18 +85,6 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(neList.get(0).getKlsId(), neData.getKlsId());
     }
 
-    public void checkNumberOfNetworkElements(List<A4NetworkElement> neDataList) {
-        List<NetworkElement> neList = getAllNetworkElementsV4();
-        assertEquals(neList.size(), neDataList.size());
-    }
-
-    @Step("Read all Network Element Groups as list from v4 API")
-    public List<NetworkElementGroup> getAllNetworkElementGroupsV4() {
-        return a4ResourceInventoryService.networkElementGroup()
-                .listNetworkElementGroup()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Search all Network Element Groups by name as list from v4 API")
     public List<NetworkElementGroup> getNetworkElementGroupsV4ByName(String name) {
         return a4ResourceInventoryService.networkElementGroup()
@@ -136,11 +108,6 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(negList.size(), 1);
         assertEquals(negList.get(0).getId(), negData.getUuid());
         assertEquals(Objects.requireNonNull(negList.get(0).getLifecycleState()).toString(), negData.getLifecycleState());
-    }
-
-    public void checkNumberOfNetworkElementGroups(List<A4NetworkElementGroup> negDataList) {
-        List<NetworkElementGroup> negList = getAllNetworkElementGroupsV4();
-        assertEquals(negList.size(), negDataList.size());
     }
 
     public void checkIfNetworkElementGroupExistsByUuid(A4NetworkElementGroup negData) {
@@ -200,6 +167,7 @@ public class A4ResourceInventoryServiceV4Robot {
         NspFtthAccess nspFtthAccess = getNetworkServiceProfileFtthAccessV4ByUuid(nspData.getUuid());
         List<ResourceRelationship> rrl = nspFtthAccess.getResourceRelationship();
 
+        assertNotNull(rrl);
         assertEquals(rrl.size(), 2);
 
         ResourceRelationship resourceRelationshipTp = rrl.get(0);
@@ -245,22 +213,6 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Read all NetworkElementLink as list from v4 API")
-    public List<NetworkElementLink> getNetworkElementLinksV4ByLsz(String lsz) {
-        return a4ResourceInventoryService.networkElementLink()
-                .listNetworkElementLink()
-                .lszQuery(lsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("Read all NetworkElementLink as list from v4 API")
-    public List<NetworkElementLink> getNetworkElementLinksV4ByUeWegId(String ueWegId) {
-        return a4ResourceInventoryService.networkElementLink()
-                .listNetworkElementLink()
-                .ueWegIdQuery(ueWegId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
     @Step("Check if list of all existing NetworkElementLink (v4 API) contains at least one entry")
     public void checkIfAnyNetworkElementLinksExist(int minimalExpectedCount) {
         List<NetworkElementLink> nelList = getAllNetworkElementLinksV4();
@@ -275,13 +227,6 @@ public class A4ResourceInventoryServiceV4Robot {
 
         assertEquals(nelV4UuidList.size(), 1);
         assertEquals(nelV4UuidList.get(0), nelData.getUuid());
-    }
-
-    @Step("Read all Network Element Ports as list from v4 API")
-    public List<NetworkElementPort> getAllNetworkElementPortsV4() {
-        return a4ResourceInventoryService.networkElementPort()
-                .listNetworkElementPort()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     @Step("Read  Network Element Ports as list by NE Uuid from v4 API")
@@ -383,11 +328,6 @@ public class A4ResourceInventoryServiceV4Robot {
 
         assertEquals(nepV4UuidList.size(), 1);
         assertEquals(nepV4UuidList.get(0), nepData.getUuid());
-    }
-
-    public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
-        String portNumber = functionalPortLabel.substring(functionalPortLabel.lastIndexOf("_") + 1);
-        return portNumber.replaceFirst("^0+(?!$)", ""); // Remove leading zeroes
     }
 
 }

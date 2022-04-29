@@ -1,11 +1,11 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileFtthAccess;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.PreProvisioningStub;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4ProvisioningWiremockRobot;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
 import com.tsystems.tm.acc.tests.osr.wg.a4.provisioning.v1_9_0.client.model.A4AccessLineRequestDto;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -66,7 +66,7 @@ public class WiremockWgA4ProvisioningSteps {
 
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
         wiremock
@@ -111,7 +111,7 @@ public class WiremockWgA4ProvisioningSteps {
     public void givenUPiterDpuDeprovWiremockWillRespondHTTPCodeWhenCalledForthTimeAndDeleteNsp(int httpCode, int attempt) {
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
         wiremock

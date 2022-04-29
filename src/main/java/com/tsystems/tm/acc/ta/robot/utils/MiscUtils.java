@@ -73,4 +73,9 @@ public class MiscUtils {
         return string == null || string.isEmpty();
     }
 
+    public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
+        String portNumber = functionalPortLabel.substring(functionalPortLabel.lastIndexOf("_") + 1);
+        return portNumber.replaceFirst("^0+(?!$)", ""); // Remove leading zeroes
+    }
+
 }

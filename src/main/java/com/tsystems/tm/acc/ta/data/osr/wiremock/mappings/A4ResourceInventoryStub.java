@@ -34,13 +34,6 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .atPriority(1);
   }
 
-  public MappingBuilder deleteTPWith500(int httpcode) {
-    return delete(urlPathMatching(A4_TERMINATION_POINTS_URL))
-            .withName("deleteTP" + httpcode)
-            .willReturn(aDefaultResponseWithBody("{{{request.body}}}", httpcode))
-            .atPriority(1);
-  }
-
   public MappingBuilder getNspBySnWithoutOntLastRegisteredOn() {
     return get(urlPathMatching(A4_NSP_URL_WITH_PARAMETERS))
             .withName("getA4NetworkServiceProfilesFtthAccessByParameters")
@@ -72,7 +65,7 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
   public MappingBuilder getA4NetworkElements() {
     return get(urlMatching(A4_NETWORK_ELEMENTS_URL)).withQueryParam("vpsz", vpsz)
             .withName("getA4NetworkElements")
-            .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getNetworkElementDto()), HTTP_CODE_OK_200))
+            .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getDefaultNetworkElementData()), HTTP_CODE_OK_200))
             .atPriority(0);
   }
 
@@ -88,4 +81,5 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
     json.setGson(json.getGson().newBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create());
     return json.serialize(obj);
   }
+
 }

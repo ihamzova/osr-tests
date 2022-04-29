@@ -10,6 +10,8 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 
+import java.util.UUID;
+
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
@@ -24,7 +26,7 @@ public class CommonSteps {
     public void setup() {
         // ACTION
         WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(
-                new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests"))
+                new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests-" + UUID.randomUUID()))
                 .build();
         wiremock.publish()
                 .publishedHook(savePublishedToDefaultDir())

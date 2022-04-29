@@ -12,7 +12,6 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
-import sun.nio.ch.Net;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
@@ -96,6 +94,14 @@ public class A4ResourceInventoryRobot {
                 .deleteNetworkElement()
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    public void deleteNetworkElementNoChecks(String uuid) {
+        a4ResourceInventory
+                .networkElements()
+                .deleteNetworkElement()
+                .uuidPath(uuid)
+                .execute(voidCheck()); // unfortunately deletion of NEs is not idempotent, therefore we deactivate the HTTP status check
     }
 
     @Step("Create new Network Element Port in A4 resource inventory")
@@ -747,7 +753,15 @@ public class A4ResourceInventoryRobot {
 
         nepList.forEach(this::deleteNetworkElementPortsRecursively);
 
-        deleteNetworkElement(ne.getUuid());
+        deleteNetworkElementNoChecks(ne.getUuid());
+    }
+
+    public void deleteA4NetworkElementsRecursivelyByUuid(String neUuid) {
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(neUuid);
+
+        nepList.forEach(this::deleteNetworkElementPortsRecursively);
+
+        deleteNetworkElementNoChecks(neUuid);
     }
 
     @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
@@ -803,7 +817,7 @@ public class A4ResourceInventoryRobot {
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
-    private void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
+    public void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
         final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
@@ -837,8 +851,14 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete NSP FTTH-Access by line id and by ont serial number")
     public void deleteNspFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthAccess) {
-        final String lineId = nspFtthAccess.getLineId();
-        final String ontSerialNo = nspFtthAccess.getOntSerialNumber();
+        deleteNspFtthAccess(nspFtthAccess.getLineId(), nspFtthAccess.getOntSerialNumber());
+    }
+
+    public void deleteNspFtthAccess(NetworkServiceProfileFtthAccessDto nspFtthAccess) {
+        deleteNspFtthAccess(nspFtthAccess.getLineId(), nspFtthAccess.getOntSerialNumber());
+    }
+
+    public void deleteNspFtthAccess(String lineId, String ontSerialNo) {
         List<NetworkServiceProfileFtthAccessDto> nspFtthList;
 
         // NSP lineId (& lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
@@ -859,6 +879,17 @@ public class A4ResourceInventoryRobot {
         // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
         final String lineId = nspL2Bsa.getLineId();
+        final List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
+
+        nspL2List.forEach(nspL2 ->
+                deleteNetworkServiceProfileL2Bsa(nspL2.getUuid())
+        );
+    }
+
+    @Step("Delete NSP L2BSA by line id")
+    public void deleteNspsL2Bsa(String lineId) {
+        // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
+
         final List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
 
         nspL2List.forEach(nspL2 ->
@@ -1008,6 +1039,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createNetworkServiceProfileFtthAccess(NetworkServiceProfileFtthAccessDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspData)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
     public void createNetworkServiceProfileFtthAccessWithPortReference(A4NetworkServiceProfileFtthAccess nspData,
                                                                        A4TerminationPoint tpData,
@@ -1036,6 +1076,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createNetworkServiceProfileA10Nsp(NetworkServiceProfileA10NspDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .createOrUpdateNetworkServiceProfileA10Nsp()
+                .body(nspData)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new NetworkServiceProfileL2Bsa in A4 resource inventory")
     public void createNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
         // Creation of DTO-Object with NSP and TP Data with reference
@@ -1046,6 +1095,15 @@ public class A4ResourceInventoryRobot {
                 .networkServiceProfilesL2Bsa()
                 .createOrUpdateNetworkServiceProfileL2Bsa()
                 .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void createNetworkServiceProfileL2Bsa(NetworkServiceProfileL2BsaDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .createOrUpdateNetworkServiceProfileL2Bsa()
+                .body(nspData)
                 .uuidPath(nspData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }

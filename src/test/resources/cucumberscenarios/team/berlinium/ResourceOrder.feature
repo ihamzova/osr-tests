@@ -12,12 +12,13 @@ Feature: Receive and process Resource Orders for A10NSP
     And a NEL connected to NEPs "NEP#1" and "NEP#2" is existing in A4 resource inventory
 
   # Add DIGIHUB xray ticket here
-  Scenario: Receive RO - Sunny Day
-    When CAD@Sputnik sends a resource order with empty resource order ID
-    Then the request is responded with HTTP error code 201
-    And the response contains a resource order ID
-    And the resource order state is "COMPLETED"
-    And ...
+#  Scenario: Receive RO - Sunny Day
+#    When CAD@Sputnik sends a resource order with empty resource order ID
+#    Then the request is responded with HTTP error code 201
+#    And the response contains a resource order ID
+#    And the resource order is saved in RO database
+#    And the resource order state is "COMPLETED"
+#    And ...
 
   # Add DIGIHUB xray ticket here
   Scenario: Receive RO - Rainy Day, resource order ID is sent

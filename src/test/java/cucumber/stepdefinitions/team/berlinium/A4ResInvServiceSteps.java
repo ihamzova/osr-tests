@@ -3,9 +3,7 @@ package cucumber.stepdefinitions.team.berlinium;
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -15,6 +13,7 @@ import io.restassured.response.Response;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
@@ -264,7 +263,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update/change (the )NEP description to {string}")
     public void whenNemoSendsARequestToUpdateNEPDescriptionTo(String descr) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
 
@@ -282,7 +281,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update/change (the )NEP operational state to {string}")
     public void whenNemoSendsARequestToUpdateNEPOperationalStateTo(String opState) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
 
@@ -300,7 +299,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update NEP without operationalState nor description")
     public void whenNemoSendsARequestToUpdateNEPWithoutOperationalStateNorDescription() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
         // ACTION
 
@@ -317,7 +316,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NEL operationalState to {string}")
     public void whenNemoSendsARequestToUpdateNELOperationalStateTo(String ops) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
         // ACTION
 
@@ -335,7 +334,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NEL without operationalState( characteristic)")
     public void whenNemoSendsARequestToUpdateNelWithoutOperationalState() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
         // ACTION
 
@@ -352,7 +351,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a delete TP request( to A4 resource inventory service)")
     public void whenNemoSendsADeleteTPRequest() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
         Response response = a4ResInvService.deleteLogicalResource(tp.getUuid());
@@ -366,20 +365,23 @@ public class A4ResInvServiceSteps {
 
     @When("NEMO sends a create TP request with type {string}")
     public void whenNemoSendsACreateTPRequestWithType(String tpType) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementPort nep = (A4NetworkElementPort) testContext.getScenarioContext().getContext(Context.A4_NEP);
+        final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
-        // ACTION
+        // TODO this is dirty! Make clean solution
+
         A4TerminationPoint tp = testContext.getOsrTestContext().getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+        tp.setUuid(UUID.randomUUID().toString());
         tp.setSubType(tpType);
-        Response response = a4ResInvService.createTerminationPoint(tp, nep);
+        TerminationPointDto tpDto = testContext.getObjectMapper().convertValue(tp, TerminationPointDto.class);
+
+        Response response = a4ResInvService.createTerminationPoint(tp, nep.getUuid());
 
         // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
         sleepForSeconds(SLEEP_TIMER);
 
         // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_TP, tp);
+        testContext.getScenarioContext().setContext(Context.A4_TP, tpDto);
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
@@ -387,7 +389,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NSP FTTH-Access operationalState to {string} and NEP reference to {string}")
     public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateToAndNepReferenceTo(String opState, String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
@@ -407,9 +409,8 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update/change (the )NSP FTTH-Access operational state to {string}")
     public void whenNemoSendsARequestToUpdateNspFtthAccessOperationalStateTo(String opState) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
-
 
         // ACTION
 
@@ -428,7 +429,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update/change (the )NSP FTTH-Access NEP reference to {string}")
     public void whenNemoSendsARequestToUpdateNspFtthAccessNepReferenceTo(String portUuid) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
@@ -447,7 +448,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to update NSP FTTH-Access without operationalState nor NEP reference")
     public void whenNemoSendsARequestToUpdateNspFtthAccessWithoutOperationalStateNorNepReference() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccess = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccess = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         // ACTION
@@ -466,8 +467,8 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NSP L2BSA operationalState to {string}")
     public void whenNemoSendsOperationalStateUpdateForNspL2Bsa(String newOperationalState) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2 = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final NetworkServiceProfileL2BsaDto nspL2 = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
 
@@ -485,7 +486,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NSP L2BSA without operationalState")
     public void whenNemoSendsOperationalStateUpdateForNspL2Bsa() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2 = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final NetworkServiceProfileL2BsaDto nspL2 = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
 
         // ACTION
 
@@ -499,13 +500,12 @@ public class A4ResInvServiceSteps {
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
-
     @When("NEMO sends a request to change/update (the )NSP A10NSP operationalState to {string}")
     public void whenNemoSendsOperationalStateUpdateForNspA10Nsp(String newOperationalState) {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileA10Nsp nspA10nsp = (A4NetworkServiceProfileA10Nsp) testContext
+        final NetworkServiceProfileA10NspDto nspA10nsp = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
 
@@ -524,7 +524,7 @@ public class A4ResInvServiceSteps {
     @When("NEMO sends a request to change/update (the )NSP A10NSP without operationalState")
     public void whenNemoSendsOperationalStateUpdateForNspA10Nsp() {
         // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileA10Nsp nspA10nsp = (A4NetworkServiceProfileA10Nsp) testContext
+        final NetworkServiceProfileA10NspDto nspA10nsp = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
 
         // ACTION

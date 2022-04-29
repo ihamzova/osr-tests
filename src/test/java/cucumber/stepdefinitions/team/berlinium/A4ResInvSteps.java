@@ -2,16 +2,9 @@ package cucumber.stepdefinitions.team.berlinium;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
-import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofileftthaccess.A4NetworkServiceProfileFtthAccessCase;
-import com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilel2bsa.A4NetworkServiceProfileL2BsaCase;
-import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import cucumber.Context;
@@ -29,7 +22,7 @@ import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT_B;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPortNumberByFunctionalPortLabel;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
@@ -290,7 +283,7 @@ public class A4ResInvSteps {
         A4NetworkElement ne = new A4NetworkElement();
         ne.setUuid(UUID.randomUUID().toString());
 
-        a4ResInv.deleteA4NetworkElementsRecursively(ne); // TODO work with only uuid here
+        a4ResInv.deleteA4NetworkElementsRecursivelyByUuid(ne.getUuid());
 
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
@@ -302,7 +295,7 @@ public class A4ResInvSteps {
         ne.setVpsz(vpsz);
         ne.setFsz(fsz);
 
-        a4ResInv.deleteA4NetworkElementsRecursively(ne); // TODO work with only endsz here
+        a4ResInv.deleteA4NetworkElementsRecursively(vpsz, fsz);
 
         testContext.getScenarioContext().setContext(Context.A4_NE, ne);
     }
@@ -380,6 +373,7 @@ public class A4ResInvSteps {
         NetworkElementPortDto nep = setupDefaultNepTestData(neAlias);
         nep.setType(type);
         nep.setLogicalLabel(functionalLabel);
+        nep.setPortNumber(getPortNumberByFunctionalPortLabel(functionalLabel));
 
         persistNep(nepAlias, nep, neAlias);
     }
@@ -417,7 +411,7 @@ public class A4ResInvSteps {
 
     @Given("a NEL with operational state {string} and lifecycle state {string}( is existing)( in A4 resource inventory)")
     public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String ops, String lcs) {
-        createNelWithStates(DEFAULT, ops, lcs, DEFAULT, DEFAULT);
+        createNelWithStates(DEFAULT, ops, lcs, DEFAULT, DEFAULT_B);
     }
 
     @Given("a/another NEL with operational state {string} and lifecycle state {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
@@ -510,127 +504,181 @@ public class A4ResInvSteps {
 
     @Given("no TP exists in A4 resource inventory")
     public void givenNoTPExistsInA4ResourceInventory() {
-        A4TerminationPoint tp = new A4TerminationPoint();
+        TerminationPointDto tp = new TerminationPointDto();
         tp.setUuid(UUID.randomUUID().toString());
 
         testContext.getScenarioContext().setContext(Context.A4_TP, tp);
     }
 
-    @Given("a NSP FTTH(-Access) with Line ID {string} is existing in A4 resource inventory( for the TP)")
+    @Given("a NSP FTTH(-Access) with Line ID {string}( connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId) {
-        // ACTION
-        A4NetworkServiceProfileFtthAccess nspFtth = setupDefaultNspFtthTestData();
+        createNspFtth(DEFAULT, lineId, DEFAULT);
+    }
+
+    @Given("a/another NSP FTTH(-Access) with Line ID {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String lineId, String tpAlias) {
+        createNspFtth(DEFAULT, lineId, tpAlias);
+    }
+
+    @Given("a/another NSP FTTH(-Access) \\(called {string}) with Line ID {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String lineId, String tpAlias) {
+        createNspFtth(nspAlias, lineId, tpAlias);
+    }
+
+    private void createNspFtth(String nspAlias, String lineId, String tpAlias) {
+        NetworkServiceProfileFtthAccessDto nspFtth = setupDefaultNspFtthTestData(tpAlias);
         nspFtth.setLineId(lineId);
 
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        persistNspFtth(nspAlias, nspFtth);
+    }
 
+    private void persistNspFtth(String nspAlias, NetworkServiceProfileFtthAccessDto nspFtth) {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
         a4ResInv.deleteNspFtthAccess(nspFtth);
 
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtth, tp);
+        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtth);
+        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspAlias, nspFtth);
+    }
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
+    @Given("a NSP FTTH-Access with operational state {string} and NEP reference {string}( connected to the TP)( is existing)( in A4 resource inventory)")
+    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String opState, String portUuid) {
+        createNspFtthWithRef(DEFAULT, opState, portUuid, DEFAULT);
+    }
+
+    @Given("a/another NSP FTTH-Access with operational state {string} and NEP reference {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String opState, String portUuid, String tpAlias) {
+        createNspFtthWithRef(DEFAULT, opState, portUuid, tpAlias);
+    }
+
+    @Given("a/another NSP FTTH-Access \\(called {string}) with operational state {string} and NEP reference {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String nspAlias, String opState, String portUuid, String tpAlias) {
+        createNspFtthWithRef(nspAlias, opState, portUuid, tpAlias);
+    }
+
+    private void createNspFtthWithRef(String nspAlias, String opState, String nepRef, String tpAlias) {
+        NetworkServiceProfileFtthAccessDto nspFtth = setupDefaultNspFtthTestData(tpAlias);
+        nspFtth.setOperationalState(opState);
+        nspFtth.setOltPortOntLastRegisteredOn(nepRef);
+
+        persistNspFtth(nspAlias, nspFtth);
+    }
+
+    @Given("a NSP FTTH-Access with operationalState {string} and lifecycleState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
+    public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
+        createNspFtthWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
+    }
+
+    @Given("a/another NSP FTTH-Access with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState, String tpAlias) {
+        createNspFtthWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
+    }
+
+    @Given("a/another NSP FTTH-Access \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
+        createNspFtthWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
+    }
+
+    private void createNspFtthWithStates(String nspAlias, String opState, String lcState, String tpAlias) {
+        NetworkServiceProfileFtthAccessDto nspFtth = setupDefaultNspFtthTestData(tpAlias);
+        nspFtth.setOperationalState(opState);
+        nspFtth.setLifecycleState(lcState);
+
+        persistNspFtth(nspAlias, nspFtth);
     }
 
     @Given("no NSP FTTH(-Access) exists in A4 resource inventory( for the TP)")
     public void givenNoNSPFTTHExistsInA4ResourceInventoryForTheTP() {
-        // ACTION
-        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
+        NetworkServiceProfileFtthAccessDto nspFtth = new NetworkServiceProfileFtthAccessDto();
         nspFtth.setUuid(UUID.randomUUID().toString());
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
         a4ResInv.deleteNspFtthAccess(nspFtth);
 
-        // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
-    @Given("a NSP FTTH-Access with operational state {string} and NEP reference {string} is existing in A4 resource inventory")
-    public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String opState, String portUuid) {
-        // ACTION
-        A4NetworkServiceProfileFtthAccess nspFtthAccess = setupDefaultNspFtthTestData();
-        nspFtthAccess.setOperationalState(opState);
-        nspFtthAccess.setOltPortOntLastRegisteredOn(portUuid);
-
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
-
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
-
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess, tp);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
-    }
-
-
-    @Given("a NSP FTTH-Access with operationalState {string} and lifecycleState {string} is existing in A4 resource inventory")
-    public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
-        // ACTION
-
-        A4NetworkServiceProfileFtthAccess nspFtthAccess = setupDefaultNspFtthTestData();
-        nspFtthAccess.setOperationalState(operationalState);
-        nspFtthAccess.setLifecycleState(lifecycleState);
-
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
-
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(tp.getUuid());
-
-        a4ResInv.createNetworkServiceProfileFtthAccess(nspFtthAccess, tp);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
-    }
-
-
-    @Given("a NSP L2BSA with operationalState {string} is existing in A4 resource inventory")
+    @Given("a NSP L2BSA with operationalState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState) {
-        // ACTION
-        A4NetworkServiceProfileL2Bsa nspL2Bsa = setupDefaultNspL2BsaTestData();
-        nspL2Bsa.setOperationalState(operationalState);
-
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
-
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
-
-        a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+        createNspL2BsaWithOpState(DEFAULT, operationalState, DEFAULT);
     }
 
-    @Given("a NSP L2BSA with operationalState {string} and lifecycleState {string} is existing in A4 resource inventory")
+    @Given("a/another NSP L2BSA with operationalState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspL2BsaWithLineID(String operationalState, String tpAlias) {
+        createNspL2BsaWithOpState(DEFAULT, operationalState, tpAlias);
+    }
+
+    @Given("a/another NSP L2BSA \\(called {string}) with operationalState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspL2BsaWithLineID(String nspAlias, String operationalState, String tpAlias) {
+        createNspL2BsaWithOpState(nspAlias, operationalState, tpAlias);
+    }
+
+    private void createNspL2BsaWithOpState(String nspAlias, String opState, String tpAlias) {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(tpAlias);
+        nspL2Bsa.setOperationalState(opState);
+
+        persistNspL2Bsa(nspAlias, nspL2Bsa);
+    }
+
+    private void persistNspL2Bsa(String nspAlias, NetworkServiceProfileL2BsaDto nspL2Bsa) {
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNspsL2Bsa(nspL2Bsa.getLineId());
+
+        a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa);
+
+        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspAlias, nspL2Bsa);
+    }
+
+    @Given("a NSP L2BSA with operationalState {string} and lifecycleState {string}(connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
-        // ACTION
-        A4NetworkServiceProfileL2Bsa nspL2Bsa = setupDefaultNspL2BsaTestData();
-        nspL2Bsa.setOperationalState(operationalState);
-        nspL2Bsa.setLifecycleState(lifecycleState);
-
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
-
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
-
-        a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa, tp);
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+        createNspL2BsaWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
     }
 
-    @Given("a NSP A10NSP with operationalState {string} and lifecycleState {string} is existing in A4 resource inventory")
+    @Given("a/another NSP L2BSA with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState, String tpAlias) {
+        createNspL2BsaWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
+    }
+
+    @Given("a/another NSP L2BSA \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
+        createNspL2BsaWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
+    }
+
+    private void createNspL2BsaWithStates(String nspAlias, String opState, String lcState, String tpAlias) {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(tpAlias);
+        nspL2Bsa.setOperationalState(opState);
+        nspL2Bsa.setLifecycleState(lcState);
+
+        persistNspL2Bsa(nspAlias, nspL2Bsa);
+    }
+
+    @Given("a NSP A10NSP with operationalState {string} and lifecycleState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenNspA10nspWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
+        createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
+    }
+
+    @Given("a/another NSP A10NSP with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nspWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState, String tpAlias) {
+        createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
+    }
+
+    @Given("a/another NSP A10NSP \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nspWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
+        createNspA10NspWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
+    }
+
+    private void createNspA10NspWithStates(String nspAlias, String opState, String lcState, String tpAlias) {
         // ACTION
-        A4NetworkServiceProfileA10Nsp nspA10nsp = setupDefaultNspA10NspTestData();
-        nspA10nsp.setOperationalState(operationalState);
-        nspA10nsp.setLifecycleState(lifecycleState);
+        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+        nspA10nsp.setOperationalState(opState);
+        nspA10nsp.setLifecycleState(lcState);
 
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        persistNspA10Nsp(nspAlias, nspA10nsp);
+    }
 
-        a4ResInv.createNetworkServiceProfileA10Nsp(nspA10nsp, tp);
+    private void persistNspA10Nsp(String nspAlias, NetworkServiceProfileA10NspDto nspA10Nsp) {
+        a4ResInv.createNetworkServiceProfileA10Nsp(nspA10Nsp);
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_A10NSP, nspA10nsp);
+        testContext.getScenarioContext().setContext(Context.A4_NSP_A10NSP, nspAlias, nspA10Nsp);
     }
 
 
@@ -779,12 +827,10 @@ public class A4ResInvSteps {
 
     @Then("the NE creationTime is not updated")
     public void thenTheNECreationTimeIsNotUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementDto neData = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkElementDto ne = a4ResInv.getExistingNetworkElement(neData.getUuid());
+
         assertNotNull(ne.getCreationTime());
         assertTrue(ne.getCreationTime().isBefore(oldDateTime), "creationTime (" + ne.getCreationTime() + ") is newer than " + oldDateTime + "!");
     }
@@ -792,270 +838,218 @@ public class A4ResInvSteps {
 
     @Then("{int} NEP(s) connected to the NE with VPSZ {string} and FSZ {string} do/does exist( in A4 resource inventory)")
     public void thenXNepsConnectedToTheNEWithVPSZAndFSZDoExistInAResourceInventory(int count, String vpsz, String fsz) {
-        // ACTION
         final List<NetworkElementDto> neList = a4ResInv.getNetworkElementsByVpszFsz(vpsz, fsz);
-        assertEquals(1, neList.size());
-
         final List<NetworkElementPortDto> nepList = a4ResInv.getNetworkElementPortsByNetworkElement(neList.get(0).getUuid());
+
+        assertEquals(1, neList.size());
         assertEquals(count, nepList.size());
     }
 
     @Then("the (new )NEP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNepOperationalStateIsUpdatedInA4ResInv(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementPortDto nepData = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
-
-        // ACTION
         final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+
         assertEquals(operationalState, nep.getOperationalState());
     }
 
     @Then("the (new )NEP operationalState is (now )deleted( in the A4 resource inventory)")
     public void thenTheNepOperationalStateIsDeletedInA4ResInv() {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementPortDto nepData = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
-
-        // ACTION
         final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+
         assertNull(nep.getOperationalState());
     }
 
     @Then("the (new )NEP description is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNEPDescriptionIsUpdatedTo(String newDescr) {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementPortDto nepData = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
-
-        // ACTION
         final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+
         assertEquals(newDescr, nep.getDescription());
     }
 
     @Then("the NEP lastUpdateTime is updated")
     public void thenTheNEPLastUpdateTimeIsUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementPortDto nepData = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+
         assertNotNull(nep.getLastUpdateTime());
         assertTrue(nep.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     @Then("the NEP lastUpdateTime is not updated")
     public void thenTheNEPLastUpdateTimeIsNotUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
         final NetworkElementPortDto nepData = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkElementPortDto nep = a4ResInv.getExistingNetworkElementPort(nepData.getUuid());
+
         assertNotNull(nep.getLastUpdateTime());
         assertTrue(nep.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nep.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
     @Then("the (new )NEL operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNelOperationalStateIsUpdatedInA4ResInv(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
-
-        // ACTION
+        final NetworkElementLinkDto nelData = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
         final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+
         assertEquals(operationalState, nel.getOperationalState());
     }
 
     @Then("the (new )NEL lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNelLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
-
-        // ACTION
+        final NetworkElementLinkDto nelData = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
         final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+
         assertEquals(lifecycleState, nel.getLifecycleState());
     }
 
     @Then("the NEL lastUpdateTime is updated")
     public void thenTheNelLastUpdateTimeIsUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkElementLink nelData = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        final NetworkElementLinkDto nelData = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkElementLinkDto nel = a4ResInv.getExistingNetworkElementLink(nelData.getUuid());
+
         assertNotNull(nel.getLastUpdateTime());
         assertTrue(nel.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nel.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     @Then("the TP does exist in A4 resource inventory")
     public void thenTheTPDoesExistInA4ResourceInventory() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
-        // ACTION
         a4ResInv.checkTerminationPointExists(tp.getUuid());
     }
 
     @Then("the TP does not exist in A4 resource inventory( anymore)( any longer)")
     public void thenTheTPIsDoesNotExistInA4ResourceInventoryAnymore() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
-        // ACTION
         a4ResInv.checkTerminationPointIsDeleted(tp.getUuid());
     }
 
-
     @Then("the (new )NSP FTTH-Access operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspFtthAccessOperationalStateIsUpdatedInA4ResInv(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccessData = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
-
-        // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+
         assertEquals(operationalState, nspFtthAccess.getOperationalState());
     }
 
     @Then("the (new )NSP FTTH-Access NEP reference is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspFtthAccessNepReferenceIsUpdatedTo(String portUuid) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccessData = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
-
-        // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+
         assertEquals(portUuid, nspFtthAccess.getOltPortOntLastRegisteredOn());
     }
 
     @Then("the (new )NSP FTTH-Access lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspFtthAccessLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccessData = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
-
-        // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+
         assertEquals(lifecycleState, nspFtthAccess.getLifecycleState());
     }
 
-
     @Then("the NSP FTTH-Access lastUpdateTime is updated")
     public void thenTheNspFtthAccessLastUpdateTimeIsUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtthAccessData = (A4NetworkServiceProfileFtthAccess) testContext
+        final NetworkServiceProfileFtthAccessDto nspFtthAccessData = (NetworkServiceProfileFtthAccessDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_FTTH);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkServiceProfileFtthAccessDto nspFtthAccess = a4ResInv
                 .getExistingNetworkServiceProfileFtthAccess(nspFtthAccessData.getUuid());
+
         assertNotNull(nspFtthAccess.getLastUpdateTime());
         assertTrue(nspFtthAccess.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspFtthAccess.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     @Then("a/the NSP FTTH connected to the TP does exist in A4 resource inventory")
     public void thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
-
-        // ACTION
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
         final NetworkServiceProfileFtthAccessDto nspFtthDto = a4ResInv.checkNetworkServiceProfileFtthAccessConnectedToTerminationPointExists(tp.getUuid(), 1);
-        final A4NetworkServiceProfileFtthAccess nspFtth = mapDtoToA4NspFtth(nspFtthDto);
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
+        testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthDto);
     }
 
     @Then("the NSP FTTH does not exist in A4 resource inventory( anymore)( any longer)")
     public void thenTheNspFtthDoesNotExistInA4ResourceInventoryAnymore() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileFtthAccess nspFtth = (A4NetworkServiceProfileFtthAccess) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
-        // ACTION
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
     @Then("the (new )NSP L2BSA operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNSPLBSAOperationalStateIsUpdatedInA4ResInv(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-
-        // ACTION
+        final NetworkServiceProfileL2BsaDto nspL2Data = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         final NetworkServiceProfileL2BsaDto nspL2 = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+
         assertEquals(operationalState, nspL2.getOperationalState());
     }
 
     @Then("the (new )NSP L2BSA lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNSPLBSALifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2Data = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
-
-        // ACTION
+        final NetworkServiceProfileL2BsaDto nspL2Data = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         final NetworkServiceProfileL2BsaDto nspL2 = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
+
         assertEquals(lifecycleState, nspL2.getLifecycleState());
     }
 
     @Then("the NSP L2BSA lastUpdateTime is updated")
     public void thenTheNSPLBSALastUpdateTimeIsUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2BsaData = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final NetworkServiceProfileL2BsaDto nspL2BsaData = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkServiceProfileL2BsaDto nspL2Bsa = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+
         assertNotNull(nspL2Bsa.getLastUpdateTime());
         assertTrue(nspL2Bsa.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
     @Then("the NSP L2BSA lastUpdateTime is not updated")
     public void thenTheNSPLBSALastUpdateTimeIsNotUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileL2Bsa nspL2BsaData = (A4NetworkServiceProfileL2Bsa) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+        final NetworkServiceProfileL2BsaDto nspL2BsaData = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkServiceProfileL2BsaDto nspL2Bsa = a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
+
         assertNotNull(nspL2Bsa.getLastUpdateTime());
         assertTrue(nspL2Bsa.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
     @Then("the (new )NSP A10NSP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspA10nspOperationalStateIsUpdatedInA4ResInv(String operationalState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
-
-        // ACTION
         final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
                 .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+
         assertEquals(operationalState, nspA10nsp.getOperationalState());
     }
 
     @Then("the (new )NSP A10NSP lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspA10nspLifecycleStateIsUpdatedInA4ResInv(String lifecycleState) {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
-
-        // ACTION
         final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
                 .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+
         assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
     }
 
     @Then("the NSP A10NSP lastUpdateTime is updated")
     public void thenTheNspA10nspLastUpdateTimeIsUpdated() {
-        // INPUT FROM SCENARIO CONTEXT
-        final A4NetworkServiceProfileA10Nsp nspA10nspData = (A4NetworkServiceProfileA10Nsp) testContext
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-
-        // ACTION
         final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
                 .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+
         assertNotNull(nspA10nsp.getLastUpdateTime());
         assertTrue(nspA10nsp.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspA10nsp.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
@@ -1063,13 +1057,7 @@ public class A4ResInvSteps {
     // -----=====[ HELPERS ]=====-----
 
     private NetworkElementGroupDto setupDefaultNegTestData() {
-        // ACTION
-        A4NetworkElementGroup neg = testContext.getOsrTestContext().getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        neg.setUuid(UUID.randomUUID().toString());
-        neg.setName("NEG-" + getRandomDigits(6));
-
-        return a4ResInvMapper.getNetworkElementGroupDto(neg);
+        return a4ResInvMapper.getDefaultNetworkElementGroupData();
     }
 
     private void persistNeg(String negAlias, NetworkElementGroupDto neg) {
@@ -1116,7 +1104,7 @@ public class A4ResInvSteps {
         final TokenBuffer buffer = new TokenBuffer(om, false);
 
         // First create a new NEG default test data set...
-        final NetworkElementGroupDto negDefault = setupDefaultNegTestData();
+        final NetworkElementGroupDto negDefault = a4ResInvMapper.getDefaultNetworkElementGroupData();
 
         try {
             // ... then overwrite default data set with data provided in given-step data table
@@ -1138,12 +1126,7 @@ public class A4ResInvSteps {
 
         final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG, negAlias);
 
-        A4NetworkElement ne = testContext.getOsrTestContext().getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
-        ne.setUuid(UUID.randomUUID().toString());
-        ne.setVpsz("49/" + getRandomDigits(4) + "/" + getRandomDigits(3));
-
-        return a4ResInvMapper.getNetworkElementDto(ne, neg);
+        return a4ResInvMapper.getNetworkElementDto(neg.getUuid());
     }
 
     private NetworkElementPortDto setupDefaultNepTestData(String neAlias) {
@@ -1155,11 +1138,25 @@ public class A4ResInvSteps {
 
         final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, neAlias);
 
-        A4NetworkElementPort nep = testContext.getOsrTestContext().getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.defaultNetworkElementPort);
-        nep.setUuid(UUID.randomUUID().toString());
+        return a4ResInvMapper.getNetworkElementPortDto(ne.getUuid(), ne.getVpsz(), ne.getFsz());
+    }
 
-        return a4ResInvMapper.getNetworkElementPortDto(nep, ne);
+    private NetworkElementLinkDto setupDefaultNelTestData(String nepAlias1, String nepAlias2) {
+        final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias1);
+        final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias2);
+
+        // NEL needs to be connected to 2 NEPs, so if no NEPs present, create them
+        if (!NEP_A_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory(nepAlias1, nepAlias1);
+        if (!NEP_B_PRESENT)
+            givenANEPIsExistingInA4ResourceInventory(nepAlias2, nepAlias2);
+
+        final NetworkElementPortDto nep1 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias1);
+        final NetworkElementPortDto nep2 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias2);
+        final NetworkElementDto ne1 = a4ResInv.getExistingNetworkElement(nep1.getNetworkElementUuid());
+        final NetworkElementDto ne2 = a4ResInv.getExistingNetworkElement(nep2.getNetworkElementUuid());
+
+        return a4ResInvMapper.getNetworkElementLinkDto(nep1.getUuid(), nep2.getUuid(), ne1.getVpsz(), ne1.getFsz(), ne2.getVpsz(), ne2.getFsz());
     }
 
     private TerminationPointDto setupDefaultTpTestData(String nepAlias) {
@@ -1171,100 +1168,40 @@ public class A4ResInvSteps {
 
         final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias);
 
-        A4TerminationPoint tp = testContext.getOsrTestContext().getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.TerminationPointB);
-        tp.setUuid(UUID.randomUUID().toString());
-
-        return a4ResInvMapper.getTerminationPointDto(tp, nep.getUuid());
+        return a4ResInvMapper.getTerminationPointDto(nep.getUuid());
     }
 
-    private NetworkElementLinkDto setupDefaultNelTestData(String nepAlias1, String nepAlias2) {
-        final boolean NEP_A_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias1);
-        final boolean NEP_B_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias2);
-
-        // NEL needs to be connected to 2 NEPs, so if no NEPs present, create them
-        if (!NEP_A_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory(nepAlias1, DEFAULT);
-        if (!NEP_B_PRESENT)
-            givenANEPIsExistingInA4ResourceInventory(nepAlias2, DEFAULT_B);
-
-        final NetworkElementPortDto nep1 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias1);
-        final NetworkElementPortDto nep2 = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP, nepAlias2);
-        final NetworkElementDto ne1 = a4ResInv.getExistingNetworkElement(nep1.getNetworkElementUuid());
-        final NetworkElementDto ne2 = a4ResInv.getExistingNetworkElement(nep2.getNetworkElementUuid());
-
-        A4NetworkElementLink nel = testContext.getOsrTestContext().getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        nel.setUuid(UUID.randomUUID().toString());
-
-        return a4ResInvMapper.getNetworkElementLinkDto(nel, nep1, nep2, ne1, ne2);
-    }
-
-    private A4NetworkServiceProfileFtthAccess setupDefaultNspFtthTestData() {
-        // INPUT FROM SCENARIO CONTEXT
-        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP);
-
-        // ACTION
+    private NetworkServiceProfileFtthAccessDto setupDefaultNspFtthTestData(String tpAlias) {
+        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP, tpAlias);
 
         // NSP needs to be connected to a TP, so if no TP present, create one
         if (!TP_PRESENT)
-            givenATPIsExistingInA4ResourceInventory();
+            givenATPIsExistingInA4ResourceInventory(tpAlias);
 
-        A4NetworkServiceProfileFtthAccess nspFtth = testContext.getOsrTestContext().getData()
-                .getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
-        nspFtth.setUuid(UUID.randomUUID().toString());
-
-        return nspFtth;
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP, tpAlias);
+        return a4ResInvMapper.getNetworkServiceProfileFtthAccessDto(tp.getUuid());
     }
 
-    private A4NetworkServiceProfileL2Bsa setupDefaultNspL2BsaTestData() {
-        // INPUT FROM SCENARIO CONTEXT
-        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP);
-
-        // ACTION
+    private NetworkServiceProfileL2BsaDto setupDefaultNspL2BsaTestData(String tpAlias) {
+        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP, tpAlias);
 
         // NSP needs to be connected to a TP, so if no TP present, create one
         if (!TP_PRESENT)
-            givenATPIsExistingInA4ResourceInventory();
+            givenATPIsExistingInA4ResourceInventory(tpAlias);
 
-        A4NetworkServiceProfileL2Bsa nspL2Bsa = testContext.getOsrTestContext().getData()
-                .getA4NetworkServiceProfileL2BsaDataProvider()
-                .get(A4NetworkServiceProfileL2BsaCase.defaultNetworkServiceProfileL2Bsa);
-        nspL2Bsa.setUuid(UUID.randomUUID().toString());
-
-        return nspL2Bsa;
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP, tpAlias);
+        return a4ResInvMapper.getNetworkServiceProfileL2BsaDto(tp.getUuid());
     }
 
-    private A4NetworkServiceProfileA10Nsp setupDefaultNspA10NspTestData() {
-        // INPUT FROM SCENARIO CONTEXT
-        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP);
-
-        // ACTION
+    private NetworkServiceProfileA10NspDto setupDefaultNspA10NspTestData(String tpAlias) {
+        final boolean TP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_TP, tpAlias);
 
         // NSP needs to be connected to a TP, so if no TP present, create one
         if (!TP_PRESENT)
-            givenATPIsExistingInA4ResourceInventory();
+            givenATPIsExistingInA4ResourceInventory(tpAlias);
 
-        A4NetworkServiceProfileA10Nsp nspA10nsp = testContext.getOsrTestContext().getData()
-                .getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        nspA10nsp.setUuid(UUID.randomUUID().toString());
-
-        return nspA10nsp;
-    }
-
-    private A4NetworkServiceProfileFtthAccess mapDtoToA4NspFtth(NetworkServiceProfileFtthAccessDto nspFtthDto) {
-        A4NetworkServiceProfileFtthAccess nspFtth = new A4NetworkServiceProfileFtthAccess();
-        nspFtth.setUuid(nspFtthDto.getUuid());
-        nspFtth.setLineId(nspFtthDto.getLineId());
-        nspFtth.setLifecycleState(nspFtthDto.getLifecycleState());
-        nspFtth.setOperationalState(nspFtthDto.getOperationalState());
-        nspFtth.setOntSerialNumber(nspFtthDto.getOntSerialNumber());
-        nspFtth.setOltPortOntLastRegisteredOn(nspFtthDto.getOltPortOntLastRegisteredOn());
-        nspFtth.setTerminationPointUuid(nspFtthDto.getTerminationPointFtthAccessUuid());
-
-        return nspFtth;
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP, tpAlias);
+        return a4ResInvMapper.getNetworkServiceProfileA10NspDto(tp.getUuid());
     }
 
 }

@@ -1,6 +1,9 @@
 package com.tsystems.tm.acc.ta.data.osr.mappers;
 
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceRef;
@@ -8,6 +11,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class A4ResourceInventoryServiceMapper {
@@ -80,9 +84,17 @@ public class A4ResourceInventoryServiceMapper {
         return generateNspA10NspLogicalResourceUpdate(nspA10Data, tpData, operationalState);
     }
 
+    public LogicalResourceUpdate getLogicalResourceUpdate(NetworkServiceProfileA10NspDto nspA10Data, TerminationPointDto tpData, String operationalState) {
+        return generateNspA10NspLogicalResourceUpdate(nspA10Data.getUuid(), nspA10Data.getLifecycleState(), tpData.getUuid(), operationalState);
+    }
+
     // Create logicalResource representation of network service profile (L2BSA) with manually set operational state
     public LogicalResourceUpdate getLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
         return generateNspL2BsaLogicalResourceUpdate(nspL2Data, tpData, operationalState);
+    }
+
+    public LogicalResourceUpdate getLogicalResourceUpdate(NetworkServiceProfileL2BsaDto nspL2Data, TerminationPointDto tpData, String operationalState) {
+        return generateNspL2BsaLogicalResourceUpdate(nspL2Data.getUuid(), nspL2Data.getLifecycleState(), tpData.getUuid(), operationalState);
     }
 
     // Create logicalResource representation of network element link with manually set operational state
@@ -104,7 +116,7 @@ public class A4ResourceInventoryServiceMapper {
         lru.getResourceRelationship().add(rrs);
     }
 
-    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+    public LogicalResourceUpdate getLogicalResourceUpdate(A4TerminationPoint tpData, String nepUuid) {
 
         // Is this really necessary?
         if (tpData.getUuid().isEmpty())
@@ -120,7 +132,28 @@ public class A4ResourceInventoryServiceMapper {
         addCharacteristic(lru, LOCKED_NSP_USAGE, "true");
         addCharacteristic(lru, SUPPORTED_DIAG_NAMES, "(Diagnose1,Diagnose2)");
         addCharacteristic(lru, SUPPORTED_DIAG_VERSION, "(V1,V2");
-        addResourceRelationship(lru, NEP, nepData.getUuid());
+        addResourceRelationship(lru, NEP, nepUuid);
+
+        return lru;
+    }
+
+    public LogicalResourceUpdate getLogicalResourceUpdate(TerminationPointDto tpData, String nepUuid) {
+
+        // Is this really necessary?
+        if (Objects.requireNonNull(tpData.getUuid()).isEmpty())
+            tpData.setUuid(UUID.randomUUID().toString());
+
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(tpData.getUuid());
+        lru.setAtType(TP);
+        lru.setDescription("TP for integration test");
+        lru.setVersion("1");
+
+        addCharacteristic(lru, SUB_TYPE, tpData.getType());
+        addCharacteristic(lru, STATE, "status");
+        addCharacteristic(lru, LOCKED_NSP_USAGE, "true");
+        addCharacteristic(lru, SUPPORTED_DIAG_NAMES, "(Diagnose1,Diagnose2)");
+        addCharacteristic(lru, SUPPORTED_DIAG_VERSION, "(V1,V2");
+        addResourceRelationship(lru, NEP, nepUuid);
 
         return lru;
     }
@@ -191,26 +224,34 @@ public class A4ResourceInventoryServiceMapper {
     }
 
     private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(A4NetworkServiceProfileA10Nsp nspA10Data, A4TerminationPoint tpData, String operationalState) {
-        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspA10Data.getUuid());
+        return generateNspA10NspLogicalResourceUpdate(nspA10Data.getUuid(), nspA10Data.getLifecycleState(), tpData.getUuid(), operationalState);
+    }
+
+    private LogicalResourceUpdate generateNspA10NspLogicalResourceUpdate(String nspA10Uuid, String nspA10LcState, String tpUuid, String operationalState) {
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspA10Uuid);
         lru.setAtType(NSP_A10NSP);
         lru.setDescription("NSP-A10NSP for integration test");
-        lru.setLifecycleState(nspA10Data.getLifecycleState());
+        lru.setLifecycleState(nspA10LcState);
 
         addCharacteristic(lru, OP_STATE, operationalState);
         addCharacteristic(lru, LACP_ACTIVE, "false");
-        addResourceRelationship(lru, TP, tpData.getUuid());
+        addResourceRelationship(lru, TP, tpUuid);
 
         return lru;
     }
 
     private LogicalResourceUpdate generateNspL2BsaLogicalResourceUpdate(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String operationalState) {
-        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspL2Data.getUuid());
+        return generateNspL2BsaLogicalResourceUpdate(nspL2Data.getUuid(), nspL2Data.getLifecycleState(), tpData.getUuid(), operationalState);
+    }
+
+    private LogicalResourceUpdate generateNspL2BsaLogicalResourceUpdate(String nspL2Uuid, String nspL2LcState, String tpUuid, String operationalState) {
+        LogicalResourceUpdate lru = generateGenericLogicalResourceUpdate(nspL2Uuid);
         lru.setAtType(NSP_L2BSA);
         lru.setDescription("NSP-L2BSA for integration test");
-        lru.setLifecycleState(nspL2Data.getLifecycleState());
+        lru.setLifecycleState(nspL2LcState);
 
         addCharacteristic(lru, OP_STATE, operationalState);
-        addResourceRelationship(lru, TP, tpData.getUuid());
+        addResourceRelationship(lru, TP, tpUuid);
 
         return lru;
     }

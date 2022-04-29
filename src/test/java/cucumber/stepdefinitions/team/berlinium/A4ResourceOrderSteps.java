@@ -1,7 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementLinkDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
 import cucumber.Context;
@@ -14,6 +14,7 @@ import io.restassured.response.Response;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
+import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType.ADD;
 import static org.testng.Assert.*;
 
 public class A4ResourceOrderSteps {
@@ -41,12 +42,12 @@ public class A4ResourceOrderSteps {
     @When("CAD@Sputnik sends a resource order with empty resource order ID")
     public void whenCadSputnikSendsAResourceOrderWithEmptyResourceOrderID() {
         // INPUT FROM SCENARIO CONTEXT
-        A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
         // ACTION
         ResourceOrder ro = resOrder.buildResourceOrder();
         ro.setId(null);
-        resOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nel, ro);
+        resOrder.addOrderItem(DEFAULT_ORDER_ITEM_ID, ADD, nel.getLbz(), ro);
         final Response response = resOrder.sendPostResourceOrderWithoutChecks(ro);
 
         // OUTPUT INTO SCENARIO CONTEXT
@@ -56,13 +57,13 @@ public class A4ResourceOrderSteps {
     @When("(CAD@)Sputnik sends a resource order with filled resource order ID")
     public void whenCadSputnikSendsAResourceOrderWithFilledResourceOrderID() {
         // INPUT FROM SCENARIO CONTEXT
-        A4NetworkElementLink nel = (A4NetworkElementLink) testContext.getScenarioContext().getContext(Context.A4_NEL);
+        NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
 
         // ACTION
         String roId = UUID.randomUUID().toString();
         ResourceOrder ro = resOrder.buildResourceOrder();
         ro.setId(roId);
-        resOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nel, ro);
+        resOrder.addOrderItem(DEFAULT_ORDER_ITEM_ID, ADD, nel.getLbz(), ro);
         final Response response = resOrder.sendPostResourceOrderWithoutChecks(ro);
 
         // OUTPUT INTO SCENARIO CONTEXT
