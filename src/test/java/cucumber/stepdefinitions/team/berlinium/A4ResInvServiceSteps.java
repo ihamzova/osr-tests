@@ -1,6 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
 import com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
@@ -20,10 +21,11 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
 public class A4ResInvServiceSteps {
 
-    final int SLEEP_TIMER = 5; // in seconds
     private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
+    private final A4ResourceInventoryMapper a4ResInvMapper;
     private final TestContext testContext;
 
+    final int SLEEP_TIMER = 5; // in seconds
     private static final String DESCRIPTION = "description";
     private static final String NAME = "name";
     private static final String TYPE = "type";
@@ -40,8 +42,9 @@ public class A4ResInvServiceSteps {
     private static final String PLANNED_MAT_NUM = "plannedMatNumber";
     private static final String NEG_UUID = "networkElementGroupUuid";
 
-    public A4ResInvServiceSteps(TestContext testContext) {
+    public A4ResInvServiceSteps(TestContext testContext, A4ResourceInventoryMapper a4ResInvMapper) {
         this.testContext = testContext;
+        this.a4ResInvMapper = a4ResInvMapper;
     }
 
 
@@ -367,21 +370,15 @@ public class A4ResInvServiceSteps {
     public void whenNemoSendsACreateTPRequestWithType(String tpType) {
         final NetworkElementPortDto nep = (NetworkElementPortDto) testContext.getScenarioContext().getContext(Context.A4_NEP);
 
-        // TODO this is dirty! Make clean solution
-
-        A4TerminationPoint tp = testContext.getOsrTestContext().getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
-        tp.setUuid(UUID.randomUUID().toString());
-        tp.setSubType(tpType);
-        TerminationPointDto tpDto = testContext.getObjectMapper().convertValue(tp, TerminationPointDto.class);
+        TerminationPointDto tp = a4ResInvMapper.getDefaultTerminationPointData();
+        tp.setType(tpType);
 
         Response response = a4ResInvService.createTerminationPoint(tp, nep.getUuid());
 
         // Add a bit of waiting time here, to give process the chance to complete (because of async callbacks etc.)
         sleepForSeconds(SLEEP_TIMER);
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.A4_TP, tpDto);
+        testContext.getScenarioContext().setContext(Context.A4_TP, tp);
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
     }
 
