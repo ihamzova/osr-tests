@@ -447,6 +447,16 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtthAccess);
     }
 
+    @Given("no NSP L2BSA exists in A4 resource inventory( for the TP)")
+    public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
+        // ACTION
+        A4NetworkServiceProfileL2Bsa nspL2Bsa = new A4NetworkServiceProfileL2Bsa();
+        nspL2Bsa.setUuid(UUID.randomUUID().toString());
+        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
+
+        // OUTPUT INTO SCENARIO CONTEXT
+        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+    }
 
     @Given("a NSP FTTH-Access with operationalState {string} and lifecycleState {string} is existing in A4 resource inventory")
     public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {

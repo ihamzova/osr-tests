@@ -52,7 +52,6 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | G_FAST_TP |
       | G.FAST_TP |
       | A10NSP_TP |
-      | L2BSA_TP  |
 
   @DIGIHUB-144191
     @team:berlinium
