@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.EquipmentData;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileInbetriebnahmeNELPage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileMonitoringPage;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Alert;
@@ -31,6 +32,8 @@ import static org.testng.Assert.*;
 @Slf4j
 public class A4MobileUiRobot {
 
+    private static final String TR_TD ="tr/td";
+
     //ne-search-page
     @Step("Open UI, log in, and goTo Ne-mobile-search-page")
     public void openNetworkElementMobileSearchPage() {
@@ -38,6 +41,13 @@ public class A4MobileUiRobot {
     }
 
     public void searchForNetworkElement(A4NetworkElement neData) {
+        openNetworkElementMobileSearchPage();
+        enterVpsz(neData.getVpsz());
+        enterFsz(neData.getFsz());
+        clickSearchButton();
+    }
+
+    public void searchForNetworkElement(NetworkElementDto neData) {
         openNetworkElementMobileSearchPage();
         enterVpsz(neData.getVpsz());
         enterFsz(neData.getFsz());
@@ -210,20 +220,19 @@ public class A4MobileUiRobot {
             driver.switchTo().alert();
             alert.accept();
         } catch (NoAlertPresentException e) {
-            System.out.println("EXCEPTION " + e.getCause());
+            fail("Unexpected exception: " + e.getCause());
         }
     }
 
     @Step("Click NE Reset to planning button")
     public void clickNeResetToPlanningButtonAndConfirm() {
-        System.out.println("+++ Button Enabled: " + $(NE_RESET_TO_PLANNING_BUTTON_LOCATOR).isEnabled());
         $(NE_RESET_TO_PLANNING_BUTTON_LOCATOR).click();
         checkAlert();
     }
 
     public ElementsCollection getNeElementsCollection() throws InterruptedException {
         Thread.sleep(2000);
-        return $(SEARCH_RESULT_TABLE_LOCATOR).findAll(By.xpath("tr/td"));
+        return $(SEARCH_RESULT_TABLE_LOCATOR).findAll(By.xpath(TR_TD));
     }
 
     @Step("Check error message not found")
@@ -265,7 +274,7 @@ public class A4MobileUiRobot {
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
         ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_NE_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
+                .findAll(By.xpath(TR_TD));
         List<String> concat = new ArrayList<>();
 
         elementsCollection.forEach(k -> concat.add(k.getText()));
@@ -293,7 +302,7 @@ public class A4MobileUiRobot {
         waitForTableToFullyLoad(a4NeFilteredList.size());
 
         ElementsCollection elementsCollection = $(A4MobileMonitoringPage.getSEARCH_NEL_RESULT_TABLE_LOCATOR())
-                .findAll(By.xpath("tr/td"));
+                .findAll(By.xpath(TR_TD));
         List<String> monitoringZeile = new ArrayList<>();
 
         elementsCollection.forEach(k -> monitoringZeile.add(k.getText()));

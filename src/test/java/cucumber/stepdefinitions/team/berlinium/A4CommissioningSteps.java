@@ -1,7 +1,7 @@
 package cucumber.stepdefinitions.team.berlinium;
 
-import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.robot.osr.A4CommissioningRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.When;
@@ -26,7 +26,7 @@ public class A4CommissioningSteps {
         // Therefore the callback itself cannot be handled via webhook but needs to be sent "by hand".
 
         // INPUT FROM SCENARIO CONTEXT
-        final A4TerminationPoint tp = (A4TerminationPoint) testContext.getScenarioContext().getContext(Context.A4_TP);
+        final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         // ACTION
         final Response response = a4Commissioning.startCallBackA4AccessLineDeprovisioningWithoutChecks(tp.getUuid());

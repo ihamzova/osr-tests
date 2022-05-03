@@ -10,9 +10,9 @@ Feature: Send "Knoten" request to PLURAL and import the returning data into A4 r
   @team:berlinium @domain:osr @ui
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-inventory-importer
   Scenario: Import a NEG, some NEGs and NEPs from Plural via UI
-    Given no NEG with name "49/1111/1/POD/01" is existing in A4 resource inventory
-    And no NE with VPSZ "49/1234/0" and FSZ "7KH3" is existing in A4 resource inventory
-    And no NE with VPSZ "49/9876/1" and FSZ "7KE0" is existing in A4 resource inventory
+    Given no NEG with name "49/1111/1/POD/01" exists in A4 resource inventory
+    And no NE with VPSZ "49/1234/0" and FSZ "7KH3" exists in A4 resource inventory
+    And no NE with VPSZ "49/9876/1" and FSZ "7KE0" exists in A4 resource inventory
     And the Plural mock will respond HTTP code 201 and provide the following NE data when called with NEG name "49/1111/1/POD/01":
       | VPSZ      | FSZ  |
       | 49/1234/0 | 7KH3 |

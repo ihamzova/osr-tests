@@ -9,6 +9,7 @@ public class A4QueueSteps {
 
     private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
+    private final String QUEUE_RES_ORDER = "jms.queue.roo";
 
     public A4QueueSteps() {
     }
@@ -25,6 +26,7 @@ public class A4QueueSteps {
     public void cleanup() {
         // ACTION
         a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
+        a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_RES_ORDER);
     }
 
     // -----=====[ THENS ]=====-----
@@ -33,6 +35,11 @@ public class A4QueueSteps {
     public void thenTheTpUuidIsAddedToA4DeprovisioningDlq() {
         // ACTION
         a4ResilienceRobot.checkMessagesInQueue(QUEUE_DEPROV_DLQ, 1);
+    }
+
+    @Then("the RO is not added to A4 resource order queue")
+    public void thenTheROIsNotAddedToQueue() {
+        a4ResilienceRobot.checkMessagesInQueue(QUEUE_RES_ORDER, 0);
     }
 
 }
