@@ -874,7 +874,12 @@ public class A4ResourceInventoryRobot {
         );
     }
 
+
     @Step("Delete NSP L2BSA by line id")
+    public void deleteNspsL2Bsa(NetworkServiceProfileL2BsaDto nspL2Bsa) {
+        deleteNspsL2Bsa(nspL2Bsa.getLineId());
+    }
+
     public void deleteNspsL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Bsa) {
         // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
