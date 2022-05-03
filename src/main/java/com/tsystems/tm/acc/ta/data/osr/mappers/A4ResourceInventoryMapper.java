@@ -13,6 +13,8 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 
 public class A4ResourceInventoryMapper {
 
+    public static final String ENDSZ_A = "12/3456/78";
+    public static final String ENDSZ_B = "98/7654/32";
     public static final String NEL_LSZ = "4N4";
     public static final String NEL_ORDER_NUMBER = "1004";
     public static final String ACTIVATED = "ACTIVATED";
@@ -73,7 +75,7 @@ public class A4ResourceInventoryMapper {
                 .uuid(UUID.randomUUID().toString()) // Unique constraint for NEPs
                 .logicalLabel(funcLabel) // Unique constraint (together with endsz of connected NE) for NEPs
                 .networkElementUuid("neUuid") // has to be set existing NE in calling method
-                .networkElementEndsz("neEndsz") // has to be set existing NE in calling method
+                .networkElementEndsz(ENDSZ_A) // has to be set existing NE in calling method
                 .href("/networkElements/neUuid")
                 .operationalState(INSTALLING)
                 .administrativeState(WORKING)
@@ -88,32 +90,23 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getDefaultNetworkElementLinkData() {
-        final String endsz1 = "endszA";
-        final String endsz2 = "endszB";
-        final String lsz = NEL_LSZ;
-        final String orderNo = NEL_ORDER_NUMBER;
-
         return new NetworkElementLinkDto()
                 .uuid(UUID.randomUUID().toString()) // Unique constraint for NELs
                 .networkElementPortAUuid("nepA") // has to be set existing NEP in calling method
-                .endszA(endsz1) // has to be set existing NE in calling method
+                .endszA(ENDSZ_A) // has to be set existing NE in calling method
                 .networkElementPortBUuid("nepB") // has to be set existing NEP in calling method
-                .endszB(endsz2) // has to be set existing NE in calling method
-                .lbz(getLbzByEndsz(lsz, orderNo, endsz1, endsz2)) // has to be linked existing NEs in calling method
+                .endszB(ENDSZ_B) // has to be set existing NE in calling method
+                .lbz(getLbzByEndsz(NEL_LSZ, NEL_ORDER_NUMBER, ENDSZ_A, ENDSZ_B)) // has to be linked to existing NEs in calling method
                 .description("NEL for integration test")
-                .lsz(lsz)
+                .lsz(NEL_LSZ)
                 .lifecycleState(INSTALLING)
                 .operationalState(INSTALLING)
-                .orderNumber(orderNo)
+                .orderNumber(NEL_ORDER_NUMBER)
                 .pluralId("2")
                 .ueWegId("uewegId")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
                 .lastSuccessfulSyncTime(OffsetDateTime.now());
-    }
-
-    public String getLbzByEndsz(String lsz, String orderNo, String endsz1, String endsz2) {
-        return lsz + "/" + orderNo + "-" + endsz1 + "-" + endsz2;
     }
 
     public TerminationPointDto getDefaultTerminationPointData() {
@@ -368,15 +361,15 @@ public class A4ResourceInventoryMapper {
     }
 
     public NetworkElementLinkDto getNetworkElementLinkDto(String nepUuid1, String nepUuid2, String neVpsz1, String neFsz1, String neVpsz2, String neFsz2) {
-        final String endsz1 = getEndsz(neVpsz1, neFsz1);
-        final String endsz2 = getEndsz(neVpsz2, neFsz2);
+        final String endszA = getEndsz(neVpsz1, neFsz1);
+        final String endszB = getEndsz(neVpsz2, neFsz2);
 
         NetworkElementLinkDto nel = getDefaultNetworkElementLinkData();
         nel.setNetworkElementPortAUuid(nepUuid1);
         nel.setNetworkElementPortBUuid(nepUuid2);
-        nel.setEndszA(endsz1);
-        nel.setEndszB(endsz2);
-        nel.setLbz(getLbzByEndsz(nel.getLsz(), nel.getOrderNumber(), endsz1, endsz2)); // LBZ is unique constraint!
+        nel.setEndszA(endszA);
+        nel.setEndszB(endszB);
+        nel.setLbz(getLbzByEndsz(nel.getLsz(), nel.getOrderNumber(), endszA, endszB)); // LBZ is unique constraint!
 
         return nel;
     }

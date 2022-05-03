@@ -66,7 +66,7 @@ public class A4ResInvSteps {
         createNeg(DEFAULT);
     }
 
-    @Given("a/another NEG \\(called {string})( is existing)( in A4 resource inventory)")
+    @Given("a/another NEG {string}( is existing)( in A4 resource inventory)")
     public void givenA4NegWithAlias(String alias) {
         createNeg(alias);
     }
@@ -76,7 +76,7 @@ public class A4ResInvSteps {
         createNegWithName(DEFAULT, name);
     }
 
-    @Given("a/another NEG \\(called {string}) with name {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEG {string} with name {string}( is existing)( in A4 resource inventory)")
     public void givenA4NegWithAliasWithName(String alias, String name) {
         createNegWithName(alias, name);
     }
@@ -86,17 +86,17 @@ public class A4ResInvSteps {
         createNegWithType(DEFAULT, type);
     }
 
-    @Given("a/another NEG \\(called {string}) with type {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEG {string} with type {string}( is existing)( in A4 resource inventory)")
     public void givenA4NegWithAliasWithType(String alias, String type) {
         createNegWithType(alias, type);
     }
 
     @Given("a NEG with operational state {string} and lifecycle state {string}( is existing)( in A4 resource inventory)")
-    public void givenA4NegWithStates(String ops, String lcs) {
-        createNeg(DEFAULT, ops, lcs);
+    public void givenA4NegWithStates(String opState, String lcState) {
+        createNeg(DEFAULT, opState, lcState);
     }
 
-    @Given("a/another NEG \\(called {string}) with operational state {string} and lifecycle state {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEG {string} with operational state {string} and lifecycle state {string}( is existing)( in A4 resource inventory)")
     public void givenA4NegWithAliasWithStates(String alias, String ops, String lcs) {
         createNeg(alias, ops, lcs);
     }
@@ -112,7 +112,7 @@ public class A4ResInvSteps {
         createNeg(DEFAULT, properties);
     }
 
-    @Given("a/another NEG \\(called {string}) with the following properties( is existing)( in A4 resource inventory):")
+    @Given("a/another NEG {string} with the following properties( is existing)( in A4 resource inventory):")
     public void givenA4NegWithAliasWithProperties(String alias, DataTable table) {
         createNeg(alias, table);
     }
@@ -144,12 +144,12 @@ public class A4ResInvSteps {
         createNe(DEFAULT, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string})( connected to the NEG)( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAlias(String neAlias) {
         createNe(neAlias, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) connected to the NEG {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} connected to the NEG {string}( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasConnectedToNeg(String neAlias, String negAlias) {
         createNe(neAlias, negAlias);
     }
@@ -159,12 +159,12 @@ public class A4ResInvSteps {
         createNeWithStates(DEFAULT, ops, lcs, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with operational state {string} and lifecycle state {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with operational state {string} and lifecycle state {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithStates(String neAlias, String ops, String lcs) {
         createNeWithStates(neAlias, ops, lcs, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with operational state {string} and lifecycle state {string} connected to the NEG {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with operational state {string} and lifecycle state {string} connected to the NEG {string}( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithStatesConnectedToNeg(String neAlias, String ops, String lcs, String negAlias) {
         createNeWithStates(neAlias, ops, lcs, negAlias);
     }
@@ -180,12 +180,12 @@ public class A4ResInvSteps {
         createNe(DEFAULT, properties, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with the following properties( connected to the NEG)( is existing)( in A4 resource inventory):")
+    @Given("a/another NE {string} with the following properties( connected to the NEG)( is existing)( in A4 resource inventory):")
     public void givenA4NeWithAliasWithProperties(String neAlias, DataTable properties) {
         createNe(neAlias, properties, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with the following properties connected to the NEG {string}( is existing)( in A4 resource inventory):")
+    @Given("a/another NE {string} with the following properties connected to the NEG {string}( is existing)( in A4 resource inventory):")
     public void givenA4NeWithAliasWithPropertiesConnectedToNeg(String neAlias, DataTable properties, String negAlias) {
         createNe(neAlias, properties, negAlias);
     }
@@ -195,12 +195,12 @@ public class A4ResInvSteps {
         createNeWithEndsz(DEFAULT, vpsz, fsz, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with VPSZ {string} and FSZ {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with VPSZ {string} and FSZ {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithVpszAndFsz(String neAlias, String vpsz, String fsz) {
         createNeWithEndsz(neAlias, vpsz, fsz, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with VPSZ {string} and FSZ {string} connected to the NEG {string} ( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with VPSZ {string} and FSZ {string} connected to the NEG {string} ( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithVpszFszConnectedToNeg(String neAlias, String vpsz, String fsz, String negAlias) {
         createNeWithEndsz(neAlias, vpsz, fsz, negAlias);
     }
@@ -210,12 +210,12 @@ public class A4ResInvSteps {
         createNeWithTypes(DEFAULT, type, category, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with type {string} and category {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with type {string} and category {string}( connected to the NEG)( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithTypeCategory(String neAlias, String type, String category) {
         createNeWithTypes(neAlias, type, category, DEFAULT);
     }
 
-    @Given("a/another NE \\(called {string}) with type {string} and category {string} connected to NEG {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NE {string} with type {string} and category {string} connected to NEG {string}( is existing)( in A4 resource inventory)")
     public void givenA4NeWithAliasWithTypeCategoryConnectedToNeg(String neAlias, String type, String category, String negAlias) {
         createNeWithTypes(neAlias, type, category, negAlias);
     }
@@ -247,12 +247,12 @@ public class A4ResInvSteps {
         createNep(DEFAULT, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string})( connected to the NE)( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string}( connected to the NE)( is existing)( in A4 resource inventory)")
     public void givenANEPIsExistingInA4ResourceInventory(String nepAlias) {
         createNep(nepAlias, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string}) connected to NE {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string} connected to NE {string}( is existing)( in A4 resource inventory)")
     public void givenANEPIsExistingInA4ResourceInventory(String nepAlias, String neAlias) {
         createNep(nepAlias, neAlias);
     }
@@ -262,12 +262,12 @@ public class A4ResInvSteps {
         createNepWithStates(DEFAULT, opState, descr, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string}) with operational state {string} and description {string}( connected to the NE)( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string} with operational state {string} and description {string}( connected to the NE)( is existing)( in A4 resource inventory)")
     public void givenANEPWithOperationalStateAndDescriptionIsExistingInAResourceInventory(String nepAlias, String opState, String descr) {
         createNepWithStates(nepAlias, opState, descr, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string}) with operational state {string} and description {string} connected to NE {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string} with operational state {string} and description {string} connected to NE {string}( is existing)( in A4 resource inventory)")
     public void givenANEPWithOperationalStateAndDescriptionIsExistingInAResourceInventory(String nepAlias, String opState, String descr, String neAlias) {
         createNepWithStates(nepAlias, opState, descr, neAlias);
     }
@@ -277,12 +277,12 @@ public class A4ResInvSteps {
         createNepWithTypes(DEFAULT, type, functionalLabel, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string}) with type {string} and functional label {string}( connected to the NE)( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string} with type {string} and functional label {string}( connected to the NE)( is existing)( in A4 resource inventory)")
     public void givenANEPWithTypeAndFunctionalLabelIsExistingInA4ResourceInventory(String nepAlias, String type, String functionalLabel) {
         createNepWithTypes(nepAlias, type, functionalLabel, DEFAULT);
     }
 
-    @Given("a/another NEP \\(called {string}) with type {string} and functional label {string} connected to NE {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEP {string} with type {string} and functional label {string} connected to NE {string}( is existing)( in A4 resource inventory)")
     public void givenANEPWithTypeAndFunctionalLabelIsExistingInA4ResourceInventory(String nepAlias, String type, String functionalLabel, String neAlias) {
         createNepWithTypes(nepAlias, type, functionalLabel, neAlias);
     }
@@ -292,7 +292,7 @@ public class A4ResInvSteps {
         createNel(DEFAULT, DEFAULT, DEFAULT);
     }
 
-    @Given("a/another NEL \\(called {string})( is existing)( in A4 resource inventory)")
+    @Given("a/another NEL {string}( is existing)( in A4 resource inventory)")
     public void givenANELIsExistingInA4ResourceInventory(String nelAlias) {
         createNel(nelAlias, DEFAULT, DEFAULT);
     }
@@ -302,7 +302,7 @@ public class A4ResInvSteps {
         createNel(DEFAULT, nepAlias1, nepAlias2);
     }
 
-    @Given("a/another NEL \\(called {string}) connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEL {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
     public void givenANELIsExistingInA4ResourceInventory(String nelAlias, String nepAlias1, String nepAlias2) {
         createNel(nelAlias, nepAlias1, nepAlias2);
     }
@@ -317,7 +317,7 @@ public class A4ResInvSteps {
         createNelWithStates(DEFAULT, ops, lcs, nepAlias1, nepAlias2);
     }
 
-    @Given("a/another NEL \\(called {string}) with operational state {string} and lifecycle state {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEL {string} with operational state {string} and lifecycle state {string} connected to NEPs {string} and {string}( is existing)( in A4 resource inventory)")
     public void givenANELWithOperationalStateAndLifecycleStateIsExistingInA4ResourceInventory(String nelAlias, String ops, String lcs, String nepAlias1, String nepAlias2) {
         createNelWithStates(nelAlias, ops, lcs, nepAlias1, nepAlias2);
     }
@@ -332,7 +332,7 @@ public class A4ResInvSteps {
         createNel(DEFAULT, uewegId, nepAlias1, nepAlias2);
     }
 
-    @Given("a/another NEL \\(called {string}) with ueweg id {string} connected to NEPs {string}and {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NEL {string} with ueweg id {string} connected to NEPs {string}and {string}( is existing)( in A4 resource inventory)")
     public void givenANELWithUewegIdIsExistingInA4ResourceInventory(String nelAlias, String uewegId, String nepAlias1, String nepAlias2) {
         createNel(nelAlias, uewegId, nepAlias1, nepAlias2);
     }
@@ -347,7 +347,7 @@ public class A4ResInvSteps {
         createTpForNep(DEFAULT, nepAlias);
     }
 
-    @Given("a/another TP \\(called {string}) connected to NEP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another TP {string} connected to NEP {string}( is existing)( in A4 resource inventory)")
     public void givenATPIsExistingInA4ResourceInventory(String tpAlias, String nepAlias) {
         createTpForNep(tpAlias, nepAlias);
     }
@@ -362,7 +362,7 @@ public class A4ResInvSteps {
         createTpForNep(DEFAULT, tpType, nepAlias);
     }
 
-    @Given("a/another TP \\(called {string}) with type {string} connected to NEP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another TP {string} with type {string} connected to NEP {string}( is existing)( in A4 resource inventory)")
     public void givenTPWithTypeIsExistingInA4ResourceInventory(String tpAlias, String tpType, String nepAlias) {
         createTpForNep(tpAlias, tpType, nepAlias);
     }
@@ -385,7 +385,7 @@ public class A4ResInvSteps {
         createNspFtth(DEFAULT, lineId, tpAlias);
     }
 
-    @Given("a/another NSP FTTH(-Access) \\(called {string}) with Line ID {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP FTTH(-Access) {string} with Line ID {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenANSPFTTHWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String lineId, String tpAlias) {
         createNspFtth(nspAlias, lineId, tpAlias);
     }
@@ -400,7 +400,7 @@ public class A4ResInvSteps {
         createNspFtthWithRef(DEFAULT, opState, portUuid, tpAlias);
     }
 
-    @Given("a/another NSP FTTH-Access \\(called {string}) with operational state {string} and NEP reference {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP FTTH-Access {string} with operational state {string} and NEP reference {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenANspFtthAccessWithOperationalStateAndNepReferenceIsExistingInAResourceInventory(String nspAlias, String opState, String portUuid, String tpAlias) {
         createNspFtthWithRef(nspAlias, opState, portUuid, tpAlias);
     }
@@ -415,7 +415,7 @@ public class A4ResInvSteps {
         createNspFtthWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
     }
 
-    @Given("a/another NSP FTTH-Access \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP FTTH-Access {string} with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspFtthAccessWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
         createNspFtthWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
     }
@@ -441,7 +441,7 @@ public class A4ResInvSteps {
         createNspL2BsaWithOpState(DEFAULT, operationalState, tpAlias);
     }
 
-    @Given("a/another NSP L2BSA \\(called {string}) with operationalState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP L2BSA {string} with operationalState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineID(String nspAlias, String operationalState, String tpAlias) {
         createNspL2BsaWithOpState(nspAlias, operationalState, tpAlias);
     }
@@ -456,7 +456,7 @@ public class A4ResInvSteps {
         createNspL2BsaWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
     }
 
-    @Given("a/another NSP L2BSA \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP L2BSA {string} with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
         createNspL2BsaWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
     }
@@ -471,7 +471,7 @@ public class A4ResInvSteps {
         createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, tpAlias);
     }
 
-    @Given("a/another NSP A10NSP \\(called {string}) with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    @Given("a/another NSP A10NSP {string} with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspA10nspWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
         createNspA10NspWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
     }

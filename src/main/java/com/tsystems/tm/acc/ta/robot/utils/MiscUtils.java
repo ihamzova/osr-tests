@@ -50,6 +50,10 @@ public class MiscUtils {
         return vpsz + "/" + fsz;
     }
 
+    public static String getLbzByEndsz(String lsz, String orderNo, String endszA, String endszB) {
+        return lsz + "/" + orderNo + "-" + endszA + "-" + endszB;
+    }
+
     // Get configured object mapper that supports TMF quirks
     public static ObjectMapper getObjectMapper() {
         final ObjectMapper objectMapper = new ObjectMapper();
