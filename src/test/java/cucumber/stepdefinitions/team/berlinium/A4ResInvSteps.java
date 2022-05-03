@@ -473,7 +473,7 @@ public class A4ResInvSteps {
         nspL2Bsa.setUuid(UUID.randomUUID().toString());
 
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNspsL2Bsa(nspL2Bsa);
+        a4ResInv.deleteNspsL2Bsa(nspL2Bsa.getUuid());
 
         testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
     }

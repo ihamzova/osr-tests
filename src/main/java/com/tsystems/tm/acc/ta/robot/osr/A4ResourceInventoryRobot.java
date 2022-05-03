@@ -87,15 +87,7 @@ public class A4ResourceInventoryRobot {
         createNetworkElement(neDto);
     }
 
-    @Step("Delete existing Network Element from A4 resource inventory")
-    public void deleteNetworkElement(String uuid) {
-        a4ResourceInventory
-                .networkElements()
-                .deleteNetworkElement()
-                .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-    }
-
+    @Step("Delete Network Element from A4 resource inventory")
     public void deleteNetworkElementNoChecks(String uuid) {
         a4ResourceInventory
                 .networkElements()
@@ -872,12 +864,6 @@ public class A4ResourceInventoryRobot {
         nspFtthList.forEach(nspFtth ->
                 deleteNetworkServiceProfileFtthAccess(nspFtth.getUuid())
         );
-    }
-
-
-    @Step("Delete NSP L2BSA by line id")
-    public void deleteNspsL2Bsa(NetworkServiceProfileL2BsaDto nspL2Bsa) {
-        deleteNspsL2Bsa(nspL2Bsa.getLineId());
     }
 
     public void deleteNspsL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Bsa) {
