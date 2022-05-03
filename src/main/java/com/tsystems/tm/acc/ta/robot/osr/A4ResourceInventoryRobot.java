@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.internal.collections.Pair;
 
@@ -19,8 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_NEMO_UPDATER_MS;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
@@ -35,16 +35,16 @@ public class A4ResourceInventoryRobot {
     private final ApiClient a4ResourceInventory = new A4ResourceInventoryClient(authTokenProvider).getClient();
 
     @Step("Create new Network Element Group in A4 resource inventory")
-    public void createNetworkElementGroup(A4NetworkElementGroup negData) {
+    public Response createNetworkElementGroup(A4NetworkElementGroup negData) {
         NetworkElementGroupDto negDto = new A4ResourceInventoryMapper()
                 .getNetworkElementGroupDto(negData);
 
-        createNetworkElementGroup(negDto);
+        return createNetworkElementGroup(negDto);
     }
 
     @Step("Create new Network Element Group in A4 resource inventory based on NEG DTO")
-    public void createNetworkElementGroup(NetworkElementGroupDto negDto) {
-        a4ResourceInventory
+    public Response createNetworkElementGroup(NetworkElementGroupDto negDto) {
+        return a4ResourceInventory
                 .networkElementGroups()
                 .createOrUpdateNetworkElementGroup()
                 .body(negDto)
@@ -79,6 +79,14 @@ public class A4ResourceInventoryRobot {
         createNetworkElement(neDto);
     }
 
+    @Step("Create new Network Element in A4 resource inventory")
+    public void createNetworkElement(A4NetworkElement neData, NetworkElementGroupDto neg) {
+        NetworkElementDto neDto = new A4ResourceInventoryMapper()
+                .getNetworkElementDto(neData, neg);
+
+        createNetworkElement(neDto);
+    }
+
     @Step("Delete existing Network Element from A4 resource inventory")
     public void deleteNetworkElement(String uuid) {
         a4ResourceInventory
@@ -88,11 +96,29 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
+    public void deleteNetworkElementNoChecks(String uuid) {
+        a4ResourceInventory
+                .networkElements()
+                .deleteNetworkElement()
+                .uuidPath(uuid)
+                .execute(voidCheck()); // unfortunately deletion of NEs is not idempotent, therefore we deactivate the HTTP status check
+    }
+
     @Step("Create new Network Element Port in A4 resource inventory")
     public void createNetworkElementPort(A4NetworkElementPort nepData, A4NetworkElement neData) {
         NetworkElementPortDto nepDto = new A4ResourceInventoryMapper()
                 .getNetworkElementPortDto(nepData, neData);
 
+        a4ResourceInventory
+                .networkElementPorts()
+                .createOrUpdateNetworkElementPort()
+                .body(nepDto)
+                .uuidPath(nepDto.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    @Step("Create new Network Element Port in A4 resource inventory")
+    public void createNetworkElementPort(NetworkElementPortDto nepDto) {
         a4ResourceInventory
                 .networkElementPorts()
                 .createOrUpdateNetworkElementPort()
@@ -311,18 +337,6 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    @Step("Get an existing Network Elements by ztpIdent")
-    public NetworkElementDto getExistingNetworkElementByZtpIdent(String ztpIdent) {
-        List<NetworkElementDto> networkElementDtoList = getNetworkElementsByZtpIdent(ztpIdent);
-
-        // List has only size 1, return uuid of element
-        // If list has not size 1 an error occurred
-        assertEquals(networkElementDtoList.size(), 1);
-
-        return networkElementDtoList.get(0);
-    }
-
-
     @Step("Get a list of Network Element Ports by Network Element")
     public List<NetworkElementPortDto> getNetworkElementPortsByNetworkElement(String networkElementUuid) {
         return a4ResourceInventory
@@ -536,6 +550,13 @@ public class A4ResourceInventoryRobot {
         assertTrue(Objects.requireNonNull(networkElementGroupDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
     }
 
+    @Step("Check that lastSuccessfulSyncTime has been set for network element group")
+    public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(String uuid, OffsetDateTime timeBeforeSync) {
+        NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(uuid);
+
+        assertTrue(Objects.requireNonNull(networkElementGroupDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
+    }
+
     @Step("Check that lifecycle state and operational state have been updated for network element")
     public void checkNetworkElementIsUpdatedWithNewStates(A4NetworkElement neData, String expectedNewOperationalState, String expectedNewLifecycleState) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
@@ -548,10 +569,14 @@ public class A4ResourceInventoryRobot {
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element")
     public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData,OffsetDateTime timeBeforeSync) {
-        NetworkElementDto networkElementDto = getExistingNetworkElement(neData.getUuid());
+        checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData.getUuid(), timeBeforeSync);
+    }
+
+    @Step("Check that lastSuccessfulSyncTime has been set for network element")
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(String neUuid,OffsetDateTime timeBeforeSync) {
+        NetworkElementDto networkElementDto = getExistingNetworkElement(neUuid);
 
         assertTrue(Objects.requireNonNull(networkElementDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
-
     }
 
     @Step("Check that lifecycle state and operational state have been updated for network element")
@@ -728,7 +753,15 @@ public class A4ResourceInventoryRobot {
 
         nepList.forEach(this::deleteNetworkElementPortsRecursively);
 
-        deleteNetworkElement(ne.getUuid());
+        deleteNetworkElementNoChecks(ne.getUuid());
+    }
+
+    public void deleteA4NetworkElementsRecursivelyByUuid(String neUuid) {
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByNetworkElement(neUuid);
+
+        nepList.forEach(this::deleteNetworkElementPortsRecursively);
+
+        deleteNetworkElementNoChecks(neUuid);
     }
 
     @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
@@ -777,7 +810,14 @@ public class A4ResourceInventoryRobot {
         deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
-    private void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
+    @Step("Delete NE by all unique constraints ztpIdent and endsz, also recursively deletes as children")
+    public void deleteA4NetworkElementsRecursivelyDto(NetworkElementDto ne) {
+        // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        deleteA4NetworkElementsRecursively(ne.getZtpIdent());
+        deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
+    }
+
+    public void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {
         final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
@@ -789,7 +829,13 @@ public class A4ResourceInventoryRobot {
     @Step("Delete NEP by functional label, also recursively deletes as children")
     public void deleteA4NetworkElementPortsRecursively(A4NetworkElementPort nep, A4NetworkElement ne) {
         // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nep.getFunctionalPortLabel(), getEndsz(ne));
+        deleteA4NetworkElementPortsRecursively(nep.getFunctionalPortLabel(), ne.getVpsz(), ne.getFsz());
+    }
+
+    @Step("Delete NEP by functional label, also recursively deletes as children")
+    public void deleteA4NetworkElementPortsRecursively(String nepFunctionalLabel, String neVpsz, String neFsz) {
+        // NEP functional label & NE endsz has to be unique, so let's delete by that, to avoid constraint violations for future tests
+        final List<NetworkElementPortDto> nepList = getNetworkElementPortsByFunctionalLabel(nepFunctionalLabel, getEndsz(neVpsz, neFsz));
         nepList.forEach(this::deleteNetworkElementPortsRecursively);
     }
 
@@ -805,8 +851,14 @@ public class A4ResourceInventoryRobot {
 
     @Step("Delete NSP FTTH-Access by line id and by ont serial number")
     public void deleteNspFtthAccess(A4NetworkServiceProfileFtthAccess nspFtthAccess) {
-        final String lineId = nspFtthAccess.getLineId();
-        final String ontSerialNo = nspFtthAccess.getOntSerialNumber();
+        deleteNspFtthAccess(nspFtthAccess.getLineId(), nspFtthAccess.getOntSerialNumber());
+    }
+
+    public void deleteNspFtthAccess(NetworkServiceProfileFtthAccessDto nspFtthAccess) {
+        deleteNspFtthAccess(nspFtthAccess.getLineId(), nspFtthAccess.getOntSerialNumber());
+    }
+
+    public void deleteNspFtthAccess(String lineId, String ontSerialNo) {
         List<NetworkServiceProfileFtthAccessDto> nspFtthList;
 
         // NSP lineId (& lifecycle state) has to be unique, so let's delete by that, to avoid constraint violations for future tests
@@ -827,6 +879,17 @@ public class A4ResourceInventoryRobot {
         // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
         final String lineId = nspL2Bsa.getLineId();
+        final List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
+
+        nspL2List.forEach(nspL2 ->
+                deleteNetworkServiceProfileL2Bsa(nspL2.getUuid())
+        );
+    }
+
+    @Step("Delete NSP L2BSA by line id")
+    public void deleteNspsL2Bsa(String lineId) {
+        // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
+
         final List<NetworkServiceProfileL2BsaDto> nspL2List = getNetworkServiceProfilesL2BsaByLineId(lineId);
 
         nspL2List.forEach(nspL2 ->
@@ -893,6 +956,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createTerminationPoint(TerminationPointDto tpData) {
+        a4ResourceInventory
+                .terminationPoints()
+                .createOrUpdateTerminationPoint()
+                .body(tpData)
+                .uuidPath(tpData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new TerminationPoint in A4 resource inventory")
     public void createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementGroup negData) {
         TerminationPointDto tpDto = new A4ResourceInventoryMapper()
@@ -916,6 +988,15 @@ public class A4ResourceInventoryRobot {
                 .createOrUpdateNetworkElementLink()
                 .body(nelDto)
                 .uuidPath(nelData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void createNetworkElementLink(NetworkElementLinkDto nel) {
+        a4ResourceInventory
+                .networkElementLinks()
+                .createOrUpdateNetworkElementLink()
+                .body(nel)
+                .uuidPath(nel.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -958,6 +1039,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createNetworkServiceProfileFtthAccess(NetworkServiceProfileFtthAccessDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesFtthAccess()
+                .createOrUpdateNetworkServiceProfileFtthAccess()
+                .body(nspData)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new NetworkServiceProfileFtthAccess in A4 resource inventory")
     public void createNetworkServiceProfileFtthAccessWithPortReference(A4NetworkServiceProfileFtthAccess nspData,
                                                                        A4TerminationPoint tpData,
@@ -986,6 +1076,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
+    public void createNetworkServiceProfileA10Nsp(NetworkServiceProfileA10NspDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesA10Nsp()
+                .createOrUpdateNetworkServiceProfileA10Nsp()
+                .body(nspData)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
     @Step("Create new NetworkServiceProfileL2Bsa in A4 resource inventory")
     public void createNetworkServiceProfileL2Bsa(A4NetworkServiceProfileL2Bsa nspData, A4TerminationPoint tpData) {
         // Creation of DTO-Object with NSP and TP Data with reference
@@ -996,6 +1095,15 @@ public class A4ResourceInventoryRobot {
                 .networkServiceProfilesL2Bsa()
                 .createOrUpdateNetworkServiceProfileL2Bsa()
                 .body(nspDto)
+                .uuidPath(nspData.getUuid())
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    }
+
+    public void createNetworkServiceProfileL2Bsa(NetworkServiceProfileL2BsaDto nspData) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .createOrUpdateNetworkServiceProfileL2Bsa()
+                .body(nspData)
                 .uuidPath(nspData.getUuid())
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }

@@ -17,6 +17,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -24,8 +25,7 @@ import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
@@ -59,12 +59,20 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-
         return a4ResourceOrder
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString();
+    }
+
+    @Step("Send POST for A10nsp Resource Order")
+    public Response sendPostResourceOrderWithoutChecks(ResourceOrder resourceOrder) {
+        return a4ResourceOrder
+                .resourceOrder()
+                .createResourceOrder()
+                .body(resourceOrder)
+                .execute(voidCheck());
     }
 
     @Step("Send POST for A10nsp Resource Order - Error")
@@ -93,8 +101,12 @@ public class A4ResourceOrderRobot {
     }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {
+        addOrderItem(orderItemId, actionType, nelData.getLbz(), ro);
+    }
+
+    public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro) {
         ResourceRefOrValue resource = new ResourceRefOrValue()
-                .name(nelData.getLbz())
+                .name(nelLbz)
                 .resourceCharacteristic(resourceOrderMapper.buildResourceCharacteristicList());
 
         ResourceOrderItem orderItem = new ResourceOrderItem()
@@ -179,6 +191,14 @@ public class A4ResourceOrderRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
                 .getBody()
                 .as(ResourceOrderDto.class);
+    }
+
+    public void checkResourceOrderDoesntExist(String id) {
+        a4ResourceOrderOrchestratorClient
+                .resourceOrder()
+                .getResourceOrder()
+                .uuidPath(id)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrdersFromDb() {
@@ -272,7 +292,7 @@ public class A4ResourceOrderRobot {
         return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);
     }
 
-    private void deleteA4TestDataRecursively(String roUuid) {
+    public void deleteA4TestDataRecursively(String roUuid) {
         deleteResourceOrder(roUuid); // no further instructions needed because of the cascaded data structure
     }
 

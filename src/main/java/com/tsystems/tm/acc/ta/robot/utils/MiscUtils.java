@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.Arrays;
@@ -38,7 +39,19 @@ public class MiscUtils {
     }
 
     public static String getEndsz(A4NetworkElement neData) {
-        return neData.getVpsz() + "/" + neData.getFsz();
+        return getEndsz(neData.getVpsz(), neData.getFsz());
+    }
+
+    public static String getEndsz(NetworkElementDto neData) {
+        return getEndsz(neData.getVpsz(), neData.getFsz());
+    }
+
+    public static String getEndsz(String vpsz, String fsz) {
+        return vpsz + "/" + fsz;
+    }
+
+    public static String getLbzByEndsz(String lsz, String orderNo, String endszA, String endszB) {
+        return lsz + "/" + orderNo + "-" + endszA + "-" + endszB;
     }
 
     // Get configured object mapper that supports TMF quirks
@@ -62,6 +75,11 @@ public class MiscUtils {
 
     public static boolean isNullOrEmpty(String string) {
         return string == null || string.isEmpty();
+    }
+
+    public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
+        String portNumber = functionalPortLabel.substring(functionalPortLabel.lastIndexOf("_") + 1);
+        return portNumber.replaceFirst("^0+(?!$)", ""); // Remove leading zeroes
     }
 
 }

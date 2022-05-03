@@ -6,6 +6,9 @@ import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
@@ -32,8 +35,24 @@ public class A4ResourceInventoryServiceRobot {
 
     @Step("Create Termination Point represented as Logical Resource")
     public Response createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
+        return createTerminationPoint(tpData, nepData.getUuid());
+    }
+
+    public Response createTerminationPoint(A4TerminationPoint tpData, String nepUuid) {
         LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
-                .getLogicalResourceUpdate(tpData, nepData);
+                .getLogicalResourceUpdate(tpData, nepUuid);
+
+        return a4ResourceInventoryService
+                .logicalResource()
+                .updateLogicalResourcePut()
+                .idPath(tpData.getUuid())
+                .body(terminationPointLogicalResource)
+                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+    }
+
+    public Response createTerminationPoint(TerminationPointDto tpData, String nepUuid) {
+        LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
+                .getLogicalResourceUpdate(tpData, nepUuid);
 
         return a4ResourceInventoryService
                 .logicalResource()
@@ -157,7 +176,7 @@ public class A4ResourceInventoryServiceRobot {
     }
 
     @Step("Send new operational state for Network Service Profile (L2BSA) without checks")
-    public Response sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(A4NetworkServiceProfileL2Bsa nspL2Data, A4TerminationPoint tpData, String newOperationalState) {
+    public Response sendStatusUpdateForNetworkServiceProfileL2BsaWithoutChecks(NetworkServiceProfileL2BsaDto nspL2Data, TerminationPointDto tpData, String newOperationalState) {
         LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
 
@@ -170,7 +189,7 @@ public class A4ResourceInventoryServiceRobot {
     }
 
     @Step("Send new operational state for Network Service Profile (A10NSP) without checks")
-    public Response sendStatusUpdateForNetworkServiceProfileA10NspWithoutChecks(A4NetworkServiceProfileA10Nsp nspA10nspData, A4TerminationPoint tpData, String newOperationalState) {
+    public Response sendStatusUpdateForNetworkServiceProfileA10NspWithoutChecks(NetworkServiceProfileA10NspDto nspA10nspData, TerminationPointDto tpData, String newOperationalState) {
         LogicalResourceUpdate nspA10nspLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspA10nspData, tpData, newOperationalState);
 
