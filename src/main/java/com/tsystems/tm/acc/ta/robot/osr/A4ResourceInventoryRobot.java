@@ -217,6 +217,15 @@ public class A4ResourceInventoryRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
+    @Step("Delete existing Network Service Profile (L2BSA) from A4 resource inventory without check")
+    public void deleteNetworkServiceProfileL2BsaWithoutCheck(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .deleteNetworkServiceProfileL2Bsa()
+                .uuidPath(uuid)
+                .execute(voidCheck());
+    }
+
     @Step("Delete all Network Service Profiles (FTTH Access) connected to given Termination Point")
     public void deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);

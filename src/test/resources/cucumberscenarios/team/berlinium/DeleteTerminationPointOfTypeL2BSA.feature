@@ -2,6 +2,11 @@
 Feature: Delete Termination Point of Type L2BSA_TP
   See https://gard.telekom.de/gardwiki/pages/viewpage.action?pageId=398395795 for details.
 
+  # @DIGIHUB-127641
+  # Scenario: NEMO deletes non-existent L2BSA Termination Point (idempotency test)
+  # is fulfilled with Scenario: NEMO deletes non-existent Termination Point
+  # in DpuCommissioningInA4PlatformDeleteFtthAccessLine
+
   #@DIGIHUB-xxxxxxx generate xray ticket here
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
