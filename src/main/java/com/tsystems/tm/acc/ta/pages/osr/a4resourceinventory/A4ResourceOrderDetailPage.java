@@ -17,16 +17,16 @@ public class A4ResourceOrderDetailPage {
     public static final By RO_ID_FIELD_LOCATOR = By.id("roId");
 
     @Getter
-    public static final By RO_VUEP_FIELD_LOCATOR = By.id("vuepPublicReferenceNumber");
+    public static final By RO_PUBLIC_REFERENCE_ID_FIELD_LOCATOR = By.id("publicReferenceId");
 
     @Getter
     public static final By RO_EXT_ORDER_ID_FIELD_LOCATOR = By.id("externalOrderId");
 
     @Getter
-    public static final By RO_CBR_FIELD_LOCATOR = By.id("carrierBsaReferenz");
+    public static final By RO_CBR_FIELD_LOCATOR = By.id("carrierBsaReference");
 
     @Getter
-    public static final By RO_RVNR_FIELD_LOCATOR = By.id("rahmenvertragsnummer");
+    public static final By RO_FRAME_CONTRACT_ID_FIELD_LOCATOR = By.id("frameContractId");
 
     @Getter
     public static final By RO_START_DATE_FIELD_LOCATOR = By.id("startDate");

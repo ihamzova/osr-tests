@@ -17,8 +17,8 @@ public class A4ResourceOrderSearchPageRobot {
     }
 
     @Step("Enter vuep")
-    public void enterRoVuep(String value) {
-        $(A4ResourceOrderSearchPage.getRO_VUEP_NUMBER_FIELD_LOCATOR()).val(value);
+    public void enterRoPublicReferenceId(String value) {
+        $(A4ResourceOrderSearchPage.getRO_PUBLIC_REFERENCE_ID_FIELD_LOCATOR()).val(value);
     }
 
     @Step("Select InProgress")

@@ -37,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP_PUBLIC_REFERENZ_NR;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.PUBLIC_REFERENCE_ID;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
@@ -129,7 +129,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
         ResourceOrder resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, resourceOrder);
-        a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
+        a4ResourceOrderRobot.setCharacteristicValue(PUBLIC_REFERENCE_ID, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
         return resourceOrder;
     }
 
@@ -171,7 +171,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns); // 7 is the number of columns
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(""); // or vuep
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -236,7 +236,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(""); // or vuep
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -292,7 +292,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, no checkbox with vuep")
     public void testRoSearchNoCheckboxWithVuep() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(vuep);
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(8);  // wait for result
 
@@ -301,7 +301,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(vuep);
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -358,7 +358,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, completed with vuep")
     public void testRoSearchCompletedWithVuep() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(vuep);
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(18);// wait for result
@@ -368,7 +368,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB, filter completed
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(vuep);
         System.out.println("+++ number of all ROs in DB with vuep: " + allRoList.size());
         // System.out.println("+++ allRoList: "+allRoList);
 
@@ -430,7 +430,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         ro.setId(roId);
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(vuep);
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();

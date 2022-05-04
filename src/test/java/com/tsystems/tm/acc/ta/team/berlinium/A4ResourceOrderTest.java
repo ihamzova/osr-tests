@@ -476,10 +476,10 @@ public class A4ResourceOrderTest {
     @DataProvider(name = "characteristicNamesDelete")
     public static Object[][] characteristicNamesDeleteString() {
         return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
+                {FRAME_CONTRACT_ID},
                 {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
                 {MTU_SIZE},
                 {VLAN_RANGE},
                 {QOS_LIST}};
@@ -568,10 +568,10 @@ public class A4ResourceOrderTest {
     @DataProvider(name = "characteristicNamesEmptyString")
     public static Object[][] characteristicNamesEmptyString() {
         return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
+                {FRAME_CONTRACT_ID},
                 {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
                 {MTU_SIZE}};
     }
 
