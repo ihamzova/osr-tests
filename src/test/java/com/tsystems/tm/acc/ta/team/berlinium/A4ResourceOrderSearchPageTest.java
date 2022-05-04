@@ -37,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.VUEP_PUBLIC_REFERENZ_NR;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.PUBLIC_REFERENCE_ID;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
@@ -129,7 +129,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
         ResourceOrder resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, resourceOrder);
-        a4ResourceOrderRobot.setCharacteristicValue(VUEP_PUBLIC_REFERENZ_NR, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
+        a4ResourceOrderRobot.setCharacteristicValue(PUBLIC_REFERENCE_ID, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
         return resourceOrder;
     }
 

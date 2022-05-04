@@ -36,7 +36,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @Epic("OS&R")
 public class A4ResourceOrderTest {
 
-    // test send a request (resource order) from simulated Merlin to Berlinium and get a callback
+    // test send a request (resource order) from simulated Sputnik to Berlinium and get a callback
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
@@ -476,10 +476,10 @@ public class A4ResourceOrderTest {
     @DataProvider(name = "characteristicNamesDelete")
     public static Object[][] characteristicNamesDeleteString() {
         return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
+                {FRAME_CONTRACT_ID},
                 {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
                 {MTU_SIZE},
                 {VLAN_RANGE},
                 {QOS_LIST}};
@@ -568,10 +568,10 @@ public class A4ResourceOrderTest {
     @DataProvider(name = "characteristicNamesEmptyString")
     public static Object[][] characteristicNamesEmptyString() {
         return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
+                {FRAME_CONTRACT_ID},
                 {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
                 {MTU_SIZE}};
     }
 
