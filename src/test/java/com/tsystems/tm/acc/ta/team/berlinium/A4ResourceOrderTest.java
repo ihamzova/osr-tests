@@ -36,7 +36,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @Epic("OS&R")
 public class A4ResourceOrderTest {
 
-    // test send a request (resource order) from simulated Merlin to Berlinium and get a callback
+    // test send a request (resource order) from simulated Sputnik to Berlinium and get a callback
 
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);

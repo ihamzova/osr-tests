@@ -11,13 +11,19 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceOrderMapper {
 
+    //public static final String RAHMEN_VERTRAGS_NR = "RahmenvertragsNr";
     public static final String FRAME_CONTRACT_ID = "frameContractId";
+    //public static final String CARRIER_BSA_REFERENCE = "Subscription.keyA";
     public static final String CARRIER_BSA_REFERENCE = "carrierBsaReference";
+    //public static final String VUEP_PUBLIC_REFERENZ_NR = "VUEP_Public_Referenz-Nr.";
     public static final String PUBLIC_REFERENCE_ID = "publicReferenceId";
+    //public static final String LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV = "LACP_aktiv";
     public static final String LACP_ACTIVE = "lacpActive";
     public static final String MTU_SIZE = "mtuSize";
     public static final String VLAN_RANGE = "VLAN_Range";
     public static final String QOS_LIST = "QoS_List";
+    public static final String OVERALL_BANDWIDTH = "linkOverallBandwidth";
+
 
 
     public ResourceOrder buildResourceOrder() {
@@ -32,14 +38,14 @@ public class A4ResourceOrderMapper {
     public List<Characteristic> buildResourceCharacteristicList() {
         List<Characteristic> cList = new ArrayList<>();
 
-        addCharacteristic(FRAME_CONTRACT_ID, getRandomDigits(8), "valueTypeRv", cList);
+        addCharacteristic(FRAME_CONTRACT_ID, getRandomDigits(8), "valueTypeId", cList);
         addCharacteristic(CARRIER_BSA_REFERENCE, UUID.randomUUID().toString(), "valueTypeCbr", cList);
-        addCharacteristic(PUBLIC_REFERENCE_ID, "A1000851", "valueTypeVuep", cList);
+        addCharacteristic(PUBLIC_REFERENCE_ID, "A1000851", "valueTypePublic", cList);
         addCharacteristic(LACP_ACTIVE, "true", "valueTypeLacp", cList);
         addCharacteristic(MTU_SIZE, "1590", "valueTypeMtu", cList);
-        addCharacteristic(VLAN_RANGE, buildVlanRange(), "Object", cList);
-        addCharacteristic(QOS_LIST, buildQosList(), "Object", cList);
-
+        addCharacteristic(VLAN_RANGE, buildVlanRange(), "valueTypeVlan", cList);
+        addCharacteristic(QOS_LIST, buildQosList(), "valueTypeQos", cList);
+        addCharacteristic(OVERALL_BANDWIDTH, "7777", "valueTypeBw", cList);
         return cList;
     }
 
