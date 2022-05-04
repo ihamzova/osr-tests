@@ -208,11 +208,11 @@ public class A4ResourceOrderRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
+    public List<ResourceOrderMainDataDto> getResourceOrderListByPublicReferenceIdFromDb(String publicReferenceId) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()
-                .vuepPublicReferenceNrQuery(vuep)
+                .publicReferenceIdQuery(publicReferenceId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 

@@ -54,7 +54,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
-    private final String vuep = "A1000858-" + UUID.randomUUID();
+    private final String publicReferenceId = "A1000858-" + UUID.randomUUID();
     private final int SleeperInSec = 20; // workaround while performance problems
 
     private A4NetworkElementGroup negData;
@@ -129,7 +129,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     private ResourceOrder initResourceOrder(A4NetworkElementLink nelData) {
         ResourceOrder resourceOrder = a4ResourceOrderRobot.buildResourceOrder();
         a4ResourceOrderRobot.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData, resourceOrder);
-        a4ResourceOrderRobot.setCharacteristicValue(PUBLIC_REFERENCE_ID, vuep, DEFAULT_ORDER_ITEM_ID, resourceOrder);
+        a4ResourceOrderRobot.setCharacteristicValue(PUBLIC_REFERENCE_ID, publicReferenceId, DEFAULT_ORDER_ITEM_ID, resourceOrder);
         return resourceOrder;
     }
 
@@ -156,8 +156,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
-    @Description("test RO search page of A4 browser, all checkboxes without vuep")
-    public void testRoSearchAllCheckboxesWithoutVuep() {
+    @Description("test RO search page of A4 browser, all checkboxes without publicReferenceId")
+    public void testRoSearchAllCheckboxesWithoutPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
 
         a4ResourceOrderSearchPageRobot.selectCompleted();
@@ -171,7 +171,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns); // 7 is the number of columns
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(""); // or publicReferenceId
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -225,8 +225,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
-    @Description("test RO search page of A4 browser, no checkbox without vuep")
-    public void testRoSearchNoCheckboxWithoutVuep() {
+    @Description("test RO search page of A4 browser, no checkbox without public reference id")
+    public void testRoSearchNoCheckboxWithoutPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(SleeperInSec);  // wait for result
@@ -236,7 +236,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(""); // or vuep
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(""); // or publicReferenceId
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -289,10 +289,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
-    @Description("test RO search page of A4 browser, no checkbox with vuep")
-    public void testRoSearchNoCheckboxWithVuep() {
+    @Description("test RO search page of A4 browser, no checkbox with public reference id")
+    public void testRoSearchNoCheckboxWithPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(8);  // wait for result
 
@@ -301,7 +301,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(publicReferenceId);
 
         // filter, also null
         List<ResourceOrderMainDataDto> filteredRoList;
@@ -355,10 +355,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
-    @Description("test RO search page of A4 browser, completed with vuep")
-    public void testRoSearchCompletedWithVuep() {
+    @Description("test RO search page of A4 browser, completed with publicReferenceId")
+    public void testRoSearchCompletedWithPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(18);// wait for result
@@ -368,8 +368,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // get ROs from DB, filter completed
-        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByVuepFromDb(vuep);
-        System.out.println("+++ number of all ROs in DB with vuep: " + allRoList.size());
+        List<ResourceOrderMainDataDto> allRoList = a4ResourceOrderRobot.getResourceOrderListByPublicReferenceIdFromDb(publicReferenceId);
+        System.out.println("+++ number of all ROs in DB with publicReferenceId: " + allRoList.size());
         // System.out.println("+++ allRoList: "+allRoList);
 
         // filter, also null
@@ -418,8 +418,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Test
     @Owner("Heiko.Schwanke@t-systems.com")
     @TmsLink("DIGIHUB-116462")
-    @Description("test RO search page of A4 browser, rejected and inprogress with vuep")
-    public void testRoSearchRejectedInprogressWithVuep() {
+    @Description("test RO search page of A4 browser, rejected and inprogress with publicReferenceId")
+    public void testRoSearchRejectedInprogressWithPublicReferenceId() {
         a4ResourceOrderRobot.deleteA4TestDataRecursively(ro);
         //creating a RO with wrong LBZ to provoke RO status = rejected
         assertNotNull(ro.getOrderItem());
@@ -430,7 +430,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         ro.setId(roId);
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-        a4ResourceOrderSearchPageRobot.enterRoVuep(vuep);
+        a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
@@ -443,7 +443,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         // search-page
         assertEquals(roCollection.get(1).innerText(), ro.getId()); // RO-ID
         assertEquals(roCollection.get(2).innerText(), ro.getExternalId()); // ext ID
-        assertEquals(roCollection.get(3).innerText(), vuep); // vuep
+        assertEquals(roCollection.get(3).innerText(), publicReferenceId); // publicReferenceId
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();

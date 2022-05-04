@@ -25,7 +25,7 @@ public class A4ResourceOrderSearchPage {
 
 
     @Getter
-    public static final By RO_VUEP_NUMBER_FIELD_LOCATOR = By.id("vuep");
+    public static final By RO_PUBLIC_REFERENCE_ID_FIELD_LOCATOR = By.id("publicReferenceId");
 
     @Getter
     public static final By RO_SEARCH_BUTTON_LOCATOR = By.id("searchSubmit");
