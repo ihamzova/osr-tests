@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import cucumber.Context;
@@ -464,6 +465,17 @@ public class A4ResInvSteps {
     @Given("a NSP A10NSP with operationalState {string} and lifecycleState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenNspA10nspWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState, String lifecycleState) {
         createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
+    }
+
+    @Given("no NSP L2BSA( connected to the TP)( exists in A4)( resource inventory)")
+    public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = new NetworkServiceProfileL2BsaDto();
+        nspL2Bsa.setUuid(UUID.randomUUID().toString());
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNetworkServiceProfileL2BsaWithoutCheck(nspL2Bsa.getUuid());
+
+        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
     }
 
     @Given("a/another NSP A10NSP with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")

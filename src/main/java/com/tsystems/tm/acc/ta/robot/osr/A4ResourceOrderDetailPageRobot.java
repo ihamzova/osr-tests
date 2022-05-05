@@ -3,7 +3,6 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceOrderDetailPage;
 
-import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceOrderSearchPage;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
@@ -14,7 +13,7 @@ public class A4ResourceOrderDetailPageRobot {
 
     @Step("Read vuep")
     public String readVuep() {
-        return $(A4ResourceOrderDetailPage.getRO_VUEP_FIELD_LOCATOR()).innerHtml();
+        return $(A4ResourceOrderDetailPage.getRO_PUBLIC_REFERENCE_ID_FIELD_LOCATOR()).innerHtml();
     }
 
     @Step("Read RO-ID")
@@ -27,14 +26,14 @@ public class A4ResourceOrderDetailPageRobot {
         return $(A4ResourceOrderDetailPage.getRO_EXT_ORDER_ID_FIELD_LOCATOR()).innerHtml();
     }
 
-    @Step("Read carrierBsaReferenz")
-    public String readCarrierBsaReferenz() {
+    @Step("Read carrierBsaReference")
+    public String readCarrierBsaReference() {
         return $(A4ResourceOrderDetailPage.getRO_CBR_FIELD_LOCATOR()).innerHtml();
     }
 
-    @Step("Read rahmenvertragsnummer")
-    public String readRahmenvertragsnummer() {
-        return $(A4ResourceOrderDetailPage.getRO_RVNR_FIELD_LOCATOR()).innerHtml();
+    @Step("Read frameContractId")
+    public String readFrameContractId() {
+        return $(A4ResourceOrderDetailPage.getRO_FRAME_CONTRACT_ID_FIELD_LOCATOR()).innerHtml();
     }
 
     @Step("Read startDate")

@@ -37,7 +37,7 @@ import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf65
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
 public class A4ResourceOrderTest {
-    // test send a request (resource order) from simulated Merlin to Berlinium and get a callback
+    // test send a request (resource order) from simulated Sputnik to Berlinium and get a callback
     private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
     private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
@@ -73,54 +73,6 @@ public class A4ResourceOrderTest {
     private ResourceOrder ro;
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME)).build();
-
-    @DataProvider(name = "vlanRangeCombinations")
-    public static Object[][] vlanRangeCombinations() {
-        VlanRange vlanRange1 = new VlanRange()
-                .vlanRangeLower(null)
-                .vlanRangeUpper(null);
-        VlanRange vlanRange2 = new VlanRange()
-                .vlanRangeLower("")  // values empty, no change in db; ok
-                .vlanRangeUpper("");
-        VlanRange vlanRange3 = new VlanRange()
-                .vlanRangeLower("3")
-                .vlanRangeUpper("");
-        VlanRange vlanRange4 = new VlanRange()
-                .vlanRangeLower(null)
-                .vlanRangeUpper("4012");
-        return new Object[][]{
-                {vlanRange1},
-                {vlanRange2},
-                {vlanRange3},
-                {vlanRange4}};
-    }
-
-    @DataProvider(name = "characteristicNamesDelete")
-    public static Object[][] characteristicNamesDeleteString() {
-        return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
-                {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTIV},
-                {MTU_SIZE},
-                {VLAN_RANGE},
-                {QOS_LIST}};
-    }
-
-    @DataProvider(name = "characteristicNamesEmptyString")
-    public static Object[][] characteristicNamesEmptyString() {
-        return new Object[][]{
-                {RAHMEN_VERTRAGS_NR},
-                {CARRIER_BSA_REFERENCE},
-                {VUEP_PUBLIC_REFERENZ_NR},
-                {LACP_AKTIV},
-                {MTU_SIZE}};
-    }
-
-    @DataProvider(name = "characteristicNamesEmptyList")
-    public static Object[][] characteristicNamesEmptyList() {
-        return new Object[][]{{VLAN_RANGE}};
-    }
 
     @BeforeClass
     public void init() {
@@ -218,24 +170,29 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.deleteA4TestDataRecursively(ro);
     }
 
-    @Test
-    @Owner("DL_Berlinium@telekom.de")
-    @TmsLink("DIGIHUB-126401")
-    @Description("add-case: send RO with -add- and get -completed-")
-    public void testRoAddItem() {
-        // GIVEN
-        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData2, ro);
-        // post first input request that resource order processing is starting
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
-        sleepForSeconds(SLEEP_TIMER);
-        // process resource order checks
-        a4ResourceOrder.checkResourceOrderState(ro, roUuid, ResourceOrderStateType.COMPLETED);
-        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
-        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), HttpMethod.GET, 1);
-        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a4ResourceOrder.getA10NspA4Dto(ro), HttpMethod.POST, 1);
-        // all done, finally check event publishing
-        a4Wiremock.checkSyncRequest(URL_EVENT_PUBLISH, HttpMethod.POST, 1);
+    @DataProvider(name = "vlanRangeCombinations")
+    public static Object[][] vlanRangeCombinations() {
+        VlanRange vlanRange1 = new VlanRange()
+                .vlanRangeLower(null)
+                .vlanRangeUpper(null);
+
+        VlanRange vlanRange2 = new VlanRange()
+                .vlanRangeLower("")  // values empty, no change in db; ok
+                .vlanRangeUpper("");
+
+        VlanRange vlanRange3 = new VlanRange()
+                .vlanRangeLower("3")
+                .vlanRangeUpper("");
+
+        VlanRange vlanRange4 = new VlanRange()
+                .vlanRangeLower(null)
+                .vlanRangeUpper("4012");
+
+        return new Object[][]{
+                {vlanRange1},
+                {vlanRange2},
+                {vlanRange3},
+                {vlanRange4}};
     }
 
     @Test(dataProvider = "vlanRangeCombinations")
@@ -320,8 +277,29 @@ public class A4ResourceOrderTest {
         System.out.println("+++ uuid der RO: " + roUuid);
         sleepForSeconds(SLEEP_TIMER);
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
-        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+    }
+
+    @Test
+    @Owner("DL_Berlinium@telekom.de")
+    @TmsLink("DIGIHUB-126401")
+    @Description("add-case: send RO with -add- and get -completed-")
+    public void testRoAddItem() {
+        // GIVEN
+        a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData2, ro);
+        // post first input request that resource order processing is starting
+        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
+        System.out.println("+++ uuid der RO: " + roUuid);
+        sleepForSeconds(SLEEP_TIMER);
+        // process resource order checks
+        a4ResourceOrder.checkResourceOrderState(ro, roUuid, ResourceOrderStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
+        a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), HttpMethod.GET, 1);
+        a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a4ResourceOrder.getA10NspA4Dto(ro), HttpMethod.POST, 1);
+        // all done, finally check event publishing
+        a4Wiremock.checkSyncRequest(URL_EVENT_PUBLISH, HttpMethod.POST, 1);
     }
 
     @Test(description = "DIGIHUB-142958 error-case: send RO with Id and get Response with -400- from roo")
@@ -332,7 +310,8 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData2, ro);
         ro.setId(UUID.randomUUID().toString());
-        System.out.println("+++ RO mit uuid: " + ro);
+        System.out.println("+++ RO mit uuid: "+ro);
+
         // WHEN
         a4ResourceOrder.sendPostResourceOrderError400(ro);
         sleepForSeconds(SLEEP_TIMER);
@@ -438,8 +417,21 @@ public class A4ResourceOrderTest {
         System.out.println("+++ uuid der RO: " + roUuid);
         sleepForSeconds(SLEEP_TIMER);
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
-        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected (ro);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.REJECTED);
+
+    }
+
+    @DataProvider(name = "characteristicNamesDelete")
+    public static Object[][] characteristicNamesDeleteString() {
+        return new Object[][]{
+                {FRAME_CONTRACT_ID},
+                {CARRIER_BSA_REFERENCE},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
+                {MTU_SIZE},
+                {VLAN_RANGE},
+                {QOS_LIST}};
     }
 
     @Test(dataProvider = "characteristicNamesDelete")
@@ -506,8 +498,19 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
-        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
-        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), roiId2, COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), DEFAULT_ORDER_ITEM_ID, ResourceOrderItemStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderItemHasCorrectState(ro.getId(), roiId2, ResourceOrderItemStateType.COMPLETED);
+
+    }
+
+    @DataProvider(name = "characteristicNamesEmptyString")
+    public static Object[][] characteristicNamesEmptyString() {
+        return new Object[][]{
+                {FRAME_CONTRACT_ID},
+                {CARRIER_BSA_REFERENCE},
+                {PUBLIC_REFERENCE_ID},
+                {LACP_ACTIVE},
+                {MTU_SIZE}};
     }
 
     @Test(dataProvider = "characteristicNamesEmptyString")

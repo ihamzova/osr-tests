@@ -27,6 +27,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.FRAME_CONTRACT_ID;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static org.assertj.core.util.IterableUtil.isNullOrEmpty;
@@ -207,11 +211,11 @@ public class A4ResourceOrderRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public List<ResourceOrderMainDataDto> getResourceOrderListByVuepFromDb(String vuep) {
+    public List<ResourceOrderMainDataDto> getResourceOrderListByPublicReferenceIdFromDb(String publicReferenceId) {
         return a4ResourceOrderOrchestratorClient
                 .resourceOrder()
                 .listResourceOrders()
-                .vuepPublicReferenceNrQuery(vuep)
+                .publicReferenceIdQuery(publicReferenceId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
@@ -233,7 +237,7 @@ public class A4ResourceOrderRobot {
 
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        assertNotNull(roDb);
+        assertNotNull(roDb); // passende RO gefunden
         assertEquals(roDb.getId(), roUuid);
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(roDb.getState(), ResourceOrderStateType.COMPLETED.toString());
@@ -246,6 +250,7 @@ public class A4ResourceOrderRobot {
 
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+        assertNotNull(roDb); // passende RO gefunden
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
     }
@@ -292,7 +297,7 @@ public class A4ResourceOrderRobot {
 
     public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {
         ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
-        String rvNumber = (String) getCharacteristic(RAHMEN_VERTRAGS_NR, roi).getValue();
+        String rvNumber = (String) getCharacteristic(FRAME_CONTRACT_ID, roi).getValue();
         String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
 
         return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);

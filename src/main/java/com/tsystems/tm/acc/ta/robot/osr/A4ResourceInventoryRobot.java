@@ -87,15 +87,7 @@ public class A4ResourceInventoryRobot {
         createNetworkElement(neDto);
     }
 
-    @Step("Delete existing Network Element from A4 resource inventory")
-    public void deleteNetworkElement(String uuid) {
-        a4ResourceInventory
-                .networkElements()
-                .deleteNetworkElement()
-                .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
-    }
-
+    @Step("Delete Network Element from A4 resource inventory")
     public void deleteNetworkElementNoChecks(String uuid) {
         a4ResourceInventory
                 .networkElements()
@@ -223,6 +215,15 @@ public class A4ResourceInventoryRobot {
                 .deleteNetworkServiceProfileL2Bsa()
                 .uuidPath(uuid)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+    }
+
+    @Step("Delete existing Network Service Profile (L2BSA) from A4 resource inventory without check")
+    public void deleteNetworkServiceProfileL2BsaWithoutCheck(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .deleteNetworkServiceProfileL2Bsa()
+                .uuidPath(uuid)
+                .execute(voidCheck());
     }
 
     @Step("Delete all Network Service Profiles (FTTH Access) connected to given Termination Point")
@@ -874,7 +875,6 @@ public class A4ResourceInventoryRobot {
         );
     }
 
-    @Step("Delete NSP L2BSA by line id")
     public void deleteNspsL2Bsa(A4NetworkServiceProfileL2Bsa nspL2Bsa) {
         // NSP lineId has to be unique, so let's delete by that, to avoid constraint violations for future tests
 
