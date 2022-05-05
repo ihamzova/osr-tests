@@ -44,6 +44,8 @@ public class NemoStatusUpdateTest {
 
     private final static String OPERATIONAL_STATE_WORKING = "WORKING";
     private final static String LIFECYCLE_STATE_OPERATING = "OPERATING";
+    private final static String OPERATIONAL_STATE_FAILED = "FAILED";
+    private final static String LIFECYCLE_STATE_PLANNING = "PLANNING";
 
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
@@ -139,6 +141,22 @@ public class NemoStatusUpdateTest {
         // THEN
         TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_WORKING, LIFECYCLE_STATE_OPERATING);
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData,timeBeforeNemoStatusUpdate);
+    }
+
+
+    @Test(description = "DIGIHUB-xxxxx NEMO sends a status update for A4 Network Element to FAILED")
+    @Owner("bela.kovac@t-systems.com")
+    @Description("NEMO sends a status update for A4 Network Element to FAILED")
+    public void testNemoStatusUpdateForNeToFailed() throws InterruptedException {
+        //GIVEN
+        OffsetDateTime timeBeforeNemoStatusUpdate = OffsetDateTime.now();
+        // WHEN
+        nemo.sendStatusUpdateForNetworkElement(neData, negData, OPERATIONAL_STATE_FAILED);
+
+        // THEN
+        TimeUnit.SECONDS.sleep(SLEEP_TIMER); //wait a bit until StatusUpdate is really ready
+        a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithNewStates(neData, OPERATIONAL_STATE_FAILED, LIFECYCLE_STATE_PLANNING);
         a4ResourceInventoryRobot.checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData,timeBeforeNemoStatusUpdate);
     }
 
