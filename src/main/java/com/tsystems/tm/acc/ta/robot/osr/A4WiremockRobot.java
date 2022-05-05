@@ -8,11 +8,12 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 
 public class A4WiremockRobot {
 
-    public void checkSyncRequest(String url, String method, int count) {
+    public void checkSyncRequest(String url, String method, int count, long timeout) {
         WireMockFactory.get().retrieve(
                 exactly(count),
                 newRequestPattern(
                         RequestMethod.fromString(method),
-                        urlPathEqualTo(url)), 1000);
+                        urlPathEqualTo(url)),
+                timeout);
     }
 }

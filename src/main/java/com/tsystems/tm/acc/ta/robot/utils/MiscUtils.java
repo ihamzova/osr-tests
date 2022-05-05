@@ -9,6 +9,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkE
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +76,12 @@ public class MiscUtils {
 
     public static boolean isNullOrEmpty(String string) {
         return string == null || string.isEmpty();
+    }
+
+    public static boolean isNullOrEmpty(Iterable<?> iterable) {
+        if (iterable == null) return true;
+        if (iterable instanceof Collection && ((Collection<?>) iterable).isEmpty()) return true;
+        return !iterable.iterator().hasNext();
     }
 
     public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {

@@ -6,25 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper.LACP_ACTIVE;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 
 public class A4ResourceOrderMapper {
 
-    //public static final String RAHMEN_VERTRAGS_NR = "RahmenvertragsNr";
     public static final String FRAME_CONTRACT_ID = "frameContractId";
-    //public static final String CARRIER_BSA_REFERENCE = "Subscription.keyA";
     public static final String CARRIER_BSA_REFERENCE = "carrierBsaReference";
-    //public static final String VUEP_PUBLIC_REFERENZ_NR = "VUEP_Public_Referenz-Nr.";
     public static final String PUBLIC_REFERENCE_ID = "publicReferenceId";
-    //public static final String LACP_AKTVUEP_PUBLIC_REFERENZ_NRIV = "LACP_aktiv";
     public static final String LACP_ACTIVE = "lacpActive";
     public static final String MTU_SIZE = "mtuSize";
     public static final String VLAN_RANGE = "VLAN_Range";
     public static final String QOS_LIST = "QoS_List";
     public static final String OVERALL_BANDWIDTH = "linkOverallBandwidth";
-
-
 
     public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
