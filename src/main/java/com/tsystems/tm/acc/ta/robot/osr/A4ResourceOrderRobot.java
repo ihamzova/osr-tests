@@ -27,10 +27,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.RAHMEN_VERTRAGS_NR;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
+import static org.assertj.core.util.IterableUtil.isNullOrEmpty;
 import static org.testng.Assert.*;
 
 
@@ -224,22 +223,29 @@ public class A4ResourceOrderRobot {
             assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
+    public void checkResourceOrderState(ResourceOrder ro, String roUuid, ResourceOrderStateType stateType) {
+        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+        assertNotNull(roDb);
+        assertEquals(roDb.getId(), roUuid);
+        ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
+        assertEquals(roDb.getState(), stateType.toString());
+    }
+
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        assertNotNull(roDb); // passende RO gefunden
+        assertNotNull(roDb);
         assertEquals(roDb.getId(), roUuid);
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(roDb.getState(), ResourceOrderStateType.COMPLETED.toString());
 
         // vollständige RO holen (ResourceOrderDto)
         ResourceOrderDto roDbDto = getResourceOrderFromDb(roDb.getId());
-        if (roDbDto.getOrderItem() != null && !roDbDto.getOrderItem().isEmpty())
+        if (!isNullOrEmpty(roDbDto.getOrderItem()))
             assertEquals(roDbDto.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
     }
 
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
         ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        assertNotNull(roDb); // passende RO gefunden
         ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
         assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
     }

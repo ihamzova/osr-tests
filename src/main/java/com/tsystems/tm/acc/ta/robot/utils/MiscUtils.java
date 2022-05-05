@@ -26,9 +26,9 @@ public class MiscUtils {
 
     public static void sleepForSeconds(int seconds) {
         try {
+            System.out.printf("Sleep for %s seconds%n", seconds);
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
-            e.printStackTrace();
             fail("Unexpected exception: " + e.getMessage());
             Thread.currentThread().interrupt(); // make sonar happy
         }
