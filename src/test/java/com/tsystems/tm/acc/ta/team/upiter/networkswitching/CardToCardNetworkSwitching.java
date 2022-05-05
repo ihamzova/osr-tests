@@ -165,13 +165,10 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         assertEquals(sourceOnuIdsAfterCommitPort2.size(), 0);
         assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size(), 32);
         assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size(), 32);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H2_3_0).size(), 0);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H2_3_1).size(), 0);
         accessLineRiRobot.checkFtthPortParameters(endSz_49_30_179_76H2_3_0);
         accessLineRiRobot.checkFtthPortParameters(endSz_49_30_179_76H2_3_1);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(endSz_49_30_179_76H2_3_0, 0, 1);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(endSz_49_30_179_76H2_3_1, 0, 1);
-
     }
 
     @Test

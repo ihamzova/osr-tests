@@ -61,13 +61,6 @@ values:
   homeIdPool: 0
   backhaulId: 1
 ---
-name: standardDpuDeviceData
-template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
-values:
-  ponConnectionWe: "2"
-  ponConnectionGe: "2"
-  ponConnectionSl: "1"
----
 name: dpuDemand
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand
 values:

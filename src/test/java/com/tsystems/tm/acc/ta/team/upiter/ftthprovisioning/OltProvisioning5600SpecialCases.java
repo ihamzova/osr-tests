@@ -58,7 +58,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H2");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H3");
         Thread.sleep(3000);
-        accessLineRiRobot.fillDatabaseForOltCommissioningV2(1, 1);
+        accessLineRiRobot.fillDatabaseForOltCommissioningV2(10000, 10000);
     }
 
     @Test
