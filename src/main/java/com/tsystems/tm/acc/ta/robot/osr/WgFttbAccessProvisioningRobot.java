@@ -86,21 +86,4 @@ public class WgFttbAccessProvisioningRobot {
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
         log.info("Received xCallbackCorrelationId: " + uuid.toString());
     }
-
-    @Step("Change feature toggle state")
-    public void changeFeatureToogleDpuDemandState(boolean toggleState) {
-        if (toggleState) {
-            unleashClient.enableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-        } else {
-            unleashClient.disableToggle(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-        }
-        log.info("toggleState for {} = {}", FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME , toggleState);
-    }
-
-    @Step("Get feature toggle state")
-    public boolean getFeatureToggleDpuDemandState() {
-        return unleashClient.isToggleEnabled(FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME);
-    }
-
-
 }

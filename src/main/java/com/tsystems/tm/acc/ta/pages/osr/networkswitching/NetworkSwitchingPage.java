@@ -219,7 +219,7 @@ public class NetworkSwitchingPage {
         $(ACTIONS_DROPDOWN).click();
         $(PORTDEPROVISIONING).click();
         $(COMMIT_BUTTON).click();
-        $(NOTIFICATION).shouldHave(text("Der Commit-Prozess wurde gestartet"));
+        $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
         closeNotificationButton();
         return this;
     }
@@ -230,7 +230,7 @@ public class NetworkSwitchingPage {
         getPackageInfo(packageId);
         getPackageStatus().contains("PREPARED");
         $(COMMIT_BUTTON).click();
-        $(NOTIFICATION).shouldHave(text("Der Commit-Prozess wurde gestartet"));
+        $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
         closeNotificationButton();
         return this;
     }

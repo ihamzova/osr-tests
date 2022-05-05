@@ -51,8 +51,7 @@
     </test>
     <test thread-count="1" name="FTTB Provisioning Backend Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioningFeatureToggleOn"/>
-            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioningFeatureToggleOff"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.fttbprovisioning.WgFttbAccessProvisioning"/>
         </classes>
     </test>
     <test thread-count="1" name="Ral Test">
