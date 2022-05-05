@@ -20,17 +20,19 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_BFF_PROXY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.WIREMOCK_MS_NAME;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.FRAME_CONTRACT_ID;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
 import static org.testng.Assert.*;
 
 
@@ -38,28 +40,23 @@ import static org.testng.Assert.*;
 public class A4ResourceOrderRobot {
 
     public static final String CB_PATH = "/test_url";
-
     private static final AuthTokenProvider getAuthTokenProviderA4ResourceOrder =
             new RhssoClientFlowAuthTokenProvider(WIREMOCK_MS_NAME,
                     RhssoHelper.getSecretOfGigabitHub(WIREMOCK_MS_NAME));
-
     private static final AuthTokenProvider authTokenProviderOrchestrator =
             new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
                     RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
-
-    private final ApiClient a4ResourceOrder =
-            new A4ResourceOrderClient(getAuthTokenProviderA4ResourceOrder).getClient();
-
+    private static final String FIRST_ORDER_ITEM = "-1";
+    private final ApiClient internalClient = new A4ResourceOrderClient(getAuthTokenProviderA4ResourceOrder).getClient();
     private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator
-            .client.invoker.ApiClient a4ResourceOrderOrchestratorClient =
+            .client.invoker.ApiClient externalClient =
             new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
-
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
     private final A10nspA4DtoMapper a10Mapper = new A10nspA4DtoMapper();
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-        return a4ResourceOrder
+        return internalClient
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
@@ -68,7 +65,7 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public Response sendPostResourceOrderWithoutChecks(ResourceOrder resourceOrder) {
-        return a4ResourceOrder
+        return internalClient
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
@@ -77,7 +74,7 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order - Error")
     public void sendPostResourceOrderError400(ResourceOrder resourceOrder) {
-        a4ResourceOrder
+        internalClient
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
@@ -150,25 +147,17 @@ public class A4ResourceOrderRobot {
     }
 
     public ResourceOrderItem getResourceOrderItemByOrderItemId(String orderItemId, ResourceOrder ro) {
-        List<ResourceOrderItem> roiList = ro.getOrderItem();
-
-        if (roiList != null) {
-            for (ResourceOrderItem resourceOrderItem : roiList) {
-                if (resourceOrderItem.getId().equals(orderItemId))
-                    return resourceOrderItem;
-            }
-        }
-        return null;
+        return Optional.ofNullable(ro.getOrderItem()).map(Collection::stream).orElseGet(Stream::empty)
+                .filter(resourceOrderItem -> resourceOrderItem.getId().equals(orderItemId))
+                .findFirst()
+                .orElse(null);
     }
 
     public ResourceOrderItemDto getResourceOrderItemByOrderItemDtoId(String orderItemId, List<ResourceOrderItemDto> roiList) {
-        if (roiList != null) {
-            for (ResourceOrderItemDto resourceOrderItem : roiList) {
-                if (Objects.equals(resourceOrderItem.getId(), orderItemId))
-                    return resourceOrderItem;
-            }
-        }
-        return null;
+        return roiList != null ? roiList.stream()
+                .filter(x -> !isNullOrEmpty(x.getId()))
+                .filter(resourceOrderItem -> resourceOrderItem.getId().equals(orderItemId))
+                .findAny().orElse(null) : null;
     }
 
     public void cleanCallbacksInWiremock() {
@@ -184,7 +173,7 @@ public class A4ResourceOrderRobot {
     }
 
     public ResourceOrderDto getResourceOrderFromDb(String id) {
-        return a4ResourceOrderOrchestratorClient
+        return externalClient
                 .resourceOrder()
                 .getResourceOrder()
                 .uuidPath(id)
@@ -194,7 +183,7 @@ public class A4ResourceOrderRobot {
     }
 
     public void checkResourceOrderDoesntExist(String id) {
-        a4ResourceOrderOrchestratorClient
+        externalClient
                 .resourceOrder()
                 .getResourceOrder()
                 .uuidPath(id)
@@ -202,46 +191,55 @@ public class A4ResourceOrderRobot {
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrdersFromDb() {
-        return a4ResourceOrderOrchestratorClient
+        return externalClient
                 .resourceOrder()
                 .listResourceOrders()
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrderListByPublicReferenceIdFromDb(String publicReferenceId) {
-        return a4ResourceOrderOrchestratorClient
+        return externalClient
                 .resourceOrder()
                 .listResourceOrders()
                 .publicReferenceIdQuery(publicReferenceId)
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public void getResourceOrderFromDbAndCheckIfCompleted(ResourceOrder ro) {
-        ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
+    public String checkResourceOrderState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
+        String roId;
+        String roState;
+        if (isNullOrEmpty(ro.getId())) {
+            ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+            assertNotNull(roDb);
+            roId = roDb.getId();
+            roState = roDb.getState();
+        } else {
+            ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
+            assertNotNull(roDb);
+            roId = roDb.getId();
+            roState = roDb.getState();
+        }
+        if (!isNullOrEmpty(roUuid)) assertEquals(roId, roUuid);
+        ro.setId(roId); // damit das Löschen der RO am Ende geht
+        assertEquals(roState, checkedState.toString());
+        return roId;
+    }
 
-        assertEquals(ResourceOrderStateType.COMPLETED.toString(), roDb.getState());
-        if (roDb.getOrderItem() != null && !roDb.getOrderItem().isEmpty())
-            assertEquals(roDb.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
+    public void checkResourceOrderAndFirstItemState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
+        String roId = checkResourceOrderState(ro, roUuid, checkedState);
+        checkResourceOrderItemState(roId, FIRST_ORDER_ITEM, getRoiType(checkedState));
+    }
+
+    private ResourceOrderItemStateType getRoiType(ResourceOrderStateType stateType) {
+        return ResourceOrderItemStateType.valueOf(stateType.name());
     }
 
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
-        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        assertNotNull(roDb); // passende RO gefunden
-        assertEquals(roDb.getId(), roUuid);
-        ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
-        assertEquals(roDb.getState(), ResourceOrderStateType.COMPLETED.toString());
-
-        // vollständige RO holen (ResourceOrderDto)
-        ResourceOrderDto roDbDto = getResourceOrderFromDb(roDb.getId());
-        if (roDbDto.getOrderItem() != null && !roDbDto.getOrderItem().isEmpty())
-            assertEquals(roDbDto.getOrderItem().get(0).getState(), ResourceOrderItemStateType.COMPLETED.toString());
+        checkResourceOrderState(ro, roUuid, ResourceOrderStateType.COMPLETED);
     }
 
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
-        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
-        assertNotNull(roDb); // passende RO gefunden
-        ro.setId(roDb.getId()); // damit das Löschen der RO am Ende geht
-        assertEquals(ResourceOrderStateType.REJECTED.toString(), roDb.getState());
+        checkResourceOrderState(ro, null, ResourceOrderStateType.REJECTED);
     }
 
     public void getResourceOrdersFromDbAndCheckIfNotInDb(ResourceOrder ro) {
@@ -249,24 +247,24 @@ public class A4ResourceOrderRobot {
         assertNull(roDb); // RO nicht in DB
     }
 
-    public void checkResourceOrderItemHasCorrectState(String roId, String orderItemId, ResourceOrderItemStateType state) {
+    public void checkResourceOrderItemState(String roId, String orderItemId, ResourceOrderItemStateType state) {
         ResourceOrderDto roDbDto = getResourceOrderFromDb(roId);
-
-        if (roDbDto != null) {
-            ResourceOrderItemDto roi = getResourceOrderItemByOrderItemDtoId(orderItemId, roDbDto.getOrderItem());
-            assertEquals(roi.getState(), state.toString());
-        } else
-            fail("No callback resource order to check");
+        if (roDbDto == null) {
+            fail("No resource order found to check");
+            return;
+        }
+        ResourceOrderItemDto roi = orderItemId.equals(FIRST_ORDER_ITEM) && !isNullOrEmpty(roDbDto.getOrderItem()) ?
+                roDbDto.getOrderItem().get(0) :
+                getResourceOrderItemByOrderItemDtoId(orderItemId, roDbDto.getOrderItem());
+        assertNotNull(roi, "No ResourceOrderItem found");
+        assertEquals(roi.getState(), state.toString());
     }
 
     public ResourceOrderMainDataDto searchCorrectRoInDb(String externalId) {
-        List<ResourceOrderMainDataDto> roDbList = getResourceOrdersFromDb();
-        ResourceOrderMainDataDto roDb = null;
-        for (ResourceOrderMainDataDto mainDataDto : roDbList) {
-            if (Objects.equals(mainDataDto.getExternalId(), externalId))
-                roDb = mainDataDto;
-        }
-        return roDb;
+        return getResourceOrdersFromDb().stream()
+                .filter(item -> Objects.equals(item.getExternalId(), externalId))
+                .findAny()
+                .orElse(null);
     }
 
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
@@ -277,7 +275,7 @@ public class A4ResourceOrderRobot {
 
     @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
-        a4ResourceOrderOrchestratorClient
+        externalClient
                 .resourceOrder()
                 .deleteResourceOrder()
                 .uuidPath(uuid)
@@ -288,7 +286,6 @@ public class A4ResourceOrderRobot {
         ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
         String rvNumber = (String) getCharacteristic(FRAME_CONTRACT_ID, roi).getValue();
         String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
-
         return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);
     }
 

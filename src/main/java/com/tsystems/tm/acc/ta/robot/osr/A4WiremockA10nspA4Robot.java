@@ -10,18 +10,6 @@ import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.A10nspInventoryS
 
 public class A4WiremockA10nspA4Robot {
 
-    public void checkSyncRequestToA10nspA4Wiremock(String carrierBsaReference, String rahmenvertragsnummer, String method, int count) {
-
-        WireMockFactory.get()
-                .retrieve(
-                        exactly(count),
-                        newRequestPattern(
-                                RequestMethod.fromString(method),
-                                urlPathEqualTo(A10NSP_A4CONTROLLER_URL))
-                                .withQueryParam("rahmenvertragsnummer", equalTo(rahmenvertragsnummer))
-                                .withQueryParam("carrierBsaReference", equalTo(carrierBsaReference)));
-    }
-
     public void checkSyncRequestToA10nspA4Wiremock(A10nspA4Dto a10Nsp, String method, int count) {
         final String rvNumber = a10Nsp.getRahmenvertragsnummer();
         final String cBsaRef = a10Nsp.getCarrierBsaReference();
