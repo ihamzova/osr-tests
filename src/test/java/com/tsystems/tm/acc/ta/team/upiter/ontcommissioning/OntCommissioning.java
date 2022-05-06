@@ -376,7 +376,7 @@ public class OntCommissioning extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-53284")
-  @Description("Get ONT State by LineID")
+  @Description("Get ONT State by LineID, AccessLine has subscriber_ne_profile")
   public void getOntStateByLineIdTest() {
     accessLine.setLineId(accessLineRiRobot.getFtthAccessLinesWithOnt(port).get(0).getLineId());
     OntStateDto ontState = ontOltOrchestratorRobot.getOntState(accessLine);
@@ -384,6 +384,22 @@ public class OntCommissioning extends GigabitTest {
             accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntState().toString(), ontState.getOntState());
     assertEquals("ONT S/N returned in the callback is incorrect",
             accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()).getOntSerialNumber(), ontState.getSerialNumber());
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-150111")
+  @Description("Get ONT State by LineID, WG AccessLine")
+  public void getOntStateWgAccessLine() {
+    String lineId = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+            AccessLineTechnology.GPON,
+            AccessLineStatus.WALLED_GARDEN,
+            null,
+            null).get(0).getLineId();
+    accessLine.setLineId(lineId);
+    OntStateDto ontState = ontOltOrchestratorRobot.getOntState(accessLine);
+    assertEquals("ONT State returned in the callback is incorrect",
+            OntState.UNKNOWN.getValue(), ontState.getOntState());
+    assertNull("ONT S/N returned in the callback is incorrect", ontState.getSerialNumber());
   }
 
   @Test
