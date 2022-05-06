@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT_B;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPortNumberByFunctionalPortLabel;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -48,7 +46,7 @@ public class A4ResInvSteps {
                     .map(neg -> (NetworkElementGroupDto) neg)
                     .collect(toList());
 
-            negList.forEach(neg -> a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName()));
+            negList.forEach(neg -> a4ResInv.deleteA4NetworkElementGroupsRecursively(neg));
         }
 
         final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
@@ -122,7 +120,7 @@ public class A4ResInvSteps {
         neg.setUuid(UUID.randomUUID().toString());
 
         // Make sure that NEG really doesn't exist
-        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getUuid());
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
 
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
@@ -133,7 +131,7 @@ public class A4ResInvSteps {
         neg.setName(name);
 
         // Make sure that NEG really doesn't exist
-        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
 
         testContext.getScenarioContext().setContext(Context.A4_NEG, neg);
     }
@@ -889,7 +887,7 @@ public class A4ResInvSteps {
 
     private void persistNeg(String negAlias, NetworkElementGroupDto neg) {
         // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg.getName());
+        a4ResInv.deleteA4NetworkElementGroupsRecursively(neg);
 
         a4ResInv.createNetworkElementGroup(neg);
 

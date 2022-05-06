@@ -275,6 +275,8 @@ public class A4ResourceOrderRobot {
 
     @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
+        //TODO: maybe an assertion better here ?
+        if (isNullOrEmpty(uuid)) return;
         externalClient
                 .resourceOrder()
                 .deleteResourceOrder()

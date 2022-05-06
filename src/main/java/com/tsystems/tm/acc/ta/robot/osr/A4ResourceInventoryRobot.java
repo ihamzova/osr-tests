@@ -545,7 +545,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element group")
-    public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementGroup negData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkElementGroupIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementGroup negData, OffsetDateTime timeBeforeSync) {
         NetworkElementGroupDto networkElementGroupDto = getExistingNetworkElementGroup(negData.getUuid());
 
         assertTrue(Objects.requireNonNull(networkElementGroupDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -569,12 +569,12 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element")
-    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElement neData, OffsetDateTime timeBeforeSync) {
         checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(neData.getUuid(), timeBeforeSync);
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element")
-    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(String neUuid,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkElementIsUpdatedWithLastSuccessfulSyncTime(String neUuid, OffsetDateTime timeBeforeSync) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(neUuid);
 
         assertTrue(Objects.requireNonNull(networkElementDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -636,7 +636,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element port")
-    public void checkNetworkElementPortIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementPort nepData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkElementPortIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementPort nepData, OffsetDateTime timeBeforeSync) {
         NetworkElementPortDto networkElementPortDto = getExistingNetworkElementPort(nepData.getUuid());
 
         assertTrue(Objects.requireNonNull(networkElementPortDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -652,7 +652,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network service profile FTTH Access")
-    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileFtthAccess nspFtthData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkServiceProfileFtthAccessIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileFtthAccess nspFtthData, OffsetDateTime timeBeforeSync) {
         NetworkServiceProfileFtthAccessDto networkServiceProfileFtthAccessDto = getExistingNetworkServiceProfileFtthAccess(nspFtthData.getUuid());
 
         assertTrue(Objects.requireNonNull(networkServiceProfileFtthAccessDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -679,7 +679,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network service profile A10Nsp")
-    public void checkNetworkServiceProfileA10NspIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileA10Nsp nspA10Data,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkServiceProfileA10NspIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileA10Nsp nspA10Data, OffsetDateTime timeBeforeSync) {
         NetworkServiceProfileA10NspDto networkServiceProfileA10NspDto = getExistingNetworkServiceProfileA10Nsp(nspA10Data.getUuid());
 
         assertTrue(Objects.requireNonNull(networkServiceProfileA10NspDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -694,7 +694,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network service profile L2BSA")
-    public void checkNetworkServiceProfileL2BsaIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileL2Bsa nspL2BsaData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkServiceProfileL2BsaIsUpdatedWithLastSuccessfulSyncTime(A4NetworkServiceProfileL2Bsa nspL2BsaData, OffsetDateTime timeBeforeSync) {
         NetworkServiceProfileL2BsaDto networkServiceProfileL2BsaDto = getExistingNetworkServiceProfileL2Bsa(nspL2BsaData.getUuid());
 
         assertTrue(Objects.requireNonNull(networkServiceProfileL2BsaDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -719,7 +719,7 @@ public class A4ResourceInventoryRobot {
     }
 
     @Step("Check that lastSuccessfulSyncTime has been set for network element link")
-    public void checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementLink nelData,OffsetDateTime timeBeforeSync) {
+    public void checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementLink nelData, OffsetDateTime timeBeforeSync) {
         NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
 
         assertTrue(Objects.requireNonNull(networkElementLinkDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
@@ -738,7 +738,6 @@ public class A4ResourceInventoryRobot {
     @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
     public void deleteA4NetworkElementGroupsRecursively(String negName) {
         // NEG name has to be unique, so let's delete by that, to avoid constraint violations for future tests
-
         final List<NetworkElementGroupDto> negList = getNetworkElementGroupsByName(negName);
         negList.forEach(neg -> {
             final List<NetworkElementDto> neList = getNetworkElementsByNegUuid(neg.getUuid());
@@ -765,8 +764,15 @@ public class A4ResourceInventoryRobot {
         deleteNetworkElementNoChecks(neUuid);
     }
 
-    @Step("Delete A4 test data recursively by provided NEG name (NEG, NEs, NEPs, NELs, TPs, NSPs (FtthAccess, A10Nsp, L2Bsa)")
+    @Step("Delete A4 test data recursively by provided NetworkElementGroupDto")
+    public void deleteA4NetworkElementGroupsRecursively(NetworkElementGroupDto negData) {
+        assertNotNull(negData);
+        deleteA4NetworkElementGroupsRecursively(negData.getName());
+    }
+
+    @Step("Delete A4 test data recursively by provided A4NetworkElementGroup")
     public void deleteA4NetworkElementGroupsRecursively(A4NetworkElementGroup negData) {
+        assertNotNull(negData);
         deleteA4NetworkElementGroupsRecursively(negData.getName());
     }
 
@@ -822,6 +828,7 @@ public class A4ResourceInventoryRobot {
         final List<NetworkElementDto> neList = getNetworkElementsByVpszFsz(vpsz, fsz);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
     }
+
     private void deleteA4NetworkElementsRecursively(String ztpIdent) {
         final List<NetworkElementDto> neList = getNetworkElementsByZtpIdent(ztpIdent);
         neList.forEach(this::deleteA4NetworkElementsRecursively);
