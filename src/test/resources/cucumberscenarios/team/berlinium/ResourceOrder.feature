@@ -2,7 +2,7 @@
 Feature: Receive and process Resource Orders for A10NSP
   See https://gard.telekom.de/gardwiki/display/DGHB/Fulfillment+-+A10NSP+interface+-+Resource+Order+Management for details.
 
-  #@DIGIHUB-xxxx
+  #@DIGIHUB-150008
   Background:
   Work in progress!
     Given a NEG with type "POD" is existing in A4 resource inventory
@@ -21,7 +21,7 @@ Feature: Receive and process Resource Orders for A10NSP
 #    And the resource order state is "COMPLETED"
 #    And ...
 
-  # Add DIGIHUB xray ticket here
+  @DIGIHUB-150006
   @team:berlinium
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO - Rainy Day, resource order ID is sent
