@@ -22,6 +22,7 @@ import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+import static org.testng.Assert.assertFalse;
 
 @Slf4j
 public class NetworkSwitchingPage {
@@ -29,7 +30,7 @@ public class NetworkSwitchingPage {
 
     private static final String APP = "network-switching-ui";
     private static final String ENDPOINT = "/network-switching-ui/port-to-port";
-    private static final long TIMEOUT_FOR_PREPARATION = 300000;
+    private static final long TIMEOUT = 300000;
 
     private static final By NE3_UMSCHALTUNG_TAB = byText("NE3 Umschaltung");
     private static final By NE2_UMSCHALTUNG_TAB = byText("NE2 Umschaltung");
@@ -310,7 +311,7 @@ public class NetworkSwitchingPage {
     @Step("Wait until needed status")
     public NetworkSwitchingPage waitUntilNeededStatus(String expectedStatus, String packageId) {
         try {
-            TimeoutBlock timeoutBlock = new TimeoutBlock(TIMEOUT_FOR_PREPARATION); //set timeout in milliseconds
+            TimeoutBlock timeoutBlock = new TimeoutBlock(TIMEOUT); //set timeout in milliseconds
             timeoutBlock.setTimeoutInterval(1000);
             Supplier<Boolean> checkPackageStatus = () -> {
                 Boolean result = false;
