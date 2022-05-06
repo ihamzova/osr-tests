@@ -45,11 +45,10 @@ public class A4NemoUpdaterSteps {
         uuidList.add(neg.getUuid());
 
         testContext.getScenarioContext().setContext(Context.TIMESTAMP, OffsetDateTime.now());
+        a4NemoUpdater.triggerAsyncNemoUpdate(uuidList);
 
         // Give async process enough time to finish
         sleepForSeconds(SLEEP_TIME);
-
-        a4NemoUpdater.triggerAsyncNemoUpdate(uuidList);
     }
 
 }
