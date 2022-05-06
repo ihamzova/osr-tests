@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
+import com.tsystems.tm.acc.data.osr.models.DataBundle;
 import com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase;
 import com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase;
@@ -61,15 +62,7 @@ public class A4ResourceOrderTest {
     private A4NetworkElementLink nelData1;
     private A4NetworkElementLink nelData2;
     private A4NetworkServiceProfileA10Nsp nspA10Data1;
-    private A4NetworkServiceProfileA10Nsp nspA10Data2;
-    private A4NetworkServiceProfileA10Nsp nspA10Data3;
-    private A4NetworkServiceProfileA10Nsp nspA10Data4;
     private A4TerminationPoint tpData1;
-    private A4TerminationPoint tpData2;
-    private A4TerminationPoint tpData3;
-    private A4TerminationPoint tpData4;
-    private UewegData uewegData1;
-    private UewegData uewegData2;
     private ResourceOrder ro;
     // Initialize with dummy wiremock so that cleanUp() call within init() doesn't run into nullpointer
     private WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME)).build();
@@ -128,50 +121,34 @@ public class A4ResourceOrderTest {
 
     @BeforeClass
     public void init() {
-        negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
-                .get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
-        neData1 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementA10NspSwitch01);
-        nepData1 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
-        neData2 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.defaultNetworkElement);
-        nepData2 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
-        neData3 = osrTestContext.getData().getA4NetworkElementDataProvider()
-                .get(A4NetworkElementCase.networkElementA10NspSwitch02);
-        nepData3 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
-        nepData4 = osrTestContext.getData().getA4NetworkElementPortDataProvider()
-                .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
-        nelData1 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
-        nelData2 = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
-                .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        nspA10Data1 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        nspA10Data2 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro);
-        nspA10Data3 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro2);
-        nspA10Data4 = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
-                .get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro3);
-        tpData1 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
-        tpData2 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.terminationPointA10NspPrePro);
-        tpData3 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.terminationPointA10NspPrePro2);
-        tpData4 = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.terminationPointA10NspPrePro3);
-        uewegData1 = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.uewegA);
-        uewegData2 = osrTestContext.getData().getUewegDataDataProvider().get(UewegDataCase.uewegB);
         // Ensure that no old test data is in the way
-        cleanup();
+        cleanupWiremock();
     }
 
     @BeforeMethod
     public void setup() {
+        DataBundle data = osrTestContext.getData();
+        negData = data.getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
+        neData1 = data.getA4NetworkElementDataProvider().get(A4NetworkElementCase.networkElementA10NspSwitch01);
+        nepData1 = data.getA4NetworkElementPortDataProvider().get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
+        neData2 = data.getA4NetworkElementDataProvider().get(A4NetworkElementCase.defaultNetworkElement);
+        nepData2 = data.getA4NetworkElementPortDataProvider().get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_002);
+        neData3 = data.getA4NetworkElementDataProvider().get(A4NetworkElementCase.networkElementA10NspSwitch02);
+        nepData3 = data.getA4NetworkElementPortDataProvider().get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
+        nepData4 = data.getA4NetworkElementPortDataProvider().get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
+        nelData1 = data.getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.networkElementLinkLcsInstalling);
+        nelData2 = data.getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.defaultNetworkElementLink);
+        nspA10Data1 = data.getA4NetworkServiceProfileA10NspDataProvider().get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
+        A4NetworkServiceProfileA10Nsp nspA10Data2 = data.getA4NetworkServiceProfileA10NspDataProvider().get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro);
+        A4NetworkServiceProfileA10Nsp nspA10Data3 = data.getA4NetworkServiceProfileA10NspDataProvider().get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro2);
+        A4NetworkServiceProfileA10Nsp nspA10Data4 = data.getA4NetworkServiceProfileA10NspDataProvider().get(A4NetworkServiceProfileA10NspCase.networkServiceProfileA10NspPrePro3);
+        tpData1 = data.getA4TerminationPointDataProvider().get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
+        A4TerminationPoint tpData2 = data.getA4TerminationPointDataProvider().get(A4TerminationPointCase.terminationPointA10NspPrePro);
+        A4TerminationPoint tpData3 = data.getA4TerminationPointDataProvider().get(A4TerminationPointCase.terminationPointA10NspPrePro2);
+        A4TerminationPoint tpData4 = data.getA4TerminationPointDataProvider().get(A4TerminationPointCase.terminationPointA10NspPrePro3);
+        UewegData uewegData1 = data.getUewegDataDataProvider().get(UewegDataCase.uewegA);
+        UewegData uewegData2 = data.getUewegDataDataProvider().get(UewegDataCase.uewegB);
+
         a4ResourceInventory.createNetworkElementGroup(negData);
         a4ResourceInventory.createNetworkElement(neData1, negData);
         a4ResourceInventory.createNetworkElement(neData2, negData);
@@ -204,13 +181,10 @@ public class A4ResourceOrderTest {
 
     @AfterMethod
     public void cleanup() {
-        wiremock.close();
-        wiremock
-                .eventsHook(saveEventsToDefaultDir())
-                .eventsHook(attachEventsToAllureReport());
-        wiremock.getWireMock().resetRequests();
-        a4ResourceOrder.cleanCallbacksInWiremock();
+        // clean wiremock gedöhns
+        cleanupWiremock();
         // Delete all A4 data which might provoke problems because of unique constraints
+        //TODO: null check in method ?
         a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData1);
         a4ResourceInventory.deleteA4NetworkElementsRecursively(neData2);
@@ -220,6 +194,13 @@ public class A4ResourceOrderTest {
         a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData3, neData3);
         a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepData4, neData2);
         a4ResourceOrder.deleteA4TestDataRecursively(ro);
+    }
+
+    private void cleanupWiremock() {
+        wiremock.close();
+        wiremock.eventsHook(saveEventsToDefaultDir()).eventsHook(attachEventsToAllureReport());
+        wiremock.getWireMock().resetRequests();
+        a4ResourceOrder.cleanCallbacksInWiremock();
     }
 
     @Test(dataProvider = "vlanRangeCombinations")
@@ -327,7 +308,7 @@ public class A4ResourceOrderTest {
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a4ResourceOrder.getA10NspA4Dto(ro), HttpMethod.POST, 1);
         // all done, finally check event publishing
         // TODO: if event processing is working in gigahub
-        //a4Wiremock.checkSyncRequest(URL_EVENT_PUBLISH, HttpMethod.POST, 1, 1000);
+        //a4Wiremock.checkSyncRequest(URL_EVENT_PUBLISH, RequestMethod.POST, 1, 1000);
     }
 
     @Test(description = "DIGIHUB-142958 error-case: send RO with Id and get Response with -400- from roo")
