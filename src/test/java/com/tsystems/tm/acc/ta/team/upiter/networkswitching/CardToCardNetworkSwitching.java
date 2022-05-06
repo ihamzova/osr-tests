@@ -86,12 +86,13 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         networkSwitchingPage.startCardPreparation(endSz_49_30_179_76H2_3_0, endSz_49_30_179_76H2_3_1, endSz_49_911_1100_76H2_1_0, endSz_49_911_1100_76H2_1_1);
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
-        assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
-        assertTrue(networkSwitchingPage.getRollbackButton().isEnabled());
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during preparation");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during preparation");
 
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
-
-        assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after preparation");
+        assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation");
 
         List<AccessLineDto> sourceAccessLinesAfterPreparationPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
         List<AccessLineDto> sourceAccessLinesAfterPreparationPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
@@ -139,10 +140,13 @@ public class CardToCardNetworkSwitching extends GigabitTest {
                 .searchPackagesByDevice(endSz_49_911_1100_76H2_1_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
         networkSwitchingPage.startCommitWithDeprovisioning(packageId);
-        assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
-        assertFalse(networkSwitchingPage.getRollbackButton().isEnabled());
+
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
         networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
-        assert (networkSwitchingPage.getPackageStatus().contains("FINISHED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("FINISHED"));
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after commit phase");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after commit phase");
 
         List<AccessLineDto> sourceAccessLinesAfterCommitPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_911_1100_76H2_1_0);
         List<AccessLineDto> sourceAccessLinesAfterCommitPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_911_1100_76H2_1_1);
@@ -157,7 +161,6 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort2, targetAnpTagsBeforeCommitPort2);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort1, targetOnuIdsBeforeCommitPort1);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort2, targetOnuIdsBeforeCommitPort2);
-
 
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
@@ -199,16 +202,23 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         networkSwitchingPage.startCardPreparation(endSz_49_30_179_76H2_3_0, endSz_49_30_179_76H2_3_1, endSz_49_911_1100_76H2_1_0, endSz_49_911_1100_76H2_1_1);
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
-        assertTrue(networkSwitchingPage.getCommitButton().isEnabled());
-        assertTrue(networkSwitchingPage.getRollbackButton().isEnabled());
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during preparation");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during preparation");
 
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
 
-        assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after preparation");
+        assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation");
 
         networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");
         networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
-        assert (networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after rollback");
 
         List<AccessLineDto> sourceAccessLinesAfterRollbackPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
         List<AccessLineDto> sourceAccessLinesAfterRollbackPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
@@ -239,6 +249,5 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         accessLineRiRobot.compareLists(targetAnpTagsBeforePreparationPort2, targetAnpTagsAfterRollbackPort2);
         accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort1, targetOnuIdsAfterRollbackPort1);
         accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort2, targetOnuIdsAfterRollbackPort2);
-
     }
 }
