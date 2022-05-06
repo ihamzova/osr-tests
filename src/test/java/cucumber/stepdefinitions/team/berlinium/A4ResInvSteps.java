@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import cucumber.Context;
@@ -223,7 +221,7 @@ public class A4ResInvSteps {
 
     @Given("no NE exists( in A4 resource inventory)")
     public void givenA4NeNotExist() {
-        A4NetworkElement ne = new A4NetworkElement();
+        NetworkElementDto ne = new NetworkElementDto();
         ne.setUuid(UUID.randomUUID().toString());
 
         a4ResInv.deleteA4NetworkElementsRecursivelyByUuid(ne.getUuid());
@@ -233,7 +231,7 @@ public class A4ResInvSteps {
 
     @Given("no NE with VPSZ {string} and FSZ {string} exists( in A4 resource inventory)")
     public void givenA4NWithVpszFszNotExist(String vpsz, String fsz) {
-        A4NetworkElement ne = new A4NetworkElement();
+        NetworkElementDto ne = new NetworkElementDto();
         ne.setUuid(UUID.randomUUID().toString());
         ne.setVpsz(vpsz);
         ne.setFsz(fsz);
@@ -432,6 +430,21 @@ public class A4ResInvSteps {
         testContext.getScenarioContext().setContext(Context.A4_NSP_FTTH, nspFtth);
     }
 
+    @Given("a NSP L2BSA( connected to the TP)( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2Bsa() {
+        createNspL2Bsa(DEFAULT, DEFAULT);
+    }
+
+    @Given("a NSP L2BSA connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2Bsa(String tpAlias) {
+        createNspL2Bsa(DEFAULT, tpAlias);
+    }
+
+    @Given("a/another NSP L2BSA {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2Bsa(String nspAlias, String tpAlias) {
+        createNspL2Bsa(nspAlias, tpAlias);
+    }
+
     @Given("a NSP L2BSA with operationalState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String operationalState) {
         createNspL2BsaWithOpState(DEFAULT, operationalState, DEFAULT);
@@ -467,7 +480,7 @@ public class A4ResInvSteps {
         createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
     }
 
-    @Given("no NSP L2BSA( connected to the TP)( exists in A4)( resource inventory)")
+    @Given("no NSP L2BSA( connected to the TP)( exists)( in A4 resource inventory)")
     public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
         NetworkServiceProfileL2BsaDto nspL2Bsa = new NetworkServiceProfileL2BsaDto();
         nspL2Bsa.setUuid(UUID.randomUUID().toString());
@@ -722,8 +735,8 @@ public class A4ResInvSteps {
         assertTrue(nel.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nel.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
 
-    @Then("the TP does exist in A4 resource inventory")
-    public void thenTheTPDoesExistInA4ResourceInventory() {
+    @Then("the TP (does )(still )exist(s)( in A4 resource inventory)")
+    public void thenA4TpExist() {
         final TerminationPointDto tp = (TerminationPointDto) testContext.getScenarioContext().getContext(Context.A4_TP);
 
         a4ResInv.checkTerminationPointExists(tp.getUuid());
@@ -791,6 +804,13 @@ public class A4ResInvSteps {
         final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
 
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
+    }
+
+    @Then("the NSP L2BSA (does )(still )exist(s) in A4 resource inventory")
+    public void thenA4NspL2BsaExist() {
+        final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
+
+        a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspFtth.getUuid());
     }
 
     @Then("the (new )NSP L2BSA operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
@@ -1173,6 +1193,12 @@ public class A4ResInvSteps {
         a4ResInv.createNetworkServiceProfileL2Bsa(nspL2Bsa);
 
         testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspAlias, nspL2Bsa);
+    }
+
+    private void createNspL2Bsa(String nspAlias, String tpAlias) {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(tpAlias);
+
+        persistNspL2Bsa(nspAlias, nspL2Bsa);
     }
 
     private void createNspL2BsaWithOpState(String nspAlias, String opState, String tpAlias) {

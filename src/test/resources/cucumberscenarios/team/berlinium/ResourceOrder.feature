@@ -4,7 +4,7 @@ Feature: Receive and process Resource Orders for A10NSP
 
   #@DIGIHUB-xxxx
   Background:
-    Work in progress!
+  Work in progress!
     Given a NEG with type "POD" is existing in A4 resource inventory
     And a NE "A" with type "" and category "" is existing in A4 resource inventory
     And another NE "B" with type "" and category "" is existing in A4 resource inventory
@@ -22,6 +22,8 @@ Feature: Receive and process Resource Orders for A10NSP
 #    And ...
 
   # Add DIGIHUB xray ticket here
+  @team:berlinium
+  @ms:a4-resource-order-orchestrator
   Scenario: Receive RO - Rainy Day, resource order ID is sent
     When CAD@Sputnik sends a resource order with filled resource order ID
     Then the request is responded with HTTP error code 400
