@@ -21,7 +21,7 @@ public class A4ResourceOrderMapper {
 
     public ResourceOrder buildResourceOrder() {
         return new ResourceOrder()
-                .externalId("sputnik_id_" + getRandomDigits(4))
+                .externalId("sputnik_id_" + UUID.randomUUID())
                 .description("resource order of osr-tests")
                 .name("resource order name");
     }
