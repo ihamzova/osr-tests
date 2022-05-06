@@ -806,9 +806,9 @@ public class A4ResInvSteps {
 
     @Then("the NSP L2BSA (does )(still )exist(s) in A4 resource inventory")
     public void thenA4NspL2BsaExist() {
-        final NetworkServiceProfileFtthAccessDto nspFtth = (NetworkServiceProfileFtthAccessDto) testContext.getScenarioContext().getContext(Context.A4_NSP_FTTH);
+        final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
 
-        a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspFtth.getUuid());
+        a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Bsa.getUuid());
     }
 
     @Then("the (new )NSP L2BSA operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
