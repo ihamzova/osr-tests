@@ -129,6 +129,7 @@ public class A4ResourceOrderTest {
     public void setup() {
         DataBundle data = osrTestContext.getData();
         negData = data.getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
+        negData.setName(replaceLast(4, negData.getName(), getRandomDigits(4)));
         neData1 = data.getA4NetworkElementDataProvider().get(A4NetworkElementCase.networkElementA10NspSwitch01);
         nepData1 = data.getA4NetworkElementPortDataProvider().get(A4NetworkElementPortCase.networkElementPort_logicalLabel_100G_001);
         neData2 = data.getA4NetworkElementDataProvider().get(A4NetworkElementCase.defaultNetworkElement);
