@@ -84,6 +84,11 @@ public class MiscUtils {
         return !iterable.iterator().hasNext();
     }
 
+    public static String replaceLast(int lastLength, String inValue, String replaceValue) {
+        int length = inValue.length();
+        return (length < 4) ? inValue : inValue.substring(0, length - 4) + replaceValue;
+    }
+
     public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
         String portNumber = functionalPortLabel.substring(functionalPortLabel.lastIndexOf("_") + 1);
         return portNumber.replaceFirst("^0+(?!$)", ""); // Remove leading zeroes
