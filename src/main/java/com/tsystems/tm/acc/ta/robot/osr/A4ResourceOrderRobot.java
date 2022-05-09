@@ -228,11 +228,6 @@ public class A4ResourceOrderRobot {
         return roId;
     }
 
-    public void checkResourceOrderAndFirstItemState(ResourceOrder ro, ResourceOrderStateType checkedState) {
-        final String roId = checkResourceOrderState(ro, ro.getId(), checkedState);
-        checkResourceOrderItemState(roId, FIRST_ORDER_ITEM, getRoiType(checkedState));
-    }
-
     private ResourceOrderItemStateType getRoiType(ResourceOrderStateType stateType) {
         return ResourceOrderItemStateType.valueOf(stateType.name());
     }
