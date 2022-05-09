@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.testng.FileAssert.fail;
 
+@Slf4j
 public class MiscUtils {
 
     private MiscUtils() {
@@ -27,7 +29,7 @@ public class MiscUtils {
 
     public static void sleepForSeconds(int seconds) {
         try {
-            System.out.printf("Sleep for %s seconds%n", seconds);
+            log.info("Sleep for {} seconds", seconds);
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             fail("Unexpected exception: " + e.getMessage());
@@ -86,7 +88,11 @@ public class MiscUtils {
 
     public static String replaceLast(int lastLength, String inValue, String replaceValue) {
         int length = inValue.length();
-        return (length < 4) ? inValue : inValue.substring(0, length - 4) + replaceValue;
+        return (length < lastLength) ? inValue : inValue.substring(0, length - lastLength) + replaceValue;
+    }
+
+    public static String getPrefixWithRandom(String prefix, int digits) {
+        return prefix + getRandomDigits(digits);
     }
 
     public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
