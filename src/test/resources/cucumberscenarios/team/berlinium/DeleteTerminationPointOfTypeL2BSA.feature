@@ -24,6 +24,6 @@ Feature: Delete Termination Point of Type L2BSA_TP
     Given a TP with type "L2BSA_TP" is existing in A4 resource inventory
     And a NSP L2BSA is existing in A4 resource inventory
     When NEMO sends a delete TP request
-    Then the request is responded with HTTP code 500
+    Then the request is responded with HTTP code 400
     And the NSP L2BSA still exists in A4 resource inventory
     And the TP still exists in A4 resource inventory
