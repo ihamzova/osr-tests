@@ -56,11 +56,15 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-        return internalClient
+        final String roId = internalClient
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
                 .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString();
+
+        log.info("+++ Resource-Order ID: " + roId);
+        resourceOrder.setId(roId);
+        return roId;
     }
 
     @Step("Send POST for A10nsp Resource Order")
@@ -102,11 +106,11 @@ public class A4ResourceOrderRobot {
     }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro) {
-        ResourceRefOrValue resource = new ResourceRefOrValue()
+        final ResourceRefOrValue resource = new ResourceRefOrValue()
                 .name(nelLbz)
                 .resourceCharacteristic(resourceOrderMapper.buildResourceCharacteristicList());
 
-        ResourceOrderItem orderItem = new ResourceOrderItem()
+        final ResourceOrderItem orderItem = new ResourceOrderItem()
                 .action(actionType)
                 .resource(resource)
                 .id(orderItemId);
@@ -115,18 +119,18 @@ public class A4ResourceOrderRobot {
     }
 
     public void setResourceName(String name, String orderItemId, ResourceOrder ro) {
-        ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, ro);
+        final ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, ro);
         Objects.requireNonNull(roi.getResource()).setName(name);
     }
 
     public void setCharacteristicValue(String characteristicName, Object value, String orderItemId, ResourceOrder ro) {
-        ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, ro);
-        Characteristic c = getCharacteristic(characteristicName, roi);
+        final ResourceOrderItem roi = getResourceOrderItemByOrderItemId(orderItemId, ro);
+        final Characteristic c = getCharacteristic(characteristicName, roi);
         c.setValue(value);
     }
 
     public Characteristic getCharacteristic(String name, ResourceOrderItem roi) {
-        List<Characteristic> rcList = Objects.requireNonNull(roi.getResource()).getResourceCharacteristic();
+        final List<Characteristic> rcList = Objects.requireNonNull(roi.getResource()).getResourceCharacteristic();
 
         if (rcList != null) {
             for (Characteristic characteristic : rcList) {
@@ -139,7 +143,7 @@ public class A4ResourceOrderRobot {
     }
 
     public void removeCharacteristic(String chName, String orderItemId, ResourceOrder ro) {
-        List<Characteristic> rcList = Objects.requireNonNull(getResourceOrderItemByOrderItemId(orderItemId, ro).getResource()).getResourceCharacteristic();
+        final List<Characteristic> rcList = Objects.requireNonNull(getResourceOrderItemByOrderItemId(orderItemId, ro).getResource()).getResourceCharacteristic();
 
         if (rcList != null) {
             rcList.removeIf(characteristic -> characteristic.getName().equals(chName));
@@ -209,24 +213,23 @@ public class A4ResourceOrderRobot {
         String roId;
         String roState;
         if (isNullOrEmpty(ro.getId())) {
-            ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+            final ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
             assertNotNull(roDb);
             roId = roDb.getId();
             roState = roDb.getState();
         } else {
-            ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
+            final ResourceOrderDto roDb = getResourceOrderFromDb(ro.getId());
             assertNotNull(roDb);
             roId = roDb.getId();
             roState = roDb.getState();
         }
         if (!isNullOrEmpty(roUuid)) assertEquals(roId, roUuid);
-        ro.setId(roId); // damit das Löschen der RO am Ende geht
         assertEquals(roState, checkedState.toString());
         return roId;
     }
 
-    public void checkResourceOrderAndFirstItemState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
-        String roId = checkResourceOrderState(ro, roUuid, checkedState);
+    public void checkResourceOrderAndFirstItemState(ResourceOrder ro, ResourceOrderStateType checkedState) {
+        final String roId = checkResourceOrderState(ro, ro.getId(), checkedState);
         checkResourceOrderItemState(roId, FIRST_ORDER_ITEM, getRoiType(checkedState));
     }
 
@@ -234,8 +237,8 @@ public class A4ResourceOrderRobot {
         return ResourceOrderItemStateType.valueOf(stateType.name());
     }
 
-    public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro, String roUuid) {
-        checkResourceOrderState(ro, roUuid, ResourceOrderStateType.COMPLETED);
+    public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro) {
+        checkResourceOrderState(ro, ro.getId(), ResourceOrderStateType.COMPLETED);
     }
 
     public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
@@ -243,17 +246,17 @@ public class A4ResourceOrderRobot {
     }
 
     public void getResourceOrdersFromDbAndCheckIfNotInDb(ResourceOrder ro) {
-        ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
+        final ResourceOrderMainDataDto roDb = searchCorrectRoInDb(ro.getExternalId());
         assertNull(roDb); // RO nicht in DB
     }
 
     public void checkResourceOrderItemState(String roId, String orderItemId, ResourceOrderItemStateType state) {
-        ResourceOrderDto roDbDto = getResourceOrderFromDb(roId);
+        final ResourceOrderDto roDbDto = getResourceOrderFromDb(roId);
         if (roDbDto == null) {
             fail("No resource order found to check");
             return;
         }
-        ResourceOrderItemDto roi = orderItemId.equals(FIRST_ORDER_ITEM) && !isNullOrEmpty(roDbDto.getOrderItem()) ?
+        final ResourceOrderItemDto roi = orderItemId.equals(FIRST_ORDER_ITEM) && !isNullOrEmpty(roDbDto.getOrderItem()) ?
                 roDbDto.getOrderItem().get(0) :
                 getResourceOrderItemByOrderItemDtoId(orderItemId, roDbDto.getOrderItem());
         assertNotNull(roi, "No ResourceOrderItem found");
@@ -269,7 +272,7 @@ public class A4ResourceOrderRobot {
 
     @Step("Delete A4 test data recursively by provided RO (item, characteristics etc)")
     public void deleteA4TestDataRecursively(ResourceOrder ro) {
-        if (ro != null)
+        if (ro != null && ro.getId() != null)
             deleteA4TestDataRecursively(ro.getId());
     }
 
@@ -285,9 +288,9 @@ public class A4ResourceOrderRobot {
     }
 
     public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {
-        ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
-        String rvNumber = (String) getCharacteristic(FRAME_CONTRACT_ID, roi).getValue();
-        String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
+        final ResourceOrderItem roi = Objects.requireNonNull(ro.getOrderItem()).get(0);
+        final String rvNumber = (String) getCharacteristic(FRAME_CONTRACT_ID, roi).getValue();
+        final String cBsaRef = (String) getCharacteristic(CARRIER_BSA_REFERENCE, roi).getValue();
         return a10Mapper.getA10nspA4Dto(cBsaRef, rvNumber);
     }
 

@@ -39,8 +39,8 @@ import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf65
 @Epic("OS&R")
 public class A4ResourceOrderTest {
     // test send a request (resource order) from simulated Sputnik to Berlinium and get a callback
-    private final String DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
-    private final String SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(4);
+    private String DEFAULT_ORDER_ITEM_ID;
+    private String SECOND_ORDER_ITEM_ID;
     private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
     private final int SLEEP_TIMER = 2;
     private final String URL_EVENT_PUBLISH = "/upstream-partner/tardis/resource-order-resource-inventory/a10nsp/resourceOrderingManagement/horizon/events/v1";
@@ -50,7 +50,6 @@ public class A4ResourceOrderTest {
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
     private final A4WiremockRebellRobot a4WiremockRebellRobot = new A4WiremockRebellRobot();
     private final A4WiremockA10nspA4Robot a4WiremockA10nspA4Robot = new A4WiremockA10nspA4Robot();
-    private final A4WiremockRobot a4Wiremock = new A4WiremockRobot();
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData1;
     private A4NetworkElement neData2;
@@ -127,6 +126,9 @@ public class A4ResourceOrderTest {
 
     @BeforeMethod
     public void setup() {
+        DEFAULT_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(6);
+        SECOND_ORDER_ITEM_ID = "orderItemId" + getRandomDigits(6);
+
         DataBundle data = osrTestContext.getData();
         negData = data.getA4NetworkElementGroupDataProvider().get(A4NetworkElementGroupCase.NetworkElementGroupL2Bsa);
         negData.setName(replaceLast(4, negData.getName(), getRandomDigits(4)));
@@ -211,10 +213,11 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(VLAN_RANGE, vlanRange, DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -227,12 +230,13 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
@@ -246,12 +250,13 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.removeCharacteristic(VLAN_RANGE, DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
@@ -265,10 +270,11 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", DEFAULT_ORDER_ITEM_ID, ro); // erzeugt Mercury-Fehler 409
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -281,14 +287,14 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", DEFAULT_ORDER_ITEM_ID, ro); // Link is unknown
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
-
     }
 
     @Test
@@ -298,12 +304,13 @@ public class A4ResourceOrderTest {
     public void testRoAddItem() {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData2, ro);
-        // post first input request that resource order processing is starting
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+
+        // WHEN
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
-        // process resource order checks
-        a4ResourceOrder.checkResourceOrderAndFirstItemState(ro, roUuid, ResourceOrderStateType.COMPLETED);
+
+        // THEN
+        a4ResourceOrder.checkResourceOrderAndFirstItemState(ro, ResourceOrderStateType.COMPLETED);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), HttpMethod.GET, 1);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a4ResourceOrder.getA10NspA4Dto(ro), HttpMethod.POST, 1);
@@ -325,6 +332,7 @@ public class A4ResourceOrderTest {
         // WHEN
         a4ResourceOrder.sendPostResourceOrderError400(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfNotInDb(ro);
         ro = null; // damit am Ende keine Daten gelöscht werden, die nicht vorhanden sind
@@ -339,9 +347,11 @@ public class A4ResourceOrderTest {
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData2, ro);
         Objects.requireNonNull(ro.getOrderItem()).get(0).setId(null);
         System.out.println("+++ RO mit uuid: " + ro);
+
         // WHEN
         a4ResourceOrder.sendPostResourceOrderError400(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfNotInDb(ro);
         ro = null; // damit am Ende keine Daten gelöscht werden, die nicht vorhanden sind
@@ -354,18 +364,19 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(SECOND_ORDER_ITEM_ID, nelData2, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4WiremockRebellRobot.checkSyncRequestToRebellWiremock(getEndsz(neData1), "GET", 1);
         A10nspA4Dto a10nspA4Dto = a4ResourceOrder.getA10NspA4Dto(ro);
         a4WiremockA10nspA4Robot.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), SECOND_ORDER_ITEM_ID, COMPLETED);
-        a4ResourceOrder.checkResourceOrderAndFirstItemState(ro, null, ResourceOrderStateType.COMPLETED);
+        a4ResourceOrder.checkResourceOrderAndFirstItemState(ro, ResourceOrderStateType.COMPLETED);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -375,14 +386,15 @@ public class A4ResourceOrderTest {
     public void testRoDeleteItem() {
         // GIVEN
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
         a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         a4NemoUpdater.checkNetworkElementLinkPutRequestToNemoWiremockByNel(nelData1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1);
@@ -399,17 +411,18 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemDelete(SECOND_ORDER_ITEM_ID, nelData2, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceInventory.checkDefaultValuesNsp(nspA10Data1);
         a4ResourceInventory.checkLifecycleState(nelData1, "DEACTIVATED");
         a4ResourceInventory.checkLifecycleState(nelData2, "DEACTIVATED");
         a4NemoUpdater.checkTwoNetworkElementLinksPutRequestToNemoWiremock(nepData1);
         a4NemoUpdater.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(tpData1, 2);
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), SECOND_ORDER_ITEM_ID, COMPLETED);
     }
@@ -422,14 +435,14 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(SECOND_ORDER_ITEM_ID, nelData2, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
-
     }
 
     @Test(dataProvider = "characteristicNamesDelete")
@@ -440,10 +453,11 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemDelete(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(cName, "", DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -455,10 +469,11 @@ public class A4ResourceOrderTest {
     public void testModifyNotImplemented() {
         // GIVEN
         a4ResourceOrder.addOrderItemModify(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -472,10 +487,11 @@ public class A4ResourceOrderTest {
         final String roiId2 = "roiId2";
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(roiId2, nelData1, ro); // uses same nelData, therefore same LBZ mapped to resource.name
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -490,15 +506,15 @@ public class A4ResourceOrderTest {
         final String roiId2 = "roiId2";
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.addOrderItemAdd(roiId2, nelData2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(5);
+
         // THEN
-        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro, roUuid);
+        a4ResourceOrder.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, COMPLETED);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), roiId2, COMPLETED);
-
     }
 
     @Test(dataProvider = "characteristicNamesEmptyString")
@@ -508,10 +524,11 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(cName, "", DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
@@ -524,12 +541,14 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4ResourceOrder.addOrderItemAdd(DEFAULT_ORDER_ITEM_ID, nelData1, ro);
         a4ResourceOrder.setCharacteristicValue(cName, new ArrayList<>(), DEFAULT_ORDER_ITEM_ID, ro);
+
         // WHEN
-        String roUuid = a4ResourceOrder.sendPostResourceOrder(ro);
-        System.out.println("+++ uuid der RO: " + roUuid);
+        a4ResourceOrder.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
+
         // THEN
         a4ResourceOrder.getResourceOrdersFromDbAndCheckIfRejected(ro);
         a4ResourceOrder.checkResourceOrderItemState(ro.getId(), DEFAULT_ORDER_ITEM_ID, REJECTED);
     }
+
 }
