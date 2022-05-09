@@ -77,8 +77,6 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
 
         A4NetworkElementLink a4Link = osrTestContext.getData().getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        //a4Link.setUeWegId("125906, 598516");
-        a4Link.setLbz("4N4/1004-49/1125/0/7KC1-49/2516/0/7KD1");
         a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_02_LINK1, a4Link);
 
         cleanUp(); // Make sure no old test data is in the way
