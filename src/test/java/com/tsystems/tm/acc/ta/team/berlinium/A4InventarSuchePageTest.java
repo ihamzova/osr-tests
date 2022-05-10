@@ -17,10 +17,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.Comparator;
 import java.util.List;
@@ -91,7 +88,7 @@ public class A4InventarSuchePageTest extends GigabitTest {
         a4ResourceInventoryRobot.createNetworkElementGroup(a4NetworkElementGroup);
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventoryRobot.deleteA4NetworkElementGroupsRecursively(a4NetworkElementGroup);

@@ -67,9 +67,8 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
                 .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
         nspDataB = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
                 .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessB);
-
         nspDataC = osrTestContext.getData().getA4NetworkServiceProfileFtthAccessDataProvider()
-                .get(A4NetworkServiceProfileFtthAccessCase.defaultNetworkServiceProfileFtthAccess);
+                .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessL2Bsa);
         // Ensure that no old test data is in the way
         tearDown();
 

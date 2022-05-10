@@ -18,10 +18,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,7 +99,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 .build().publish();
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
         mappingsContext.close();
         mappingsContext
