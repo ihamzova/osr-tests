@@ -6,11 +6,11 @@ Feature: Receive and process Resource Orders for A10NSP
   Background:
   Work in progress!
     Given a NEG with type "POD" is existing in A4 resource inventory
-#    And a NE "A" with type "" and category "" is existing in A4 resource inventory
-#    And another NE "B" with type "" and category "" is existing in A4 resource inventory
-#    And a NEP "A" with type "100G_ETHERNET_PORT" and functional label "100G_001" connected to NE "A" is existing in A4 resource inventory
-#    And another NEP "B" with type "" and functional label "" connected to NE "B" is existing in A4 resource inventory
-#    And a NEL "A" connected to NEPs "A" and "B" is existing in A4 resource inventory
+    And a NE "A" with type "" and category "" is existing in A4 resource inventory
+    And another NE "B" with type "" and category "" is existing in A4 resource inventory
+    And a NEP "A" with type "100G_ETHERNET_PORT" and functional label "100G_001" connected to NE "A" is existing in A4 resource inventory
+    And another NEP "B" with type "" and functional label "" connected to NE "B" is existing in A4 resource inventory
+    And a NEL connected to NEPs "A" and "B" is existing in A4 resource inventory
 #    And the REBELL wiremock will respond HTTP code 200 when called
 #    And the REBELL wiremock response will include a vendorPortNameA "A" and vendorPortName "B" with reference to NE "A", NE "B" and NEL "A"
 #    And the Merlin wiremock will respond HTTP code 200 when called

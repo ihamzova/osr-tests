@@ -7,7 +7,7 @@ Feature: Network Element search in A4 res-inv UI
     Given a user with Berlinium credentials
 
   @DIGIHUB-144213
-    @team:berlinium @domain:osr @smoke @ui
+    @team:berlinium @domain:osr @smoke @ui @test
     @ms:a4-resource-inventory-ui @ms:a4-resource-inventory-bff-proxy @ms:a4-resource-inventory
   Scenario Outline: User wants to look up an existing Network Element
     Given a NE with VPSZ <VPSZ> and FSZ <FSZ> is existing in A4 resource inventory

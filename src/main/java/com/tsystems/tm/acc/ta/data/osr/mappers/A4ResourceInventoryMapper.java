@@ -31,7 +31,7 @@ public class A4ResourceInventoryMapper {
                 .description("NEG created during osr-test integration test")
                 .centralOfficeNetworkOperator("neg_centOffNetOp_for_integration_test")
                 .lastUpdateTime(OffsetDateTime.now())
-                .lastSuccessfulSyncTime(null)
+                .lastSuccessfulSyncTime(OffsetDateTime.now())
                 .creationTime(OffsetDateTime.now());
     }
 
@@ -61,7 +61,7 @@ public class A4ResourceInventoryMapper {
                 .partyId("10001")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
-                .lastSuccessfulSyncTime(null);
+                .lastSuccessfulSyncTime(OffsetDateTime.now());
     }
 
     public NetworkElementPortDto getDefaultNetworkElementPortData() {
@@ -125,14 +125,14 @@ public class A4ResourceInventoryMapper {
                 .uuid(UUID.randomUUID().toString()) // Unique constraint for NSPs
                 .lineId("LINEID-" + getRandomDigits(6)) // Unique constraint (together with lifecycleState) for NSPs
                 .ontSerialNumber("ONTSERIALNUMBER-" + getRandomDigits(6)) // Unique constraint (together with lifecycleState) for NSPs
-                .terminationPointFtthAccessUuid(null) // has to be set to existing TP in calling method
+                .terminationPointFtthAccessUuid(null) // has to be set to existing TP in calling method, also unique constraint (together with terminationPointFtthAccessUuid) for NSPs
                 .oltPortOntLastRegisteredOn(null) // has to be set to existing NEP in calling method
+                .lifecycleState(INSTALLING)
                 .href("HREF?")
                 .specificationVersion("3")
                 .virtualServiceProvider("ein Virtual Service Provider")
                 .administrativeMode(ACTIVATED)
                 .operationalState(INSTALLING)
-                .lifecycleState(INSTALLING)
                 .description("NSP FTTH Access created during osr-test integration test")
                 .creationTime(OffsetDateTime.now())
                 .lastUpdateTime(OffsetDateTime.now())
@@ -363,7 +363,6 @@ public class A4ResourceInventoryMapper {
         nspData.setUuid(nspFtth.getUuid());
 
         nspFtth.setLineId(nspData.getLineId());
-        nspFtth.setOltPortOntLastRegisteredOn(nspData.getOltPortOntLastRegisteredOn());
         nspFtth.setOntSerialNumber(nspData.getOntSerialNumber());
         nspFtth.setLineId(nspData.getLineId());
         nspFtth.setOltPortOntLastRegisteredOn(port);

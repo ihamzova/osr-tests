@@ -40,6 +40,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     private A4NetworkElementPort nepDataB;
     private A4TerminationPoint tpDataA;
     private A4TerminationPoint tpDataB;
+    private A4TerminationPoint tpDataC;
     private A4NetworkElementLink nelData;
     private A4NetworkServiceProfileFtthAccess nspDataA;
     private A4NetworkServiceProfileFtthAccess nspDataB;
@@ -57,6 +58,8 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
                 .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
         tpDataB = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
+        tpDataC = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.terminationPointFtthAccessPrePro);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
         nepDataB = osrTestContext.getData().getA4NetworkElementPortDataProvider()
@@ -80,10 +83,11 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         a4ResourceInventoryRobot.createNetworkElementPort(nepDataB, neDataB);
         a4ResourceInventoryRobot.createTerminationPoint(tpDataA, nepDataA);
         a4ResourceInventoryRobot.createTerminationPoint(tpDataB, nepDataB);
+        a4ResourceInventoryRobot.createTerminationPoint(tpDataC, nepDataB);
         a4ResourceInventoryRobot.createNetworkElementLink(nelData, nepDataA, nepDataB);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspDataA, tpDataA);
         a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccess(nspDataB, tpDataB);
-        a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccessWithPortReference(nspDataC, tpDataA, nepDataA);
+        a4ResourceInventoryRobot.createNetworkServiceProfileFtthAccessWithPortReference(nspDataC, tpDataC, nepDataB);
     }
 
     @AfterClass
@@ -192,7 +196,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     @TmsLink("DIGIHUB-116694")
     @Description("Read Network Service Profile Ftth Access from resource inventory service v4 api")
     public void readNetworkServiceProfileFtthAccessFromA4ApiByUuidWithResourceRelationships() {
-        nspDataC.setOltPortOntLastRegisteredOn(nepDataA.getUuid());
+        nspDataC.setOltPortOntLastRegisteredOn(nepDataB.getUuid());
         a4ResourceInventoryServiceV4Robot.checkResourceRelationshipsByNetworkServiceProfileFtthAccess(nspDataC);
     }
 
