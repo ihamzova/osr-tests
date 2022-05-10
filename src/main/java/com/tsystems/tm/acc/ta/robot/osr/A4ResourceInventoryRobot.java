@@ -813,15 +813,25 @@ public class A4ResourceInventoryRobot {
     @Step("Delete NE by all unique constraints ztpIdent and endsz, also recursively deletes as children")
     public void deleteA4NetworkElementsRecursively(A4NetworkElement ne) {
         // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        deleteA4NetworkElementsRecursively(ne.getZtpIdent());
-        deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
+        // Also, ztpIdent is a unique constraint
+
+        if (ne != null && ne.getZtpIdent() != null)
+            deleteA4NetworkElementsRecursively(ne.getZtpIdent());
+
+        if (ne != null && (ne.getVpsz() != null || ne.getFsz() != null))
+            deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
     @Step("Delete NE by all unique constraints ztpIdent and endsz, also recursively deletes as children")
     public void deleteA4NetworkElementsRecursivelyDto(NetworkElementDto ne) {
         // NE VPSZ & FSZ has to be unique, so let's delete by that, to avoid constraint violations for future tests
-        deleteA4NetworkElementsRecursively(ne.getZtpIdent());
-        deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
+        // Also, ztpIdent is a unique constraint
+
+        if (ne != null && ne.getZtpIdent() != null)
+            deleteA4NetworkElementsRecursively(ne.getZtpIdent());
+
+        if (ne != null && (ne.getVpsz() != null || ne.getFsz() != null))
+            deleteA4NetworkElementsRecursively(ne.getVpsz(), ne.getFsz());
     }
 
     public void deleteA4NetworkElementsRecursively(String vpsz, String fsz) {

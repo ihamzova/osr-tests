@@ -135,7 +135,7 @@ public class A4MobileNeSearchPageTest extends GigabitTest {
         robotRI.createNetworkElementPort(a4NetworkElementPortB, a4NetworkElements.get(A4_NE_RETIRING_PODSERVER_01));
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
         // Delete all A4 data which might provoke problems because of unique constraints
         robotRI.deleteA4NetworkElementGroupsRecursively(a4NetworkElementGroup);

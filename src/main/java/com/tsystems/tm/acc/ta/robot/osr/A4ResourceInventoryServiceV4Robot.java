@@ -171,10 +171,10 @@ public class A4ResourceInventoryServiceV4Robot {
         assertEquals(rrl.size(), 2);
 
         ResourceRelationship resourceRelationshipTp = rrl.get(0);
-        assertEquals(nspFtthAccess.getTerminationPointUuid(), resourceRelationshipTp.getResource().getId());
+        assertEquals(resourceRelationshipTp.getResource().getId(), nspFtthAccess.getTerminationPointUuid());
 
         ResourceRelationship resourceRelationshipNep = nspFtthAccess.getResourceRelationship().get(1);
-        assertEquals(nspData.getOltPortOntLastRegisteredOn(), resourceRelationshipNep.getResource().getId());
+        assertEquals(resourceRelationshipNep.getResource().getId(), nspData.getOltPortOntLastRegisteredOn());
     }
 
     public void checkIfNetworkServiceProfileFtthAccessExistsByOntSerialNumber(A4NetworkServiceProfileFtthAccess nspData) {

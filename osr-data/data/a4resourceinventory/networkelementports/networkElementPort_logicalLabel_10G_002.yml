@@ -1,7 +1,7 @@
 name: networkElementPort_logicalLabel_10G_002
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort
 values:
-  uuid: "" # if blank: field will be filled with returned uuid of created NEP
+  uuid: "" # don't set! Filled automatically
   operationalState: "WORKING"
   functionalPortLabel: "10G_002"
   type: "10G_ETHERNET_PORT"
