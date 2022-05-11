@@ -16,6 +16,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.*;
 
 import javax.ws.rs.HttpMethod;
@@ -38,12 +39,11 @@ import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf65
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
+@Slf4j
 public class A4ResourceOrderTest {
 
-    private final boolean eventHandling = false;
     private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
     private final int SLEEP_TIMER = 5;
-    private final String URL_EVENT_PUBLISH = "/upstream-partner/tardis/resource-order-resource-inventory/a10nsp/resourceOrderingManagement/horizon/events/v1";
     private final A4ResourceInventoryRobot a4RobotRI = new A4ResourceInventoryRobot();
     private final A4ResourceOrderRobot a4RobotRO = new A4ResourceOrderRobot();
     private final A4NemoUpdaterRobot a4RobotNU = new A4NemoUpdaterRobot();
@@ -203,6 +203,22 @@ public class A4ResourceOrderTest {
         a4RobotRO.cleanCallbacksInWiremock();
     }
 
+    private void sendRoAndCheckState(ResourceOrderStateType state) {
+        boolean eventHandling = false;
+        String URL_EVENT_PUBLISH = "/upstream-partner/tardis/resource-order-resource-inventory/a10nsp/resourceOrderingManagement/horizon/events/v1";
+        a4RobotRO.sendPostResourceOrder(ro);
+        sleepForSeconds(SLEEP_TIMER);
+        // THEN
+        a4RobotRO.checkResourceOrderState(ro, ro.getId(), state);
+        if (state == ResourceOrderStateType.COMPLETED) {
+            a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), HttpMethod.GET, 1);
+            a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), HttpMethod.POST, 1);
+            // all done, finally check event publishing
+            if (eventHandling)
+                a4WmRobot.checkSyncRequest(URL_EVENT_PUBLISH, RequestMethod.POST, 1, 1000);
+        }
+    }
+
     @Test
     @Owner("DL_Berlinium@telekom.de")
     @TmsLink("DIGIHUB-126401")
@@ -211,7 +227,7 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         // THEN
-        sendAndCheckCompleted();
+        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
     }
 
@@ -223,21 +239,9 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
         // THEN
-        sendAndCheckCompleted();
+        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId2, COMPLETED);
-    }
-
-    private void sendAndCheckCompleted() {
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.checkResourceOrderState(ro, ro.getId(), ResourceOrderStateType.COMPLETED);
-        a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), HttpMethod.GET, 1);
-        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), HttpMethod.POST, 1);
-        // all done, finally check event publishing
-        if (eventHandling)
-            a4WmRobot.checkSyncRequest(URL_EVENT_PUBLISH, RequestMethod.POST, 1, 1000);
     }
 
     @Test(dataProvider = "vlanRangeCombinations")
@@ -248,10 +252,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(VLAN_RANGE, vlanRange, orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -263,14 +264,8 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfCompleted(ro);
-        a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), "GET", 1);
+        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
-        A10nspA4Dto a10nspA4Dto = a4RobotRO.getA10NspA4Dto(ro);
-        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
     }
 
     @Test
@@ -281,13 +276,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfCompleted(ro);
-        a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), "GET", 1);
-        A10nspA4Dto a10nspA4Dto = a4RobotRO.getA10NspA4Dto(ro);
-        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 1);
+        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
     }
 
@@ -299,10 +288,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", orderItemId, ro); // erzeugt Mercury-Fehler 409
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -314,10 +300,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", orderItemId, ro); // Link is unknown
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -329,7 +312,7 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL2, ro);
         ro.setId(UUID.randomUUID().toString());
-        System.out.println("+++ RO mit uuid: " + ro);
+        log.info("+++ RO mit uuid: " + ro);
         // WHEN
         a4RobotRO.sendPostResourceOrderError400(ro);
         sleepForSeconds(SLEEP_TIMER);
@@ -368,13 +351,11 @@ public class A4ResourceOrderTest {
         // THEN
         a4RobotRI.checkDefaultValuesNsp(a4A10Nsp);
         a4RobotRI.checkLifecycleState(a4NEL, "DEACTIVATED");
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfCompleted(ro);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
-        a4RobotNU.checkNetworkElementLinkPutRequestToNemoWiremockByNel(a4NEL);
+        a4RobotNU.checkLogicalResourcePutRequestToNemoWiremock(a4NEL.getUuid());
         a4RobotNU.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(a4TP);
         a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), "GET", 0);
-        A10nspA4Dto a10nspA4Dto = a4RobotRO.getA10NspA4Dto(ro);
-        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a10nspA4Dto, "POST", 0);
+        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), "POST", 0);
     }
 
     @Test(description = "DIGIHUB-76370 a10-ro delete")
@@ -408,10 +389,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
         a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -424,10 +402,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -438,10 +413,7 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4RobotRO.addOrderItemModify(orderItemId, a4NEL, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -454,10 +426,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.addOrderItemAdd(roiId2, a4NEL, ro); // uses same nelData, therefore same LBZ mapped to resource.name
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), roiId2, REJECTED);
     }
@@ -487,10 +456,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
@@ -502,10 +468,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(cName, new ArrayList<>(), orderItemId, ro);
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(SLEEP_TIMER);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfRejected(ro);
+        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 }
