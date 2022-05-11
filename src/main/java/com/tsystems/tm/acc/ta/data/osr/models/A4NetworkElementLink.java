@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class A4NetworkElementLink {
+
     private String uuid;
     private String ueWegId;
     private String lsz;
     private String lbz;
     private String lifecycleState;
     private String operationalState;
-    private String lastSuccessfulSyncTime;
 
 }

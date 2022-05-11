@@ -1,12 +1,8 @@
 name: defaultNetworkServiceProfileL2Bsa
 template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkServiceProfileL2Bsa
 values:
-  uuid: "" # if blank: field will be filled with returned uuid of created NSP
+  uuid: "" # don't set! Filled automatically
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
   administrativeMode: "ACTIVATED"
-  # faultyOperationalState : "FAULTY OPERATIONAL_STATE"
-# creationTime: "2021-01-27T10:00:02.105Z"
-# lastUpdateTime: "2021-02-02T08:59:50.888Z"
   lineId: "DEU.DTAG.${randomLong, 1000000000, 9999999999}"
-# virtualServiceProvider: "DTAG"

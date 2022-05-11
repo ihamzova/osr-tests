@@ -18,10 +18,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,8 +74,6 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 .get(EquipmentDataCase.equipment_MatNr_40318601);
 
         A4NetworkElementLink a4Link = osrTestContext.getData().getA4NetworkElementLinkDataProvider().get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        //a4Link.setUeWegId("125906, 598516");
-        a4Link.setLbz("4N4/1004-49/1125/0/7KC1-49/2516/0/7KD1");
         a4NetworkElementLinks.put(A4_NE_OPERATING_BOR_02_LINK1, a4Link);
 
         cleanUp(); // Make sure no old test data is in the way
@@ -104,7 +99,7 @@ public class A4InbetriebnahmeTest extends GigabitTest {
                 .build().publish();
     }
 
-    @AfterClass
+    @AfterMethod
     public void cleanUp() {
         mappingsContext.close();
         mappingsContext

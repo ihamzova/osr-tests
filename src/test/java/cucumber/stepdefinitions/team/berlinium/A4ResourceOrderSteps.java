@@ -31,7 +31,7 @@ public class A4ResourceOrderSteps {
     public void cleanup() {
         final boolean RO_ID_PRESENT = testContext.getScenarioContext().isContains(Context.A4_RES_ORDER_ID);
         if (RO_ID_PRESENT) {
-            String roId = (String) testContext.getScenarioContext().getContext(Context.A4_RES_ORDER_ID);
+            final String roId = (String) testContext.getScenarioContext().getContext(Context.A4_RES_ORDER_ID);
             resOrder.deleteA4TestDataRecursively(roId);
         }
     }
@@ -39,7 +39,7 @@ public class A4ResourceOrderSteps {
 
     // -----=====[ WHENS ]=====-----
 
-    @When("CAD@Sputnik sends a resource order with empty resource order ID")
+    @When("(CAD@)Sputnik sends a resource order with empty resource order ID")
     public void whenCadSputnikSendsAResourceOrderWithEmptyResourceOrderID() {
         // INPUT FROM SCENARIO CONTEXT
         NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL);
