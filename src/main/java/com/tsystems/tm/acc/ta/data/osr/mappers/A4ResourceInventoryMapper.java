@@ -397,6 +397,13 @@ public class A4ResourceInventoryMapper {
         return nspFtth;
     }
 
+    public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOnWorking() {
+        NetworkServiceProfileFtthAccessDto nspFtth = getDefaultNetworkServiceProfileFtthAccessData();
+        nspFtth.setOltPortOntLastRegisteredOn(null);
+        nspFtth.setOperationalState("WORKING");
+        return nspFtth;
+    }
+
     public List<NetworkServiceProfileFtthAccessDto> getListOfNspWithoutOntLastRegisteredOn() {
         List<NetworkServiceProfileFtthAccessDto> networkServiceProfileFtthAccessDtos = new ArrayList<>();
         networkServiceProfileFtthAccessDtos.add(getNspWithoutOntLastRegisteredOn());

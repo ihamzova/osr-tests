@@ -136,8 +136,8 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
-  public OsrWireMockMappingsContextBuilder addA4NspByUuidWithoutOntLastRegisteredOn() {
-    context.add(new A4ResourceInventoryStub().getNspByUuidWithoutOntLastRegisteredOn());
+  public OsrWireMockMappingsContextBuilder addA4NspByUuidWithoutOntLastRegisteredOnWorking() {
+    context.add(new A4ResourceInventoryStub().getNspByUuidWithoutOntLastRegisteredOnWorking());
     return this;
   }
 
