@@ -113,9 +113,6 @@ public class A4ResourceInventoryNegDetailsRobot {
             assertEquals(neListInDB.get(i).getCategory(), neListOnUI.get(i).getCategory());
             assertEquals(neListInDB.get(i).getLifecycleState(), neListOnUI.get(i).getLifecycleState());
             assertEquals(neListInDB.get(i).getOperationalState(), neListOnUI.get(i).getOperationalState());
-            assertEquals(neListInDB.get(i).getCreationTime(), OffsetDateTime.parse(neListOnUI.get(i).getCreationTime()) );
-            assertEquals(neListInDB.get(i).getLastUpdateTime(), OffsetDateTime.parse(neListOnUI.get(i).getLastUpdateTime()) );
-            assertEquals(neListInDB.get(i).getLastSuccessfulSyncTime(), OffsetDateTime.parse(neListOnUI.get(i).getLastSuccessfulSyncTime()) );
         }
     }
 
@@ -131,18 +128,12 @@ public class A4ResourceInventoryNegDetailsRobot {
 
         // Read table from ui and fill list (actual result)
         for (int i = 0; i < elementsCollection.size() / numberOfColumnsNeList; i++) {
-            /*
-            UUID	Category	VPSZ	FSZ	LifecycleState	OperationalState	Creation Time	Last Update Time	Last Successful Sync Time
-             */
             neList.get(i).setUuid(elementsCollection.get(i * numberOfColumnsNeList + 1).getText());
             neList.get(i).setVpsz(elementsCollection.get(i * numberOfColumnsNeList + 2).getText());
             neList.get(i).setFsz(elementsCollection.get(i * numberOfColumnsNeList + 3).getText());
             neList.get(i).setCategory(elementsCollection.get(i * numberOfColumnsNeList + 4).getText());
             neList.get(i).setOperationalState(elementsCollection.get(i * numberOfColumnsNeList + 5).getText());
             neList.get(i).setLifecycleState(elementsCollection.get(i * numberOfColumnsNeList + 6).getText());
-            neList.get(i).setCreationTime(elementsCollection.get(i * numberOfColumnsNeList + 7).getText());
-            neList.get(i).setLastUpdateTime(elementsCollection.get(i * numberOfColumnsNeList + 8).getText());
-            neList.get(i).setLastSuccessfulSyncTime(elementsCollection.get(i * numberOfColumnsNeList + 9).getText());
         }
 
         // Sort

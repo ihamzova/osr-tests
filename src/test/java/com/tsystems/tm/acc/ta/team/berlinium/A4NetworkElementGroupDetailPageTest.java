@@ -91,7 +91,7 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE  works")
-    public void testA4NegDetailPageAndClickNeg() {
+    public void testA4NetworkElementGroupDetailPageAndClickNeg() {
         // GIVEN
         a4InventarSuche.searchForNetworkElementGroup(negData);
         WebDriver driver = WebDriverRunner.getWebDriver();
