@@ -31,21 +31,26 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
     private final A4ResourceInventoryNeDetailsRobot a4ResourceInventoryNeDetails = new A4ResourceInventoryNeDetailsRobot();
 
     private A4NetworkElementGroup negData;
-    private A4NetworkElement neData;
+    private A4NetworkElement neDataA;
+    private A4NetworkElement neDataB;
 
     @BeforeClass()
     public void init() {
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
-        neData = osrTestContext.getData().getA4NetworkElementDataProvider()
+        negData.setName("0" + negData.getName()); // Hack to be the first in search list
+        neDataA = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementInstallingOlt01);
+        neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
+                .get(A4NetworkElementCase.networkElementInstallingSpine01);
 
         // Ensure that no old test data is in the way
         cleanUp();
 
         // Test cases only do read requests, therefore it's ok to crete them only once at beginning
         a4ResourceInventory.createNetworkElementGroup(negData);
-        a4ResourceInventory.createNetworkElement(neData, negData);
+        a4ResourceInventory.createNetworkElement(neDataA, negData);
+        a4ResourceInventory.createNetworkElement(neDataB, negData);
     }
 
     @BeforeMethod
@@ -58,18 +63,18 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
     public void cleanUp() {
         // Delete all A4 data which might provoke problems because of unique constraints
         a4ResourceInventory.deleteA4NetworkElementGroupsRecursively(negData);
-        a4ResourceInventory.deleteA4NetworkElementsRecursively(neData);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neDataA);
+        a4ResourceInventory.deleteA4NetworkElementsRecursively(neDataB);
     }
 
     @Test
-    @Owner("bela.kovac@t-systems.com")
+    @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test for Network Element Group Detail page")
     public void testA4NetworkElementGroupDetailPage() {
         // WHEN
 //        WebDriverWait wait = new WebDriverWait(driver, 5000);
         a4InventarSuche.searchForNetworkElementGroup(negData);
-
 
         WebDriver driver = WebDriverRunner.getWebDriver();
         driver.manage().window().maximize();
@@ -78,7 +83,7 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
         a4InventarSuche.clickDetailLinkForFirstNEGInSearchResultTable();
 
         // THEN
-        a4ResourceInventoryNegDetails.checkNegDetailsAndTableContents(negData, neData);
+        a4ResourceInventoryNegDetails.checkNegDetailsAndTableContents(negData);
     }
 
 
@@ -93,12 +98,12 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
         driver.manage().window().maximize();
         sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEGInSearchResultTable();
-
+        sleepForSeconds(2);  // wait for result
         // WHEN
         a4ResourceInventoryNegDetails.clickNeIcon();
-
+        sleepForSeconds(2);  // wait for result
         // THEN
-        a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neData);
+        a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataA);
 
     }
 }
