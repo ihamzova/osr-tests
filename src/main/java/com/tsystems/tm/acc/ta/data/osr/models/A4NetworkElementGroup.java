@@ -13,6 +13,7 @@ public class A4NetworkElementGroup {
 
     private String uuid;
     private String name;
+    private String description;
     private String operationalState;
     private String lifecycleState;
     private String type;

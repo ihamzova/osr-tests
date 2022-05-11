@@ -3,5 +3,6 @@ template: com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup
 values:
   uuid: "" # don't set! Filled automatically
   name: "NEG-${randomLong, 100000, 999999}" # if blank: random name will be generated and field will be filled with that value
+  description: "NEG created during osr-test integration test"
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"

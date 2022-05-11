@@ -2,9 +2,8 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
@@ -12,7 +11,6 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkE
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.time.OffsetDateTime;
@@ -35,17 +33,6 @@ public class A4InventarSucheRobot {
         $(By.xpath("//tr[" + numberOfElements + "]")).shouldBe(Condition.visible);
     }
 
-    public ElementsCollection getNegElementsCollection() {
-        // waitForTableToFullyLoad(elementsCollection.size());
-        try {
-            Thread.sleep(2000);
-            return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
-                    .findAll(By.xpath("tr/td"));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public ElementsCollection getNeElementsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
@@ -60,6 +47,18 @@ public class A4InventarSucheRobot {
     }
 
 
+    public ElementsCollection getNegElementsCollection() {
+        // waitForTableToFullyLoad(elementsCollection.size());
+        try {
+            Thread.sleep(2000);
+            return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public ElementsCollection getNeDetailsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
@@ -73,6 +72,17 @@ public class A4InventarSucheRobot {
         }
     }
 
+    public ElementsCollection getNeList4NEGCollection() {
+        // waitForTableToFullyLoad(elementsCollection.size());
+        try {
+            Thread.sleep(2000);
+            return $(A4InventarSuchePage.getNEG_NE_LIST_TABLE_LOCATOR())
+                    .findAll(By.xpath("tr/td"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 
@@ -227,6 +237,16 @@ public class A4InventarSucheRobot {
         clickNeSearchButton();
     }
 
+
+
+    @Step("Search for network element group")
+    public void searchForNetworkElementGroup(A4NetworkElementGroup negData) {
+        openInventarSuchePage();
+        clickNetworkElementGroup();
+        clickNegSearchButton();
+    }
+
+
     public void clickDetailLinkForFirstNEInSearchResultTable() {
 
        // getNeElementsCollection().get(0).click();
@@ -243,6 +263,18 @@ public class A4InventarSucheRobot {
         // NE_DETAIL_LINK_LOCATOR_1 + 0
         // first column of the first row has the link
     }
+
+
+    public void clickDetailLinkForFirstNEGInSearchResultTable() {
+
+        sleepForSeconds(2);
+        WebElement element = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
+                .toWebElement().findElement(A4InventarSuchePage.NEG_DETAIL_LINK_LOCATOR_1);
+        sleepForSeconds(2);
+        element.click();
+
+    }
+
 
     public List<NetworkElementGroupDto> createNegListActualResult() {
         ElementsCollection elementsCollection = getNegElementsCollection();
@@ -274,7 +306,7 @@ public class A4InventarSucheRobot {
 
         // sort
         negActualResultList = negActualResultList
-                .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid))
+                .stream().sorted(Comparator.comparing(NetworkElementGroupDto::getUuid)) //TODO: ist das nicht nach Namen sortiert?
                 .collect(Collectors.toList());
 
         return negActualResultList;
