@@ -6,4 +6,4 @@ values:
   lineId: "DEU.DTAG.${randomLong, 1000000000, 9999999999}"
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
-
+  oltPortOntLastRegisteredOn: "" # don't set! Filled automatically

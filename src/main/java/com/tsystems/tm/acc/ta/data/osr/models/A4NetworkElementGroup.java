@@ -15,9 +15,6 @@ public class A4NetworkElementGroup {
     private String name;
     private String operationalState;
     private String lifecycleState;
-    private String creationTime;
-    private String lastUpdateTime;
     private String type;
-    private String lastSuccessfulSyncTime;
 
 }

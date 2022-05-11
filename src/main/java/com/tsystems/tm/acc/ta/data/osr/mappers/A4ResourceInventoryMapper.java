@@ -212,6 +212,7 @@ public class A4ResourceInventoryMapper {
         neg.setName(negData.getName());
         neg.setOperationalState(negData.getOperationalState());
         neg.setLifecycleState(negData.getLifecycleState());
+        neg.setType(negData.getType());
 
         return neg;
     }
@@ -230,6 +231,7 @@ public class A4ResourceInventoryMapper {
         ne.setKlsId(neData.getKlsId());
         ne.setPlanningDeviceName(neData.getPlanningDeviceName());
         ne.setPlannedMatNumber(neData.getPlannedMatNr());
+        ne.setZtpIdent(neData.getZtpIdent());
 
         return ne;
     }
@@ -270,7 +272,6 @@ public class A4ResourceInventoryMapper {
 
         nepData.setUuid(nep.getUuid());
 
-        nep.setDescription(nepData.getDescription());
         nep.setLogicalLabel(nepData.getFunctionalPortLabel());
         nep.setPortNumber(getPortNumberByFunctionalPortLabel(nepData.getFunctionalPortLabel()));
         nep.setOperationalState(nepData.getOperationalState());
@@ -342,6 +343,7 @@ public class A4ResourceInventoryMapper {
 
         tp.setCarrierBsaReference(tpData.getCarrierBsaReference());
         tp.setType(tpData.getSubType());
+        tp.setState(tpData.getState());
 
         return tp;
     }
@@ -361,6 +363,7 @@ public class A4ResourceInventoryMapper {
         NetworkServiceProfileFtthAccessDto nspFtth = getNetworkServiceProfileFtthAccessDto(tpData.getUuid());
 
         nspData.setUuid(nspFtth.getUuid());
+        nspData.setOltPortOntLastRegisteredOn(port);
 
         nspFtth.setLineId(nspData.getLineId());
         nspFtth.setOntSerialNumber(nspData.getOntSerialNumber());
@@ -407,7 +410,6 @@ public class A4ResourceInventoryMapper {
 
         nspA10.setOperationalState(nspData.getOperationalState());
         nspA10.setLifecycleState(nspData.getLifecycleState());
-        nspA10.setNumberOfAssociatedNsps(nspData.getNumberOfAssociatedNsps());
 
         return nspA10;
     }
@@ -427,6 +429,8 @@ public class A4ResourceInventoryMapper {
         nspL2.setAdministrativeMode(nspData.getAdministrativeMode());// neu im Model
         nspL2.setOperationalState(nspData.getOperationalState());
         nspL2.setLifecycleState(nspData.getLifecycleState());
+        nspL2.setDataRateUp(nspData.getDataRateUp());
+        nspL2.setDataRateDown(nspData.getDataRateDown());
         nspL2.setLineId(nspData.getLineId());
         nspL2.setL2CcId(nspData.getL2CcId());
 
