@@ -284,7 +284,7 @@ public class A4OntCommissioning extends GigabitTest {
     accessLine.setLineId(a4AccessLine.getLineId());
 
     mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "A4Verschaltungsfehler"))
-            .addA4NspByUuidWithoutOntLastRegisteredOn()
+            .addA4NspByUuidWithoutOntLastRegisteredOnWorking()
             .build()
             .publish()
             .publishedHook(savePublishedToDefaultDir())

@@ -3,3 +3,4 @@ template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
 values:
   uuid: "" # don't set! Filled automatically
   subType: "PON_TP"
+  state: "UNUSED"

@@ -3,3 +3,4 @@ template: com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint
 values:
   uuid: "" # don't set! Filled automatically
   subType: "L2BSA_TP"
+  state: "UNUSED"

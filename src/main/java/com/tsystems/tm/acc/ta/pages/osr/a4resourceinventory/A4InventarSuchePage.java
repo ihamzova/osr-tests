@@ -89,6 +89,9 @@ public class A4InventarSuchePage {
     @Getter
     // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
     public static final By NE_DETAILS_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
+    @Getter
+    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
+    public static final By NEG_NE_LIST_TABLE_LOCATOR = By.id("tblNeList");
 
 
 
@@ -112,6 +115,10 @@ public class A4InventarSuchePage {
 
     @Getter
     public static final By NE_DETAIL_LINK_LOCATOR_1 = By.id("linkNe0");
+
+
+    @Getter
+    public static final By NEG_DETAIL_LINK_LOCATOR_1 = By.id("linkNeg0");
 
 
 

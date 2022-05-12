@@ -41,10 +41,10 @@ public class A4ResourceInventoryStub extends AbstractStubMapping {
             .atPriority(0);
   }
 
-  public MappingBuilder getNspByUuidWithoutOntLastRegisteredOn() {
+  public MappingBuilder getNspByUuidWithoutOntLastRegisteredOnWorking() {
     return get(urlMatching(A4_NSP_URL))
             .withName("getA4NetworkServiceProfilesFtthAccessByUuid")
-            .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getNspWithoutOntLastRegisteredOn()), HTTP_CODE_OK_200))
+            .willReturn(aDefaultResponseWithBody(serialize(new A4ResourceInventoryMapper().getNspWithoutOntLastRegisteredOnWorking()), HTTP_CODE_OK_200))
             .atPriority(0);
   }
 

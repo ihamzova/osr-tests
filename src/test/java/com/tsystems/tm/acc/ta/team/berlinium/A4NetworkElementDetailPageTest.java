@@ -13,10 +13,7 @@ import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -29,7 +26,7 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 @Epic("OS&R")
 @Feature("Test detail-view for found NEs in UI")
 @TmsLink("DIGIHUB-xxxxx")
-public class A4DetailsNetworkElementPageTest extends GigabitTest {
+public class A4NetworkElementDetailPageTest extends GigabitTest {
 
     private final A4InventarSucheRobot a4InventarSuche = new A4InventarSucheRobot();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
