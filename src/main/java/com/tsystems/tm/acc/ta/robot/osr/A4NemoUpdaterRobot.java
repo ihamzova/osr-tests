@@ -4,7 +4,10 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4NemoUpdaterClient;
-import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
+import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
+import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
@@ -96,8 +99,7 @@ public class A4NemoUpdaterRobot {
 
     @Step("Check if PUT request to NEMO wiremock with network service profile A10NSP has happened")
     public void checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(A4TerminationPoint tpData, int count) {
-        List<NetworkServiceProfileA10NspDto> nspList = a4Inventory
-                .getNetworkServiceProfilesA10NspByTerminationPoint(tpData.getUuid());
+        List<NetworkServiceProfileA10NspDto> nspList = a4Inventory.getNetworkServiceProfilesA10NspByTerminationPoint(tpData.getUuid());
         Assert.assertEquals(nspList.size(), 1);
         checkLogicalResourceRequestToNemoWiremock(nspList.get(0).getUuid(), "PUT", count);
     }
@@ -128,15 +130,9 @@ public class A4NemoUpdaterRobot {
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
     }
 
-    @Step("Check if PUT request to NEMO wiremock with network element link has happened")
-    public void checkNetworkElementLinkPutRequestToNemoWiremockByNel(A4NetworkElementLink nelData) {
-        checkLogicalResourcePutRequestToNemoWiremock(nelData.getUuid());
-    }
-
     @Step("Check if PUT request to NEMO wiremock with two network element links at one port has happened")
     public void checkTwoNetworkElementLinksPutRequestToNemoWiremock(A4NetworkElementPort nepData) {
-        List<NetworkElementLinkDto> nelList = a4Inventory
-                .getNetworkElementLinksByNePort(nepData.getUuid());
+        List<NetworkElementLinkDto> nelList = a4Inventory.getNetworkElementLinksByNePort(nepData.getUuid());
         Assert.assertEquals(nelList.size(), 2);
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(0).getUuid());
         checkLogicalResourcePutRequestToNemoWiremock(nelList.get(1).getUuid());

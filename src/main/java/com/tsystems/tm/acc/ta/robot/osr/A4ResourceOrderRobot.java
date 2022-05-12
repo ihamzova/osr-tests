@@ -209,7 +209,7 @@ public class A4ResourceOrderRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
     }
 
-    public String checkResourceOrderState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
+    public void checkResourceOrderState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
         String roId;
         String roState;
         if (isNullOrEmpty(ro.getId())) {
@@ -225,19 +225,14 @@ public class A4ResourceOrderRobot {
         }
         if (!isNullOrEmpty(roUuid)) assertEquals(roId, roUuid);
         assertEquals(roState, checkedState.toString());
-        return roId;
     }
 
-    private ResourceOrderItemStateType getRoiType(ResourceOrderStateType stateType) {
+    public ResourceOrderItemStateType getRoiType(ResourceOrderStateType stateType) {
         return ResourceOrderItemStateType.valueOf(stateType.name());
     }
 
     public void getResourceOrdersFromDbAndCheckIfCompleted(ResourceOrder ro) {
         checkResourceOrderState(ro, ro.getId(), ResourceOrderStateType.COMPLETED);
-    }
-
-    public void getResourceOrdersFromDbAndCheckIfRejected(ResourceOrder ro) {
-        checkResourceOrderState(ro, null, ResourceOrderStateType.REJECTED);
     }
 
     public void getResourceOrdersFromDbAndCheckIfNotInDb(ResourceOrder ro) {
