@@ -21,7 +21,6 @@ import org.testng.annotations.*;
 
 import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase.*;
@@ -36,12 +35,14 @@ import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderItemStateType.*;
+import static org.testng.Assert.assertNotNull;
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
 @Epic("OS&R")
 @Slf4j
 public class A4ResourceOrderTest {
 
+    public static final String DEACTIVATED = "DEACTIVATED";
     private final String WIREMOCK_SCENARIO_NAME = "A4ResourceOrderTest";
     private final int SLEEP_TIMER = 5;
     private final A4ResourceInventoryRobot a4RobotRI = new A4ResourceInventoryRobot();
@@ -204,12 +205,17 @@ public class A4ResourceOrderTest {
     }
 
     private void sendRoAndCheckState(ResourceOrderStateType state) {
+        sendRoAndCheckState(state, orderItemId);
+    }
+
+    private void sendRoAndCheckState(ResourceOrderStateType state, String orderItemId) {
         boolean eventHandling = false;
         String URL_EVENT_PUBLISH = "/upstream-partner/tardis/resource-order-resource-inventory/a10nsp/resourceOrderingManagement/horizon/events/v1";
         a4RobotRO.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
         // THEN
         a4RobotRO.checkResourceOrderState(ro, ro.getId(), state);
+        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, a4RobotRO.getRoiType(state));
         if (state == ResourceOrderStateType.COMPLETED) {
             a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), HttpMethod.GET, 1);
             a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), HttpMethod.POST, 1);
@@ -228,7 +234,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         // THEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
     }
 
     @Test
@@ -240,7 +245,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
         // THEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId2, COMPLETED);
     }
 
@@ -253,7 +257,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.setCharacteristicValue(VLAN_RANGE, vlanRange, orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test
@@ -265,7 +268,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
     }
 
     @Test
@@ -277,7 +279,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
     }
 
     @Test
@@ -286,10 +287,10 @@ public class A4ResourceOrderTest {
     public void testRoNoPostToMercury() {
         // GIVEN
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", orderItemId, ro); // erzeugt Mercury-Fehler 409
+        // erzeugt Mercury-Fehler 409
+        a4RobotRO.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test
@@ -298,13 +299,13 @@ public class A4ResourceOrderTest {
     public void testRoUnknownNel() {
         // GIVEN
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", orderItemId, ro); // Link is unknown
+        // Link is unknown
+        a4RobotRO.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
-    @Test(description = "DIGIHUB-142958 error-case: send RO with Id and get Response with -400- from roo")
+    @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-142958")
     @Description("error-case: send RO with Id and get Response with -400- from roo")
@@ -321,15 +322,16 @@ public class A4ResourceOrderTest {
         ro = null; // damit am Ende keine Daten gelöscht werden, die nicht vorhanden sind
     }
 
-    @Test(description = "DIGIHUB-142958 error-case: send RO with invalid structure and get Response with -400- from swagger")
+    @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-142958")
     @Description("error-case: send RO with invalid structure and get Response with -400- from swagger")
     public void testRoAddItemWithInvalidStructure() {
         // GIVEN
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL2, ro);
-        Objects.requireNonNull(ro.getOrderItem()).get(0).setId(null);
-        System.out.println("+++ RO mit uuid: " + ro);
+        assertNotNull(ro.getOrderItem());
+        ro.getOrderItem().get(0).setId(null);
+        log.info("+++ RO mit uuid: " + ro);
         // WHEN
         a4RobotRO.sendPostResourceOrderError400(ro);
         sleepForSeconds(SLEEP_TIMER);
@@ -338,7 +340,7 @@ public class A4ResourceOrderTest {
         ro = null; // damit am Ende keine Daten gelöscht werden, die nicht vorhanden sind
     }
 
-    @Test(description = "DIGIHUB-76370 a10-ro delete")
+    @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-130475")
     @Description("delete-case: send RO with -delete- and get Callback with -completed-")
@@ -350,15 +352,15 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
         // THEN
         a4RobotRI.checkDefaultValuesNsp(a4A10Nsp);
-        a4RobotRI.checkLifecycleState(a4NEL, "DEACTIVATED");
+        a4RobotRI.checkLifecycleState(a4NEL, DEACTIVATED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
         a4RobotNU.checkLogicalResourcePutRequestToNemoWiremock(a4NEL.getUuid());
         a4RobotNU.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(a4TP);
-        a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), "GET", 0);
-        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), "POST", 0);
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), HttpMethod.GET, 0);
+        a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), HttpMethod.POST, 0);
     }
 
-    @Test(description = "DIGIHUB-76370 a10-ro delete")
+    @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-130477")
     @Description("delete-case: send RO with two -delete- and get Callback with -completed-")
@@ -371,8 +373,8 @@ public class A4ResourceOrderTest {
         sleepForSeconds(SLEEP_TIMER);
         // THEN
         a4RobotRI.checkDefaultValuesNsp(a4A10Nsp);
-        a4RobotRI.checkLifecycleState(a4NEL, "DEACTIVATED");
-        a4RobotRI.checkLifecycleState(a4NEL2, "DEACTIVATED");
+        a4RobotRI.checkLifecycleState(a4NEL, DEACTIVATED);
+        a4RobotRI.checkLifecycleState(a4NEL2, DEACTIVATED);
         a4RobotNU.checkTwoNetworkElementLinksPutRequestToNemoWiremock(a4NEP);
         a4RobotNU.checkNetworkServiceProfileA10NspPutRequestToNemoWiremock(a4TP, 2);
         a4RobotRO.getResourceOrdersFromDbAndCheckIfCompleted(ro);
@@ -380,7 +382,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId2, COMPLETED);
     }
 
-    @Test(description = "DIGIHUB-119735 a10-ro delete, prevalidation, action check")
+    @Test
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-130474")
     @Description("mixed-case: send RO with -add- and -delete- and get Callback with -rejected-")
@@ -390,7 +392,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test(dataProvider = "characteristicNamesDelete")
@@ -403,7 +404,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test
@@ -414,7 +414,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemModify(orderItemId, a4NEL, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test
@@ -427,7 +426,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(roiId2, a4NEL, ro); // uses same nelData, therefore same LBZ mapped to resource.name
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), roiId2, REJECTED);
     }
 
@@ -440,11 +438,7 @@ public class A4ResourceOrderTest {
         a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
         a4RobotRO.addOrderItemAdd(roiId2, a4NEL2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
         // WHEN
-        a4RobotRO.sendPostResourceOrder(ro);
-        sleepForSeconds(5);
-        // THEN
-        a4RobotRO.getResourceOrdersFromDbAndCheckIfCompleted(ro);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, COMPLETED);
+        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), roiId2, COMPLETED);
     }
 
@@ -457,7 +451,6 @@ public class A4ResourceOrderTest {
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 
     @Test(dataProvider = "characteristicNamesEmptyList")
@@ -469,6 +462,5 @@ public class A4ResourceOrderTest {
         a4RobotRO.setCharacteristicValue(cName, new ArrayList<>(), orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-        a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId, REJECTED);
     }
 }
