@@ -527,6 +527,15 @@ public class A4ResourceInventoryRobot {
                 .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
     }
 
+    @Step("Check that Network Service Profile L2BSA doesn't exists in Inventory")
+    public void checkNetworkServiceProfileL2BsaIsDeleted(String uuid) {
+        a4ResourceInventory
+                .networkServiceProfilesL2Bsa()
+                .findNetworkServiceProfileL2Bsa()
+                .uuidPath(uuid)
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+    }
+
     @Step("Check that existing Network Element has been enriched with data from PSL")
     public void checkNetworkElementIsUpdatedWithPslData(String networkElementUuid, EquipmentData equipmentData) {
         NetworkElementDto networkElementDto = getExistingNetworkElement(networkElementUuid);
