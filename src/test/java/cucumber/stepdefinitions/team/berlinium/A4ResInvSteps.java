@@ -46,7 +46,7 @@ public class A4ResInvSteps {
                     .map(neg -> (NetworkElementGroupDto) neg)
                     .collect(toList());
 
-            negList.forEach(neg -> a4ResInv.deleteA4NetworkElementGroupsRecursively(neg));
+            negList.forEach(a4ResInv::deleteA4NetworkElementGroupsRecursively);
         }
 
         final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
@@ -441,6 +441,21 @@ public class A4ResInvSteps {
     @Given("a/another NSP L2BSA {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenA4NspL2Bsa(String nspAlias, String tpAlias) {
         createNspL2Bsa(nspAlias, tpAlias);
+    }
+
+    @Given("a NSP L2BSA with lifecycleState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2BsaWithLcState(String lcState) {
+        createNspL2BsaWithLcState(DEFAULT, lcState, DEFAULT);
+    }
+
+    @Given("a/another NSP L2BSA {string} with lifecycleState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2BsaWithLcState(String nspAlias, String lcState) {
+        createNspL2BsaWithLcState(nspAlias, lcState, DEFAULT);
+    }
+
+    @Given("a/another NSP L2BSA {string} with lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenA4NspL2BsaWithLcState(String nspAlias, String lcState, String tpAlias) {
+        createNspL2BsaWithLcState(nspAlias, lcState, tpAlias);
     }
 
     @Given("a NSP L2BSA with operationalState {string}( connected to the TP)( is existing)( in A4 resource inventory)")
@@ -847,6 +862,13 @@ public class A4ResInvSteps {
         assertTrue(nspL2Bsa.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
+    @Then("the NSP L2BSA does not exist in A4 resource inventory( anymore)( any longer)")
+    public void thenNspL2BsaNotExist() {
+        final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        a4ResInv.checkNetworkServiceProfileL2BsaIsDeleted(nspL2Bsa.getUuid());
+    }
+
     @Then("the (new )NSP A10NSP operationalState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
     public void thenTheNspA10nspOperationalStateIsUpdatedInA4ResInv(String operationalState) {
         final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
@@ -1195,6 +1217,13 @@ public class A4ResInvSteps {
 
     private void createNspL2Bsa(String nspAlias, String tpAlias) {
         NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(tpAlias);
+
+        persistNspL2Bsa(nspAlias, nspL2Bsa);
+    }
+
+    private void createNspL2BsaWithLcState(String nspAlias, String lcState, String tpAlias) {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(tpAlias);
+        nspL2Bsa.setLifecycleState(lcState);
 
         persistNspL2Bsa(nspAlias, nspL2Bsa);
     }
