@@ -819,9 +819,16 @@ public class A4ResInvSteps {
         a4ResInv.checkNetworkServiceProfileFtthAccessIsDeleted(nspFtth.getUuid());
     }
 
-    @Then("the NSP L2BSA (does )(still )exist(s) in A4 resource inventory")
+    @Then("the NSP L2BSA (does )(still )exist(s)( in A4 resource inventory)")
     public void thenA4NspL2BsaExist() {
         final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Bsa.getUuid());
+    }
+
+    @Then("the NSP L2BSA {string} (does )(still )exist(s)( in A4 resource inventory)")
+    public void thenA4NspL2BsaExist(String alias) {
+        final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA, alias);
 
         a4ResInv.getExistingNetworkServiceProfileL2Bsa(nspL2Bsa.getUuid());
     }
@@ -862,9 +869,16 @@ public class A4ResInvSteps {
         assertTrue(nspL2Bsa.getLastUpdateTime().isBefore(oldDateTime), "lastUpdateTime (" + nspL2Bsa.getLastUpdateTime() + ") is newer than " + oldDateTime + "!");
     }
 
-    @Then("the NSP L2BSA does not exist in A4 resource inventory( anymore)( any longer)")
+    @Then("the NSP L2BSA does not exist( in A4 resource inventory)( anymore)( any longer)")
     public void thenNspL2BsaNotExist() {
         final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA);
+
+        a4ResInv.checkNetworkServiceProfileL2BsaIsDeleted(nspL2Bsa.getUuid());
+    }
+
+    @Then("the NSP L2BSA {string} does not exist( in A4 resource inventory)( anymore)( any longer)")
+    public void thenNspL2BsaNotExist(String alias) {
+        final NetworkServiceProfileL2BsaDto nspL2Bsa = (NetworkServiceProfileL2BsaDto) testContext.getScenarioContext().getContext(Context.A4_NSP_L2BSA, alias);
 
         a4ResInv.checkNetworkServiceProfileL2BsaIsDeleted(nspL2Bsa.getUuid());
     }
