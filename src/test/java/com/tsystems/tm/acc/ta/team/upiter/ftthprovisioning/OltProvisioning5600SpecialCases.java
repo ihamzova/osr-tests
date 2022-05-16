@@ -48,6 +48,9 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+
         portProvisioningPartly = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portPartlyOccupied);
         portProvisioningFully = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portFullyOccupied);
         portWithInActiveLines = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portWithInActiveLines);

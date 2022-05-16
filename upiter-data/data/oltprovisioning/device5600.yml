@@ -1,9 +1,22 @@
-name: port5600
+name: port5600v1
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
   endSz: "49/30/179/76H3"
   slotNumber: "3"
   portNumber: "0"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 16
+  defaultNEProfilesActive: 16
+  defaultNetworkLineProfilesActive: 16
+  accessLinesCount: 16
+---
+name: port5600v2
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H1"
+  slotNumber: "3"
+  portNumber: "4"
   homeIdPool: 0
   backhaulId: 1
   accessLinesWG: 16
