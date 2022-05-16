@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkSwitchingRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto;
@@ -38,6 +39,7 @@ public class CardToCardNetworkSwitching extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private NetworkSwitchingRobot networkSwitchingRobot;
+    private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private UpiterTestContext context = UpiterTestContext.get();
     private PortProvisioning endSz_49_30_179_76H2_3_0;
     private PortProvisioning endSz_49_30_179_76H2_3_1;
@@ -47,7 +49,11 @@ public class CardToCardNetworkSwitching extends GigabitTest {
     @BeforeClass
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
+        wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         networkSwitchingRobot = new NetworkSwitchingRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+
         endSz_49_30_179_76H2_3_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H2_3_0);
         endSz_49_30_179_76H2_3_1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H2_3_1);
         endSz_49_911_1100_76H2_1_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_911_1100_76H2_1_0);

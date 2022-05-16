@@ -53,9 +53,13 @@ public class OltProvisioning5800 extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeClass
-  public void init() {
+  public void init() throws InterruptedException {
     accessLineRiRobot = new AccessLineRiRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(3000);
+
     accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
     wgAccessProvisioningClient = new WgAccessProvisioningClient();
     device5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5800);

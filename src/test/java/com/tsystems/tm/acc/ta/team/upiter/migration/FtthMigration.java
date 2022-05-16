@@ -51,10 +51,13 @@ public class FtthMigration {
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
-    public void init(){
+    public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         homeIdManagementRobot = new HomeIdManagementRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+        Thread.sleep(5000);
 
         migratedAccessLineWithHomeIdPool = context.getData().getAccessLineDtoDataProvider().get(AccessLineDtoCase.migratedAccessLineWithHomeIdPool);
         migratedOnuIdWithHomeIdPool = context.getData().getAllocatedOnuIdDtoDataProvider().get(AllocatedOnuIdDtoCase.migratedOnuIdWithHomeIdPool);

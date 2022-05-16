@@ -50,9 +50,13 @@ public class OltProvisioningAdtran extends GigabitTest {
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
-    public void init() {
+    public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+        Thread.sleep(3000);
+
         portEmptyAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceAdtran);
         portDeprovisioningAdtran = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningAdtran);
         portDeprovisioningForDpu = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.portDeprovisioningForDpuAdtran);

@@ -40,6 +40,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private NetworkSwitchingRobot networkSwitchingRobot;
+    private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private OntOltOrchestratorRobot ontOltOrchestratorRobot;
     private HomeIdManagementRobot homeIdManagementRobot;
     private OntUsageRobot ontUsageRobot;
@@ -57,9 +58,12 @@ public class PortToPortNetworkSwitching extends GigabitTest {
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         networkSwitchingRobot = new NetworkSwitchingRobot();
+        wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         ontOltOrchestratorRobot = new OntOltOrchestratorRobot();
         homeIdManagementRobot = new HomeIdManagementRobot();
         ontUsageRobot = new OntUsageRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
         endSz_49_30_179_76H1_3_0 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H1_3_0);
         endSz_49_30_179_76H1_3_1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H1_3_1);

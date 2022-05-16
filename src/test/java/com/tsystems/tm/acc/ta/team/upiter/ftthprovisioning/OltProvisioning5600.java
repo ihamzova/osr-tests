@@ -43,10 +43,12 @@ public class OltProvisioning5600 extends GigabitTest {
   private PortProvisioning device5600;
   private PortProvisioning card5600v1;
   private PortProvisioning card5600v2;
-  private PortProvisioning port5600;
+  private PortProvisioning port5600v1;
+  private PortProvisioning port5600v2;
   private PortProvisioning portTopas;
   private DefaultNeProfile defaultNeProfile;
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
+  private DefaultNetworkLineProfile defaultNetworkLineProfileV2;
   private UpiterTestContext context = UpiterTestContext.get();
 
   @BeforeClass
@@ -63,31 +65,57 @@ public class OltProvisioning5600 extends GigabitTest {
     device5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5600);
     card5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v1);
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
-    port5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600);
+    port5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v1);
+    port5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v2);
     portTopas = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceTopas);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+    defaultNetworkLineProfileV2 = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtthV2);
   }
 
   @Test
-  @TmsLink("DIGIHUB-29664")
-  @Description("Port provisioning case when port is completely free")
-  public void portProvisioning() {
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(port5600);
+  @TmsLink("DIGIHUB-151327")
+  @Description("Port provisioning case when port is completely free, enable-64-pon-splitting toggle off")
+  public void portProvisioningToggleOff() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(port5600v1);
     assertEquals(accessLinesBeforeProvisioning.size(), 0);
-    wgAccessProvisioningRobot.startPortProvisioning(port5600);
-    accessLineRiRobot.checkFtthPortParameters(port5600);
-    accessLineRiRobot.checkDefaultNeProfiles(port5600, defaultNeProfile, port5600.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600, defaultNetworkLineProfile, port5600.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600, 1, 1);
-    accessLineRiRobot.checkPartyId(port5600, 10001L);
-    accessLineRiRobot.checkLineIdPrefix(port5600, "DTAG");
+    wgAccessProvisioningRobot.startPortProvisioning(port5600v1);
+    accessLineRiRobot.checkFtthPortParameters(port5600v1);
+    accessLineRiRobot.checkDefaultNeProfiles(port5600v1, defaultNeProfile, port5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600v1, defaultNetworkLineProfile, port5600v1.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600v1, 1, 1);
+    accessLineRiRobot.checkPartyId(port5600v1, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port5600v1, "DTAG");
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-151326")
+  @Description("Port provisioning case when port is completely free, enable-64-pon-splitting toggle on")
+  public void portProvisioningToggleOn() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
+    Thread.sleep(5000);
+
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(port5600v2);
+    assertEquals(accessLinesBeforeProvisioning.size(), 0);
+    wgAccessProvisioningRobot.startPortProvisioning(port5600v2);
+    accessLineRiRobot.checkFtthPortParameters(port5600v2);
+    accessLineRiRobot.checkDefaultNeProfiles(port5600v2, defaultNeProfile, port5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(port5600v2, defaultNetworkLineProfileV2, port5600v2.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600v2, 1, 1);
+    accessLineRiRobot.checkPartyId(port5600v2, 10001L);
+    accessLineRiRobot.checkLineIdPrefix(port5600v2, "DTAG");
   }
 
   @Test(priority = 1)
   @TmsLink("DIGIHUB-29666")
   @Description("Card provisioning case with 1 empty port")
-  public void cardProvisioning() {
+  public void cardProvisioning() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v1);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v1.getEndSz(),
             card5600v1.getSlotNumber(),
@@ -109,7 +137,10 @@ public class OltProvisioning5600 extends GigabitTest {
   @Test(priority = 1)
   @TmsLink("DIGIHUB-113901")
   @Description("Card provisioning case with 1 card")
-  public void oneCardProvisioning() {
+  public void oneCardProvisioning() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
     Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v2);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v2.getEndSz(),
             card5600v2.getSlotNumber(),
@@ -132,7 +163,10 @@ public class OltProvisioning5600 extends GigabitTest {
   @Test(priority = 1)
   @TmsLink("DIGIHUB-29667")
   @Description("Device provisioning case")
-  public void deviceProvisioning() {
+  public void deviceProvisioning() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
     Device device = wgAccessProvisioningRobot.getDevice(device5600);
     PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(device5600.getEndSz(),
             device.getEquipmentHolders().get(1).getSlotNumber(),
@@ -156,7 +190,10 @@ public class OltProvisioning5600 extends GigabitTest {
   @Test
   @TmsLink("DIGIHUB-74001")
   @Description("Port provisioning case when port is completely free, Topas")
-  public void portProvisioningTopas() {
+  public void portProvisioningTopas() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
     List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portTopas);
     assertEquals(accessLinesBeforeProvisioning.size(), 0);
     wgAccessProvisioningRobot.startPortProvisioning(portTopas);
