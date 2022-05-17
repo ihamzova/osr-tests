@@ -268,13 +268,15 @@ public class A4ResourceOrderRobot {
 
     @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
-        //TODO: maybe an assertion better here ?
         if (isNullOrEmpty(uuid)) return;
-        externalClient
+        final Response r = externalClient
                 .resourceOrder()
                 .deleteResourceOrder()
                 .uuidPath(uuid)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                .execute(voidCheck());
+
+        final int httpCode = r.getStatusCode();
+        assertTrue(httpCode == 204 || httpCode == 404);
     }
 
     public A10nspA4Dto getA10NspA4Dto(ResourceOrder ro) {

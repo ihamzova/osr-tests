@@ -150,6 +150,8 @@ public class A4ResourceOrderTest {
         A4TerminationPoint tpData4 = data.getA4TerminationPointDataProvider().get(terminationPointA10NspPrePro3);
         UewegData uewegData1 = data.getUewegDataDataProvider().get(uewegA);
         UewegData uewegData2 = data.getUewegDataDataProvider().get(uewegB);
+
+        cleanup();
         a4RobotRI.createNetworkElementGroup(a4NEG);
         a4RobotRI.createNetworkElement(a4NE, a4NEG);
         a4RobotRI.createNetworkElement(a4NE2, a4NEG);
