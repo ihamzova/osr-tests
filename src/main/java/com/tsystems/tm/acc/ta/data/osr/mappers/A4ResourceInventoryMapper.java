@@ -186,9 +186,9 @@ public class A4ResourceInventoryMapper {
         serviceBandwidthDtoList.add(serviceBandwidthDto);
 
         return new NetworkServiceProfileL2BsaDto()
-                .uuid(UUID.randomUUID().toString()) // Unique constraint for TPs
+                .uuid(UUID.randomUUID().toString()) // Unique constraint for NSPs L2BSA
                 .lineId("LINEID-" + getRandomDigits(6)) // Unique constraint (together with lifecycleState) for NSPs
-                .terminationPointL2BsaUuid(null) // has to be set to existing TP in calling method
+                .terminationPointL2BsaUuid(null) // Unique constraint; also has to be set to existing TP in calling method
                 .href("HREF")
                 .specificationVersion("1")
                 .virtualServiceProvider("a Virtual Service Provider")
@@ -400,7 +400,7 @@ public class A4ResourceInventoryMapper {
     public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOnWorking() {
         NetworkServiceProfileFtthAccessDto nspFtth = getDefaultNetworkServiceProfileFtthAccessData();
         nspFtth.setOltPortOntLastRegisteredOn(null);
-        nspFtth.setOperationalState("WORKING");
+        nspFtth.setOperationalState(WORKING);
         return nspFtth;
     }
 
