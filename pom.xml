@@ -17,6 +17,7 @@
     <properties>
         <framework.version>${project.parent.version}</framework.version>
         <osr.models.version>3.0.0.161</osr.models.version>
+        <magic-framework.version>1.0.0</magic-framework.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
@@ -91,6 +92,11 @@
     </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>com.tsystems.tm.framework</groupId>
+            <artifactId>magic-api</artifactId>
+            <version>${magic-framework.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
