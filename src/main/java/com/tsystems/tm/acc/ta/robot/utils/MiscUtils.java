@@ -9,10 +9,13 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkE
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.testng.FileAssert.fail;
 
@@ -98,6 +101,27 @@ public class MiscUtils {
     public static String getPortNumberByFunctionalPortLabel(String functionalPortLabel) {
         String portNumber = functionalPortLabel.substring(functionalPortLabel.lastIndexOf("_") + 1);
         return portNumber.replaceFirst("^0+(?!$)", ""); // Remove leading zeroes
+    }
+
+    /**
+     * Returns a list with 0 to 2 entries containing endsz values parsed from a LBZ string
+     *
+     * @param lbz LBZ to be parsed
+     * @return List containing 0..2 entries
+     */
+    public static List<String> getEndszFromLbz(String lbz) {
+        final String LSZ_SYMBOLS = "[\\dA-Z]+";
+        final String ORDER_NUMBER_SYMBOLS = "[\\dA-Z]+";
+
+        List<String> endszList = new ArrayList<>();
+        Pattern pattern = Pattern.compile("^" + LSZ_SYMBOLS + "/" + ORDER_NUMBER_SYMBOLS + "-" + "(.*)" + "-" + "(.*)" + "$");
+        Matcher matcher = pattern.matcher(lbz);
+        if (matcher.find()) {
+            endszList.add(matcher.group(1));
+            endszList.add(matcher.group(2));
+        }
+
+        return endszList;
     }
 
 }

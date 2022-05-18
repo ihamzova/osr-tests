@@ -19,7 +19,8 @@ public enum Context {
     A4_NSP_A10NSP, // contains class NetworkServiceProfileA10NspDto
     A4_CSV, // contains class A4ImportCsvData
     WIREMOCK_COUNT_WG_A4_DEPROV, // contains int
-    A4_RES_ORDER_ID, // contains class String
+    A4_RESOURCE_ORDER, // contains class ResourceOrder
+    A4_RESOURCE_ORDER_ID, // contains class ResourceOrder
 
     // U-Piter
     // ...
