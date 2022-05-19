@@ -20,7 +20,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
 @Getter
 public class A4ResourceInventoryNegDetailsPage {
 
-    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser/network-element";  // + uuid des NE /0571e643-eec2-4c8b-8266-b1e4b35f35dd
+    public static final String ENDPOINT = A4_RESOURCE_INVENTORY_UI_MS + "/a4-inventory-browser/network-element-group";  // + uuid des NE /0571e643-eec2-4c8b-8266-b1e4b35f35dd
     public static final By NEG_UUID_FIELD_LOCATOR = By.id("uuid");
     public static final By NEG_NAME_FIELD_LOCATOR = By.id("name");
     public static final By NEG_DESCRIPTION_FIELD_LOCATOR = By.id("description");
@@ -37,7 +37,7 @@ public class A4ResourceInventoryNegDetailsPage {
         return this;
     }
 
-    @Step("Validate page")
+    @Step("Validate page w/ uuid of NEG")
     public A4ResourceInventoryNegDetailsPage validate(String uuid) {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT + "/" + uuid);

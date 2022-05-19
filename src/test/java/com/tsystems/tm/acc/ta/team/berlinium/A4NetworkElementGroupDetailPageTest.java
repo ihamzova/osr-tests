@@ -103,12 +103,10 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
         sleepForSeconds(2);  // wait for result
         // WHEN
 
-        NetworkElementDto firstNeDataDto = a4ResourceInventory.getExistingNetworkElement(a4ResourceInventoryNegDetails.getUUiOfFirstNeOnUi()) ;// how to get it?
-        A4NetworkElement firstNeData = a4InventarSuche.transformNetworkElementDto2A4NetworkElement(firstNeDataDto);
         a4ResourceInventoryNegDetails.clickNeIcon();
         sleepForSeconds(2);  // wait for result
         // THEN
-        a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(firstNeData);
+        a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataA);
 
     }
 
