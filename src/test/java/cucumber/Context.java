@@ -20,7 +20,6 @@ public enum Context {
     A4_CSV, // contains class A4ImportCsvData
     WIREMOCK_COUNT_WG_A4_DEPROV, // contains int
     A4_RESOURCE_ORDER, // contains class ResourceOrder
-    A4_RESOURCE_ORDER_ID, // contains class ResourceOrder
 
     // U-Piter
     // ...

@@ -42,27 +42,11 @@ public class A4ResourceOrderSteps {
     }
 
 
-    // -----=====[ GIVENs ]=====-----
-
-    @Given("a prepared resource order with the following order items:")
-    public void aPreparedResourceOrderWithTheFollowingOrderItems(DataTable orderItems) {
-        final List<Map<String, String>> rows = orderItems.asMaps(String.class, String.class);
-        ResourceOrder ro = resOrder.buildResourceOrder();
-
-        rows.forEach(r -> {
-            final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL, r.get("NEL Reference"));
-            final OrderItemActionType actionType = OrderItemActionType.valueOf(r.get("Action Type"));
-            resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
-        });
-
-        testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
-    }
-
-
     // -----=====[ WHENs ]=====-----
 
     @When("(CAD@)Sputnik sends a resource order with the following order items:")
     public void whenCadSputnikSendsAResourceOrder(DataTable orderItems) {
+        // Prepare the RO...
         final List<Map<String, String>> rows = orderItems.asMaps(String.class, String.class);
         ResourceOrder ro = resOrder.buildResourceOrder();
 
@@ -72,28 +56,22 @@ public class A4ResourceOrderSteps {
             resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
         });
 
-        testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
-
-        // ACTION
+        // ... and perform the request with the prepared RO
         final Response response = resOrder.sendPostResourceOrderWithoutChecks(ro);
+        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+
+        // Give the long RO process some time to finish
         sleepForSeconds(7);
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
-    }
-
-    @When("(CAD@)Sputnik sends the prepared resource order")
-    public void whenCadSputnikSendsAResourceOrder() {
-        // INPUT FROM SCENARIO CONTEXT
-        ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-
-        // ACTION
-        final Response response = resOrder.sendPostResourceOrderWithoutChecks(ro);
-        final String roId = response.getBody().asString();
-
-        // OUTPUT INTO SCENARIO CONTEXT
-        testContext.getScenarioContext().setContext(Context.RESPONSE, response);
-        testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER_ID, roId);
+        // The RO id is known only in the response for the RO request, so we check if the id is valid and add it to the RO in the context
+        final String body = response.getBody().asString();
+        try {
+            final UUID roId = UUID.fromString(body);
+            ro.setId(roId.toString());
+            testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
+        } catch (IllegalArgumentException e) {
+            fail("Response is not a uuid, but is instead: " + body);
+        }
     }
 
     @When("(CAD@)Sputnik sends a resource order with filled resource order ID")
@@ -107,26 +85,11 @@ public class A4ResourceOrderSteps {
 
         // OUTPUT INTO SCENARIO CONTEXT
         testContext.getScenarioContext().setContext(Context.RESPONSE, response);
+        testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
     }
 
 
     // -----=====[ THENs ]=====-----
-
-    @Then("the response contains a resource order ID")
-    public void thenTheResponseContainsAResourceOrderID() {
-        final Response response = (Response) testContext.getScenarioContext().getContext(Context.RESPONSE);
-        ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-
-        final String body = response.getBody().asString();
-
-        try {
-            final UUID roId = UUID.fromString(body);
-            ro.setId(roId.toString());
-            testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
-        } catch (IllegalArgumentException e) {
-            fail("Response is not a uuid, but is instead: " + body);
-        }
-    }
 
     @Then("the resource order is saved in RO database")
     public void thenTheResourceOrderIsSavedInRODatabase() {

@@ -34,12 +34,13 @@ Feature: Receive and process Resource Orders for A10NSP
       | A             | ADD         |
       | B             | ADD         |
     Then the request is responded with HTTP error code 201
-    And the response contains a resource order ID
     And the resource order is saved in RO database
     And the resource order state is "completed"
     And all order item states are "completed"
     And 1 "GET" request was sent to the REBELL wiremock for NE "A"
     And 1 "POST" request was sent to the A10NSP Inventory mock for the 1st order item
+    # Some checks for NEMO update notifications necessary?
+    # Some checks for property contents in NELs, TPs, NSPs necessary?
 
   @DIGIHUB-150006
   @team:berlinium
