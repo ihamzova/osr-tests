@@ -355,4 +355,20 @@ public class A4InventarSucheRobot {
         return neActualResultList;
     }
 
+
+    public A4NetworkElement transformNetworkElementDto2A4NetworkElement(NetworkElementDto neDto) {
+        A4NetworkElement a4NetworkElement = new A4NetworkElement();
+        a4NetworkElement.setUuid(neDto.getUuid());
+        a4NetworkElement.setFsz(neDto.getFsz());
+        a4NetworkElement.setVpsz(neDto.getVpsz());
+        a4NetworkElement.setCategory(neDto.getCategory());
+        a4NetworkElement.setType(neDto.getType());
+        a4NetworkElement.setLifecycleState(neDto.getLifecycleState());
+        a4NetworkElement.setKlsId(neDto.getKlsId());
+        a4NetworkElement.setZtpIdent(neDto.getZtpIdent());
+        a4NetworkElement.setOperationalState(neDto.getOperationalState());
+        a4NetworkElement.setPlannedMatNr(neDto.getPlannedMatNumber());
+        a4NetworkElement.setPlanningDeviceName(neDto.getPlanningDeviceName());
+        return a4NetworkElement;
+    }
 }

@@ -43,21 +43,6 @@ public class A4ResourceInventoryNegDetailsRobot {
         return $(A4ResourceInventoryNegDetailsPage.NEG_LCS_FIELD_LOCATOR).innerHtml();
     }
 
-    @Step("Read creation time ne")
-    public String readNegCreationTime() {
-        return $(A4ResourceInventoryNegDetailsPage.NEG_CreationTime_FIELD_LOCATOR).innerHtml();
-    }
-
-    @Step("Read last update time ne")
-    public String readNegLastUpdateTime() {
-        return $(A4ResourceInventoryNegDetailsPage.NEG_LastUpdateTime_FIELD_LOCATOR).innerHtml();
-    }
-
-
-    @Step("Read last sync time ne")
-    public String readNegLastSuccessfulSyncTime() {
-        return $(A4ResourceInventoryNegDetailsPage.NEG_LastSuccessfulSync_FIELD_LOCATOR).innerHtml();
-    }
 
     @Step("Open UI, log in")
     public void openRiNegDetailPage() {
@@ -151,14 +136,9 @@ public class A4ResourceInventoryNegDetailsRobot {
 
 
 
-
-
-    public void checkLandedOnCorrectNegDetailsPage(A4NetworkElementGroup negData) {
-        final A4ResourceInventoryNegDetailsPage a4ResourceInventoryNegDetailsPage = new A4ResourceInventoryNegDetailsPage();
-        a4ResourceInventoryNegDetailsPage.validate(negData.getUuid());
+    public String getUUiOfFirstNeOnUi() {
+       return getNeElementsCollection().get(1).innerHtml();
     }
-
-
 
 }
 
