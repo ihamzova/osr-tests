@@ -493,6 +493,11 @@ public class A4ResInvSteps {
         createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
     }
 
+    @Given("a NSP A10NSP {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nsp(String nspAlias, String tpAlias) {
+        createNspA10Nsp(nspAlias, tpAlias);
+    }
+
     @Given("no NSP L2BSA( connected to the TP)( exists)( in A4 resource inventory)")
     public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
         NetworkServiceProfileL2BsaDto nspL2Bsa = new NetworkServiceProfileL2BsaDto();
@@ -1272,6 +1277,13 @@ public class A4ResInvSteps {
         a4ResInv.createNetworkServiceProfileA10Nsp(nspA10Nsp);
 
         testContext.getScenarioContext().setContext(Context.A4_NSP_A10NSP, nspAlias, nspA10Nsp);
+    }
+
+    private void createNspA10Nsp(String nspAlias, String tpAlias) {
+        // ACTION
+        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+
+        persistNspA10Nsp(nspAlias, nspA10nsp);
     }
 
     private void createNspA10NspWithStates(String nspAlias, String opState, String lcState, String tpAlias) {

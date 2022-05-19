@@ -38,7 +38,7 @@ Feature: Delete Termination Point of Type L2BSA_TP
     Then the request is responded with HTTP code 202
     And the NSP L2BSA does not exist in A4 resource inventory anymore
     And the TP does not exist in A4 resource inventory anymore
-    And 1 "PUT" NSP L2BSA update notification was sent to NEMO
+    And 1 "DELETE" NSP L2BSA update notification was sent to NEMO
 
     Examples:
       | lcState      |

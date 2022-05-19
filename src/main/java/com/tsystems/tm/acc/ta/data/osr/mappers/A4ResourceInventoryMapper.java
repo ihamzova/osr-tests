@@ -167,8 +167,8 @@ public class A4ResourceInventoryMapper {
                 .carrierBsaReference("CarrierBsaReference")
                 .numberOfAssociatedNsps("noAssoNsps")
                 .itAccountingKey(UNDEFINED)
-                .lacpMode(UNDEFINED)
-                .dataRate(UNDEFINED)
+                .lacpMode("ACTIVE")
+                .dataRate("123")
                 .numberOfAssociatedNsps(UNDEFINED)
                 .sVlanRange(Collections.singletonList(vrDto))
                 .qosClasses(Collections.singletonList(a10NspQosDto))
@@ -192,7 +192,7 @@ public class A4ResourceInventoryMapper {
                 .href("HREF")
                 .specificationVersion("1")
                 .virtualServiceProvider("a Virtual Service Provider")
-                .administrativeMode("admMode") // neu im Model
+                .administrativeMode("ENABLED") // neu im Model
                 .operationalState("opState")
                 .lifecycleState("lcState")
                 .l2CcId("l2CcId")
