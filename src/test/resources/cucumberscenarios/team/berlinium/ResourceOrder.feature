@@ -1,6 +1,9 @@
-#@DIGIHUB-xxxxxx
+@DIGIHUB-126401
 Feature: Receive and process Resource Orders for A10NSP
   See https://gard.telekom.de/gardwiki/display/DGHB/Fulfillment+-+A10NSP+interface+-+Resource+Order+Management for details.
+
+  Note: These scenarios and steps are a first draft! Maybe this changes, to make them more understandable
+  for stakeholders...
 
   #@DIGIHUB-150008
   Background:

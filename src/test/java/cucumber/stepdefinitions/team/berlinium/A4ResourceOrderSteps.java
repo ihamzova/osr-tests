@@ -114,18 +114,18 @@ public class A4ResourceOrderSteps {
 
     @Then("the response contains a resource order ID")
     public void thenTheResponseContainsAResourceOrderID() {
-        // INPUT FROM SCENARIO CONTEXT
         final Response response = (Response) testContext.getScenarioContext().getContext(Context.RESPONSE);
         ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
 
-        // ACTION
-        final String roId = response.getBody().asString();
-        assertNotNull(roId, "Resource order id is null!");
-        assertFalse(roId.isEmpty(), "Resource order id is empty!");
+        final String body = response.getBody().asString();
 
-        // OUTPUT INTO SCENARIO CONTEXT
-        ro.setId(roId);
-        testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
+        try {
+            final UUID roId = UUID.fromString(body);
+            ro.setId(roId.toString());
+            testContext.getScenarioContext().setContext(Context.A4_RESOURCE_ORDER, ro);
+        } catch (IllegalArgumentException e) {
+            fail("Response is not a uuid, but is instead: " + body);
+        }
     }
 
     @Then("the resource order is saved in RO database")
