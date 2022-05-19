@@ -44,8 +44,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
 
   private AccessLine accessLineRetail;
-  private AccessLine accessLineWB;
-  private AccessLine accessLineWS;
+  private AccessLine accessLineWbGfnw;
+  private AccessLine accessLineWbRkom;
+  private AccessLine accessLineWs;
   private AccessLine a4accessLine;
   private AccessLine a4AccessLineL2Bsa;
   private AccessLine accessLineFttbCoax;
@@ -106,8 +107,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000,
             oltDeviceCoax.getEndSz(), dpuDeviceCoax.getEndsz(), oltDeviceCoax.getSlotNumber(), oltDeviceCoax.getPortNumber());
     accessLineRetail = new AccessLine();
-    accessLineWS = new AccessLine();
-    accessLineWB = new AccessLine();
+    accessLineWs = new AccessLine();
+    accessLineWbGfnw = new AccessLine();
+    accessLineWbRkom = new AccessLine();
     a4accessLine = new AccessLine();
     a4AccessLineL2Bsa = new AccessLine();
     accessLineFttbCoax = new AccessLine();
@@ -154,7 +156,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderRetailActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderRetailActivation, accessLineRetail, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderRetailActivation.getResourceOrder(), accessLineRetail);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineRetail, expectedRetailSubscriberProfileFtth);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineRetail.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineRetail.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = "createSubscriberNetworkLineProfileRetail")
@@ -164,73 +166,111 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineRetail, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineRetail);
     accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineRetail, expectedDefaultNetworklineProfileFtth);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineRetail.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineRetail.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
   }
 
   @Test
   @TmsLink("DIGIHUB-91194")
   @Description("Subscriber NetworkLine Profile creation for FTTH OLT_BNG: Wholesale case")
   public void createSubscriberNetworkLineProfileWS() {
-    accessLineWS.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
-    resourceOrderWsActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsActivation, accessLineWS, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsActivation.getResourceOrder(), accessLineWS);
-    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWS, expectedWsSubscriberProfileActivationFtth);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineWS.getLineId()), AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineWS.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    accessLineWs.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
+    resourceOrderWsActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsActivation, accessLineWs, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsActivation.getResourceOrder(), accessLineWs);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWs, expectedWsSubscriberProfileActivationFtth);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWs.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineWs.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWS"})
   @TmsLink("DIGIHUB-91194")
   @Description("Subscriber NetworkLine Profile modification for FTTH OLT_BNG: Wholesale case")
   public void changeSubscriberNetworkLineProfileWS() {
-    resourceOrderWsModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsModification, accessLineWS, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsModification.getResourceOrder(), accessLineWS);
-    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWS, expectedWsSubscriberProfileModificationFtth);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineWS.getLineId()), AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineWS.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    resourceOrderWsModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsModification, accessLineWs, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsModification.getResourceOrder(), accessLineWs);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWs, expectedWsSubscriberProfileModificationFtth);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWs.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineWs.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWS", "changeSubscriberNetworkLineProfileWS"})
   @TmsLink("DIGIHUB-91194")
   @Description("Subscriber NetworkLine Profile deletion for FTTH OLT_BNG: Wholesale case")
   public void deleteSubscriberNetworkLineProfileWS() {
-    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineWS, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineWS);
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineWS, expectedDefaultNetworklineProfileFtth);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineWS.getLineId()), AccessLineStatus.ASSIGNED);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWS.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineWs, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineWs);
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineWs, expectedDefaultNetworklineProfileFtth);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWs.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWs.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
   }
 
   @Test
   @TmsLink("DIGIHUB-49568")
-  @Description("Subscriber NetworkLine Profile creation: Wholebuy case")
-  public void createSubscriberNetworkLineProfileWB() {
-    accessLineWB.setLineId("DEU.GFNW.SQA0000777");
-    resourceOrderWbActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbActivation, accessLineWB, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbActivation.getResourceOrder(), accessLineWB);
-    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWB, expectedWbSubscriberProfileActivation);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineWB.getLineId()), AccessLineStatus.ASSIGNED);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWB.getLineId()).get(0).getDefaultNetworkLineProfile());
+  @Description("Subscriber NetworkLine Profile creation: Wholebuy GFNW case")
+  public void createSubscriberNetworkLineProfileWbGfnw() {
+    accessLineWbGfnw.setLineId("DEU.GFNW.SQA0000777");
+    resourceOrderWbActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbActivation, accessLineWbGfnw, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbActivation.getResourceOrder(), accessLineWbGfnw);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWbGfnw, expectedWbSubscriberProfileActivation);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWbGfnw.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWbGfnw.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on a Wholebuy AccessLine");
   }
 
-  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWB"})
+  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWbGfnw"})
   @TmsLink("DIGIHUB-49938")
-  @Description("Subscriber NetworkLine Profile modification: Wholebuy case")
-  public void changeSubscriberNetworkLineProfileWB() {
-    resourceOrderWbModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbModification, accessLineWB, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbModification.getResourceOrder(), accessLineWB);
-    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWB, expectedWbSubscriberProfileModification);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineWB.getLineId()), AccessLineStatus.ASSIGNED);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWB.getLineId()).get(0).getDefaultNetworkLineProfile());
+  @Description("Subscriber NetworkLine Profile modification: Wholebuy GFNW case")
+  public void changeSubscriberNetworkLineProfileWbGfnw() {
+    resourceOrderWbModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbModification, accessLineWbGfnw, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbModification.getResourceOrder(), accessLineWbGfnw);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWbGfnw, expectedWbSubscriberProfileModification);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWbGfnw.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWbGfnw.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on a Wholebuy AccessLine");
   }
 
-  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWB", "changeSubscriberNetworkLineProfileWB"})
+  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWbGfnw", "changeSubscriberNetworkLineProfileWbGfnw"})
   @TmsLink("DIGIHUB-50901")
-  @Description("Subscriber NetworkLine Profile deletion: Wholebuy case")
-  public void deleteSubscriberNetworkLineProfileWB() {
-    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineWB, calId);
-    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineWB);
-    assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineWB.getLineId()).isEmpty(), "WB Access line is not deleted");
+  @Description("Subscriber NetworkLine Profile deletion: Wholebuy GFNW case")
+  public void deleteSubscriberNetworkLineProfileWbGfnw() {
+    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineWbGfnw, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineWbGfnw);
+    assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineWbGfnw.getLineId()).isEmpty(), "WB Access line is not deleted");
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-*****")
+  @Description("Subscriber NetworkLine Profile creation: Wholebuy RKOM case")
+  public void createSubscriberNetworkLineProfileWbRkom() {
+    accessLineWbRkom.setLineId("DEU.RKOM.SQA0000777");
+    resourceOrderWbActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbActivation, accessLineWbRkom, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbActivation.getResourceOrder(), accessLineWbRkom);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWbRkom, expectedWbSubscriberProfileActivation);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWbRkom.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWbRkom.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on a Wholebuy AccessLine");
+  }
+
+  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWbRkom"})
+  @TmsLink("DIGIHUB-*****")
+  @Description("Subscriber NetworkLine Profile modification: Wholebuy RKOM case")
+  public void changeSubscriberNetworkLineProfileWbRkom() {
+    resourceOrderWbModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWbModification, accessLineWbRkom, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWbModification.getResourceOrder(), accessLineWbRkom);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineWbRkom, expectedWbSubscriberProfileModification);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineWbRkom.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineWbRkom.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on a Wholebuy AccessLine");
+  }
+
+  @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileWbRkom", "changeSubscriberNetworkLineProfileWbRkom"})
+  @TmsLink("DIGIHUB-*****")
+  @Description("Subscriber NetworkLine Profile deletion: Wholebuy RKOM case")
+  public void deleteSubscriberNetworkLineProfileWbRkom() {
+    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineWbRkom, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineWbRkom);
+    assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineWbRkom.getLineId()).isEmpty(), "WB Access line is not deleted");
   }
 
   @Test
@@ -241,8 +281,8 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourcerOrderA4Activation = networkLineProfileManagementRobot.setResourceOrderData(resourcerOrderA4Activation, a4accessLine, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourcerOrderA4Activation.getResourceOrder(), a4accessLine);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(a4accessLine, expectedA4SubscriberProfileActivation);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createA4networkLineProfile"})
@@ -252,8 +292,8 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourcerOrderA4Modification = networkLineProfileManagementRobot.setResourceOrderData(resourcerOrderA4Modification, a4accessLine, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourcerOrderA4Modification.getResourceOrder(), a4accessLine);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(a4accessLine, expectedA4SubscriberProfileModification);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createA4networkLineProfile", "changeA4networkLineProfile"})
@@ -264,8 +304,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), a4accessLine);
     System.out.println(accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getDefaultNetworkLineProfile());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(a4accessLine, expectedDefaultNetworklineProfileFtth);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4accessLine.getLineId()), AccessLineStatus.ASSIGNED);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4accessLine.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
   }
 
   @Test
@@ -275,10 +316,12 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     a4AccessLineL2Bsa.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.A4, AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
     resourceOrderA4l2BsaActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderA4l2BsaActivation, a4AccessLineL2Bsa, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderA4l2BsaActivation.getResourceOrder(), a4AccessLineL2Bsa);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile());
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on an L2BSA AccessLine after activation");
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile is present on an L2BSA AccessLine after activation");
     accessLineRiRobot.checkL2bsaNspReference(a4AccessLineL2Bsa, expectedL2BsaNspReferenceActivation);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(a4AccessLineL2Bsa.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4AccessLineL2Bsa.getLineId()), AccessLineStatus.ASSIGNED);
   }
 
   @Test(dependsOnMethods = {"createA4L2bsa"})
@@ -288,8 +331,10 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderA4l2BsaModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderA4l2BsaModification, a4AccessLineL2Bsa, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderA4l2BsaModification.getResourceOrder(), a4AccessLineL2Bsa);
     accessLineRiRobot.checkL2bsaNspReference(a4AccessLineL2Bsa, expectedL2BsaNspReferenceModification);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile());
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile(),
+            "DefaultNetworkLineProfile is present on an L2BSA AccessLine after modification");
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile is present on an L2BSA AccessLine after modification");
   }
 
   @Test(dependsOnMethods = {"createA4L2bsa", "changeA4L2bsa"})
@@ -298,10 +343,11 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   public void deleteA4L2bsa() {
     resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, a4AccessLineL2Bsa, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), a4AccessLineL2Bsa);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(a4AccessLineL2Bsa.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("DefaultNetworkLineProfile state is incorrect", accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4AccessLineL2Bsa.getLineId()), AccessLineStatus.ASSIGNED);
     accessLineRiRobot.checkDefaultNetworkLineProfiles(a4AccessLineL2Bsa, expectedDefaultNetworklineProfileFtth);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getL2BsaNspReference());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getL2BsaNspReference(),
+            "L2BsaNspReference is present on an A4 AccessLine after deletion");
   }
 
   @Test
@@ -311,9 +357,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     accessLineFttbCoax.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.COAX, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderRetailActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderRetailActivation, accessLineFttbCoax, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderRetailActivation.getResourceOrder(), accessLineFttbCoax);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbCoax.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbCoax.getLineId()), AccessLineStatus.ASSIGNED);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineFttbCoax, expectedRetailSubscriberProfileFttb);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbCoax.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineFttbCoax.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileFttbCoax"})
@@ -323,7 +369,8 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineFttbCoax, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineFttbCoax);
     accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineFttbCoax, expectedDefaultNetworklineProfileFttbCoax);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbCoax.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbCoax.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
   }
 
   @Test
@@ -333,9 +380,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderWsActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsActivation, accessLineFttbTp, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsActivation.getResourceOrder(), accessLineFttbTp);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineFttbTp, expectedWsSubscriberProfileActivationFttb);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileFttbTp"})
@@ -345,9 +392,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     accessLineFttbTp.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
     resourceOrderWsModification = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderWsModification, accessLineFttbTp, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderWsModification.getResourceOrder(), accessLineFttbTp);
-    assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);
+    assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineFttbTp.getLineId()), AccessLineStatus.ASSIGNED);
     accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineFttbTp, expectedWsSubscriberProfileModificationFttb);
-    assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
   }
 
   @Test(dependsOnMethods = {"createSubscriberNetworkLineProfileFttbTp", "changeSubscriberNetworkLineProfileFttbTp"})
@@ -357,6 +404,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineFttbTp, calId);
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineFttbTp);
     accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineFttbTp, expectedDefaultNetworklineProfileFttbTp);
-    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getSubscriberNetworkLineProfile());
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
   }
 }

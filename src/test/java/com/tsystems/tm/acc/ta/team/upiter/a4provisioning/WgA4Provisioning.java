@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningC
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgA4PreProvisioningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineProductionPlatform;
@@ -38,6 +39,7 @@ public class WgA4Provisioning extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
     private WgA4PreProvisioningRobot wgA4PreProvisioningRobot;
+    private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private OltDevice a4OltDevice7kh0;
     private OltDevice a4OltDevice7kh1;
     private OltDevice a4OltDevice7kh4;
@@ -62,13 +64,15 @@ public class WgA4Provisioning extends GigabitTest {
     public void init() throws InterruptedException {
         accessLineRiRobot = new AccessLineRiRobot();
         wgA4PreProvisioningRobot = new WgA4PreProvisioningRobot();
+        wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
 
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH0");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH1");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH5");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH6");
-        accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH7");
         accessLineRiRobot.clearDatabaseByOlt("49/30/179/7KH7");
         accessLineRiRobot.fillDatabaseForOltCommissioningV2(1000, 1000);
 
@@ -88,7 +92,13 @@ public class WgA4Provisioning extends GigabitTest {
         a4TerminationPoint = new A4TerminationPoint();
         a4AccessLine = new AccessLine();
         a4Port = new PortProvisioning();
-        defaultNetworkLineProfileFtth = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+
+        if (wgAccessProvisioningRobot.getFeatureToogleEnable64PonSplittingState() == false) {
+            defaultNetworkLineProfileFtth = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+        } else {
+            defaultNetworkLineProfileFtth = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtthV2);
+        }
+
         defaultNetworkLineProfileFttbTp = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbTP);
     }
 
@@ -272,7 +282,7 @@ public class WgA4Provisioning extends GigabitTest {
         );
 
         accessLineRiRobot.checkA4FttbLineParameters(a4PortProvisioning7kh6, a4TerminationPoint.getUuid());
-        //accessLineRiRobot.checkDefaultNetworkLineProfiles(a4PortProvisioning7kh6, defaultNetworkLineProfileFttbTp, 1);
+//        accessLineRiRobot.checkDefaultNetworkLineProfiles(a4PortProvisioning7kh6, defaultNetworkLineProfileFttbTp, 1);
         accessLineRiRobot.checkPhysicalResourceRefCountA4Fttb(a4DpuDevice7kh6, a4PortProvisioning7kh6, 1);
         accessLineRiRobot.checkAccessTransmissionMedium(a4DpuDevice7kh6, 1);
     }
