@@ -61,6 +61,7 @@ public class A4ResourceInventoryNegDetailsRobot {
 
         List<NetworkElementDto> allNeOfNegList = a4ResourceInventoryRobot.getNetworkElementsByNegUuid(negData.getUuid());
 
+        System.out.println("Now for checkNegDetailsAndTableContents starting validate NegDetailPage");
         // now we have the detail-list
         a4ResourceInventoryNegDetailsPage.validate();
 

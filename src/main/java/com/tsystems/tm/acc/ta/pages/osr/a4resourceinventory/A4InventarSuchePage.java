@@ -123,7 +123,7 @@ public class A4InventarSuchePage {
 
 
     // common
-    @Step("Validate page")
+    @Step("Validate NE Suche page w/ header")
     public A4InventarSuchePage validate() {
         $(A4_SEARCH_PAGE_HEADER).shouldBe(visible, Duration.ofMillis(3000));
         assertContains(url(), ENDPOINT);
