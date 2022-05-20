@@ -28,7 +28,7 @@ Feature: Delete Termination Point of Type L2BSA_TP
     And the NSP L2BSA still exists in A4 resource inventory
     And the TP still exists in A4 resource inventory
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-151802
   @team:berlinium @domain:osr
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario Outline: NEMO deletes L2BSA Termination Point with NSP connected which has NOT lifecycle state OPERATING

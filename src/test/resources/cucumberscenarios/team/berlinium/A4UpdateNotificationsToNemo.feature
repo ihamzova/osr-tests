@@ -11,7 +11,7 @@ Feature: Sending Update Calls to Nemo
     Then 1 "PUT" NEG update notification was sent to NEMO
     And the NEG lastSuccessfulSyncTime property was updated
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-151800
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: Trigger an async update call to NEMO for an existing Network Element Group
@@ -28,7 +28,7 @@ Feature: Sending Update Calls to Nemo
     When an update call to NEMO for the NEG is triggered
     Then 1 "DELETE" NEG update notification was sent to NEMO
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-151801
   @team:berlinium @domain:osr
   @ms:a4-resource-inventory @ms:a4-nemo-updater @ms:a4-queue-dispatcher
   Scenario: Trigger an async update call to NEMO for a non-existing Network Element Group
