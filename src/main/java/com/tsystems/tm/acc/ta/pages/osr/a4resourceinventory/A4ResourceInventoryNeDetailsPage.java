@@ -35,16 +35,21 @@ public class A4ResourceInventoryNeDetailsPage {
     public static final By NE_LastSuccessfulSync_FIELD_LOCATOR = By.id("lastSuccessfulSyncTime");
     public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
 
-    @Step("Validate page")
+    @Step("Validate NE detail page w/o uuuid")
     public A4ResourceInventoryNeDetailsPage validate() {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        System.out.println("url: " + url()) ;
+        System.out.println("ENDPOINT: " + ENDPOINT) ;
         assertContains(url(), ENDPOINT);
         return this;
     }
 
-    @Step("Validate page")
+    @Step("Validate NE detail page w/ uuuid")
     public A4ResourceInventoryNeDetailsPage validate(String uuid) {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        System.out.println("NE Uuid: " + uuid) ;
+        System.out.println("url: " + url()) ;
+        System.out.println("ENDPOINT w/ Uuid: " + ENDPOINT + "/" + uuid) ;
         assertContains(url(), ENDPOINT + "/" + uuid);
         return this;
     }

@@ -30,16 +30,21 @@ public class A4ResourceInventoryNegDetailsPage {
     public static final By NEG_LastSuccessfulSync_FIELD_LOCATOR = By.id("lastSuccessfulSyncTime");
     public static final By NELIST_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNeList");
 
-    @Step("Validate page")
+    @Step("Validate NEG detail page w/o uuid")
     public A4ResourceInventoryNegDetailsPage validate() {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        System.out.println("url: " + url()) ;
+        System.out.println("ENDPOINT w/o Uuid: " + ENDPOINT) ;
         assertContains(url(), ENDPOINT);
         return this;
     }
 
-    @Step("Validate page w/ uuid of NEG")
+    @Step("Validate NEG detail page w/ uuid")
     public A4ResourceInventoryNegDetailsPage validate(String uuid) {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
+        System.out.println("NEG Uuid: " + uuid) ;
+        System.out.println("url: " + url()) ;
+        System.out.println("ENDPOINT w/ Uuid: " + ENDPOINT + "/" + uuid) ;
         assertContains(url(), ENDPOINT + "/" + uuid);
         return this;
     }

@@ -103,6 +103,8 @@ public class A4ResourceInventoryNeDetailsRobot {
         final A4ResourceInventoryNeDetailsPage a4ResourceInventoryNeDetailsPage = new A4ResourceInventoryNeDetailsPage();
         List<NetworkElementDetails> neDetailsExpectedList = generateExpectedData(nepDataA, nelData, neDataB);
 
+
+        System.out.println("Now for checkNeDetailsAndTableContents starting validate NeDetailPage");
         // now we have the detail-list with NE-Port, NE-Link and opposite NE
         a4ResourceInventoryNeDetailsPage.validate();
 
