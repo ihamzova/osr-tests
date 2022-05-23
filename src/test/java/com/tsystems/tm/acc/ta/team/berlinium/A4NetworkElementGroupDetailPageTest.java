@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +15,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
@@ -93,14 +94,14 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxxx")
     @Description("Test if link for NE  works")
-    public void testA4NetworkElementGroupDetailPageAndClickNeg() {
+    public void testA4NetworkElementGroupDetailPageAndClickNe() {
         // GIVEN
         a4InventarSuche.searchForNetworkElementGroup(negData);
         WebDriver driver = WebDriverRunner.getWebDriver();
         driver.manage().window().maximize();
         sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEGInSearchResultTable();
-        sleepForSeconds(2);  // wait for result
+        sleepForSeconds(6);  // wait for result
         // WHEN
 
         a4ResourceInventoryNegDetails.clickNeIcon();
