@@ -12,7 +12,7 @@ import io.cucumber.testng.CucumberOptions;
         glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
                 "cucumber.stepdefinitions.team.berlinium",
                 "cucumber.stepdefinitions.common"},
-        features = {"src/test/java/cucumber/stepdefinitions/team/berlinium"}
+        features = {"src/test/resources/cucumberscenarios/team/berlinium.a4"}
 )
 public class RunCucumberTestsBerliniumFullRegressionTests extends AbstractGigabitCucumberTest {
 }
