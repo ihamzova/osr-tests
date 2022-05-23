@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.wiremock;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
@@ -8,13 +8,15 @@ import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Then;
 
-public class WiremockA10NspSteps {
+public class A10NspSteps {
 
     private final TestContext testContext;
     private final A4ResourceOrderRobot roRobot;
     private final A4WiremockA10nspA4Robot a10Mock;
 
-    public WiremockA10NspSteps(TestContext testcontext, A4ResourceOrderRobot roRobot, A4WiremockA10nspA4Robot a10mock) {
+    public A10NspSteps(TestContext testcontext,
+                       A4ResourceOrderRobot roRobot,
+                       A4WiremockA10nspA4Robot a10mock) {
         this.testContext = testcontext;
         this.roRobot = roRobot;
         this.a10Mock = a10mock;

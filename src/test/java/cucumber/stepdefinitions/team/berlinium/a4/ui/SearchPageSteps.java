@@ -1,9 +1,8 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.ui;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4InventarSucheRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
-import cucumber.TestContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -13,13 +12,13 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 
-public class A4UiSearchPageSteps {
-    private final A4InventarSucheRobot a4ResInvSearch = new A4InventarSucheRobot();
-    private final TestContext testContext;
+public class SearchPageSteps {
+    private final A4InventarSucheRobot a4ResInvSearch;
 
-    public A4UiSearchPageSteps(TestContext testContext) {
-        this.testContext = testContext;
+    public SearchPageSteps(A4InventarSucheRobot a4ResInvSearch) {
+        this.a4ResInvSearch = a4ResInvSearch;
     }
+
 
     // -----=====[ WHENS ]=====-----
 

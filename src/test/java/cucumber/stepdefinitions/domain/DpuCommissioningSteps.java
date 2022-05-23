@@ -1,16 +1,21 @@
 package cucumber.stepdefinitions.domain;
 
-import cucumber.stepdefinitions.team.berlinium.A4ResInvServiceSteps;
-import cucumber.stepdefinitions.team.berlinium.A4ResInvSteps;
+import cucumber.stepdefinitions.team.berlinium.a4.ResInvServiceSteps;
+import cucumber.stepdefinitions.team.berlinium.a4.resourceinventory.NetworkElementPortSteps;
+import cucumber.stepdefinitions.team.berlinium.a4.resourceinventory.NetworkServiceProfileFtthAccessSteps;
 import io.cucumber.java.en.Given;
 
 public class DpuCommissioningSteps {
 
-    private final A4ResInvSteps a4ResInvSteps;
-    private final A4ResInvServiceSteps a4ResInvServiceSteps;
+    private final NetworkElementPortSteps a4NepStes;
+    private final NetworkServiceProfileFtthAccessSteps a4NspFtthAccessSteps;
+    private final ResInvServiceSteps a4ResInvServiceSteps;
 
-    public DpuCommissioningSteps(A4ResInvSteps a4ResInvSteps, A4ResInvServiceSteps a4ResInvServiceSteps) {
-        this.a4ResInvSteps = a4ResInvSteps;
+    public DpuCommissioningSteps(NetworkElementPortSteps a4NepStes,
+                                 NetworkServiceProfileFtthAccessSteps a4NspFtthAccessSteps,
+                                 ResInvServiceSteps a4ResInvServiceSteps) {
+        this.a4NepStes = a4NepStes;
+        this.a4NspFtthAccessSteps = a4NspFtthAccessSteps;
         this.a4ResInvServiceSteps = a4ResInvServiceSteps;
     }
 
@@ -19,9 +24,9 @@ public class DpuCommissioningSteps {
     @Given("a DPU preprovisioning was done earlier")
     public void givenDpuPreprovisioningWasDoneEarlier() {
         // ACTION
-        a4ResInvSteps.givenANEPIsExistingInA4ResourceInventory();
+        a4NepStes.givenANEPIsExistingInA4ResourceInventory();
         a4ResInvServiceSteps.whenNemoSendsACreateTPRequestWithType("PON_TP");
-        a4ResInvSteps.thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory();
+        a4NspFtthAccessSteps.thenTheNspFtthConnectedToTpDoesExistInA4ResourceInventory();
     }
 
 }

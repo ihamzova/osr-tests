@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.ui;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
@@ -15,14 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class A4UiImportPageSteps {
+public class ImportPageSteps {
 
     private final TestContext testContext;
-    private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
-    private final A4ResourceInventoryImporterUiRobot a4ImportUi = new A4ResourceInventoryImporterUiRobot();
+    private final A4ResourceInventoryRobot a4ResInv;
+    private final A4ResourceInventoryImporterUiRobot a4ImportUi;
 
-    public A4UiImportPageSteps(TestContext testContext) {
+    public ImportPageSteps(TestContext testContext,
+                           A4ResourceInventoryRobot a4ResInv,
+                           A4ResourceInventoryImporterUiRobot a4ImportUi) {
         this.testContext = testContext;
+        this.a4ResInv = a4ResInv;
+        this.a4ImportUi = a4ImportUi;
     }
 
     // -----=====[ GIVENS ]=====-----

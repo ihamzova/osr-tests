@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.wiremock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.DeProvisioningStub;
@@ -15,14 +15,17 @@ import io.cucumber.java.en.Then;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static org.testng.Assert.assertEquals;
 
-public class WiremockWgA4ProvisioningSteps {
+public class WgA4ProvisioningSteps {
 
-    private final WgA4ProvisioningWiremockRobot a4ProvWiremock = new WgA4ProvisioningWiremockRobot();
+    private final WgA4ProvisioningWiremockRobot a4ProvWiremock;
     private final TestContext testContext;
 
-    public WiremockWgA4ProvisioningSteps(TestContext testContext) {
+    public WgA4ProvisioningSteps(TestContext testContext,
+                                 WgA4ProvisioningWiremockRobot a4ProvWiremock) {
         this.testContext = testContext;
+        this.a4ProvWiremock = a4ProvWiremock;
     }
+
 
     // -----=====[ GIVENS ]=====-----
 

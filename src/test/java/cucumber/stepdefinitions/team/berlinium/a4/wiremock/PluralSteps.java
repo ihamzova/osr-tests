@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.wiremock;
 
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
@@ -14,14 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class WiremockPluralSteps {
+public class PluralSteps {
 
-    private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
+    private final A4ResourceInventoryRobot a4ResourceInventory;
     private final TestContext testContext;
 
-    public WiremockPluralSteps(TestContext testContext) {
+    public PluralSteps(TestContext testContext,
+                       A4ResourceInventoryRobot a4ResourceInventory) {
         this.testContext = testContext;
+        this.a4ResourceInventory = a4ResourceInventory;
     }
+
 
     // -----=====[ GIVENS ]=====-----
 

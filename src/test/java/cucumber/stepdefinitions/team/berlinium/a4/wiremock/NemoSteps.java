@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.wiremock;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
@@ -11,15 +11,20 @@ import java.util.List;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-public class WiremockNemoSteps {
+public class NemoSteps {
 
-    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
-    private final A4ResourceInventoryRobot a4ResInv = new A4ResourceInventoryRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater;
+    private final A4ResourceInventoryRobot a4ResInv;
     private final TestContext testContext;
 
-    public WiremockNemoSteps(TestContext testContext) {
+    public NemoSteps(TestContext testContext,
+                     A4NemoUpdaterRobot a4NemoUpdater,
+                     A4ResourceInventoryRobot a4ResInv) {
         this.testContext = testContext;
+        this.a4NemoUpdater = a4NemoUpdater;
+        this.a4ResInv = a4ResInv;
     }
+
 
     // -----=====[ THENS ]=====-----
 

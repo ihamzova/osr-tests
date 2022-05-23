@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4CommissioningRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
@@ -9,13 +9,15 @@ import io.restassured.response.Response;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
-public class A4CommissioningSteps {
+public class CommissioningSteps {
 
-    private final A4CommissioningRobot a4Commissioning = new A4CommissioningRobot();
+    private final A4CommissioningRobot a4Commissioning;
     private final TestContext testContext;
 
-    public A4CommissioningSteps(TestContext testContext) {
+    public CommissioningSteps(TestContext testContext,
+                              A4CommissioningRobot a4Commissioning) {
         this.testContext = testContext;
+        this.a4Commissioning = a4Commissioning;
     }
 
     // -----=====[ WHENS ]=====-----

@@ -50,6 +50,7 @@ public class CommonSteps {
         wiremock.getWireMock().resetRequests();
     }
 
+
     // -----=====[ THENS ]=====-----
 
     @Then("the (callback )request is responded/answered with HTTP( error) code {int}")

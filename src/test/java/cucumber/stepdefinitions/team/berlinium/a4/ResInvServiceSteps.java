@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
@@ -16,11 +16,7 @@ import java.util.Map;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
-public class A4ResInvServiceSteps {
-
-    private final A4ResourceInventoryServiceRobot a4ResInvService = new A4ResourceInventoryServiceRobot();
-    private final A4ResourceInventoryMapper a4ResInvMapper;
-    private final TestContext testContext;
+public class ResInvServiceSteps {
 
     final int SLEEP_TIMER = 5; // in seconds
     private static final String DESCRIPTION = "description";
@@ -39,8 +35,15 @@ public class A4ResInvServiceSteps {
     private static final String PLANNED_MAT_NUM = "plannedMatNumber";
     private static final String NEG_UUID = "networkElementGroupUuid";
 
-    public A4ResInvServiceSteps(TestContext testContext, A4ResourceInventoryMapper a4ResInvMapper) {
+    private final A4ResourceInventoryServiceRobot a4ResInvService;
+    private final A4ResourceInventoryMapper a4ResInvMapper;
+    private final TestContext testContext;
+
+    public ResInvServiceSteps(TestContext testContext,
+                              A4ResourceInventoryServiceRobot a4ResInvService,
+                              A4ResourceInventoryMapper a4ResInvMapper) {
         this.testContext = testContext;
+        this.a4ResInvService = a4ResInvService;
         this.a4ResInvMapper = a4ResInvMapper;
     }
 
