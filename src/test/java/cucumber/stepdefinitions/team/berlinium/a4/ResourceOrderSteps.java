@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementLinkDto;
@@ -10,7 +10,6 @@ import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
@@ -23,13 +22,15 @@ import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType.ADD;
 import static org.testng.Assert.*;
 
-public class A4ResourceOrderSteps {
+public class ResourceOrderSteps {
 
-    final A4ResourceOrderRobot resOrder = new A4ResourceOrderRobot();
+    final A4ResourceOrderRobot resOrder;
     private final TestContext testContext;
 
-    public A4ResourceOrderSteps(TestContext testContext) {
+    public ResourceOrderSteps(TestContext testContext,
+                              A4ResourceOrderRobot resOrder) {
         this.testContext = testContext;
+        this.resOrder = resOrder;
     }
 
     @After

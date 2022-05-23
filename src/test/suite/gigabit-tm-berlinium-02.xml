@@ -32,7 +32,7 @@
         <parameter name="featureFolder" value="team/berlinium"/>
         <parameter name="tags" value="@berlinium"/>
         <classes>
-            <class name="cucumber.RunCucumberTestsBerliniumFullRegression"/>
+            <class name="cucumber.RunCucumberTestsBerliniumFullRegressionTests"/>
         </classes>
     </test>
 

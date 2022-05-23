@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.ui;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.ta.cucumber.steps.AbstractCommonBrowserSteps;
@@ -7,11 +7,12 @@ import com.tsystems.tm.acc.ta.test.SelenideConfigurationManagerFacade;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 
-public class A4UiCommonSteps extends AbstractCommonBrowserSteps {
+public class CommonSteps extends AbstractCommonBrowserSteps {
 
     private final TestContext testContext;
 
-    public A4UiCommonSteps(TestContext testContext, SelenideConfigurationManagerFacade selenideConfigurationManagerFacade) {
+    public CommonSteps(TestContext testContext,
+                       SelenideConfigurationManagerFacade selenideConfigurationManagerFacade) {
         super(selenideConfigurationManagerFacade);
         this.testContext = testContext;
     }

@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4NemoUpdaterRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
@@ -12,15 +12,17 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 
-public class A4NemoUpdaterSteps {
+public class NemoUpdaterSteps {
 
     private static final int SLEEP_TIME = 2; // in seconds
 
-    private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
+    private final A4NemoUpdaterRobot a4NemoUpdater;
     private final TestContext testContext;
 
-    public A4NemoUpdaterSteps(TestContext testContext) {
+    public NemoUpdaterSteps(TestContext testContext,
+                            A4NemoUpdaterRobot a4NemoUpdater) {
         this.testContext = testContext;
+        this.a4NemoUpdater = a4NemoUpdater;
     }
 
     // -----=====[ WHENS ]=====-----

@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.ui;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4MobileUiRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
@@ -11,13 +11,15 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4MobileNeSearchPage.VPSZ_VALUE_LOCATOR;
 import static org.testng.Assert.assertEquals;
 
-public class A4UiMobileUiPageSteps {
+public class MobileUiPageSteps {
 
-    public final A4MobileUiRobot a4MobileUiRobot = new A4MobileUiRobot();
+    public final A4MobileUiRobot a4MobileUiRobot;
     private final TestContext testContext;
 
-    public A4UiMobileUiPageSteps(TestContext testContext) {
+    public MobileUiPageSteps(TestContext testContext,
+                             A4MobileUiRobot a4MobileUiRobot) {
         this.testContext = testContext;
+        this.a4MobileUiRobot = a4MobileUiRobot;
     }
 
     // -----=====[ WHENS ]=====-----

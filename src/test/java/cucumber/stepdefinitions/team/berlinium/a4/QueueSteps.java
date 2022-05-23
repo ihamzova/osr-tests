@@ -1,17 +1,19 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 
-public class A4QueueSteps {
+public class QueueSteps {
 
-    private final A4ResilienceRobot a4ResilienceRobot = new A4ResilienceRobot();
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
     private final String QUEUE_RES_ORDER = "jms.queue.roo";
 
-    public A4QueueSteps() {
+    private final A4ResilienceRobot a4ResilienceRobot;
+
+    public QueueSteps(A4ResilienceRobot a4ResilienceRobot) {
+        this.a4ResilienceRobot = a4ResilienceRobot;
     }
 
     @Before

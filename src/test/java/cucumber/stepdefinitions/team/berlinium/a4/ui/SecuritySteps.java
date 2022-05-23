@@ -1,18 +1,14 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.ui;
 
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import cucumber.TestContext;
 import io.cucumber.java.en.When;
 
 import static com.codeborne.selenide.Selenide.open;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
 
-public class A4UiSecuritySteps {
+public class SecuritySteps {
 
-    private final TestContext testContext;
-
-    public A4UiSecuritySteps(TestContext testContext) {
-        this.testContext = testContext;
+    public SecuritySteps() {
     }
 
     // -----=====[ WHENS ]=====-----

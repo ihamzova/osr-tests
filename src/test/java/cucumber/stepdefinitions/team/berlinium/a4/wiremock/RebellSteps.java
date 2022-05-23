@@ -1,4 +1,4 @@
-package cucumber.stepdefinitions.team.berlinium;
+package cucumber.stepdefinitions.team.berlinium.a4.wiremock;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.RebellMapper;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.RebellStub;
@@ -20,13 +20,15 @@ import java.util.Map;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndsz;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getEndszFromLbz;
 
-public class WiremockRebellSteps {
+public class RebellSteps {
 
     private final TestContext testContext;
     private final A4WiremockRebellRobot rebell;
     private final RebellMapper rebellMapper;
 
-    public WiremockRebellSteps(TestContext testContext, A4WiremockRebellRobot rebell, RebellMapper rebellMapper) {
+    public RebellSteps(TestContext testContext,
+                       A4WiremockRebellRobot rebell,
+                       RebellMapper rebellMapper) {
         this.testContext = testContext;
         this.rebell = rebell;
         this.rebellMapper = rebellMapper;
