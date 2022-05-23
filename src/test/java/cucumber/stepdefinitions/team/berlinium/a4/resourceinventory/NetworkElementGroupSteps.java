@@ -51,12 +51,6 @@ public class NetworkElementGroupSteps {
 
             negList.forEach(a4ResInv::deleteA4NetworkElementGroupsRecursively);
         }
-
-        final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
-        if (CSV_PRESENT) {
-            final A4ImportCsvData csv = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
-            a4ResInv.deleteA4TestDataRecursively(csv);
-        }
     }
 
 
