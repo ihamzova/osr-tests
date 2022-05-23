@@ -479,15 +479,15 @@ public class A4ResourceInventoryRobot {
         assertEquals(nsp.getMtuSize(), "1590");
         assertEquals(nsp.getEtherType(), "0x88a8");
         assertEquals(nsp.getVirtualServiceProvider(), "DTAG");
-        assertEquals(nsp.getSpecificationVersion(), "7");
+        assertEquals(nsp.getSpecificationVersion(), "8");
         assertNull(nsp.getNumberOfAssociatedNsps());
         assertNull(nsp.getNetworkElementLinkUuid());
         assertTrue(Objects.requireNonNull(nsp.getLacpActive()));
-        assertEquals(nsp.getLacpMode(), UNDEFINED);
+        assertEquals(nsp.getLacpMode(), "ACTIVE");
         assertEquals(nsp.getMinActiveLagLinks(), "1");
         assertEquals(nsp.getCarrierBsaReference(), UNDEFINED);
         assertEquals(nsp.getItAccountingKey(), UNDEFINED);
-        assertEquals(nsp.getDataRate(), UNDEFINED);
+        assertNull(nsp.getDataRate());
         assertEquals(nsp.getQosMode(), "TOLERANT");
 
         A10NspQosDto qosClass = Objects.requireNonNull(nsp.getQosClasses()).get(0);
