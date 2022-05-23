@@ -18,17 +18,17 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
-public class NetworkServiceProfileA10Nsp {
+public class NetworkServiceProfileA10NspSteps {
 
     private final A4ResourceInventoryRobot a4ResInv;
     private final A4ResourceInventoryMapper a4ResInvMapper;
     private final TerminationPointSteps a4TpSteps;
     private final TestContext testContext;
 
-    public NetworkServiceProfileA10Nsp(TestContext testContext,
-                                                A4ResourceInventoryRobot a4ResInv,
-                                                A4ResourceInventoryMapper a4ResInvMapper,
-                                                TerminationPointSteps a4TpSteps) {
+    public NetworkServiceProfileA10NspSteps(TestContext testContext,
+                                            A4ResourceInventoryRobot a4ResInv,
+                                            A4ResourceInventoryMapper a4ResInvMapper,
+                                            TerminationPointSteps a4TpSteps) {
         this.testContext = testContext;
         this.a4ResInv = a4ResInv;
         this.a4ResInvMapper = a4ResInvMapper;
