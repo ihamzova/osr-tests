@@ -104,7 +104,7 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
         // WHEN
 
         a4ResourceInventoryNegDetails.clickNeIcon();
-        sleepForSeconds(2);  // wait for result
+        sleepForSeconds(4);  // wait for result
         // THEN
         a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataA);
 
