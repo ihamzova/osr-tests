@@ -37,8 +37,8 @@ public class ResourceOrderSteps {
     public void cleanup() {
         final boolean RO_PRESENT = testContext.getScenarioContext().isContains(Context.A4_RESOURCE_ORDER);
         if (RO_PRESENT) {
-            final String roId = (String) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-            resOrder.deleteA4TestDataRecursively(roId);
+            final ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
+            resOrder.deleteA4TestDataRecursively(ro.getId());
         }
     }
 
