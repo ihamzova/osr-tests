@@ -9,7 +9,11 @@ import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.cli
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.AncpSessionDto;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.external.v4_17_0.client.model.Port;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class OltResourceInventoryStub extends AbstractStubMapping {
     public static final String DPU_DEVICE_URL = "/resource-order-resource-inventory/v1/device";
+    public static final String RAL_URL = "/resource-order-resource-inventory/v5/rial/abstractDevice";
     public static final String DPU_PORT_URL = "/resource-order-resource-inventory/v1/port";
     public static final String GET_DPU_PON_CONNECTION_URL = "/resource-order-resource-inventory/v1/dpu/dpuPonConnection";
     public static final String GET_ETHERNET_LINK_URL = "/resource-order-resource-inventory/v5/resource-order-resource-inventory/v1/ethernetlink/findEthernetLinksByEndsz";
@@ -25,6 +30,11 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
     public static final String DPU_AT_OLT_CONF_URL = "/resource-order-resource-inventory/v1/dpu/dpuAtOltConfiguration";
     public static final String DPU_EMS_CONFIGURATION_URL = "/resource-order-resource-inventory/v1/dpu/dpuEmsConfiguration";
     public static final String DPU_COMMISSIONING_URL = "/resource-order-resource-inventory/v1/dpuProcessRestoreTask";
+
+    public static final String PATH_TO_GET_DPU_DEVICE_INSTALLING = "/team/morpheus/mobileDpu/mobiledpuGETdevice_INSTALLING.json";
+    public static final String PATH_TO_GET_DPU_RAL_INSTALLING = "/team/morpheus/mobileDpu/mobiledpuGETabstractDeviceDpu_INSTALLING.json";
+    public static final String PATH_TO_GET_DPU_RAL_OPERATING = "/team/morpheus/mobileDpu/mobiledpuGETabstractDeviceDpu_OPERATING.json";
+    public static final String PATH_TO_GET_DPU_RAL_CONFLICT = "/team/morpheus/mobileDpu/GETdeviceBySerNrFromRALConflict.json";
 
     public MappingBuilder getDpuDevice200(Dpu dpu) {
         return get(urlPathEqualTo(DPU_DEVICE_URL))
@@ -34,6 +44,58 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
                         200
                 ))
                 .withQueryParam("endsz", equalTo(dpu.getEndSz()));
+    }
+
+    public MappingBuilder getDpuDeviceINSTALLING() throws IOException {
+        return get(urlPathEqualTo(DPU_DEVICE_URL))
+                .withName("getDpuDeviceINSTALLING")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass()
+                        .getResource(PATH_TO_GET_DPU_DEVICE_INSTALLING).getFile()), Charset.defaultCharset()), 200))
+                .withQueryParam("endsz", matching("49\\/311\\/\\d+\\/71GA"));
+    }
+
+    public MappingBuilder getDpuInRalINSTALLING() throws IOException {
+        return get(urlPathEqualTo(RAL_URL))
+                .withName("getDpuInRalINSTALLING")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass()
+                        .getResource(PATH_TO_GET_DPU_RAL_INSTALLING).getFile()), Charset.defaultCharset()), 200))
+                .withQueryParam("endSz", matching("49\\/311\\/\\d+\\/71GA"));
+    }
+
+    public MappingBuilder getDpuInRalOPERATING() throws IOException {
+        return get(urlPathEqualTo(RAL_URL))
+                .withName("getDpuInRalOPERATING")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass()
+                        .getResource(PATH_TO_GET_DPU_RAL_OPERATING).getFile()), Charset.defaultCharset()), 200))
+                .withQueryParam("endSz", matching("49\\/311\\/\\d+\\/71GA|49\\/411\\/\\d+\\/71GA"));
+    }
+
+    public MappingBuilder GETdeviceBySerNrFromRALConflict() throws IOException {
+        return get(urlPathEqualTo(RAL_URL))
+                .withName("getDpuInRalConflict")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(FileUtils.readFileToString(new File(getClass()
+                        .getResource(PATH_TO_GET_DPU_RAL_CONFLICT).getFile()), Charset.defaultCharset()), 200))
+                .withQueryParam("serialNumber", matching(".*"));
+    }
+
+    public MappingBuilder GETdevice500() {
+        return get(urlPathEqualTo(RAL_URL))
+                .withName("getDpuInRal500")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(null, 500))
+                .withQueryParam("endSz", matching("49\\/311\\/\\d+\\/71GA|49\\/411\\/\\d+\\/71GA"));
+    }
+
+    public MappingBuilder GETdeviceBySerNr500() {
+        return get(urlPathEqualTo(RAL_URL))
+                .withName("getDeviceBySerNr500")
+                .atPriority(0)
+                .willReturn(aDefaultResponseWithBody(null, 500))
+                .withQueryParam("serialNumber", matching(".*"));
     }
 
     public MappingBuilder getDpuDeviceAdtran200(Dpu dpu) {
@@ -226,7 +288,7 @@ public class OltResourceInventoryStub extends AbstractStubMapping {
         return post(urlPathEqualTo(DPU_AT_OLT_CONF_URL))
                 .withName("postDpuAtOltConf200")
                 .willReturn(aDefaultResponseWithBody(
-                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true,  olt, dpu)),
+                        serialize(new OltResourceInventoryMapper().getDpuAtOltConfigurationDto(true, olt, dpu)),
                         200
                 ))
                 .withRequestBody(matchingJsonPath(String.format("$.[?(@.dpuEndsz=='%s')]", dpu.getEndSz())));

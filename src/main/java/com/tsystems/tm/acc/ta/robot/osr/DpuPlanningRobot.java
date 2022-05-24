@@ -43,6 +43,21 @@ public class DpuPlanningRobot {
         }
     }
 
+    @Step("Deserialize DpuDemandCreate object from json")
+    public DpuDemandCreate getDpuDemandCreateFromJsonForMobileDpu(String pathToFile, String folId) {
+        File template = new File(getClass().getResource(pathToFile).getFile());
+        DpuDemandCreate dpuDemandCreate;
+        try {
+            dpuDemandCreate = DpuPlanningClient.json()
+                    .deserialize(FileUtils.readFileToString(template, Charset.defaultCharset()), DpuDemandCreate.class);
+            dpuDemandCreate.fiberOnLocationId(folId);
+            return dpuDemandCreate;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     @Step("Create DPU Demand")
     public DpuDemand createDpuDemand(DpuDemandCreate dpuDemandRequestData) {
         DpuPlanningClient dpuPlanningClient = new DpuPlanningClient(new RhssoClientFlowAuthTokenProvider(DPU_PLANNING, RhssoHelper.getSecretOfGigabitHub(DPU_PLANNING)));
@@ -117,6 +132,17 @@ public class DpuPlanningRobot {
                 .executeAs(validatedWith(shouldBeCode(200)));
     }
 
+    @Step("Modify DPU Demand by replace: one parameter updated")
+    public DpuDemand modifyWorkorderId(DpuDemand dpuDemandToModify) {
+        return dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
+                .idPath(dpuDemandToModify.getId())
+                .body(Collections.singletonList(new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                        .op(JsonPatchOperation.OpEnum.ADD)
+                        .path("/workorderId")
+                        .value(dpuDemandToModify.getFiberOnLocationId())))
+                .executeAs(validatedWith(shouldBeCode(200)));
+    }
+
     @Step("Modify DPU Demand: 409 error code")
     public void patchDpuDemand409(DpuDemand dpuDemandToModify, String path, String value, JsonPatchOperation.OpEnum operation) {
         dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
@@ -142,6 +168,38 @@ public class DpuPlanningRobot {
                 .executeAs(validatedWith(shouldBeCode(200)));
     }
 
+    @Step("Fulfill DPU Demand")
+    public DpuDemand fulfillDpuDemand(DpuDemand dpuDemandToModify, String onkz) {
+        return dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
+                .idPath(dpuDemandToModify.getId())
+                .body(Arrays.asList(new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/state")
+                                .value("FULFILLED"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuEndSz")
+                                .value("49/" + onkz + "/" + dpuDemandToModify.getFiberOnLocationId() + "/71GA"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/emsNbiName")
+                                .value("SDX2221-08-TP"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatName")
+                                .value("SDX2221-08 TP-AC-M-FTTB ETSI"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatNo")
+                                .value("40898328"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuPortCount")
+                                .value("8")
+                ))
+                .executeAs(validatedWith(shouldBeCode(200)));
+    }
+
     @Step("Read DPU Demand by fiberOnLocationId and check Response")
     public DpuDemand readDpuDemandByFolId(DpuDemand dpuDemandToRead) {
         return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
@@ -160,6 +218,28 @@ public class DpuPlanningRobot {
     public DpuDemand findDpuDemandByFolIdDomain(com.tsystems.tm.acc.ta.data.osr.models.DpuDemand dpuDemandToRead) {
         return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
                 .fiberOnLocationIdQuery(dpuDemandToRead.getFiberOnLocationId())
+                .executeAs(validatedWith(shouldBeCode(200))).get(0);
+    }
+
+    @Step("Find DPU Demand by dpuEndSz and check Response")
+    public DpuDemand findDpuDemandByEndSz(String endSz) {
+        return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
+                .dpuEndSzQuery(endSz)
+                .executeAs(validatedWith(shouldBeCode(200))).get(0);
+    }
+
+    @Step("Find DPU Demand by FolId and check Response")
+    public DpuDemand findDpuDemandByFolIdAndState(String folId) {
+        return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
+                .fiberOnLocationIdQuery(folId)
+                .stateQuery("OPEN")
+                .executeAs(validatedWith(shouldBeCode(200))).get(0);
+    }
+
+    @Step("Find DPU Demand by FolId and check Response")
+    public DpuDemand findDpuDemandByFolId(String folId) {
+        return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()
+                .fiberOnLocationIdQuery(folId)
                 .executeAs(validatedWith(shouldBeCode(200))).get(0);
     }
 
