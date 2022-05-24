@@ -1,0 +1,111 @@
+[
+  {
+    "shortName": "SDX2221-04 TP-AC-M-FTTB ETSI",
+    "materialNumber": "40247069",
+    "emsNbiName": "MA5600T",
+    "tkz1": "02351082",
+    "tkz2": null,
+    "descriptionUrl": "https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40247069",
+    "lastDiscovery": "2020-03-10T16:40:26.154Z",
+    "id": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+    "resourceId": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+    "deviceName": "ETSI Service Shelf H8-MABC",
+    "endSz": "{{request.requestLine.query.endsz}}",
+    "fachSz": null,
+    "klsId": 16063944,
+    "ipAddress": "10.182.112.196",
+    "firmwareVersion": null,
+    "resourceState": "NON_WORKING",
+    "communicationState": "CS_AVAILABLE",
+    "serialNumber": "12345",
+    "importState": "PLANNED",
+    "type": "DPU",
+    "accessTransmissionMedium": "COAX",
+    "importDate": "2020-03-10T16:40:26.154Z",
+    "equipmentHolders": [
+      {
+        "id": 1011,
+        "slotNumber": "4",
+        "card": {
+          "shortName": "GPPD",
+          "materialNumber": "40261742",
+          "emsNbiName": "H805GPBD",
+          "tkz1": "03021BQW",
+          "tkz2": null,
+          "descriptionUrl": "https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742",
+          "lastDiscovery": "2020-03-10T16:40:26.154Z",
+          "id": 1011,
+          "resourceId": "1011",
+          "name": "8-port GPON OLT Interface Board V2",
+          "description": null,
+          "serialNumber": "021BQW10B6000065",
+          "serviceState": null,
+          "resourceState": "INSTALLING_INSTALLED",
+          "firmwareVersion": "507(2015-8-27)",
+          "cardType": "GPON",
+          "equipmentNumber": "40261742",
+          "manufacturer": null,
+          "ports": [
+            {
+              "id": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+              "resourceId": "1049",
+              "portType": "PON",
+              "portNumber": "1",
+              "opticalModule": {
+                "shortName": "GPPD",
+                "materialNumber": "40261742",
+                "emsNbiName": "H805GPBD",
+                "tkz1": "03021BQW",
+                "tkz2": null,
+                "descriptionUrl": "https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742",
+                "lastDiscovery": "2020-03-10T16:40:26.154Z",
+                "id": 0,
+                "resourceId": "1049",
+                "name": "8-port GPON OLT Interface Board V2",
+                "description": null,
+                "manufacturer": null,
+                "compositePartyId": 0
+              },
+              "compositePartyId": 0
+            }
+          ],
+          "compositePartyId": 0
+        }
+      }
+    ],
+    "description": "string",
+    "asb": 0,
+    "technicalLocation": "string",
+    "equipmentNumber": "string",
+    "manufacturer": "string",
+    "distributionPointId": "123456789",
+    "lifeCycleState": "INSTALLING",
+    "fiberOnLocationId": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+    "ports": [
+      {
+        "id": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+        "resourceId": "{{groovy arg1='request.requestLine.query.endsz' arg2='/' inline='String endsz=context.get(arg1); String[] endszParts=endsz.split(arg2); return endszParts[1]'}}",
+        "lifeCycleState": "INSTALLING",
+        "portType": "PON",
+        "portNumber": "1",
+        "opticalModule": {
+          "shortName": "GPPD",
+          "materialNumber": "40261742",
+          "emsNbiName": "H805GPBD",
+          "tkz1": "03021BQW",
+          "tkz2": "string",
+          "descriptionUrl": "https://edmpc3.one-erp.telekom.de/sap(bD1kZSZjPTAzMA==)/bc/bsp/sap/zmnetkat/material.htm?matnr=40261742",
+          "lastDiscovery": "2020-07-10T08:34:38.467Z",
+          "id": 0,
+          "resourceId": "1049",
+          "name": "8-port GPON OLT Interface Board V2",
+          "description": "string",
+          "manufacturer": "string",
+          "compositePartyId": 0
+        },
+        "compositePartyId": 0
+      }
+    ],
+    "compositePartyId": 0
+  }
+]
