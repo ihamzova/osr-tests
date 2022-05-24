@@ -3,11 +3,13 @@ package com.tsystems.tm.acc.ta.robot.osr;
 import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNegDetailsPage;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -132,7 +134,16 @@ public class A4ResourceInventoryNegDetailsRobot {
 
 
     public void clickNeIcon() {
-        getNeElementsCollection().get(0).click();
+
+        //getNeElementsCollection().get(0).click();
+
+        sleepForSeconds(2);
+        WebElement element = $(A4InventarSuchePage.getNEG_NE_LIST_TABLE_LOCATOR())
+                .toWebElement().findElement(A4InventarSuchePage.NE_DETAIL_LINK_LOCATOR_1);
+        sleepForSeconds(2);
+        element.click();
+
+
     }
 
 
