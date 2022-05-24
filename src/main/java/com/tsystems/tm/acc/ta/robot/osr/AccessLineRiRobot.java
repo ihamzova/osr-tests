@@ -363,6 +363,8 @@ public class AccessLineRiRobot {
         assertEquals(actualDefaultNLProfileDtos.size(), numberOfAccessLinesForProvisioning, "Default NetworkLine Profiles count is incorrect");
         List<DefaultNetworkLineProfile> actualDefaultNLProfiles =
                 actualDefaultNLProfileDtos.stream().map(AccessLineRiRobot::mapToNLProfile).collect(Collectors.toList());
+        System.out.println("actualDefaultNLProfiles = " + actualDefaultNLProfiles);
+        System.out.println("expectedDefaultNLineProfile = " + expectedDefaultNLineProfile);
         assertTrue(actualDefaultNLProfiles.stream().allMatch(defaultNetworkLineProfile -> defaultNetworkLineProfile.equals(expectedDefaultNLineProfile)),
                 "Default NetworkLine Profiles are incorrect");
     }

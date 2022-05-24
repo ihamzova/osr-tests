@@ -25,3 +25,31 @@ values:
   guaranteedUpBandwidth: 21312
   downBandwidth: 40000
   upBandwidth: 20000
+---
+name: A4SubscriberNetworkLineProfileActivationV2
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId:  12345
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  minDownBandwidth: 31808
+  minUpBandwidth: 12032
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
+  downBandwidth: 30000
+  upBandwidth: 10000
+---
+name: A4SubscriberNetworkLineProfileModificationV2
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  minDownBandwidth: 31808
+  minUpBandwidth: 12032
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
+  downBandwidth: 40000
+  upBandwidth: 20000

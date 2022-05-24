@@ -400,7 +400,7 @@ public class A4ResourceInventoryMapper {
     public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOnWorking() {
         NetworkServiceProfileFtthAccessDto nspFtth = getDefaultNetworkServiceProfileFtthAccessData();
         nspFtth.setOltPortOntLastRegisteredOn(null);
-        nspFtth.setOperationalState(WORKING);
+        nspFtth.setOperationalState("DEACTIVATING");
         return nspFtth;
     }
 

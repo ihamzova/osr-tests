@@ -13,10 +13,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.helpers.osr.RetryLoop;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceRobot;
-import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
-import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
+import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileFtthAccessDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
@@ -60,6 +57,7 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
     private final A4ResourceInventoryServiceRobot a4Nemo = new A4ResourceInventoryServiceRobot();
     private final AccessLineRiRobot accessLineRi = new AccessLineRiRobot();
     private final NetworkLineProfileManagementRobot networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();
+    private final WgAccessProvisioningRobot wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
     private A4NetworkElementGroup negData;
     private A4NetworkElement neData;
     private A4NetworkElementPort nepData;
@@ -76,6 +74,8 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
 
     @BeforeClass
     public void init() {
+        wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
+
         long SLEEP_TIMER = 15000;
         negData = osrTestContext.getData().getA4NetworkElementGroupDataProvider()
                 .get(A4NetworkElementGroupCase.defaultNetworkElementGroup);
@@ -101,8 +101,15 @@ public class FulfillmentL2BsaProductTest extends GigabitTest {
                 .get(L2BsaNspReferenceCase.l2BsaNspReferenceActivation);
         expectedL2BsaNspReferenceModification = osrTestContext.getData().getL2BsaNspReferenceDataProvider()
                 .get(L2BsaNspReferenceCase.l2BsaNspReferenceModification);
-        expectedDefaultNetworklineProfile = osrTestContext.getData().getDefaultNetworkLineProfileDataProvider()
-                .get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+
+        if (wgAccessProvisioningRobot.getFeatureToogleEnable64PonSplittingState()) {
+            expectedDefaultNetworklineProfile = osrTestContext.getData().getDefaultNetworkLineProfileDataProvider()
+                    .get(DefaultNetworkLineProfileCase.defaultNLProfileFtthV2);
+        } else {
+            expectedDefaultNetworklineProfile = osrTestContext.getData().getDefaultNetworkLineProfileDataProvider()
+                    .get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+        }
+
         accessLine = new AccessLine();
 
         // Ensure that no old test data is in the way
