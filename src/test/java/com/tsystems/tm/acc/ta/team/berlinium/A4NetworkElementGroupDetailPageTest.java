@@ -101,11 +101,11 @@ public class A4NetworkElementGroupDetailPageTest extends GigabitTest {
         driver.manage().window().maximize();
         sleepForSeconds(4);  // wait for result
         a4InventarSuche.clickDetailLinkForFirstNEGInSearchResultTable();
-        sleepForSeconds(6);  // wait for result
+        sleepForSeconds(4);  // wait for result
         // WHEN
 
         a4ResourceInventoryNegDetails.clickNeIcon();
-        sleepForSeconds(6);  // wait for result
+        sleepForSeconds(4);  // wait for result
         // THEN
         a4ResourceInventoryNeDetails.checkLandedOnCorrectNeDetailsPage(neDataA);
 

@@ -35,7 +35,7 @@ public class A4ResourceInventoryNeDetailsPage {
     public static final By NE_LastSuccessfulSync_FIELD_LOCATOR = By.id("lastSuccessfulSyncTime");
     public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
 
-    @Step("Validate NE detail page w/o uuuid")
+    @Step("Validate NE detail page w/o uuid")
     public A4ResourceInventoryNeDetailsPage validate() {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
         System.out.println("url: " + url()) ;
@@ -44,7 +44,7 @@ public class A4ResourceInventoryNeDetailsPage {
         return this;
     }
 
-    @Step("Validate NE detail page w/ uuuid")
+    @Step("Validate NE detail page w/ uuid")
     public A4ResourceInventoryNeDetailsPage validate(String uuid) {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));
         System.out.println("NE Uuid: " + uuid) ;
