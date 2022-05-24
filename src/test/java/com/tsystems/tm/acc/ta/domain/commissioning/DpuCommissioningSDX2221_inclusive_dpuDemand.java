@@ -13,6 +13,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuCommissioningUiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.DpuPlanningRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -58,7 +59,6 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
 
     @BeforeClass
     public void init() {
-
         dpuCommissioningUiRobot.restoreOsrDbState();
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_179_71G1_SDX2221);
@@ -134,7 +134,5 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
                 0,
                 1, 1);
         accessLineRiRobot.checkFtthPortParameters(oltDevice);
-
-
     }
 }

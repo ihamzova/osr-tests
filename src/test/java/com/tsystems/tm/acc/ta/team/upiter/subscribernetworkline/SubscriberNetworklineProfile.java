@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
+import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
@@ -41,6 +42,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot;
   private NetworkLineProfileManagementRobot networkLineProfileManagementRobot;
+  private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private UpiterTestContext context = UpiterTestContext.get();
 
   private AccessLine accessLineRetail;
@@ -64,6 +66,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   private NetworkLineProfileData resourceOrderDeletion;
 
   private DefaultNetworkLineProfile expectedDefaultNetworklineProfileFtth;
+  private DefaultNetworkLineProfile expectedDefaultNetworklineProfileFtthV2;
   private DefaultNetworkLineProfile expectedDefaultNetworklineProfileFttbCoax;
   private DefaultNetworkLineProfile expectedDefaultNetworklineProfileFttbTp;
 
@@ -94,6 +97,9 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   public void init() throws InterruptedException {
     accessLineRiRobot = new AccessLineRiRobot();
     networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();
+    wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
+
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
 
     oltDeviceTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
     dpuDeviceTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
@@ -118,6 +124,22 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     calId = new ResourceCharacteristic();
     calId.setName(ResourceCharacteristic.NameEnum.CALID);
 
+    if (wgAccessProvisioningRobot.getFeatureToogleEnable64PonSplittingState()) {
+      expectedRetailSubscriberProfileFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.RetailSubscriberNetworkLineProfileFtthV2);
+      expectedWsSubscriberProfileActivationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileActivationFtthV2);
+      expectedWsSubscriberProfileModificationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileModificationFtthV2);
+      expectedA4SubscriberProfileActivation = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileActivationV2);
+      expectedA4SubscriberProfileModification = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileModificationV2);
+    } else {
+      expectedRetailSubscriberProfileFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.RetailSubscriberNetworkLineProfileFtth);
+      expectedWsSubscriberProfileActivationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileActivationFtth);
+      expectedWsSubscriberProfileModificationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileModificationFtth);
+      expectedA4SubscriberProfileActivation = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileActivation);
+      expectedA4SubscriberProfileModification = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileModification);
+    }
+
+    expectedDefaultNetworklineProfileFtth = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
+    expectedDefaultNetworklineProfileFtthV2 = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtthV2);
     resourceOrderRetailActivation = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.NetworkLineProfileActivation);
     resourceOrderWsActivation = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.WsNetworkLineProfileActivation);
     resourceOrderWsModification = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.WsNetworkLineProfileModification);
@@ -129,20 +151,13 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     resourceOrderA4l2BsaModification = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.A4L2BsaModification);
     resourceOrderDeletion = context.getData().getNetworkLineProfileDataDataProvider().get(NetworkLineProfileDataCase.NetworkLineProfileDeactivation);
 
-    expectedDefaultNetworklineProfileFtth = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
     expectedDefaultNetworklineProfileFttbCoax = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
     expectedDefaultNetworklineProfileFttbTp = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFttbTP);
-
-    expectedRetailSubscriberProfileFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.RetailSubscriberNetworkLineProfileFtth);
-    expectedWsSubscriberProfileActivationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileActivationFtth);
-    expectedWsSubscriberProfileModificationFtth = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileModificationFtth);
     expectedWsSubscriberProfileActivationFttb = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileActivationFttb);
     expectedWsSubscriberProfileModificationFttb = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WsSubscriberNetworkLineProfileModificationFttb);
 
     expectedWbSubscriberProfileActivation = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WbSubscriberNetworkLineProfileActivation);
     expectedWbSubscriberProfileModification = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.WbSubscriberNetworkLineProfileModification);
-    expectedA4SubscriberProfileActivation = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileActivation);
-    expectedA4SubscriberProfileModification = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.A4SubscriberNetworkLineProfileModification);
     expectedL2BsaNspReferenceActivation = context.getData().getL2BsaNspReferenceDataProvider().get(L2BsaNspReferenceCase.L2BsaNspReferenceActivation);
     expectedL2BsaNspReferenceModification = context.getData().getL2BsaNspReferenceDataProvider().get(L2BsaNspReferenceCase.L2BsaNspReferenceModification);
     expectedRetailSubscriberProfileFttb = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.RetailSubscriberNetworkLineProfileFttb);
@@ -345,7 +360,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), a4AccessLineL2Bsa);
     assertEquals("DefaultNetworkLineProfile state is incorrect", accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.ACTIVE);
     assertEquals("AccessLine Status is incorrect", accessLineRiRobot.getAccessLineStateByLineId(a4AccessLineL2Bsa.getLineId()), AccessLineStatus.ASSIGNED);
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(a4AccessLineL2Bsa, expectedDefaultNetworklineProfileFtth);
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(a4AccessLineL2Bsa, expectedDefaultNetworklineProfileFtthV2);
     assertNull(accessLineRiRobot.getAccessLinesByLineId(a4AccessLineL2Bsa.getLineId()).get(0).getL2BsaNspReference(),
             "L2BsaNspReference is present on an A4 AccessLine after deletion");
   }

@@ -4,8 +4,8 @@ values:
   accessType: "Gfast"
   minDownBandwidth: 1152
   minUpBandwidth: 768
-  guaranteedDownBandwidth: 63680
-  guaranteedUpBandwidth: 21312
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
   maxDownBandwidth: 1168256
   maxUpBandwidth: 292096
   state: "ACTIVE"
@@ -16,8 +16,8 @@ values:
   accessType: "GfastCX"
   minDownBandwidth: 1152
   minUpBandwidth: 768
-  guaranteedDownBandwidth: 63680
-  guaranteedUpBandwidth: 21312
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
   maxDownBandwidth: 1168256
   maxUpBandwidth: 292096
   state: "ACTIVE"

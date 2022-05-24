@@ -26,6 +26,34 @@ values:
   downBandwidth: 223000
   upBandwidth: 223000
 ---
+name: WsSubscriberNetworkLineProfileActivationFtthV2
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  minDownBandwidth: 31808
+  minUpBandwidth: 12032
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
+  downBandwidth: 123000
+  upBandwidth: 123000
+---
+name: WsSubscriberNetworkLineProfileModificationFtthV2
+template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
+values:
+  state: "ACTIVE"
+  klsId: 12345
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  minDownBandwidth: 31808
+  minUpBandwidth: 12032
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
+  downBandwidth: 223000
+  upBandwidth: 223000
+---
 name: WsSubscriberNetworkLineProfileActivationFttb
 template: com.tsystems.tm.acc.ta.data.osr.models.SubscriberNetworkLineProfile
 values:
@@ -35,8 +63,8 @@ values:
   maxUpBandwidth: 292096
   minDownBandwidth: 1152
   minUpBandwidth: 768
-  guaranteedDownBandwidth: 63680
-  guaranteedUpBandwidth: 21312
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
   downBandwidth: 123000
   upBandwidth: 123000
 ---
@@ -49,7 +77,7 @@ values:
   maxUpBandwidth: 292096
   minDownBandwidth: 1152
   minUpBandwidth: 768
-  guaranteedDownBandwidth: 63680
-  guaranteedUpBandwidth: 21312
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
   downBandwidth: 223000
   upBandwidth: 223000
