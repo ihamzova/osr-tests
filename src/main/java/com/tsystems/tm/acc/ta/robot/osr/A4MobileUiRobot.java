@@ -19,6 +19,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -215,7 +216,7 @@ public class A4MobileUiRobot {
     private void checkAlert() {
         try {
             WebDriver driver = WebDriverRunner.getWebDriver();
-            WebDriverWait wait = new WebDriverWait(driver, 5000);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert();
             alert.accept();
