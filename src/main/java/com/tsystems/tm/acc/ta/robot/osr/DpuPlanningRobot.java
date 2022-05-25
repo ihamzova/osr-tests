@@ -200,6 +200,38 @@ public class DpuPlanningRobot {
                 .executeAs(validatedWith(shouldBeCode(200)));
     }
 
+    @Step("Fulfill DPU Demand")
+    public DpuDemand fulfillDpuDemandDomain(DpuDemand dpuDemandToModify) {
+        return dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
+                .idPath(dpuDemandToModify.getId())
+                .body(Arrays.asList(new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/state")
+                                .value("FULFILLED"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuEndSz")
+                                .value(dpuDemandToModify.getDpuEndSz()),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/emsNbiName")
+                                .value("SDX2221-04-TP"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatName")
+                                .value("SDX2221-04 TP-AC-M-FTTB ETSI"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatNo")
+                                .value("40898328"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuPortCount")
+                                .value("4")
+                ))
+                .executeAs(validatedWith(shouldBeCode(200)));
+    }
+
     @Step("Read DPU Demand by fiberOnLocationId and check Response")
     public DpuDemand readDpuDemandByFolId(DpuDemand dpuDemandToRead) {
         return dpuPlanningClient.getClient().dpuDemand().findDpuDemand()

@@ -1,0 +1,7 @@
+{
+  "dpuAccessTechnology": "FTTB_COAX",
+  "fiberOnLocationId": "71520003000999",
+  "klsId": "122334466",
+  "numberOfNeededDpuPorts": 4,
+  "state": "OPEN"
+}

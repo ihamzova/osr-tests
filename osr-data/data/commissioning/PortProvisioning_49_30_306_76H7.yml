@@ -1,0 +1,9 @@
+name: EndSz_49_30_306_76H7
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/306/76H7"
+  slotNumber: "3"
+  portNumber: "3"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 16
