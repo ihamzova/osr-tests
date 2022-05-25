@@ -19,9 +19,7 @@ import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemandCreate;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
-import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
-import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -45,16 +43,16 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
         DPU_PLANNING_MS
 })
 public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
-    private OsrTestContext context = OsrTestContext.get();
-    private DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
-    private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
-    private DpuPlanningRobot dpuPlanningRobot = new DpuPlanningRobot();
+    private final OsrTestContext context = OsrTestContext.get();
+    private final DpuCommissioningUiRobot dpuCommissioningUiRobot = new DpuCommissioningUiRobot();
+    private final AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
+    private final DpuPlanningRobot dpuPlanningRobot = new DpuPlanningRobot();
     private DpuDevice dpuDevice;
     private DpuDemand dpuDemand;
     private PortProvisioning oltDevice;
     private FttbNeProfile expectedFttbNeProfile;
     private DefaultNetworkLineProfile expectedDefaultNlProfile;
-    private int numberOfAcсessLines;
+    private int numberOfAccessLines;
     private static final String CREATE_DPU_DEMAND = "/domain/osr/commissioning/createDpuDemandForMobileDpuDomain.json";
     private MobileDpuPage mobileDpuPage;
 
@@ -71,7 +69,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         expectedDefaultNlProfile = context.getData().getDefaultNetworkLineProfileDataProvider()
                 .get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
 
-        numberOfAcсessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
+        numberOfAccessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
         DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemandDomain(dpuPlanningRobot.findDpuDemandByFolIdDomain(dpuDemand));
@@ -121,7 +119,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         mobileDpuPage.goToNextPage();
         mobileDpuPage.finishCommissioning();
 
-        accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAcсessLines);
-
+        accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAccessLines);
+        dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
     }
 }
