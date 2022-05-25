@@ -21,6 +21,8 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
     And no DPU deprovisioning request to wg-a4-provisioning mock was triggered
     And the TP does not exist in A4 resource inventory anymore
 
+
+    #TODO: correct
   @DIGIHUB-127854
   @team:berlinium @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
@@ -53,6 +55,7 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | G.FAST_TP |
       | A10NSP_TP |
 
+    #TODO: correct
   @DIGIHUB-144191
     @team:berlinium
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning
@@ -74,6 +77,7 @@ Feature: DPU Commissioning in A4 platform - Delete FTTH Accessline (part 3)
       | 403      |
       | 408      |
 
+    #TODO: correct
   @DIGIHUB-144192
     @team:berlinium
     @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-commissioning

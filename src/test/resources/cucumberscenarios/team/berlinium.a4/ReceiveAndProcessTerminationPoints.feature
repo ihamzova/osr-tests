@@ -6,6 +6,7 @@ Feature: Receive and process Termination Points
   Background:
     Given a NEP is existing in A4 resource inventory
 
+    #TODO: correct
   @DIGIHUB-143497
   @team:berlinium @smoke
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
@@ -18,6 +19,7 @@ Feature: Receive and process Termination Points
     And a DPU preprovisioning request to wg-a4-provisioning mock was triggered
     And a NSP FTTH connected to the TP does exist in A4 resource inventory
 
+    #TODO: correct
   @DIGIHUB-143498
   @team:berlinium
   @ms:a4-resource-inventory @ms:a4-resource-inventory-service @ms:a4-queue-dispatcher @ms:a4-carrier-management
