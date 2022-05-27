@@ -86,11 +86,11 @@ public class Postprovisioning extends GigabitTest {
 
         wgAccessProvisioningRobot.prepareForPostprovisioning(6, accessLine32); // 28 + 6 assigned lines
 
-        portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + 1);
-        portForPostprovisioning32.setAccessLinesWG(0);
-
-        accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
-        accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning32);
+//        portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + 1);
+//        portForPostprovisioning32.setAccessLinesWG(0);
+//
+//        accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
+//        accessLineRiRobot.checkPortParametersForAssignedLines(portForPostprovisioning32);
     }
 
     @Test
