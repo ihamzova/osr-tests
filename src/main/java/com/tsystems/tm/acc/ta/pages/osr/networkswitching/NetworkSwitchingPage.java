@@ -22,7 +22,6 @@ import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
-import static org.testng.Assert.assertFalse;
 
 @Slf4j
 public class NetworkSwitchingPage {
@@ -50,6 +49,7 @@ public class NetworkSwitchingPage {
     private static final By SEARCH_BUTTON = byQaData("search-btn");
     private static final By GET_PACKAGE_DATA_BUTTON = byQaData("get-info-btn");
     private static final By COMMIT_BUTTON = byQaData("commit-btn");
+    private static final By EXECUTION_BUTTON = byQaData("execution-btn");
     private static final By ROLLBACK_BUTTON = byQaData("rollback-btn");
     private static final By COPY_PACKAGE_ID_BUTTON = byQaData("copy-btn");
     private static final By DEVICE_INFORMATION = byQaData("device-info-btn");
@@ -126,6 +126,7 @@ public class NetworkSwitchingPage {
 
         $(PORT_TO_PORT_PREPARE_BUTTON).click();
         $(GANZEN_PON_PORT_UMSCHALTEN).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Die Vorbereitung für den Zielport hat begonnen"));
         closeNotificationButton();
         return this;
@@ -236,14 +237,39 @@ public class NetworkSwitchingPage {
         return this;
     }
 
+    @Step("Start commit phase after execution")
+    public NetworkSwitchingPage startCommitAfterExecution(String packageId) throws Exception {
+        clickPaketverwaltungTab();
+        getPackageInfo(packageId);
+        waitUntilNeededStatus("EXECUTED",packageId);
+        $(COMMIT_BUTTON).shouldBe(visible);
+        $(COMMIT_BUTTON).click();
+        $(NOTIFICATION).shouldBe(visible);
+        $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
+        closeNotificationButton();
+        return this;
+    }
+    @Step("Start execution phase")
+    public NetworkSwitchingPage startExecution(String packageId) throws Exception {
+        clickPaketverwaltungTab();
+        getPackageInfo(packageId);
+        waitUntilNeededStatus("PREPARED",packageId);
+        $(EXECUTION_BUTTON).click();
+        $(NOTIFICATION).shouldBe(visible);
+        $(NOTIFICATION).shouldHave(text("Der Durchführungsprozess für den Zielport hat begonnen"));
+        closeNotificationButton();
+        return this;
+    }
+
     @Step("Start rollback ")
     public NetworkSwitchingPage startRollback(String packageId) throws Exception {
         clickPaketverwaltungTab();
         getPackageInfo(packageId);
-        getPackageStatus().contains("PREPARED");
+        waitUntilNeededStatus("PREPARED",packageId);
         $(ROLLBACK_BUTTON).click();
-//    $(NOTIFICATION).shouldHave(text("Der Rollback-Prozess für den Zielport hat begonnen"));
-//    closeNotificationButton();
+        $(NOTIFICATION).shouldBe(visible);
+        $(NOTIFICATION).shouldHave(text("Der Rollback-Prozess für den Zielport hat begonnen"));
+        closeNotificationButton();
         return this;
     }
 
@@ -303,6 +329,10 @@ public class NetworkSwitchingPage {
     public WebElement getCommitButton() {
         return $(COMMIT_BUTTON);
     }
+    public WebElement getExecutionButton() {
+        return $(EXECUTION_BUTTON);
+    }
+
 
     public WebElement getRollbackButton() {
         return $(ROLLBACK_BUTTON);
