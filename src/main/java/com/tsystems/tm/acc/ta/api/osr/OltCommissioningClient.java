@@ -8,6 +8,8 @@ import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.api.client.olt.commissioning.invoker.ApiClient;
 import com.tsystems.tm.api.client.olt.commissioning.invoker.GsonObjectMapper;
 import com.tsystems.tm.api.client.olt.commissioning.invoker.JSON;
+import de.telekom.it.magic.api.IAccessTokenProvider;
+import de.telekom.it.magic.api.IIdentityTokenProvider;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
@@ -16,6 +18,23 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_
 public class OltCommissioningClient implements Resetable {
 
     private final ApiClient client;
+
+
+    public OltCommissioningClient(IIdentityTokenProvider iIdentityTokenProvider, IAccessTokenProvider iAccessTokenProvider) {
+        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
+                () -> RequestSpecBuilders
+                        .getDefault(
+                                GsonObjectMapper.gson(),
+                                new GigabitUrlBuilder(OLT_COMMISSIONING_MS)
+                                        .buildUri())
+                        .setContentType("application/json")
+                        .addFilter((requestSpec, responseSpec, ctx) -> {
+                            requestSpec.header("Authorization", "Bearer " + iAccessTokenProvider.getAccessToken());
+                            requestSpec.header("apm-principal-token", iIdentityTokenProvider.getIdentityToken());
+                            return ctx.next(requestSpec, responseSpec);
+                        })
+        ));
+    }
 
     public OltCommissioningClient(AuthTokenProvider authTokenProvider) {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
