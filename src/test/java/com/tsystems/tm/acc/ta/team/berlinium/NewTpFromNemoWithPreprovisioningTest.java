@@ -65,7 +65,7 @@ public class NewTpFromNemoWithPreprovisioningTest extends GigabitTest {
                 .get(A4TerminationPointCase.terminationPointA10NspPrePro);
         tpL2Data = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.terminationPointL2BsaPrePro);
-        routeName = "resource-order-resource-inventory.v1.a4TerminationPoints";
+        routeName = "a4-resource-inventory.resource-order-resource-inventory.v1.a4TerminationPoints";
 
         // Ensure that no old test data is in the way
         cleanup();
