@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.CachedRhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OntUsageClient;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
@@ -25,7 +26,7 @@ import static org.testng.AssertJUnit.assertFalse;
 public class OntUsageRobot {
     private char[] hexArray = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ont-usage-bff-proxy", RhssoHelper.getSecretOfGigabitHub("ont-usage-bff-proxy"));
+    private static final AuthTokenProvider authTokenProvider = new CachedRhssoClientFlowAuthTokenProvider("wiremock-acc");
 
     private OntUsageClient ontUsageClient = new OntUsageClient(authTokenProvider);
 

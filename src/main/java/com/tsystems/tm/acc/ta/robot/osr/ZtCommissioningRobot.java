@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.CachedRhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
@@ -38,7 +39,7 @@ public class ZtCommissioningRobot {
 
     private static final Integer TIMEOUT_FOR_ZTC_COMMISSIONING = 2 * 60_000;
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
+    private static final AuthTokenProvider authTokenProvider = new CachedRhssoClientFlowAuthTokenProvider("wiremock-acc");
     private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private final OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
