@@ -12,7 +12,10 @@ import com.tsystems.tm.acc.ta.helpers.upiter.UserTokenProvider;
 import com.tsystems.tm.acc.ta.pages.osr.ontusage.OntUsagePage;
 import com.tsystems.tm.acc.ta.pages.osr.ontusage.OntUsageSupportPage;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsageEntity;
+import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsagePostRequest;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsagePutRequest;
+import de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProvider;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -20,6 +23,7 @@ import java.util.List;
 
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getPublicAuthorizationCodeTokenProvider;
 import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 
@@ -27,7 +31,6 @@ public class OntUsageRobot {
     private char[] hexArray = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     private static final AuthTokenProvider authTokenProvider = new CachedRhssoClientFlowAuthTokenProvider("wiremock-acc");
-
     private OntUsageClient ontUsageClient = new OntUsageClient(authTokenProvider);
 
     @Step("Create ONT via supplier ui")
@@ -125,6 +128,26 @@ public class OntUsageRobot {
                 putOntUsage().
                 body(putRequest).
                 serialNumberPath(ontTestData.getSerialNumber()).
+                executeAs(validatedWith(shouldBeCode(200)));
+    }
+
+    @Owner("TMI")
+    @Step("Create ONT via supplier API")
+    public void createOntViaSupplierApi(Ont ont, Supplier supplier, boolean useForOnlyOneEmployee, String username, String password, String realm) {
+        AuthorizationCodeTokenProvider tokenProvider = getPublicAuthorizationCodeTokenProvider(username, password, realm);
+        OntUsageClient client = new OntUsageClient(authTokenProvider, tokenProvider);
+        OntUsagePostRequest postRequest = new OntUsagePostRequest();
+
+        postRequest.setPartyId(Long.parseLong(supplier.getAtomicOrganizationId()));
+        postRequest.setIdmNameOfEmployee(ont.getAssignedEmployee());
+        postRequest.setSerialNumber(ont.getSerialNumber());
+        postRequest.setUseForOnlyOneEmployee(useForOnlyOneEmployee);
+
+        client.
+                getClient().
+                ontUsageCrudOperations().
+                postOntUsage().
+                body(postRequest).
                 executeAs(validatedWith(shouldBeCode(200)));
     }
 
