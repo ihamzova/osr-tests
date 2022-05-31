@@ -18,6 +18,7 @@ import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.*;
 import com.tsystems.tm.api.client.olt.commissioning.model.OltCommissioningDto;
 import com.tsystems.tm.api.client.olt.commissioning.model.UplinkDto;
+import com.tsystems.tm.api.client.olt.material.catalog.external.model.DeviceTemplate;
 import com.tsystems.tm.api.client.osr.process.log.model.ProcessLogListItemDTO;
 import com.tsystems.tm.api.client.osr.process.log.model.ProcessStatus;
 import com.tsystems.tm.api.client.osr.process.log.model.ResolutionStatus;
@@ -50,8 +51,6 @@ public class OltCommissioningRobot {
     private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
     private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
     private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
-    private static final Integer ACCESS_LINE_PER_PORT_MA5600 = 16;
-    private static final Integer ACCESS_LINE_PER_PORT_SDX6320 = 16;
     private static final Integer HOME_ID_POOL_PER_PORT = 0;
 
     private static final AuthTokenProvider authTokenProviderOltCommissioning = new RhssoClientFlowAuthTokenProvider(OLT_COMMISSIONING_MS/*, RhssoHelper.getSecretOfGigabitHub(OLT_COMMISSIONING_MS)*/);
@@ -63,6 +62,7 @@ public class OltCommissioningRobot {
     private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
     private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private OsrProcessLogClient osrProcessLogClient = new OsrProcessLogClient(authTokenProviderAccessProcessManagementBff);
+    private OltMaterialCatalogClient oltMaterialCatalogClient = new OltMaterialCatalogClient(authTokenProviderOltCommissioning);
 
     private UnleashClient unleashClient = new UnleashClient();
 
@@ -179,7 +179,7 @@ public class OltCommissioningRobot {
     public void checkOltCommissioningResult(OltDevice olt) {
         String oltEndSz = olt.getEndsz();
         long portsCount;
-        long accessLinesPerPort = ACCESS_LINE_PER_PORT_MA5600;
+        long accessLinesPerPort = getPreProvisioningAccessLineCount(olt);
 
         AuthTokenProvider authTokenProviderWgAccessProvisioning = new RhssoClientFlowAuthTokenProvider(WG_ACCESS_PROVISIONING_MS, RhssoHelper.getSecretOfGigabitHub(WG_ACCESS_PROVISIONING_MS));
         AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient(authTokenProviderWgAccessProvisioning);
@@ -197,8 +197,6 @@ public class OltCommissioningRobot {
         if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
             assertEquals(portList.size(), olt.getNumberOfPonPorts() + olt.getNumberOfEthernetPorts(), "Ports number by Adtran mismatch");
             portsCount = olt.getNumberOfPonPorts();
-            //for ADTRAN device provisioning (strategy 16-4-4 on demand)
-            accessLinesPerPort = ACCESS_LINE_PER_PORT_SDX6320;
         } else {
             portsCount = portList.stream()
                                  .filter(port -> port.getPortType().equals(PortType.PON)).count();
@@ -315,5 +313,26 @@ public class OltCommissioningRobot {
     @Step("enable unleash feature toggle: service.olt-resource-inventory-ui.uplink-import")
     public void enableFeatureToogleUiUplinkImport() {
         unleashClient.enableToggle(SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT);
+    }
+
+    @Step(" get the count of pre-provisioning access lines from olt-material-catalog")
+    public Integer getPreProvisioningAccessLineCount(OltDevice oltDevice) {
+        DeviceTemplate deviceTemplate = oltMaterialCatalogClient.getClient().deviceTemplateController()
+                .findDeviceTemplateByEmsNbiName().emsnbinamePath(oltDevice.getBezeichnung())
+                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+
+        String str =  deviceTemplate.getPreprovisioningStrategy();
+        log.info("getPreprovisioningStrategy {} for emsNbiName = {}", str, oltDevice.getBezeichnung() );
+
+        StringBuffer strBuff = new StringBuffer();
+        for (int i = 0; i < str.length() ; i++) {
+            if (Character.isDigit(str.charAt(i))) {
+                strBuff.append(str.charAt(i));
+            } else {
+                break;
+            }
+        }
+
+        return Integer.parseInt(strBuff.toString());
     }
 }
