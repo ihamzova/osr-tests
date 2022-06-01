@@ -45,8 +45,10 @@ public class ImportCsvSteps {
         rows.forEach(columns -> {
             final A4ImportCsvLine csvLine = new A4ImportCsvLine();
             csvLine.setNegName(columns.get("NEG Name"));
-            csvLine.setNeVpsz(columns.get("VPSZ"));
-            csvLine.setNeFsz(columns.get("FSZ"));
+            csvLine.setNegDescription(columns.get("NEG Description"));
+            csvLine.setNeVpsz(columns.get("NE VPSZ"));
+            csvLine.setNeFsz(columns.get("NE FSZ"));
+            csvLine.setNeDescription(columns.get("NE Description"));
 
             csvLines.add(csvLine);
         });

@@ -12,7 +12,7 @@ import io.cucumber.testng.CucumberOptions;
         glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
                 "cucumber.stepdefinitions.team.berlinium",
                 "cucumber.stepdefinitions.common"},
-        features = {"src/test/resources/cucumberscenarios/team/berlinium.a4"},
+        features = {"src/test/resources/cucumberscenarios/team/berlinium"},
         tags = "@smoke"
 )
 public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractGigabitCucumberTest {
