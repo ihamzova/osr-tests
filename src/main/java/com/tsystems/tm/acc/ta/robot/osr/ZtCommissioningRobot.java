@@ -40,10 +40,12 @@ public class ZtCommissioningRobot {
     private static final Integer TIMEOUT_FOR_ZTC_COMMISSIONING = 2 * 60_000;
 
     private static final AuthTokenProvider authTokenProvider = new CachedRhssoClientFlowAuthTokenProvider("wiremock-acc");
-    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
+    private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS);
+
+    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private final OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
-    private final OltCommissioningEventListenerClient oltCommissioningEventListenerClient = new OltCommissioningEventListenerClient();
+    private final OltCommissioningEventListenerClient oltCommissioningEventListenerClient = new OltCommissioningEventListenerClient(authTokenProvider);
 
     @Step("Start the zero touch commissioning process")
     public void startZtCommissioning(OltDevice oltDevice, String acid) {

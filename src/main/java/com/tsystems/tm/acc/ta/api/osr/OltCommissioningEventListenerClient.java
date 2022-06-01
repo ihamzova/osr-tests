@@ -1,31 +1,36 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
+import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
+import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
 import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.api.client.olt.commissioning.event.listener.invoker.ApiClient;
+import com.tsystems.tm.api.client.olt.commissioning.event.listener.invoker.GsonObjectMapper;
 import com.tsystems.tm.api.client.olt.commissioning.event.listener.invoker.JSON;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
-import static com.tsystems.tm.api.client.olt.commissioning.invoker.GsonObjectMapper.gson;
-import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
-import static io.restassured.config.RestAssuredConfig.config;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.APIGW;
 
 @Getter
 public class OltCommissioningEventListenerClient implements Resetable {
 
     private final ApiClient client;
 
-    public OltCommissioningEventListenerClient() {
+    private final String BASE_PATH = "/resource-order-resource-inventory/oltZtCommissioning/v1/";
+    private final String TARDIS_PATH = "/downstream-partner/tardis/resource-order-resource-inventory/oltZtCommissioning/v1";
+
+    public OltCommissioningEventListenerClient(AuthTokenProvider authTokenProvider) {
         client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> new RequestSpecBuilder().setConfig(config().objectMapperConfig(objectMapperConfig().defaultObjectMapper(gson())))
-                        .setContentType("application/json")
-                        .addFilter(new RequestLoggingFilter())
-                        .addFilter(new ResponseLoggingFilter())
-                        .setBaseUri(new GigabitUrlBuilder(OLT_COMMISSIONING_MS).buildUri())));
+                () -> RequestSpecBuilders.getDefaultWithAuth(
+                        GsonObjectMapper.gson(),
+                        new GigabitUrlBuilder(APIGW)
+                                .withoutSuffix()
+                                .withEndpoint(TARDIS_PATH)
+                                .buildUri(),
+                        new BearerHeaderAuthTokenInjector(authTokenProvider))
+        ));
+
     }
 
 
