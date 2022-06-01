@@ -3,7 +3,6 @@ package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
-import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import cucumber.Context;
