@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.tsystems.tm.api.client</groupId>
             <artifactId>olt-commissioning-event-listener</artifactId>
-            <version>3.1.0.0</version>
+            <version>4.1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.tsystems.tm.api.client</groupId>
