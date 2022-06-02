@@ -6,7 +6,7 @@ values:
   portNumber: "1"
   homeIdPool: 32
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
