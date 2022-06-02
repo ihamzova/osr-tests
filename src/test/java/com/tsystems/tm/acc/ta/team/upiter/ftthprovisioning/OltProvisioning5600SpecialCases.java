@@ -82,7 +82,7 @@ public class OltProvisioning5600SpecialCases extends GigabitTest {
     @Description("Port provisioning case when port is partly occupied")
     public void portProvisioningPartly() {
         List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portProvisioningPartly);
-        assertEquals(accessLinesBeforeProvisioning.size(), 8);
+        assertEquals(accessLinesBeforeProvisioning.size(), 3);
         wgAccessProvisioningRobot.startPortProvisioning(portProvisioningPartly);
         accessLineRiRobot.checkFtthPortParameters(portProvisioningPartly);
         accessLineRiRobot.checkDefaultNeProfiles(portProvisioningPartly, defaultNeProfile, portProvisioningPartly.getAccessLinesCount());

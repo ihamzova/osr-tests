@@ -6,10 +6,10 @@ values:
   portNumber: "6"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: portForPostProvisioning64
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -19,10 +19,10 @@ values:
   portNumber: "7"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: assignAccessLines32
 template: com.tsystems.tm.acc.ta.data.osr.models.AccessLine

@@ -66,7 +66,7 @@ public class Postprovisioning extends GigabitTest {
         accessLine32.setHomeId(homeIdManagementRobot.generateHomeid().getHomeId());
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning32);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning32);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(15, accessLine32); //15 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(3, accessLine32); //15 assigned lines
 
         portForPostprovisioning32.setAccessLinesCount(portForPostprovisioning32.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning32.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);
@@ -102,7 +102,7 @@ public class Postprovisioning extends GigabitTest {
         //precondition
         wgAccessProvisioningRobot.startPortProvisioning(portForPostprovisioning64);//create 16 wg access lines
         accessLineRiRobot.checkFtthPortParameters(portForPostprovisioning64);
-        wgAccessProvisioningRobot.prepareForPostprovisioning(15, accessLine64); //15 assigned lines
+        wgAccessProvisioningRobot.prepareForPostprovisioning(3, accessLine64); //15 assigned lines
 
         portForPostprovisioning64.setAccessLinesCount(portForPostprovisioning64.getAccessLinesCount() + numberOfCreatedLines);
         portForPostprovisioning64.setAccessLinesWG(numberOfWgLinesAfterPortprovisioning);

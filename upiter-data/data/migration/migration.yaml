@@ -35,10 +35,10 @@ values:
   portNumber: "0"
   homeIdPool: 32
   backhaulId: 1
-  accessLinesWG: 15
-  defaultNEProfilesActive: 15
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 3
+  defaultNEProfilesActive: 3
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: allocatedAnpTagWithHomeIdPool
 template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedAnpTagDto
@@ -123,10 +123,10 @@ values:
   portNumber: "0"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 15
-  defaultNEProfilesActive: 15
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 3
+  defaultNEProfilesActive: 3
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: allocatedAnpTagWithoutHomeIdPool
 template: com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedAnpTagDto

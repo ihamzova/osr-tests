@@ -133,10 +133,12 @@ public class PortToPortNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-121792")
     @Description("Network Switching Commit")
     public void networkSwitchingCommitTest() throws Exception {
-
         List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_0);
         List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommit);
         List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H1_1_0, sourceAccessLinesBeforeCommit);
+
+        int expectedNumberofAccessLineOnTargetPort = sourceAccessLinesBeforeCommit.size() +
+                accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H1_1_0).size();
 
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -157,8 +159,15 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, sourceAccessLinesAfterCommit);
         List<Integer> targetOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H1_1_0, sourceAccessLinesBeforeCommit);
 
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), endSz_49_30_179_76H1_3_0.getAccessLinesCount().intValue());
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H1_1_0).size(), endSz_49_911_1100_76H1_1_0.getAccessLinesCount().intValue());
+        int expectedNumberOfAccessLineOnSourcePort;
+        if (accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size() >4) {
+            expectedNumberOfAccessLineOnSourcePort = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size();
+        } else {
+            expectedNumberOfAccessLineOnSourcePort = endSz_49_30_179_76H1_3_0.getAccessLinesCount();
+        }
+
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), expectedNumberOfAccessLineOnSourcePort);
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H1_1_0).size(), expectedNumberofAccessLineOnTargetPort);
 
         accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit);
@@ -432,9 +441,14 @@ public class PortToPortNetworkSwitching extends GigabitTest {
     @Description("FTTH PON NE3 Switching Execution and Commit")
     public void networkSwitchingWithinOneOltExecutionAndCommitTest() throws Exception {
 
-        List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_0);
+        List<AccessLineDto> allSourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> sourceAccessLinesforSwitching = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_1);
         List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforeCommit);
         List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesBeforeCommit);
+
+        int expectedNumberOfAccessLinesOnTargetPort = sourceAccessLinesforSwitching.size() +
+                accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size();
 
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -461,8 +475,15 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterCommit);
         List<Integer> targetOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, sourceAccessLinesBeforeCommit);
 
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), 32);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1).size(), 27);
+        int expectedNumberOfAccessLinesOnSourcePort;
+        if (allSourceAccessLinesBeforeCommit.size() - sourceAccessLinesforSwitching.size()  > 4) {
+            expectedNumberOfAccessLinesOnSourcePort = allSourceAccessLinesBeforeCommit.size() - sourceAccessLinesforSwitching.size();
+        } else {
+            expectedNumberOfAccessLinesOnSourcePort = endSz_49_30_179_76H1_3_1.getAccessLinesCount();
+        }
+
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), expectedNumberOfAccessLinesOnTargetPort);
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1).size(), expectedNumberOfAccessLinesOnSourcePort);
         accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit);
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));

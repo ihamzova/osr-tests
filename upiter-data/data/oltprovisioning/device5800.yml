@@ -6,10 +6,10 @@ values:
   portNumber: "0"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: card5800v1
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -18,10 +18,10 @@ values:
   slotNumber: "1"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: card5800v2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -30,10 +30,10 @@ values:
   slotNumber: "1"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: device5800
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -41,7 +41,7 @@ values:
   endSz: "49/911/1100/76H4"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
