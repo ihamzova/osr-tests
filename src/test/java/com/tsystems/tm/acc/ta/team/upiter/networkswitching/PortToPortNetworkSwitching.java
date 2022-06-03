@@ -506,6 +506,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_1).get(0);
         assertEquals(accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(),
                 accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber());
+        String ontSerialNumberBeforeRollback = accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber();
         ontOltOrchestratorRobot.changeOntSerialNumber(accessLineDto.getLineId(), ont.getSerialNumber());
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
@@ -515,14 +516,103 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 .clickPaketverwaltungTab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
-                .waitUntilNeededStatus("PREPARED", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+                .waitUntilNeededStatus("EXECUTED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"));
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
 
         assertEquals(accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber(),
                 accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber());
     }
+
+    @Test
+    @TmsLink("DIGIHUB-153334")
+    @Description("Network Switching Rollback within one OLT after Preparation")
+    public void networkSwitchingWithinOneOltRollbackTest() throws Exception {
+
+        List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> targetAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);
+        List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
+        List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesBeforePreparation);
+        List<Integer> targetAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesBeforePreparation);
+        List<Integer> targetOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesBeforePreparation);
+        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+        networkSwitchingPage.validateUrl();
+        networkSwitchingPage.startFullPortPreparation(endSz_49_30_179_76H1_3_1, endSz_49_30_179_76H1_3_0);
+        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+        networkSwitchingPage.clickPackageId()
+                .waitUntilNeededStatus("PREPARED", packageId);
+
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");
+
+        networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after rollback");
+
+        List<AccessLineDto> sourceAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> targetAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);
+        List<Integer> sourceAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterRollback);
+        List<Integer> sourceOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterRollback);
+        List<Integer> targetAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollback);
+        List<Integer> targetOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesAfterRollback);
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+        assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
+                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size());
+        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
+        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
+        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
+        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-153335")
+    @Description("Network Switching Rollback within one OLT after Execution")
+    public void networkSwitchingWithinOneOltRollbackAfterExecutionTest() throws Exception {
+
+        List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> targetAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);
+        List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
+        List<Integer> sourceOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesBeforePreparation);
+        List<Integer> targetAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesBeforePreparation);
+        List<Integer> targetOnuIdsBeforePreparation = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesBeforePreparation);
+        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+        networkSwitchingPage.validateUrl();
+        networkSwitchingPage.startFullPortPreparation(endSz_49_30_179_76H1_3_1, endSz_49_30_179_76H1_3_0);
+        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+        networkSwitchingPage.clickPackageId()
+                .waitUntilNeededStatus("PREPARED", packageId);
+        networkSwitchingPage.startExecution(packageId);
+        networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
+        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");
+
+        networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after rollback");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after rollback");
+
+        List<AccessLineDto> sourceAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> targetAccessLinesAfterRollback = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);
+        List<Integer> sourceAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterRollback);
+        List<Integer> sourceOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterRollback);
+        List<Integer> targetAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollback);
+        List<Integer> targetOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesAfterRollback);
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+        assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
+                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size());
+        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
+        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
+        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
+        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+    }
+
 
     @Test
     @TmsLink("DIGIHUB-152166")
