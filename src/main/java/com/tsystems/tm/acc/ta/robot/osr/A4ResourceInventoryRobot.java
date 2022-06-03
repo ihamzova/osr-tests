@@ -713,8 +713,10 @@ public class A4ResourceInventoryRobot {
     public void checkThatNoFieldsAreChanged(A4NetworkServiceProfileL2Bsa nspL2Data, NetworkServiceProfileL2BsaDto nspOld) {
         NetworkServiceProfileL2BsaDto nspNew = getExistingNetworkServiceProfileL2Bsa(nspL2Data.getUuid());
 
-        // Known "feature": LastUpdateTime is updated, despite no other fields being changed. Ignore this in assertion
+        // We compare whole old and new object, that way we don't have to compare each an every property.
+        // However, LastUpdateTime & LastSuccessfulSyncTime _is_ updated, so ignore this in assertion
         nspNew.setLastUpdateTime(nspOld.getLastUpdateTime());
+        nspNew.setLastSuccessfulSyncTime(nspOld.getLastSuccessfulSyncTime());
 
         assertEquals(nspNew, nspOld);
     }
