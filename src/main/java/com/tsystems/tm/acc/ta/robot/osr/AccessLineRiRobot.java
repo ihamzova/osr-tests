@@ -12,9 +12,11 @@ import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.clie
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
+import org.keycloak.representations.AccessToken;
 import org.testng.Assert;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -464,23 +466,36 @@ public class AccessLineRiRobot {
     @Step("Remove lines with id > 1008, change some port refs")
     public void prepareTestDataToDeprovisioning(PortProvisioning port) {
         // delete extra lines
+        List<AccessLineDto> accessLineIds = new ArrayList<AccessLineDto>();
         getAccessLinesByPort(port).stream()
-                .filter(line -> line.getId() > 1008)
+                .filter(line -> line.getStatus() == AccessLineStatus.ASSIGNED)
                 .forEach(line -> {
                     accessLineResourceInventory.accessLineController()
                             .delete()
                             .lineIdQuery(line.getLineId())
                             .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                    accessLineIds.add(line);
                 });
-        for (int i = 0; i < 8; i++) {
-            getAllocatedOnuIds(port, String.valueOf(i)).stream()
-                    .filter(onuId -> onuId.getId() > 1008).forEach(onu -> {
-                        accessLineResourceInventory.allocatedOnuIdController()
-                                .deleteAllocatedOnuId()
-                                .idQuery(onu.getId())
-                                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-                    });
-        }
+//        for (int i = 0; i < 8; i++) {
+//            getAllocatedOnuIds(port, String.valueOf(i)).stream()
+//                    .filter(onuId -> onuId.getId() > 1008).forEach(onu -> {
+//                        accessLineResourceInventory.allocatedOnuIdController()
+//                                .deleteAllocatedOnuId()
+//                                .idQuery(onu.getId())
+//                                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+//                    });
+//        }
+
+        List<Integer> ontIds = accessLineIds.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+                        .searchAllocatedOnuId()
+                        .body(new SearchAllocatedOnuIdDto()
+                                .oltEndSz(accessLine.getReference().getEndSz())
+                                .slotNumber(accessLine.getReference().getSlotNumber())
+                                .portNumber(accessLine.getReference().getPortNumber())
+                                .lineId(accessLine.getLineId()))
+                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                .flatMap(List::stream).collect(Collectors.toList());
+
     }
 
     @Step("Check absence of assigned lines, subscriber profiles")
