@@ -121,8 +121,6 @@ public class DpuCommissioningSDX2221_inclusive_dpuDemand extends GigabitTest {
     @Description("(DPU Decommissioning incl DPU demand (device : SDX2221-04-CX) case")
     @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void dpuDeommissioningDpuDemand() {
-        oltDevice.setAccessLinesWG(16);
-
         dpuCommissioningUiRobot.startDpuDecommissioning(dpuDevice);
         dpuCommissioningUiRobot.checkDpuDecommissioningResult(dpuDevice);
 
