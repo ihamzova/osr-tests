@@ -1,0 +1,25 @@
+name: deviceGfnw
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/8571/0/76Z7"
+  slotNumber: "4"
+  portNumber: "0"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
+---
+name: deviceGfps
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/8571/0/76Z5"
+  slotNumber: "4"
+  portNumber: "0"
+  homeIdPool: 0
+  backhaulId: 1
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
