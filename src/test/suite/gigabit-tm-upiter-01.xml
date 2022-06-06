@@ -82,6 +82,7 @@
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.CardToCardNetworkSwitching"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.PortToPortNetworkSwitching"/>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.networkswitching.WithinOneOltNetworkSwitching"/>
 
         </classes>
     </test>
