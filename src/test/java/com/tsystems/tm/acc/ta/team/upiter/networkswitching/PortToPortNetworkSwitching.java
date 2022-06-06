@@ -109,7 +109,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during preparation");
 
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
-        assert (networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+        "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
         assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after preparation");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation");
 
@@ -149,7 +150,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
         networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
-        assert (networkSwitchingPage.getPackageStatus().contains("FINISHED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("FINISHED"),
+        "Wrong package status, expected FINISHED, but found " + networkSwitchingPage.getPackageStatus());
 
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after commit phase");
@@ -193,15 +195,17 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId()
                 .waitUntilNeededStatus("PREPARED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
         networkSwitchingPage.startRollback(packageId);
         networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");
 
         networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"),
+                "Wrong package status, expected ROLLBACKED, but found " + networkSwitchingPage.getPackageStatus());
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after rollback");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after rollback");
 
@@ -230,6 +234,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId()
                 .waitUntilNeededStatus("PREPARED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_2).get(0);
         assertEquals(accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(),
@@ -244,7 +250,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
 
@@ -274,7 +281,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
 
@@ -325,7 +333,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during preparation");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during preparation");
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
         assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after preparation");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation");
 
@@ -368,8 +377,10 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         networkSwitchingPage
                 .clickPaketverwaltungTab()
                 .getPackageInfo(packageId)
-                .waitUntilNeededStatus("UPDATING", packageId);
-        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"));
+                .waitUntilNeededStatus("UPDATING", packageId)
+                .waitUntilNeededStatus("PREPARED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
+                "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
         List<AccessLineDto> targetAccessLinesAfterUpdate = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);

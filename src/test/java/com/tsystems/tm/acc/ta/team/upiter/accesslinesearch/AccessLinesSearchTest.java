@@ -47,17 +47,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     private AccessLine accessLinesByEndSzSlotPort;
     private AccessLine accessLine;
     private PortProvisioning homeAndBackhaulIds;
-    private DpuDevice dpuDevice;
     private Credentials loginData;
-
-    private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
-    private PortProvisioning adtranDeviceFttbProvisioningCoax;
-    private PortProvisioning oltDeviceFttbProvisioningCoax;
-    private PortProvisioning adtranDeviceFttbProvisioningTwistedPair;
-    private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
-    private DpuDevice dpuDeviceFttbProvisioningOnAdtranCoax;
-    private DpuDevice dpuDeviceFttbProvisioningCoax;
-    private DpuDevice dpuDeviceFttbProvisioningonOnAdtranTwistedPair;
 
     @BeforeSuite
     public void beforeSuite() {
@@ -73,15 +63,6 @@ public class AccessLinesSearchTest extends GigabitTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
-        dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
-        dpuDeviceFttbProvisioningOnAdtranCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranCoax);
-        oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
-        adtranDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningCoax);
-        dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
-        dpuDeviceFttbProvisioningonOnAdtranTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranTwistedPair);
-        oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
-        adtranDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningTwistedPair);
-
         accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, "49/89/8000/76H2",
                 "49/812/179/71G0", "1", "0");
 
@@ -91,10 +72,8 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
         accessLinesByEndSzSlotPort = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSzSlotPort);
         homeAndBackhaulIds = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.homeIdsByEndSz);
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDevice);
         accessLine = new AccessLine();
         wgAccessProvisioningRobot.startPortProvisioning(homeAndBackhaulIds);
-        //accessLineRiRobot.checkFtthPortParameters(homeAndBackhaulIds);
     }
 
     @BeforeMethod
