@@ -45,7 +45,8 @@ public class OltProvisioning5600 extends GigabitTest {
   private PortProvisioning card5600v2;
   private PortProvisioning port5600v1;
   private PortProvisioning port5600v2;
-  private PortProvisioning portTopas;
+  private PortProvisioning portGfnw;
+  private PortProvisioning portGfps;
   private DefaultNeProfile defaultNeProfile;
   private DefaultNetworkLineProfile defaultNetworkLineProfile;
   private DefaultNetworkLineProfile defaultNetworkLineProfileV2;
@@ -67,7 +68,8 @@ public class OltProvisioning5600 extends GigabitTest {
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
     port5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v1);
     port5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v2);
-    portTopas = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceTopas);
+    portGfnw = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceGfnw);
+    portGfps = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceGfps);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
     defaultNetworkLineProfile = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtth);
     defaultNetworkLineProfileV2 = context.getData().getDefaultNetworkLineProfileDataProvider().get(DefaultNetworkLineProfileCase.defaultNLProfileFtthV2);
@@ -189,19 +191,37 @@ public class OltProvisioning5600 extends GigabitTest {
 
   @Test
   @TmsLink("DIGIHUB-74001")
-  @Description("Port provisioning case when port is completely free, Topas")
-  public void portProvisioningTopas() throws InterruptedException {
+  @Description("Port provisioning case when port is completely free, Topas (GFNW)")
+  public void portProvisioningGfnw() throws InterruptedException {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
     Thread.sleep(5000);
 
-    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portTopas);
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portGfnw);
     assertEquals(accessLinesBeforeProvisioning.size(), 0);
-    wgAccessProvisioningRobot.startPortProvisioning(portTopas);
-    accessLineRiRobot.checkFtthPortParameters(portTopas);
-    accessLineRiRobot.checkDefaultNeProfiles(portTopas, defaultNeProfile, portTopas.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(portTopas, defaultNetworkLineProfile, portTopas.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portTopas, 1, 1);
-    accessLineRiRobot.checkPartyId(portTopas, 10000L);
-    accessLineRiRobot.checkLineIdPrefix(portTopas, "GFNW");
+    wgAccessProvisioningRobot.startPortProvisioning(portGfnw);
+    accessLineRiRobot.checkFtthPortParameters(portGfnw);
+    accessLineRiRobot.checkDefaultNeProfiles(portGfnw, defaultNeProfile, portGfnw.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portGfnw, defaultNetworkLineProfile, portGfnw.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portGfnw, 1, 1);
+    accessLineRiRobot.checkPartyId(portGfnw, 10000L);
+    accessLineRiRobot.checkLineIdPrefix(portGfnw, "GFNW");
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-*****")
+  @Description("Port provisioning case when port is completely free, GF+ (GFPS)")
+  public void portProvisioningGfps() throws InterruptedException {
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
+    Thread.sleep(5000);
+
+    List<AccessLineDto> accessLinesBeforeProvisioning = accessLineRiRobot.getAccessLinesByPort(portGfps);
+    assertEquals(accessLinesBeforeProvisioning.size(), 0);
+    wgAccessProvisioningRobot.startPortProvisioning(portGfps);
+    accessLineRiRobot.checkFtthPortParameters(portGfps);
+    accessLineRiRobot.checkDefaultNeProfiles(portGfps, defaultNeProfile, portGfps.getAccessLinesCount());
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portGfps, defaultNetworkLineProfile, portGfps.getAccessLinesCount());
+    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portGfps, 1, 1);
+    accessLineRiRobot.checkPartyId(portGfps, 10257L);
+    accessLineRiRobot.checkLineIdPrefix(portGfps, "GFPS");
   }
 }
