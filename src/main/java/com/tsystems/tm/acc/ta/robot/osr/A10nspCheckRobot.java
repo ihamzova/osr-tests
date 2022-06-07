@@ -176,7 +176,7 @@ public class A10nspCheckRobot {
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
     }
 
-    @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-invemtory database.")
+    @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-inventory database.")
     private void refreshA10nspInventory() {
         // clear a10nsp-inventory database
         a10nspInventoryClient.getClient().databaseTestController().clearDatabase()
