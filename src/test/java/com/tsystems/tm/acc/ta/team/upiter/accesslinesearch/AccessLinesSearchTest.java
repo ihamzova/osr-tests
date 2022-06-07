@@ -108,8 +108,8 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        accessLineSearchPage.setPageSize(100);
-        accessLineSearchPage.getTableRows(100);
+        accessLineSearchPage.setPageSize(50);
+        accessLineSearchPage.getTableRows(50);
         accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getTableLines());
     }
 
