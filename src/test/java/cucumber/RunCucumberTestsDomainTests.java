@@ -10,10 +10,8 @@ import io.cucumber.testng.CucumberOptions;
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
         glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
-                "cucumber.stepdefinitions.team.berlinium",
-                "cucumber.stepdefinitions.common"},
-        features = {"src/test/resources/cucumberscenarios/team/berlinium"},
-        tags = "@smoke"
+                "cucumber.stepdefinitions"},
+        features = {"src/test/resources/cucumberscenarios/domain"}
 )
-public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractTestNGCucumberTests {
+public class RunCucumberTestsDomainTests extends AbstractTestNGCucumberTests {
 }
