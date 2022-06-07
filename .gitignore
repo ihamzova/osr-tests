@@ -14,6 +14,7 @@ target
 ### Logs ###
 *.log
 src/main/logFiles/
+chromeLogs/
 
 ### Checkstyle ###
 .checkstyle

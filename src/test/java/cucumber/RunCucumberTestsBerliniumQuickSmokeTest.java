@@ -1,6 +1,6 @@
 package cucumber;
 
-import com.tsystems.tm.acc.ta.cucumber.AbstractGigabitCucumberTest;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
@@ -15,5 +15,5 @@ import io.cucumber.testng.CucumberOptions;
         features = {"src/test/resources/cucumberscenarios/team/berlinium"},
         tags = "@smoke"
 )
-public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractGigabitCucumberTest {
+public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractTestNGCucumberTests {
 }

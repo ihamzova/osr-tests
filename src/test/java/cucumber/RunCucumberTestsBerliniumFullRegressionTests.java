@@ -1,6 +1,6 @@
 package cucumber;
 
-import com.tsystems.tm.acc.ta.cucumber.AbstractGigabitCucumberTest;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
@@ -14,5 +14,5 @@ import io.cucumber.testng.CucumberOptions;
                 "cucumber.stepdefinitions.common"},
         features = {"src/test/resources/cucumberscenarios/team/berlinium"}
 )
-public class RunCucumberTestsBerliniumFullRegressionTests extends AbstractGigabitCucumberTest {
+public class RunCucumberTestsBerliniumFullRegressionTests extends AbstractTestNGCucumberTests {
 }
