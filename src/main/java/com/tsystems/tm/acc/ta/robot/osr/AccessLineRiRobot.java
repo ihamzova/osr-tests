@@ -34,7 +34,7 @@ import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
-    private static final Integer LATENCY_FOR_RECONFIGURATION = 70_000;
+    private static final Integer LATENCY_FOR_RECONFIGURATION = 80_000;
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
     private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProviderCa).getClient();
@@ -436,15 +436,19 @@ public class AccessLineRiRobot {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus());
-        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus());
+        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus(),
+                "DefaultNeProfile syncStatus is incorrect");
+        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus(),
+                "DefaultNetworkLineProfile syncStatus is incorrect");
 
         if (getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile() != null) {
-            assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus());
+            assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus(),
+                    "SubscriberNeProfile syncStatus is incorrect");
         }
 
         if (getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile() != null) {
-            assertNull(getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus());
+            assertNull(getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus(),
+                    "SubscriberNetworkLineProfile syncStatus is incorrect");
         }
     }
 
