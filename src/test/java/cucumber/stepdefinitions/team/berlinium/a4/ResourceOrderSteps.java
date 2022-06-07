@@ -13,6 +13,7 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,10 @@ import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType.ADD;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.*;
 
+@Slf4j
 public class ResourceOrderSteps {
 
     final A4ResourceOrderRobot resOrder;
@@ -35,11 +38,17 @@ public class ResourceOrderSteps {
 
     @After
     public void cleanup() {
+        log.info("Checking if any A4 resource order(s) exists in scenario context...");
         final boolean RO_PRESENT = testContext.getScenarioContext().isContains(Context.A4_RESOURCE_ORDER);
         if (RO_PRESENT) {
-            final ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-            resOrder.deleteA4TestDataRecursively(ro.getId());
-        }
+            log.info("A4 resource order(s) found! Deleting them...");
+            final List<ResourceOrder> roList = testContext.getScenarioContext().getAllContext(Context.A4_RESOURCE_ORDER).stream()
+                    .map(ro -> (ResourceOrder) ro)
+                    .collect(toList());
+
+            roList.forEach(resOrder::deleteA4TestDataRecursively);
+        } else
+            log.info("No A4 resource order found. Nothing to do.");
     }
 
 

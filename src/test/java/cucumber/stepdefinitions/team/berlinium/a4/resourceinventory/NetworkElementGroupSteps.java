@@ -11,6 +11,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -26,6 +27,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.FileAssert.fail;
 
+@Slf4j
 public class NetworkElementGroupSteps {
 
     private final A4ResourceInventoryRobot a4ResInv;
@@ -42,14 +44,17 @@ public class NetworkElementGroupSteps {
 
     @After
     public void cleanup() {
+        log.info("Checking if any A4 NEG(s) exist in scenario context...");
         final boolean NEG_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEG);
         if (NEG_PRESENT) {
+            log.info("A4 NEG(s) found! Deleting them and any connected A4 elements...");
             final List<NetworkElementGroupDto> negList = testContext.getScenarioContext().getAllContext(Context.A4_NEG).stream()
                     .map(neg -> (NetworkElementGroupDto) neg)
                     .collect(toList());
 
             negList.forEach(a4ResInv::deleteA4NetworkElementGroupsRecursively);
-        }
+        } else
+            log.info("No A4 NEG found. Nothing to do.");
     }
 
 

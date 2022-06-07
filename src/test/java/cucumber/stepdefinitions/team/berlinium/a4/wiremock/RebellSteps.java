@@ -10,7 +10,7 @@ import com.tsystems.tm.acc.tests.osr.rebell.client.model.Ueweg;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class RebellSteps {
 
     // -----=====[ GIVENs ]=====-----
 
-    @And("the REBELL wiremock will respond HTTP code {int} when called for NE {string}(,) with the following data:")
+    @Given("the REBELL wiremock will respond HTTP code {int} when called for NE {string}(,) with the following data:")
     public void theREBELLWiremockWillRespondHTTPCodeWhenCalledWithTheFollowingData(int httpCode, String neAlias, DataTable rebellProperties) {
         final NetworkElementDto ne = (NetworkElementDto) testContext.getScenarioContext().getContext(Context.A4_NE, neAlias);
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
