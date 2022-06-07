@@ -99,7 +99,8 @@ public class DpuCreatePage {
         $(DPU_KLS_ID_SEARCH_INPUT_LOCATOR).val(dpuDevice.getKlsId());
         $(DPU_KLS_ID_SEARCH_START_LOCATOR).click();
         $(FIBERONLOCATION_OPTION_0).click();
-        $(DPU_DEMANDS_OPTION_0).click();
+        if (!$(DPU_DEMANDS_OPTION_0).isSelected())
+            $(DPU_DEMANDS_OPTION_0).click();
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).click();
         $(DPU_SERIALNUMBER_INPUT_LOCATOR).val(dpuDevice.getSeriennummer());
         try {
