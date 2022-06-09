@@ -87,12 +87,6 @@ public class OntUsageTest extends GigabitTest {
     }
 
     @Test
-    public void supportUiAdminMustHavePartyId() {
-        setLoginDataForAdminUserWithoutPartyId();
-        ontUsageRobot.checkInsufficientPermissionsForSupportUi();
-    }
-
-    @Test
     public void changeSupplierTest() {
         ont = ontUsageRobot.randomizeSerialNumber(ont);
         Supplier oldSupplier = context.getData().getSupplierDataProvider().get(SupplierCase.SupplierTelekom10013);
@@ -124,11 +118,6 @@ public class OntUsageTest extends GigabitTest {
         } else {
             loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.ONTSupportUiAdminTelekom);
         }
-        setCredentials(loginData.getLogin(), loginData.getPassword());
-    }
-
-    private void setLoginDataForAdminUserWithoutPartyId() {
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.AdminWithoutPartyId);
         setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 

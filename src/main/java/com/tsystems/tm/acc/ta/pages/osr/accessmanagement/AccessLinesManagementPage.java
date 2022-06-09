@@ -328,17 +328,17 @@ public class AccessLinesManagementPage {
     public void checkAccessLineProfilesStates(String neExpectedDefaultProfileState,
                                               String neExpectedSubscriberProfileState, String nlExpectedDefaultProfileState,
                                               String nlExpectedSubscriberProfileState) {
-        assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState));
-        assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState));
-        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
-        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+        assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState), "DefaultNeProfile State is incorrect");
+        assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState), "SubscriberNeProfile State is incorrect");
+        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
+        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
     }
 
     @Step("Check NL profiles states")
     public void checkNLProfiles(String nlExpectedDefaultProfileState,
                                 String nlExpectedSubscriberProfileState) {
-        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
-        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
+        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
     }
 
     @Step("Check FTTB AccessLine profiles states")

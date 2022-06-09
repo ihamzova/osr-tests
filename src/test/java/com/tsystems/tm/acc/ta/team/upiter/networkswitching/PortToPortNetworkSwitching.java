@@ -146,7 +146,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         networkSwitchingPage.clickSearchTab()
                 .searchPackagesByDevice(endSz_49_911_1100_76H1_1_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommit(packageId);
+        networkSwitchingPage.startCommit(packageId, "Portdeprovisionierung", "PREPARED");
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
         networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
@@ -198,7 +198,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
                 "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.startRollback(packageId, "PREPARED");
         networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");

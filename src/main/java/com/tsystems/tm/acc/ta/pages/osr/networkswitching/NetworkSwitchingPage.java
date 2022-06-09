@@ -213,42 +213,20 @@ public class NetworkSwitchingPage {
         return this;
     }
 
-    @Step("Start commit phase with deprovisioning")
-    public NetworkSwitchingPage startCommitWithDeprovisioning(String packageId) throws Exception {
-        clickPaketverwaltungTab();
-        getPackageInfo(packageId);
-        getPackageStatus().contains("PREPARED");
-        $(ACTIONS_DROPDOWN).click();
-        $(PORTDEPROVISIONING).click();
-        $(COMMIT_BUTTON).click();
-        $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
-        closeNotificationButton();
-        return this;
-    }
-
     @Step("Start commit phase")
-    public NetworkSwitchingPage startCommit(String packageId) throws Exception {
+    public NetworkSwitchingPage startCommit(String packageId, String sourcePortAction, String expectedInitialState) throws Exception {
         clickPaketverwaltungTab();
         getPackageInfo(packageId);
-        getPackageStatus().contains("PREPARED");
+        getPackageStatus().contains(expectedInitialState);
+        $(ACTIONS_DROPDOWN).click();
+        By ACTION = byXpath("//li[contains(@aria-label,'" + sourcePortAction+"')]");
+        $(ACTION).click();
         $(COMMIT_BUTTON).click();
         $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
         closeNotificationButton();
         return this;
     }
 
-    @Step("Start commit phase after execution")
-    public NetworkSwitchingPage startCommitAfterExecution(String packageId) throws Exception {
-        clickPaketverwaltungTab();
-        getPackageInfo(packageId);
-        waitUntilNeededStatus("EXECUTED",packageId);
-        $(COMMIT_BUTTON).shouldBe(visible);
-        $(COMMIT_BUTTON).click();
-        $(NOTIFICATION).shouldBe(visible);
-        $(NOTIFICATION).shouldHave(text("Der Abschließprozess wurde gestartet"));
-        closeNotificationButton();
-        return this;
-    }
     @Step("Start execution phase")
     public NetworkSwitchingPage startExecution(String packageId) throws Exception {
         clickPaketverwaltungTab();
@@ -261,11 +239,11 @@ public class NetworkSwitchingPage {
         return this;
     }
 
-    @Step("Start rollback ")
-    public NetworkSwitchingPage startRollback(String packageId) throws Exception {
+    @Step("Start rollback")
+    public NetworkSwitchingPage startRollback(String packageId, String expectedInitialState) throws Exception {
         clickPaketverwaltungTab();
         getPackageInfo(packageId);
-        waitUntilNeededStatus("PREPARED",packageId);
+        waitUntilNeededStatus(expectedInitialState, packageId);
         $(ROLLBACK_BUTTON).click();
         $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Der Rollback-Prozess für den Zielport hat begonnen"));

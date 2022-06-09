@@ -265,7 +265,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontDecommissioning33LineToggleOffTest() throws InterruptedException {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
-    Thread.sleep(3000);
+   // Thread.sleep(1000);
 
     // prepare test data
     List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
@@ -292,7 +292,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals("HomeId on the AccessLine that wasn't decommissioned is incorrect",
             accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
             accessLineFor33LineCaseOld.getHomeId());
-    Thread.sleep(2000);
+    Thread.sleep(5000);
 
     assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), "Decommissioned AccessLine wasn't deleted");
   }
@@ -304,7 +304,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontDecommissioning33LineToggleOnTest() throws InterruptedException {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
 
-    Thread.sleep(3000);
+    Thread.sleep(5000);
 
     // prepare test data
     List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
