@@ -138,7 +138,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after execution");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after execution");
 
-        networkSwitchingPage.startCommitAfterExecution(packageId);
+        networkSwitchingPage.startCommit(packageId, "Portprovisionierung", "EXECUTED");
         assertTrue(networkSwitchingPage.getPackageStatus().contains("COMMIT_IN_PROGRESS"));
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
@@ -287,7 +287,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
                 "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.startRollback(packageId, "PREPARED");
         networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");
@@ -342,7 +342,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"),
                 "Wrong package status, expected EXECUTED, but found " + networkSwitchingPage.getPackageStatus());
 
-        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.startRollback(packageId, "EXECUTED");
         networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("IN_ROLLBACK"),
                 "Wrong package status, expected IN_ROLLBACK, but found " + networkSwitchingPage.getPackageStatus());

@@ -238,7 +238,8 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "ACTIVE", "NULL");
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN,
+                "AccessLine state is incorrect");
     }
 
     @Test

@@ -145,7 +145,7 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         networkSwitchingPage.clickSearchTab()
                 .searchPackagesByDevice(endSz_49_911_1100_76H2_1_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommitWithDeprovisioning(packageId);
+        networkSwitchingPage.startCommit(packageId, "Portdeprovisionierung", "PREPARED");
 
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
@@ -217,7 +217,7 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after preparation");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation");
 
-        networkSwitchingPage.startRollback(packageId);
+        networkSwitchingPage.startRollback(packageId, "PREPARED");
         networkSwitchingPage.waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during rollback");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during rollback");

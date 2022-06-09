@@ -15,8 +15,7 @@ import java.net.URL;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -97,6 +96,10 @@ public class OntUsageSupportPage {
     public OntUsageSupportPage deleteWorkOrder(Ont ont){
         By DELETE_ONT_BUTTON = byXpath(String.format("//*[@data-qa-delete-workorderid='%s']", ont.getSerialNumber()));
         $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(1000)).click();
+        By CONFIRMATION_DIALOG = byClassName("p-dialog-header");
+        $(CONFIRMATION_DIALOG).shouldBe(visible);
+        By CONFIRMATION_BUTTON = byText("Ja");
+        $(CONFIRMATION_BUTTON).click();
         $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(2000));
         return this;
     }
