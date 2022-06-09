@@ -63,18 +63,6 @@ values:
   defaultNetworkLineProfilesActive: 4
   accessLinesCount: 4
 ---
-name: card5600v1
-template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
-values:
-  endSz: "49/30/179/76H2"
-  slotNumber: "11"
-  homeIdPool: 0
-  backhaulId: 1
-  accessLinesWG: 4
-  defaultNEProfilesActive: 4
-  defaultNetworkLineProfilesActive: 4
-  accessLinesCount: 4
----
 name: card5600v2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:

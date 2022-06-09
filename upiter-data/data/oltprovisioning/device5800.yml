@@ -11,18 +11,6 @@ values:
   defaultNetworkLineProfilesActive: 4
   accessLinesCount: 4
 ---
-name: card5800v1
-template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
-values:
-  endSz: "49/911/1100/76H1"
-  slotNumber: "1"
-  homeIdPool: 0
-  backhaulId: 1
-  accessLinesWG: 4
-  defaultNEProfilesActive: 4
-  defaultNetworkLineProfilesActive: 4
-  accessLinesCount: 4
----
 name: card5800v2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:

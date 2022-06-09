@@ -72,16 +72,6 @@ public class WgAccessProvisioningRobot {
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 
-  @Step("Start card provisioning")
-  public void startCardProvisioning(PortProvisioning port) {
-    wgAccessProvisioningClient.getClient().provisioningProcess().startCardsProvisioning()
-            .body(Stream.of(new CardRequestDto()
-                    .endSz(port.getEndSz())
-                    .slotNumber(port.getSlotNumber()))
-                    .collect(Collectors.toList()))
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-  }
-
   @Step("Start device provisioning")
   public void startDeviceProvisioning(PortProvisioning port) {
     wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
@@ -110,16 +100,6 @@ public class WgAccessProvisioningRobot {
                     .slotNumber(port.getSlotNumber())
                     .portNumber(port.getPortNumber()))
             .deprovisioningForDpuQuery(deprovisioningForDpu)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-  }
-
-  @Step("Start card deprovisioning")
-  public void startCardDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
-    wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardsDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
-            .body(Stream.of(new CardRequestDto()
-                    .endSz(port.getEndSz())
-                    .slotNumber(port.getSlotNumber()))
-                    .collect(Collectors.toList()))
             .executeAs(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
   }
 

@@ -93,17 +93,6 @@ public class DeprovisioningTest extends GigabitTest {
   }
 
   @Test
-  @TmsLink("DIGIHUB-48516")
-  @Description("Card deprovisioning case")
-  public void cardDeprovisioningTest() {
-    accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
-    accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr, true);
-    accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
-  }
-
-  @Test
   @TmsLink("DIGIHUB-113902")
   @Description("Card deprovisioning case for 1 card")
   public void oneCardDeprovisioningTest() {
