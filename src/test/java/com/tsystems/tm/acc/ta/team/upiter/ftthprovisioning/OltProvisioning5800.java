@@ -42,10 +42,7 @@ public class OltProvisioning5800 extends GigabitTest {
 
   private AccessLineRiRobot accessLineRiRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
-  private WgAccessProvisioningClient wgAccessProvisioningClient;
-  private AccessLineResourceInventoryClient accessLineResourceInventoryClient;
   private PortProvisioning device5800;
-  private PortProvisioning card5800v1;
   private PortProvisioning card5800v2;
   private PortProvisioning port5800;
   private DefaultNeProfile defaultNeProfile;
@@ -60,10 +57,7 @@ public class OltProvisioning5800 extends GigabitTest {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
     Thread.sleep(3000);
 
-    accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
-    wgAccessProvisioningClient = new WgAccessProvisioningClient();
     device5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5800);
-    card5800v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v1);
     card5800v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5800v2);
     port5800 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5800);
     defaultNeProfile = context.getData().getDefaultNeProfileDataProvider().get(DefaultNeProfileCase.defaultNeProfile);
@@ -85,26 +79,6 @@ public class OltProvisioning5800 extends GigabitTest {
     accessLineRiRobot.checkFtthPortParameters(port5800);
     accessLineRiRobot.checkDefaultNeProfiles(port5800, defaultNeProfile, port5800.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port5800, defaultNetworkLineProfile, port5800.getAccessLinesCount());
-  }
-
-  @Test(priority = 1)
-  @TmsLink("DIGIHUB-30870")
-  @Description("Card Provisioning with 1 port")
-  public void cardProvisioning() {
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5800v1);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5800v1.getEndSz(),
-            card5800v1.getSlotNumber(),
-            cardBeforeProvisioning.getContainsPortsRefOrValue().get(1).getPortName(), card5800v1);
-
-    assertNotNull(cardBeforeProvisioning);
-    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
-    assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
-
-    wgAccessProvisioningRobot.startCardProvisioning(card5800v1);
-    accessLineRiRobot.checkFtthPortParameters(port);
-    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v1.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v1.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
   }
 
   @Test(priority = 1)

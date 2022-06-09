@@ -41,7 +41,6 @@ public class OltProvisioning5600 extends GigabitTest {
   private AccessLineRiRobot accessLineRiRobot;
   private WgAccessProvisioningRobot wgAccessProvisioningRobot;
   private PortProvisioning device5600;
-  private PortProvisioning card5600v1;
   private PortProvisioning card5600v2;
   private PortProvisioning port5600v1;
   private PortProvisioning port5600v2;
@@ -64,7 +63,6 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.clearDatabaseByOlt("49/8571/0/76Z7");
 
     device5600 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.device5600);
-    card5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v1);
     card5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.card5600v2);
     port5600v1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v1);
     port5600v2 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.port5600v2);
@@ -109,31 +107,6 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot.checkPhysicalResourceRefCountFtth(port5600v2, 1, 1);
     accessLineRiRobot.checkPartyId(port5600v2, 10001L);
     accessLineRiRobot.checkLineIdPrefix(port5600v2, "DTAG");
-  }
-
-  @Test(priority = 1)
-  @TmsLink("DIGIHUB-29666")
-  @Description("Card provisioning case with 1 empty port")
-  public void cardProvisioning() throws InterruptedException {
-    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
-    Thread.sleep(5000);
-
-    Card cardBeforeProvisioning = wgAccessProvisioningRobot.getCard(card5600v1);
-    PortProvisioning port = wgAccessProvisioningRobot.getPortProvisioning(card5600v1.getEndSz(),
-            card5600v1.getSlotNumber(),
-            cardBeforeProvisioning.getContainsPortsRefOrValue().get(0).getPortName(), card5600v1);
-
-    assertNotNull(cardBeforeProvisioning);
-    assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 8);
-    assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v1).size(), 0);
-
-    wgAccessProvisioningRobot.startCardProvisioning(card5600v1);
-    accessLineRiRobot.checkFtthPortParameters(port);
-    accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v1.getAccessLinesCount());
-    accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5600v1.getAccessLinesCount());
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(port, 1, 1);
-    accessLineRiRobot.checkPartyId(port, 10001L);
-    accessLineRiRobot.checkLineIdPrefix(port, "DTAG");
   }
 
   @Test(priority = 1)
