@@ -2,11 +2,9 @@ package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
 import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
@@ -314,6 +312,30 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "ACTIVE", "NULL");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-153943")
+    @Description("Set homeId to Null in Access Management UI")
+    public void deleteHomeId() {
+        accessLine.setLineId(accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+                        AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
+                .get(0).getLineId());
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton();
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        String lineId = accessLinesManagementPage.getLineId();
+        accessLinesManagementPage.clickEditButton()
+                .removeHomeID()
+                .closeCurrentTab();
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .searchAccessLinesByLineID(lineId)
+                .clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
+                "INACTIVE", "ACTIVE");
+        assertNull(accessLineRiRobot.getAccessLinesByLineId(lineId).get(0).getHomeId());
     }
 
     @Test
