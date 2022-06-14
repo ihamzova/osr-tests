@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -19,11 +20,14 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import groovy.util.logging.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
+import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+
+import java.util.function.Supplier;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
@@ -233,8 +237,7 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickTerminationButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
-                .searchAccessLinesByLineID(accessLine.getLineId())
-                .clickSearchButton()
+                .waitUntilNeededStatus("WALLED_GARDEN", accessLine.getLineId())
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "ACTIVE", "NULL");
@@ -446,5 +449,4 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLinesManagementPage.clickEditButton().generateAnpTag();
         assertEquals(accessLine.getAnpTag().getAnpTag(), initialAnpTag);
     }
-
 }

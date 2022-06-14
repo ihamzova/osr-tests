@@ -52,10 +52,12 @@ public class OntUsageSupportPage {
     }
 
     @Step("Select supplier for search")
-    public OntUsageSupportPage selectSupplier(Supplier supplier){
+    public OntUsageSupportPage selectSupplier(Supplier supplier) {
         $(SUPPLIER_SELECTION).click();
-        $(SUPPLIER_SEARCH).shouldBe(visible, Duration.ofMillis(2000)).val(supplier.getSupplierName());
+        $(SUPPLIER_SEARCH).shouldBe(visible, Duration.ofMillis(2000));
         By SUPPLIER_LABEL = byXpath("//li[@aria-label='"+supplier.getSupplierName()+"']");
+        $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(3000));
+        $(SUPPLIER_SEARCH).val(supplier.getSupplierName());
         $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(3000)).click();
         $(SUPPLIER_SELECTION).click(); //close supplier selection
         return this;

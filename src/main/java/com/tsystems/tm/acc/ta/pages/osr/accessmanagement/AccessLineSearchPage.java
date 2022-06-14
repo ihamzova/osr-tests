@@ -6,11 +6,14 @@ import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
+import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
+import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineViewDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.representations.AccessToken;
 import org.openqa.selenium.By;
 
 import java.net.URL;
@@ -18,6 +21,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -347,4 +351,29 @@ public class AccessLineSearchPage {
     });
     assertEquals(tableRows, supposedOrder);
   }
+
+  @Step("Wait until needed status")
+  public AccessLineSearchPage waitUntilNeededStatus(String expectedStatus, String lineId) {
+    try {
+      TimeoutBlock timeoutBlock = new TimeoutBlock(TIMEOUT); //set timeout in milliseconds
+      timeoutBlock.setTimeoutInterval(1000);
+      Supplier<Boolean> checkAccessLineStatus = () -> {
+        Boolean result = false;
+        try {
+          searchAccessLinesByLineID(lineId)
+                  .clickSearchButton();
+          result = getTableLines().get(0).getStatus().toString().contains(expectedStatus);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return result;
+      };
+      timeoutBlock.addBlock(checkAccessLineStatus); // execute the runnable precondition
+    } catch (Throwable e) {
+      //catch the exception here . Which is block didn't execute within the time limit
+    }
+
+    return this;
+  }
+
 }

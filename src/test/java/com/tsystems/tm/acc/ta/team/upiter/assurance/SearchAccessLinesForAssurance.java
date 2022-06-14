@@ -180,7 +180,7 @@ public class SearchAccessLinesForAssurance extends GigabitTest {
   @TmsLink("DIGIHUB-139285")
   @Description("Search AccessLine entities with offset")
   public void searchWithOffset() {
-    int offset = 1 + (int) (Math.random() * 119);
+    int offset = 1 + (int) (Math.random() * 64);
 
     List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> allAccessLines =
             accessLineRiRobot.getAllAccessLineEntities();
