@@ -115,14 +115,20 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         int numberOfAccessLinesOnTargetPort2AfterPreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size();
 
         assertEquals(numberOfAccessLinesOnTargetPort1AfterPreparation,
-                numberOfAccessLinesOnTargetPort1BeforePreparation - sourceAccessLinesBeforePreparationPort1.size());
+                numberOfAccessLinesOnTargetPort1BeforePreparation - sourceAccessLinesBeforePreparationPort1.size(),
+                "Number of AccessLines on targetPort1 after preparation is incorrect");
         assertEquals(numberOfAccessLinesOnTargetPort2AfterPreparation,
-                numberOfAccessLinesOnTargetPort2BeforePreparation - sourceAccessLinesBeforePreparationPort2.size());
-        assertTrue(targetAnpTagsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size());
-        assertTrue(targetAnpTagsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size());
+                numberOfAccessLinesOnTargetPort2BeforePreparation - sourceAccessLinesBeforePreparationPort2.size(),
+                "Number of AccessLines on targetPort2 after preparation is incorrect");
+        assertTrue(targetAnpTagsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size(),
+                "Number of anpTags on sourcePort1 and targetPort1 after preparation is incorrect");
+        assertTrue(targetAnpTagsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size(),
+                "Number of anpTags on sourcePort2 and targetPort2 after preparation is incorrect");
 
-        assertTrue(targetOnuIdsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size());
-        assertTrue(targetOnuIdsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size());
+        assertTrue(targetOnuIdsAfterPreparationPort1.size() == sourceAccessLinesAfterPreparationPort1.size(),
+                "Number of target onuIds after preparation on port1 is incorrect");
+        assertTrue(targetOnuIdsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size(),
+                "Number of target onuIds after preparation on port2 is incorrect");
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterPreparationPort1);
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterPreparationPort2);
         accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterPreparationPort1);
@@ -168,12 +174,16 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort1, targetOnuIdsBeforeCommitPort1);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort2, targetOnuIdsBeforeCommitPort2);
 
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-        assertEquals(sourceOnuIdsAfterCommitPort1.size(), 0);
-        assertEquals(sourceOnuIdsAfterCommitPort2.size(), 0);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size(), 32);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size(), 32);
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the switched AccessLines on port1 still have NetworkSwitchingProfiles");
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the switched AccessLines on port2 still have NetworkSwitchingProfiles");
+        assertEquals(sourceOnuIdsAfterCommitPort1.size(), 0, "There are source onuIds on the switched AccessLines on port1 after Commit");
+        assertEquals(sourceOnuIdsAfterCommitPort2.size(), 0, "There are source onuIds on the switched AccessLines on port2 after Commit");
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0).size(), 32,
+                "Number of AccessLines on the target port1 is incorrect");
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1).size(), 32,
+                "Number of AccessLines on the target port2 is incorrect");
         accessLineRiRobot.checkFtthPortParameters(endSz_49_30_179_76H2_3_0);
         accessLineRiRobot.checkFtthPortParameters(endSz_49_30_179_76H2_3_1);
         accessLineRiRobot.checkPhysicalResourceRefCountFtth(endSz_49_30_179_76H2_3_0, 0, 1);
@@ -239,14 +249,16 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         List<Integer> targetAnpTagsAfterRollbackPort2 = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollbackPort2);
         List<Integer> targetOnuIdsAfterRollbackPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_0, targetAccessLinesAfterRollbackPort1);
         List<Integer> targetOnuIdsAfterRollbackPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_1, targetAccessLinesAfterRollbackPort2);
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollbackPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollbackPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollbackPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the AccessLines on port1 still have NetworkSwitchingProfiles after Rollback");
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollbackPort2).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the AccessLines on port2 still have NetworkSwitchingProfiles after Rollback");
 
         assertTrue(targetAccessLinesBeforePreparationPort1.size() == targetAccessLinesAfterRollbackPort1.size()
                 && targetAccessLinesBeforePreparationPort2.size() == targetAccessLinesAfterRollbackPort2.size() &&
                 sourceAccessLinesBeforePreparationPort1.size() == sourceAccessLinesAfterRollbackPort1.size() &&
-                sourceAccessLinesBeforePreparationPort2.size() == sourceAccessLinesAfterRollbackPort2.size());
+                sourceAccessLinesBeforePreparationPort2.size() == sourceAccessLinesAfterRollbackPort2.size(),
+                "Source AccessLine before Preparation and after Rollback are not identical");
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterRollbackPort1);
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterRollbackPort2);
         accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterRollbackPort1);

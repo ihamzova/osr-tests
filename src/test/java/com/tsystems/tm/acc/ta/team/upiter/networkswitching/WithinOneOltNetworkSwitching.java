@@ -100,16 +100,20 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         List<AllocatedAnpTagDto> targetAnpTags = accessLineRiRobot.getAllocatedAnpTagsFromNsProfileV2(accessLinesForSwitchingAfterPreparation);
         List<Integer> targetOnuIds = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, accessLinesForSwitchingAfterPreparation);
 
-        assertTrue(accessLinesForSwitchingAfterPreparation.stream().allMatch(accessLineDto -> accessLineDto.getNetworkSwitchingProfile() != null));
-        assertTrue(accessLinesNotForSwitching.stream().allMatch(accessLineDto -> accessLineDto.getNetworkSwitchingProfile() == null));
-        assertEquals(targetAnpTags.size(), numberOfAccessLinesForSwitching);
+        assertTrue(accessLinesForSwitchingAfterPreparation.stream().allMatch(accessLineDto -> accessLineDto.getNetworkSwitchingProfile() != null),
+                "Some of the switched AccessLine do not have a NetworkSwitchingProfile");
+        assertTrue(accessLinesNotForSwitching.stream().allMatch(accessLineDto -> accessLineDto.getNetworkSwitchingProfile() == null),
+                "Some of the not switched AccessLine have a NetworkSwitchingProfile");
+        assertEquals(targetAnpTags.size(), numberOfAccessLinesForSwitching, "Some of the NetworkSwitchingProfiles do not have an anpTag");
         assertTrue(targetAnpTags.stream().allMatch(allocatedAnpTagDto ->
                 allocatedAnpTagDto.getReference().getEndSz().equals(endSz_49_30_179_76H1_3_0.getEndSz())
                         && allocatedAnpTagDto.getReference().getSlotNumber().equals(endSz_49_30_179_76H1_3_0.getSlotNumber())
-                        && allocatedAnpTagDto.getReference().getPortNumber().equals(endSz_49_30_179_76H1_3_0.getPortNumber())));
+                        && allocatedAnpTagDto.getReference().getPortNumber().equals(endSz_49_30_179_76H1_3_0.getPortNumber())),
+                "Some of the target anpTags have a wrong Reference");
         assertEquals(numberOfAccessLinesOnTargetPortAfterPreparation,
-                numberOfAccessLinesOnTargetPortBeforePreparation - accessLinesForSwitchingAfterPreparation.size());
-        assertEquals(targetOnuIds.size(), numberOfAccessLinesForSwitching);
+                numberOfAccessLinesOnTargetPortBeforePreparation - accessLinesForSwitchingAfterPreparation.size(),
+                "Number of AccessLines on target port after preparation is incorrect");
+        assertEquals(targetOnuIds.size(), numberOfAccessLinesForSwitching, "Number of target onuIds is not correct");
     }
 
     @Test(dependsOnMethods = "networkSwitchingWithinOneOltPreparationTest")
@@ -161,12 +165,15 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
             expectedNumberOfAccessLinesOnSourcePort = endSz_49_30_179_76H1_3_1.getAccessLinesCount();
         }
 
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), expectedNumberOfAccessLinesOnTargetPort);
-        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1).size(), expectedNumberOfAccessLinesOnSourcePort);
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size(), expectedNumberOfAccessLinesOnTargetPort,
+                "Number of AccessLines on target port is incorrect");
+        assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1).size(), expectedNumberOfAccessLinesOnSourcePort,
+                "Number of AccessLines on source port is incorrect");
         accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit);
         accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit);
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
-        assertEquals(sourceOnuIdsAfterCommit.size(), 0);
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the switched AccessLines still have a NetworkSwitchingProfile");
+        assertEquals(sourceOnuIdsAfterCommit.size(), 0, "Some source AccessLines still have source onuIds after Commit");
     }
 
     @Test
@@ -187,7 +194,6 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
                 "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-
         networkSwitchingPage.startExecution(packageId);
         networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"),
@@ -195,11 +201,13 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
 
         AccessLineDto accessLineDto = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_1).get(0);
         assertEquals(accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(),
-                accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber());
+                accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber(),
+                "OntSerialNumbers on SubscriberNeProfile and NetworkSwitchingProfile after Execution are different");
         ontOltOrchestratorRobot.changeOntSerialNumber(accessLineDto.getLineId(), ont.getSerialNumber());
 
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
-        assertEquals(accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(), ont.getSerialNumber());
+        assertEquals(accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(), ont.getSerialNumber(),
+                "OntSerialNumber was not updated on SubscriberNeProfile");
 
         networkSwitchingPage
                 .clickPaketverwaltungTab()
@@ -212,7 +220,8 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         accessLineDto = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
 
         assertEquals(accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber(),
-                accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber());
+                accessLineDto.getDefaultNeProfile().getSubscriberNeProfile().getOntSerialNumber(),
+                "OntSerialNumber on NetworkSwitchingProfile was not updated after mirroring");
     }
 
     @Test
@@ -238,7 +247,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
                 .getAccessLinesWithoutSwitchingProfile(endSz_49_30_179_76H1_3_1).stream()
                 .filter(accessLine -> accessLine.getHomeId() == null).collect(Collectors.toList()).get(0);
 
-        assertNull(accessLineDto.getHomeId());
+        assertNull(accessLineDto.getHomeId(), "AccessLine for mirroring already has a HomeId");
         String homeId = homeIdManagementRobot.generateHomeid().getHomeId();
         accessLineRiRobot.updateHomeIdOnAccessLine(accessLineDto.getLineId(), homeId);
         networkSwitchingPage
@@ -252,14 +261,17 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         accessLineDto
                 = accessLineRiRobot.getAccessLinesByLineId(accessLineDto.getLineId()).get(0);
 
-        assertNotNull(accessLineDto.getNetworkSwitchingProfile());
-        assertEquals(accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber(), accessLineDto.getDefaultNeProfile().getOntSerialNumber());
-        assertNotNull(accessLineDto.getNetworkSwitchingProfile().getAnpTag());
-        assertEquals(accessLineRiRobot.getAllocatedOnuIdByDeviceAndLineId(endSz_49_30_179_76H1_3_1, accessLineDto.getLineId()).size(), 1);
-        assertEquals(accessLineRiRobot.getAllocatedOnuIdByDeviceAndLineId(endSz_49_30_179_76H1_3_0, accessLineDto.getLineId()).size(), 1);
+        assertNotNull(accessLineDto.getNetworkSwitchingProfile(), "Newly switched AccessLine doesn't have a NetworkSwitchingProfile");
+        assertEquals(accessLineDto.getNetworkSwitchingProfile().getOntSerialNumber(), accessLineDto.getDefaultNeProfile().getOntSerialNumber(),
+                "OntSerialNumbers on SubscriberNeProfile and NetworkSwitchingProfile after Mirroring process are different");
+        assertNotNull(accessLineDto.getNetworkSwitchingProfile().getAnpTag(), "Newly switched AccessLine doesn't have an anpTag on the NetworkSwitchingProfile");
+        assertEquals(accessLineRiRobot.getAllocatedOnuIdByDeviceAndLineId(endSz_49_30_179_76H1_3_1, accessLineDto.getLineId()).size(), 1,
+                "Number of source AllocatedOnuIds for the newly switched AccessLine is incorrect");
+        assertEquals(accessLineRiRobot.getAllocatedOnuIdByDeviceAndLineId(endSz_49_30_179_76H1_3_0, accessLineDto.getLineId()).size(), 1,
+                "Number of target AllocatedOnuIds for the newly switched AccessLine is incorrect");
 
         List<AccessLineDto> targetAccessLinesAfterUpdate = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0);
-        assertEquals(targetAccessLinesAfterUpdate.size(), targetAccessLinesBeforeUpdate.size());
+        assertEquals(targetAccessLinesAfterUpdate.size(), targetAccessLinesBeforeUpdate.size(), "Number of AccessLine on the target port is incorrect");
     }
 
     @Test
@@ -304,9 +316,11 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         List<Integer> sourceOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterRollback);
         List<Integer> targetAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollback);
         List<Integer> targetOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesAfterRollback);
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the AccessLines still have NetworkSwitchingProfiles");
         assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
-                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size());
+                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size(),
+                "Number of source and target AccessLines after Rollback is incorrect");
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
         accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
         accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
@@ -361,9 +375,11 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         List<Integer> sourceOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterRollback);
         List<Integer> targetAnpTagsAfterRollback = accessLineRiRobot.getAllocatedAnpTags(targetAccessLinesAfterRollback);
         List<Integer> targetOnuIdsAfterRollback = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, targetAccessLinesAfterRollback);
-        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null));
+        assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterRollback).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
+                "Some of the AccessLines still have NetworkSwitchingProfiles");
         assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
-                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size());
+                && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size(),
+                "Number of source and target AccessLines after Rollback is incorrect");
         accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
         accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
         accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
