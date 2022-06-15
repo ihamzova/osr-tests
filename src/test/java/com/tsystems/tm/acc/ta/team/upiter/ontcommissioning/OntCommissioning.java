@@ -292,7 +292,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals("HomeId on the AccessLine that wasn't decommissioned is incorrect",
             accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
             accessLineFor33LineCaseOld.getHomeId());
-
+    accessLineRiRobot.waitUntilAccessLineIsDeleted(accessLineFor33LineCaseNew.getLineId());
     assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), "Decommissioned AccessLine wasn't deleted");
   }
 

@@ -137,6 +137,10 @@ public class PortToPortNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-121792")
     @Description("Network Switching Commit")
     public void networkSwitchingCommitTest() throws Exception {
+        endSz_49_30_179_76H1_3_0.setAccessLinesCount(0);
+        endSz_49_30_179_76H1_3_0.setAccessLinesWG(0);
+        endSz_49_30_179_76H1_3_0.setHomeIdPool(0);
+        endSz_49_30_179_76H1_3_0.setBackhaulId(0);
         List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_0);
         List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesBeforeCommit);
         List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H1_1_0, sourceAccessLinesBeforeCommit);
@@ -182,6 +186,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertEquals(sourceOnuIdsAfterCommit.size(), 0, "Number of source onuIds after commit is incorrect");
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
                 "Some of the switched AccessLines still have NetworkSwitchingProfiles after Commit");
+        accessLineRiRobot.checkFtthPortParameters(endSz_49_30_179_76H1_3_0);
     }
 
     @Test
