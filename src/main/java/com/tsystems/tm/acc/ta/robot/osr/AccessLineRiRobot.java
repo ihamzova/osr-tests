@@ -34,6 +34,7 @@ import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
+    private static final Integer LATENCY_FOR_ACCESSLINE_DEPROVISIONING = 30_000;
     private static final Integer LATENCY_FOR_RECONFIGURATION = 80_000;
 
     private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
@@ -1207,6 +1208,21 @@ public class AccessLineRiRobot {
             throw new RuntimeException("Access Line not found with lineId: " + lineId);
         }
     }
+
+    @Step("Wait until AccessLine is deleted")
+    public void waitUntilAccessLineIsDeleted(String lineId) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_ACCESSLINE_DEPROVISIONING); //set timeout in milliseconds
+            timeoutBlock.setTimeoutInterval(2000);
+            Supplier<Boolean> checkAccessLineDeletion = () ->
+                    getAccessLinesByLineId(lineId).size() == 0;
+            timeoutBlock.addBlock(checkAccessLineDeletion); // execute the runnable precondition
+        } catch (Exception e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+    }
+
+
 }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {

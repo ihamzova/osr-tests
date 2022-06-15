@@ -11,7 +11,9 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AllocatedAnpTagDto;
+import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -20,8 +22,20 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
 
+@ServiceLog({
+        WG_ACCESS_PROVISIONING_MS,
+        ACCESS_LINE_RESOURCE_INVENTORY_MS,
+        ACCESS_LINE_MANAGEMENT_MS,
+        NETWORK_LINE_PROFILE_MANAGEMENT_MS,
+        NETWORK_SWITCHING_CONGIF_MGT_MS,
+        DECOUPLING_MS,
+        GATEWAY_ROUTE_MS
+})
+
+@Epic("Network Switching")
 public class WithinOneOltNetworkSwitching extends GigabitTest {
     private AccessLineRiRobot accessLineRiRobot;
     private NetworkSwitchingRobot networkSwitchingRobot;
