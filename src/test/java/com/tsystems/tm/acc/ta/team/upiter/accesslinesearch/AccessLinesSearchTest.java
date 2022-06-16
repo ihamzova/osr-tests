@@ -26,6 +26,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
@@ -121,6 +122,8 @@ public class AccessLinesSearchTest extends GigabitTest {
     public void searchAccessLinesByHomeIdTest() {
         String homeId = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
                         AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
+                .stream().filter(accessLineDto -> accessLineDto.getHomeId()!=null)
+                .collect(Collectors.toList())
                 .get(0).getHomeId();
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();

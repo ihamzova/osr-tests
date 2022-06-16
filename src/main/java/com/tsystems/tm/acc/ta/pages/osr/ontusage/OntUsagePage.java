@@ -82,10 +82,7 @@ public class OntUsagePage implements SupplierCockpitUiPage{
         $(byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]/following-sibling::cdk-cell[contains(@class, 'cdk-column-trash')]")).click();
         By ONT_CELL = byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]");
         if (assertWillFail){
-            sleep(1000); //this is needed because the error message pops up asyncronously
-            if (!$(ERRORMESSAGE).isDisplayed()){
-                throw new Assert.AssertionFailedException();
-            }
+            $(ERRORMESSAGE).shouldBe(visible);
             $(ONT_CELL).shouldBe(visible);
         } else {
             $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(2000)).click();
