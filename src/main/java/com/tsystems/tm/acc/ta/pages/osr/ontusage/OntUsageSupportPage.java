@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.Supplier;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.util.Screenshot;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -120,9 +121,23 @@ public class OntUsageSupportPage {
     @Step("Validating ONT state and supplier")
     public OntUsageSupportPage checkOntDetails(Ont ont, Supplier supplier, String state){
         By ONT_CELL = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).shouldBe(visible, Duration.ofMillis(3000)).click();
-        $(DETAIL_STATE).shouldHave(text(state));
-        $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        $(ONT_CELL).shouldBe(visible, Duration.ofMillis(3000));
+        $(ONT_CELL).click();
+        if ($(DETAIL_STATE).isDisplayed()) {
+            $(DETAIL_STATE).shouldHave(text(state));
+        } else {
+            $(ONT_CELL).click();
+            $(DETAIL_STATE).shouldHave(text(state));
+        }
+
+        if ($(DETAIL_SUPPLIER).isDisplayed()) {
+            $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        } else {
+            $(ONT_CELL).click();
+            $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        }
+        // sometimes the detailed view isn't opened with the first click. Is not reproduced manually
+
         return this;
     }
 
