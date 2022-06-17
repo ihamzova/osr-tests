@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.data.upiter.models.oltdevice.OltDeviceCase;
 import com.tsystems.tm.acc.ta.data.osr.models.ExpectedAbstractDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
+import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.RiAbstractionLayerRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
@@ -39,6 +40,7 @@ public class RalTest extends GigabitTest {
   private OltDevice oltDevice;
   private OltDevice a4DeviceForRal;
   private RiAbstractionLayerRobot riAbstractionLayerRobot = new RiAbstractionLayerRobot();
+  private AccessLineRiRobot accessLineRiRobot = new AccessLineRiRobot();
   private UpiterTestContext context = UpiterTestContext.get();
   private List<String> oltList;
   private WireMockMappingsContext mappingsContext;
@@ -89,7 +91,7 @@ public class RalTest extends GigabitTest {
     OltDevice olt4 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.Ral7KH4);
     oltList = new ArrayList<>(Arrays.asList(olt1.getEndsz(), olt2.getEndsz(), olt3.getEndsz(), olt4.getEndsz()));
     List<String> response = riAbstractionLayerRobot.getOLtsByVpsz(oltDeviceForRal.getDeviceType(), oltDeviceForRal.getVpsz());
-    assertEquals(response, oltList);
+    accessLineRiRobot.compareLists(response, oltList);
   }
 
   @Test
