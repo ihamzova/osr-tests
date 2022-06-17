@@ -98,12 +98,12 @@ public class OntUsageSupportPage {
     @Step("delete workorder via support ui")
     public OntUsageSupportPage deleteWorkOrder(Ont ont){
         By DELETE_ONT_BUTTON = byXpath(String.format("//*[@data-qa-delete-workorderid='%s']", ont.getSerialNumber()));
-        $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(1000)).click();
+        $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(3000)).click();
         By CONFIRMATION_DIALOG = byClassName("p-dialog-header");
         $(CONFIRMATION_DIALOG).shouldBe(visible);
         By CONFIRMATION_BUTTON = byText("Ja");
         $(CONFIRMATION_BUTTON).click();
-        $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(2000));
+        $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(3000));
         return this;
     }
 
