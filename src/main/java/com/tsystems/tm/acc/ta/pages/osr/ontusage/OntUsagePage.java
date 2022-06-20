@@ -85,8 +85,14 @@ public class OntUsagePage implements SupplierCockpitUiPage{
             $(ERRORMESSAGE).shouldBe(visible);
             $(ONT_CELL).shouldBe(visible);
         } else {
-            $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(2000)).click();
-            $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            if ($(CONFIRM_BUTTON).isDisplayed()) {
+                $(CONFIRM_BUTTON).click();
+                $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            } else {
+                $(byXpath("//cdk-cell[contains(text(),'" + ont.getSerialNumber() + "')]/following-sibling::cdk-cell[contains(@class, 'cdk-column-trash')]")).click();
+                $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(3000)).click();
+                $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            }
         }
         return this;
     }

@@ -158,7 +158,6 @@ public class OntUsageRobot {
                 validate().
                 selectSupplier(supplier).
                 filterBySerialNumber(ont).
-                checkOntDetails(ont, supplier, desiredState).
                 logout();
     }
 
