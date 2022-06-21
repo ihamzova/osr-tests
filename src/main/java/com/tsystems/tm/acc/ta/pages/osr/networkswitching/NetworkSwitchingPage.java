@@ -28,7 +28,7 @@ public class NetworkSwitchingPage {
     WebDriver driver;
 
     private static final String APP = "network-switching-ui";
-    private static final String ENDPOINT = "/network-switching-ui/port-to-port";
+    private static final String ENDPOINT = "/network-switching-ui/ne3/port-to-port";
     private static final long TIMEOUT = 300000;
 
     private static final By NE3_UMSCHALTUNG_TAB = byText("NE3 Umschaltung");
