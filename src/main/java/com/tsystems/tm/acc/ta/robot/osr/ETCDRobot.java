@@ -7,7 +7,7 @@ import com.tsystems.tm.acc.ta.etcd.ETCDV3Client;
 import com.tsystems.tm.acc.ta.etcd.ETCDV3RestClient;
 import com.tsystems.tm.acc.ta.etcd.WatchListenerGrpcImpl;
 import com.tsystems.tm.acc.ta.kubernetes.ServicePortForwarder;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import de.telekom.it.t3a.kotlin.kubernetes.KubernetesContext;
 import io.etcd.jetcd.Watch;
 import lombok.Data;
@@ -42,11 +42,11 @@ public class ETCDRobot {
     }
 
     public void checkEtcdValuesWithIngress(String key, List<String> values) {
-        checkEtcdValues(new OCUrlBuilder("ont-etcd").withoutSuffix().withPort(433).buildUri(), key, values);
+        checkEtcdValues(new GigabitUrlBuilder("ont-etcd").withoutSuffix().withPort(433).buildUri(), key, values);
     }
 
     public void checkEtcdValuesWithRest(String key, List<String> values) {
-        ETCDV3RestClient client = new ETCDV3RestClient(new OCUrlBuilder("ont-etcd").withoutSuffix().buildUri());
+        ETCDV3RestClient client = new ETCDV3RestClient(new GigabitUrlBuilder("ont-etcd").withoutSuffix().buildUri());
         AggregatingKeyValuesWatchListenerRest listener = new AggregatingKeyValuesWatchListenerRest();
         client.watch(key, listener);
 

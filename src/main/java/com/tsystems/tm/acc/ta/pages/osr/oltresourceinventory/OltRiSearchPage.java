@@ -2,7 +2,7 @@ package com.tsystems.tm.acc.ta.pages.osr.oltresourceinventory;
 
 import com.codeborne.selenide.Condition;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -34,7 +34,7 @@ public class OltRiSearchPage {
 
     @Step("Open Search page")
     public static OltRiSearchPage openPage() {
-        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, OltRiSearchPage.class);
     }

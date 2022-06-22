@@ -1,14 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A10nspInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspCheckData;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.A10nspDto;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.CheckLineIdResult;
 import com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.model.OltDto;
@@ -18,12 +14,9 @@ import org.testng.Assert;
 
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A10NSP_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_SCHEDULER_MS;
-import static com.tsystems.tm.acc.tests.osr.a10nsp.inventory.internal.client.invoker.ResponseSpecBuilders.shouldBeCode;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
 @Slf4j
@@ -37,12 +30,9 @@ public class A10nspCheckRobot {
 
     private static final Long COMPOSITE_PARTY_ID_DTAG = 10001L;
 
-    private static final AuthTokenProvider authTokenProviderForA10nsp = new RhssoClientFlowAuthTokenProvider(OLT_SCHEDULER_MS, RhssoHelper.getSecretOfGigabitHub(OLT_SCHEDULER_MS));
-    private static final AuthTokenProvider authTokenProviderForAlri = new RhssoClientFlowAuthTokenProvider(A10NSP_INVENTORY_MS, RhssoHelper.getSecretOfGigabitHub(A10NSP_INVENTORY_MS));
-
-    private A10nspInventoryClient a10nspInventoryClient = new A10nspInventoryClient(authTokenProviderForA10nsp);
-    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderForAlri);
-    private DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
+    private final A10nspInventoryClient a10nspInventoryClient = new A10nspInventoryClient();
+    private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
+    private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
 
     @Step("Check if a carrierConnection is found for a given LineId")
     public void checkLineIdTestFound(A10nspCheckData checkLineIdA10nsp) {
@@ -55,7 +45,7 @@ public class A10nspCheckRobot {
                     .rahmenvertragsnummerQuery(checkLineIdA10nsp.getRahmenVertragsNr())
                     .xRequestIDHeader(checkLineIdA10nsp.getBngEndSz())
                     .body(checkLineIdA10nsp.getLineId())
-                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                    .executeAs(checkStatus(HTTP_CODE_OK_200));
 
 
             if (checkLineIdResult.isCarrierConnectionAvailable()) {
@@ -73,7 +63,7 @@ public class A10nspCheckRobot {
                 .rahmenvertragsnummerQuery(checkLineIdA10nspNotFound.getRahmenVertragsNr())
                 .xRequestIDHeader(checkLineIdA10nspNotFound.getBngEndSz())
                 .body(checkLineIdA10nspNotFound.getLineId())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         assertFalse(checkLineIdResult.isCarrierConnectionAvailable());
     }
@@ -85,7 +75,7 @@ public class A10nspCheckRobot {
                 .rahmenvertragsnummerQuery(checkLineIdA10nspWrongLineId.getRahmenVertragsNr())
                 .xRequestIDHeader(checkLineIdA10nspWrongLineId.getBngEndSz())
                 .body(checkLineIdA10nspWrongLineId.getLineId())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .executeAs(checkStatus(HTTP_CODE_BAD_REQUEST_400));
 
         assertNotNull(checkLineIdResult);
     }
@@ -96,7 +86,7 @@ public class A10nspCheckRobot {
         List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(checkLineIdA10nsp.getOltEndSz())
                 .endszQuery(checkLineIdA10nsp.getOltEndSz2())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertEquals(oltDtoList.size(), 2L, "oltDtoList found but wrong size");
         OltDto oltDto = oltDtoList.get(0);
@@ -118,7 +108,7 @@ public class A10nspCheckRobot {
                 .endszQuery(a10nsp.getOltEndSz())
                 .endszQuery(a10nsp.getOltEndSz2())
                 .endszQuery(a10nsp.getOltEndSz3())
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+                .execute(checkStatus(HTTP_CODE_NOT_FOUND_404));
 
     }
 
@@ -127,7 +117,7 @@ public class A10nspCheckRobot {
 
         List<OltDto> oltDtoList = a10nspInventoryClient.getClient().a10nspInternalControllerV2().findA10nspByOltEndSz()
                 .endszQuery(checkLineIdA10nspEmptyList.getOltEndSz2())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertEquals(oltDtoList.size(), 1L, "oltDtoList found but wrong size");
         OltDto oltDto = oltDtoList.get(0);
@@ -142,7 +132,7 @@ public class A10nspCheckRobot {
     @Step("Fill access-line-resource-inventory database with test data\"")
     public void prepareAccessLineResourceInventoryDataBase() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseForOltCommissioning()
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("fill olt-resource-inventory database with test data")
@@ -158,7 +148,7 @@ public class A10nspCheckRobot {
                 .uplinkTargetPortQuery(oltDevice.getBngDownlinkPort())
                 .uplinkAncpConfigurationQuery("1")
                 .executeSqlQuery("1")
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
 
         refreshA10nspInventory();        // trigger the a10nsp-inventory refresh
 
@@ -167,24 +157,24 @@ public class A10nspCheckRobot {
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("clear the OLT device in olt-resource-invemtory database.")
     public void deleteDeviceInResourceInventory(String endSz) {
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                .execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
     }
 
     @Step("Prepare the precondition. Clear and refresh the a10nsp-resource-inventory database.")
     private void refreshA10nspInventory() {
         // clear a10nsp-inventory database
         a10nspInventoryClient.getClient().databaseTestController().clearDatabase()
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
 
         // fill a10nsp-inventory database
         a10nspInventoryClient.getClient().inventoryController().refreshInventory()
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
 
         waitForAsyncResponse();
     }

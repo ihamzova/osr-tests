@@ -1,44 +1,29 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
-import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
-import com.tsystems.tm.acc.ta.api.Resetable;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.v1_2_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.v1_2_0.client.invoker.GsonObjectMapper;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
+import com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.v1_2_0.client.invoker.JSON;
+import de.telekom.it.magic.api.IAccessTokenProvider;
+import de.telekom.it.magic.api.keycloak.TokenProviderFactory;
+import de.telekom.it.magic.api.restassured.ApiClientBuilder;
 import lombok.Getter;
 
-import static com.tsystems.tm.acc.tests.osr.wg.fttb.access.provisioning.v1_2_0.client.invoker.GsonObjectMapper.gson;
-import static io.restassured.RestAssured.config;
-import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
-
 @Getter
-public class WgFttbAccessProvisioningClient implements Resetable {
-    private ApiClient client;
+public class WgFttbAccessProvisioningClient {
+    private final ApiClient client;
+
+    public WgFttbAccessProvisioningClient(IAccessTokenProvider accessTokenProvider) {
+        client = new ApiClientBuilder<>(ApiClient.class)
+                .withBaseUri(new GigabitUrlBuilder("wg-fttb-access-provisioning").buildUri())
+                .withAccessTokenAuth(accessTokenProvider)
+                .build();
+    }
 
     public WgFttbAccessProvisioningClient() {
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> new RequestSpecBuilder().setConfig(config().objectMapperConfig(objectMapperConfig().defaultObjectMapper(gson())))
-                        .addFilter(new RequestLoggingFilter())
-                        .addFilter(new ResponseLoggingFilter())
-                        .setBaseUri(new OCUrlBuilder("wg-fttb-access-provisioning").buildUri())));
+        this(TokenProviderFactory.getDefaultAccessTokenProvider());
     }
 
-    public WgFttbAccessProvisioningClient (AuthTokenProvider authTokenProvider) {
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> RequestSpecBuilders.getDefaultWithAuth(
-                        GsonObjectMapper.gson(),
-                        new OCUrlBuilder("wg-fttb-access-provisioning")
-                                .buildUri(),
-                        new BearerHeaderAuthTokenInjector(authTokenProvider))
-        ));
-    }
-
-    @Override
-    public void reset() {
+    public static JSON json() {
+        return new JSON();
     }
 }

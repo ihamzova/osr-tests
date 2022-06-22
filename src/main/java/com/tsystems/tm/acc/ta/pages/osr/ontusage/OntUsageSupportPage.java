@@ -5,7 +5,7 @@ import com.openshift.internal.util.Assert;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.Supplier;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.Screenshot;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class OntUsageSupportPage {
 
     @Step("Open Supplier ONT usage Page")
     public static OntUsageSupportPage openPage() {
-        URL url = new OCUrlBuilder(APP).withoutSuffix().buildExternal();
+        URL url = new GigabitUrlBuilder(APP).withoutSuffix().buildExternal();
         log.info("Opening url " + url.toString());
         OntUsageSupportPage page = open(url, OntUsageSupportPage.class);
         return page;

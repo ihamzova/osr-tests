@@ -1,56 +1,40 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
-import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
-import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.api.client.olt.commissioning.invoker.ApiClient;
-import com.tsystems.tm.api.client.olt.commissioning.invoker.GsonObjectMapper;
 import com.tsystems.tm.api.client.olt.commissioning.invoker.JSON;
 import de.telekom.it.magic.api.IAccessTokenProvider;
 import de.telekom.it.magic.api.IIdentityTokenProvider;
+import de.telekom.it.magic.api.keycloak.TokenProviderFactory;
+import de.telekom.it.magic.api.restassured.ApiClientBuilder;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_COMMISSIONING_MS;
 
 @Getter
-public class OltCommissioningClient implements Resetable {
-
+public class OltCommissioningClient {
     private final ApiClient client;
 
-
-    public OltCommissioningClient(IIdentityTokenProvider iIdentityTokenProvider, IAccessTokenProvider iAccessTokenProvider) {
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> RequestSpecBuilders
-                        .getDefault(
-                                GsonObjectMapper.gson(),
-                                new GigabitUrlBuilder(OLT_COMMISSIONING_MS)
-                                        .buildUri())
-                        .setContentType("application/json")
-                        .addFilter((requestSpec, responseSpec, ctx) -> {
-                            requestSpec.header("Authorization", "Bearer " + iAccessTokenProvider.getAccessToken());
-                            requestSpec.header("apm-principal-token", iIdentityTokenProvider.getIdentityToken());
-                            return ctx.next(requestSpec, responseSpec);
-                        })
-        ));
+    public OltCommissioningClient(IIdentityTokenProvider identityTokenProvider, IAccessTokenProvider accessTokenProvider) {
+        client = new ApiClientBuilder<>(ApiClient.class)
+                .withBaseUri(new GigabitUrlBuilder(OLT_COMMISSIONING_MS).buildUri())
+                .withAccessTokenAuth(accessTokenProvider)
+                .withIdentityTokenAuth(identityTokenProvider)
+                .build();
     }
 
-    public OltCommissioningClient(AuthTokenProvider authTokenProvider) {
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> RequestSpecBuilders.getDefaultWithAuth(
-                        GsonObjectMapper.gson(),
-                        new GigabitUrlBuilder(OLT_COMMISSIONING_MS)
-                                .buildUri(),
-                        new BearerHeaderAuthTokenInjector(authTokenProvider))
-        ));
+    public OltCommissioningClient(IAccessTokenProvider accessTokenProvider) {
+        client = new ApiClientBuilder<>(ApiClient.class)
+                .withBaseUri(new GigabitUrlBuilder(OLT_COMMISSIONING_MS).buildUri())
+                .withAccessTokenAuth(accessTokenProvider)
+                .build();
+    }
+
+    public OltCommissioningClient() {
+        this(TokenProviderFactory.getDefaultAccessTokenProvider());
     }
 
     public static JSON json() {
         return new JSON();
-    }
-
-    @Override
-    public void reset() {
     }
 }

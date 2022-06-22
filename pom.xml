@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>3.4.7</version>
+        <version>3.4.10</version>
     </parent>
 
     <properties>

@@ -1,20 +1,16 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderClient;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A10nspA4DtoMapper;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.A10nspA4Dto;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderMainDataDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -28,11 +24,12 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.voidCheck;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
-import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
+import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.FRAME_CONTRACT_ID;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
 
@@ -40,27 +37,20 @@ import static org.testng.Assert.*;
 public class A4ResourceOrderRobot {
 
     public static final String CB_PATH = "/test_url";
-    private static final AuthTokenProvider getAuthTokenProviderA4ResourceOrder =
-            new RhssoClientFlowAuthTokenProvider(WIREMOCK_MS_NAME,
-                    RhssoHelper.getSecretOfGigabitHub(WIREMOCK_MS_NAME));
-    private static final AuthTokenProvider authTokenProviderOrchestrator =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_BFF_PROXY_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_BFF_PROXY_MS));
+
     private static final String FIRST_ORDER_ITEM = "-1";
-    private final ApiClient internalClient = new A4ResourceOrderClient(getAuthTokenProviderA4ResourceOrder).getClient();
-    private final com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator
-            .client.invoker.ApiClient externalClient =
-            new A4ResourceOrderOrchestratorClient(authTokenProviderOrchestrator).getClient();
+    private final A4ResourceOrderClient internalClient = new A4ResourceOrderClient();
+    private final A4ResourceOrderOrchestratorClient externalClient = new A4ResourceOrderOrchestratorClient();
     private final A4ResourceOrderMapper resourceOrderMapper = new A4ResourceOrderMapper();
     private final A10nspA4DtoMapper a10Mapper = new A10nspA4DtoMapper();
 
     @Step("Send POST for A10nsp Resource Order")
     public String sendPostResourceOrder(ResourceOrder resourceOrder) {
-        final String roId = internalClient
+        final String roId = internalClient.getClient()
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201))).getBody().asString();
+                .execute(checkStatus(HTTP_CODE_CREATED_201)).getBody().asString();
 
         log.info("+++ Resource-Order ID: " + roId);
         resourceOrder.setId(roId);
@@ -69,7 +59,7 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order")
     public Response sendPostResourceOrderWithoutChecks(ResourceOrder resourceOrder) {
-        return internalClient
+        return internalClient.getClient()
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
@@ -78,11 +68,11 @@ public class A4ResourceOrderRobot {
 
     @Step("Send POST for A10nsp Resource Order - Error")
     public void sendPostResourceOrderError400(ResourceOrder resourceOrder) {
-        internalClient
+        internalClient.getClient()
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_BAD_REQUEST_400)));
+                .execute(checkStatus(HTTP_CODE_BAD_REQUEST_400));
     }
 
     public ResourceOrder buildResourceOrder() {
@@ -177,36 +167,36 @@ public class A4ResourceOrderRobot {
     }
 
     public ResourceOrderDto getResourceOrderFromDb(String id) {
-        return externalClient
+        return externalClient.getClient()
                 .resourceOrder()
                 .getResourceOrder()
                 .uuidPath(id)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .execute(checkStatus(HTTP_CODE_OK_200))
                 .getBody()
                 .as(ResourceOrderDto.class);
     }
 
     public void checkResourceOrderDoesntExist(String id) {
-        externalClient
+        externalClient.getClient()
                 .resourceOrder()
                 .getResourceOrder()
                 .uuidPath(id)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+                .execute(checkStatus(HTTP_CODE_NOT_FOUND_404));
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrdersFromDb() {
-        return externalClient
+        return externalClient.getClient()
                 .resourceOrder()
                 .listResourceOrders()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     public List<ResourceOrderMainDataDto> getResourceOrderListByPublicReferenceIdFromDb(String publicReferenceId) {
-        return externalClient
+        return externalClient.getClient()
                 .resourceOrder()
                 .listResourceOrders()
                 .publicReferenceIdQuery(publicReferenceId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     public void checkResourceOrderState(ResourceOrder ro, String roUuid, ResourceOrderStateType checkedState) {
@@ -269,7 +259,7 @@ public class A4ResourceOrderRobot {
     @Step("Delete existing Resource Order from A4 resource order")
     public void deleteResourceOrder(String uuid) {
         if (isNullOrEmpty(uuid)) return;
-        final Response r = externalClient
+        final Response r = externalClient.getClient()
                 .resourceOrder()
                 .deleteResourceOrder()
                 .uuidPath(uuid)
