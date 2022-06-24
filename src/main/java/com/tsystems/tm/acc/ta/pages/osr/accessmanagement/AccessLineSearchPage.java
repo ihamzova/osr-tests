@@ -58,16 +58,9 @@ public class AccessLineSearchPage {
   private static final By ONTSN_TAB = byQaData("sc-ont-sn-tab-li");
   private static final By ONTSN_INPUT = byQaData("hic-ont-sn-input");
   private static final By SORT_BY_STATUS = byQaData("sc-status-sort-header-td");
-  private static final By HOME_ID_DEVICE_SEARCH_TAB = byQaData("sc-home-ids-section-li");
-  private static final By HOME_ID_SEARCH_TAB = byQaData("sc-home-id-tab-li");
   private static final By BACKHAUL_ID_DEVICE_SEARCH_TAB = byQaData("sc-backhaul-ids-section-li");
   private static final By BACKHAUL_ID_SEARCH_TAB = byQaData("sc-backhaul-id-tab-li");
-  private static final By HOME_ID_ASSIGNED = byQaData("ucc-assigned-filter-label");
-  private static final By HOME_ID_RESERVED = byQaData("ucc-reserved-filter-label");
-  private static final By HOME_ID_FREE = byQaData("ucc-free-filter-label");
   private static final By BACKHAUL_ID_INPUT = byQaData("hic-backhaul-id-input");
-  private static final By HOME_ID_INPUT = byQaData("hic-home-id-input");
-  private static final By HOME_ID_LINK = byQaData("homeid-link-a");
 
   @Step("Open Access-line-Search page")
   public static AccessLineSearchPage openPage() {
@@ -83,31 +76,7 @@ public class AccessLineSearchPage {
   }
 
   @Step("Search Access lines by device parameters")
-  public AccessLineSearchPage searchAccessLinesByPortAddress(AccessLine accessLine) {
-    $(ENDSZ_INPUT).click();
-    $(ENDSZ_INPUT).val(accessLine.getEndSz());
-    if (!accessLine.getSlotNumber().isEmpty()) {
-      $(SLOT_NUMBER_INPUT).click();
-      $(SLOT_NUMBER_INPUT).val(accessLine.getSlotNumber());
-    }
-    if (!accessLine.getPortNumber().isEmpty()) {
-      $(PORT_NUMBER_INPUT).click();
-      $(PORT_NUMBER_INPUT).val(accessLine.getPortNumber());
-    }
-    return this;
-  }
-
-  @Step("Search Access lines by HomeID")
-  public AccessLineSearchPage searchAccessLinesByHomeID(String homeId) {
-    $(HOMEID_TAB).click();
-    $(HOMEID_INPUT).click();
-    $(HOMEID_INPUT).val(homeId);
-    return this;
-  }
-
-  @Step("Search HomeIds by EndsZ")
-  public AccessLineSearchPage searchHomeIdsbyEndsZ(PortProvisioning port) {
-    $(HOME_ID_DEVICE_SEARCH_TAB).click();
+  public AccessLineSearchPage searchAccessLinesByPortAddress(PortProvisioning port) {
     $(ENDSZ_INPUT).click();
     $(ENDSZ_INPUT).val(port.getEndSz());
     if (!port.getSlotNumber().isEmpty()) {
@@ -118,6 +87,14 @@ public class AccessLineSearchPage {
       $(PORT_NUMBER_INPUT).click();
       $(PORT_NUMBER_INPUT).val(port.getPortNumber());
     }
+    return this;
+  }
+
+  @Step("Search Access lines by HomeID")
+  public AccessLineSearchPage searchAccessLinesByHomeID(String homeId) {
+    $(HOMEID_TAB).click();
+    $(HOMEID_INPUT).click();
+    $(HOMEID_INPUT).val(homeId);
     return this;
   }
 
@@ -134,21 +111,6 @@ public class AccessLineSearchPage {
       $(PORT_NUMBER_INPUT).click();
       $(PORT_NUMBER_INPUT).val(port.getPortNumber());
     }
-    return this;
-  }
-
-  @Step("Set Assigned status to Home Id")
-  public AccessLineSearchPage setAssigneStatustoHomeID() {
-    $(HOME_ID_ASSIGNED).click();
-    return this;
-  }
-
-  @Step("Search HomeId by HomeId")
-  public AccessLineSearchPage searchHomeIdsbyHomeId(String homeId) {
-    $(HOME_ID_DEVICE_SEARCH_TAB).click();
-    $(HOME_ID_SEARCH_TAB).click();
-    $(HOME_ID_INPUT).click();
-    $(HOME_ID_INPUT).val(homeId);
     return this;
   }
 
@@ -183,13 +145,6 @@ public class AccessLineSearchPage {
     $(KLSID_INPUT).click();
     $(KLSID_INPUT).val(klsId);
     return this;
-  }
-
-  @Step("Navigate to Al Search Page")
-  public AccessLineSearchPage navigateToAlSearchPage() {
-    $(HOME_ID_LINK).click();
-    switchTo().window(1);
-    return new AccessLineSearchPage();
   }
 
   @Step("Check BackhaulIds table headers")
@@ -298,13 +253,6 @@ public class AccessLineSearchPage {
     ElementsCollection tds = $$(By.tagName("td"));
     tds.get(10).shouldNotHave(text(status), Duration.ofMillis(TIMEOUT));
     return this;
-  }
-
-  @Step("Check HomeIds table headers")
-  public void checkHomeIdsTableHeaders(List<String> tableHeaders) {
-    List<String> supposedHeaders = Arrays.asList("EndSZ", "Slot", "Port", "Home ID", "Status", "Modification Date", "Access Line");
-    assertEqualsNoOrder(tableHeaders.stream().filter(header -> !header.isEmpty()).toArray(),
-            supposedHeaders.toArray());
   }
 
   @Step("Check presence of sortable icon in status column")
