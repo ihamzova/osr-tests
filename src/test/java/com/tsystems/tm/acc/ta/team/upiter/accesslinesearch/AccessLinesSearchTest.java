@@ -1,12 +1,10 @@
 package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
-import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
-import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
@@ -18,14 +16,12 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import groovy.util.logging.Slf4j;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
-import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
@@ -46,10 +42,9 @@ public class AccessLinesSearchTest extends GigabitTest {
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private UpiterTestContext context = UpiterTestContext.get();
-    private AccessLine accessLinesByEndSz;
-    private AccessLine accessLinesByEndSzSlotPort;
+    private PortProvisioning accessLinesByEndSz;
+    private PortProvisioning accessLinesByEndSzSlotPort;
     private AccessLine accessLine;
-    private PortProvisioning homeAndBackhaulIds;
     private Credentials loginData;
 
     @BeforeSuite
@@ -72,11 +67,8 @@ public class AccessLinesSearchTest extends GigabitTest {
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLine = new AccessLine();
-        accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
-        accessLinesByEndSzSlotPort = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSzSlotPort);
-        homeAndBackhaulIds = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.homeIdsByEndSz);
-        accessLine = new AccessLine();
-        wgAccessProvisioningRobot.startPortProvisioning(homeAndBackhaulIds);
+        accessLinesByEndSz = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.searchByEndSz);
+        accessLinesByEndSzSlotPort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.searchByEndSzSlotPort);
     }
 
     @BeforeMethod
@@ -345,37 +337,12 @@ public class AccessLinesSearchTest extends GigabitTest {
     }
 
     @Test
-    @TmsLink("DIGIHUB-60975")
-    @Description("Search for Home IDs by EndsZ in Access Management UI")
-    public void searchHomeIdsbyEndsZTest() {
-        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-        accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds).clickSearchButton();
-        accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
-        accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-        accessLineSearchPage.setPageSize(50);
-        accessLineSearchPage.getTableRows(32);
-    }
-
-    @Test
-    @TmsLink("DIGIHUB-138291")
-    @Description("Search for Home ID by Home ID in Access Management UI")
-    public void searchHomeIdbyHomeIDTest() {
-        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-        accessLineSearchPage.validateUrl();
-        String homeId = accessLineRiRobot.getHomeIdPool(homeAndBackhaulIds).get(0).getHomeId();
-        accessLineSearchPage.searchHomeIdsbyHomeId(homeId).clickSearchButton();
-        accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
-        accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-    }
-
-    @Test
     @TmsLink("DIGIHUB-55323")
     @Description("Search for Backhaul ID by EndSZ in Access Management UI")
     public void searchBackhaulIDsByEndsZTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchBackhaulIDs(homeAndBackhaulIds).clickSearchButton();
+        accessLineSearchPage.searchBackhaulIDs(accessLinesByEndSzSlotPort).clickSearchButton();
         accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
         accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
         assertEquals(accessLineSearchPage.getTableRows().size(), 1);
@@ -385,7 +352,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     @TmsLink("DIGIHUB-55322")
     @Description("Search for Backhaul ID by Backhaul ID in Access Management UI")
     public void searchBackhaulIDByBackhaulIdTest() {
-        String backhaulId = accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getBackhaulId();
+        String backhaulId = accessLineRiRobot.getBackHaulId(accessLinesByEndSzSlotPort).get(0).getBackhaulId();
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchBackhaulIDbyBackhaulId(backhaulId).clickSearchButton();
