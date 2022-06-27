@@ -2,11 +2,8 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.WgA4ProvisioningClient;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
@@ -22,19 +19,17 @@ import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertTrue;
 
 
 @Slf4j
 public class WgA4PreProvisioningRobot {
 
-    private final ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient(authTokenProvider).getClient();
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
+    private final ApiClient wgA4ProvisioningClient = new WgA4ProvisioningClient().getClient();
     private static String CORRELATION_ID;
 
     @Step("Start preprovisioning process")
@@ -43,7 +38,7 @@ public class WgA4PreProvisioningRobot {
                 .preProvisioningProcessExternal()
                 .startAccessLinePreProvisioning()
                 .body(tpRefDto)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Start AccessLine Deprovisioning")
@@ -55,15 +50,15 @@ public class WgA4PreProvisioningRobot {
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
                 .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
-                        .build()
+                        .buildContainer()
                         .toString())
                 .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
-                        .build()
+                        .buildContainer()
                         .toString())
                 .body(new A4AccessLineRequestDto()
-                .lineId(lineId))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                        .lineId(lineId))
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
 
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
         new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), DeprovisioningResponseHolder.class);

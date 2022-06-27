@@ -1,38 +1,31 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.BearerHeaderAuthTokenInjector;
-import com.tsystems.tm.acc.ta.api.RequestSpecBuilders;
-import com.tsystems.tm.acc.ta.api.Resetable;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.a4.dpu.commissioning.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.dpu.commissioning.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.invoker.GsonObjectMapper;
+import de.telekom.it.magic.api.IAccessTokenProvider;
+import de.telekom.it.magic.api.keycloak.TokenProviderFactory;
+import de.telekom.it.magic.api.restassured.ApiClientBuilder;
 import lombok.Getter;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
 
 @Getter
-public class A4DpuCommissioningClient implements Resetable {
-
+public class A4DpuCommissioningClient {
     private final ApiClient client;
 
-    public A4DpuCommissioningClient(AuthTokenProvider authTokenProvider){
-        client = ApiClient.api(ApiClient.Config.apiConfig().reqSpecSupplier(
-                () -> RequestSpecBuilders.getDefaultWithAuth(
-                        GsonObjectMapper.gson(),
-                        new GigabitUrlBuilder(A4_INVENTORY_IMPORTER_MS).buildUri(),
-                        new BearerHeaderAuthTokenInjector(authTokenProvider)
-                )
-        ));
+    public A4DpuCommissioningClient(IAccessTokenProvider accessTokenProvider) {
+        client = new ApiClientBuilder<>(ApiClient.class)
+                .withBaseUri(new GigabitUrlBuilder(A4_INVENTORY_IMPORTER_MS).buildUri())
+                .withAccessTokenAuth(accessTokenProvider)
+                .build();
+    }
+
+    public A4DpuCommissioningClient() {
+        this(TokenProviderFactory.getDefaultAccessTokenProvider());
     }
 
     public static JSON json() {
         return new JSON();
     }
-
-    @Override
-    public void reset() {
-    }
-
 }

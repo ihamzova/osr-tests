@@ -8,7 +8,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineViewDto;
 import io.qameta.allure.Step;
@@ -64,7 +64,7 @@ public class AccessLineSearchPage {
 
   @Step("Open Access-line-Search page")
   public static AccessLineSearchPage openPage() {
-    URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+    URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
     log.info("Opening url " + url.toString());
     return open(url, AccessLineSearchPage.class);
   }

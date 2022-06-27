@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.team.mercury.commissioning.manual;
 
 import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.oltdevice.OltDeviceCase;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
@@ -10,7 +9,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -32,19 +30,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 
 @Slf4j
-@ServiceLog({ ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
+@ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
-    private OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
-    private DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient;
+    private final OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
+    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
@@ -53,8 +50,6 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     @BeforeMethod
     public void init() {
         oltCommissioningRobot.enableFeatureToogleUiUplinkImport();
-
-        deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS)));
 
         OsrTestContext context = OsrTestContext.get();
         oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76HC_MA5600);
@@ -164,13 +159,13 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
     /**
      * check all port states from ethernet card
      *
-     * @param device device
+     * @param device      device
      * @param detailsPage details
      */
     public void checkPortState(OltDevice device, OltDetailsPage detailsPage) {
 
         int startPort = 0;
-        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+        if (oltDevice.getBezeichnung().equals("SDX 6320-16")) {
             startPort = 1;
         }
         for (int port = startPort; port <= 1; ++port) {
@@ -185,11 +180,11 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
 
     public void checkPorts(OltDevice oltDevice) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
         Assert.assertEquals(deviceList.size(), 1L, "Device is not present");
 
         List<Port> portList = deviceResourceInventoryManagementClient.getClient().port().listPort()
-                .parentEquipmentRefEndSzQuery(oltDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .parentEquipmentRefEndSzQuery(oltDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
 
         // check uplink port lifecycle state
         if (deviceList.get(0).getEmsNbiName().equals(EMS_NBI_NAME_SDX6320_16)) {
@@ -198,7 +193,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                     .filter(port -> port.getPortType().equals(PortType.ETHERNET))
                     .findFirst();
             Assert.assertTrue(uplinkPort.isPresent(), "ADTRAN No uplink port is present");
-            Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
+            Assert.assertEquals(uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
         } else {
             Optional<Port> uplinkPort = portList.stream()
                     .filter(port -> port.getParentEquipmentRef().getSlotName().equals(oltDevice.getOltSlot()))
@@ -206,7 +201,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
                     .filter(port -> port.getPortType().equals(PortType.ETHERNET))
                     .findFirst();
             Assert.assertTrue(uplinkPort.isPresent(), "HUAWEI No uplink port is present");
-            Assert.assertEquals( uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
+            Assert.assertEquals(uplinkPort.get().getLifeCycleState(), LifeCycleState.OPERATING, "Uplink port state after commissioning is not in operating state");
         }
     }
 
@@ -215,12 +210,12 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
      */
     private void checkDeviceMA5800(String endSz) {
 
-        if(oltDevice.getBezeichnung().equals("SDX 6320-16")) {
-         return;
+        if (oltDevice.getBezeichnung().equals("SDX 6320-16")) {
+            return;
         }
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(endSz).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(endSz).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
         Device device = deviceList.get(0);
@@ -232,7 +227,7 @@ public class RandomOltDeviceCommissioningManualProcess extends GigabitTest {
      */
     private void checkUplinkDeleted(String endSz) {
         List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertTrue(uplinkList.isEmpty());
     }

@@ -1,15 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryServiceMapper;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResource;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.LogicalResourceUpdate;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.client.model.ResourceCharacteristic;
@@ -20,18 +16,13 @@ import org.testng.Assert;
 import java.util.List;
 import java.util.Objects;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.NEMO_CLIENT;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.voidCheck;
 
 public class A4ResourceInventoryServiceRobot {
-
-    private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(NEMO_CLIENT,
-                    RhssoHelper.getSecretOfGigabitHub(NEMO_CLIENT));
-
-    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient(authTokenProvider).getClient();
+    private final A4ResourceInventoryServiceClient a4ResourceInventoryService = new A4ResourceInventoryServiceClient();
 
     @Step("Create Termination Point represented as Logical Resource")
     public Response createTerminationPoint(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
@@ -42,29 +33,29 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(tpData, nepUuid);
 
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePut()
                 .idPath(tpData.getUuid())
                 .body(terminationPointLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     public Response createTerminationPoint(TerminationPointDto tpData, String nepUuid) {
         LogicalResourceUpdate terminationPointLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(tpData, nepUuid);
 
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePut()
                 .idPath(tpData.getUuid())
                 .body(terminationPointLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Delete Logical Resource")
     public Response deleteLogicalResource(String uuid) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .deleteLogicalResource()
                 .idPath(uuid)
@@ -76,17 +67,17 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate negLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(negData, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(negData.getUuid())
                 .body(negLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send PATCH request for logical resource")
     public Response sendMinimalStatusUpdateAsLogicalResourceWithoutChecks(String uuid, LogicalResourceUpdate lru) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(uuid)
@@ -99,12 +90,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate neLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(neData, negData, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(neData.getUuid())
                 .body(neLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state for Network Element Port")
@@ -112,12 +103,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nepData, neData, newOperationalState, newDescription);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nepData.getUuid())
                 .body(nepLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state for Network Service Profile (FTTH Access)")
@@ -125,12 +116,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspFtthData.getUuid())
                 .body(nepLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state and Port Reference for Network Service Profile (FTTH Access)")
@@ -140,12 +131,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspFtthData, tpData, newOperationalState, nepData);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspFtthData.getUuid())
                 .body(nepLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state for Network Service Profile (A10NSP)")
@@ -153,12 +144,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nspA10LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspA10Data, tpData, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspA10Data.getUuid())
                 .body(nspA10LogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state for Network Service Profile (L2BSA)")
@@ -166,12 +157,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspL2Data.getUuid())
                 .body(nspL2LogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
 
     }
 
@@ -180,7 +171,7 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nspL2LogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspL2Data, tpData, newOperationalState);
 
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspL2Data.getUuid())
@@ -193,7 +184,7 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nspA10nspLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nspA10nspData, tpData, newOperationalState);
 
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nspA10nspData.getUuid())
@@ -203,12 +194,12 @@ public class A4ResourceInventoryServiceRobot {
 
     @Step("Send PATCH request with logical resource")
     public void sendPatchForLogicalResource(String uuid, LogicalResourceUpdate logicalResource) {
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(uuid)
                 .body(logicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Send new operational state for Network Element Link")
@@ -216,12 +207,12 @@ public class A4ResourceInventoryServiceRobot {
         LogicalResourceUpdate nepLogicalResource = new A4ResourceInventoryServiceMapper()
                 .getLogicalResourceUpdate(nelData, nepDataA, nepDataB, newOperationalState);
 
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .logicalResource()
                 .updateLogicalResourcePatch()
                 .idPath(nelData.getUuid())
                 .body(nepLogicalResource)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Check Network Element Group as Logical Resource representation")
@@ -229,11 +220,11 @@ public class A4ResourceInventoryServiceRobot {
         String uuid = negData.getUuid();
 
         List<LogicalResource> logicalResourceList =
-                a4ResourceInventoryService
+                a4ResourceInventoryService.getClient()
                         .logicalResource()
                         .retrieveLogicalResource()
                         .idPath(uuid)
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertEquals(logicalResourceList.size(), 1, "Count of returned logicalResources");
         Assert.assertEquals(logicalResourceList.get(0).getId(), uuid, "UUID is the same");
@@ -243,11 +234,11 @@ public class A4ResourceInventoryServiceRobot {
     @Step("Check Logical Resource representation has expected characteristic and value")
     public void checkLogicalResourceHasCharacteristic(String uuid, String characteristic, String expectedValue) {
         List<LogicalResource> logicalResourceList =
-                a4ResourceInventoryService
+                a4ResourceInventoryService.getClient()
                         .logicalResource()
                         .retrieveLogicalResource()
                         .idPath(uuid)
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         // Only one logical resource should be found by uuid
         Assert.assertEquals(logicalResourceList.size(), 1);

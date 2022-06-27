@@ -6,7 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
@@ -97,7 +97,7 @@ public class NetworkSwitchingPage {
 
     @Step("Open Network Switching page")
     public static NetworkSwitchingPage openPage() {
-        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, NetworkSwitchingPage.class);
     }

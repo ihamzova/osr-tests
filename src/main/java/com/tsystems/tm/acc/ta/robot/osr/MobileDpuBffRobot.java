@@ -8,8 +8,7 @@ import io.restassured.response.Response;
 import org.testng.Assert;
 
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 
 public class MobileDpuBffRobot {
 
@@ -21,7 +20,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
                 .woIdPath(woid)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
         Assert.assertEquals(workorderResponse.getStatus(), WorkorderResponse.StatusEnum.CREATED);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
@@ -34,7 +33,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
                 .woIdPath(woid)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
 
     }
 
@@ -44,7 +43,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffInternal().getWorkorder()
                 .woIdPath(woid)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(400)));
+                .execute(checkStatus(400));
 
     }
 
@@ -53,7 +52,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().startWorkorder()
                 .woIdPath(woid)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(workorderResponse.getId().longValue(), 2L);
         Assert.assertEquals(workorderResponse.getStatus(), WorkorderResponse.StatusEnum.IN_PROGRESS);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
@@ -64,7 +63,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffInternal().startWorkorder()
                 .woIdPath(woid)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
     }
 
     @Step("Completes a workorder for given Workorder-Id and returns WorkorderResponse.")
@@ -72,7 +71,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         WorkorderResponse workorderResponse = mobileDpuBffClient.getClient().mobileDpuBffInternal().completeWorkorder()
                 .woIdPath(woid)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(workorderResponse.getId().longValue(), woid);
         Assert.assertEquals(workorderResponse.getStatus(),WorkorderResponse.StatusEnum.COMPLETED);
         Assert.assertEquals(workorderResponse.getType(), "DPU_INSTALLATION");
@@ -83,7 +82,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffInternal().completeWorkorder()
                 .woIdPath(woid)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
     }
 
     @Step("Returns a dpu response determined by given fiberOnLocationId.")
@@ -91,7 +90,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
                 .fiberOnLocationIdPath(folId)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(dpuResponse.getFiberOnLocationId(), folId);
         Assert.assertEquals(dpuResponse.getEndSZ(), dpuEndsz);
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
@@ -106,7 +105,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().getDpuByFiberOnLocationId()
                 .fiberOnLocationIdPath(folId)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
     }
 
     @Step("Update SerialNumber of DPU.")
@@ -117,7 +116,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().updateDpuSerialNumber()
                 .body(updateDpuSerialNumberRequest)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(dpuResponse.getFiberOnLocationId(), folId);
         Assert.assertEquals(dpuResponse.getEndSZ(), dpuEndsz);
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
@@ -132,7 +131,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().updateDpuSerialNumber()
                 .body(updateDpuSerialNumberRequest)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
     }
 
     @Step("Mark the DPU functional as OPERATING.")
@@ -143,7 +142,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         DpuResponse dpuResponse = mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().markDpuAsOperating()
                 .body(markDpuAsOperatingRequest)
-                .executeAs(validatedWith(shouldBeCode(200)));
+                .executeAs(checkStatus(200));
         Assert.assertEquals(dpuResponse.getFiberOnLocationId(), folId);
         Assert.assertEquals(dpuResponse.getEndSZ(), dpuEndsz);
         Assert.assertEquals(dpuResponse.getSerialNumber(), serialNumber);
@@ -158,7 +157,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().markDpuAsOperating()
                 .body(markDpuAsOperatingRequest)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(404)));
+                .execute(checkStatus(404));
     }
 
     @Step("trigger DPU comissioning process on bff side")
@@ -170,7 +169,7 @@ public void getWorkorder (long woid){
         StartDpuCommissioningResponse startDpuCommissioningResponse = mobileDpuBffClient.getClient()
                 .mobileDpuBffDpuInternal().startDpuCommissioning()
                 .body(startDpuCommissioningRequest)
-                .executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(201)));
+                .executeAs(checkStatus(201));
         Assert.assertEquals(startDpuCommissioningResponse.getProcessStatus().getValue(), "RUNNING");
         Assert.assertEquals(startDpuCommissioningResponse.getEndSZ(), dpuEndsz);
         Assert.assertNotNull(startDpuCommissioningResponse.getProcessId());
@@ -185,7 +184,7 @@ public void getWorkorder (long woid){
         mobileDpuBffClient = new MobileDpuBffClient();
         mobileDpuBffClient.getClient().mobileDpuBffDpuInternal().startDpuCommissioning()
                 .body(startDpuCommissioningRequest)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(500)));
+                .execute(checkStatus(500));
     }
 
 }

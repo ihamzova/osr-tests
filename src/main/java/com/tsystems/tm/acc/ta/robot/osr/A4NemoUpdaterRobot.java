@@ -1,16 +1,12 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4NemoUpdaterClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvData;
 import com.tsystems.tm.acc.ta.data.osr.models.A4ImportCsvLine;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
 import com.tsystems.tm.acc.ta.data.osr.models.A4TerminationPoint;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
-import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.nemo.updater.client.model.UpdateNemoTask;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.*;
 import io.qameta.allure.Step;
@@ -21,46 +17,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.*;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.wiremock.mappings.NemoStub.NEMO_URL;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 
 @Slf4j
 public class A4NemoUpdaterRobot {
-
-    private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(A4_RESOURCE_INVENTORY_SERVICE_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_RESOURCE_INVENTORY_SERVICE_MS));
-
-    private static final AuthTokenProvider authTokenProviderImporter =
-            new RhssoClientFlowAuthTokenProvider(A4_INVENTORY_IMPORTER_MS,
-                    RhssoHelper.getSecretOfGigabitHub(A4_INVENTORY_IMPORTER_MS));
-
-    private final ApiClient a4NemoUpdater = new A4NemoUpdaterClient(authTokenProvider).getClient();
-    private final ApiClient a4NemoUpdaterImporter = new A4NemoUpdaterClient(authTokenProviderImporter).getClient();
+    private final A4NemoUpdaterClient a4NemoUpdater = new A4NemoUpdaterClient();
     private final A4ResourceInventoryRobot a4Inventory = new A4ResourceInventoryRobot();
 
     @Step("Trigger NEMO Update")
     public void triggerNemoUpdate(String uuid) {
         UpdateNemoTask updateNemoTask = new UpdateNemoTask();
         updateNemoTask.setEntityUuid(uuid);
-        a4NemoUpdaterImporter
+        a4NemoUpdater.getClient()
                 .nemoUpdateService()
                 .updateNemoTask()
                 .body(updateNemoTask)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Trigger NEMO Update")
     public void triggerAsyncNemoUpdate(List<String> uuids) {
-        a4NemoUpdater
+        a4NemoUpdater.getClient()
                 .nemoUpdateServiceAsync()
                 .updateNemoTaskAsync()
                 .body(uuids)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_CREATED_201)));
+                .execute(checkStatus(HTTP_CODE_CREATED_201));
     }
 
     @Step("Check if PUT request to NEMO wiremock with logical resource has happened")

@@ -2,12 +2,9 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.NetworkLineProfileManagementClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.NetworkLineProfileData;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.ifclient.network.profile.client.model.AsyncResponseNotification;
@@ -24,18 +21,16 @@ import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
 @Slf4j
 public class NetworkLineProfileManagementRobot {
 
     private static String CORRELATION_ID;
-    private final NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient(authTokenProvider);
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
+    private final NetworkLineProfileManagementClient networkLineProfileManagementClient = new NetworkLineProfileManagementClient();
 
 
     @Step("Performs actions with subscriberNetworklineProfile or l2SsaNspReference")
@@ -55,8 +50,7 @@ public class NetworkLineProfileManagementRobot {
                         .build()
                         .toString())
                 .body(resourceOrder)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
-        log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
 
         AsyncResponseNotification notification = new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), AsyncResponseNotification.class);
@@ -89,7 +83,6 @@ public class NetworkLineProfileManagementRobot {
                 newRequestPattern(RequestMethod.POST, urlPathEqualTo(CONSUMER_ENDPOINT))
                         .withHeader("X-Callback-Correlation-Id", equalTo(uuid)),
                 500_000);
-        log.info("Callback: " + requests);
         assertTrue(requests.size() >= 1, "Callback is found");
         return requests;
     }

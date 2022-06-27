@@ -14,6 +14,7 @@ import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.url;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_UI_MS;
 import static com.tsystems.tm.acc.ta.util.Assert.assertContains;
+import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 
 @Slf4j
 public class A4ImportPage {
@@ -28,7 +29,7 @@ public class A4ImportPage {
     @Step("Validate page")
     public A4ImportPage validate() {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible);
-        assertContains(url(), ENDPOINT);
+        assertUrlContainsWithTimeout(ENDPOINT);
         return this;
     }
 

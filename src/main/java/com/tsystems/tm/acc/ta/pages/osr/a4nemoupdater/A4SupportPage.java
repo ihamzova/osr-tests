@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.a4nemoupdater;
 
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class A4SupportPage {
 
     @Step("Login")
     public static A4SupportPage login() {
-        URL url = new OCUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(A4_RESOURCE_INVENTORY_UI_MS).withEndpoint(ENDPOINT).build();
         return open(url, A4SupportPage.class);
     }
 }
