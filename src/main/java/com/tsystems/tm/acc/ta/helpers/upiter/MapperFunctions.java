@@ -1,6 +1,6 @@
 package com.tsystems.tm.acc.ta.helpers.upiter;
 
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.ProfileState;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.SubscriberNeProfiesStates;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
