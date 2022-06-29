@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
