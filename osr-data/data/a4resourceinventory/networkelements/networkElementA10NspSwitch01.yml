@@ -9,5 +9,5 @@ values:
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
   type: "A4-A10NSP-Switch-v1"
-  plannedMatNr: "40990641"
+  plannedMatNr: "40990638"
   planningDeviceName: "bln.a10switch.7"
