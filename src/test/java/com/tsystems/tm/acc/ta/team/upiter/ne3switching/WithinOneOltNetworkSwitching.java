@@ -68,7 +68,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
 
     @BeforeMethod
     void setup() {
-        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOTelekomNSOOpsRW);
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.NearshoreEmployeesHungary);
         setCredentials(loginData.getLogin(), loginData.getPassword());
     }
 
