@@ -1054,8 +1054,8 @@ public class AccessLineRiRobot {
 
 
     @Step("Compare two Lists")
-    public <T, U> boolean compareLists(List<T> sourceList, List<U> targetList) {
-        return sourceList.size() == targetList.size() && sourceList.containsAll(targetList) && targetList.containsAll(sourceList);
+    public <T, U> boolean compareLists(List<T> actualList, List<U> expectedList) {
+        return actualList.size() == expectedList.size() && actualList.containsAll(expectedList) && expectedList.containsAll(actualList);
     }
 
     private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {

@@ -31,5 +31,5 @@ public interface UpiterConstants {
 
     String FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING = "business.resource-order-resource-inventory.enable-64-pon-splitting";
     String FEATURE_TOGGLE_CREATE_HOME_ID_POOL = "business.resource-order-resource-inventory.disable-home-id-pools-creation";
-
+    String FEATURE_TOGGLE_ENABLE_FTTB_NE2_NETWORK_SWITCHING = "service.network-switching-config-mgt.enable-fttb-ne2-network-switching";
 }

@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.networkswitching;
+package com.tsystems.tm.acc.ta.team.upiter.ne3switching;
 
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
@@ -35,7 +35,7 @@ import static org.testng.Assert.*;
         GATEWAY_ROUTE_MS
 })
 
-@Epic("Network Switching")
+@Epic("NE3 Network Switching")
 public class PortToPortNetworkSwitching extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
@@ -129,8 +129,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 "Number of target anpTags is incorrect");
         assertTrue(targetOnuIdsAfterPreparation.size() == sourceAccessLinesAfterPreparation.size(),
                 "Number of target onuIds is incorrect");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterPreparation);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterPreparation);
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterPreparation));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterPreparation));
     }
 
     @Test(dependsOnMethods = "networkSwitchingFullPortPreparationTest")
@@ -153,7 +153,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         networkSwitchingPage.clickSearchTab()
                 .searchPackagesByDevice(endSz_49_911_1100_76H1_1_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommit(packageId, "Portdeprovisionierung", "PREPARED");
+        networkSwitchingPage.startNe3Commit(packageId, "Portdeprovisionierung", "PREPARED");
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
         networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
@@ -180,8 +180,8 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H1_1_0).size(), expectedNumberofAccessLineOnTargetPort,
                 "Number of AccessLines on target port is incorrect");
 
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit);
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit));
 
         assertEquals(sourceOnuIdsAfterCommit.size(), 0, "Number of source onuIds after commit is incorrect");
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
@@ -193,7 +193,6 @@ public class PortToPortNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-114664")
     @Description("Network Switching Rollback")
     public void networkSwitchingRollbackTest() throws Exception {
-
         List<AccessLineDto> sourceAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
         List<AccessLineDto> targetAccessLinesBeforePreparation = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H1_1_1);
         List<Integer> sourceAnpTagsBeforePreparation = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforePreparation);
@@ -231,10 +230,10 @@ public class PortToPortNetworkSwitching extends GigabitTest {
         assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
                 && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size(),
                 "Source AccessLine before Preparation and after Rollback are not identical");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
-        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback));
     }
 
     @Test
@@ -261,7 +260,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 "OntSerialNumber was not updated on SubscriberNeProfile");
 
         networkSwitchingPage
-                .clickPaketverwaltungTab()
+                .clickPaketverwaltungNe3Tab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
@@ -293,7 +292,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 .searchPackagesByDevice(endSz_49_911_1100_76H1_1_2);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
         networkSwitchingPage
-                .clickPaketverwaltungTab()
+                .clickPaketverwaltungNe3Tab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
@@ -339,7 +338,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
 
         List<String> displayedHomeIds = networkSwitchingPage.clickPartialPortPreparation(endSz_49_30_179_76H1_3_0, endSz_49_911_1100_76H1_1_0)
                 .collectHomeIds().stream().map(homeIdElement -> homeIdElement.getText()).collect(Collectors.toList());
-        accessLineRiRobot.compareLists(displayedHomeIds, assignedHomeIds);
+        assertTrue(accessLineRiRobot.compareLists(displayedHomeIds, assignedHomeIds));
 
         List<String> checkedHomeIds = networkSwitchingPage.selectHomeIdsForPreparation(numberOfAccessLinesForSwitching);
         List<AccessLineDto> accessLinesForSwitchingBeforePreparation = accessLineRiRobot.getAccessLinesByHomeIds(checkedHomeIds);
@@ -399,7 +398,7 @@ public class PortToPortNetworkSwitching extends GigabitTest {
                 .searchPackagesByDevice(endSz_49_30_179_76H1_3_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
         networkSwitchingPage
-                .clickPaketverwaltungTab()
+                .clickPaketverwaltungNe3Tab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
