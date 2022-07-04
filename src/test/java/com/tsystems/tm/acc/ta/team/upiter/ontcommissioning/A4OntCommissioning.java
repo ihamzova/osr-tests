@@ -232,7 +232,6 @@ public class A4OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine state in incorrect",
