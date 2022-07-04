@@ -1,0 +1,14 @@
+name: EndSz_49_30_179_76H2
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H2"
+---
+name: EndSz_49_30_179_76H3
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/30/179/76H3"
+---
+name: EndSz_49_911_1100_76H1
+template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
+values:
+  endSz: "49/911/1100/76H1"

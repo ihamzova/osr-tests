@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.networkswitching;
+package com.tsystems.tm.acc.ta.team.upiter.ne3switching;
 
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
@@ -35,7 +35,7 @@ import static org.testng.Assert.*;
         GATEWAY_ROUTE_MS
 })
 
-@Epic("Network Switching")
+@Epic("NE3 Network Switching")
 public class WithinOneOltNetworkSwitching extends GigabitTest {
     private AccessLineRiRobot accessLineRiRobot;
     private NetworkSwitchingRobot networkSwitchingRobot;
@@ -90,7 +90,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
 
         List<String> displayedHomeIds = networkSwitchingPage.clickPartialPortPreparation(endSz_49_30_179_76H1_3_1, endSz_49_30_179_76H1_3_0)
                 .collectHomeIds().stream().map(homeIdElement -> homeIdElement.getText()).collect(Collectors.toList());
-        accessLineRiRobot.compareLists(displayedHomeIds, assignedHomeIds);
+        assertTrue(accessLineRiRobot.compareLists(displayedHomeIds, assignedHomeIds));
 
         List<String> checkedHomeIds = networkSwitchingPage.selectHomeIdsForPreparation(numberOfAccessLinesForSwitching);
         List<AccessLineDto> accessLinesForSwitchingBeforePreparation = accessLineRiRobot.getAccessLinesByHomeIds(checkedHomeIds);
@@ -133,30 +133,33 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
     @Test(dependsOnMethods = "networkSwitchingWithinOneOltPreparationTest")
     @TmsLink("DIGIHUB-121792")
     @Description("FTTH PON NE3 Switching Execution and Commit")
-    public void networkSwitchingWithinOneOltExecutionAndCommitTest() throws Exception {
-
-        List<AccessLineDto> allSourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1);
-        List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
-        List<AccessLineDto> sourceAccessLinesforSwitching = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_1);
-        List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesBeforeCommit);
-        List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesBeforeCommit);
-
-        int expectedNumberOfAccessLinesOnTargetPort = sourceAccessLinesforSwitching.size() +
-                accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size();
-
+    public void networkSwitchingWithinOneOltExecutionAndCommitTest() {
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.clickSearchTab()
                 .searchPackagesByDevice(endSz_49_30_179_76H1_3_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startExecution(packageId);
+        networkSwitchingPage.startNe3Execution(packageId);
         networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"),
                 "Wrong package status, expected EXECUTED, but found " + networkSwitchingPage.getPackageStatus());
         assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after execution");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after execution");
 
-        networkSwitchingPage.startCommit(packageId, "Portprovisionierung", "EXECUTED");
+        List<AccessLineDto> allSourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> sourceAccessLinesBeforeCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_1);
+        List<AccessLineDto> sourceAccessLinesforSwitching = accessLineRiRobot.getAccessLinesWithSwitchingProfile(endSz_49_30_179_76H1_3_1);
+
+        int expectedNumberOfAccessLinesOnTargetPort = sourceAccessLinesforSwitching.size() +
+                accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_0).size();
+
+        List<Integer> targetAnpTagsBeforeCommit = accessLineRiRobot.getAllocatedAnpTagsFromNsProfile(sourceAccessLinesforSwitching);
+        System.out.println("targetAnpTagsBeforeCommit = " + targetAnpTagsBeforeCommit);
+        List<Integer> targetOnuIdsBeforeCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, sourceAccessLinesforSwitching);
+        System.out.println("targetOnuIdsBeforeCommit = " + targetOnuIdsBeforeCommit);
+
+        networkSwitchingPage.startNe3Commit(packageId, "Portprovisionierung", "EXECUTED");
+        networkSwitchingPage.waitUntilNeededStatus("COMMIT_IN_PROGRESS", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("COMMIT_IN_PROGRESS"));
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
@@ -169,8 +172,11 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
 
         List<AccessLineDto> sourceAccessLinesAfterCommit = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H1_3_0);
         List<Integer> targetAnpTagsAfterCommit = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterCommit);
+        System.out.println("targetAnpTagsAfterCommit = " + targetAnpTagsAfterCommit);
         List<Integer> sourceOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_1, sourceAccessLinesAfterCommit);
         List<Integer> targetOnuIdsAfterCommit = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_30_179_76H1_3_0, sourceAccessLinesBeforeCommit);
+        System.out.println("sourceOnuIdsAfterCommit = " + sourceOnuIdsAfterCommit);
+        System.out.println("targetOnuIdsAfterCommit = " + targetOnuIdsAfterCommit);
 
         int expectedNumberOfAccessLinesOnSourcePort;
         if (allSourceAccessLinesBeforeCommit.size() - sourceAccessLinesforSwitching.size() > 4) {
@@ -183,8 +189,8 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
                 "Number of AccessLines on target port is incorrect");
         assertEquals(accessLineRiRobot.getAccessLinesByPort(endSz_49_30_179_76H1_3_1).size(), expectedNumberOfAccessLinesOnSourcePort,
                 "Number of AccessLines on source port is incorrect");
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommit, targetAnpTagsBeforeCommit);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommit, targetOnuIdsBeforeCommit);
+        assertTrue(targetAnpTagsAfterCommit.containsAll(targetAnpTagsBeforeCommit));
+        assertTrue(targetOnuIdsAfterCommit.containsAll(targetOnuIdsBeforeCommit));
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommit).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
                 "Some of the switched AccessLines still have a NetworkSwitchingProfile");
         assertEquals(sourceOnuIdsAfterCommit.size(), 0, "Some source AccessLines still have source onuIds after Commit");
@@ -208,7 +214,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
                 "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-        networkSwitchingPage.startExecution(packageId);
+        networkSwitchingPage.startNe3Execution(packageId);
         networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"),
                 "Wrong package status, expected EXECUTED, but found " + networkSwitchingPage.getPackageStatus());
@@ -224,7 +230,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
                 "OntSerialNumber was not updated on SubscriberNeProfile");
 
         networkSwitchingPage
-                .clickPaketverwaltungTab()
+                .clickPaketverwaltungNe3Tab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("EXECUTED", packageId);
@@ -265,7 +271,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         String homeId = homeIdManagementRobot.generateHomeid().getHomeId();
         accessLineRiRobot.updateHomeIdOnAccessLine(accessLineDto.getLineId(), homeId);
         networkSwitchingPage
-                .clickPaketverwaltungTab()
+                .clickPaketverwaltungNe3Tab()
                 .getPackageInfo(packageId)
                 .waitUntilNeededStatus("UPDATING", packageId)
                 .waitUntilNeededStatus("PREPARED", packageId);
@@ -335,10 +341,11 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
                 && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size(),
                 "Number of source and target AccessLines after Rollback is incorrect");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
-        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback));
     }
 
     @Test
@@ -365,7 +372,7 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getPackageStatus().contains("PREPARED"),
                 "Wrong package status, expected PREPARED, but found " + networkSwitchingPage.getPackageStatus());
 
-        networkSwitchingPage.startExecution(packageId);
+        networkSwitchingPage.startNe3Execution(packageId);
         networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"),
                 "Wrong package status, expected EXECUTED, but found " + networkSwitchingPage.getPackageStatus());
@@ -394,9 +401,10 @@ public class WithinOneOltNetworkSwitching extends GigabitTest {
         assertTrue(targetAccessLinesBeforePreparation.size() == targetAccessLinesAfterRollback.size()
                 && sourceAccessLinesBeforePreparation.size() == sourceAccessLinesAfterRollback.size(),
                 "Number of source and target AccessLines after Rollback is incorrect");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback);
-        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback);
-        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback);
+
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparation, sourceAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparation, sourceOnuIdsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsBeforePreparation, targetAnpTagsAfterRollback));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsBeforePreparation, targetOnuIdsAfterRollback));
     }
 }

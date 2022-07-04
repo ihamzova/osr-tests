@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.team.upiter.networkswitching;
+package com.tsystems.tm.acc.ta.team.upiter.ne3switching;
 
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
@@ -34,7 +34,7 @@ import static org.testng.Assert.*;
         GATEWAY_ROUTE_MS
 })
 
-@Epic("Network Switching")
+@Epic("NE3 Network Switching")
 public class CardToCardNetworkSwitching extends GigabitTest {
 
     private AccessLineRiRobot accessLineRiRobot;
@@ -129,10 +129,11 @@ public class CardToCardNetworkSwitching extends GigabitTest {
                 "Number of target onuIds after preparation on port1 is incorrect");
         assertTrue(targetOnuIdsAfterPreparationPort2.size() == sourceAccessLinesAfterPreparationPort2.size(),
                 "Number of target onuIds after preparation on port2 is incorrect");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterPreparationPort1);
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterPreparationPort2);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterPreparationPort1);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort2, sourceOnuIdsAfterPreparationPort2);
+
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterPreparationPort1));
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterPreparationPort2));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterPreparationPort1));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort2, sourceOnuIdsAfterPreparationPort2));
     }
 
     @Test(dependsOnMethods = "networkSwitchingCardtoCardPreparationTest")
@@ -151,7 +152,7 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         networkSwitchingPage.clickSearchTab()
                 .searchPackagesByDevice(endSz_49_911_1100_76H2_1_0);
         String packageId = networkSwitchingPage.getPackageIdOnSearchTab();
-        networkSwitchingPage.startCommit(packageId, "Portdeprovisionierung", "PREPARED");
+        networkSwitchingPage.startNe3Commit(packageId, "Portdeprovisionierung", "PREPARED");
 
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during commit phase");
         assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during commit phase");
@@ -169,10 +170,10 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         List<Integer> targetOnuIdsAfterCommitPort1 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_0, sourceAccessLinesBeforeCommitPort1);
         List<Integer> targetOnuIdsAfterCommitPort2 = accessLineRiRobot.getAllocatedOnuIdsFromAccessLines(endSz_49_911_1100_76H2_1_1, sourceAccessLinesBeforeCommitPort2);
 
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort1, targetAnpTagsBeforeCommitPort1);
-        accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort2, targetAnpTagsBeforeCommitPort2);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort1, targetOnuIdsBeforeCommitPort1);
-        accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort2, targetOnuIdsBeforeCommitPort2);
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort1, targetAnpTagsBeforeCommitPort1));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsAfterCommitPort2, targetAnpTagsBeforeCommitPort2));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort1, targetOnuIdsBeforeCommitPort1));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsAfterCommitPort2, targetOnuIdsBeforeCommitPort2));
 
         assertTrue(accessLineRiRobot.getNsProfile(sourceAccessLinesAfterCommitPort1).stream().allMatch(networkSwitchingProfile -> networkSwitchingProfile == null),
                 "Some of the switched AccessLines on port1 still have NetworkSwitchingProfiles");
@@ -239,7 +240,7 @@ public class CardToCardNetworkSwitching extends GigabitTest {
         List<AccessLineDto> sourceAccessLinesAfterRollbackPort1 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_0);
         List<AccessLineDto> sourceAccessLinesAfterRollbackPort2 = accessLineRiRobot.getAccessLinesWithHomeId(endSz_49_30_179_76H2_3_1);
         List<AccessLineDto> targetAccessLinesAfterRollbackPort1 = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0);
-        List<AccessLineDto> targetAccessLinesAfterRollbackPort2 = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_0);
+        List<AccessLineDto> targetAccessLinesAfterRollbackPort2 = accessLineRiRobot.getAccessLinesByPort(endSz_49_911_1100_76H2_1_1);
         List<Integer> sourceAnpTagsAfterRollbackPort1 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterRollbackPort1);
         List<Integer> sourceAnpTagsAfterRollbackPort2 = accessLineRiRobot.getAllocatedAnpTags(sourceAccessLinesAfterRollbackPort2);
 
@@ -259,13 +260,13 @@ public class CardToCardNetworkSwitching extends GigabitTest {
                 sourceAccessLinesBeforePreparationPort1.size() == sourceAccessLinesAfterRollbackPort1.size() &&
                 sourceAccessLinesBeforePreparationPort2.size() == sourceAccessLinesAfterRollbackPort2.size(),
                 "Source AccessLine before Preparation and after Rollback are not identical");
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterRollbackPort1);
-        accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterRollbackPort2);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterRollbackPort1);
-        accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort2, sourceOnuIdsAfterRollbackPort2);
-        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparationPort1, targetAnpTagsAfterRollbackPort1);
-        accessLineRiRobot.compareLists(targetAnpTagsBeforePreparationPort2, targetAnpTagsAfterRollbackPort2);
-        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort1, targetOnuIdsAfterRollbackPort1);
-        accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort2, targetOnuIdsAfterRollbackPort2);
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort1, sourceAnpTagsAfterRollbackPort1));
+        assertTrue(accessLineRiRobot.compareLists(sourceAnpTagsBeforePreparationPort2, sourceAnpTagsAfterRollbackPort2));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort1, sourceOnuIdsAfterRollbackPort1));
+        assertTrue(accessLineRiRobot.compareLists(sourceOnuIdsBeforePreparationPort2, sourceOnuIdsAfterRollbackPort2));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsBeforePreparationPort1, targetAnpTagsAfterRollbackPort1));
+        assertTrue(accessLineRiRobot.compareLists(targetAnpTagsBeforePreparationPort2, targetAnpTagsAfterRollbackPort2));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort1, targetOnuIdsAfterRollbackPort1));
+        assertTrue(accessLineRiRobot.compareLists(targetOnuIdsBeforePreparationPort2, targetOnuIdsAfterRollbackPort2));
     }
 }
