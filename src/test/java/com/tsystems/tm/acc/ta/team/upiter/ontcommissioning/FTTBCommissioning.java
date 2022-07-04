@@ -126,7 +126,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     //check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
@@ -183,7 +182,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
@@ -223,7 +221,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", terminationCallback.getError());
-    assertNull("Callback returned a response body", terminationCallback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED,
@@ -263,7 +260,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", terminationCallback.getError());
-    assertNull("Callback returned a response body", terminationCallback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN, accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax2.getLineId()));

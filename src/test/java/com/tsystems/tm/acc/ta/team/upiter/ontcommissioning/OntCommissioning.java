@@ -194,7 +194,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wansn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId()));
@@ -220,7 +219,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wasn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()));
@@ -246,7 +244,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wasn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()));
@@ -284,7 +281,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("State of the AccessLine that wasn't decommissioned is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
@@ -322,7 +318,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine that was decommissioned was deleted although it shouldn't have",
