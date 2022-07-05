@@ -25,6 +25,7 @@ public class PonInventoryStub extends AbstractStubMapping {
     public static final String PATH_TO_PO_MOCK_DECOM_DIFF_SLOT = "/team/morpheus/ponInventory_negative_decomissioning_different_slots.json";
     public static final String PATH_TO_DOMAIN_MOCK = "/team/morpheus/ponInventoryDomain.json";
     public static final String PATH_TO_DOMAIN_MOCK_WITH_DPU_DEMANDS = "/team/morpheus/ponInventoryDomainWithDpuDemands.json";
+    public static final String PATH_TO_DOMAIN_MOCK_BNG_FROM_MOBILE_DPU = "/team/morpheus/ponInventoryDomainBngPlatformFromMobileDpuUi.json";
 
     //TODO refactor this in inno sprint: return null is rough
     public MappingBuilder getLlc200(Dpu dpu, OltDevice olt){
@@ -111,6 +112,18 @@ public class PonInventoryStub extends AbstractStubMapping {
         return null;
     }
 
+    public MappingBuilder getLlcForDomainFromMobileDPU200(DpuDevice dpu){
+        try {
+            return get(urlPathEqualTo(GET_LLC_URL))
+                    .withName("getllcDomainFromMobileDpu200")
+                    .willReturn(aDefaultResponseWithBody(prepareBodyForDomainFromMobileDpu(dpu),200))
+                    .withQueryParam("dpuEndSz", equalTo(dpu.getEndsz()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private String prepareBody(OltDevice oltDevice, String mockPath) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
                 .getResource(mockPath).getFile()), Charset.defaultCharset())
@@ -126,5 +139,10 @@ public class PonInventoryStub extends AbstractStubMapping {
     private String prepareBodyForDomainWithDpuDemands(DpuDevice dpuDevice) throws IOException {
         return FileUtils.readFileToString(new File(getClass()
                 .getResource(PATH_TO_DOMAIN_MOCK_WITH_DPU_DEMANDS).getFile()), Charset.defaultCharset());
+    }
+
+    private String prepareBodyForDomainFromMobileDpu(DpuDevice dpuDevice) throws IOException {
+        return FileUtils.readFileToString(new File(getClass()
+                .getResource(PATH_TO_DOMAIN_MOCK_BNG_FROM_MOBILE_DPU).getFile()), Charset.defaultCharset());
     }
 }

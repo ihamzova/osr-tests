@@ -21,6 +21,15 @@ public class WorkorderStub extends AbstractStubMapping {
                 .withName("getWorkorder200");
     }
 
+    public MappingBuilder getWorkorderDomain() {
+        return get(urlMatching(GET_WORKORDER_URL + "/.*"))
+                .willReturn(aDefaultResponseWithBody(
+                        serialize(new WorkorderMapper().getWorkorderDomain()),
+                        200
+                ))
+                .withName("getWorkorderDomain");
+    }
+
     public MappingBuilder getWorkorderGF_AP_INSTALLATION() {
         return get(urlMatching(GET_WORKORDER_URL + "/.*"))
                 .willReturn(aDefaultResponseWithBody(

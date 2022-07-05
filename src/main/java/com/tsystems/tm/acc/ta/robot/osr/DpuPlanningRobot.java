@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
+import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.DpuPlanningClient;
 import com.tsystems.tm.acc.ta.helpers.NotificationHelper;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -27,6 +29,17 @@ import static org.testng.Assert.*;
 public class DpuPlanningRobot {
 
     private final DpuPlanningClient dpuPlanningClient = new DpuPlanningClient();
+    private UnleashClient unleashClient = new UnleashClient();
+    String FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT = "business.rori.use-dpu-configuration-v2-with-a4-support";
+
+    @Step("use-dpu-configuration-v2-with-a4-support - сhange feature toggle state")
+    public void changeFeatureToggleDpuConfigurationWithA4Support(boolean toggleState) {
+        if (toggleState) {
+            unleashClient.enableToggle(FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT);
+        } else {
+            unleashClient.disableToggle(FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT);
+        }
+    }
 
     @Step("Deserialize DpuDemandCreate object from json")
     public DpuDemandCreate getDpuDemandCreateFromJson(String pathToFile) {
@@ -192,6 +205,38 @@ public class DpuPlanningRobot {
                                 .op(JsonPatchOperation.OpEnum.ADD)
                                 .path("/dpuPortCount")
                                 .value("8")
+                ))
+                .executeAs(checkStatus(200));
+    }
+
+    @Step("Fulfill DPU Demand")
+    public DpuDemand fulfillDpuDemandDomain(DpuDemand dpuDemandToModify) {
+        return dpuPlanningClient.getClient().dpuDemand().patchDpuDemand()
+                .idPath(dpuDemandToModify.getId())
+                .body(Arrays.asList(new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/state")
+                                .value("FULFILLED"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuEndSz")
+                                .value("49/30/306/71G1"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/emsNbiName")
+                                .value("SDX2221-04-TP"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatName")
+                                .value("SDX2221-04 TP-AC-M-FTTB ETSI"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuMatNo")
+                                .value("40898328"),
+                        new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
+                                .op(JsonPatchOperation.OpEnum.ADD)
+                                .path("/dpuPortCount")
+                                .value("4")
                 ))
                 .executeAs(checkStatus(200));
     }

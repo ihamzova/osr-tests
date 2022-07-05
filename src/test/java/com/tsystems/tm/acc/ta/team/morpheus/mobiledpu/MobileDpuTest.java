@@ -50,7 +50,7 @@ public class MobileDpuTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_BNG);
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
         mobileDpuPage.inputSerialNumber();
@@ -77,7 +77,7 @@ public class MobileDpuTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
         mobileDpuPage.inputSerialNumber();
@@ -112,7 +112,7 @@ public class MobileDpuTest extends GigabitTest {
                 .build()
                 .publish();
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectMultipleDpuDemands();
 
         dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
@@ -136,7 +136,7 @@ public class MobileDpuTest extends GigabitTest {
                 .build()
                 .publish();
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectMultipleDpuDemandsDisabled();
 
         dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
@@ -153,7 +153,7 @@ public class MobileDpuTest extends GigabitTest {
                 .build()
                 .publish();
 
-        mobileDpuPage = MobileDpuPage.openPage("9999");
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.errorNotificationDisplayed();
 
     }
@@ -166,7 +166,7 @@ public class MobileDpuTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
 
@@ -190,7 +190,7 @@ public class MobileDpuTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addMocksDpuCommissioningGetDevice500");
@@ -213,7 +213,7 @@ public class MobileDpuTest extends GigabitTest {
         dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
         dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
 
-        mobileDpuPage = MobileDpuPage.openPage(folId);
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
 
