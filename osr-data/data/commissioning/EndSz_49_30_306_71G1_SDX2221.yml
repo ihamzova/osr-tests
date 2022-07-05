@@ -3,7 +3,7 @@ template: com.tsystems.tm.acc.ta.data.osr.models.DpuDevice
 values:
   vpsz: "49/30/306"
   fsz: "71G1"
-  oltEndsz: "49/30/306/76H7"
+  oltEndsz: "49/30/179/76H8"
   oltGponSlot: "3"
   oltGponPort: "3"
   bngEndsz: "49/30/306/43G3"

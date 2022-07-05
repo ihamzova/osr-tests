@@ -530,7 +530,7 @@ public class MorpeusWireMockMappingsContextBuilder extends WireMockMappingsConte
     public MorpeusWireMockMappingsContextBuilder addMocksForDomainFromMobileDpu(DpuDevice dpu) {
         context.add(new SealStub().postDomainDpuDpuConfiguration202(dpu));
         context.add(new SealStub().postDomainOltDpuConfiguration202(dpu));
-        context.add(new PonInventoryStub().getLlcForDomainWithDpuDemands200(dpu));
+        context.add(new PonInventoryStub().getLlcForDomainFromMobileDPU200(dpu));
         context.add(new WorkorderStub().getWorkorderDomain());
         context.add(new WorkorderStub().patchWorkorderInProgress200());
         context.add(new WorkorderStub().patchWorkorderCompleted200());
