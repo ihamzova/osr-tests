@@ -16,6 +16,7 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.List;
 
+import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getProviderAuthorizationCodeTokenProvider;
 import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getPublicAuthorizationCodeTokenProvider;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertEquals;
@@ -71,8 +72,8 @@ public class OntUsageRobot {
 
     @Step("check ONT via API")
     public void checkOntViaAPI(Ont ontTestData, OntUsageEntity.StatusEnum status, Credentials adminLogin) {
-        AuthorizationCodeTokenProvider tokenProvider = getPublicAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword(), "");
-        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider, tokenProvider);
+        AuthorizationCodeTokenProvider tokenProvider = getProviderAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword());
+        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider);
         List<OntUsageEntity> ontResponse = ontUsageClient.
                 getClient().
                 ontUsageCrudOperations().
@@ -91,8 +92,8 @@ public class OntUsageRobot {
 
     @Step("place work order via API")
     public void placeWorkOrderViaAPI(Ont ontTestData, Credentials adminLogin, Long workOrderId, OntUsagePutRequest.StatusEnum desiredStatus) {
-        AuthorizationCodeTokenProvider tokenProvider = getPublicAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword(), "");
-        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider, tokenProvider);
+        AuthorizationCodeTokenProvider tokenProvider = getProviderAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword());
+        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider);
         List<OntUsageEntity> getOntResponse = ontUsageClient.
                 getClient().
                 ontUsageCrudOperations().
@@ -122,7 +123,7 @@ public class OntUsageRobot {
     @Step("Create ONT via supplier API")
     public void createOntViaSupplierApi(Ont ont, Supplier supplier, boolean useForOnlyOneEmployee, String username, String password, String realm) {
         AuthorizationCodeTokenProvider tokenProvider = getPublicAuthorizationCodeTokenProvider(username, password, realm);
-        OntUsageClient client = new OntUsageClient(tokenProvider, tokenProvider);
+        OntUsageClient client = new OntUsageClient(tokenProvider);
         OntUsagePostRequest postRequest = new OntUsagePostRequest();
 
         postRequest.setPartyId(Long.parseLong(supplier.getAtomicOrganizationId()));
