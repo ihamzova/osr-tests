@@ -115,7 +115,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        mobileDpuPage = MobileDpuPage.openPage("98765");
+        mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
         mobileDpuPage.inputSerialNumber();

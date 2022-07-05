@@ -1,5 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.mobiledpu;
 
+import com.tsystems.tm.acc.ta.pages.osr.ztcommissioning.OltInstallationPage;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -17,6 +19,8 @@ public class MobileDpuPage {
 
     private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
     private static final Integer WAIT_TIME_FOR_PROCESS = 90_000;
+    public static final String APP = "portal-proxy";
+    public static final String ENDPOINT = "/auftragnehmerportal-mui/dpu-installation/";
 
     public static final By DPU_DEMAND_RADIO_BUTTON = By.id("mat-radio-2");
     public static final By CONFIRM_BUTTON = By.xpath("//button[text()=' Auswahl bestätigen ']");
@@ -31,9 +35,12 @@ public class MobileDpuPage {
     public static final By ALERT = By.xpath("//h2[@role='alert']");
 
     @Step("Open MobileDpuPage")
-    public static MobileDpuPage openPage(String folId) throws MalformedURLException {
-        URL url = new URL("https://mobile-dpu-app-osr-autotest-01.telitcaas3.t-internal.com/auftragnehmerportal-mui/dpu-installation/?a-cid=47100#/" + folId + "/edit");
-        return open(url, MobileDpuPage.class);
+    public static MobileDpuPage openPage() {
+        URL url = new GigabitUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", "47100").buildExternal();
+        String targetUrl = url.toString();
+        targetUrl += "#/651799/edit";
+        log.info("DPU Mobile UI Opening url " + targetUrl);
+        return open(targetUrl, MobileDpuPage.class);
     }
 
     @Step("Go to Next page")
