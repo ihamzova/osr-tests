@@ -137,12 +137,17 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
 
         // todo check if process is finished  and remove sleep
         try {
-            Thread.sleep( 4 * 60_000);
+            Thread.sleep( 6 * 60_000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
+        accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDevice,
+                oltDevice,
+                0,
+                1, 1);
+        accessLineRiRobot.checkFtthPortParameters(oltDevice);
     }
 
 }
