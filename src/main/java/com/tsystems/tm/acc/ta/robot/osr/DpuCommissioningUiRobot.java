@@ -47,7 +47,6 @@ public class DpuCommissioningUiRobot {
     private final UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient(authTokenProviderOltBffProxy);
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
-    private String businessKey;
 
     @Step("Start automatic dpu creation and commissioning process")
     public void startDpuCommissioning(DpuDevice dpuDevice, boolean withDpuDemand) {
@@ -72,9 +71,6 @@ public class DpuCommissioningUiRobot {
         assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Device LifeCycleState mismatch");
         assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Port LifeCycleState mismatch");
         dpuInfoPage.startDpuCommissioning();
-        businessKey = dpuInfoPage.getBusinessKey();
-        Assert.assertNotNull(businessKey);
-        Assert.assertFalse(businessKey.isEmpty());
 
         assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Device LifeCycleState after com. mismatch");
 
@@ -179,6 +175,16 @@ public class DpuCommissioningUiRobot {
         assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Port LifeCycleState after decom. mismatch");
     }
 
+    @Step("Start DPU decommissioning process v2")
+    public void startDpuDecommissioningV2(DpuDevice dpuDevice) {
+        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
+        oltSearchPage.validateUrl();
+        oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
+        DpuInfoPage dpuInfoPage = new DpuInfoPage();
+        dpuInfoPage.validateUrl();
+        dpuInfoPage.startDpuDecommissioningV2();
+    }
+
     @Step("Checks data in ri after dpu decommissioning process")
     public void checkDpuDecommissioningResult(DpuDevice dpuDevice) {
 
@@ -254,10 +260,5 @@ public class DpuCommissioningUiRobot {
                 .uplinkAncpConfigurationQuery("1")
                 .executeSqlQuery("1")
                 .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
-    }
-
-    @Step("get businessKey")
-    public String getBusinessKey() {
-        return businessKey;
     }
 }
