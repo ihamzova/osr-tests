@@ -27,11 +27,11 @@ public class WgFttbAccessProvisioningRobot {
                 .xCallbackCorrelationIdHeader(String.valueOf(uuid))
                 .xCallbackUrlHeader(new GigabitUrlBuilder("wiremock-acc")
                         .withEndpoint(CONSUMER_ENDPOINT)
-                        .buildContainer()
+                        .buildUri()
                         .toString())
                 .xCallbackErrorUrlHeader(new GigabitUrlBuilder("wiremock-acc")
                         .withEndpoint(CONSUMER_ENDPOINT)
-                        .buildContainer()
+                        .buildUri()
                         .toString())
                 .endSZQuery(dpuEndSz)
                 .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
