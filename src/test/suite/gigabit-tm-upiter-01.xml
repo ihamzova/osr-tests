@@ -74,11 +74,16 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontusage.OntUsageTest"/>
         </classes>
     </test>
-    <test thread-count="1" name="Network Switching Tests">
+    <test thread-count="1" name="NE3 Network Switching Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ne3switching.CardToCardNetworkSwitching"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ne3switching.PortToPortNetworkSwitching"/>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ne3switching.WithinOneOltNetworkSwitching"/>
+        </classes>
+    </test>
+    <test thread-count="1" name="NE2 Network Switching Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.ne2switching.FtthNetworkSwitching"/>
         </classes>
     </test>
     <test thread-count="1" name="FTTH 1.7 Migration">

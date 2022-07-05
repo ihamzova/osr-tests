@@ -12,6 +12,7 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -29,6 +30,7 @@ import static org.testng.Assert.*;
         GATEWAY_ROUTE_MS
 })
 
+@Epic("NE2 Network Switching")
 public class FtthNetworkSwitching extends GigabitTest {
 
     private NetworkSwitchingRobot networkSwitchingRobot;
