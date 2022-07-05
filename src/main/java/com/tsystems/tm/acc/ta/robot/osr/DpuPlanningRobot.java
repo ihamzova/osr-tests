@@ -224,7 +224,7 @@ public class DpuPlanningRobot {
                         new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
                                 .op(JsonPatchOperation.OpEnum.ADD)
                                 .path("/dpuEndSz")
-                                .value(dpuDemandToModify.getDpuEndSz()),
+                                .value("49/30/306/71G1"),
                         new com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperation()
                                 .op(JsonPatchOperation.OpEnum.ADD)
                                 .path("/emsNbiName")
