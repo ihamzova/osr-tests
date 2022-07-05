@@ -1,6 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.api.osr.DpuPlanningClient;
 import com.tsystems.tm.acc.ta.helpers.NotificationHelper;
 import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
@@ -22,12 +23,24 @@ import java.util.List;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
 import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.morpheus.CommonTestData.*;
+import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.FEATURE_TOGGLE_CREATE_HOME_ID_POOL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 
 public class DpuPlanningRobot {
 
     DpuPlanningClient dpuPlanningClient = new DpuPlanningClient(new RhssoClientFlowAuthTokenProvider(DPU_PLANNING, RhssoHelper.getSecretOfGigabitHub(DPU_PLANNING)));
+    private UnleashClient unleashClient = new UnleashClient();
+    String FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT = "business.rori.use-dpu-configuration-v2-with-a4-support";
+
+    @Step("use-dpu-configuration-v2-with-a4-support - сhange feature toggle state")
+    public void changeFeatureToggleDpuConfigurationWithA4Support(boolean toggleState) {
+        if (toggleState) {
+            unleashClient.enableToggle(FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT);
+        } else {
+            unleashClient.disableToggle(FEATURE_TOGGLE_DPU_CONFIG_A4_SUPPORT);
+        }
+    }
 
     @Step("Deserialize DpuDemandCreate object from json")
     public DpuDemandCreate getDpuDemandCreateFromJson(String pathToFile) {

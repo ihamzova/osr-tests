@@ -6,6 +6,7 @@ import com.tsystems.tm.acc.data.osr.models.dpudemand.DpuDemandCase;
 import com.tsystems.tm.acc.data.osr.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.osr.models.fttbneprofile.FttbNeProfileCase;
 import com.tsystems.tm.acc.data.osr.models.portprovisioning.PortProvisioningCase;
+import com.tsystems.tm.acc.ta.api.UnleashClient;
 import com.tsystems.tm.acc.ta.data.mercury.wiremock.MercuryWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.morpheus.wiremock.MorpeusWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
@@ -61,6 +62,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
     @BeforeClass
     public void init() {
         dpuCommissioningUiRobot.restoreOsrDbState();
+        dpuPlanningRobot.changeFeatureToggleDpuConfigurationWithA4Support(true);
 
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_306_71G1_SDX2221);
         dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.DpuDemand_49_30_306_71G1);
@@ -88,6 +90,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
                 .eventsHook(attachEventsToAllureReport());
         dpuCommissioningUiRobot.clearResourceInventoryDataBase(dpuDevice);
         dpuCommissioningUiRobot.restoreOsrDbState();
+        dpuPlanningRobot.changeFeatureToggleDpuConfigurationWithA4Support(false);
     }
 
     @Test(description = "DPU Commissioning V2 from Mobile DPU UI: BNG Platform")
@@ -100,7 +103,9 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
                 .addMocksForDomainFromMobileDpu(dpuDevice)
                 .build()
-                .publish();
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "dpuCommissioningPositiveDomain");
         new MercuryWireMockMappingsContextBuilder(mappingsContext)
@@ -110,7 +115,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
-        mobileDpuPage = MobileDpuPage.openPage("123456");
+        mobileDpuPage = MobileDpuPage.openPage("98765");
         mobileDpuPage.selectDpuDemand();
         mobileDpuPage.goToNextPage();
         mobileDpuPage.inputSerialNumber();

@@ -29,7 +29,7 @@ import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 public class MobileDpuPage {
 
     private static final Integer WAIT_TIME_FOR_BUTTON_ENABLED = 2_000;
-    private static final Integer WAIT_TIME_FOR_PROCESS = 50_000;
+    private static final Integer WAIT_TIME_FOR_PROCESS = 90_000;
 
     public static final By DPU_DEMAND_RADIO_BUTTON = By.id("mat-radio-3");
     public static final By CONFIRM_BUTTON = By.xpath("//button[text()=' Auswahl bestätigen ']");
