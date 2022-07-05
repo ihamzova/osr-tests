@@ -1,20 +1,17 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
 import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryFillDbClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.testng.Assert;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -22,29 +19,20 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.STATUS_WALLED_GARDEN;
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.BackhaulStatus.CONFIGURED;
-import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.PortType.*;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.BackhaulStatus.CONFIGURED;
+import static com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.PortType.*;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
 public class AccessLineRiRobot {
     private static final Integer LATENCY_FOR_PORT_PROVISIONING = 500_000;
-    private static final Integer LATENCY_FOR_RECONFIGURATION = 70_000;
+    private static final Integer LATENCY_FOR_ACCESSLINE_DEPROVISIONING = 30_000;
+    private static final Integer LATENCY_FOR_RECONFIGURATION = 80_000;
 
-    private ApiClient accessLineResourceInventory = new AccessLineResourceInventoryClient(authTokenProvider).getClient();
-    private ApiClient accessLineResourceInventoryCa = new AccessLineResourceInventoryClient(authTokenProviderCa).getClient();
-    private ApiClient accessLineResourceInventoryWiremock = new AccessLineResourceInventoryClient(authTokenProviderWiremock).getClient();
-    private AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProvider);
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider
-            ("wg-access-provisioning", RhssoHelper.getSecretOfGigabitHub("wg-access-provisioning"));
-    private static final AuthTokenProvider authTokenProviderCa = new RhssoClientFlowAuthTokenProvider
-            ("ca-integration", RhssoHelper.getSecretOfGigabitHub("ca-integration"));
-    private static final AuthTokenProvider authTokenProviderWiremock = new RhssoClientFlowAuthTokenProvider
-            ("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
-
+    private final AccessLineResourceInventoryClient accessLineResourceInventory = new AccessLineResourceInventoryClient();
+    private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
 
     @Step("Clear Al RI db")
     public void clearDatabase() {
@@ -52,7 +40,7 @@ public class AccessLineRiRobot {
                 .getClient()
                 .fillDatabase()
                 .truncateDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     public void clearDatabaseByOlt(String endSz) {
@@ -61,7 +49,7 @@ public class AccessLineRiRobot {
                 .fillDatabase()
                 .removeOlt()
                 .END_SZQuery(endSz)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2, default values")
@@ -70,7 +58,7 @@ public class AccessLineRiRobot {
                 .fillDatabaseForOltCommissioningWithDpu()
                 .HOME_ID_SEQQuery(HOME_ID_SEQ)
                 .LINE_ID_SEQQuery(LINE_ID_SEQ)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
@@ -81,7 +69,7 @@ public class AccessLineRiRobot {
                 .LINE_ID_SEQQuery(LINE_ID_SEQ)
                 .SLOT_NUMBER1Query(oltSlot)
                 .END_SZQuery(oltEndSz)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data as a part of OLT Commissioning process emulation, v2")
@@ -97,7 +85,7 @@ public class AccessLineRiRobot {
                 .DPU_ENDSZQuery(dpuEndSz)
                 .OLT_SLOT_WITH_DPUQuery(oltSlotWithDpu)
                 .OLT_PORT_WITH_DPUQuery(oltPortWithDpu)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data as a part of Adtran OLT Commissioning process emulation")
@@ -105,7 +93,7 @@ public class AccessLineRiRobot {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().fillDatabaseWithAdtranOlt()
                 .HOME_ID_SEQQuery(1)
                 .LINE_ID_SEQQuery(1)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data for Network Switching")
@@ -117,7 +105,7 @@ public class AccessLineRiRobot {
                 .SLOT_NUMBER1Query(sourcePort.getSlotNumber())
                 .END_SZ_2Query(targetPort.getEndSz())
                 .SLOT_NUMBER2Query(targetPort.getSlotNumber())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Fill database with test data as a part of DPU Preprovisioning process emulation, v2")
@@ -133,7 +121,7 @@ public class AccessLineRiRobot {
                 .OLT_SLOT_WITH_DPUQuery(oltDevice.getSlotNumber())
                 .OLT_PORT_WITH_DPUQuery(oltDevice.getPortNumber())
                 .DPU_END_SZQuery(dpuDevice.getEndsz())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
         if (oltDevice.getSlotNumber().equals("null")) oltDevice.setSlotNumber(null);
     }
 
@@ -434,15 +422,19 @@ public class AccessLineRiRobot {
             //catch the exception here . Which is block didn't execute within the time limit
         }
 
-        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus());
-        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus());
+        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSyncStatus(),
+                "DefaultNeProfile syncStatus is incorrect");
+        assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNetworkLineProfile().getSyncStatus(),
+                "DefaultNetworkLineProfile syncStatus is incorrect");
 
         if (getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile() != null) {
-            assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus());
+            assertNull(getAccessLinesByLineId(lineId).get(0).getDefaultNeProfile().getSubscriberNeProfile().getSyncStatus(),
+                    "SubscriberNeProfile syncStatus is incorrect");
         }
 
         if (getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile() != null) {
-            assertNull(getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus());
+            assertNull(getAccessLinesByLineId(lineId).get(0).getSubscriberNetworkLineProfile().getSyncStatus(),
+                    "SubscriberNetworkLineProfile syncStatus is incorrect");
         }
     }
 
@@ -455,7 +447,7 @@ public class AccessLineRiRobot {
     }
 
     @Step("Check LineId Prefix")
-    public void checkLineIdPrefix(PortProvisioning port, String expectedPrefix){
+    public void checkLineIdPrefix(PortProvisioning port, String expectedPrefix) {
         List<String> actualPrefixes =
                 getLineIdsByPort(port).stream().map(AccessLineRiRobot::getLineIdPrefix).collect(Collectors.toList());
         assertTrue(actualPrefixes.stream().allMatch(prefix -> prefix.equals(expectedPrefix)), "LineId prefixes are incorrect");
@@ -464,23 +456,36 @@ public class AccessLineRiRobot {
     @Step("Remove lines with id > 1008, change some port refs")
     public void prepareTestDataToDeprovisioning(PortProvisioning port) {
         // delete extra lines
+        List<AccessLineDto> accessLineIds = new ArrayList<AccessLineDto>();
         getAccessLinesByPort(port).stream()
-                .filter(line -> line.getId() > 1008)
+                .filter(line -> line.getStatus() == AccessLineStatus.ASSIGNED)
                 .forEach(line -> {
-                    accessLineResourceInventory.accessLineController()
+                    accessLineResourceInventory.getClient().accessLineController()
                             .delete()
                             .lineIdQuery(line.getLineId())
-                            .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                            .execute(checkStatus(HTTP_CODE_OK_200));
+                    accessLineIds.add(line);
                 });
-        for (int i = 0; i < 8; i++) {
-            getAllocatedOnuIds(port, String.valueOf(i)).stream()
-                    .filter(onuId -> onuId.getId() > 1008).forEach(onu -> {
-                        accessLineResourceInventory.allocatedOnuIdController()
-                                .deleteAllocatedOnuId()
-                                .idQuery(onu.getId())
-                                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
-                    });
-        }
+//        for (int i = 0; i < 8; i++) {
+//            getAllocatedOnuIds(port, String.valueOf(i)).stream()
+//                    .filter(onuId -> onuId.getId() > 1008).forEach(onu -> {
+//                        accessLineResourceInventory.getClient().allocatedOnuIdController()
+//                                .deleteAllocatedOnuId()
+//                                .idQuery(onu.getId())
+//                                .execute(checkStatus(HTTP_CODE_OK_200));
+//                    });
+//        }
+
+        List<Integer> ontIds = accessLineIds.stream().map(accessLine -> accessLineResourceInventory.getClient().allocatedOnuIdController()
+                        .searchAllocatedOnuId()
+                        .body(new SearchAllocatedOnuIdDto()
+                                .oltEndSz(accessLine.getReference().getEndSz())
+                                .slotNumber(accessLine.getReference().getSlotNumber())
+                                .portNumber(accessLine.getReference().getPortNumber())
+                                .lineId(accessLine.getLineId()))
+                        .executeAs(checkStatus(HTTP_CODE_OK_200)))
+                .flatMap(List::stream).collect(Collectors.toList());
+
     }
 
     @Step("Check absence of assigned lines, subscriber profiles")
@@ -499,9 +504,9 @@ public class AccessLineRiRobot {
 
     @Step("Check PhysicalResourceRef after manual OLT Decommissioning")
     public void checkPhysicalResourceRefAfterManualOltDecommissioning(OltDevice olt) {
-        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+        List<ReferenceDto> physicalResourceRefs = accessLineResourceInventory.getClient().physicalResourceReferenceInternalController().searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .executeAs(checkStatus(HTTP_CODE_OK_200))
                 .stream().collect(Collectors.toList());
 
         long numberOfPhysicalResourceRefs = physicalResourceRefs.stream().map(ReferenceDto::getPortType)
@@ -512,9 +517,9 @@ public class AccessLineRiRobot {
 
     @Step("Check PhysicalResourceRef after Auto OLT Decommissioning")
     public void checkPhysicalResourceRefAfterAutoOltDecommissioning(OltDevice olt) {
-        long physicalResourceRefs = accessLineResourceInventory.physicalResourceReferenceInternalController().searchPhysicalResourceReference()
+        long physicalResourceRefs = accessLineResourceInventory.getClient().physicalResourceReferenceInternalController().searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto().endSz(olt.getEndsz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .executeAs(checkStatus(HTTP_CODE_OK_200))
                 .stream().collect(Collectors.toList()).size();
 
         assertEquals(physicalResourceRefs, 0, "There are PhysicalResourceRefs left");
@@ -542,75 +547,75 @@ public class AccessLineRiRobot {
 
     @Step("Get Pon Ports")
     public List<ReferenceDto> getPonPorts(PortProvisioning port) {
-        List<ReferenceDto> ponPorts = accessLineResourceInventory
+        List<ReferenceDto> ponPorts = accessLineResourceInventory.getClient()
                 .physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(PON.toString())).collect(Collectors.toList());
     }
 
     @Step("Get Ethernet Ports")
     public List<ReferenceDto> getEthernetPorts(PortProvisioning port) {
-        List<ReferenceDto> ponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+        List<ReferenceDto> ponPorts = accessLineResourceInventory.getClient().physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto()
                         .endSz(port.getEndSz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         return ponPorts.stream().filter(ponPort -> ponPort.getPortType().getValue().equals(ETHERNET.toString())).collect(Collectors.toList());
     }
 
     @Step("Get Gfast Ports")
     public List<ReferenceDto> getGfastPorts(DpuDevice dpuDevice) {
-        List<ReferenceDto> gfastPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+        List<ReferenceDto> gfastPorts = accessLineResourceInventory.getClient().physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto()
                         .endSz(dpuDevice.getEndsz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         return gfastPorts.stream().filter(gfastPort -> gfastPort.getPortType().getValue().equals(GFAST.toString())).collect(Collectors.toList());
     }
 
     @Step("Get Gpon Ports")
     public List<ReferenceDto> getGponPorts(PortProvisioning port) {
-        List<ReferenceDto> gponPorts = accessLineResourceInventory.physicalResourceReferenceInternalController()
+        List<ReferenceDto> gponPorts = accessLineResourceInventory.getClient().physicalResourceReferenceInternalController()
                 .searchPhysicalResourceReference()
                 .body(new SearchPhysicalResourceReferenceDto()
                         .endSz(port.getEndSz()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         return gponPorts.stream().filter(gponPort -> gponPort.getPortType().getValue().equals(GPON.toString())).collect(Collectors.toList());
     }
 
     @Step("Get BackhaulId by Port")
     public List<BackhaulIdDto> getBackHaulId(PortProvisioning port) {
-        List<BackhaulIdDto> backhaulIds = accessLineResourceInventory
+        List<BackhaulIdDto> backhaulIds = accessLineResourceInventory.getClient()
                 .backhaulIdController()
                 .searchBackhaulIds()
                 .body(new SearchBackhaulIdDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         return backhaulIds;
     }
 
     @Step("Get list of AccessLines on the specified port")
     public List<AccessLineDto> getAccessLinesByPort(PortProvisioning port) {
-        return accessLineResourceInventory
+        return accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get list of AccessLines on the specified port")
     public List<AccessLineDto> getAccessLinesByGfastPort(PortProvisioning port) {
-        return accessLineResourceInventory
+        return accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
@@ -618,29 +623,29 @@ public class AccessLineRiRobot {
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber())
                         .referenceType(ReferenceType.DPU))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine by lineId")
     public List<AccessLineDto> getAccessLinesByLineId(String lineId) {
-        return accessLineResourceInventory
+        return accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get OLT_BNG AccessLines with ONT")
     public List<AccessLineDto> getAccessLinesByType(AccessLineProductionPlatform productionPlatform, AccessLineTechnology technology, AccessLineStatus accessLineStatus) {
-        List<AccessLineDto> accessLines = accessLineResourceInventory
+        List<AccessLineDto> accessLines = accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .productionPlatform(productionPlatform)
                         .technology(technology)
                         .status(accessLineStatus))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertTrue(accessLines.size() != 0, "There are no AccessLines with required parameters");
         return accessLines;
     }
@@ -651,14 +656,14 @@ public class AccessLineRiRobot {
                                                       AccessLineStatus accessLineStatus,
                                                       ProfileState subscriberNeProfileState,
                                                       ProfileState subscriberNlProfileState) {
-        List<AccessLineDto> accessLines = accessLineResourceInventory
+        List<AccessLineDto> accessLines = accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .productionPlatform(productionPlatform)
                         .technology(technology)
                         .status(accessLineStatus))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         List<AccessLineDto> accessLinesFilteredByNeStatus;
         List<AccessLineDto> accessLinesFilteredByNlStatus;
@@ -691,14 +696,14 @@ public class AccessLineRiRobot {
 
     @Step("Get OLT_BNG AccessLines with ONT")
     public List<AccessLineDto> getFtthAccessLinesWithOnt(PortProvisioning port) {
-        List<AccessLineDto> accessLines = accessLineResourceInventory
+        List<AccessLineDto> accessLines = accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
                 .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
                         && accessLineDto.getDefaultNeProfile().getSubscriberNeProfile() != null
@@ -711,13 +716,13 @@ public class AccessLineRiRobot {
 
     @Step("Get A4 AccessLines with ONT")
     public List<AccessLineDto> getA4AccessLinesWithOnt(AccessLineTechnology technology) {
-        List<AccessLineDto> accessLines = accessLineResourceInventory
+        List<AccessLineDto> accessLines = accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .productionPlatform(AccessLineProductionPlatform.A4)
                         .technology(technology))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         List<AccessLineDto> accessLinesWithOnt = accessLines.stream()
                 .filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.ASSIGNED)
                         && accessLineDto.getNetworkServiceProfileReference().getNspOntSerialNumber() != null)
@@ -727,13 +732,13 @@ public class AccessLineRiRobot {
 
     @Step("Get FTTB AccessLines")
     public List<AccessLineDto> getFttbAccessLines(AccessTransmissionMedium accessTransmissionMedium, AccessLineStatus accessLineStatus, AccessLineProductionPlatform productionPlatform) {
-        List<AccessLineDto> fttbAccessLines = accessLineResourceInventory
+        List<AccessLineDto> fttbAccessLines = accessLineResourceInventory.getClient()
                 .accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .technology(AccessLineTechnology.GFAST)
                         .productionPlatform(productionPlatform))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         List<AccessLineDto> fttbAccessLinesFiltered = fttbAccessLines.stream()
                 .filter(accessLineDto -> accessLineDto.getDpuReference().getAccessTransmissionMedium().equals(accessTransmissionMedium)
                         && accessLineDto.getStatus().equals(accessLineStatus))
@@ -755,11 +760,11 @@ public class AccessLineRiRobot {
     }
 
     public List<AccessLineDto> getAccessLinesByHomeIds(List<String> homeIds) {
-        return homeIds.stream().map(homeId -> accessLineResourceInventory.accessLineController()
+        return homeIds.stream().map(homeId -> accessLineResourceInventory.getClient().accessLineController()
                         .searchAccessLines()
                         .body(new SearchAccessLineDto()
                                 .homeId(homeId))
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                        .executeAs(checkStatus(HTTP_CODE_OK_200)))
                 .flatMap(List::stream).collect(Collectors.toList());
     }
 
@@ -789,22 +794,22 @@ public class AccessLineRiRobot {
 
     @Step("Get LineID Pool by Port")
     public List<LineIdDto> getLineIdPool(PortProvisioning port) {
-        return accessLineResourceInventory.lineIdController().searchLineIds().body(
+        return accessLineResourceInventory.getClient().lineIdController().searchLineIds().body(
                         new SearchLineIdDto()
                                 .endSz(port.getEndSz())
                                 .slotNumber(port.getSlotNumber())
                                 .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get HomeID Pool by Port")
     public List<HomeIdDto> getHomeIdPool(PortProvisioning port) {
-        return accessLineResourceInventory.homeIdController().searchHomeIds().body(
+        return accessLineResourceInventory.getClient().homeIdController().searchHomeIds().body(
                         new SearchHomeIdDto()
                                 .endSz(port.getEndSz())
                                 .slotNumber(port.getSlotNumber())
                                 .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get LineIds by Port")
@@ -820,20 +825,20 @@ public class AccessLineRiRobot {
 
     @Step("Get AllocatedOnuIds by port")
     private List<AllocatedOnuIdDto> getAllocatedOnuIds(PortProvisioning port, String portNumber) {
-        List<Integer> onuIds = accessLineResourceInventory.allocatedOnuIdController().searchAllocatedOnuId()
+        List<Integer> onuIds = accessLineResourceInventory.getClient().allocatedOnuIdController().searchAllocatedOnuId()
                 .body(new SearchAllocatedOnuIdDto()
                         .oltEndSz(port.getEndSz())
                         .portNumber(portNumber)
                         .slotNumber(port.getSlotNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
-        List<AllocatedOnuIdDto> onuIdDtos = onuIds.stream().map(onuId -> accessLineResourceInventory.allocatedOnuIdController().findFirstAllocatedOnuId()
+        List<AllocatedOnuIdDto> onuIdDtos = onuIds.stream().map(onuId -> accessLineResourceInventory.getClient().allocatedOnuIdController().findFirstAllocatedOnuId()
                         .body(new SearchAllocatedOnuIdDto()
                                 .onuId(onuId)
                                 .oltEndSz(port.getEndSz())
                                 .portNumber(portNumber)
                                 .slotNumber(port.getSlotNumber()))
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                        .executeAs(checkStatus(HTTP_CODE_OK_200)))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         return onuIdDtos;
@@ -841,39 +846,39 @@ public class AccessLineRiRobot {
 
     @Step("Get AllocatedOnuIds by Device and LineId")
     public List<Integer> getAllocatedOnuIdByDeviceAndLineId(PortProvisioning port, String lineId) {
-        return accessLineResourceInventory.allocatedOnuIdController()
+        return accessLineResourceInventory.getClient().allocatedOnuIdController()
                 .searchAllocatedOnuId()
                 .body(new SearchAllocatedOnuIdDto()
                         .lineId(lineId)
                         .oltEndSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
                         .portNumber(port.getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AllocatedOnuIds by AccessLines")
     public List<Integer> getAllocatedOnuIdsFromAccessLines(PortProvisioning port, List<AccessLineDto> accessLinesList) {
-        return accessLinesList.stream().map(accessLine -> accessLineResourceInventory.allocatedOnuIdController()
+        return accessLinesList.stream().map(accessLine -> accessLineResourceInventory.getClient().allocatedOnuIdController()
                         .searchAllocatedOnuId()
                         .body(new SearchAllocatedOnuIdDto()
                                 .oltEndSz(port.getEndSz())
                                 .slotNumber(port.getSlotNumber())
                                 .portNumber(port.getPortNumber())
                                 .lineId(accessLine.getLineId()))
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200))))
+                        .executeAs(checkStatus(HTTP_CODE_OK_200)))
                 .flatMap(List::stream).collect(Collectors.toList());
     }
 
     @Step("Get AllocatedOnuId by AccessLine")
     public List<Integer> getAllocatedOnuIdFromAccessLine(AccessLineDto accessLine) {
-        return accessLineResourceInventory.allocatedOnuIdController()
+        return accessLineResourceInventory.getClient().allocatedOnuIdController()
                 .searchAllocatedOnuId()
                 .body(new SearchAllocatedOnuIdDto()
                         .oltEndSz(accessLine.getReference().getEndSz())
                         .lineId(accessLine.getLineId())
                         .slotNumber(accessLine.getReference().getSlotNumber())
                         .portNumber(accessLine.getReference().getPortNumber()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
     }
 
@@ -899,33 +904,33 @@ public class AccessLineRiRobot {
 
     @Step("Get homeID state")
     public HomeIdStatus getHomeIdStateByHomeId(String homeId) {
-        List<HomeIdDto> homeIdPool = accessLineResourceInventory.homeIdController()
+        List<HomeIdDto> homeIdPool = accessLineResourceInventory.getClient().homeIdController()
                 .searchHomeIds()
                 .body(new SearchHomeIdDto()
                         .homeId(homeId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertNotNull(homeIdPool.get(0), "HomeId is not found");
         return homeIdPool.get(0).getStatus();
     }
 
     @Step("Get access line state by LineId")
     public AccessLineStatus getAccessLineStateByLineId(String lineId) {
-        List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
+        List<AccessLineDto> line = accessLineResourceInventory.getClient().accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertNotNull(line.get(0), "Access line is not found");
         return line.get(0).getStatus();
     }
 
     @Step("Get subscriber NE profile by LineId")
     public SubscriberNeProfileDto getSubscriberNEProfile(String lineId) {
-        List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
+        List<AccessLineDto> line = accessLineResourceInventory.getClient().accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertNotNull(line.get(0).getDefaultNeProfile(), "Default NE profile is null");
         SubscriberNeProfileDto subscriberNeProfile = line.get(0).getDefaultNeProfile().getSubscriberNeProfile();
         return subscriberNeProfile;
@@ -933,137 +938,124 @@ public class AccessLineRiRobot {
 
     @Step("Get subscriber network line profile by LineId")
     public SubscriberNetworkLineProfileDto getSubscriberNLProfile(String lineId) {
-        List<AccessLineDto> line = accessLineResourceInventory.accessLineController()
+        List<AccessLineDto> line = accessLineResourceInventory.getClient().accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto()
                         .lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertNotNull(line.get(0).getSubscriberNetworkLineProfile(), "Subscriber NL profile is null");
         return line.get(0).getSubscriberNetworkLineProfile();
     }
 
     @Step("Get all AccessLine entities")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAllAccessLineEntities() {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAllAccessLineEntities() {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by LineId for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByLineId(String lineId) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal().listAccessLine().lineIdQuery(lineId)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by oltEndSz, slot, port for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByOlt(int limit, String EndSz, String slot, String port) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .limitQuery(limit)
                 .portReferencesOltDownlinkPortReferenceEndSZQuery(EndSz)
                 .portReferencesOltDownlinkPortReferenceSlotNameQuery(slot)
                 .portReferencesOltDownlinkPortReferencePortNameQuery(port)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by dpuEndSz, port for CA")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByDpu(String dpuEndSz, String port) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .portReferencesDpuDownlinkPortReferenceEndSZQuery(dpuEndSz)
                 .portReferencesDpuDownlinkPortReferencePortNameQuery(port)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by HomeId")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByHomeId(String homeId) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByHomeId(String homeId) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .homeIdQuery(homeId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by OntSerialNumber")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByOntSerialNumber(String ontSerialNumber) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByOntSerialNumber(String ontSerialNumber) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .profilesFtthNeProfileSubscriberNetworkElementProfileOntSerialNumberQuery(ontSerialNumber)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by Status")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByStatus(AccessLineStatus accesslineStatus) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByStatus(AccessLineStatus accesslineStatus) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .statusQuery(accesslineStatus)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by Technology")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByTechnology(AccessLineTechnology accessLineTechnology) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByTechnology(AccessLineTechnology accessLineTechnology) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .technologyQuery(accessLineTechnology)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by Modification Date greater than")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateGt(OffsetDateTime offsetDateTime) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByModificationDateGt(OffsetDateTime offsetDateTime) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .modificationDateGtQuery(offsetDateTime.toString())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by Modification Date less than")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesByModificationDateLt(OffsetDateTime offsetDateTime) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesByModificationDateLt(OffsetDateTime offsetDateTime) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .modificationDateLtQuery(offsetDateTime.toString())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities with offset")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesWithOffset(int offset) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesWithOffset(int offset) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .offsetQuery(offset)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities with fields")
-    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> getAccessLineEntitiesWithFields(String fields) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAccessLineEntitiesWithFields(String fields) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .listAccessLine()
                 .fieldsQuery(fields)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get AccessLine entities by id")
-    public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine getAccessLineEntitiesbyId(Long id) {
-        return accessLineResourceInventoryCa
-                .accessLineControllerExternal()
+    public com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine getAccessLineEntitiesbyId(Long id) {
+        return accessLineResourceInventory.getClient().accessLineControllerExternal()
                 .retrieveAccessLine()
                 .idPath(id)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
 
     @Step("Compare two Lists")
-    public <T, U> boolean compareLists(List<T> sourceList, List<U> targetList) {
-        return sourceList.size() == targetList.size() && sourceList.containsAll(targetList) && targetList.containsAll(sourceList);
+    public <T, U> boolean compareLists(List<T> actualList, List<U> expectedList) {
+        return actualList.size() == expectedList.size() && actualList.containsAll(expectedList) && expectedList.containsAll(actualList);
     }
 
     private static DefaultNeProfile mapToDefaultNeProfile(DefaultNeProfileDto defaultNeProfile) {
@@ -1124,11 +1116,11 @@ public class AccessLineRiRobot {
 
     @Owner("TMI")
     public String getLineIdByHomeId(String homeId) {
-        List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLine> accessLines =
-                accessLineResourceInventory.accessLineControllerExternal()
+        List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> accessLines =
+                accessLineResourceInventory.getClient().accessLineControllerExternal()
                         .listAccessLine()
                         .homeIdQuery(homeId)
-                        .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                        .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertNotNull(accessLines.get(0), "AccessLine is not found");
         assertNotNull(accessLines.get(0).getLineId(), "lineId is not found");
         return accessLines.get(0).getLineId();
@@ -1136,58 +1128,74 @@ public class AccessLineRiRobot {
 
     @Step("Create AccessLine")
     public void postAccessLine(AccessLineDto accessLineMigrated) {
-        accessLineResourceInventory.accessLineController()
+        accessLineResourceInventory.getClient().accessLineController()
                 .create()
                 .body(accessLineMigrated)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Create OnuId")
     public void postOnuId(AllocatedOnuIdDto onuIdMigrated) {
-        accessLineResourceInventory.allocatedOnuIdController()
+        accessLineResourceInventory.getClient().allocatedOnuIdController()
                 .createAllocatedOnuId()
                 .body(onuIdMigrated)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Create LineId")
     public void postLineId(LineIdMigrated lineIdMigrated) {
-        accessLineResourceInventoryWiremock.lineIdController()
+        accessLineResourceInventory.getClient()
+                .lineIdController()
                 .addLineIds()
                 .body(lineIdMigrated.getLineIdDtoList())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Change HomeId Status")
     public String changeHomeIdStatus(HomeIdDto homeIdDto, HomeIdStatus homeIdStatus) {
         homeIdDto.setStatus(homeIdStatus);
-        accessLineResourceInventory.homeIdController()
+        accessLineResourceInventory.getClient().homeIdController()
                 .updateHomeId()
                 .body(homeIdDto)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
         return homeIdDto.getHomeId();
     }
 
     @Step("Update HomeId on migrated AccessLine")
     public void updateHomeIdOnAccessLine(String lineId, String homeId) {
-        List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.accessLineController()
+        List<AccessLineDto> accessLineDtoList = accessLineResourceInventory.getClient().accessLineController()
                 .searchAccessLines()
                 .body(new SearchAccessLineDto().lineId(lineId))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         final AccessLineDto accessLineDto = accessLineDtoList.get(0);
 
         if (accessLineDto != null) {
             accessLineDto.setHomeId(homeId);
 
-            accessLineResourceInventory.accessLineController()
+            accessLineResourceInventory.getClient().accessLineController()
                     .update()
                     .body(accessLineDto)
-                    .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                    .executeAs(checkStatus(HTTP_CODE_OK_200));
         } else {
             throw new RuntimeException("Access Line not found with lineId: " + lineId);
         }
     }
+
+    @Step("Wait until AccessLine is deleted")
+    public void waitUntilAccessLineIsDeleted(String lineId) {
+        try {
+            TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_ACCESSLINE_DEPROVISIONING); //set timeout in milliseconds
+            timeoutBlock.setTimeoutInterval(2000);
+            Supplier<Boolean> checkAccessLineDeletion = () ->
+                    getAccessLinesByLineId(lineId).size() == 0;
+            timeoutBlock.addBlock(checkAccessLineDeletion); // execute the runnable precondition
+        } catch (Exception e) {
+            //catch the exception here . Which is block didn't execute within the time limit
+        }
+    }
+
+
 }
 
 //  private void checkDevicePostConditions(PortProvisioning port) {

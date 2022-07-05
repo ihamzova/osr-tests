@@ -11,10 +11,10 @@ import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessTransmissionMedium;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.PortType;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessTransmissionMedium;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.PortType;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.ProfileState;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultLineIdDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.OperationResultVoid;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
@@ -126,7 +126,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     //check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
@@ -183,7 +182,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN,
@@ -223,7 +221,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", terminationCallback.getError());
-    assertNull("Callback returned a response body", terminationCallback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.ASSIGNED,
@@ -263,7 +260,6 @@ public class FTTBCommissioning extends GigabitTest {
     // check callback
     assertTrue(terminationCallback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", terminationCallback.getError());
-    assertNull("Callback returned a response body", terminationCallback.getResponse());
 
     // check alri
     assertEquals("AccessLine state is incorrect", AccessLineStatus.WALLED_GARDEN, accessLineRiRobot.getAccessLineStateByLineId(accessLineCoax2.getLineId()));

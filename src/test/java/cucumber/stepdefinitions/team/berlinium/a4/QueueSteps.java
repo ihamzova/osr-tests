@@ -4,7 +4,9 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResilienceRobot;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class QueueSteps {
 
     private final String QUEUE_DEPROV_DLQ = "jms.dlq.deprovisioning";
@@ -26,6 +28,7 @@ public class QueueSteps {
 
     @After
     public void cleanup() {
+        log.info("Cleaning A4 queues...");
         // ACTION
         a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_DEPROV_DLQ);
         a4ResilienceRobot.removeAllMessagesInQueue(QUEUE_RES_ORDER);

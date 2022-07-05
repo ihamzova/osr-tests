@@ -6,18 +6,16 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>3046.0</version>
-
+    <version>3182.0</version>
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.10</version>
     </parent>
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>3.0.0.162</osr.models.version>
-        <magic-framework.version>1.0.0</magic-framework.version>
+        <osr.models.version>3.0.0.164</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 
@@ -93,11 +91,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.tsystems.tm.framework</groupId>
-            <artifactId>magic-api</artifactId>
-            <version>${magic-framework.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>1.9.9.1</version>
@@ -146,7 +139,7 @@
         <dependency>
             <groupId>com.tsystems.tm.api.client</groupId>
             <artifactId>olt-commissioning-event-listener</artifactId>
-            <version>3.1.0.0</version>
+            <version>4.1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.tsystems.tm.api.client</groupId>
@@ -155,8 +148,18 @@
         </dependency>
         <dependency>
             <groupId>com.tsystems.tm.api.client</groupId>
+            <artifactId>osr-process-log</artifactId>
+            <version>4.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tsystems.tm.api.client</groupId>
             <artifactId>seal</artifactId>
             <version>3.1.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tsystems.tm.api.client</groupId>
+            <artifactId>olt-material-catalog</artifactId>
+            <version>4.1.7.0</version>
         </dependency>
     </dependencies>
 

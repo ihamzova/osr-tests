@@ -1,33 +1,29 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OntUsageClient;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.Supplier;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.helpers.upiter.UserTokenProvider;
 import com.tsystems.tm.acc.ta.pages.osr.ontusage.OntUsagePage;
 import com.tsystems.tm.acc.ta.pages.osr.ontusage.OntUsageSupportPage;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsageEntity;
+import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsagePostRequest;
 import com.tsystems.tm.acc.tests.osr.ont.usage.client.model.OntUsagePutRequest;
+import de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProvider;
+import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getProviderAuthorizationCodeTokenProvider;
+import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getPublicAuthorizationCodeTokenProvider;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 
 public class OntUsageRobot {
     private char[] hexArray = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("ont-usage-bff-proxy", RhssoHelper.getSecretOfGigabitHub("ont-usage-bff-proxy"));
-
-    private OntUsageClient ontUsageClient = new OntUsageClient(authTokenProvider);
 
     @Step("Create ONT via supplier ui")
     public void createOntViaSupplierUi(Ont ont, Supplier supplier) {
@@ -76,16 +72,14 @@ public class OntUsageRobot {
 
     @Step("check ONT via API")
     public void checkOntViaAPI(Ont ontTestData, OntUsageEntity.StatusEnum status, Credentials adminLogin) {
-        ontUsageClient.setUserTokenProvider(new UserTokenProvider(
-                adminLogin.getLogin(),
-                adminLogin.getPassword(),
-                "ont-usage-support-ui"));
+        AuthorizationCodeTokenProvider tokenProvider = getProviderAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword());
+        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider);
         List<OntUsageEntity> ontResponse = ontUsageClient.
                 getClient().
                 ontUsageCrudOperations().
                 getOntUsages().
                 serialNumberQuery(ontTestData.getSerialNumber()).
-                executeAs(validatedWith(shouldBeCode(200)));
+                executeAs(checkStatus(200));
 
         assertEquals(ontResponse.size(), 1);
         OntUsageEntity actualOnt = ontResponse.get(0);
@@ -98,16 +92,14 @@ public class OntUsageRobot {
 
     @Step("place work order via API")
     public void placeWorkOrderViaAPI(Ont ontTestData, Credentials adminLogin, Long workOrderId, OntUsagePutRequest.StatusEnum desiredStatus) {
-        ontUsageClient.setUserTokenProvider(new UserTokenProvider(
-                adminLogin.getLogin(),
-                adminLogin.getPassword(),
-                "ont-usage-support-ui"));
+        AuthorizationCodeTokenProvider tokenProvider = getProviderAuthorizationCodeTokenProvider(adminLogin.getLogin(), adminLogin.getPassword());
+        OntUsageClient ontUsageClient = new OntUsageClient(tokenProvider);
         List<OntUsageEntity> getOntResponse = ontUsageClient.
                 getClient().
                 ontUsageCrudOperations().
                 getOntUsages().
                 serialNumberQuery(ontTestData.getSerialNumber()).
-                executeAs(validatedWith(shouldBeCode(200)));
+                executeAs(checkStatus(200));
 
         OntUsageEntity actualOnt = getOntResponse.get(0);
 
@@ -124,7 +116,27 @@ public class OntUsageRobot {
                 putOntUsage().
                 body(putRequest).
                 serialNumberPath(ontTestData.getSerialNumber()).
-                executeAs(validatedWith(shouldBeCode(200)));
+                executeAs(checkStatus(200));
+    }
+
+    @Owner("TMI")
+    @Step("Create ONT via supplier API")
+    public void createOntViaSupplierApi(Ont ont, Supplier supplier, boolean useForOnlyOneEmployee, String username, String password, String realm) {
+        AuthorizationCodeTokenProvider tokenProvider = getPublicAuthorizationCodeTokenProvider(username, password, realm);
+        OntUsageClient client = new OntUsageClient(tokenProvider);
+        OntUsagePostRequest postRequest = new OntUsagePostRequest();
+
+        postRequest.setPartyId(Long.parseLong(supplier.getAtomicOrganizationId()));
+        postRequest.setIdmNameOfEmployee(ont.getAssignedEmployee());
+        postRequest.setSerialNumber(ont.getSerialNumber());
+        postRequest.setUseForOnlyOneEmployee(useForOnlyOneEmployee);
+
+        client.
+                getClient().
+                ontUsageCrudOperations().
+                postOntUsage().
+                body(postRequest).
+                executeAs(checkStatus(200));
     }
 
     @Step("check ONT via SupportUi")
@@ -134,7 +146,6 @@ public class OntUsageRobot {
                 validate().
                 selectSupplier(supplier).
                 filterBySerialNumber(ont).
-                checkOntDetails(ont, supplier, desiredState).
                 logout();
     }
 

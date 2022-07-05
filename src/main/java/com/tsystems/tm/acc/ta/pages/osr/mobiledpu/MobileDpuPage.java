@@ -1,12 +1,10 @@
 package com.tsystems.tm.acc.ta.pages.osr.mobiledpu;
 
-import com.tsystems.tm.acc.ta.pages.osr.ztcommissioning.OltInstallationPage;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.codeborne.selenide.Condition.*;

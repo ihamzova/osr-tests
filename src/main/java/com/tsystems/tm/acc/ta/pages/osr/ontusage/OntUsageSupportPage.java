@@ -5,7 +5,8 @@ import com.openshift.internal.util.Assert;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.Supplier;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
+import com.tsystems.tm.acc.ta.util.Screenshot;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -15,8 +16,7 @@ import java.net.URL;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selectors.byXpath;
+import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -46,18 +46,20 @@ public class OntUsageSupportPage {
 
     @Step("Open Supplier ONT usage Page")
     public static OntUsageSupportPage openPage() {
-        URL url = new OCUrlBuilder(APP).withoutSuffix().buildExternal();
+        URL url = new GigabitUrlBuilder(APP).withoutSuffix().buildExternal();
         log.info("Opening url " + url.toString());
         OntUsageSupportPage page = open(url, OntUsageSupportPage.class);
         return page;
     }
 
     @Step("Select supplier for search")
-    public OntUsageSupportPage selectSupplier(Supplier supplier){
+    public OntUsageSupportPage selectSupplier(Supplier supplier) {
         $(SUPPLIER_SELECTION).click();
-        $(SUPPLIER_SEARCH).shouldBe(visible, Duration.ofMillis(1000)).val(supplier.getSupplierName());
+        $(SUPPLIER_SEARCH).shouldBe(visible, Duration.ofMillis(2000));
         By SUPPLIER_LABEL = byXpath("//li[@aria-label='"+supplier.getSupplierName()+"']");
-        $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(2000)).click();
+        $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(3000));
+        $(SUPPLIER_SEARCH).val(supplier.getSupplierName());
+        $(SUPPLIER_LABEL).shouldBe(visible, Duration.ofMillis(3000)).click();
         $(SUPPLIER_SELECTION).click(); //close supplier selection
         return this;
     }
@@ -96,8 +98,12 @@ public class OntUsageSupportPage {
     @Step("delete workorder via support ui")
     public OntUsageSupportPage deleteWorkOrder(Ont ont){
         By DELETE_ONT_BUTTON = byXpath(String.format("//*[@data-qa-delete-workorderid='%s']", ont.getSerialNumber()));
-        $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(1000)).click();
-        $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(2000));
+        $(DELETE_ONT_BUTTON).shouldBe(visible,Duration.ofMillis(3000)).click();
+        By CONFIRMATION_DIALOG = byClassName("p-dialog-header");
+        $(CONFIRMATION_DIALOG).shouldBe(visible);
+        By CONFIRMATION_BUTTON = byText("Ja");
+        $(CONFIRMATION_BUTTON).click();
+        $(DELETE_ONT_BUTTON).shouldNotBe(visible, Duration.ofMillis(3000));
         return this;
     }
 
@@ -115,9 +121,23 @@ public class OntUsageSupportPage {
     @Step("Validating ONT state and supplier")
     public OntUsageSupportPage checkOntDetails(Ont ont, Supplier supplier, String state){
         By ONT_CELL = byXpath("//td[@class='serial-cell']/a[contains(text(),'"+ont.getSerialNumber()+"')]");
-        $(ONT_CELL).shouldBe(visible, Duration.ofMillis(3000)).click();
-        $(DETAIL_STATE).shouldHave(text(state));
-        $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        $(ONT_CELL).shouldBe(visible, Duration.ofMillis(3000));
+        $(ONT_CELL).click();
+        if ($(DETAIL_STATE).isDisplayed()) {
+            $(DETAIL_STATE).shouldHave(text(state));
+        } else {
+            $(ONT_CELL).click();
+            $(DETAIL_STATE).shouldHave(text(state));
+        }
+
+        if ($(DETAIL_SUPPLIER).isDisplayed()) {
+            $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        } else {
+            $(ONT_CELL).click();
+            $(DETAIL_SUPPLIER).shouldHave(text(supplier.getSupplierName()));
+        }
+        // sometimes the detailed view isn't opened with the first click. Is not reproduced manually
+
         return this;
     }
 

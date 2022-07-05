@@ -1,12 +1,9 @@
 package com.tsystems.tm.acc.ta.team.upiter.accesslinesearch;
 
-import com.tsystems.tm.acc.data.upiter.models.accessline.AccessLineCase;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
-import com.tsystems.tm.acc.data.upiter.models.dpudevice.DpuDeviceCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
-import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLineSearchPage;
 import com.tsystems.tm.acc.ta.pages.osr.accessmanagement.AccessLinesManagementPage;
@@ -14,7 +11,7 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import groovy.util.logging.Slf4j;
 import io.qameta.allure.Description;
@@ -24,6 +21,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
@@ -43,21 +42,10 @@ public class AccessLinesSearchTest extends GigabitTest {
     private AccessLineRiRobot accessLineRiRobot;
     private WgAccessProvisioningRobot wgAccessProvisioningRobot;
     private UpiterTestContext context = UpiterTestContext.get();
-    private AccessLine accessLinesByEndSz;
-    private AccessLine accessLinesByEndSzSlotPort;
+    private PortProvisioning accessLinesByEndSz;
+    private PortProvisioning accessLinesByEndSzSlotPort;
     private AccessLine accessLine;
-    private PortProvisioning homeAndBackhaulIds;
-    private DpuDevice dpuDevice;
     private Credentials loginData;
-
-    private PortProvisioning oltDeviceFttbProvisioningTwistedPair;
-    private PortProvisioning adtranDeviceFttbProvisioningCoax;
-    private PortProvisioning oltDeviceFttbProvisioningCoax;
-    private PortProvisioning adtranDeviceFttbProvisioningTwistedPair;
-    private DpuDevice dpuDeviceFttbProvisioningTwistedPair;
-    private DpuDevice dpuDeviceFttbProvisioningOnAdtranCoax;
-    private DpuDevice dpuDeviceFttbProvisioningCoax;
-    private DpuDevice dpuDeviceFttbProvisioningonOnAdtranTwistedPair;
 
     @BeforeSuite
     public void beforeSuite() {
@@ -73,28 +61,14 @@ public class AccessLinesSearchTest extends GigabitTest {
 
     @BeforeClass
     public void init() throws InterruptedException {
-        dpuDeviceFttbProvisioningTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
-        dpuDeviceFttbProvisioningOnAdtranCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranCoax);
-        oltDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
-        adtranDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningCoax);
-        dpuDeviceFttbProvisioningCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
-        dpuDeviceFttbProvisioningonOnAdtranTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningOnAdtranTwistedPair);
-        oltDeviceFttbProvisioningCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
-        adtranDeviceFttbProvisioningTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.adtranDeviceForFttbProvisioningTwistedPair);
-
         accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.TWISTED_PAIR, 1, 1, "49/89/8000/76H2",
                 "49/812/179/71G0", "1", "0");
 
         wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
         wgAccessProvisioningRobot.changeFeatureToggleHomeIdPoolState(false);
         accessLine = new AccessLine();
-        accessLinesByEndSz = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSz);
-        accessLinesByEndSzSlotPort = context.getData().getAccessLineDataProvider().get(AccessLineCase.linesByEndSzSlotPort);
-        homeAndBackhaulIds = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.homeIdsByEndSz);
-        dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDevice);
-        accessLine = new AccessLine();
-        wgAccessProvisioningRobot.startPortProvisioning(homeAndBackhaulIds);
-        //accessLineRiRobot.checkFtthPortParameters(homeAndBackhaulIds);
+        accessLinesByEndSz = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.searchByEndSz);
+        accessLinesByEndSzSlotPort = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.searchByEndSzSlotPort);
     }
 
     @BeforeMethod
@@ -129,8 +103,8 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
-        accessLineSearchPage.setPageSize(100);
-        accessLineSearchPage.getTableRows(100);
+        accessLineSearchPage.setPageSize(50);
+        accessLineSearchPage.getTableRows(50);
         accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getTableLines());
     }
 
@@ -140,6 +114,8 @@ public class AccessLinesSearchTest extends GigabitTest {
     public void searchAccessLinesByHomeIdTest() {
         String homeId = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
                         AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
+                .stream().filter(accessLineDto -> accessLineDto.getHomeId()!=null)
+                .collect(Collectors.toList())
                 .get(0).getHomeId();
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
@@ -254,12 +230,12 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickTerminationButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
-                .searchAccessLinesByLineID(accessLine.getLineId())
-                .clickSearchButton()
+                .waitUntilNeededStatus("WALLED_GARDEN", accessLine.getLineId())
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "ACTIVE", "NULL");
-        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);
+        assertEquals(accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN,
+                "AccessLine state is incorrect");
     }
 
     @Test
@@ -337,28 +313,27 @@ public class AccessLinesSearchTest extends GigabitTest {
     }
 
     @Test
-    @TmsLink("DIGIHUB-60975")
-    @Description("Search for Home IDs by EndsZ in Access Management UI")
-    public void searchHomeIdsbyEndsZTest() {
+    @TmsLink("DIGIHUB-153943")
+    @Description("Set homeId to Null in Access Management UI")
+    public void deleteHomeId() {
+        accessLine.setLineId(accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+                        AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
+                .get(0).getLineId());
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchHomeIdsbyEndsZ(homeAndBackhaulIds).clickSearchButton();
-        accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
-        accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-        accessLineSearchPage.setPageSize(50);
-        accessLineSearchPage.getTableRows(32);
-    }
-
-    @Test
-    @TmsLink("DIGIHUB-138291")
-    @Description("Search for Home ID by Home ID in Access Management UI")
-    public void searchHomeIdbyHomeIDTest() {
-        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
-        accessLineSearchPage.validateUrl();
-        String homeId = accessLineRiRobot.getHomeIdPool(homeAndBackhaulIds).get(0).getHomeId();
-        accessLineSearchPage.searchHomeIdsbyHomeId(homeId).clickSearchButton();
-        accessLineSearchPage.checkHomeIdsTableHeaders(accessLineSearchPage.getTableHeaders());
-        accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton();
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
+        String lineId = accessLinesManagementPage.getLineId();
+        accessLinesManagementPage.clickEditButton()
+                .removeHomeID()
+                .closeCurrentTab();
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .searchAccessLinesByLineID(lineId)
+                .clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
+                "INACTIVE", "ACTIVE");
+        assertNull(accessLineRiRobot.getAccessLinesByLineId(lineId).get(0).getHomeId());
     }
 
     @Test
@@ -367,7 +342,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     public void searchBackhaulIDsByEndsZTest() {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
-        accessLineSearchPage.searchBackhaulIDs(homeAndBackhaulIds).clickSearchButton();
+        accessLineSearchPage.searchBackhaulIDs(accessLinesByEndSzSlotPort).clickSearchButton();
         accessLineSearchPage.checkBackhaulIdsTableHeaders(accessLineSearchPage.getTableHeaders());
         accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
         assertEquals(accessLineSearchPage.getTableRows().size(), 1);
@@ -377,7 +352,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     @TmsLink("DIGIHUB-55322")
     @Description("Search for Backhaul ID by Backhaul ID in Access Management UI")
     public void searchBackhaulIDByBackhaulIdTest() {
-        String backhaulId = accessLineRiRobot.getBackHaulId(homeAndBackhaulIds).get(0).getBackhaulId();
+        String backhaulId = accessLineRiRobot.getBackHaulId(accessLinesByEndSzSlotPort).get(0).getBackhaulId();
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchBackhaulIDbyBackhaulId(backhaulId).clickSearchButton();
@@ -466,5 +441,4 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLinesManagementPage.clickEditButton().generateAnpTag();
         assertEquals(accessLine.getAnpTag().getAnpTag(), initialAnpTag);
     }
-
 }

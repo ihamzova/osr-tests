@@ -9,10 +9,10 @@ import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.OntOltOrchestratorRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.ProfileState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.SubscriberNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLineStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.ProfileState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.SubscriberNeProfileDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -154,7 +154,6 @@ public class AdtranOntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine state in incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLine.getLineId()), AccessLineStatus.WALLED_GARDEN);

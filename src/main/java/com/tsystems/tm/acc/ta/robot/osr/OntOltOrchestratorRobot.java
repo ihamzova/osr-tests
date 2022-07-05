@@ -2,19 +2,16 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.OntOltOrchestratorClient;
 import com.tsystems.tm.acc.ta.data.osr.models.AccessLine;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.upiter.UpiterConstants;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.internal.client.model.SubscriberNeProfileDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLineDto;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import com.tsystems.tm.acc.tests.osr.resource.inventory.adapter.external.client.invoker.JSON;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.AccessLineDto;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,18 +20,16 @@ import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_ACCEPTED_202;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.wiremock.ExtendedWireMock.CONSUMER_ENDPOINT;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertTrue;
 
 @Slf4j
 public class OntOltOrchestratorRobot {
     private static String CORRELATION_ID;
-    private OntOltOrchestratorClient ontOltOrchestratorClient = new OntOltOrchestratorClient(authTokenProvider);
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
+    private final OntOltOrchestratorClient ontOltOrchestratorClient = new OntOltOrchestratorClient();
 
     @Step("Reserving new access line by port and homeId")
     public OperationResultLineIdDto reserveAccessLineByPortAndHomeId(PortAndHomeIdDto portAndHomeIdDto) {
@@ -44,16 +39,16 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .reserveAccessLineWithHomeIdV2()
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .body(portAndHomeIdDto)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON()
@@ -68,11 +63,11 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .createOntResourceV2()
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
@@ -81,7 +76,7 @@ public class OntOltOrchestratorRobot {
                         .lineId(accessLine.getLineId())
                         .ontSerialNumber(ont.getSerialNumber())
                         .ontState(OntState.UNKNOWN))
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON()
@@ -97,15 +92,15 @@ public class OntOltOrchestratorRobot {
                 .getAttenuationMeasurements()
                 .lineIdPath(lineId)
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
         return new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), AttenuationMeasurementsDto.class);
     }
@@ -118,16 +113,16 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .testOntResourceV2()
                 .xCallbackCorrelationIdHeader(CORRELATION_ID)
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .lineIdPath(lineId)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), OperationResultOntTestDto.class);
@@ -142,7 +137,7 @@ public class OntOltOrchestratorRobot {
                 .homeIdQuery(accessLine.getHomeId())
                 .lineIdQuery(accessLine.getLineId())
                 .ontStateResultQuery(SubscriberNeProfileDto.OntStateEnum.ONLINE)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Gets ONT state by LineID")
@@ -152,7 +147,7 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorSyncV2()
                 .getOntStateV2()
                 .lineIdPath(accessLine.getLineId())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)))
+                .execute(checkStatus(HTTP_CODE_OK_200))
                 .as(OntStateDto.class);
     }
 
@@ -164,16 +159,16 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .reserveAccessLineByHomeIdV2()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .body(homeIdDto)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
 
         return new JSON()
                 .deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), OperationResultLineIdDto.class);
@@ -190,7 +185,7 @@ public class OntOltOrchestratorRobot {
                         .slotNumber(accessLine.getReference().getSlotNumber())
                         .portNumber(accessLine.getReference().getPortNumber())
                         .homeId(accessLine.getHomeId()))
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Get additional ONT connectivity information")
@@ -201,16 +196,16 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .getOntConnectivityInfoV2()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .body(ontConnectivityInfoDto)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
         return new JSON().deserialize(getCallbackWiremock(CORRELATION_ID).get(0).getBodyAsString(), OperationResultEmsEventDto.class);
     }
@@ -223,17 +218,17 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .changeOntSerialNumberV2()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .lineIdPath(lineId)
                 .newSerialNumberQuery(newSerialNumber)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON()
@@ -248,16 +243,16 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .decommissioningNetworkElementProfile()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .lineIdQuery(accessline.getLineId())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON()
@@ -272,17 +267,17 @@ public class OntOltOrchestratorRobot {
                 .ontOltOrchestratorV2()
                 .decommissioningNetworkElementProfile()
                 .xCallbackCorrelationIdHeader(String.valueOf(CORRELATION_ID))
-                .xCallbackUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
-                .xCallbackErrorUrlHeader(new OCUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
+                .xCallbackErrorUrlHeader(new GigabitUrlBuilder(UpiterConstants.WIREMOCK_MS_NAME)
                         .withEndpoint(CONSUMER_ENDPOINT)
                         .build()
                         .toString())
                 .lineIdQuery(accessline.getLineId())
                 .rollbackToReservationQuery(isRollback)
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_ACCEPTED_202)));
+                .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
         log.info("Received xCallbackCorrelationId: " + CORRELATION_ID);
 
         return new JSON()

@@ -11,13 +11,11 @@ import io.qameta.allure.Step;
 
 import java.util.List;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static com.tsystems.tm.acc.ta.data.upiter.CommonTestData.HTTP_CODE_OK_200;
 
 public class RiAbstractionLayerRobot {
-  private RiAbstractionLayerClient riAbstractionLayerClient = new RiAbstractionLayerClient(authTokenProvider);
-  private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider("wiremock-acc", RhssoHelper.getSecretOfGigabitHub("wiremock-acc"));
+  private final RiAbstractionLayerClient riAbstractionLayerClient = new RiAbstractionLayerClient();
 
   @Step("Get Device by EndSz")
   public Device getDeviceByEndsz(String endSz) {
@@ -25,7 +23,7 @@ public class RiAbstractionLayerRobot {
             .getClient()
             .deviceController()
             .getOltByEndSZ()
-            .endSzQuery(endSz).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            .endSzQuery(endSz).executeAs(checkStatus(HTTP_CODE_OK_200));
   }
 
   @Step("Get list of OLTs by VPSZ")
@@ -36,7 +34,7 @@ public class RiAbstractionLayerRobot {
             .getOltsByEndSzSegment()
             .devicetypeQuery(deviceType)
             .vpszQuery(vpsz)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            .executeAs(checkStatus(HTTP_CODE_OK_200));
   }
 
   @Step("Get Device by VPSZ")
@@ -46,7 +44,7 @@ public class RiAbstractionLayerRobot {
             .deviceController()
             .getDeviceByEndSZ()
             .vpszQuery(vpsz)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            .executeAs(checkStatus(HTTP_CODE_OK_200));
   }
 
   @Step("Get Device by KLSId")
@@ -56,7 +54,7 @@ public class RiAbstractionLayerRobot {
             .deviceController()
             .getDeviceByEndSZ()
             .klsIdQuery(klsID)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            .executeAs(checkStatus(HTTP_CODE_OK_200));
   }
 
   @Step("Get Device by FiberonLocation")
@@ -66,7 +64,7 @@ public class RiAbstractionLayerRobot {
             .deviceController()
             .getDeviceByEndSZ()
             .fiberOnLocationIdQuery(fiberOnLocation)
-            .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+            .executeAs(checkStatus(HTTP_CODE_OK_200));
   }
 
   public static ExpectedAbstractDevice mapToAbstractDevice(AbstractDevice abstractDevice) {

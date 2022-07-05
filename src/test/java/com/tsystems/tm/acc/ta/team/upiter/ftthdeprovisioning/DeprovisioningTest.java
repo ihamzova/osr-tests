@@ -6,9 +6,9 @@ import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.BackhaulStatus;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.HomeIdDto;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.HomeIdLogicalStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.BackhaulStatus;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.HomeIdDto;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.HomeIdLogicalStatus;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -90,17 +90,6 @@ public class DeprovisioningTest extends GigabitTest {
     long countHomeIDsFree = homeIds.stream().filter(HomeId -> HomeId.getStatus().getValue().equals(HomeIdLogicalStatus.FREE.getValue())).count();
     assertEquals(accessLineRiRobot.getBackHaulId(portDeprForDpu).get(0).getStatus(), BackhaulStatus.CONFIGURED);
     assertEquals(countHomeIDsFree, portDeprForDpu.getHomeIdPool().intValue());
-  }
-
-  @Test
-  @TmsLink("DIGIHUB-48516")
-  @Description("Card deprovisioning case")
-  public void cardDeprovisioningTest() {
-    accessLineRiRobot.prepareTestDataToDeprovisioning(cardDepr);
-    accessLineRiRobot.checkDecommissioningPreconditions(cardDepr);
-    wgAccessProvisioningRobot.startCardDeprovisioning(cardDepr, true);
-    accessLineRiRobot.checkFtthPortParameters(portDepr);
-    accessLineRiRobot.checkPhysicalResourceRefCountFtth(portDepr, 0, 1);
   }
 
   @Test

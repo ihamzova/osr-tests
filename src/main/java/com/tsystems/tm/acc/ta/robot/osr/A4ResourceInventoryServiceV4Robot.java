@@ -1,11 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.invoker.ApiClient;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.*;
 import io.qameta.allure.Step;
 
@@ -14,63 +10,58 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.CA_INTEGRATION;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPortNumberByFunctionalPortLabel;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
 public class A4ResourceInventoryServiceV4Robot {
 
-    private static final AuthTokenProvider authTokenProvider =
-            new RhssoClientFlowAuthTokenProvider(CA_INTEGRATION,
-                    RhssoHelper.getSecretOfGigabitHub(CA_INTEGRATION));
-
-    private final ApiClient a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client(authTokenProvider).getClient();
+    private final A4ResourceInventoryServiceV4Client a4ResourceInventoryService = new A4ResourceInventoryServiceV4Client();
 
     @Step("Read all Network Elements as list from v4 API")
     public List<NetworkElement> getNetworkElementsV4ByEndsz(String endsz) {
-        return a4ResourceInventoryService.networkElement()
+        return a4ResourceInventoryService.getClient()
+                .networkElement()
                 .listNetworkElement()
                 .endszQuery(endsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("List all Network Service Profile Ftth Access from v4 API")
     public List<NspFtthAccess> getAllNetworkServiceProfilesFtthAccessV4() {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .nspFtthAccess()
                 .listNspFtthAccess()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read one Network Service Profile Ftth Access from v4 API")
     public NspFtthAccess getNetworkServiceProfileFtthAccessV4ByUuid(String uuid) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .nspFtthAccess()
                 .retrieveNspFtthAccess()
                 .idPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read Network Service Profile Ftth Access via OntSerialNumber from v4 API")
     public List<NspFtthAccess> getNetworkServiceProfilesFtthAccessV4ByOntSerialNumber(String ontSerialNumber) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .nspFtthAccess()
                 .listNspFtthAccess()
                 .ontSerialNumberQuery(ontSerialNumber)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read Network Service Profile Ftth Access via Line Id from v4 API")
     public List<NspFtthAccess> getNetworkServiceProfilesFtthAccessV4ByLineId(String lineId) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .nspFtthAccess()
                 .listNspFtthAccess()
                 .lineIdQuery(lineId)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     public void checkIfNetworkElementExistsByUuid(A4NetworkElement neData) {
@@ -87,19 +78,19 @@ public class A4ResourceInventoryServiceV4Robot {
 
     @Step("Search all Network Element Groups by name as list from v4 API")
     public List<NetworkElementGroup> getNetworkElementGroupsV4ByName(String name) {
-        return a4ResourceInventoryService.networkElementGroup()
+        return a4ResourceInventoryService.getClient().networkElementGroup()
                 .listNetworkElementGroup()
                 .nameQuery(name)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read one NetworkElement from v4 API")
     public NetworkElementGroup getNetworkElementGroupV4(String uuid) {
-        return a4ResourceInventoryService
+        return a4ResourceInventoryService.getClient()
                 .networkElementGroup()
                 .retrieveNetworkElementGroup()
                 .idPath(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     public void checkIfNetworkElementGroupExistsByName(A4NetworkElementGroup negData) {
@@ -119,26 +110,26 @@ public class A4ResourceInventoryServiceV4Robot {
     }
 
     public void checkNotFoundErrorForNonExistingNeg() {
-        a4ResourceInventoryService
+        a4ResourceInventoryService.getClient()
                 .networkElementGroup()
                 .retrieveNetworkElementGroup()
                 .idPath(UUID.randomUUID().toString())
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_NOT_FOUND_404)));
+                .execute(checkStatus(HTTP_CODE_NOT_FOUND_404));
     }
 
     @Step("Read all TerminationPoints as list from v4 API")
     public List<TerminationPoint> getAllTerminationPointsV4() {
-        return a4ResourceInventoryService.terminationPoint()
+        return a4ResourceInventoryService.getClient().terminationPoint()
                 .listTerminationPoint()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read all TerminationPoints as list from v4 API")
     public List<TerminationPoint> getTerminationPointsV4ByPort(String nepUuid) {
-        return a4ResourceInventoryService.terminationPoint()
+        return a4ResourceInventoryService.getClient().terminationPoint()
                 .listTerminationPoint()
                 .parentUuidQuery(nepUuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Check if list of all existing Termination Points (v4 API) contains at least one entry")
@@ -200,17 +191,17 @@ public class A4ResourceInventoryServiceV4Robot {
 
     @Step("Read all NetworkElementLink as list from v4 API")
     public List<NetworkElementLink> getAllNetworkElementLinksV4() {
-        return a4ResourceInventoryService.networkElementLink()
+        return a4ResourceInventoryService.getClient().networkElementLink()
                 .listNetworkElementLink()
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read all NetworkElementLink as list from v4 API")
     public List<NetworkElementLink> getNetworkElementLinksV4ByLbz(String lbz) {
-        return a4ResourceInventoryService.networkElementLink()
+        return a4ResourceInventoryService.getClient().networkElementLink()
                 .listNetworkElementLink()
                 .lbzQuery(lbz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Check if list of all existing NetworkElementLink (v4 API) contains at least one entry")
@@ -231,46 +222,46 @@ public class A4ResourceInventoryServiceV4Robot {
 
     @Step("Read  Network Element Ports as list by NE Uuid from v4 API")
     public List<NetworkElementPort> getNetworkElementPortsByNetworkElementUuidV4(String uuid) {
-        return a4ResourceInventoryService.networkElementPort()
+        return a4ResourceInventoryService.getClient().networkElementPort()
                 .listNetworkElementPort()
                 .networkElementUuidQuery(uuid)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read  Network Element Ports as list by NE Endsz from v4 API")
     public List<NetworkElementPort> getNetworkElementPortsByEndszV4(String endsz) {
-        return a4ResourceInventoryService.networkElementPort()
+        return a4ResourceInventoryService.getClient().networkElementPort()
                 .listNetworkElementPort()
                 .networkElementEndszQuery(endsz)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read  Network Element Ports as list by NE Endsz and Port Type from v4 API")
     public List<NetworkElementPort> getNetworkElementPortsByEndszAndTypeV4(String endsz, String type) {
-        return a4ResourceInventoryService.networkElementPort()
+        return a4ResourceInventoryService.getClient().networkElementPort()
                 .listNetworkElementPort()
                 .networkElementEndszQuery(endsz)
                 .portTypeQuery(type)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read  Network Element Ports as list by NE Endsz and Port Type from v4 API")
     public List<NetworkElementPort> getNetworkElementPortsByEndszAndTypeAndPortnumberV4(String endsz, String type, String portNumber) {
-        return a4ResourceInventoryService.networkElementPort()
+        return a4ResourceInventoryService.getClient().networkElementPort()
                 .listNetworkElementPort()
                 .networkElementEndszQuery(endsz)
                 .portTypeQuery(type)
                 .portNumberQuery(portNumber)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Read  Network Element Ports as list by NE Endsz and functionalPortLabel from v4 API")
     public List<NetworkElementPort> getNetworkElementPortsByEndszAndFunctionalPortLabelV4(String endsz, String functionalPortLabel) {
-        return a4ResourceInventoryService.networkElementPort()
+        return a4ResourceInventoryService.getClient().networkElementPort()
                 .listNetworkElementPort()
                 .networkElementEndszQuery(endsz)
                 .functionalPortLabelQuery(functionalPortLabel)
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     public void checkIfNetworkElementPortExistsByEndszAndFunctionPortLabel(A4NetworkElement neData, A4NetworkElementPort nepData) {

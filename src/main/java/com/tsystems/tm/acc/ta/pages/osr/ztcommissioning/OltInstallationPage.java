@@ -77,7 +77,7 @@ public class OltInstallationPage {
 
     @Step("Manually continue zero touch commissioning process and wait for a error message")
     public OltInstallationPage continueZtCommissioningProcessCallbackError(Integer timeout) {
-        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);
+        sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS*3); // 1 second is not enough
         $(OPEN_FORCE_PROCEED_LINK).click();
         $(FORCE_PROCEED_BUTTON).should(exist , Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
         sleep(MAX_LATENCY_FOR_ELEMENT_APPEARS);

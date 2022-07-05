@@ -9,12 +9,14 @@ import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 import static org.testng.Assert.assertEquals;
 
+@Slf4j
 public class CommonSteps {
     private final TestContext testContext;
 
@@ -24,6 +26,7 @@ public class CommonSteps {
 
     @Before
     public void setup() {
+        log.info("Initializing wiremock...");
         // ACTION
         WireMockMappingsContext wiremock = new OsrWireMockMappingsContextBuilder(
                 new WireMockMappingsContext(WireMockFactory.get(), "CucumberTests-" + UUID.randomUUID()))
@@ -38,6 +41,7 @@ public class CommonSteps {
 
     @After
     public void cleanup() {
+        log.info("Tearing down wiremock...");
         // INPUT FROM SCENARIO CONTEXT
         WireMockMappingsContext wiremock = (WireMockMappingsContext) testContext.getScenarioContext().getContext(Context.WIREMOCK);
 

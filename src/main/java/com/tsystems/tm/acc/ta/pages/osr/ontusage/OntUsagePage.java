@@ -4,7 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.openshift.internal.util.Assert;
 import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import com.tsystems.tm.acc.ta.util.Screenshot;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class OntUsagePage implements SupplierCockpitUiPage{
 
     @Step("Open Supplier ONT usage Page")
     public static OntUsagePage openPage(String acid) {
-        URL url = new OCUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", acid).buildExternal();
+        URL url = new GigabitUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", acid).buildExternal();
         log.info("Opening url " + url.toString());
         OntUsagePage page = open(url, OntUsagePage.class);
         return page;
@@ -82,14 +82,17 @@ public class OntUsagePage implements SupplierCockpitUiPage{
         $(byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]/following-sibling::cdk-cell[contains(@class, 'cdk-column-trash')]")).click();
         By ONT_CELL = byXpath("//cdk-cell[contains(text(),'"+ont.getSerialNumber()+"')]");
         if (assertWillFail){
-            sleep(1000); //this is needed because the error message pops up asyncronously
-            if (!$(ERRORMESSAGE).isDisplayed()){
-                throw new Assert.AssertionFailedException();
-            }
+            $(ERRORMESSAGE).shouldBe(visible);
             $(ONT_CELL).shouldBe(visible);
         } else {
-            $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(2000)).click();
-            $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            if ($(CONFIRM_BUTTON).isDisplayed()) {
+                $(CONFIRM_BUTTON).click();
+                $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            } else {
+                $(byXpath("//cdk-cell[contains(text(),'" + ont.getSerialNumber() + "')]/following-sibling::cdk-cell[contains(@class, 'cdk-column-trash')]")).click();
+                $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(3000)).click();
+                $(ONT_CELL).should(disappear, Duration.ofMillis(4000));
+            }
         }
         return this;
     }

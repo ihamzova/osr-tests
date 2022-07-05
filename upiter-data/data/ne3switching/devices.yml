@@ -5,7 +5,7 @@ values:
   slotNumber: "3"
   portNumber: "0"
   homeIdPool: 32
-  accessLinesCount: 16
+  accessLinesCount: 4
 ---
 name: EndSz_49_30_179_76H2_3_0
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning

@@ -5,7 +5,7 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.ETCDRobot;
 import com.tsystems.tm.acc.ta.sql.Keys;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import de.telekom.it.t3a.kotlin.kubernetes.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.Test;
@@ -29,7 +29,7 @@ public class Debug extends GigabitTest {
 
     @Test
     public void debug() {
-        ETCDV3Client client = new ETCDV3Client(new OCUrlBuilder("ont-etcd").withoutSuffix().withPort(443).buildUri());
+        ETCDV3Client client = new ETCDV3Client(new GigabitUrlBuilder("ont-etcd").withoutSuffix().withPort(443).buildUri());
         client.getAllKeys(true).getKvs().forEach(kv -> log.info(kv.getKey().toString(Charset.defaultCharset())));
     }
 

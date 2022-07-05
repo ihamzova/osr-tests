@@ -1,14 +1,10 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.DeviceResourceInventoryManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.DeviceTestDataManagementClient;
 import com.tsystems.tm.acc.ta.api.osr.OltCommissioningClient;
 import com.tsystems.tm.acc.ta.api.osr.OltCommissioningEventListenerClient;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.ztcommissioning.OltInstallationPage;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.DeviceType;
@@ -24,13 +20,11 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertEquals;
 
 @Slf4j
@@ -38,10 +32,9 @@ public class ZtCommissioningRobot {
 
     private static final Integer TIMEOUT_FOR_ZTC_COMMISSIONING = 2 * 60_000;
 
-    private static final AuthTokenProvider authTokenProvider = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
-    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProvider);
+    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
-    private final OltCommissioningClient oltCommissioningClient = new OltCommissioningClient(authTokenProvider);
+    private final OltCommissioningClient oltCommissioningClient = new OltCommissioningClient();
     private final OltCommissioningEventListenerClient oltCommissioningEventListenerClient = new OltCommissioningEventListenerClient();
 
     @Step("Start the zero touch commissioning process")
@@ -95,14 +88,14 @@ public class ZtCommissioningRobot {
     @Step("Clear old zero touch commissioning process data")
     public void clearZtCommissioningData(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
-                .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .oltEndSzQuery(endSz).executeAs(checkStatus(HTTP_CODE_OK_200));
 
         if (oltZtcConfigurations.size() > 0) {
             log.info("delete oltZtcConfigurations = {}", oltZtcConfigurations.get(0));
             deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().deleteOltZtcConfiguration()
-                    .idPath(oltZtcConfigurations.get(0).getId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                    .idPath(oltZtcConfigurations.get(0).getId()).execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
             oltCommissioningClient.getClient().oltZtCommissioning().deleteZtCommissioning()
-                    .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                    .processIdPath(oltZtcConfigurations.get(0).getProcessId()).execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
         }
     }
 
@@ -122,12 +115,12 @@ public class ZtCommissioningRobot {
                                 .specversion("1")
                                 .time(OffsetDateTime.now())
                                 .type("de.telekom.seal.device.olt.statechanged.v1"))
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     public Integer getZtCommissioningState(String endSz) {
         List<OltZtcConfiguration> oltZtcConfigurations = deviceResourceInventoryManagementClient.getClient().oltZtcConfiguration().listOltZtcConfiguration()
-                .oltEndSzQuery(endSz).executeAs(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .oltEndSzQuery(endSz).executeAs(checkStatus(HTTP_CODE_OK_200));
         if (oltZtcConfigurations.size() > 0) {
             log.info("oltZtcConfigurations state = {}", oltZtcConfigurations.get(0).getState());
             return oltZtcConfigurations.get(0).getState();
@@ -137,14 +130,14 @@ public class ZtCommissioningRobot {
 
     @Step("Verify the oltZtcConfiguration state.")
     public void verifyZtCommissioningState(String endSz, Integer expectedState, Integer bitmask) {
-        Integer state =  getZtCommissioningState(endSz) & bitmask;
+        Integer state = getZtCommissioningState(endSz) & bitmask;
         Assert.assertEquals(state, expectedState, "oltZtcConfiguration.state mismatch");
     }
 
     @Step("Verify the OLT device in olt-resource-inventory.")
     public void verifyDeviceSDX3620(OltDevice oltDevice) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
 
         Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
         Device device = deviceList.get(0);
@@ -161,6 +154,6 @@ public class ZtCommissioningRobot {
     @Step("Clear device in olt-resource-inventory databases")
     public void clearResourceInventoryDataBase(String endSz) {
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(endSz)
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                .execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
     }
 }

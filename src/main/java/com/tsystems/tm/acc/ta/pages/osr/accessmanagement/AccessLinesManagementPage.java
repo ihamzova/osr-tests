@@ -4,12 +4,14 @@ import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 import java.util.function.Supplier;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byCssSelector;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -64,6 +66,8 @@ public class AccessLinesManagementPage {
     private static final By ANP_TAG_INPUT = byQaData("mp-anptag-input");
     private static final By ONU_ID_INPUT = byQaData("mp-onu id-input");
     private static final By OFFLINE_ONT_STATE = byXpath("//*[@id='OFFLINE']");
+    private static final By HOMEID_DELETE = byCssSelector(".am-icon icon--reset");
+    private static final By HOMEID_INPUT = byQaData("mp-homeid-input");
 
 
     @Step("Return on first window")
@@ -218,6 +222,14 @@ public class AccessLinesManagementPage {
         return this;
     }
 
+    @Step("Remove HomeID")
+    public AccessLinesManagementPage removeHomeID() {
+        $(HOMEID_INPUT).sendKeys((Keys.CONTROL + "a"));
+        $(HOMEID_INPUT).sendKeys(Keys.DELETE);
+        clickSaveAndReconfigureButton();
+        return this;
+    }
+
     @Step("Start A4 connectivity test")
     public AccessLinesManagementPage startA4ConnectivityTest() {
         $(A4_CONNECTIVITY_TEST).click();
@@ -255,6 +267,7 @@ public class AccessLinesManagementPage {
 
         return this;
     }
+
     @Step("Change ONT state to Offline")
     public AccessLinesManagementPage changeOntStateToOffline() {
         $(NE_SUBSCRIBER_ONT_STATE_INPUT).click();
@@ -328,17 +341,17 @@ public class AccessLinesManagementPage {
     public void checkAccessLineProfilesStates(String neExpectedDefaultProfileState,
                                               String neExpectedSubscriberProfileState, String nlExpectedDefaultProfileState,
                                               String nlExpectedSubscriberProfileState) {
-        assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState));
-        assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState));
-        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
-        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+        assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState), "DefaultNeProfile State is incorrect");
+        assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState), "SubscriberNeProfile State is incorrect");
+        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
+        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
     }
 
     @Step("Check NL profiles states")
     public void checkNLProfiles(String nlExpectedDefaultProfileState,
                                 String nlExpectedSubscriberProfileState) {
-        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState));
-        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState));
+        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
+        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
     }
 
     @Step("Check FTTB AccessLine profiles states")

@@ -1,6 +1,6 @@
 package cucumber;
 
-import com.tsystems.tm.acc.ta.cucumber.AbstractGigabitCucumberTest;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
@@ -10,10 +10,8 @@ import io.cucumber.testng.CucumberOptions;
                 "json:target/allure-results/cucumberscenarios.json"},
         monochrome = true,
         glue = {"com.tsystems.tm.acc.ta.cucumber.steps",
-                "cucumber.stepdefinitions.team.berlinium",
-                "cucumber.stepdefinitions.common"},
-        features = {"src/test/resources/cucumberscenarios/team/berlinium.a4"},
-        tags = "@smoke"
+                "cucumber.stepdefinitions"},
+        features = {"src/test/resources/cucumberscenarios/domain"}
 )
-public class RunCucumberTestsBerliniumQuickSmokeTest extends AbstractGigabitCucumberTest {
+public class RunCucumberTestsDomainTests extends AbstractTestNGCucumberTests {
 }

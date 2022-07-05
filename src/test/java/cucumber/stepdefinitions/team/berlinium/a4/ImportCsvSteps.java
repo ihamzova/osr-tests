@@ -8,11 +8,15 @@ import cucumber.TestContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
+
+@Slf4j
 public class ImportCsvSteps {
 
     private final A4ResourceInventoryRobot a4ResInv;
@@ -26,11 +30,17 @@ public class ImportCsvSteps {
 
     @After
     public void cleanup() {
+        log.info("Checking if any A4 CSV(s) exists in scenario context...");
         final boolean CSV_PRESENT = testContext.getScenarioContext().isContains(Context.A4_CSV);
         if (CSV_PRESENT) {
-            final A4ImportCsvData csv = (A4ImportCsvData) testContext.getScenarioContext().getContext(Context.A4_CSV);
-            a4ResInv.deleteA4TestDataRecursively(csv);
-        }
+            log.info("A4 CSV(s) found! Deleting any related NEGs and connected A4 elements...");
+            final List<A4ImportCsvData> csvList = testContext.getScenarioContext().getAllContext(Context.A4_CSV).stream()
+                    .map(csv -> (A4ImportCsvData) csv)
+                    .collect(toList());
+
+            csvList.forEach(a4ResInv::deleteA4TestDataRecursively);
+        } else
+            log.info("No A4 CSV found. Nothing to do.");
     }
 
 
@@ -45,8 +55,10 @@ public class ImportCsvSteps {
         rows.forEach(columns -> {
             final A4ImportCsvLine csvLine = new A4ImportCsvLine();
             csvLine.setNegName(columns.get("NEG Name"));
-            csvLine.setNeVpsz(columns.get("VPSZ"));
-            csvLine.setNeFsz(columns.get("FSZ"));
+            csvLine.setNegDescription(columns.get("NEG Description"));
+            csvLine.setNeVpsz(columns.get("NE VPSZ"));
+            csvLine.setNeFsz(columns.get("NE FSZ"));
+            csvLine.setNeDescription(columns.get("NE Description"));
 
             csvLines.add(csvLine);
         });

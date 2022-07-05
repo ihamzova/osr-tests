@@ -1,7 +1,7 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltmaintenance;
 
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.OCUrlBuilder;
+import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -31,7 +31,7 @@ public class OLTSuchePage {
 
     @Step("Open Search page")
     public static OLTSuchePage openPage() {
-        URL url = new OCUrlBuilder(APP).withEndpoint(ENDPOINT).build();
+        URL url = new GigabitUrlBuilder(APP).withEndpoint(ENDPOINT).build();
         log.info("Opening url " + url.toString());
         return open(url, OLTSuchePage.class);
     }

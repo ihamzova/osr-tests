@@ -16,8 +16,8 @@ import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.OntState;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.OntState;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.*;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -194,7 +194,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wansn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLineForCommissioning.getLineId()));
@@ -220,7 +219,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wasn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()));
@@ -246,7 +244,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertNull("SubscriberNeProfile wasn't deleted", accessLineRiRobot.getSubscriberNEProfile(accessLine.getLineId()));
@@ -265,7 +262,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontDecommissioning33LineToggleOffTest() throws InterruptedException {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
-    Thread.sleep(3000);
+    Thread.sleep(5000);
 
     // prepare test data
     List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
@@ -284,7 +281,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("State of the AccessLine that wasn't decommissioned is incorrect", accessLineRiRobot.getAccessLineStateByLineId(accessLineFor33LineCaseOld.getLineId()),
@@ -292,8 +288,7 @@ public class OntCommissioning extends GigabitTest {
     assertEquals("HomeId on the AccessLine that wasn't decommissioned is incorrect",
             accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseOld.getLineId()).get(0).getHomeId(),
             accessLineFor33LineCaseOld.getHomeId());
-    Thread.sleep(2000);
-
+    accessLineRiRobot.waitUntilAccessLineIsDeleted(accessLineFor33LineCaseNew.getLineId());
     assertTrue(accessLineRiRobot.getAccessLinesByLineId(accessLineFor33LineCaseNew.getLineId()).isEmpty(), "Decommissioned AccessLine wasn't deleted");
   }
 
@@ -304,7 +299,7 @@ public class OntCommissioning extends GigabitTest {
   public void ontDecommissioning33LineToggleOnTest() throws InterruptedException {
     wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
 
-    Thread.sleep(3000);
+    Thread.sleep(5000);
 
     // prepare test data
     List<AccessLineDto> accessLines = accessLineRiRobot.getAccessLinesByPort(port).stream()
@@ -323,7 +318,6 @@ public class OntCommissioning extends GigabitTest {
     // check callback
     assertTrue(callback.getSuccess(), "Callback returned an error");
     assertNull("Callback returned an error", callback.getError());
-    assertNull("Callback returned a response body", callback.getResponse());
 
     // check alri
     assertEquals("AccessLine that was decommissioned was deleted although it shouldn't have",

@@ -1,12 +1,8 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
-import com.tsystems.tm.acc.ta.api.AuthTokenProvider;
-import com.tsystems.tm.acc.ta.api.ResponseSpecBuilders;
-import com.tsystems.tm.acc.ta.api.RhssoClientFlowAuthTokenProvider;
 import com.tsystems.tm.acc.ta.api.osr.*;
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.helpers.RhssoHelper;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
@@ -23,13 +19,11 @@ import org.testng.Assert;
 import java.util.List;
 import java.util.Optional;
 
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.shouldBeCode;
-import static com.tsystems.tm.acc.ta.api.ResponseSpecBuilders.validatedWith;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NO_CONTENT_204;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
 import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_MA5600;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.OLT_BFF_PROXY_MS;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -40,13 +34,12 @@ public class DpuCommissioningUiRobot {
     private static final String OLT_EMS_CONFIGURATION_STATE = "ACTIVE";
     private static final String DPU_EMS_CONFIGURATION_STATE = "ACTIVE";
 
-    private static final AuthTokenProvider authTokenProviderOltBffProxy = new RhssoClientFlowAuthTokenProvider(OLT_BFF_PROXY_MS, RhssoHelper.getSecretOfGigabitHub(OLT_BFF_PROXY_MS));
-
-    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient(authTokenProviderOltBffProxy);
-    private final AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient(authTokenProviderOltBffProxy);
-    private final UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient(authTokenProviderOltBffProxy);
+    private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
+    private final AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient();
+    private final UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient();
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
-    private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient(authTokenProviderOltBffProxy);
+    private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
+    private String businessKey;
 
     @Step("Start automatic dpu creation and commissioning process")
     public void startDpuCommissioning(DpuDevice dpuDevice, boolean withDpuDemand) {
@@ -58,7 +51,7 @@ public class DpuCommissioningUiRobot {
 
         DpuCreatePage dpuCreatePage = new DpuCreatePage();
         dpuCreatePage.validateUrl();
-        if (withDpuDemand){
+        if (withDpuDemand) {
             dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
         } else {
             dpuCreatePage.startDpuCreation(dpuDevice);
@@ -100,7 +93,7 @@ public class DpuCommissioningUiRobot {
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
         assertEquals(deviceList.get(0).getDeviceType(), DeviceType.DPU, "DPU DeviceType mismatch");
         assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
@@ -116,7 +109,7 @@ public class DpuCommissioningUiRobot {
 
         // PON port lifecycle state
         List<Port> portList = deviceResourceInventoryManagementClient.getClient().port().listPort()
-                .parentEquipmentRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .parentEquipmentRefEndSzQuery(dpuDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
         Optional<Port> ponPort = portList.stream()
                 .filter(port -> port.getPortName().equals("1"))
                 .filter(port -> port.getPortType().equals(PortType.PON))
@@ -135,13 +128,13 @@ public class DpuCommissioningUiRobot {
         List<AncpIpSubnet> ancpIpSubnetList = ancpResourceInventoryManagementClient.getClient().ancpIpSubnet().listAncpIpSubnet()
                 .bngDownlinkPortEquipmentBusinessRefEndSzQuery(dpuDevice.getBngEndsz())
                 .bngDownlinkPortEquipmentBusinessRefPortNameQuery(dpuDevice.getBngDownlinkPort())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         Assert.assertEquals(ancpIpSubnetList.size(), 2L, "AncpIpSubnet size missmatch exist after commissioning");
 
         // DpuOltConfiguration
         List<DpuOltConfiguration> dpuOltConfigurations = deviceResourceInventoryManagementClient.getClient()
                 .dpuOltConfiguration().listDpuOltConfiguration().dpuEndSzQuery(dpuDevice.getEndsz())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(dpuOltConfigurations.size(), 1L, "DPU dpuEmsConfigurations.size mismatch");
         DpuOltConfiguration dpuOltConfiguration = dpuOltConfigurations.get(0);
         assertEquals(dpuOltConfiguration.getConfigurationState(), "ACTIVE", "DPU dpuOltConfigurations state mismatch" );
@@ -151,7 +144,7 @@ public class DpuCommissioningUiRobot {
         // DpuEmsConfiguration
         List<DpuEmsConfiguration> dpuEmsConfigurations = deviceResourceInventoryManagementClient.getClient()
                 .dpuEmsConfiguration().listDpuEmsConfiguration().dpuEndSzQuery(dpuDevice.getEndsz())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
 
         assertEquals(dpuEmsConfigurations.size(), 1L, "DPU dpuEmsConfigurations.size mismatch");
         DpuEmsConfiguration dpuEmsConfiguration = dpuEmsConfigurations.get(0);
@@ -189,32 +182,32 @@ public class DpuCommissioningUiRobot {
     public void checkDpuDecommissioningResult(DpuDevice dpuDevice) {
 
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(deviceList.size(), 1L, "DPU deviceList.size mismatch");
         assertEquals(deviceList.get(0).getDeviceType(), DeviceType.DPU, "DPU DeviceType mismatch");
         assertEquals(deviceList.get(0).getEndSz(), dpuDevice.getEndsz(), "DPU endSz mismatch");
 
         List<DpuEmsConfiguration> dpuEmsConfigurationList = deviceResourceInventoryManagementClient.getClient().dpuEmsConfiguration().listDpuEmsConfiguration()
-                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(dpuEmsConfigurationList.size(), 0L, "DpuEmsConfiguration exist after decommissioning");
 
         List<DpuOltConfiguration> dpuOltConfigurationList = deviceResourceInventoryManagementClient.getClient().dpuOltConfiguration().listDpuOltConfiguration()
-                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .dpuEndSzQuery(dpuDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(dpuOltConfigurationList.size(), 0L, "DpuOltConfiguration exist after decommissioning");
 
         List<AncpSession> ancpSessionList = ancpResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-                .accessNodeEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .accessNodeEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
         Assert.assertEquals(ancpSessionList.size(), 0L, "AncpSession exist after decommissioning");
 
         List<AncpIpSubnet> ancpIpSubnetList = ancpResourceInventoryManagementClient.getClient().ancpIpSubnet().listAncpIpSubnet()
                 .bngDownlinkPortEquipmentBusinessRefEndSzQuery(dpuDevice.getBngEndsz())
                 .bngDownlinkPortEquipmentBusinessRefPortNameQuery(dpuDevice.getBngDownlinkPort())
-                .executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
         Assert.assertEquals(ancpIpSubnetList.size(), 1L, "AncpIpSubnet size missmatch exist after decommissioning");
         Assert.assertEquals(ancpIpSubnetList.get(0).getAncpIpSubnetType(), AncpIpSubnetType.OLT.toString(), "AncpIpSubnetType not OLT after decommissioning");
 
         List<Uplink> uplinkList = uplinkResourceInventoryManagementClient.getClient().uplink().listUplink()
-                .portsEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .portsEquipmentBusinessRefEndSzQuery(dpuDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
         Assert.assertEquals(uplinkList.size(), 0L, "Uplink exist after decommissioning");
     }
 
@@ -229,22 +222,22 @@ public class DpuCommissioningUiRobot {
     @Step("Checks DPU Device deletion")
     public void checkDpuDeviceDelationResult(DpuDevice dpuDevice) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(deviceList.size(), 0L, "DPU exist after deletion");
     }
 
     @Step("Restore accessline-resource-inventory Database state")
     public void restoreOsrDbState() {
         accessLineResourceInventoryFillDbClient.getClient().fillDatabase().deleteDatabase()
-                .execute(validatedWith(shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Clear devices (DPU and OLT) in olt-resource-inventory database")
     public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getOltEndsz())
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                .execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
         deviceTestDataManagementClient.getClient().deviceTestDataManagement().deleteTestData().deviceEndSzQuery(dpuDevice.getEndsz())
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_NO_CONTENT_204)));
+                .execute(checkStatus(HTTP_CODE_NO_CONTENT_204));
     }
 
     @Step("Create the precondition olt-resource-inventory and access-line-resource-inventory database")
@@ -259,6 +252,6 @@ public class DpuCommissioningUiRobot {
                 .uplinkTargetPortQuery(dpuDevice.getBngDownlinkPort())
                 .uplinkAncpConfigurationQuery("1")
                 .executeSqlQuery("1")
-                .execute(validatedWith(ResponseSpecBuilders.shouldBeCode(HTTP_CODE_OK_200)));
+                .execute(checkStatus(HTTP_CODE_OK_200));
     }
 }

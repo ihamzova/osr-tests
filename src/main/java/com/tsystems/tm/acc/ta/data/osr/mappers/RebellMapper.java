@@ -45,21 +45,25 @@ public class RebellMapper {
         Ueweg ueweg = getDefaultUeweg();
         ueweg.setUewegId(uewegData.getUewegId());
         ueweg.getEndPointA().setEndSz(endSzA);
-        ueweg.getEndPointA().setVendorPortName(uewegData.getVendorPortNameA());
+        //ueweg.getEndPointA().setVendorPortName(uewegData.getVendorPortNameA());
+        ueweg.getEndPointA().setPortName(uewegData.getVendorPortNameA());
         ueweg.getEndPointB().setEndSz(endSzB);
-        ueweg.getEndPointB().setVendorPortName(uewegData.getVendorPortNameB());
+        //ueweg.getEndPointB().setVendorPortName(uewegData.getVendorPortNameB());
+        ueweg.getEndPointB().setPortName(uewegData.getVendorPortNameB());
 
         return ueweg;
     }
 
-    public Ueweg getUewegByNel(String endszA, String endszB, NetworkElementLinkDto nel, String vendorPortNameA, String vendorPortNameB) {
+    public Ueweg getUewegByNel(String endszA, String endszB, NetworkElementLinkDto nel, String portNameA, String portNameB) {
         Ueweg ueweg = getDefaultUeweg();
         ueweg.setLsz(nel.getLsz());
         ueweg.setOrdNr(nel.getOrderNumber());
         ueweg.getEndPointA().setEndSz(endszA.replace("/", "_"));
-        ueweg.getEndPointA().setVendorPortName(vendorPortNameA);
+        //ueweg.getEndPointA().setVendorPortName(vendorPortNameA);
+        ueweg.getEndPointA().setPortName(portNameA);
         ueweg.getEndPointB().setEndSz(endszB.replace("/", "_"));
-        ueweg.getEndPointB().setVendorPortName(vendorPortNameB);
+        //ueweg.getEndPointB().setVendorPortName(vendorPortNameB);
+        ueweg.getEndPointB().setPortName(portNameB);
 
         return ueweg;
     }

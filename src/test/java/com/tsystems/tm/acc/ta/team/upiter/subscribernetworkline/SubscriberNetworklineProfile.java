@@ -13,7 +13,7 @@ import com.tsystems.tm.acc.ta.robot.osr.NetworkLineProfileManagementRobot;
 import com.tsystems.tm.acc.ta.robot.osr.WgAccessProvisioningRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
-import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_35_0.client.model.*;
+import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import com.tsystems.tm.acc.tests.osr.network.line.profile.management.v1_5_0.client.model.ResourceCharacteristic;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
@@ -46,6 +46,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   private UpiterTestContext context = UpiterTestContext.get();
 
   private AccessLine accessLineRetail;
+  private AccessLine accessLineRetailGfps;
   private AccessLine accessLineWbGfnw;
   private AccessLine accessLineWbRkom;
   private AccessLine accessLineWs;
@@ -92,6 +93,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
   private DpuDevice dpuDeviceTwistedPair;
   private PortProvisioning oltDeviceCoax;
   private DpuDevice dpuDeviceCoax;
+  private PortProvisioning portGfps;
 
   @BeforeClass
   public void init() throws InterruptedException {
@@ -105,6 +107,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     dpuDeviceTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
     oltDeviceCoax = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
     dpuDeviceCoax = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
+    portGfps = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.deviceGfps);
 
     accessLineRiRobot.clearDatabase();
     Thread.sleep(1000);
@@ -113,6 +116,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     accessLineRiRobot.fillDatabaseForOltCommissioningWithDpu(true, AccessTransmissionMedium.COAX, 1000, 1000,
             oltDeviceCoax.getEndSz(), dpuDeviceCoax.getEndsz(), oltDeviceCoax.getSlotNumber(), oltDeviceCoax.getPortNumber());
     accessLineRetail = new AccessLine();
+    accessLineRetailGfps = new AccessLine();
     accessLineWs = new AccessLine();
     accessLineWbGfnw = new AccessLine();
     accessLineWbRkom = new AccessLine();
@@ -161,6 +165,8 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     expectedL2BsaNspReferenceActivation = context.getData().getL2BsaNspReferenceDataProvider().get(L2BsaNspReferenceCase.L2BsaNspReferenceActivation);
     expectedL2BsaNspReferenceModification = context.getData().getL2BsaNspReferenceDataProvider().get(L2BsaNspReferenceCase.L2BsaNspReferenceModification);
     expectedRetailSubscriberProfileFttb = context.getData().getSubscriberNetworkLineProfileDataProvider().get(SubscriberNetworkLineProfileCase.RetailSubscriberNetworkLineProfileFttb);
+
+    wgAccessProvisioningRobot.startPortProvisioning(portGfps);
   }
 
   @Test
@@ -420,6 +426,31 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineFttbTp);
     accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineFttbTp, expectedDefaultNetworklineProfileFttbTp);
     assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineFttbTp.getLineId()).get(0).getSubscriberNetworkLineProfile(),
+            "SubscriberNetworkLineProfile wasn't deleted");
+  }
+
+  @Test
+  @TmsLink("DIGIHUB-*****")
+  @Description("Subscriber NetworkLine Profile creation for GF+: Retail case")
+  public void createSubscriberNetworkLineProfileRetailGfps() {
+    accessLineRiRobot.checkFtthPortParameters(portGfps);
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(portGfps, expectedDefaultNetworklineProfileFtthV2, portGfps.getAccessLinesCount());
+    accessLineRetailGfps.setLineId(accessLineRiRobot.getAccessLinesByPort(portGfps).get(0).getLineId());
+
+    resourceOrderRetailActivation = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderRetailActivation, accessLineRetailGfps, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderRetailActivation.getResourceOrder(), accessLineRetailGfps);
+    accessLineRiRobot.checkSubscriberNetworkLineProfiles(accessLineRetailGfps, expectedRetailSubscriberProfileFtth);
+    assertEquals("DefaultNetworkLineProfile State is incorrect", accessLineRiRobot.getAccessLinesByLineId(accessLineRetailGfps.getLineId()).get(0).getDefaultNetworkLineProfile().getState(), ProfileState.INACTIVE);
+  }
+
+  @Test(dependsOnMethods = "createSubscriberNetworkLineProfileRetailGfps")
+  @TmsLink("DIGIHUB-*****")
+  @Description("Subscriber NetworkLine Profile deletion for GF+: Retail case")
+  public void deleteSubscriberNetworkLineProfileRetailGfps() {
+    resourceOrderDeletion = networkLineProfileManagementRobot.setResourceOrderData(resourceOrderDeletion, accessLineRetailGfps, calId);
+    networkLineProfileManagementRobot.createResourceOrderRequest(resourceOrderDeletion.getResourceOrder(), accessLineRetailGfps);
+    accessLineRiRobot.checkDefaultNetworkLineProfiles(accessLineRetailGfps, expectedDefaultNetworklineProfileFtthV2);
+    assertNull(accessLineRiRobot.getAccessLinesByLineId(accessLineRetailGfps.getLineId()).get(0).getSubscriberNetworkLineProfile(),
             "SubscriberNetworkLineProfile wasn't deleted");
   }
 }

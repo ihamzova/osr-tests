@@ -6,10 +6,10 @@ values:
   portNumber: "0"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: port5600v2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -19,10 +19,10 @@ values:
   portNumber: "4"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: portFullyOccupied
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -32,10 +32,10 @@ values:
   portNumber: "2"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 32
-  defaultNEProfilesActive: 32
-  defaultNetworkLineProfilesActive: 32
-  accessLinesCount: 32
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: portPartlyOccupied
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -45,10 +45,10 @@ values:
   portNumber: "3"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: portWithInActiveLines
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -58,22 +58,10 @@ values:
   portNumber: "0"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 32
-  defaultNEProfilesActive: 32
-  defaultNetworkLineProfilesActive: 32
-  accessLinesCount: 32
----
-name: card5600v1
-template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
-values:
-  endSz: "49/30/179/76H2"
-  slotNumber: "11"
-  homeIdPool: 0
-  backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: card5600v2
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -82,10 +70,10 @@ values:
   slotNumber: "3"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
 ---
 name: device5600
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
@@ -93,7 +81,7 @@ values:
   endSz: "49/30/179/76H3"
   homeIdPool: 0
   backhaulId: 1
-  accessLinesWG: 16
-  defaultNEProfilesActive: 16
-  defaultNetworkLineProfilesActive: 16
-  accessLinesCount: 16
+  accessLinesWG: 4
+  defaultNEProfilesActive: 4
+  defaultNetworkLineProfilesActive: 4
+  accessLinesCount: 4
