@@ -85,6 +85,12 @@ public class DpuInfoPage {
         return this;
     }
 
+    @Step("Start dpu decommissioning v2")
+    public DpuInfoPage startDpuDecommissioningV2() {
+        $(START_DPU_DECOMMISSIONING_BUTTON_LOCATOR).click();
+        return this;
+    }
+
     @Step("Open DPU Ports Tab")
     public DpuInfoPage openDpuPortsTab() {
         $(DPU_PORTS_VIEW_TAB_LOCATOR).click();
