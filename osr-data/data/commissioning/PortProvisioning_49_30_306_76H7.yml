@@ -1,7 +1,7 @@
-name: EndSz_49_30_306_76H7
+name: EndSz_49_30_179_76H8
 template: com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning
 values:
-  endSz: "49/30/306/76H7"
+  endSz: "49/30/179/76H8"
   slotNumber: "3"
   portNumber: "3"
   homeIdPool: 0
