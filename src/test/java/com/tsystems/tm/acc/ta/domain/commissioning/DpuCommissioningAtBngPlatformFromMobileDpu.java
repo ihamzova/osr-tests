@@ -127,15 +127,22 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAccessLines);
     }
 
-    @Test(description = "DPU Decommissioning V2 from OS&R Mobile UI: BNG Platform")
+    @Test(dependsOnMethods = "dpuCommissioningV2BngPlatform", description = "DPU Decommissioning V2 from OS&R UI: BNG Platform")
     @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
     public void dpuDecommissioningV2BngPlatform() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
-        dpuCommissioningUiRobot.startDpuDecommissioning(dpuDevice);
+
+        dpuCommissioningUiRobot.startDpuDecommissioningV2(dpuDevice);
+
+        // todo check if process is finished  and remove sleep
+        try {
+            Thread.sleep( 4 * 60_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
-
     }
 
 }
