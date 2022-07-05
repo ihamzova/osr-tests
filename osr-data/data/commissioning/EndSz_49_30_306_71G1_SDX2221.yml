@@ -16,4 +16,4 @@ values:
   ponConnectionWe: "1"
   ponConnectionGe: "0"
   ponConnectionSl: "0"
-  accessTransmissionMedium: "COAX"
+  accessTransmissionMedium: "TWISTED_PAIR"

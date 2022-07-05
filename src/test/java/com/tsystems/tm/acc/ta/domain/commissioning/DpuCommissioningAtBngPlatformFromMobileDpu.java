@@ -67,9 +67,9 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         dpuDevice = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.EndSz_49_30_306_71G1_SDX2221);
         dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.DpuDemand_49_30_306_71G1);
         oltDevice = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.EndSz_49_30_179_76H8);
-        expectedFttbNeProfile = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileCoax);
+        expectedFttbNeProfile = context.getData().getFttbNeProfileDataProvider().get(FttbNeProfileCase.fttbNeProfileTwistedPair);
         expectedDefaultNlProfile = context.getData().getDefaultNetworkLineProfileDataProvider()
-                .get(DefaultNetworkLineProfileCase.defaultNLProfileFttbCoax);
+                .get(DefaultNetworkLineProfileCase.defaultNLProfileFttbTP);
 
         numberOfAccessLines = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
         DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);

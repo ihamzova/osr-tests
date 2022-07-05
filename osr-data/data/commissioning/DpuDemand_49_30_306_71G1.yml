@@ -1,7 +1,7 @@
 name: DpuDemand_49_30_306_71G1
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand
 values:
-  dpuAccessTechnology: "FTTB_COAX"
+  dpuAccessTechnology: "FTTB"
   dpuEndSz: "49/30/306/71G1"
   numberOfNeededDpuPorts: "4"
   fiberOnLocationId: "71520003000999"
