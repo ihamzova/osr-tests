@@ -124,7 +124,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         mobileDpuPage.goToNextPage();
         mobileDpuPage.finishCommissioning();
 
-        accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAccessLines);
         dpuCommissioningUiRobot.checkDpuCommissioningResult(dpuDevice);
+        accessLineRiRobot.checkAccessLinesAfterFttbProvisioning(oltDevice, dpuDevice, expectedFttbNeProfile, expectedDefaultNlProfile, numberOfAccessLines);
     }
 }
