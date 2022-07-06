@@ -261,6 +261,7 @@ public class NetworkSwitchingPage {
     @Step("ClickRollback button")
     public NetworkSwitchingPage clickRollbackButton() {
         $(ROLLBACK_BUTTON).click();
+        $(NOTIFICATION).shouldBe(visible);
         return this;
     }
 

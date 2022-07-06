@@ -159,7 +159,8 @@ public class FtthNetworkSwitching extends GigabitTest {
                         .waitUntilNeededStatus("EXECUTED", packageId);
 
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation phase");
-        networkSwitchingPage.clickRollbackButton();
+        networkSwitchingPage.clickRollbackButton()
+                .waitUntilNeededStatus("IN_ROLLBACK", packageId);
         assertTrue(networkSwitchingPage.getNotification().equals("Der Rollback-Prozess hat begonnen"), "Notification is incorrect");
         networkSwitchingPage.waitUntilNeededStatus("ROLLBACKED", packageId);
         assertTrue(networkSwitchingPage.getPackageStatus().contains("ROLLBACKED"));

@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.Ont;
 import com.tsystems.tm.acc.ta.data.osr.models.Supplier;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import com.tsystems.tm.acc.ta.util.Screenshot;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -19,7 +18,6 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
-import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 
 @Slf4j
 public class OntUsageSupportPage {
