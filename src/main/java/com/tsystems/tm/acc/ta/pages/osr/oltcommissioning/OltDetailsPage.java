@@ -2,18 +2,17 @@ package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.CommonHelper;
-import com.tsystems.tm.acc.ta.util.Assert;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.testng.Assert;
 
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
-import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
+import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 import static org.testng.Assert.assertEquals;
 
@@ -39,8 +38,8 @@ public class OltDetailsPage {
 
   public static final By ANCP_CONFIGURE_BUTTON_LOCATOR = byQaData("button-configure-ancp-session");
   public static final By ANCP_DE_CONFIGURE_BUTTON_LOCATOR = byQaData("button-de-configure-ancp-session");
-  public static final By ANCP_SESSION_STATUS_UNKNOWN_LOCATOR = byQaData("a-ancpstatetest");
-  public static final By ANCP_SESSION_STATUS_LOCATOR = byQaData("span-ancpstate");
+  public static final By ANCP_SESSION_STATE_TEST_LOCATOR = byQaData("a-ancpstatetest");
+  public static final By ANCP_SESSION_STATE_LOCATOR = byQaData("span-ancpstate");
 
   public static final int[] AVAILABLE_LINE_CARD_SLOTS_ARRAY = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18};
   public String cardCommissioningStartButtonLocator = "button-card-commissioning-slot-%d";
@@ -69,8 +68,8 @@ public class OltDetailsPage {
 
   @Step("Validate Url")
   public void validateUrl() {
-    assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
-    assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
+    assertUrlContainsWithTimeout(APP);
+    assertUrlContainsWithTimeout(ENDPOINT);
   }
 
   @Step("Open port view")
@@ -139,17 +138,18 @@ public class OltDetailsPage {
   }
 
 
-  @Step("Update ANCP Session State")
-  public OltDetailsPage updateAncpSessionStatus() {
+  @Step("Start ANCP Session State test")
+  public OltDetailsPage startAncpSessionStateTest() {
     $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
-    $(ANCP_SESSION_STATUS_UNKNOWN_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
+    $(ANCP_SESSION_STATE_TEST_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     return this;
   }
 
-  @Step("Check ANCP Session State is displayed")
-  public OltDetailsPage checkAncpSessionStatus() {
+  @Step("Check ANCP Session State is activ")
+  public OltDetailsPage checkAncpSessionState() {
     $(CONFIGURATION_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
-    $(ANCP_SESSION_STATUS_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).isDisplayed();
+    $(ANCP_SESSION_STATE_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).isDisplayed();
+    Assert.assertTrue($(ANCP_SESSION_STATE_LOCATOR).getText().contains("aktiv"), "ANCP Session state is not activ");
     return this;
   }
 
@@ -180,7 +180,7 @@ public class OltDetailsPage {
     $(CARDS_VIEW_TAB_LOCATOR).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
     if ($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, "1"))).exists()) {
       for (int port = 1; port < oltDevice.getNumberOfPonPorts(); ++port) {
-        Assert.assertContains($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, port))).getText(), portLifeCycleState);
+        Assert.assertTrue($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, port))).getText().contains(portLifeCycleState), "PON portLifeCycleState mismatch (device without slots)");
       }
     } else {
       for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
@@ -189,7 +189,7 @@ public class OltDetailsPage {
             $(byQaData(String.format(slotPortViewLocator, slot))).should(appear, Duration.ofMillis(MAX_LATENCY_FOR_ELEMENT_APPEARS)).click();
           }
           for (int port = 0; port < PORTS_PER_GPON_CARD; ++port) {
-            Assert.assertContains($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText(), portLifeCycleState);
+            Assert.assertTrue($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText().contains(portLifeCycleState), "PON portLifeCycleState mismatch");
           }
         }
       }

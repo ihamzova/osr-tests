@@ -70,6 +70,7 @@ public class OltCommissioningRobot {
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
+        ancpSessionStateTest();
         assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after Commissioning mismatch");
         oltDetailsPage.openPortView(olt.getOltSlot());
         assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after Commissioning mismatch");
@@ -148,8 +149,7 @@ public class OltCommissioningRobot {
         oltDetailsPage.saveUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
-        oltDetailsPage.updateAncpSessionStatus();
-        oltDetailsPage.checkAncpSessionStatus();
+        ancpSessionStateTest();
 
         assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after ANCP configuration is not in operating state");
         oltDetailsPage.openPortView(olt.getOltSlot());
@@ -244,6 +244,13 @@ public class OltCommissioningRobot {
         assertEquals(backhaulIdCount, portsCount, "backhaulIdCount mismatched with portsCount");
     }
 
+    @Owner("Mercury")
+    @Step("Perform an ANCP State test and check result")
+    public void ancpSessionStateTest() {
+        new OltDetailsPage()
+                .startAncpSessionStateTest()
+                .checkAncpSessionState();
+    }
 
     @Step("Check uplink and ancp-session data from olt-uplink-management and ancp-configuration")
     public void checkUplink(OltDevice oltDevice) {

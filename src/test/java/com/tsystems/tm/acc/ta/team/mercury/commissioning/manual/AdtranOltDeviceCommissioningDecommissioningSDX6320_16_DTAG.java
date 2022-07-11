@@ -46,7 +46,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
 
     private final OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
-    ;
+
     private OltDevice oltDevice;
 
     private WireMockMappingsContext mappingsContext;
@@ -126,8 +126,7 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_DTAG extends 
         oltDetailsPage.saveUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
-        oltDetailsPage.updateAncpSessionStatus();
-        oltDetailsPage.checkAncpSessionStatus();
+        oltCommissioningRobot.ancpSessionStateTest();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(null);
         checkPortState(oltDevice, oltDetailsPage);
