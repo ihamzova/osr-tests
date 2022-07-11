@@ -81,8 +81,7 @@ public class NewOltDeviceCommissioningManualProcessGFNW extends GigabitTest {
         oltDetailsPage.saveUplinkConfiguration();
 
         oltDetailsPage.configureAncpSessionStart();
-        oltDetailsPage.updateAncpSessionStatus();
-        oltDetailsPage.checkAncpSessionStatus();
+        oltCommissioningRobot.ancpSessionStateTest();
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         checkPortState(oltDevice, oltDetailsPage);

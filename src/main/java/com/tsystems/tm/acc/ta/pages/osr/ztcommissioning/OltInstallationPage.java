@@ -18,7 +18,7 @@ import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeo
 public class OltInstallationPage {
 
     public static final Integer MAX_LATENCY_FOR_ELEMENT_APPEARS = 1000;
-    public static final Integer WAIT_FOR_MESSAGE = 5000;
+    public static final Integer WAIT_FOR_MESSAGE = 15_000;
 
     public static final String APP = "portal-proxy";
     public static final String ENDPOINT = "/auftragnehmerportal-mui/olt-installation/";
