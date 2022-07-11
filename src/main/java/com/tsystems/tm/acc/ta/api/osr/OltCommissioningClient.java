@@ -20,6 +20,7 @@ public class OltCommissioningClient {
                 .withBaseUri(new GigabitUrlBuilder(OLT_COMMISSIONING_MS).buildUri())
                 .withAccessTokenAuth(accessTokenProvider)
                 .withIdentityTokenAuth(identityTokenProvider)
+                .modifyReqSpecBuilder(requestSpecBuilder -> requestSpecBuilder.setContentType("application/json"))
                 .build();
     }
 
