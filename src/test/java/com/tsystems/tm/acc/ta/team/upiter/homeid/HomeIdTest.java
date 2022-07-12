@@ -1,7 +1,5 @@
 package com.tsystems.tm.acc.ta.team.upiter.homeid;
 
-import com.tsystems.tm.acc.data.upiter.models.homeidbatch.HomeIdBatchCase;
-import com.tsystems.tm.acc.ta.data.osr.models.HomeIdBatch;
 import com.tsystems.tm.acc.ta.robot.osr.HomeIdManagementRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
@@ -26,13 +24,11 @@ import static org.testng.Assert.assertNotNull;
 public class HomeIdTest extends GigabitTest {
 
     private HomeIdManagementRobot homeIdManagementRobot;
-    private HomeIdBatch homeIdBatch;
     private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
         homeIdManagementRobot = new HomeIdManagementRobot();
-        homeIdBatch = context.getData().getHomeIdBatchDataProvider().get(HomeIdBatchCase.homeIdBatch);
     }
 
     @Test
@@ -47,8 +43,8 @@ public class HomeIdTest extends GigabitTest {
     @TmsLink("DIGIHUB-34654")
     @Description("Create 32 Home Ids")
     public void createPoolHomeIds() {
-        PoolHomeId response = homeIdManagementRobot.generateBatchHomeids(homeIdBatch.getNumberLineIds());
-        assertEquals(Objects.requireNonNull(response.getHomeIds()).size(), homeIdBatch.getNumberLineIds().intValue());
+        PoolHomeId response = homeIdManagementRobot.generateBatchHomeids(32);
+        assertEquals(Objects.requireNonNull(response.getHomeIds()).size(), 32);
     }
 
     @Test
