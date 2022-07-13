@@ -188,7 +188,7 @@ public class AdtranOltZtCommissioning extends GigabitTest {
   @Test(dependsOnMethods = "adtranOltZtCommissioningEventTriggered", description = "DIGIHUB-148146 Zero touch commissioning process. Unhappy case: OLT serial number exist.")
   @TmsLink("DIGIHUB-148146") // Jira Id for this test in Xray
   @Description("Perform the zero touch commissioning process for SDX 6320-16 device as DTAG user on team environment")
-  public void adtranOltZtCommissioningSerialNumberExist()
+  public void adtranOltZtCommissioningSerialNumberExist()  throws InterruptedException
   {
     ztCommissioningRobot.clearResourceInventoryDataBase(oltDevice_76HA.getEndsz());
     ztCommissioningRobot.clearZtCommissioningData(oltDevice_76HA.getEndsz());
@@ -202,6 +202,8 @@ public class AdtranOltZtCommissioning extends GigabitTest {
     oltDevice_76HA.setSeriennummer(serialNumber);
     ztCommissioningRobot.restartZtCommissioning(oltDevice_76HA);
     ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HA.getEndsz(),STATE_INSTALL_OLT, STATE_BIT_MASK);
+    Thread.sleep(2000); // send seal event HTTP 500 response ->  "errorCode": "8007030200000001",
+    SelenideScreenshotServiceKt.takeScreenshot();
     ztCommissioningRobot.sendZtCommissioningSealEvent(oltDevice_76HA.getEndsz(), "online"); // event triggered oltBasicConfiguration
     ztCommissioningRobot.waitZtCommissioningProcessIsFinished();
     ztCommissioningRobot.verifyZtCommissioningState(oltDevice_76HA.getEndsz(), STATE_FINISHED_SUCCESS, STATE_BIT_MASK);
