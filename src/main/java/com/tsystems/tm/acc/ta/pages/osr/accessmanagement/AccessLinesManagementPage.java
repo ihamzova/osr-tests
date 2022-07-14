@@ -1,5 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.accessmanagement;
 
+import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,7 @@ import org.openqa.selenium.Keys;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byCssSelector;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
@@ -25,50 +24,50 @@ public class AccessLinesManagementPage {
 
     private static final By EDIT_BUTTON = byQaData("btn-edit");
     private static final By SAVE_AND_RECONFIGURE_BUTTON = byQaData("btn-sar");
+    private static final By SAVE_LOCAL_BUTTON = byQaData("btn-save-local");
     private static final By ONT_ABMELDUNG_BUTTON = byQaData("btn-ont-dereg");
-    private static final By ADD_SUBSCRIBER_NE_PROFILE_BUTTON = byQaData("btn-ne-profile-add");
-    private static final By NE_DEFAULT_PROFILE_STATE_INPUT = byQaData("ne-def-state-input");
-    private static final By NL_DEFAULT_PROFILE_STATE_INPUT = byQaData("nl-def-state-input");
-    private static final By NE_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("ne-sub-state-input");
-    private static final By NL_SUBSCRIBER_PROFILE_STATE_INPUT = byQaData("nl-sub-state-input");
-    private static final By NE_SUBSCRIBER_ONT_STATE_INPUT = byQaData("ne-sub-ontstate-input");
-    private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
-    private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
-    private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
     private static final By TERMINATION_BUTTON = byQaData("btn-terminate");
     private static final By ABBRECHEN_BUTTON = byQaData("btn-cancel-edit");
 
-    private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
+    private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
+
     private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
+    private static final By NE_DEFAULT_PROFILE_STATE = byQaData("ne-def-state-input");
+
+    private static final By ADD_SUBSCRIBER_NE_PROFILE_BUTTON = byQaData("btn-ne-profile-add");
+    private static final By NE_SUBSCRIBER_PROFILE = byQaData("ne-profile-subscriber");
     private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
+    private static final By NE_SUBSCRIBER_PROFILE_STATE = byQaData("ne-sub-state-input");
+    private static final By NE_SUBSCRIBER_PROFILE_ONT_STATE = byQaData("ne-sub-ontstate-input");
+
     private static final By NL_DEFAULT_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
-    private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
-    private static final By SAVE_LOCAL_BUTTON = byQaData("btn-save-local");
+    private static final By NL_DEFAULT_PROFILE_STATE = byQaData("nl-def-state-input");
+
     private static final By ADD_SUBSCRIBER_NL_PROFILE_BUTTON = byQaData("btn-nl-profile-add");
-    private static final By NL_KLSId_INPUT = byQaData("nl-sub-klsid-input");
+    private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+    private static final By NL_SUBSCRIBER_PROFILE_KLSID = byQaData("nl-sub-klsid-input");
     private static final By NL_SUBSCRIBER_PROFILE_STATE = byQaData("nl-sub-state-input");
+
     private static final By SERIALNUMBER_IN_NSP = byQaData("nsp-ref-serialnumber-input");
     private static final By FTTB_NE_OLT_STATE = byQaData("fttb-ne-stateolt-input");
     private static final By FTTB_NE_STATEMOSAIC = byQaData("fttb-ne-statemosaic-input");
+    private static final By ONU_ACCESS_ID = byQaData("fttb-ne-onuaccessid-input");
 
-    private static final By INACTIVE_STATE = byXpath("//*[@id='INACTIVE']");
-    private static final By ACTIVE_STATE = byXpath("//*[@id='ACTIVE']");
-    private static final By ONLINE_ONT_STATE = byXpath("//*[@id='ONLINE']");
-    private static final By ASSIGNED_STATUS = byXpath("//*[@id='ASSIGNED']");
-    private static final By WALLED_GARDEN_STATUS = byXpath("//*[@id='WALLED_GARDEN']");
+    private static final By BESTAETIGEN_BUTTON = byQaData("am-deregistration-proceed");
+    private static final By BESTAETIGEN_TERMINATION_BUTTON = byQaData("am-termination-proceed");
+
+    private static final By LINE_ID = byXpath("//*[@class='am-primary-text']");
+
     private static final By NOTIFICATION = byXpath("//h2[@role = 'alert']");
     private static final By CLOSE_NOTIFICATION_BUTTON = byXpath("//*[@role='alert']/button");
     private static final By A4_CONNECTIVITY_TEST = byQaData("btn-nsp-connectivity-test");
     private static final By CONNECTIVITY_TEST = byQaData("btn-ne-connectivity-test");
     private static final By GENERATE_ANP_TAG = byQaData("btn-generate-anp-tag");
     private static final By GENERATE_ONU_ID = byQaData("btn-generate-onu-id");
-    private static final By ONT_STATE = byQaData("ne-sub-ontstate-input");
+    private static final By GENERATE_ONU_ACCESS_ID = byQaData("btn-generate-fttb-onu-id");
     private static final By ANP_TAG_INPUT = byQaData("mp-anptag-input");
     private static final By ONU_ID_INPUT = byQaData("mp-onu id-input");
-    private static final By OFFLINE_ONT_STATE = byXpath("//*[@id='OFFLINE']");
-    private static final By HOMEID_DELETE = byCssSelector(".am-icon icon--reset");
     private static final By HOMEID_INPUT = byQaData("mp-homeid-input");
-
 
     @Step("Return on first window")
     public AccessLineSearchPage returnToAccessLinesSearchPage() {
@@ -85,14 +84,19 @@ public class AccessLinesManagementPage {
     @Step("Click Save and Reconfigure button")
     public AccessLinesManagementPage clickSaveAndReconfigureButton() {
         $(SAVE_AND_RECONFIGURE_BUTTON).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Der Neukonfigurationsprozess wurde gestartet"));
+        closeNotificationButton();
+        $(NOTIFICATION).shouldBe(visible);
+        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
         closeNotificationButton();
         return this;
     }
 
-    @Step("Click Save local button")
-    public AccessLinesManagementPage clickSaveLocalButton() {
+    @Step("Click Save locally button")
+    public AccessLinesManagementPage clickSaveLocallyButton() {
         $(SAVE_LOCAL_BUTTON).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich aktualisiert"));
         closeNotificationButton();
         return this;
@@ -121,7 +125,7 @@ public class AccessLinesManagementPage {
 
     @Step("Get ONT State from NE Profile")
     public String getOntState() {
-        return $(ONT_STATE).getValue();
+        return $(NE_SUBSCRIBER_PROFILE_ONT_STATE).getValue();
     }
 
     @Step("Get ONT State from NE Profile")
@@ -143,70 +147,64 @@ public class AccessLinesManagementPage {
     }
 
     @Step("Add Subscriber NE profile")
-    public AccessLinesManagementPage addSubscriberNeProfile() {
+    public AccessLinesManagementPage addSubscriberNeProfile(String profileState, String ontState) {
         $(ADD_SUBSCRIBER_NE_PROFILE_BUTTON).click();
-        $(NE_SUBSCRIBER_PROFILE_STATE_INPUT).click();
-        $(ACTIVE_STATE).click();
-        $(NE_SUBSCRIBER_ONT_STATE_INPUT).click();
-        $(ONLINE_ONT_STATE).click();
-        $(ACCESS_LINE_STATUS_DROPDOWN).click();
-        $(ASSIGNED_STATUS).click();
+        $(NE_SUBSCRIBER_PROFILE_STATE).click();
+        By STATE = byXpath("//li[@aria-label='" + profileState+"']");
+        $(STATE).shouldBe(visible).hover().click();
+        changeOntState(ontState);
         return this;
     }
 
     @Step("Add Subscriber NL profile")
-    public AccessLinesManagementPage addSubscriberNLProfile(String klsId) {
+    public AccessLinesManagementPage addSubscriberNlProfile(String klsId, String state) {
         $(ADD_SUBSCRIBER_NL_PROFILE_BUTTON).click();
-        $(NL_KLSId_INPUT).click();
-        $(NL_KLSId_INPUT).val(klsId);
+        $(NL_SUBSCRIBER_PROFILE_KLSID).click();
+        $(NL_SUBSCRIBER_PROFILE_KLSID).val(klsId);
         $(NL_SUBSCRIBER_PROFILE_STATE).click();
-        $(ACTIVE_STATE).click();
+        By STATE = byXpath("//li[@aria-label='" + state+"']");
+        $(STATE).click();
         return this;
     }
 
     @Step("Add Serialnumber to NSP")
-    public AccessLinesManagementPage addSerialNumberToNSp(String serialnumber) {
+    public AccessLinesManagementPage updateSerialNumberOnNsp(String serialnumber) {
         $(SERIALNUMBER_IN_NSP).click();
+        $(HOMEID_INPUT).sendKeys((Keys.CONTROL + "a"));
+        $(HOMEID_INPUT).sendKeys(Keys.DELETE);
         $(SERIALNUMBER_IN_NSP).val(serialnumber);
         return this;
     }
 
-    @Step("Change AccessLine status to WALLED_GARDEN")
-    public AccessLinesManagementPage changeAccessLineStatusToWalledGarden() {
+    @Step("Change AccessLine status")
+    public AccessLinesManagementPage changeAccessLineStatus(String state) {
         $(ACCESS_LINE_STATUS_DROPDOWN).click();
-        $(WALLED_GARDEN_STATUS).click();
+        By STATE = byXpath("//li[@aria-label='" + state+"']");
+        $(STATE).click();
         return this;
     }
 
-    @Step("Change AccessLine status to Assigned")
-    public AccessLinesManagementPage changeAccessLineStatusToAssigned() {
-        $(ACCESS_LINE_STATUS_DROPDOWN).click();
-        $(ASSIGNED_STATUS).click();
+    @Step("Change Default NE Profile State")
+    public AccessLinesManagementPage changeDefaultNeProfileState(String state) {
+        $(NE_DEFAULT_PROFILE_STATE).scrollIntoView(true).click();
+        By STATE = byXpath("//li[@aria-label='" + state+"']");
+        $(STATE).hover().shouldBe(visible).click();
         return this;
     }
 
-    @Step("Change Default NE Profile State to Inactive")
-    public AccessLinesManagementPage changeDefaultProfileStateToInactive() {
-        $(NE_DEFAULT_PROFILE_STATE_INPUT).scrollIntoView(true).click();
-        $(INACTIVE_STATE).hover().shouldBe(visible).click();
+    @Step("Change Default NL Profile State")
+    public AccessLinesManagementPage changeDefaultNlProfileState(String state) {
+        $(NL_DEFAULT_PROFILE_STATE).scrollIntoView(true).click();
+        By STATE = byXpath("//li[@aria-label='" + state+"']");
+        $(STATE).hover().shouldBe(visible).click();
         return this;
     }
-
-    @Step("Change Default NL Profile State to Inactive")
-    public AccessLinesManagementPage changeDefaultNLProfileStateToInactive() {
-        $(NL_DEFAULT_PROFILE_STATE_INPUT).scrollIntoView(true).click();
-        $(INACTIVE_STATE).hover().shouldBe(visible).click();
-        return this;
-    }
-
 
     @Step("Generate ANP_TAG")
     public AccessLinesManagementPage generateAnpTag() {
         $(GENERATE_ANP_TAG).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Ein neues anpTag wird generiert, nachdem die Änderungen gespeichert wurden Drücken Sie 'Speichern/Speichern und rekonfigurieren"));
-        closeNotificationButton();
-        clickSaveAndReconfigureButton();
-        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
         closeNotificationButton();
         return this;
     }
@@ -214,10 +212,17 @@ public class AccessLinesManagementPage {
     @Step("Generate ONU_ID")
     public AccessLinesManagementPage generateOnuID() {
         $(GENERATE_ONU_ID).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Eine neue ONU ID wird generiert, nachdem die Änderungen gespeichert wurden Drücken Sie 'Speichern/Speichern und rekonfigurieren'"));
         closeNotificationButton();
-        clickSaveAndReconfigureButton();
-        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+        return this;
+    }
+
+    @Step("Generate Onu Access Id")
+    public AccessLinesManagementPage generateOnuAccessId() {
+        $(GENERATE_ONU_ACCESS_ID).click();
+        $(NOTIFICATION).shouldBe(visible);
+        $(NOTIFICATION).shouldHave(text("Eine neue Onu Access ID wird generiert, nachdem die Änderungen gespeichert wurden Drücken Sie 'Speichern/Speichern und rekonfigurieren'"));
         closeNotificationButton();
         return this;
     }
@@ -233,6 +238,7 @@ public class AccessLinesManagementPage {
     @Step("Start A4 connectivity test")
     public AccessLinesManagementPage startA4ConnectivityTest() {
         $(A4_CONNECTIVITY_TEST).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Der Konnektivitätstest wird gestartet. Bitte aktualisieren Sie die Seite einige Minuten später"));
         return this;
     }
@@ -240,6 +246,7 @@ public class AccessLinesManagementPage {
     @Step("Start connectivity test")
     public AccessLinesManagementPage startConnectivityTest() {
         $(CONNECTIVITY_TEST).click();
+        $(NOTIFICATION).shouldBe(visible);
         $(NOTIFICATION).shouldHave(text("Der Konnektivitätstest wird gestartet. Bitte aktualisieren Sie die Seite einige Minuten später"));
         return this;
     }
@@ -264,16 +271,14 @@ public class AccessLinesManagementPage {
         } catch (Throwable e) {
             //catch the exception here . Which is block didn't execute within the time limit
         }
-
         return this;
     }
 
-    @Step("Change ONT state to Offline")
-    public AccessLinesManagementPage changeOntStateToOffline() {
-        $(NE_SUBSCRIBER_ONT_STATE_INPUT).click();
-        $(OFFLINE_ONT_STATE).click();
-        clickSaveAndReconfigureButton();
-        $(NOTIFICATION).shouldHave(text("Access Line wurde erfolgreich neu konfiguriert"));
+    @Step("Change ONT state")
+    public AccessLinesManagementPage changeOntState(String state) {
+        $(NE_SUBSCRIBER_PROFILE_ONT_STATE).click();
+        By STATE = byXpath("//li[@aria-label='" + state+"']");
+        $(STATE).shouldBe(visible).click();
         return this;
     }
 
@@ -291,8 +296,8 @@ public class AccessLinesManagementPage {
     public String getNeDefaultProfileState() {
         String result = "NULL";
         $(NE_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NE_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
-            result = $$(NE_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
+        if ($$(NE_DEFAULT_PROFILE_STATE).size() > 0) {
+            result = $$(NE_DEFAULT_PROFILE_STATE).get(0).getValue();
         }
         return result;
     }
@@ -301,8 +306,8 @@ public class AccessLinesManagementPage {
     public String getNLDefaultProfileState() {
         String result = "NULL";
         $(NL_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NL_DEFAULT_PROFILE_STATE_INPUT).size() > 0) {
-            result = $$(NL_DEFAULT_PROFILE_STATE_INPUT).get(0).getValue();
+        if ($$(NL_DEFAULT_PROFILE_STATE).size() > 0) {
+            result = $$(NL_DEFAULT_PROFILE_STATE).get(0).getValue();
         }
         return result;
     }
@@ -311,8 +316,8 @@ public class AccessLinesManagementPage {
     public String getNeSubscriberProfileState() {
         String result = "NULL";
         $(NE_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
-            result = $$(NE_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
+        if ($$(NE_SUBSCRIBER_PROFILE_STATE).size() > 0) {
+            result = $$(NE_SUBSCRIBER_PROFILE_STATE).get(0).getValue();
         }
         return result;
     }
@@ -321,10 +326,22 @@ public class AccessLinesManagementPage {
     public String getNLSubscriberProfileState() {
         String result = "NULL";
         $(NL_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).size() > 0) {
-            result = $$(NL_SUBSCRIBER_PROFILE_STATE_INPUT).get(0).getValue();
+        if ($$(NL_SUBSCRIBER_PROFILE_STATE).size() > 0) {
+            result = $$(NL_SUBSCRIBER_PROFILE_STATE).get(0).getValue();
         }
         return result;
+    }
+
+    @Step("Get Onu Access Id")
+    public String getOnuAccessId() {
+        $(ONU_ACCESS_ID).shouldBe(visible);
+        return $(ONU_ACCESS_ID).getValue();
+    }
+
+    @Step("Get Unsynchron Tooltip")
+    public SelenideElement getUnsynchronTooltip(String profileNameQaData) {
+        By UNSYNCHRON = byXpath("//*[@qa-data='" + profileNameQaData+"']//*[contains (@class, 'am-profile-title__outofsync')]");
+        return $(UNSYNCHRON);
     }
 
     @Step("Get Olt State from NE Profile")
@@ -348,7 +365,7 @@ public class AccessLinesManagementPage {
     }
 
     @Step("Check NL profiles states")
-    public void checkNLProfiles(String nlExpectedDefaultProfileState,
+    public void checkNlProfiles(String nlExpectedDefaultProfileState,
                                 String nlExpectedSubscriberProfileState) {
         assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
         assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");

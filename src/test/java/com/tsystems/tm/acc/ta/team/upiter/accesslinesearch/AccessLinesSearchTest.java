@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
 import static org.testng.Assert.*;
 
@@ -89,7 +90,7 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.checkTableHeaders(accessLineSearchPage.getTableHeaders());
         accessLineSearchPage.checkTableMessagePattern(accessLineSearchPage.getTableMessage());
         accessLineSearchPage.checkPaginationSizes(accessLineSearchPage.getPaginatorSizes());
-        accessLineSearchPage.setWalledGardenStatus().searchAccessLinesByPortAddress(accessLinesByEndSzSlotPort);
+        accessLineSearchPage.setStatus("Walled Garden").searchAccessLinesByPortAddress(accessLinesByEndSzSlotPort);
         accessLineSearchPage.checkBasicInformation();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
@@ -105,7 +106,7 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz).clickSearchButton();
         accessLineSearchPage.setPageSize(50);
         accessLineSearchPage.getTableRows(50);
-        accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getTableLines());
+        accessLineSearchPage.checkSortOfTable(accessLineSearchPage.getAccessLinesFromTable());
     }
 
     @Test
@@ -181,17 +182,176 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSz)
-                .setWalledGardenStatus()
-                .setInactiveStatus();
+                .setStatus("Walled Garden")
+                .setStatus("Inactive");
         accessLineSearchPage.checkBasicInformation();
         assertTrue(accessLineSearchPage.sortIconIsPresentInStatusColumn(), "Sort icon is not present in status column");
         accessLineSearchPage.sortAccessLinesByStatus()
                 .setPageSize(10);
         accessLineSearchPage.getTableRows(10);
-        assertEquals(accessLineSearchPage.getTableLines().get(0).getStatus(), AccessLineStatus.INACTIVE, "Table wasn't sorted");
+        assertEquals(accessLineSearchPage.getAccessLinesFromTable().get(0).getStatus(), AccessLineStatus.INACTIVE, "Table wasn't sorted");
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.checkAccessLineProfilesStates("ACTIVE", "NULL",
                 "NULL", "NULL");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-75668")
+    @Description("Search for ftth olt_bng out_of_sync access lines, subscriber_ne_profile is out_of_sync")
+    public void searchFtthOltBngAccessLineOutOfSyncSubscriberNeProfileTest() {
+        AccessLineDto accessLine = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+                AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN, null, null).get(0);
+
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId())
+                .clickSearchButton()
+                .checkBasicInformation();
+        AccessLinesManagementPage accessLinesManagementPage =
+                accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
+                .clickEditButton()
+                .changeDefaultNeProfileState("INACTIVE")
+                .addSubscriberNeProfile("ACTIVE", "ONLINE")
+                .changeAccessLineStatus("ASSIGNED")
+                .clickSaveLocallyButton();
+
+        accessLinesManagementPage.getUnsynchronTooltip("ne-profile-subscriber").shouldBe(visible);
+        accessLinesManagementPage.closeCurrentTab();
+
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .turnOnOutOfSyncSwitch()
+                .clickSearchButton()
+                .checkBasicInformation();
+
+        assertTrue(accessLineSearchPage.getAccessLinesFromTable().stream().allMatch(accessLineViewDto -> accessLineViewDto.getOutOfSync().equals("OUT_OF_SYNC")),
+                "Some of the AccessLines don't have an out_of_sync sign");
+        assertEquals(accessLineSearchPage.getAccessLineFromTableByLineId(accessLine.getLineId()).size(), 1, "Out_of_sync AccessLine was not found");
+
+        accessLinesManagementPage = accessLineSearchPage.clickUnsynchronSignForLine(accessLine.getLineId());
+        accessLinesManagementPage.getUnsynchronTooltip("ne-profile-subscriber").shouldBe(visible);
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
+                "ACTIVE", "NULL");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-75668")
+    @Description("Search for ftth olt_bng out_of_sync access lines, subscriber_networkline_profile is out_of_sync")
+    public void searchFtthOltBngAccessLineOutOfSyncSubscriberNlProfileTest() {
+        AccessLineDto accessLine = accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
+                AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, null).get(0);
+
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId())
+                .clickSearchButton()
+                .checkBasicInformation();
+        AccessLinesManagementPage accessLinesManagementPage =
+                accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
+                        .clickEditButton()
+                        .changeDefaultNlProfileState("INACTIVE")
+                        .addSubscriberNlProfile("98765", "ACTIVE")
+                        .clickSaveLocallyButton();
+
+        accessLinesManagementPage.getUnsynchronTooltip("nl-profile-subscriber").shouldBe(visible);
+        accessLinesManagementPage.closeCurrentTab();
+
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .turnOnOutOfSyncSwitch()
+                .clickSearchButton()
+                .checkBasicInformation();
+
+        assertTrue(accessLineSearchPage.getAccessLinesFromTable().stream().allMatch(accessLineViewDto -> accessLineViewDto.getOutOfSync().equals("OUT_OF_SYNC")),
+                "Some of the AccessLines don't have an out_of_sync sign");
+        assertEquals(accessLineSearchPage.getAccessLineFromTableByLineId(accessLine.getLineId()).size(), 1, "Out_of_sync AccessLine was not found");
+
+        accessLinesManagementPage = accessLineSearchPage.clickUnsynchronSignForLine(accessLine.getLineId());
+        accessLinesManagementPage.getUnsynchronTooltip("nl-profile-subscriber").shouldBe(visible);
+        accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
+                "INACTIVE", "ACTIVE");
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-75668")
+    @Description("Search for ftth a4 out_of_sync access lines")
+    public void searchOutOfSyncFtthA4AccessLinesTest() {
+        AccessLineDto accessLine = accessLineRiRobot.getA4AccessLinesWithOnt(AccessLineTechnology.GPON).get(0);
+
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId())
+                .clickSearchButton()
+                .checkBasicInformation();
+
+        AccessLinesManagementPage accessLinesManagementPage;
+
+        if (accessLine.getSubscriberNetworkLineProfile() == null) {
+            accessLinesManagementPage =
+                    accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
+                            .clickEditButton()
+                            .updateSerialNumberOnNsp("9995874854785478")
+                            .changeAccessLineStatus("WALLED_GARDEN")
+                            .clickSaveLocallyButton();
+        } else {
+            accessLinesManagementPage =
+                    accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
+                            .clickEditButton()
+                            .updateSerialNumberOnNsp("9995874854785478")
+                            .clickSaveLocallyButton();
+        }
+
+        accessLinesManagementPage.getUnsynchronTooltip("nsp-reference").shouldBe(visible);
+        accessLinesManagementPage.closeCurrentTab();
+
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .turnOnOutOfSyncSwitch()
+                .clickSearchButton()
+                .checkBasicInformation();
+
+        assertTrue(accessLineSearchPage.getAccessLinesFromTable().stream().allMatch(accessLineViewDto -> accessLineViewDto.getOutOfSync().equals("OUT_OF_SYNC")),
+                "Some of the AccessLines don't have an out_of_sync sign");
+        assertEquals(accessLineSearchPage.getAccessLineFromTableByLineId(accessLine.getLineId()).size(), 1, "Out_of_sync AccessLine was not found");
+
+        accessLinesManagementPage = accessLineSearchPage.clickUnsynchronSignForLine(accessLine.getLineId());
+        assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), "9995874854785478");
+        accessLinesManagementPage.getUnsynchronTooltip("nsp-reference").shouldBe(visible);
+    }
+
+    @Test
+    @TmsLink("DIGIHUB-75668")
+    @Description("Search for fttb olt_bng out_of_sync access lines")
+    public void searchOutOfSyncFttbOltBngAccessLinesTest() {
+        AccessLineDto accessLine = accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.OLT_BNG, AccessLineTechnology.GFAST, AccessLineStatus.WALLED_GARDEN).get(0);
+        String initialOnuAccessId = accessLine.getFttbNeProfile().getOnuAccessId().toString();
+
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId())
+                .clickSearchButton()
+                .checkBasicInformation();
+        AccessLinesManagementPage accessLinesManagementPage =
+                accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
+                        .clickEditButton()
+                        .generateOnuAccessId()
+                        .clickSaveLocallyButton();
+
+        String newOnuAccessId = accessLinesManagementPage.getOnuAccessId();
+        assertNotEquals(newOnuAccessId, initialOnuAccessId);
+
+        accessLinesManagementPage.getUnsynchronTooltip("fttb-ne-profile").shouldBe(visible);
+        accessLinesManagementPage.closeCurrentTab();
+
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .turnOnOutOfSyncSwitch()
+                .clickSearchButton()
+                .checkBasicInformation();
+
+        assertTrue(accessLineSearchPage.getAccessLinesFromTable().stream().allMatch(accessLineViewDto -> accessLineViewDto.getOutOfSync().equals("OUT_OF_SYNC")),
+                "Some of the AccessLines don't have an out_of_sync sign");
+        assertEquals(accessLineSearchPage.getAccessLineFromTableByLineId(accessLine.getLineId()).size(), 1, "Out_of_sync AccessLine was not found");
+
+        accessLinesManagementPage = accessLineSearchPage.clickUnsynchronSignForLine(accessLine.getLineId());
+        assertEquals(accessLinesManagementPage.getOnuAccessId(), newOnuAccessId);
+        accessLinesManagementPage.getUnsynchronTooltip("fttb-ne-profile").shouldBe(visible);
     }
 
     @Test
@@ -201,12 +361,13 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByPortAddress(accessLinesByEndSzSlotPort)
-                .setWalledGardenStatus()
+                .setStatus("Walled Garden")
                 .clickMagnifyingGlassForLine(0);
         String lineId = accessLinesManagementPage.getLineId();
         accessLinesManagementPage.clickEditButton()
-                .addSubscriberNeProfile()
-                .changeDefaultProfileStateToInactive()
+                .addSubscriberNeProfile("ACTIVE", "ONLINE")
+                .changeDefaultNeProfileState("INACTIVE")
+                .changeAccessLineStatus("ASSIGNED")
                 .clickSaveAndReconfigureButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
@@ -241,7 +402,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     @Test
     @TmsLink("DIGIHUB-125016")
     @Description("Add serialnumber for A4 AccessLine and save locally")
-    public void saveLocallyA4Al() {
+    public void saveLocallyA4AlTest() {
         String ontSerialNumber = "9876543210987654";
         accessLine.setLineId(accessLineRiRobot.getAccessLinesByType(AccessLineProductionPlatform.A4, AccessLineTechnology.GPON, AccessLineStatus.WALLED_GARDEN).get(0).getLineId());
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
@@ -249,34 +410,34 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.clickEditButton()
-                .changeAccessLineStatusToAssigned()
-                .addSerialNumberToNSp(ontSerialNumber)
-                .changeDefaultNLProfileStateToInactive()
-                .addSubscriberNLProfile("123456")
-                .clickSaveLocalButton()
+                .changeAccessLineStatus("ASSIGNED")
+                .updateSerialNumberOnNsp(ontSerialNumber)
+                .changeDefaultNlProfileState("INACTIVE")
+                .addSubscriberNlProfile("123456", "ACTIVE")
+                .clickSaveLocallyButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
                 .searchAccessLinesByLineID(accessLine.getLineId())
                 .clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
-        accessLinesManagementPage.checkNLProfiles("INACTIVE", "ACTIVE");
+        accessLinesManagementPage.checkNlProfiles("INACTIVE", "ACTIVE");
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), ontSerialNumber);
     }
 
     @Test
     @TmsLink("DIGIHUB-125017")
     @Description("Add Subscriber Profile for FTTB AccessLine and save locally")
-    public void saveLocallyFttbAL() {
+    public void saveLocallyFttbALTest() {
         accessLine.setLineId(accessLineRiRobot.getFttbAccessLines(AccessTransmissionMedium.TWISTED_PAIR, AccessLineStatus.WALLED_GARDEN, AccessLineProductionPlatform.OLT_BNG).get(0).getLineId());
         AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
         accessLineSearchPage.validateUrl();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.clickEditButton()
-                .changeAccessLineStatusToAssigned()
-                .changeDefaultNLProfileStateToInactive()
-                .addSubscriberNLProfile("123456")
-                .clickSaveLocalButton()
+                .changeAccessLineStatus("ASSIGNED")
+                .changeDefaultNlProfileState("INACTIVE")
+                .addSubscriberNlProfile("123456", "ACTIVE")
+                .clickSaveLocallyButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
                 .searchAccessLinesByLineID(accessLine.getLineId())
@@ -301,7 +462,7 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickOntAbmeldungButton()
                 .clickBestätigenButton()
                 .clickEditButton()
-                .changeAccessLineStatusToWalledGarden()
+                .changeAccessLineStatus("WALLED_GARDEN")
                 .clickSaveAndReconfigureButton()
                 .closeCurrentTab();
         accessLinesManagementPage.returnToAccessLinesSearchPage()
@@ -315,7 +476,7 @@ public class AccessLinesSearchTest extends GigabitTest {
     @Test
     @TmsLink("DIGIHUB-153943")
     @Description("Set homeId to Null in Access Management UI")
-    public void deleteHomeId() {
+    public void deleteHomeIdTest() {
         accessLine.setLineId(accessLineRiRobot.getAccessLinesByTypeV2(AccessLineProductionPlatform.OLT_BNG,
                         AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED, ProfileState.ACTIVE, ProfileState.ACTIVE)
                 .get(0).getLineId());
@@ -371,7 +532,6 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.validateUrl();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(a4AccessLine.getLineId()).clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
-        accessLinesManagementPage.checkNLProfiles("ACTIVE", "NULL");
         accessLinesManagementPage.clickEditButton().startA4ConnectivityTest();
     }
 
@@ -388,7 +548,8 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage
                 .clickEditButton()
-                .changeOntStateToOffline()
+                .changeOntState("OFFLINE")
+                .clickSaveAndReconfigureButton()
                 .waitUntilNeededStatus("OFFLINE")
                 .clickEditButton()
                 .startConnectivityTest()
@@ -402,7 +563,6 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLinesManagementPage.checkAccessLineProfilesStates("INACTIVE", "ACTIVE",
                 "INACTIVE", "ACTIVE");
         assertEquals(accessLinesManagementPage.getOntState(), OntState.ONLINE.toString());
-
     }
 
     @Test
@@ -418,9 +578,12 @@ public class AccessLinesSearchTest extends GigabitTest {
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
 
-        accessLinesManagementPage.clickEditButton().generateOnuID();
+        accessLinesManagementPage
+                .clickEditButton()
+                .generateOnuID()
+                .clickSaveAndReconfigureButton();
         assertNotEquals(accessLinesManagementPage.getOnuID(), initialOnuid.toString());
-        accessLinesManagementPage.clickEditButton().generateOnuID();
+        accessLinesManagementPage.clickEditButton().generateOnuID().clickSaveAndReconfigureButton();
         assertEquals(accessLineRiRobot.getAllocatedOnuIdFromAccessLine(accessLine).get(0), initialOnuid);
     }
 
@@ -436,9 +599,9 @@ public class AccessLinesSearchTest extends GigabitTest {
         accessLineSearchPage.validateUrl();
         AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
-        accessLinesManagementPage.clickEditButton().generateAnpTag();
+        accessLinesManagementPage.clickEditButton().generateAnpTag().clickSaveAndReconfigureButton();
         assertNotEquals(accessLinesManagementPage.getAnpTag(), initialAnpTag.toString());
-        accessLinesManagementPage.clickEditButton().generateAnpTag();
+        accessLinesManagementPage.clickEditButton().generateAnpTag().clickSaveAndReconfigureButton();
         assertEquals(accessLine.getAnpTag().getAnpTag(), initialAnpTag);
     }
 }

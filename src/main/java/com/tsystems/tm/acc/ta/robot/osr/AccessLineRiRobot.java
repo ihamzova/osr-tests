@@ -879,7 +879,6 @@ public class AccessLineRiRobot {
                         .slotNumber(accessLine.getReference().getSlotNumber())
                         .portNumber(accessLine.getReference().getPortNumber()))
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
-
     }
 
     @Step("Get AllocatedAnpTags from AccessLines")
