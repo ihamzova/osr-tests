@@ -309,7 +309,8 @@ public class AccessLineRiRobot {
     public void checkFttbLineParameters(PortProvisioning port, int numberOfAccessLinesForProvisioning) {
         try {
             TimeoutBlock timeoutBlock = new TimeoutBlock(LATENCY_FOR_PORT_PROVISIONING); //set timeout in milliseconds
-            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLinesByPort(port).size() == numberOfAccessLinesForProvisioning;
+            Supplier<Boolean> checkFttbProvisioning = () -> getAccessLinesByPort(port).stream()
+                    .filter(accessLine -> accessLine.getStatus().getValue().equals(STATUS_WALLED_GARDEN)).count() == numberOfAccessLinesForProvisioning;
             timeoutBlock.addBlock(checkFttbProvisioning); // execute the runnable precondition
         } catch (Exception e) {
             //catch the exception here . Which is block didn't execute within the time limit
