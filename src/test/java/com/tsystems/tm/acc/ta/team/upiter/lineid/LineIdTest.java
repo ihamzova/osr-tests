@@ -22,7 +22,6 @@ import static org.testng.Assert.assertNotNull;
 public class LineIdTest extends GigabitTest {
 
     private LineIdGeneratorClient lineidGeneratorClient;
-    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
