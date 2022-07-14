@@ -211,8 +211,8 @@ public class A4ResourceOrderTest {
     }
 
     private void sendRoAndCheckState(ResourceOrderStateType state, String orderItemId) {
-        boolean eventHandling = false;
-        String URL_EVENT_PUBLISH = "/upstream-partner/tardis/resource-order-resource-inventory/a10nsp/resourceOrderingManagement/horizon/events/v1";
+        boolean eventHandling = true;
+        String URL_EVENT_PUBLISH = "/tardis/horizon/events/v1";
         a4RobotRO.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
         // THEN
