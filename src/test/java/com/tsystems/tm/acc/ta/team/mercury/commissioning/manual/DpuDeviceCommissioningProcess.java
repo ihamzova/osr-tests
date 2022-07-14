@@ -122,9 +122,6 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
         // ----
 
         dpuInfoPage.startDpuCommissioning();
-        //businessKey = dpuInfoPage.getBusinessKey();
-        //Assert.assertNotNull(businessKey);
-        //Assert.assertFalse(businessKey.isEmpty());
 
         dpuInfoPage.openDpuConfiguraionTab();
         Assert.assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
@@ -149,7 +146,6 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
 
         Assert.assertEquals(deviceAfterCommissioning.getKlsId(), dpuDevice.getKlsId(), "DPU KlsId missmatch");
         Assert.assertEquals(deviceAfterCommissioning.getFiberOnLocationId(), dpuDevice.getFiberOnLocationId(), "DPU FiberOnLocationId missmatch");
-        Thread.sleep(200);
     }
 
 
@@ -185,14 +181,12 @@ public class DpuDeviceCommissioningProcess extends GigabitTest {
         oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
         DpuInfoPage dpuInfoPage = new DpuInfoPage();
         dpuInfoPage.validateUrl();
-        dpuInfoPage.startDpuDecommissioning();
+        dpuInfoPage.startDpuDecommissioningV2();
         Thread.sleep(1000);
-        WebDriverRunner.getWebDriver().navigate().refresh();
 
         dpuCommissioningUiRobot.checkDpuDecommissioningResult(dpuDevice);
 
-        dpuCommissioningUiRobot.deleteDpuDevice(dpuDevice);
-        dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
+        //dpuCommissioningUiRobot.checkDpuDeviceDeletionResult(dpuDevice);
     }
 
     public void clearResourceInventoryDataBase(DpuDevice dpuDevice) {

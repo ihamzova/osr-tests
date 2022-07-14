@@ -129,20 +129,21 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
 
     @Test(dependsOnMethods = "dpuCommissioningV2BngPlatform", description = "DPU Decommissioning V2 from OS&R UI: BNG Platform")
     @Owner("DL-T-Magic.Mercury@telekom.de, DL-Morpheus@telekom.de, DL_T-Magic.U-Piter@t-systems.com")
-    public void dpuDecommissioningV2BngPlatform() {
+    public void dpuDecommissioningV2BngPlatform() throws InterruptedException {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUi);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
         dpuCommissioningUiRobot.startDpuDecommissioningV2(dpuDevice);
 
         // todo check if process is finished  and remove sleep
-        try {
-            Thread.sleep( 6 * 60_000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (int i = 0; i < 12; ++i) {
+            Thread.sleep(30_000);
+            if (dpuCommissioningUiRobot.gezAnzOfDevices(dpuDevice.getEndsz()) == 0) {
+                break;
+            }
         }
 
-        dpuCommissioningUiRobot.checkDpuDeviceDelationResult(dpuDevice);
+        dpuCommissioningUiRobot.checkDpuDeviceDeletionResult(dpuDevice);
         accessLineRiRobot.checkPhysicalResourceRefCountFttb(dpuDevice,
                 oltDevice,
                 0,
