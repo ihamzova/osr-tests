@@ -24,7 +24,6 @@ import static org.testng.Assert.assertNotNull;
 public class HomeIdTest extends GigabitTest {
 
     private HomeIdManagementRobot homeIdManagementRobot;
-    private UpiterTestContext context = UpiterTestContext.get();
 
     @BeforeClass
     public void init() {
