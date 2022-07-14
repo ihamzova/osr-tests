@@ -138,7 +138,7 @@ public class DpuCommissioningAtBngPlatformFromMobileDpu extends GigabitTest {
         // todo check if process is finished  and remove sleep
         for (int i = 0; i < 12; ++i) {
             Thread.sleep(30_000);
-            if (dpuCommissioningUiRobot.gezAnzOfDevices(dpuDevice.getEndsz()) == 0) {
+            if (dpuCommissioningUiRobot.countOfDevices(dpuDevice.getEndsz()) == 0) {
                 break;
             }
         }

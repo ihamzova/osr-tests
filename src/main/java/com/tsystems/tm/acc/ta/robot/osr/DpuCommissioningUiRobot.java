@@ -156,7 +156,7 @@ public class DpuCommissioningUiRobot {
         assertEquals(deviceList.size(), 0L, "DPU exist after deletion");
     }
 
-    public int gezAnzOfDevices(String endSz) {
+    public int countOfDevices(String endSz) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
                 .endSzQuery(endSz).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         return deviceList.size();
