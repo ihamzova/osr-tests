@@ -1,10 +1,7 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.*;
-import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.DpuDevice;
-import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuCreatePage;
-import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuEditPage;
 import com.tsystems.tm.acc.ta.pages.osr.dpucommissioning.DpuInfoPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.ancp.configuration.v3_0_0.client.model.AncpIpSubnetType;
@@ -30,64 +27,11 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class DpuCommissioningUiRobot {
 
-    private static final String DPU_ANCP_CONFIGURATION_STATE = "aktiv";
-    private static final String OLT_EMS_CONFIGURATION_STATE = "ACTIVE";
-    private static final String DPU_EMS_CONFIGURATION_STATE = "ACTIVE";
-
     private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
     private final AncpResourceInventoryManagementClient ancpResourceInventoryManagementClient = new AncpResourceInventoryManagementClient();
     private final UplinkResourceInventoryManagementClient uplinkResourceInventoryManagementClient = new UplinkResourceInventoryManagementClient();
     private final DeviceTestDataManagementClient deviceTestDataManagementClient = new DeviceTestDataManagementClient();
     private final AccessLineResourceInventoryFillDbClient accessLineResourceInventoryFillDbClient = new AccessLineResourceInventoryFillDbClient();
-    private String businessKey;
-
-    @Step("Start automatic dpu creation and commissioning process")
-    public void startDpuCommissioning(DpuDevice dpuDevice, boolean withDpuDemand) {
-        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
-        oltSearchPage.validateUrl();
-        oltSearchPage = oltSearchPage.searchNotDiscoveredByEndSz(dpuDevice.getEndsz());
-
-        oltSearchPage.pressCreateDpuButton();
-
-        DpuCreatePage dpuCreatePage = new DpuCreatePage();
-        dpuCreatePage.validateUrl();
-        if (withDpuDemand) {
-            dpuCreatePage.startDpuCreationWithDpuDemand(dpuDevice);
-        } else {
-            dpuCreatePage.startDpuCreation(dpuDevice);
-        }
-
-        dpuCreatePage.openDpuInfoPage();
-
-        DpuInfoPage dpuInfoPage = new DpuInfoPage();
-        dpuInfoPage.validateUrl();
-        assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Device LifeCycleState mismatch");
-        assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Initial Port LifeCycleState mismatch");
-        dpuInfoPage.startDpuCommissioning();
-
-        assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.INSTALLING.toString(), "Device LifeCycleState after com. mismatch");
-
-
-        dpuInfoPage.openDpuConfiguraionTab();
-        assertEquals(DpuInfoPage.getDpuKlsId(), dpuDevice.getKlsId(), "UI KlsId missmatch");
-        Assert.assertTrue(DpuInfoPage.getDpuAncpConfigState().contains(DPU_ANCP_CONFIGURATION_STATE), "DPU ANCP configuration state mismatch");
-        Assert.assertTrue(DpuInfoPage.getOltEmsConfigState().contains(OLT_EMS_CONFIGURATION_STATE), "OLT EMS configuration state mismatch");
-        Assert.assertTrue(DpuInfoPage.getDpuEmsConfigState().contains(DPU_EMS_CONFIGURATION_STATE), "DPU EMS configuration state mismatch");
-        Assert.assertTrue(DpuInfoPage.getOltEmsDpuEndsz().contains(dpuDevice.getEndsz()), "OLT EMS DPU EndSz mismatch");
-        Assert.assertTrue(DpuInfoPage.getOltEmsOltEndsz().contains(dpuDevice.getOltEndsz()), "OLT EMS OLT EndSz mismatch");
-        Assert.assertTrue(DpuInfoPage.getDpuEmsDpuEndsz().contains(dpuDevice.getEndsz()), "DPU EMS DPU EndSz mismatch");
-
-        dpuInfoPage.openDpuAccessLinesTab();
-        dpuInfoPage.openDpuPortsTab();
-        //DIGIHUB-79622
-        dpuInfoPage.openDpuEditPage();
-        DpuEditPage dpuEditPage = new DpuEditPage();
-        dpuEditPage.validateUrl();
-        dpuEditPage.SetDpuState();
-
-        assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after com. mismatch");
-        assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after com. mismatch");
-    }
 
     @Step("Checks data in ri after commissioning process")
     public void checkDpuCommissioningResult(DpuDevice dpuDevice) {
@@ -154,20 +98,6 @@ public class DpuCommissioningUiRobot {
         assertEquals(dpuEmsConfiguration.getSerialNumber(), dpuDevice.getSeriennummer(),"DPU dpuEmsConfigurations SerialNumber mismatch");
     }
 
-    @Step("Start DPU decommissioning process")
-    public void startDpuDecommissioning(DpuDevice dpuDevice) {
-
-        OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
-        oltSearchPage.validateUrl();
-        oltSearchPage.searchDiscoveredByEndSz(dpuDevice.getEndsz());
-        DpuInfoPage dpuInfoPage = new DpuInfoPage();
-        dpuInfoPage.validateUrl();
-        dpuInfoPage.startDpuDecommissioning();
-
-        assertEquals(DpuInfoPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Device LifeCycleState after decom. mismatch");
-        assertEquals(DpuInfoPage.getPortLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString(), "Port LifeCycleState after decom. mismatch");
-    }
-
     @Step("Start DPU decommissioning process v2")
     public void startDpuDecommissioningV2(DpuDevice dpuDevice) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
@@ -220,10 +150,16 @@ public class DpuCommissioningUiRobot {
     }
 
     @Step("Checks DPU Device deletion")
-    public void checkDpuDeviceDelationResult(DpuDevice dpuDevice) {
+    public void checkDpuDeviceDeletionResult(DpuDevice dpuDevice) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
                 .endSzQuery(dpuDevice.getEndsz()).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         assertEquals(deviceList.size(), 0L, "DPU exist after deletion");
+    }
+
+    public int countOfDevices(String endSz) {
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
+        return deviceList.size();
     }
 
     @Step("Restore accessline-resource-inventory Database state")
