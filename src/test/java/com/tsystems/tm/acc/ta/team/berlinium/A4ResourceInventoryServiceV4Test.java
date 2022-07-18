@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryServiceV4Robot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.TerminationPoint;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -20,11 +21,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import java.util.List;
+
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static org.testng.Assert.assertEquals;
 
 
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_SERVICE_MS})
 @Epic("OS&R domain")
 
 public class A4ResourceInventoryServiceV4Test extends GigabitTest {
@@ -39,8 +42,6 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     private A4NetworkElementPort nepDataA;
     private A4NetworkElementPort nepDataB;
     private A4TerminationPoint tpDataA;
-    private A4TerminationPoint tpDataB;
-    private A4TerminationPoint tpDataC;
     private A4NetworkElementLink nelData;
     private A4NetworkServiceProfileFtthAccess nspDataA;
     private A4NetworkServiceProfileFtthAccess nspDataB;
@@ -55,10 +56,10 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementB);
         tpDataA = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
-        tpDataB = osrTestContext.getData().getA4TerminationPointDataProvider()
+                .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
+        A4TerminationPoint tpDataB = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
-        tpDataC = osrTestContext.getData().getA4TerminationPointDataProvider()
+        A4TerminationPoint tpDataC = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.terminationPointFtthAccessPrePro);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
@@ -148,7 +149,19 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     @TmsLink("DIGIHUB-xxx")
     @Description("Read terminationPoint from resource inventory service v4 api")
     public void readTerminationPointFromA4ApiByPort() {
-        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpDataA, nepDataA);
+        List<TerminationPoint> tpV4UuidList = a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(nepDataA.getUuid(), null);
+        assertEquals(tpV4UuidList.size(), 1);
+        assertEquals(tpV4UuidList.get(0).getId(), tpDataA.getUuid());
+    }
+
+    @Test(description = "Find termination point by carrier bsa reference from a4 resource inventory service")
+    @Owner("DL_Berlinium@telekom.de")
+    @TmsLink("DIGIHUB-76377")
+    @Description("Find termination point by carrier bsa reference from a4 resource inventory service")
+    public void readTerminationPointFromA4ApiByCBR() {
+        List<TerminationPoint> tpV4UuidList = a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(null, tpDataA.getCarrierBsaReference());
+        assertEquals(tpV4UuidList.size(), 9);
+        assertEquals(tpV4UuidList.get(0).getCarrierBsaReference(), tpDataA.getCarrierBsaReference());
     }
 
     @Test(description = "DIGIHUB-xxx Read networkElementLink from resource inventory service v4 api")

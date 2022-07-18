@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceInventoryServiceV4Client;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.api.TerminationPointApi;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.*;
 import io.qameta.allure.Step;
 
@@ -10,9 +11,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_NOT_FOUND_404;
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
-import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPortNumberByFunctionalPortLabel;
+import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.testng.Assert.*;
 
@@ -98,15 +98,15 @@ public class A4ResourceInventoryServiceV4Robot {
         List<NetworkElementGroup> negList = getNetworkElementGroupsV4ByName(name);
         assertEquals(negList.size(), 1);
         assertEquals(negList.get(0).getId(), negData.getUuid());
-        assertEquals(Objects.requireNonNull(negList.get(0).getLifecycleState()).toString(), negData.getLifecycleState());
+        assertEquals(Objects.requireNonNull(negList.get(0).getLifecycleState()), negData.getLifecycleState());
     }
 
     public void checkIfNetworkElementGroupExistsByUuid(A4NetworkElementGroup negData) {
         String uuid = negData.getUuid();
         NetworkElementGroup neg = getNetworkElementGroupV4(uuid);
         assertEquals(neg.getId(), negData.getUuid());
-        assertEquals(Objects.requireNonNull(neg.getLifecycleState()).toString(), negData.getLifecycleState());
-        assertEquals(Objects.requireNonNull(neg.getOperationalState()).toString(), negData.getOperationalState());
+        assertEquals(Objects.requireNonNull(neg.getLifecycleState()), negData.getLifecycleState());
+        assertEquals(Objects.requireNonNull(neg.getOperationalState()), negData.getOperationalState());
     }
 
     public void checkNotFoundErrorForNonExistingNeg() {
@@ -124,12 +124,12 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
-    @Step("Read all TerminationPoints as list from v4 API")
-    public List<TerminationPoint> getTerminationPointsV4ByPort(String nepUuid) {
-        return a4ResourceInventoryService.getClient().terminationPoint()
-                .listTerminationPoint()
-                .parentUuidQuery(nepUuid)
-                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    @Step("Read all TerminationPoints with given Port or CarrierBsaRef from v4 API")
+    public List<TerminationPoint> getTerminationPointsV4By(String nepUuid, String carrierBsaRef) {
+        TerminationPointApi.ListTerminationPointOper oper = a4ResourceInventoryService.getClient().terminationPoint().listTerminationPoint();
+        if (!isNullOrEmpty(nepUuid)) oper.parentUuidQuery(nepUuid);
+        if (!isNullOrEmpty(carrierBsaRef)) oper.carrierBsaReferenceQuery(carrierBsaRef);
+        return oper.executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
     @Step("Check if list of all existing Termination Points (v4 API) contains at least one entry")
@@ -138,14 +138,10 @@ public class A4ResourceInventoryServiceV4Robot {
         assertTrue(tpList.size() >= minimalExpectedCount);
     }
 
-    public void checkIfTerminationPointExistsByPort(A4TerminationPoint tpData, A4NetworkElementPort nepData) {
-        List<String> tpV4UuidList = getTerminationPointsV4ByPort(nepData.getUuid())
-                .stream()
-                .map(TerminationPoint::getId)
-                .collect(Collectors.toList());
-
-        assertEquals(tpV4UuidList.size(), 1);
-        assertEquals(tpV4UuidList.get(0), tpData.getUuid());
+    public List<TerminationPoint> checkIfTerminationPointExistsBy(String uuidNEP, String carrierBsaRef) {
+        List<TerminationPoint> tpV4UuidList = getTerminationPointsV4By(uuidNEP, carrierBsaRef);
+        assertFalse(tpV4UuidList.isEmpty());
+        return tpV4UuidList;
     }
 
     @Step("Check if list of all existing Network Service Profiles FTTH Access (v4 API) contains at least one entry")
