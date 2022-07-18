@@ -20,11 +20,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
-import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
+import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 
-@ServiceLog({A4_RESOURCE_INVENTORY_MS,A4_RESOURCE_INVENTORY_SERVICE_MS})
+@ServiceLog({A4_RESOURCE_INVENTORY_MS, A4_RESOURCE_INVENTORY_SERVICE_MS})
 @Epic("OS&R domain")
 
 public class A4ResourceInventoryServiceV4Test extends GigabitTest {
@@ -55,7 +54,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         neDataB = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementB);
         tpDataA = osrTestContext.getData().getA4TerminationPointDataProvider()
-                .get(A4TerminationPointCase.defaultTerminationPointFtthAccess);
+                .get(A4TerminationPointCase.defaultTerminationPointL2Bsa);
         tpDataB = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.TerminationPointB);
         tpDataC = osrTestContext.getData().getA4TerminationPointDataProvider()
@@ -148,7 +147,15 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     @TmsLink("DIGIHUB-xxx")
     @Description("Read terminationPoint from resource inventory service v4 api")
     public void readTerminationPointFromA4ApiByPort() {
-        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsByPort(tpDataA, nepDataA);
+        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(tpDataA.getUuid(), nepDataA.getUuid(), null);
+    }
+
+    @Test(description = "Find termination point by carrier bsa reference from a4 resource inventory service")
+    @Owner("DL_Berlinium@telekom.de")
+    @TmsLink("DIGIHUB-76377")
+    @Description("Find termination point by carrier bsa reference from a4 resource inventory service")
+    public void readTerminationPointFromA4ApiByCBR() {
+        a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(tpDataA.getUuid(), null, tpDataA.getCarrierBsaReference());
     }
 
     @Test(description = "DIGIHUB-xxx Read networkElementLink from resource inventory service v4 api")

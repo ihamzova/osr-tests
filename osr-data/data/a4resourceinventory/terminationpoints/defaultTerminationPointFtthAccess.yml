@@ -4,3 +4,4 @@ values:
   uuid: "" # don't set! Filled automatically
   subType: "PON_TP"
   state: "UNUSED"
+  carrierBsaReference:
