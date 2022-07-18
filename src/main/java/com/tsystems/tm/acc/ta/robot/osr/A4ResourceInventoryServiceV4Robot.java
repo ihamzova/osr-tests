@@ -98,15 +98,15 @@ public class A4ResourceInventoryServiceV4Robot {
         List<NetworkElementGroup> negList = getNetworkElementGroupsV4ByName(name);
         assertEquals(negList.size(), 1);
         assertEquals(negList.get(0).getId(), negData.getUuid());
-        assertEquals(Objects.requireNonNull(negList.get(0).getLifecycleState()).toString(), negData.getLifecycleState());
+        assertEquals(Objects.requireNonNull(negList.get(0).getLifecycleState()), negData.getLifecycleState());
     }
 
     public void checkIfNetworkElementGroupExistsByUuid(A4NetworkElementGroup negData) {
         String uuid = negData.getUuid();
         NetworkElementGroup neg = getNetworkElementGroupV4(uuid);
         assertEquals(neg.getId(), negData.getUuid());
-        assertEquals(Objects.requireNonNull(neg.getLifecycleState()).toString(), negData.getLifecycleState());
-        assertEquals(Objects.requireNonNull(neg.getOperationalState()).toString(), negData.getOperationalState());
+        assertEquals(Objects.requireNonNull(neg.getLifecycleState()), negData.getLifecycleState());
+        assertEquals(Objects.requireNonNull(neg.getOperationalState()), negData.getOperationalState());
     }
 
     public void checkNotFoundErrorForNonExistingNeg() {
@@ -138,14 +138,10 @@ public class A4ResourceInventoryServiceV4Robot {
         assertTrue(tpList.size() >= minimalExpectedCount);
     }
 
-    public void checkIfTerminationPointExistsBy(String uuidTP, String uuidNEP, String carrierBsaRef) {
-        List<String> tpV4UuidList = getTerminationPointsV4By(uuidNEP, carrierBsaRef)
-                .stream()
-                .map(TerminationPoint::getId)
-                .collect(Collectors.toList());
-
-        assertEquals(tpV4UuidList.size(), 1);
-        assertEquals(tpV4UuidList.get(0), uuidTP);
+    public List<TerminationPoint> checkIfTerminationPointExistsBy(String uuidNEP, String carrierBsaRef) {
+        List<TerminationPoint> tpV4UuidList = getTerminationPointsV4By(uuidNEP, carrierBsaRef);
+        assertFalse(tpV4UuidList.isEmpty());
+        return tpV4UuidList;
     }
 
     @Step("Check if list of all existing Network Service Profiles FTTH Access (v4 API) contains at least one entry")
