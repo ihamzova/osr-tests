@@ -151,7 +151,6 @@ public class A4ResourceOrderTest {
         UewegData uewegData1 = data.getUewegDataDataProvider().get(uewegA);
         UewegData uewegData2 = data.getUewegDataDataProvider().get(uewegB);
 
-        cleanup();
         a4RobotRI.createNetworkElementGroup(a4NEG);
         a4RobotRI.createNetworkElement(a4NE, a4NEG);
         a4RobotRI.createNetworkElement(a4NE2, a4NEG);
@@ -187,7 +186,6 @@ public class A4ResourceOrderTest {
         // clean wiremock gedöhns
         cleanupWiremock();
         // Delete all A4 data which might provoke problems because of unique constraints
-        //TODO: null check in method ?
         a4RobotRI.deleteA4NetworkElementGroupsRecursively(a4NEG);
         a4RobotRI.deleteA4NetworkElementsRecursively(a4NE);
         a4RobotRI.deleteA4NetworkElementsRecursively(a4NE2);
@@ -211,8 +209,10 @@ public class A4ResourceOrderTest {
     }
 
     private void sendRoAndCheckState(ResourceOrderStateType state, String orderItemId) {
-        boolean eventHandling = true;
         String URL_EVENT_PUBLISH = "/tardis/horizon/events/v1";
+        // additional security line, to avoid existing ro
+        a4RobotRO.deleteA4TestDataRecursively(ro);
+        // now let's create a "new" ro
         a4RobotRO.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
         // THEN
@@ -222,8 +222,7 @@ public class A4ResourceOrderTest {
             a4WmRobotRebell.checkSyncRequestToRebellWiremock(getEndsz(a4NE), HttpMethod.GET, 1);
             a4WmRobotA10Nsp.checkSyncRequestToA10nspA4Wiremock(a4RobotRO.getA10NspA4Dto(ro), HttpMethod.POST, 1);
             // all done, finally check event publishing
-            if (eventHandling)
-                a4WmRobot.checkSyncRequest(URL_EVENT_PUBLISH, RequestMethod.POST, 1, 1000);
+            a4WmRobot.checkSyncRequest(URL_EVENT_PUBLISH, RequestMethod.POST, 1, 1000);
         }
     }
 
