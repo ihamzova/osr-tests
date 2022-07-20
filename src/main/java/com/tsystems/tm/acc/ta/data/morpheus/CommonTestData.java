@@ -9,17 +9,15 @@ import static com.tsystems.tm.acc.tests.osr.dpu.planning.model.JsonPatchOperatio
 public class CommonTestData {
     public static final String DPU_PLANNING = "dpu-planning";
     public static final String DPU_PLANNING_PUBSUB_TOPIC = "resource-order-resource-inventory/v1/dpuPlanningEvents";
-
     public static final String DPU_ENDSZ_PATH = "/dpuEndSz";
-    public static final String DPU_STATE_PATH = "/state";
     public static final String DPU_WO_ID_PATH = "/workorderId";
-
-    public static final String DPU_ENDSZ_VALUE = "49/670/4/88F9";
-    public static final String DPU_ENDSZ_NOT_UNIQUE_VALUE = "49/520/4/78G2";
+    public static final String DPU_ENDSZ_BNG = "49/311/32657/71GA";
+    public static final String DPU_ENDSZ_A4 = "49/411/32657/71GA";
     public static final String DPU_STATE_VALUE = "FULFILLED";
-    public static final String DPU_WO_ID_VALUE = "11636";
-    public static final String DPU_WO_ID_NOT_UNIQUE_VALUE = "10835";
-
+    public static final String DPU_EMS_NBI_NAME = "SDX2221-08-TP";
+    public static final String DPU_MAT_NAME = "SDX2221-08 TP-AC-M-FTTB ETSI";
+    public static final String DPU_MAT_NO = "40898328";
+    public static final String DPU_PORT_COUNT = "8";
+    public static final String DPU_WO_ID = "651799";
     public static final JsonPatchOperation.OpEnum REPLACE_OPERATION = REPLACE;
-    public static final JsonPatchOperation.OpEnum ADD_OPERATION = ADD;
 }

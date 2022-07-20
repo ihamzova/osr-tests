@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.robot.osr.DpuPlanningRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemand;
 import com.tsystems.tm.acc.tests.osr.dpu.planning.model.DpuDemandCreate;
 import io.qameta.allure.TmsLink;
 import org.testng.annotations.AfterMethod;
@@ -15,8 +16,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
+import static com.tsystems.tm.acc.ta.data.morpheus.CommonTestData.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachEventsToAllureReport;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveEventsToDefaultDir;
 
@@ -24,9 +25,7 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.saveE
 public class MobileDpuTest extends GigabitTest {
     private WireMockMappingsContext mappingsContext;
     private DpuPlanningRobot dpuPlanningRobot = new DpuPlanningRobot();
-    private static final String CREATE_DPU_DEMAND = "/team/morpheus/dpuPlanning/createDpuDemandOnlyMandatory.json";
-    private static final String ONKZ_BNG = "311";
-    private static final String ONKZ_A4 = "411";
+    private static final String CREATE_DPU_DEMAND = "/team/morpheus/dpuPlanning/createDpuDemand.json";
     MobileDpuPage mobileDpuPage;
 
     @BeforeMethod
@@ -45,10 +44,9 @@ public class MobileDpuTest extends GigabitTest {
     @Test(description = "DPU Commissioning V2 at BNG Platform: happy case")
     @TmsLink("DIGIHUB-125297")
     public void dpuCommissioningBngPlatform() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_BNG);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemand = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemand, DPU_ENDSZ_BNG);
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
@@ -66,16 +64,15 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage.goToNextPage();
         mobileDpuPage.finishCommissioning();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_BNG + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemand);
     }
 
     @Test(description = "DPU Commissioning V2 at A4 Platform: happy case")
     @TmsLink("DIGIHUB-152228")
     public void dpuCommissioningA4Platform() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemand = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemand, DPU_ENDSZ_A4);
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
@@ -93,18 +90,17 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage.goToNextPage();
         mobileDpuPage.finishCommissioning();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemand);
     }
 
     @Test(description = "DPU Demand Tab: multiple demands on folId")
     @TmsLink("DIGIHUB-125301")
     public void dpuDemandTabMultipleDemands() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_BNG);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemandBng = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemandBng, DPU_ENDSZ_BNG);
+        DpuDemand createdDpuDemandA4 = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemandA4, DPU_ENDSZ_A4);
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addMocksDpuCommissioningA4HappyCase");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -115,20 +111,19 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectMultipleDpuDemands();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_BNG + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemandBng);
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemandA4);
     }
 
     @Test(description = "DPU Demand Tab: demand with current workorderId")
     @TmsLink("DIGIHUB-125303")
     public void dpuDemandTabDemandWithCurrentWoId() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
-        dpuPlanningRobot.modifyWorkorderId(dpuPlanningRobot.findDpuDemandByFolId(folId));
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_BNG);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemandBng = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemandBng, DPU_ENDSZ_BNG);
+        dpuPlanningRobot.addWorkorderId(createdDpuDemandBng, DPU_WO_ID);
+        DpuDemand createdDpuDemandA4 = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemandA4, DPU_ENDSZ_A4);
 
         mappingsContext = new WireMockMappingsContext(WireMockFactory.get(), "addMocksDpuCommissioningA4HappyCase");
         new MorpeusWireMockMappingsContextBuilder(mappingsContext)
@@ -139,8 +134,8 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectMultipleDpuDemandsDisabled();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_BNG + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemandBng);
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemandA4);
     }
 
     @Test(description = "DPU Demand Tab: demands are not found")
@@ -155,16 +150,14 @@ public class MobileDpuTest extends GigabitTest {
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.errorNotificationDisplayed();
-
     }
 
     @Test(description = "DPU Tab: Serial number is not unique")
     @TmsLink("DIGIHUB-139096")
     public void dpuTabSerialNumberNotUnique() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemand = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemand, DPU_ENDSZ_A4);
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
@@ -179,16 +172,15 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage.inputSerialNumber();
         mobileDpuPage.errorNotificationDisplayed();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemand);
     }
 
     @Test(description = "DPU Tab: Get DPU, technical error from RAL")
     @TmsLink("DIGIHUB-136898")
     public void dpuTabGetDeviceTechnicalError() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemand = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemand, DPU_ENDSZ_A4);
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
@@ -202,16 +194,15 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage.goToNextPage();
         mobileDpuPage.errorNotificationDisplayed();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemand);
     }
 
     @Test(description = "DPU Tab: Set Serial number, technical error from RAL")
     @TmsLink("DIGIHUB-139097")
     public void dpuTabUpdateSerialNumberTechnicalError() throws IOException {
-        String folId = new SimpleDateFormat("ddHHmm").format(new java.util.Date());
-        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJsonForMobileDpu(CREATE_DPU_DEMAND, folId);
-        dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
-        dpuPlanningRobot.fulfillDpuDemand(dpuPlanningRobot.findDpuDemandByFolIdAndState(folId), ONKZ_A4);
+        DpuDemandCreate createDpuDemandRequestData = dpuPlanningRobot.getDpuDemandCreateFromJson(CREATE_DPU_DEMAND);
+        DpuDemand createdDpuDemand = dpuPlanningRobot.createDpuDemand(createDpuDemandRequestData);
+        dpuPlanningRobot.fulfillDpuDemand(createdDpuDemand, DPU_ENDSZ_A4);
 
         mobileDpuPage = MobileDpuPage.openPage();
         mobileDpuPage.selectDpuDemand();
@@ -226,7 +217,7 @@ public class MobileDpuTest extends GigabitTest {
         mobileDpuPage.inputSerialNumber();
         mobileDpuPage.errorNotificationDisplayed();
 
-        dpuPlanningRobot.deleteDpuDemand(dpuPlanningRobot.findDpuDemandByEndSz("49/" + ONKZ_A4 + "/" + folId + "/71GA"));
+        dpuPlanningRobot.deleteDpuDemand(createdDpuDemand);
     }
 
 }
