@@ -144,20 +144,17 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         a4ResourceInventoryServiceV4Robot.checkIfAnyTerminationPointsExist(2);
     }
 
-    @Test(description = "DIGIHUB-xxx Find termination point by Port from resource inventory service v4 api")
+    @Test(description = "Find Terminationpoint by Port in a4 resource inventory")
     @Owner("thea.john@telekom.de")
-    @TmsLink("DIGIHUB-xxx")
-    @Description("Read terminationPoint from resource inventory service v4 api")
     public void readTerminationPointFromA4ApiByPort() {
         List<TerminationPoint> tpV4UuidList = a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(nepDataA.getUuid(), null);
         assertEquals(tpV4UuidList.size(), 1);
         assertEquals(tpV4UuidList.get(0).getId(), tpDataA.getUuid());
     }
 
-    @Test(description = "Find termination point by carrier bsa reference from a4 resource inventory service")
-    @Owner("DL_Berlinium@telekom.de")
+    @Test(description = "DIGIHUB-76377 - Find Terminationpoint by carrierBsaReference in a4 resource inventory")
+    @Owner("holger.schenke@telekom.de")
     @TmsLink("DIGIHUB-76377")
-    @Description("Find termination point by carrier bsa reference from a4 resource inventory service")
     public void readTerminationPointFromA4ApiByCBR() {
         List<TerminationPoint> tpV4UuidList = a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(null, tpDataA.getCarrierBsaReference());
         assertEquals(tpV4UuidList.size(), 9);

@@ -40,9 +40,6 @@ import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 public class A4DpuCommissioningTest extends GigabitTest {
 
-    private final String nemoUpdaterRouteName = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
-    private final String riPortSpecsRouteName = "resource-order-resource-inventory.v1.a4PortSpecs";
-
     private final OsrTestContext osrTestContext = OsrTestContext.get();
     private final A4ResourceInventoryRobot a4ResourceInventory = new A4ResourceInventoryRobot();
     private final A4NemoUpdaterRobot a4NemoUpdater = new A4NemoUpdaterRobot();
@@ -111,7 +108,9 @@ public class A4DpuCommissioningTest extends GigabitTest {
         a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast01, neDpuData);
         a4ResourceInventory.deleteA4NetworkElementPortsRecursively(nepDpuGfast02, neDpuData);
 
+        String nemoUpdaterRouteName = "resource-order-resource-inventory.v1.asyncUpdateNemoTask";
         a4ResilienceRobot.changeRouteToMicroservice(nemoUpdaterRouteName, A4_NEMO_UPDATER_MS);
+        String riPortSpecsRouteName = "resource-order-resource-inventory.v1.a4PortSpecs";
         a4ResilienceRobot.changeRouteToMicroservice(riPortSpecsRouteName, A4_RESOURCE_INVENTORY_MS);
     }
 
@@ -528,54 +527,4 @@ public class A4DpuCommissioningTest extends GigabitTest {
                 nepPodServer.getUuid());
         // Expected error msg: "A4 DPU network element link has not the same OLT"
     }
-
-    @Test(description = "test NemoUpdater is not reachable")
-    @Owner("Anita.Junge@t-systems.com, bela.kovac@t-systems.com")
-    @TmsLink("DIGIHUB-126611")
-    @Description("DIGIHUB-118479 If NemoUpdater is not reachable then throw Server Error.")
-    public void testNemoNotReachableServerError() {
-        //GIVEN
-        // NE and NEG exists but Nemo is not reachable
-        String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
-
-        a4ResilienceRobot.changeRouteToWiremock(nemoUpdaterRouteName);
-
-        // WHEN & THEN
-        // call A4-DPU-Commissioning-Task
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
-                dpuEndSz,
-                dpuSerialNumber,
-                dpuMaterialNumber,
-                dpuKlsId,
-                dpuFiberOnLocationId,
-                existingOltEndSz,
-                existingOltPonPort);
-    }
-
-    @Test(description = "test Resource Inventoty is not reachable")
-    @Owner("Anita.Junge@t-systems.com")
-    @TmsLink("DIGIHUB-127907")
-    @Description("DIGIHUB-118482 If Resource Inventory is not reachable then throw Server Error.")
-    public void testRiNotReachableServerError() {
-        //GIVEN
-        // DPU already exists
-        // but for find PortSpec-List Resource Inventory is not reachable
-        String existingDpuEndSz = neDpuData.getVpsz() + "/" + neDpuData.getFsz();
-        String existingOltEndSz = neOltData.getVpsz() + "/" + neOltData.getFsz();
-        String existingOltPonPort = nepOltData.getFunctionalPortLabel().substring(5);
-        a4ResilienceRobot.changeRouteToWiremock(riPortSpecsRouteName);
-
-        // WHEN & THEN
-        // call A4-DPU-Commissioning-Task
-        a4DpuCommissioning.sendPostForCommissioningDpuA4TasksServerError(
-                existingDpuEndSz,
-                dpuSerialNumber,
-                dpuMaterialNumber,
-                dpuKlsId,
-                dpuFiberOnLocationId,
-                existingOltEndSz,
-                existingOltPonPort);
-    }
-
 }
