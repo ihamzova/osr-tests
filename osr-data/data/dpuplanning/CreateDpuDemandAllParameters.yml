@@ -2,11 +2,11 @@ name: CreateDpuDemandAllParameters
 template: com.tsystems.tm.acc.ta.data.osr.models.DpuDemand
 values:
   dpuAccessTechnology: FTTB
-  dpuEndSz: "49/520/4/78G2"
+  dpuEndSz: "49/311/32657/71GA"
   dpuInstallationInstruction: "30cm neben APL"
   dpuLocation: "Technikraum Keller links"
   fiberOnLocationId: "1000000021049"
   klsId: "584741042"
   numberOfNeededDpuPorts: "25"
   state: FULFILLED
-  workorderId: "10835"
+  workorderId: "651799"

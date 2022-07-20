@@ -7,7 +7,6 @@
         <class name="com.tsystems.tm.acc.ta.team.morpheus.dpucommissioning.DpuDecommissioningProcess"/>
         <class name="com.tsystems.tm.acc.ta.team.morpheus.dpuplanning.DpuPlanningTest"/>
         <class name="com.tsystems.tm.acc.ta.team.morpheus.mobiledpu.MobileDpuTest"/>
-        <class name="com.tsystems.tm.acc.ta.team.morpheus.mobiledpubff.WorkorderDpuInstallation"/>
     </classes>
 </test>
 </suite>

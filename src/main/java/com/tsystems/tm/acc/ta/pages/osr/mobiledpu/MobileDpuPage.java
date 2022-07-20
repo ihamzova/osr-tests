@@ -28,8 +28,8 @@ public class MobileDpuPage {
     public static final By START_COMMISSIONING = By.xpath("//button[text()=' Inbetriebnahme starten ']");
     public static final By DPU_IN_SYNC = By.cssSelector(".form-btn");
     public static final By FINISH_WO = By.xpath("//button[text()=' Arbeitsauftrag beenden ']");
-    public static final By FIRST_DEMAND_RADIO_BUTTON = By.id("mat-radio-4");
-    public static final By SECOND_DEMAND_RADIO_BUTTON = By.id("mat-radio-5");
+    public static final By FIRST_DEMAND_RADIO_BUTTON = By.id("mat-radio-2");
+    public static final By SECOND_DEMAND_RADIO_BUTTON = By.id("mat-radio-3");
     public static final By ALERT = By.xpath("//h2[@role='alert']");
 
     @Step("Open MobileDpuPage")
