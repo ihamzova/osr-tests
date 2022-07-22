@@ -20,7 +20,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -52,7 +52,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
 
     @BeforeClass
     public void init() {
-        WireMockFactory.get().resetToDefaultMappings();
+        //WireMockFactory.get().resetToDefaultMappings();
         List<OltDevice> olts = Arrays.asList(oltDeviceDTAG, oltDeviceGFNW);
 
         olts.forEach(oltCommissioningRobot::clearResourceInventoryDataBase);
@@ -79,7 +79,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
 
     }
 
-    @AfterMethod
+    @AfterClass
     public void cleanUp() {
         mappingsContextOsr.close();
         mappingsContextOsr

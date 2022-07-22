@@ -63,6 +63,7 @@ public class OltCommissioningRobot {
         new OltDetailsPage().checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
+    @Step("Start automatic OLT commissioning")
     public void startAutomaticOltCommissioning(OltDevice olt, int timeout) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();

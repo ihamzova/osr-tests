@@ -31,7 +31,7 @@ public class OltCommissioningPage {
         assertUrlContainsWithTimeout(ENDPOINT);
     }
 
-    @Step("Start OLT commissioning")
+    @Step("Start OLT commissioning and wait for result")
     public OltCommissioningPage startOltCommissioning(OltDevice olt, Integer timeout) {
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
         Instant start = Instant.now();
