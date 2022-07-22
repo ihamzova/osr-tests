@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Mercury test suites" verbose="1" data-provider-thread-count="1">
-    <test thread-count="2" parallel="classes" name="OLT RI UI Tests">
+    <test thread-count="2" parallel="methods" name="OLT RI UI Tests">
         <classes>
-            <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.NewOltDeviceCommissioningManualProcess"/>
-            <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.NewOltDeviceCommissioningManualProcessGFNW"/>
-            <!--class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.auto.OltAutoCommissioning"/-->
+            <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.OltDeviceCommissioningManualProcess"/>
         </classes>
     </test>
     <test thread-count="4" parallel="classes" name="OLT RI UI CommissioningDecommissioning Tests">
@@ -16,7 +14,7 @@
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW"/>
         </classes>
     </test>
-    <test thread-count="4" parallel="methods" name="OLT RI UI AutoCommissioning Tests">
+    <test thread-count="6" parallel="methods" name="OLT RI UI AutoCommissioning Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.auto.OltAutoCommissioning"/>
         </classes>

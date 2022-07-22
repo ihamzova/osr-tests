@@ -4,6 +4,7 @@ public interface MercuryConstants {
 
     Long COMPOSITE_PARTY_ID_DTAG = 10001L;
     Long COMPOSITE_PARTY_ID_GFNW = 10000L;
+    Long COMPOSITE_PARTY_ID_GFMM = 10100L;
 
     String EMS_NBI_NAME_MA5600 = "MA5600T";
     String EMS_NBI_NAME_MA5800 = "MA5800-X7";

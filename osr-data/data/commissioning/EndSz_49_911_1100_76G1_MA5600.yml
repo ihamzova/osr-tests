@@ -1,11 +1,11 @@
-name: EndSz_49_30_2000_76H1_MA5600
+name: EndSz_49_911_1100_76G1_MA5600
 template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
 values:
-  vpsz: "49/30/2000"
-  fsz: "76H1"
-  bngEndsz: "49/911/84/7ZJA"
-  bngDownlinkPort: "ge-1/2/3"
-  bngDownlinkSlot: "1"
+  vpsz: "49/911/1100"
+  fsz: "76G1"
+  bngEndsz: "49/911/84/7ZJC"
+  bngDownlinkPort: "ge-5/2/3"
+  bngDownlinkSlot: "0"
   lsz: "4C1"
   orderNumber: "1234567890"
   vst: "@DefaultVst"
@@ -16,7 +16,7 @@ values:
   hersteller: "HUAWEI"
   seriennummer: "unbekannt"
   firmwareVersion: "MA5600V800R016C00"
-  ipAdresse: "10.182.123.196"
+  ipAdresse: "10.182.143.196"
   numberOfPonSlots: 1
   numberOfEthernetSlots: 1
   matNumber: 40247069
