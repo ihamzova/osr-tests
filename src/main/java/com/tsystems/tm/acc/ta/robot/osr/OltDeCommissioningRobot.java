@@ -10,7 +10,9 @@ import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
+import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Uplink;
 import io.qameta.allure.Step;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,4 +121,43 @@ public class OltDeCommissioningRobot {
         assertEquals(backhaulIds.size(), 0, "There are BackhaulIds left");
     }
 
+
+    @Step("Checks if an uplink for a given endSz does not exist in olt-uplink-management")
+    public void checkUplinkIsDeleted(String endSz) {
+        List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
+                .portsEquipmentBusinessRefEndSzQuery(endSz).executeAs(checkStatus(HTTP_CODE_OK_200));
+
+        Assert.assertTrue(uplinkList.isEmpty());
+    }
+
+    @Step("Checks if a device for a given endSz does not exist in olt-resource-inventory")
+    public void checkDeviceIsDeleted(String endSz) {
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
+        Assert.assertEquals(deviceList.size(), 0L, "Device is present");
+    }
+
+    @Step("Checks if a card for a given endSz/slot does not exist in olt-resource-inventory")
+    public void checkCardIsDeleted(String endSz, String slot) {
+        List<Card> cardList = deviceResourceInventoryManagementClient.getClient().card().listCard()
+                .parentDeviceEquipmentRefEndSzQuery(endSz).slotNameQuery(slot).executeAs(checkStatus(HTTP_CODE_OK_200));
+
+        Assert.assertEquals(cardList.size(), 0L, "Card is present");
+    }
+
+    @Step("Checks if a device for a given endSz does exist in olt-resource-inventory")
+    public void checkDeviceIsNotDeleted(String endSz) {
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
+
+        Assert.assertEquals(deviceList.size(), 1L, "Device is deleted");
+    }
+
+    @Step("Checks if a card for a given endSz/slot does exist in olt-resource-inventory")
+    public void checkCardIsNotDeleted(String endSz, String slot) {
+        List<Card> cardList = deviceResourceInventoryManagementClient.getClient().card().listCard()
+                .parentDeviceEquipmentRefEndSzQuery(endSz).slotNameQuery(slot).executeAs(checkStatus(HTTP_CODE_OK_200));
+
+        Assert.assertEquals(cardList.size(), 1L, "Card is deleted");
+    }
 }

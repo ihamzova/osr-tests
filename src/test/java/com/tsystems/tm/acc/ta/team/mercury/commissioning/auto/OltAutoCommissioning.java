@@ -96,7 +96,6 @@ public class OltAutoCommissioning extends GigabitTest {
 
         // fix wiremock stub
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_30_2000_76H1_MA5600);
-
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
@@ -112,7 +111,6 @@ public class OltAutoCommissioning extends GigabitTest {
 
         // fix wiremock stub
         OltDevice oltDevice = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76ZB_MA5800);
-
         oltCommissioningRobot.clearResourceInventoryDataBase(oltDevice);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDevice, TIMEOUT_FOR_OLT_COMMISSIONING);
 
@@ -126,7 +124,6 @@ public class OltAutoCommissioning extends GigabitTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceDTAG);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceDTAG, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceDTAG, COMPOSITE_PARTY_ID_DTAG);
@@ -138,7 +135,6 @@ public class OltAutoCommissioning extends GigabitTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceGFNW);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceGFNW, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFNW, COMPOSITE_PARTY_ID_GFNW);
@@ -150,7 +146,6 @@ public class OltAutoCommissioning extends GigabitTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceGFMM_MA5600);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceGFMM_MA5600, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFMM_MA5600, COMPOSITE_PARTY_ID_GFMM);
@@ -162,7 +157,6 @@ public class OltAutoCommissioning extends GigabitTest {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
 
-        oltCommissioningRobot.clearResourceInventoryDataBase(oltDeviceGFMM_SDX_6320);
         oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceGFMM_SDX_6320, TIMEOUT_FOR_OLT_COMMISSIONING);
 
         oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFMM_SDX_6320, COMPOSITE_PARTY_ID_GFMM);

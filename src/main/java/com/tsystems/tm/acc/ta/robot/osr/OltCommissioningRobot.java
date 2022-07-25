@@ -63,7 +63,7 @@ public class OltCommissioningRobot {
         new OltDetailsPage().checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
-    @Step("Start automatic OLT commissioning")
+    @Step("Start automatic olt commissioning")
     public void startAutomaticOltCommissioning(OltDevice olt, int timeout) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
@@ -140,6 +140,7 @@ public class OltCommissioningRobot {
         oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
     }
 
+    @Step("Starts manual olt commissioning")
     public OltDetailsPage startManualOltCommissioningWithoutAccessLines(OltDevice olt) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
