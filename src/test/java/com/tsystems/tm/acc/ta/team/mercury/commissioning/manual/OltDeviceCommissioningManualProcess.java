@@ -138,7 +138,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-xxx Manual commissioning for MA5600 as GFMM user")
-    public void SearchAndDiscoverOltGFMM_MA5600Test() {
+    public void SearchAndDiscoverOltGFMM_MA5600Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
@@ -159,10 +159,11 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDeviceGFMM_MA5600.getOltSlot(), oltDeviceGFMM_MA5600.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFMM_MA5600.getEndsz());
+        oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFMM_MA5600, oltDetailsPage);
     }
 
     @Test(description = "DIGIHUB-xxx Manual commissioning for Adtran SDX 6320-16 as GFMM user")
-    public void SearchAndDiscoverOltGFMM_SDX_6320Test() {
+    public void SearchAndDiscoverOltGFMM_SDX_6320Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
@@ -183,6 +184,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDeviceGFMM_SDX_6320_16.getOltSlot(), oltDeviceGFMM_SDX_6320_16.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
 
         oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFMM_SDX_6320_16.getEndsz());
+        oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFMM_MA5600, oltDetailsPage);
     }
 }
 

@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
 import com.tsystems.tm.acc.ta.robot.osr.OltCommissioningRobot;
@@ -129,12 +128,6 @@ public class AdtranOltDeviceCommissioningDecommissioningSDX6320_16_GFNW extends 
 
         Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION); // ensure that the resource inventory database is updated
         oltDeCommissioningRobot.checkUplinkIsDeleted(endSz);
-
-        oltDetailsPage.deleteDevice();
-        DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
-        deleteDevicePage.validateUrl();
-        deleteDevicePage.DeleteOltDevice();
-        Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
-        oltDeCommissioningRobot.checkDeviceIsDeleted(endSz);
+        oltDeCommissioningRobot.startDeviceDeletion(oltDevice, oltDetailsPage);
     }
 }

@@ -21,7 +21,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_DTAG;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.COMPOSITE_PARTY_ID_GFNW;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 
 
@@ -82,7 +82,7 @@ public class OltDeviceCommissioningDecommissioningMA5800_GFNW extends GigabitTes
         oltDetailsPage.openPortView(oltDevice.getOltSlot());
         oltCommissioningRobot.checkUIEthernetPortStates(oltDevice);
 
-        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDevice, COMPOSITE_PARTY_ID_DTAG);
+        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDevice, COMPOSITE_PARTY_ID_GFNW);
         oltCommissioningRobot.checkUplink(oltDevice);
 
         Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error

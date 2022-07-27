@@ -69,6 +69,15 @@ public class OltDeCommissioningRobot {
         deleteDevicePage.DeleteOltDevice();
         Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
     }
+    @Step("Start olt device deletion from UI")
+    public void startDeviceDeletion(OltDevice oltDevice, OltDetailsPage oltDetailsPage) throws InterruptedException {
+        oltDetailsPage.deleteDevice();
+        DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
+        deleteDevicePage.validateUrl();
+        deleteDevicePage.DeleteOltDevice();
+        Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
+        checkDeviceIsDeleted(oltDevice.getEndsz());
+    }
 
     @Step("Start olt decommissioning process after commissioning for ADTRAN device")
     public void startAdtranOltDecommissioningAfterAutoCommissioning(OltDevice olt) throws InterruptedException {

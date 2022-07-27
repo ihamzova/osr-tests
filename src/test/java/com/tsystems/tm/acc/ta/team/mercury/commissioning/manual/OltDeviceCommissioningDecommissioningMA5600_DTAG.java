@@ -6,7 +6,6 @@ import com.tsystems.tm.acc.ta.data.osr.enums.DevicePortLifeCycleStateUI;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
-import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDiscoveryPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
@@ -95,11 +94,6 @@ public class OltDeviceCommissioningDecommissioningMA5600_DTAG extends GigabitTes
         oltDetailsPage.deleteGponCard();
         Thread.sleep(WAIT_TIME_FOR_CARD_DELETION);
         oltDeCommissioningRobot.checkCardIsDeleted(endSz, "1");
-        oltDetailsPage.deleteDevice();
-        DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
-        deleteDevicePage.validateUrl();
-        deleteDevicePage.DeleteOltDevice();
-        Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
-        oltDeCommissioningRobot.checkDeviceIsDeleted(endSz);
+        oltDeCommissioningRobot.startDeviceDeletion(oltDevice, oltDetailsPage);
     }
 }

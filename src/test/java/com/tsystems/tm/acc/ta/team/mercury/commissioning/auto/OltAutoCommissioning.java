@@ -141,7 +141,7 @@ public class OltAutoCommissioning extends GigabitTest {
         oltCommissioningRobot.checkUplink(oltDeviceGFNW);
     }
 
-    @Test(description = "DIGIHUB-xxxxx OS&R UI. Auto Commissioning MA5600 for GFMM user.")
+    @Test(description = "DIGIHUB-159699 OS&R UI. Auto Commissioning MA5600 for GFMM user.")
     public void OltAutoCommissioningGFMM_MA5600Test() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -152,7 +152,7 @@ public class OltAutoCommissioning extends GigabitTest {
         oltCommissioningRobot.checkUplink(oltDeviceGFMM_MA5600);
     }
 
-    @Test(description = "DIGIHUB-xxxxx OS&R UI. Auto Commissioning SDX_6320 for GFMM user.")
+    @Test(description = "DIGIHUB-159663 OS&R UI. Auto Commissioning SDX_6320 for GFMM user.")
     public void OltAutoCommissioningGFMM_SDX_6320Test() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
