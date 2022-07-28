@@ -24,3 +24,13 @@ values:
   portNumber: "0"
   homeIdPool: 0
   backhaulId: 1
+
+---
+name: networkSwitchingFailedProcess
+template: com.tsystems.tm.acc.ta.data.osr.models.Process
+values:
+  processName: "NetworkSwitchingPrepare"
+  endSz: "49/911/1100/76H1"
+  slotNumber: "1"
+  portNumber: "0"
+  lineId: ""
