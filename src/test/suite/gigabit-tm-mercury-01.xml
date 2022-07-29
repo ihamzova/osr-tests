@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Mercury test suites" verbose="1" data-provider-thread-count="1">
-    <test thread-count="2" parallel="methods" name="OLT RI UI ManualCommissioning Tests">
+    <test thread-count="4" parallel="methods" name="OLT RI UI ManualCommissioning Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.manual.OltDeviceCommissioningManualProcess"/>
         </classes>
@@ -19,7 +19,7 @@
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.auto.OltAutoCommissioning"/>
         </classes>
     </test>
-    <test thread-count="4" parallel="methods" name="OLT Mobile UI ZeroTouchCommissioning Tests">
+    <test thread-count="3" parallel="methods" name="OLT Mobile UI ZeroTouchCommissioning Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.mercury.commissioning.ztcommissioning.AdtranOltZtCommissioning"/>
         </classes>
