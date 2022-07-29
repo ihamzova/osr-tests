@@ -66,6 +66,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         olts.forEach(olt ->
                 new MercuryWireMockMappingsContextBuilder(mappingsContextTeam)
                         .addPonInventoryMock(olt)
+                        .addAccessLineInventoryMock()
                         .addRebellUewegeMock(olt)
                         .build()
                         .publish()
@@ -137,7 +138,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFNW.getEndsz());
     }
 
-    @Test(description = "DIGIHUB-xxx Manual commissioning for MA5600 as GFMM user")
+    @Test(description = "DIGIHUB-160199 Manual commissioning for MA5600 as GFMM user")
     public void SearchAndDiscoverOltGFMM_MA5600Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
@@ -162,7 +163,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFMM_MA5600, oltDetailsPage);
     }
 
-    @Test(description = "DIGIHUB-xxx Manual commissioning for Adtran SDX 6320-16 as GFMM user")
+    @Test(description = "DIGIHUB-160234 Manual commissioning for Adtran SDX 6320-16 as GFMM user")
     public void SearchAndDiscoverOltGFMM_SDX_6320Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();

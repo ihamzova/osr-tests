@@ -75,6 +75,7 @@ public class OltDeCommissioningRobot {
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
         deleteDevicePage.DeleteOltDevice();
+        //SelenideScreenshotServiceKt.takeScreenshot();
         Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
         checkDeviceIsDeleted(oltDevice.getEndsz());
     }
