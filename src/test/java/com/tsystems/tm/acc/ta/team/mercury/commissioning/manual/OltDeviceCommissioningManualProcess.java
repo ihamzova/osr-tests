@@ -15,6 +15,7 @@ import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
+import io.qameta.allure.TmsLink;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -90,6 +91,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-53694 Manual commissioning for Adtran SDX 6320-16 as DTAG user")
+    @TmsLink("DIGIHUB-53694") // Jira Id for this test in Xray
     public void SearchAndDiscoverOltDTAGTest() {
 
         OsrTestContext context = OsrTestContext.get();
@@ -115,6 +117,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
 
 
     @Test(description = "DIGIHUB-53713 Manual commissioning for MA5600 as GFNW user")
+    @TmsLink("DIGIHUB-53713") // Jira Id for this test in Xray
     public void SearchAndDiscoverOltGFNWTest() {
 
         OsrTestContext context = OsrTestContext.get();
@@ -139,6 +142,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-160199 Manual commissioning for MA5600 as GFMM user")
+    @TmsLink("DIGIHUB-160199") // Jira Id for this test in Xray
     public void SearchAndDiscoverOltGFMM_MA5600Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();
@@ -164,6 +168,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-160234 Manual commissioning for Adtran SDX 6320-16 as GFMM user")
+    @TmsLink("DIGIHUB-160234") // Jira Id for this test in Xray
     public void SearchAndDiscoverOltGFMM_SDX_6320Test() throws InterruptedException {
 
         OsrTestContext context = OsrTestContext.get();

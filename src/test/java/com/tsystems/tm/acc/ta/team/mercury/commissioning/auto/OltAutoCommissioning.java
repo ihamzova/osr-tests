@@ -31,7 +31,6 @@ import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
 @ServiceLog({ANCP_CONFIGURATION_MS, OLT_DISCOVERY_MS, OLT_RESOURCE_INVENTORY_MS, OLT_UPLINK_MANAGEMENT_MS, OLT_UPLINK_MANAGEMENT_MS, PSL_ADAPTER_MS, PSL_TRANSFORMER_MS})
 @Epic("OS&R")
 @Feature("Description olt auto-commissioning incl. LC-Commissioning Testcase on Mercury Team-environment")
-@TmsLink("DIGIHUB-52132") // This is the Jira id of TestSet
 public class OltAutoCommissioning extends GigabitTest {
 
     final String STUB_GROUP_ID = "OltAutoCommissioning";
@@ -89,6 +88,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-52130 OLT RI UI. Auto Commissioning MA5600 for DTAG user.")
+    @TmsLink("DIGIHUB-52130") // Jira Id for this test in Xray
     public void OltAutoCommissioningDTAGTest() {
 
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
@@ -104,6 +104,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-52133 OLT RI UI. Auto Commissioning MA5800 for GFNW user.")
+    @TmsLink("DIGIHUB-52133") // Jira Id for this test in Xray
     public void OltAutoCommissioningGFNWTest() {
 
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
@@ -119,6 +120,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-104212 OLT RI UI. Auto Commissioning SDX 6320 16 for DTAG user.")
+    @TmsLink("DIGIHUB-104212") // Jira Id for this test in Xray
     public void OltAdtranAutoCommissioningDTAGTest() {
 
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiDTAG);
@@ -131,6 +133,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-104213 OLT RI UI. Auto Commissioning SDX 6320 for GFNW user.")
+    @TmsLink("DIGIHUB-104213") // Jira Id for this test in Xray
     public void OltAdtranAutoCommissioningGFNWTest() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFNW);
         setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -142,6 +145,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-159699 OS&R UI. Auto Commissioning MA5600 for GFMM user.")
+    @TmsLink("DIGIHUB-159699") // Jira Id for this test in Xray
     public void OltAutoCommissioningGFMM_MA5600Test() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
@@ -153,6 +157,7 @@ public class OltAutoCommissioning extends GigabitTest {
     }
 
     @Test(description = "DIGIHUB-159663 OS&R UI. Auto Commissioning SDX_6320 for GFMM user.")
+    @TmsLink("DIGIHUB-159663") // Jira Id for this test in Xray
     public void OltAutoCommissioningGFMM_SDX_6320Test() {
         Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFMM);
         setCredentials(loginData.getLogin(), loginData.getPassword());
