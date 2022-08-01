@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.team.berlinium;
 
-import com.tsystems.tm.acc.ta.robot.A4ResourceOrderDirectFiberRobot;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.ResourceOrder;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderDirectFiberRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.OrderItemActionType;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.ResourceOrder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.qameta.allure.TmsLink;
@@ -15,15 +15,12 @@ import java.util.UUID;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_BAD_REQUEST_400;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getPrefixWithRandom;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertNotNull;
 
 public class A4ResourceOrderDirectFiberTest {
-
     private final A4ResourceOrderDirectFiberRobot orderDirectFiberRobot = new A4ResourceOrderDirectFiberRobot();
-
     private ResourceOrder ro;
     private String orderItemId;
-
 
     @BeforeMethod
     public void setup() {
@@ -41,7 +38,7 @@ public class A4ResourceOrderDirectFiberTest {
     @Test
     @Owner("DL_Berlinium@telekom.de")
     @TmsLink("DIGIHUB-153040")
-    @Description("Szenario 1: send RO with -add- and empty ressource order ID")
+    @Description("Szenario 1: send RO with -add- and empty resource order ID")
     public void test_post_ro() {
         // GIVEN
         ro.addOrderItemItem(orderDirectFiberRobot.createOrderItem(orderItemId, OrderItemActionType.ADD,null));
@@ -54,7 +51,7 @@ public class A4ResourceOrderDirectFiberTest {
     @Test
     @Owner("DL_Berlinium@telekom.de")
     @TmsLink("DIGIHUB-153040")
-    @Description("Szenario 3: send RO with -add- and request has filled ressource order ID")
+    @Description("Szenario 3: send RO with -add- and request has filled resource order ID")
     public void test_post_ro_with_roId() {
         // GIVEN
         ro.addOrderItemItem(orderDirectFiberRobot.createOrderItem(orderItemId, OrderItemActionType.ADD,null));
@@ -67,12 +64,11 @@ public class A4ResourceOrderDirectFiberTest {
     @Test
     @Owner("DL_Berlinium@telekom.de")
     @TmsLink("DIGIHUB-153040")
-    @Description("Szenario 2: send invalid RO without ressource order item")
+    @Description("Szenario 2: send invalid RO without resource order item")
     public void test_post_ro_without_orderitem() {
         // GIVEN
-
+        // resource order without any resource order item
         // THEN
         orderDirectFiberRobot.sendPostResourceOrderDirectFiber(ro, HTTP_CODE_BAD_REQUEST_400) ;
     }
-
 }

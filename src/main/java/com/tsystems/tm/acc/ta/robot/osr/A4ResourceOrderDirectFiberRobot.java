@@ -1,4 +1,4 @@
-package com.tsystems.tm.acc.ta.robot;
+package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderDirectFiberClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderDirectFiberMapper;
@@ -8,7 +8,6 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.ResourceRefOrValue;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_CREATED_201;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 
 @Slf4j
