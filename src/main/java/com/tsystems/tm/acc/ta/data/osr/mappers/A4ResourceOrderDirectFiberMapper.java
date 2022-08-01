@@ -43,24 +43,26 @@ public class A4ResourceOrderDirectFiberMapper {
                 .name("resource order direct fiber name");
     }
 
+
+
     public List<Characteristic> buildResourceCharacteristicList() {
         List<Characteristic> cList = new ArrayList<>();
 
-        addCharacteristic(LINE_ID, getRandomDigits(8), CHAR_VALUETYPE_STRING, cList);
-        addCharacteristic(NEG_UUID, UUID.randomUUID().toString(), CHAR_VALUETYPE_STRING, cList);
-        addCharacteristic(NEG_NAME, NEG_NAME_VALUE, CHAR_VALUETYPE_STRING, cList);
-        addCharacteristic(NE_PORTADRESSE_GF, NE_PORTADRESSE_GF_VALUE, CHAR_VALUETYPE_STRING, cList);
-        addCharacteristic(CRM_AUFTRAGSNUMMER, CRM_AUFTRAGSNUMMER_VALUE, CHAR_VALUETYPE_STRING, cList);
-        addCharacteristic(CRM_AUFTRAGSPOSITIONSNUMMER, CRM_AUFTRAGSPOSITIONSNUMMER_VALUE, CHAR_VALUETYPE_STRING, cList);
+        addCharacteristic(LINE_ID, getRandomDigits(8), cList);
+        addCharacteristic(NEG_UUID, UUID.randomUUID().toString(), cList);
+        addCharacteristic(NEG_NAME, NEG_NAME_VALUE, cList);
+        addCharacteristic(NE_PORTADRESSE_GF, NE_PORTADRESSE_GF_VALUE, cList);
+        addCharacteristic(CRM_AUFTRAGSNUMMER, CRM_AUFTRAGSNUMMER_VALUE, cList);
+        addCharacteristic(CRM_AUFTRAGSPOSITIONSNUMMER, CRM_AUFTRAGSPOSITIONSNUMMER_VALUE, cList);
         return cList;
     }
 
 
-    private void addCharacteristic(String name, Object value, String valueType, List<Characteristic> cList) {
+    private void addCharacteristic(String name, Object value, List<Characteristic> cList) {
         cList.add(new Characteristic()
                 .name(name)
                 .value(value)
-                .valueType(valueType)
+                .valueType(A4ResourceOrderDirectFiberMapper.CHAR_VALUETYPE_STRING)
         );
     }
 

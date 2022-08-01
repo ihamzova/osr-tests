@@ -2,7 +2,6 @@ package com.tsystems.tm.acc.ta.robot;
 
 import com.tsystems.tm.acc.ta.api.osr.A4ResourceOrderDirectFiberClient;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderDirectFiberMapper;
-import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.OrderItemActionType;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.direct.fiber.client.model.ResourceOrderItem;
@@ -17,12 +16,12 @@ public class A4ResourceOrderDirectFiberRobot {
     private final A4ResourceOrderDirectFiberClient internalClient = new A4ResourceOrderDirectFiberClient();
     private final A4ResourceOrderDirectFiberMapper directFiberMapper = new A4ResourceOrderDirectFiberMapper();
 
-    public String sendPostResourceOrderDirectFiber(ResourceOrder resourceOrder) {
+    public String sendPostResourceOrderDirectFiber(ResourceOrder resourceOrder, int statuscode) {
         final String roId = internalClient.getClient()
                 .resourceOrder()
                 .createResourceOrder()
                 .body(resourceOrder)
-                .execute(checkStatus(HTTP_CODE_CREATED_201)).getBody().asString();
+                .execute(checkStatus(statuscode)).getBody().asString();
 
         log.info("+++ Resource-Order-Diirect-Fiber ID: " + roId);
         resourceOrder.setId(roId);
@@ -33,21 +32,15 @@ public class A4ResourceOrderDirectFiberRobot {
         return directFiberMapper.buildResourceOrder();
     }
 
-    public void addOrderItem(String orderItemId, OrderItemActionType actionType, A4NetworkElementLink nelData, ResourceOrder ro) {
-        addOrderItem(orderItemId, actionType, nelData.getLbz(), ro);
-    }
-
-    public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro) {
+    public ResourceOrderItem createOrderItem(String orderItemId, OrderItemActionType actionType, String uuid_nsp) {
         final ResourceRefOrValue resource = new ResourceRefOrValue()
-                .name(nelLbz)
+                .id(uuid_nsp)
                 .resourceCharacteristic(directFiberMapper.buildResourceCharacteristicList());
 
-        final ResourceOrderItem orderItem = new ResourceOrderItem()
+        return new ResourceOrderItem()
                 .action(actionType)
                 .resource(resource)
                 .id(orderItemId);
-
-        ro.addOrderItemItem(orderItem);
     }
 
 }
