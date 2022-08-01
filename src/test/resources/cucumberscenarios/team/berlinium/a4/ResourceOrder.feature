@@ -27,8 +27,31 @@ Feature: Receive and process Resource Orders for A10NSP
       | A             | 100G_001           | 10ge 0/2           |
       | B             | 100G_001           | 0/0/1              |
 
-  @DIGIHUB-151803
+  @DIGIHUB-129737
   Scenario: Receive RO, 2 items - Sunny Day
+    When CAD@Sputnik sends a resource order with the following order items:
+      | NEL Reference | Action Type |
+      | A             | MODIFY      |
+      | B             | MODIFY      |
+    Then the request is responded with HTTP error code 201
+    And the resource order is saved in RO database
+    And the resource order state is "completed"
+    And all order item states are "completed"
+
+  @DIGIHUB-129737
+  Scenario: Receive RO, 2 items with Action Type NoChange - Sunny Day
+    When CAD@Sputnik sends a resource order with the following order items:
+      | NEL Reference | Action Type |
+      | A             | NOCHANGE    |
+      | B             | NOCHANGE    |
+    Then the request is responded with HTTP error code 201
+    And the resource order is saved in RO database
+    And the resource order state is "completed"
+    And all order item states are "completed"
+
+
+  @DIGIHUB-151803
+  Scenario: Receive RO, 2 items add - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Reference | Action Type |
       | A             | ADD         |
@@ -37,10 +60,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order is saved in RO database
     And the resource order state is "completed"
     And all order item states are "completed"
-    And 1 "GET" request was sent to the REBELL wiremock for NE "A"
-    And 1 "POST" request was sent to the A10NSP Inventory mock for the 1st order item
-    # Some checks for NEMO update notifications necessary?
-    # Some checks for property contents in NELs, TPs, NSPs necessary?
+
 
   @DIGIHUB-150006
   @team:berlinium
