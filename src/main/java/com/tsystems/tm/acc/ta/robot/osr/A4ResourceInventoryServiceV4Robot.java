@@ -36,6 +36,49 @@ public class A4ResourceInventoryServiceV4Robot {
                 .listNspFtthAccess()
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
+    @Step("List all Network Service Profile A10nsp v4 API")
+    public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4All() {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+    @Step("get one Network Service Profile A10nsp v4 API by uuid")
+    public NspA10Nsp getNetworkServiceProfilesA10NspV4ByUuid(String uuid) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .retrieveNspA10Nsp()
+                .idPath(uuid)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+    @Step("get a list of Network Service Profile A10nsp v4 API by itAccountingKey")
+    public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4ByItAccountingKey(String itAccountingKey) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .itAccountingKeyQuery(itAccountingKey)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+
+    @Step("get a list of Network Service Profile A10nsp v4 API by networkElementLinkUuid")
+    public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4ByNetworkElementLinkUuid(String networkElementLinkUuid) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .networkElementLinkUuidQuery(networkElementLinkUuid)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+
+    @Step("get a list of Network Service Profile A10nsp v4 API by limit")
+    public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4ByLimit(String itAccountingKey, String fields, int offset, int limit) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .itAccountingKeyQuery(itAccountingKey)
+                .offsetQuery(offset)
+                .limitQuery(limit)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
 
     @Step("Read one Network Service Profile Ftth Access from v4 API")
     public NspFtthAccess getNetworkServiceProfileFtthAccessV4ByUuid(String uuid) {
@@ -148,6 +191,45 @@ public class A4ResourceInventoryServiceV4Robot {
     public void checkIfAnyNetworkServiceProfileFtthAccessesExist(int minimalExpectedCount) {
         List<NspFtthAccess> nspList = getAllNetworkServiceProfilesFtthAccessV4();
         assertTrue(nspList.size() >= minimalExpectedCount);
+    }
+
+    @Step("Check if list of all existing Network Service Profiles A10nsp (v4 API) contains at least one entry")
+    public void checkIfAnyNetworkServiceProfileA10NspExist(int minimalExpectedCount) {
+        List<NspA10Nsp> nspList = getNetworkServiceProfilesA10NspV4All();
+        System.out.println("+++ nspList.size: "+nspList.size());
+        assertTrue(nspList.size() >= minimalExpectedCount);
+    }
+
+    @Step("Check Network Service Profiles A10nsp (v4 API) by uuid")
+    public void checkIfNetworkServiceProfileA10NspExistsByUuid(String uuid) {
+        NspA10Nsp nsp = getNetworkServiceProfilesA10NspV4ByUuid(uuid);
+        assertEquals(nsp.getId(), uuid);
+    }
+    @Step("Check Network Service Profiles A10nsp (v4 API) by itAccountingKey")
+    public void checkIfNetworkServiceProfileA10NspExistsByItAccountingKey(String itAccountingKey) {
+        List<String> nspV4List = getNetworkServiceProfilesA10NspV4ByItAccountingKey(itAccountingKey)
+                .stream()
+                .map(NspA10Nsp::getId)
+                .collect(Collectors.toList());
+        assertEquals(nspV4List.size(), 1);
+    }
+    // nspA10DataA.getNetworkElementLinkUuid()
+    @Step("Check Network Service Profiles A10nsp (v4 API) by networkElementLinkUuid")
+    public void checkIfNetworkServiceProfileA10NspExistsByNetworkElementLinkUuid(String networkElementLinkUuid) {
+        List<String> nspV4List = getNetworkServiceProfilesA10NspV4ByNetworkElementLinkUuid(networkElementLinkUuid)
+                .stream()
+                .map(NspA10Nsp::getId)
+                .collect(Collectors.toList());
+        assertEquals(nspV4List.size(), 1);
+    }
+
+    @Step("Check Network Service Profiles A10nsp (v4 API) by itAccountingKey")
+    public void checkIfNetworkServiceProfileA10NspGetWrongParameter(String itAccKey, String fields, int offset, int limit) {
+        List<String> nspV4List = getNetworkServiceProfilesA10NspV4ByLimit(itAccKey, fields, offset, limit)
+                .stream()
+                .map(NspA10Nsp::getId)
+                .collect(Collectors.toList());
+        assertEquals(nspV4List.size(), 1);
     }
 
     public void checkResourceRelationshipsByNetworkServiceProfileFtthAccess(A4NetworkServiceProfileFtthAccess nspData) {

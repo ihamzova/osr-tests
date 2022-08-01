@@ -167,6 +167,7 @@ public class A4ResourceInventoryMapper {
                 .carrierBsaReference("CarrierBsaReference")
                 .numberOfAssociatedNsps("noAssoNsps")
                 .itAccountingKey(UNDEFINED)
+                .networkElementLinkUuid(null)
                 .lacpMode("ACTIVE")
                 .dataRate("123")
                 .numberOfAssociatedNsps(UNDEFINED)
@@ -417,6 +418,8 @@ public class A4ResourceInventoryMapper {
 
         nspA10.setOperationalState(nspData.getOperationalState());
         nspA10.setLifecycleState(nspData.getLifecycleState());
+        nspA10.setItAccountingKey(nspData.getItAccountingKey());
+        nspA10.setNetworkElementLinkUuid(nspData.getNetworkElementLinkUuid());
 
         return nspA10;
     }
