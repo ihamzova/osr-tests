@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.ztcommissioning;
 
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +44,9 @@ public class OltInstallationPage {
     }
 
     @Step("ZTC Validate Url")
-    public OltInstallationPage validateUrl() {
-        assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout.intValue());
-        assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout.intValue());
-        return this;
+    public void validateUrl() {
+        assertUrlContainsWithTimeout(APP);
+        assertUrlContainsWithTimeout(ENDPOINT);
     }
 
     @Step("Start zero touch commissioning process")

@@ -24,6 +24,7 @@ import de.telekom.it.magic.api.keycloak.TokenProviderFactory;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.Assert;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,8 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.EMS_NBI_NAME_SDX6320_16;
-import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.SERVICE_OLT_RESOURCE_INVENTORY_UI_UPLINK_IMPORT;
+import static com.tsystems.tm.acc.ta.data.mercury.MercuryConstants.*;
 import static de.telekom.it.magic.api.keycloak.AuthorizationCodeTokenProviderKt.getProviderAuthorizationCodeTokenProvider;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -44,9 +44,9 @@ import static org.testng.Assert.assertTrue;
 @Slf4j
 public class OltCommissioningRobot {
 
-    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 40 * 60_000;
+    private static final Integer TIMEOUT_FOR_OLT_COMMISSIONING = 20 * 60_000;
     private static final Integer TIMEOUT_FOR_CARD_PROVISIONING = 20 * 60_000;
-    private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 40 * 60_000;
+    private static final Integer TIMEOUT_FOR_ADTRAN_PROVISIONING = 30 * 60_000;
     private static final Integer HOME_ID_POOL_PER_PORT = 0;
 
     private final AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
@@ -61,6 +61,12 @@ public class OltCommissioningRobot {
 
     @Step("Starts automatic olt commissioning process")
     public void startAutomaticOltCommissioning(OltDevice olt) {
+        startAutomaticOltCommissioning(olt,TIMEOUT_FOR_OLT_COMMISSIONING );
+        new OltDetailsPage().checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
+    }
+
+    @Step("Start automatic olt commissioning")
+    public void startAutomaticOltCommissioning(OltDevice olt, int timeout) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(olt);
@@ -68,15 +74,13 @@ public class OltCommissioningRobot {
         OltCommissioningPage oltCommissioningPage = oltSearchPage.pressAutoCommissionigButton();
 
         oltCommissioningPage.validateUrl();
-        oltCommissioningPage.startOltCommissioning(olt, TIMEOUT_FOR_OLT_COMMISSIONING);
+        oltCommissioningPage.startOltCommissioning(olt, timeout);
 
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
         ancpSessionStateTest();
         assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after Commissioning mismatch");
-        oltDetailsPage.openPortView(olt.getOltSlot());
-        assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "Port LifeCycleState after Commissioning mismatch");
-        oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
+        checkUIEthernetPortStates(olt);
     }
 
     @Owner("TMI")
@@ -129,6 +133,19 @@ public class OltCommissioningRobot {
 
     @Step("Starts manual olt commissioning process")
     public void startManualOltCommissioning(OltDevice olt) {
+        OltDetailsPage oltDetailsPage = startManualOltCommissioningWithoutAccessLines(olt);
+        //check AL Provisioning from device for adtran or from card for huawei
+        if (olt.getHersteller().equals("ADTRAN")) {
+            oltDetailsPage.startAccessLinesProvisioningFromDevice(TIMEOUT_FOR_ADTRAN_PROVISIONING);
+        } else {
+            oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
+        }
+
+        oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
+    }
+
+    @Step("Starts manual olt commissioning")
+    public OltDetailsPage startManualOltCommissioningWithoutAccessLines(OltDevice olt) {
         OltSearchPage oltSearchPage = OltSearchPage.openSearchPage();
         oltSearchPage.validateUrl();
         oltSearchPage = oltSearchPage.searchNotDiscoveredByParameters(olt);
@@ -157,17 +174,36 @@ public class OltCommissioningRobot {
         assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString(), "Device LifeCycleState after ANCP configuration is not in operating state");
         oltDetailsPage.openPortView(olt.getOltSlot());
         assertEquals(oltDetailsPage.getPortLifeCycleState(olt.getOltSlot(), olt.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString(), "Ethernet Port LifeCycleState after ANCP configuration is not in operating state");
+        checkUIEthernetPortStates(olt);
 
-        //check AL Provisioning from device for adtran or from card for huawei
-        if (olt.getHersteller().equals("ADTRAN")) {
-            oltDetailsPage.startAccessLinesProvisioningFromDevice(TIMEOUT_FOR_ADTRAN_PROVISIONING);
-        } else {
-            oltDetailsPage.startAccessLinesProvisioning(TIMEOUT_FOR_CARD_PROVISIONING);
-        }
-
-        oltDetailsPage.checkGponPortLifeCycleState(olt, DevicePortLifeCycleStateUI.OPERATING.toString());
+        return oltDetailsPage;
     }
 
+    @Step("Checks ethernet port states on UI after commissioning process")
+    public void checkUIEthernetPortStates(OltDevice oltDevice) {
+
+        OltDetailsPage detailsPage = new OltDetailsPage();
+        detailsPage.validateUrl();
+        detailsPage.openPortView(oltDevice.getOltSlot());
+
+        if(oltDevice.getBezeichnung().equals(EMS_NBI_NAME_SDX6320_16)) {
+            Assert.assertEquals(new OltDetailsPage().getPortLifeCycleState( null, oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            return;
+        }
+        int numberOfEthernetPorts = 2; // MA5600
+        if(oltDevice.getBezeichnung().equals(EMS_NBI_NAME_MA5800)) {
+            numberOfEthernetPorts = 4;
+        }
+
+        for (int port = 0; port < numberOfEthernetPorts; ++port) {
+            log.info("checkPortState() Port={}, Slot={}, PortLifeCycleState ={}", port, oltDevice.getOltSlot(), detailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), Integer.toString(port)));
+            if (oltDevice.getOltPort().equals((Integer.toString(port)))) {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), oltDevice.getOltPort()), DevicePortLifeCycleStateUI.OPERATING.toString());
+            } else {
+                Assert.assertEquals(detailsPage.getPortLifeCycleState(oltDevice.getOltSlot(), Integer.toString(port)), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+            }
+        }
+    }
 
     @Step("Checks olt data in olt-ri after commissioning process")
     public void checkOltCommissioningResult(OltDevice olt) {
@@ -255,42 +291,69 @@ public class OltCommissioningRobot {
                 .checkAncpSessionState();
     }
 
+    @Owner("Mercury")
+    @Step("Checks olt data in olt-ri after commissioning process on team environment")
+    public void checkOltCommissioningResultWithoutAccessLines(OltDevice oltDevice, Long compositePartyId ) {
+        String endSz = oltDevice.getEndsz();
+        final String KLS_ID_EXPECTED = "17056514";  // fix psl wiremock stubs
+
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(endSz).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
+
+        Assert.assertEquals(deviceList.size(), 1L, "OLT deviceList.size mismatch");
+        Device device = deviceList.get(0);
+        Assert.assertEquals(device.getEndSz(), endSz, "OLT EndSz mismatch");
+
+        Assert.assertEquals(device.getEmsNbiName(), oltDevice.getBezeichnung(), "EMS NBI name does not match");
+        Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType does not match");
+        Assert.assertEquals(device.getRelatedParty().get(0).getId(), compositePartyId.toString(), "composite partyId does not match");
+
+        OltDetailsPage oltDetailsPage = new OltDetailsPage();
+        oltDetailsPage.validateUrl();
+        Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
+        Assert.assertEquals(oltDetailsPage.getBezeichnung(), oltDevice.getBezeichnung());
+        if(!oltDetailsPage.getKlsID().equals(KLS_ID_EXPECTED)) {
+            Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (Mock)");
+        }
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    }
+
     @Step("Check uplink and ancp-session data from olt-uplink-management and ancp-configuration")
     public void checkUplink(OltDevice oltDevice) {
 
         // check uplink state
         List<Uplink> uplinkList = deviceResourceInventoryManagementClient.getClient().uplink().listUplink()
-                .portsEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
-        assertEquals(uplinkList.size(), 1L, "uplinkList.size missmatch");
+                                                                         .portsEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
+        assertEquals(uplinkList.size(), 1L, "uplinkList.size mismatch");
         assertEquals(uplinkList.get(0).getState(), UplinkState.ACTIVE, "UplinkState is not active");
 
         // check Slot Port configuration
-        assertEquals(uplinkList.get(0).getPortsEquipmentBusinessRef().size(), 2, "getPortsEquipmentBusinessRef.size missmatch");
+        assertEquals(uplinkList.get(0).getPortsEquipmentBusinessRef().size(), 2, "getPortsEquipmentBusinessRef.size mismatch");
 
         EquipmentBusinessRef equipmentBusinessRef = uplinkList.get(0).getPortsEquipmentBusinessRef().get(0);
         if (equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
-            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 0");
-            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 0");
+            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName mismatch 0");
+            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName mismatch 0");
         }
         if (equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
-            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 0");
-            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 0");
+            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName mismatch 0");
+            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName mismatch 0");
         }
         equipmentBusinessRef = uplinkList.get(0).getPortsEquipmentBusinessRef().get(1);
         if (equipmentBusinessRef.getDeviceType() == DeviceType.OLT) {
-            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName missmatch 1");
-            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName missmatch 1");
+            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getOltPort(), "OLT PortName mismatch 1");
+            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getOltSlot(), "OLT SlotName mismatch 1");
         }
         if (equipmentBusinessRef.getDeviceType() == DeviceType.BNG) {
-            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName missmatch 1");
-            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName missmatch 1");
+            assertEquals(equipmentBusinessRef.getPortName(), oltDevice.getBngDownlinkPort(), "BNG PortName mismatch 1");
+            assertEquals(equipmentBusinessRef.getSlotName(), oltDevice.getBngDownlinkSlot(), "BNG SlotName mismatch 1");
         }
 
         // check ANCP Session
         List<AncpSession> ancpSessionList = deviceResourceInventoryManagementClient.getClient().ancpSession().listAncpSession()
-                .accessNodeEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
-        assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size missmatch");
-        assertEquals(ancpSessionList.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus missmatch");
+                                                                                   .accessNodeEquipmentBusinessRefEndSzQuery(oltDevice.getEndsz()).executeAs(checkStatus(HTTP_CODE_OK_200));
+        assertEquals(ancpSessionList.size(), 1L, "ancpSessionList.size mismatch");
+        assertEquals(ancpSessionList.get(0).getConfigurationStatus(), "ACTIVE", "ANCP ConfigurationStatus mismatch");
 
     }
 
