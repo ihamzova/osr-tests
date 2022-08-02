@@ -28,7 +28,7 @@ Feature: Receive and process Resource Orders for A10NSP
       | B             | 100G_001           | 0/0/1              |
 
   @DIGIHUB-129737
-  Scenario: Receive RO, 2 items - Sunny Day
+  Scenario: Receive RO, 2 items with Action Type Modify - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Reference | Action Type |
       | A             | MODIFY      |
@@ -51,7 +51,7 @@ Feature: Receive and process Resource Orders for A10NSP
 
 
   @DIGIHUB-151803
-  Scenario: Receive RO, 2 items add - Sunny Day
+  Scenario: Receive RO, 2 items with Action Type Add - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Reference | Action Type |
       | A             | ADD         |
