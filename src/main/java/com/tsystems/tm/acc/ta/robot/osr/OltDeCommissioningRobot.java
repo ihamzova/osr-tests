@@ -7,6 +7,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.DeleteDevicePage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltDetailsPage;
 import com.tsystems.tm.acc.ta.pages.osr.oltcommissioning.OltSearchPage;
+import com.tsystems.tm.acc.ta.ui.selenide.SelenideScreenshotServiceKt;
 import com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.*;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Card;
 import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.v5_6_0.client.model.Device;
@@ -75,7 +76,6 @@ public class OltDeCommissioningRobot {
         DeleteDevicePage deleteDevicePage = new DeleteDevicePage();
         deleteDevicePage.validateUrl();
         deleteDevicePage.DeleteOltDevice();
-        //SelenideScreenshotServiceKt.takeScreenshot();
         Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
         checkDeviceIsDeleted(oltDevice.getEndsz());
     }
@@ -143,7 +143,10 @@ public class OltDeCommissioningRobot {
     @Step("Checks if a device for a given endSz does not exist in olt-resource-inventory")
     public void checkDeviceIsDeleted(String endSz) {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
-                .endSzQuery(endSz).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
+                .endSzQuery(endSz).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
+        if(deviceList.size() != 0) {
+            SelenideScreenshotServiceKt.takeScreenshot();
+        }
         Assert.assertEquals(deviceList.size(), 0L, "Device is present");
     }
 
