@@ -46,8 +46,7 @@ public class A4ResourceOrderMapper {
                 .vlanRangeUpper("3999");
     }
 
-    private QosList buildQosList() {
-        List<QosClass> qosClasses = new ArrayList<>();
+    private QosList buildQosList() {List<QosClass> qosClasses = new ArrayList<>();
 
         addQosClass("1", "0", "110", qosClasses);
         addQosClass("2", "1", "220", qosClasses);
