@@ -23,10 +23,10 @@ import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStat
 import static org.testng.Assert.assertEquals;
 
 public class OltDeCommissioningRobot {
-    private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 40 * 60_000;
+    private static final Integer TIMEOUT_FOR_CARD_DEPROVISIONING = 30 * 60_000;
 
-    private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 1_000;
-    private static final Integer WAIT_TIME_FOR_CARD_DELETION = 1_000;
+    private static final Integer WAIT_TIME_FOR_DEVICE_DELETION = 2_000;
+    private static final Integer WAIT_TIME_FOR_CARD_DELETION = 2_000;
 
     private final DeviceResourceInventoryManagementClient deviceResourceInventoryManagementClient = new DeviceResourceInventoryManagementClient();
     private final AccessLineResourceInventoryClient accessLineResourceInventoryClient = new AccessLineResourceInventoryClient();
@@ -141,11 +141,14 @@ public class OltDeCommissioningRobot {
     }
 
     @Step("Checks if a device for a given endSz does not exist in olt-resource-inventory")
-    public void checkDeviceIsDeleted(String endSz) {
+    public void checkDeviceIsDeleted(String endSz) throws InterruptedException {
         List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
                 .endSzQuery(endSz).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         if(deviceList.size() != 0) {
             SelenideScreenshotServiceKt.takeScreenshot();
+            Thread.sleep(WAIT_TIME_FOR_DEVICE_DELETION);
+            deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                    .endSzQuery(endSz).depthQuery(1).executeAs(checkStatus(HTTP_CODE_OK_200));
         }
         Assert.assertEquals(deviceList.size(), 0L, "Device is present");
     }
