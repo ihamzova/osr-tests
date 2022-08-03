@@ -25,16 +25,19 @@ import java.util.UUID;
 
 import static com.tsystems.tm.acc.data.osr.models.a4networkelement.A4NetworkElementCase.*;
 import static com.tsystems.tm.acc.data.osr.models.a4networkelementgroup.A4NetworkElementGroupCase.NetworkElementGroupL2Bsa;
-import static com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase.*;
+import static com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase.defaultNetworkElementLink;
+import static com.tsystems.tm.acc.data.osr.models.a4networkelementlink.A4NetworkElementLinkCase.networkElementLinkLcsInstalling;
 import static com.tsystems.tm.acc.data.osr.models.a4networkelementport.A4NetworkElementPortCase.*;
 import static com.tsystems.tm.acc.data.osr.models.a4networkserviceprofilea10nsp.A4NetworkServiceProfileA10NspCase.*;
 import static com.tsystems.tm.acc.data.osr.models.a4terminationpoint.A4TerminationPointCase.*;
-import static com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase.*;
+import static com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase.uewegA;
+import static com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase.uewegB;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_ORDER_ORCHESTRATOR_MS;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.*;
-import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderItemStateType.*;
+import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderItemStateType.COMPLETED;
+import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderItemStateType.REJECTED;
 import static org.testng.Assert.assertNotNull;
 
 @ServiceLog({A4_RESOURCE_ORDER_ORCHESTRATOR_MS})
@@ -403,16 +406,6 @@ public class A4ResourceOrderTest {
         // GIVEN
         a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
-        // WHEN
-        sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("Modify is not implemented")
-    public void testModifyNotImplemented() {
-        // GIVEN
-        a4RobotRO.addOrderItemModify(orderItemId, a4NEL, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
     }
