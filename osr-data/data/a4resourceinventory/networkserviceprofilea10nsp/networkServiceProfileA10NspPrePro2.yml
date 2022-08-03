@@ -4,3 +4,4 @@ values:
   uuid: "" # don't set! Filled automatically
   operationalState: "NOT_WORKING"
   lifecycleState: "PLANNING"
+  itAccountingKey: "itAccountingKey-${randomLong, 100000, 999999}"

@@ -5,6 +5,7 @@ import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.api.TerminationPointApi;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.service.v4.client.model.*;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.*;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
+import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.voidCheck;
 import static org.testng.Assert.*;
 
 public class A4ResourceInventoryServiceV4Robot {
@@ -36,6 +38,7 @@ public class A4ResourceInventoryServiceV4Robot {
                 .listNspFtthAccess()
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
+
     @Step("List all Network Service Profile A10nsp v4 API")
     public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4All() {
         return a4ResourceInventoryService.getClient()
@@ -43,6 +46,7 @@ public class A4ResourceInventoryServiceV4Robot {
                 .listNspA10Nsp()
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
+
     @Step("get one Network Service Profile A10nsp v4 API by uuid")
     public NspA10Nsp getNetworkServiceProfilesA10NspV4ByUuid(String uuid) {
         return a4ResourceInventoryService.getClient()
@@ -51,6 +55,16 @@ public class A4ResourceInventoryServiceV4Robot {
                 .idPath(uuid)
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
+
+    @Step("get one Network Service Profile A10nsp v4 API by uuid")
+    public Response getNetworkServiceProfilesA10NspV4ByUuidWithoutChecks(String uuid) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .retrieveNspA10Nsp()
+                .idPath(uuid)
+                .execute(voidCheck());
+    }
+
     @Step("get a list of Network Service Profile A10nsp v4 API by itAccountingKey")
     public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4ByItAccountingKey(String itAccountingKey) {
         return a4ResourceInventoryService.getClient()
@@ -60,6 +74,15 @@ public class A4ResourceInventoryServiceV4Robot {
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
+    @Step("get a list of Network Service Profile A10nsp v4 API by itAccountingKey")
+    public Response getNetworkServiceProfilesA10NspV4ByItAccountingKeyWithoutChecks(String itAccountingKey) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .itAccountingKeyQuery(itAccountingKey)
+                .execute(voidCheck());
+    }
+
     @Step("get a list of Network Service Profile A10nsp v4 API by networkElementLinkUuid")
     public List<NspA10Nsp> getNetworkServiceProfilesA10NspV4ByNetworkElementLinkUuid(String networkElementLinkUuid) {
         return a4ResourceInventoryService.getClient()
@@ -67,6 +90,15 @@ public class A4ResourceInventoryServiceV4Robot {
                 .listNspA10Nsp()
                 .networkElementLinkUuidQuery(networkElementLinkUuid)
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+
+    @Step("get a list of Network Service Profile A10nsp v4 API by networkElementLinkUuid")
+    public Response getNetworkServiceProfilesA10NspV4ByNetworkElementLinkUuidWithoutChecks(String networkElementLinkUuid) {
+        return a4ResourceInventoryService.getClient()
+                .nspA10Nsp()
+                .listNspA10Nsp()
+                .networkElementLinkUuidQuery(networkElementLinkUuid)
+                .execute(voidCheck());
     }
 
     @Step("get a list of Network Service Profile A10nsp v4 API by limit")
@@ -196,7 +228,6 @@ public class A4ResourceInventoryServiceV4Robot {
     @Step("Check if list of all existing Network Service Profiles A10nsp (v4 API) contains at least one entry")
     public void checkIfAnyNetworkServiceProfileA10NspExist(int minimalExpectedCount) {
         List<NspA10Nsp> nspList = getNetworkServiceProfilesA10NspV4All();
-        System.out.println("+++ nspList.size: "+nspList.size());
         assertTrue(nspList.size() >= minimalExpectedCount);
     }
 
@@ -205,6 +236,7 @@ public class A4ResourceInventoryServiceV4Robot {
         NspA10Nsp nsp = getNetworkServiceProfilesA10NspV4ByUuid(uuid);
         assertEquals(nsp.getId(), uuid);
     }
+
     @Step("Check Network Service Profiles A10nsp (v4 API) by itAccountingKey")
     public void checkIfNetworkServiceProfileA10NspExistsByItAccountingKey(String itAccountingKey) {
         List<String> nspV4List = getNetworkServiceProfilesA10NspV4ByItAccountingKey(itAccountingKey)
@@ -213,6 +245,7 @@ public class A4ResourceInventoryServiceV4Robot {
                 .collect(Collectors.toList());
         assertEquals(nspV4List.size(), 1);
     }
+
     // nspA10DataA.getNetworkElementLinkUuid()
     @Step("Check Network Service Profiles A10nsp (v4 API) by networkElementLinkUuid")
     public void checkIfNetworkServiceProfileA10NspExistsByNetworkElementLinkUuid(String networkElementLinkUuid) {

@@ -152,6 +152,7 @@ public class A4ResourceInventoryMapper {
         return new NetworkServiceProfileA10NspDto()
                 .uuid(UUID.randomUUID().toString()) // Unique constraint for TPs
                 .terminationPointA10NspUuid(null) // has to be set to existing TP in calling method
+                .networkElementLinkUuid(null)
                 .href("HREF")
                 .specificationVersion("1")
                 .virtualServiceProvider("a Virtual Service Provider")
@@ -167,7 +168,6 @@ public class A4ResourceInventoryMapper {
                 .carrierBsaReference("CarrierBsaReference")
                 .numberOfAssociatedNsps("noAssoNsps")
                 .itAccountingKey(UNDEFINED)
-                .networkElementLinkUuid(null)
                 .lacpMode("ACTIVE")
                 .dataRate("123")
                 .numberOfAssociatedNsps(UNDEFINED)
@@ -401,7 +401,7 @@ public class A4ResourceInventoryMapper {
     public NetworkServiceProfileFtthAccessDto getNspWithoutOntLastRegisteredOnWorking() {
         NetworkServiceProfileFtthAccessDto nspFtth = getDefaultNetworkServiceProfileFtthAccessData();
         nspFtth.setOltPortOntLastRegisteredOn(null);
-        nspFtth.setOperationalState("WORKING");
+        nspFtth.setOperationalState(WORKING);
         return nspFtth;
     }
 

@@ -27,7 +27,7 @@ import static org.testng.Assert.*;
 @Slf4j
 public class ResourceOrderSteps {
 
-    final A4ResourceOrderRobot resOrder;
+    private final A4ResourceOrderRobot resOrder;
     private final TestContext testContext;
 
     public ResourceOrderSteps(TestContext testContext,

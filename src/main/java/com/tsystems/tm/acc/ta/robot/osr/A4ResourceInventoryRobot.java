@@ -217,6 +217,15 @@ public class A4ResourceInventoryRobot {
                 .execute(voidCheck());
     }
 
+    @Step("Delete existing Network Service Profile (A10NSP) from A4 resource inventory without check")
+    public void deleteNetworkServiceProfileA10NspWithoutCheck(String uuid) {
+        a4ResourceInventory.getClient()
+                .networkServiceProfilesA10Nsp()
+                .deleteNetworkServiceProfileA10Nsp()
+                .uuidPath(uuid)
+                .execute(voidCheck());
+    }
+
     @Step("Delete all Network Service Profiles (FTTH Access) connected to given Termination Point")
     public void deleteNetworkServiceProfilesFtthAccessConnectedToTerminationPoint(String uuidTp) {
         List<NetworkServiceProfileFtthAccessDto> nspList = getNetworkServiceProfilesFtthAccessByTerminationPoint(uuidTp);

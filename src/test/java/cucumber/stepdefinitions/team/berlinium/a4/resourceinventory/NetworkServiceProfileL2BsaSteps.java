@@ -10,6 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
 import static org.testng.Assert.assertNotNull;
@@ -94,6 +95,17 @@ public class NetworkServiceProfileL2BsaSteps {
     @Given("a/another NSP L2BSA {string} with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspL2BsaWithLineIDIsExistingInA4ResourceInventoryForTheTP(String nspAlias, String operationalState, String lifecycleState, String tpAlias) {
         createNspL2BsaWithStates(nspAlias, operationalState, lifecycleState, tpAlias);
+    }
+
+    @Given("no NSP L2BSA( connected to the TP)( exists)( in A4 resource inventory)")
+    public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
+        NetworkServiceProfileL2BsaDto nspL2Bsa = new NetworkServiceProfileL2BsaDto();
+        nspL2Bsa.setUuid(UUID.randomUUID().toString());
+
+        // Make sure no old test data is in the way (to avoid colliding unique constraints)
+        a4ResInv.deleteNetworkServiceProfileL2BsaWithoutCheck(nspL2Bsa.getUuid());
+
+        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
     }
 
 
