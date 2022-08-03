@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static org.testng.Assert.assertEquals;
 
 
@@ -44,7 +45,6 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     private A4NetworkElementPort nepDataB;
     private A4NetworkElementPort nepDataC;
     private A4TerminationPoint tpDataA;
-    private A4TerminationPoint tpA10DataA;
     private A4NetworkElementLink nelData;
     private A4NetworkServiceProfileFtthAccess nspFtthDataA;
     private A4NetworkServiceProfileFtthAccess nspFtthDataB;
@@ -66,7 +66,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
                 .get(A4TerminationPointCase.TerminationPointB);
         A4TerminationPoint tpDataC = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.terminationPointFtthAccessPrePro);
-        tpA10DataA = osrTestContext.getData().getA4TerminationPointDataProvider()
+        A4TerminationPoint tpA10DataA = osrTestContext.getData().getA4TerminationPointDataProvider()
                 .get(A4TerminationPointCase.defaultTerminationPointA10Nsp);
         nepDataA = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.defaultNetworkElementPort);
@@ -84,8 +84,8 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
                 .get(A4NetworkServiceProfileFtthAccessCase.NetworkServiceProfileFtthAccessL2Bsa);
         nspA10DataA = osrTestContext.getData().getA4NetworkServiceProfileA10NspDataProvider()
                 .get(A4NetworkServiceProfileA10NspCase.defaultNetworkServiceProfileA10Nsp);
-        nspA10DataA.setItAccountingKey("itAccKey");
-        nspA10DataA.setNetworkElementLinkUuid("test-nel-uuid");
+        nspA10DataA.setItAccountingKey("itAccKey" + getRandomDigits(6));
+        nspA10DataA.setNetworkElementLinkUuid("test-nel-uuid" + getRandomDigits(6));
 
         // Ensure that no old test data is in the way
         tearDown();
@@ -116,6 +116,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         a4ResourceInventoryRobot.deleteA4NetworkElementsRecursively(neDataB);
         a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataA, neDataA);
         a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataB, neDataB);
+        a4ResourceInventoryRobot.deleteA4NetworkElementPortsRecursively(nepDataC, neDataB);
         a4ResourceInventoryRobot.deleteNspFtthAccess(nspFtthDataA);
         a4ResourceInventoryRobot.deleteNspFtthAccess(nspFtthDataB);
         a4ResourceInventoryRobot.deleteNspFtthAccess(nspFtthDataC);
@@ -174,8 +175,8 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     @TmsLink("DIGIHUB-76377")
     public void readTerminationPointFromA4ApiByCBR() {
         List<TerminationPoint> tpV4UuidList = a4ResourceInventoryServiceV4Robot.checkIfTerminationPointExistsBy(null, tpDataA.getCarrierBsaReference());
-        System.out.println("+++ tpV4UuidList.size(): "+tpV4UuidList.size());
-        assert(tpV4UuidList.size() >= 1);
+        System.out.println("+++ tpV4UuidList.size(): " + tpV4UuidList.size());
+        assert (tpV4UuidList.size() >= 1);
         assertEquals(tpV4UuidList.get(0).getCarrierBsaReference(), tpDataA.getCarrierBsaReference());
     }
 
@@ -218,6 +219,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     public void readNetworkServiceProfileA10NspByUuid() {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileA10NspExistsByUuid(nspA10DataA.getUuid());
     }
+
     @Test(description = "DIGIHUB-76376 Read Network Service Profile A10nsp from resource inventory service v4 api")
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxx")
@@ -233,6 +235,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
     public void readNetworkServiceProfileA10NspByNetworkElementLinkUuid() {
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileA10NspExistsByNetworkElementLinkUuid(nspA10DataA.getNetworkElementLinkUuid());
     }
+
     @Test(description = "DIGIHUB-76376 Read Network Service Profile A10nsp from resource inventory service v4 api")
     @Owner("heiko.schwanke@t-systems.com")
     @TmsLink("DIGIHUB-xxx")
@@ -241,6 +244,7 @@ public class A4ResourceInventoryServiceV4Test extends GigabitTest {
         // fields, Offset, Limit are not implemented in ris actually
         a4ResourceInventoryServiceV4Robot.checkIfNetworkServiceProfileA10NspGetWrongParameter(nspA10DataA.getItAccountingKey(), "a, b", 7, 1);
     }
+
     @Test(description = "DIGIHUB-xxx Read Network Service Profile Ftth Access from resource inventory service v4 api")
     @Owner("juergen.mayer@t-systems.com")
     @TmsLink("DIGIHUB-xxx")

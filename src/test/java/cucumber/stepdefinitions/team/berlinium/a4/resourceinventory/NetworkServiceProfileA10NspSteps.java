@@ -3,7 +3,6 @@ package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -43,20 +42,30 @@ public class NetworkServiceProfileA10NspSteps {
         createNspA10NspWithStates(DEFAULT, operationalState, lifecycleState, DEFAULT);
     }
 
+    @Given("a/another NSP A10NSP with itAccountingKey {string} and NetworkElementLinkUuid {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nspWithItAccountingKeyAndNetworkElementLinkUuid(String itAccountingKey, String networkElementLinkUuid) {
+        createNspA10NspWithItAccountingKeyAndNelUuid(DEFAULT, itAccountingKey, networkElementLinkUuid, DEFAULT);
+    }
+
+    @Given("a/another NSP A10NSP {string} with itAccountingKey {string} and NetworkElementLinkUuid {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nspWithItAccountingKeyAndNetworkElementLinkUuid(String nspAlias, String itAccountingKey, String networkElementLinkUuid) {
+        createNspA10NspWithItAccountingKeyAndNelUuid(nspAlias, itAccountingKey, networkElementLinkUuid, DEFAULT);
+    }
+
     @Given("a NSP A10NSP {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspA10nsp(String nspAlias, String tpAlias) {
         createNspA10Nsp(nspAlias, tpAlias);
     }
 
-    @Given("no NSP L2BSA( connected to the TP)( exists)( in A4 resource inventory)")
-    public void givenNoNspL2BsaExistsInA4ResourceInventoryForTheTP() {
-        NetworkServiceProfileL2BsaDto nspL2Bsa = new NetworkServiceProfileL2BsaDto();
-        nspL2Bsa.setUuid(UUID.randomUUID().toString());
+    @Given("no NSP A10NSP( connected to the TP)( exists)( in A4 resource inventory)")
+    public void givenNoNspA10NspExistsInA4ResourceInventoryForTheTP() {
+        NetworkServiceProfileA10NspDto nspA10Nsp = new NetworkServiceProfileA10NspDto();
+        nspA10Nsp.setUuid(UUID.randomUUID().toString());
 
-        // Make sure no old test data is in the way (to avoid colliding unique constraints)
-        a4ResInv.deleteNetworkServiceProfileL2BsaWithoutCheck(nspL2Bsa.getUuid());
+        // Make sure the NSP really doesn't exist
+        a4ResInv.deleteNetworkServiceProfileA10NspWithoutCheck(nspA10Nsp.getUuid());
 
-        testContext.getScenarioContext().setContext(Context.A4_NSP_L2BSA, nspL2Bsa);
+        testContext.getScenarioContext().setContext(Context.A4_NSP_A10NSP, nspA10Nsp);
     }
 
     @Given("a/another NSP A10NSP with operationalState {string} and lifecycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
@@ -136,6 +145,15 @@ public class NetworkServiceProfileA10NspSteps {
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
         nspA10nsp.setOperationalState(opState);
         nspA10nsp.setLifecycleState(lcState);
+
+        persistNspA10Nsp(nspAlias, nspA10nsp);
+    }
+
+    private void createNspA10NspWithItAccountingKeyAndNelUuid(String nspAlias, String itAccountingKey, String nelUuid, String tpAlias) {
+        // ACTION
+        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+        nspA10nsp.setItAccountingKey(itAccountingKey);
+        nspA10nsp.setNetworkElementLinkUuid(nelUuid);
 
         persistNspA10Nsp(nspAlias, nspA10nsp);
     }
