@@ -11,6 +11,7 @@ import com.tsystems.tm.acc.data.osr.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.osr.models.uewegdata.UewegDataCase;
 import com.tsystems.tm.acc.ta.data.osr.models.*;
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderDetailPageRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
@@ -36,6 +37,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Selenide.$;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.PUBLIC_REFERENCE_ID;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
@@ -159,7 +161,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, all checkboxes without publicReferenceId")
     public void testRoSearchAllCheckboxesWithoutPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
-
+        a4ResourceOrderSearchPageRobot.clickA10NSPResourceOrder();
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
@@ -197,9 +199,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         assertEquals(roCollection.size() / numberOfROColumns, sortedRoList.size());
         // assertEquals(roCollection.get(0).innerText(), sortedRoList.get(0).getId()); // RO-ID
-        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getId()); // RO-ID
-        assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
-        assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
+        assertEquals(roCollection.get(1).innerText().trim(), sortedRoList.get(0).getId().trim()); // RO-ID
+        assertEquals(roCollection.get(2).innerText().trim(), sortedRoList.get(0).getExternalId().trim()); // ext ID
+        assertEquals(roCollection.get(5).innerText().trim(), sortedRoList.get(0).getOrderDate().trim()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
@@ -215,10 +217,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
         // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText().trim(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -228,6 +230,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, no checkbox without public reference id")
     public void testRoSearchNoCheckboxWithoutPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
+        a4ResourceOrderSearchPageRobot.clickA10NSPResourceOrder();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(SleeperInSec);  // wait for result
 
@@ -261,9 +264,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of filtered ROs in DB : " + filteredRoList.size());
 
         assertEquals(roCollection.size() / numberOfROColumns, sortedRoList.size());
-        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getId()); // RO-ID
-        assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
-        assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
+        assertEquals(roCollection.get(1).innerText().trim(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(2).innerText().trim(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(5).innerText().trim(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
@@ -279,10 +282,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
         // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText().trim(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -292,6 +295,7 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, no checkbox with public reference id")
     public void testRoSearchNoCheckboxWithPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
+        a4ResourceOrderSearchPageRobot.clickA10NSPResourceOrder();
         a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
         sleepForSeconds(8);  // wait for result
@@ -326,9 +330,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of filtered ROs in DB : " + filteredRoList.size());
 
         assertEquals(roCollection.size() / numberOfROColumns, sortedRoList.size());
-        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getId()); // RO-ID
-        assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
-        assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
+        assertEquals(roCollection.get(1).innerText().trim(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(2).innerText().trim(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(5).innerText().trim(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
@@ -345,10 +349,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
         // assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText().trim(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
 
     }
 
@@ -358,6 +362,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
     @Description("test RO search page of A4 browser, completed with publicReferenceId")
     public void testRoSearchCompletedWithPublicReferenceId() {
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
+
+        a4ResourceOrderSearchPageRobot.clickA10NSPResourceOrder();
         a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.selectCompleted();
         a4ResourceOrderSearchPageRobot.clickRoSearchButton();
@@ -390,9 +396,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // search-page
         assertEquals(roCollection.size() / numberOfROColumns, filteredRoList.size());
-        assertEquals(roCollection.get(1).innerText(), sortedRoList.get(0).getId()); // RO-ID
-        assertEquals(roCollection.get(2).innerText(), sortedRoList.get(0).getExternalId()); // ext ID
-        assertEquals(roCollection.get(5).innerText(), sortedRoList.get(0).getOrderDate()); // Order Date
+        assertEquals(roCollection.get(1).innerText().trim(), sortedRoList.get(0).getId()); // RO-ID
+        assertEquals(roCollection.get(2).innerText().trim(), sortedRoList.get(0).getExternalId()); // ext ID
+        assertEquals(roCollection.get(5).innerText().trim(), sortedRoList.get(0).getOrderDate()); // Order Date
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
@@ -409,10 +415,10 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         // detail-page table
         //  assertEquals(roiCollection.size()/8, Objects.requireNonNull(sortedRoList.get(0).getOrderItem()).size());// different number of columns
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText().trim(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
     }
 
     @Test
@@ -430,6 +436,8 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
 
         ro.setId(roId);
         a4ResourceOrderSearchPageRobot.openRoSearchPage();
+
+        a4ResourceOrderSearchPageRobot.clickA10NSPResourceOrder();
         a4ResourceOrderSearchPageRobot.enterRoPublicReferenceId(publicReferenceId);
         a4ResourceOrderSearchPageRobot.selectInProgress();
         a4ResourceOrderSearchPageRobot.selectRejected();
@@ -441,9 +449,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         System.out.println("+++ number of ROs in UI : " + roCollection.size() / numberOfROColumns);
 
         // search-page
-        assertEquals(roCollection.get(1).innerText(), ro.getId()); // RO-ID
-        assertEquals(roCollection.get(2).innerText(), ro.getExternalId()); // ext ID
-        assertEquals(roCollection.get(3).innerText(), publicReferenceId); // publicReferenceId
+        assertEquals(roCollection.get(1).innerText().trim(), ro.getId()); // RO-ID
+        assertEquals(roCollection.get(2).innerText().trim(), ro.getExternalId()); // ext ID
+        assertEquals(roCollection.get(3).innerText().trim(), publicReferenceId); // publicReferenceId
 
         a4ResourceOrderSearchPageRobot.clickDetailLinkForFirstROInSearchResultTable();
         ElementsCollection roiCollection = a4ResourceOrderDetailPageRobot.getRoiElementsCollection();
@@ -456,9 +464,9 @@ public class A4ResourceOrderSearchPageTest extends GigabitTest {
         assertEquals(a4ResourceOrderDetailPageRobot.readExternalOrderId(), ro.getExternalId());
         assertEquals(a4ResourceOrderDetailPageRobot.readStatus(), ResourceOrderItemStateType.REJECTED.toString());
 
-        assertEquals(roiCollection.get(0).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
-        assertEquals(roiCollection.get(1).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
-        assertEquals(roiCollection.get(2).innerText(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
-        assertEquals(roiCollection.get(3).innerText(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
+        assertEquals(roiCollection.get(0).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getId()); //roi-id
+        assertEquals(roiCollection.get(1).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getAction());
+        assertEquals(roiCollection.get(2).innerText().trim(), Objects.requireNonNull(Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getResourceRefOrValueName())); // lbz
+        assertEquals(roiCollection.get(3).innerText().trim(), Objects.requireNonNull(resourceOrderDto.getOrderItem()).get(0).getState());
     }
 }

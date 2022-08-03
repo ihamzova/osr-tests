@@ -51,10 +51,8 @@ public class A4ResourceInventoryNegDetailsRobot {
         A4ResourceInventoryNegDetailsPage.login();     //TODO: warum wird hier die Klasse verwendet?
     }
 
-    public ElementsCollection getNeElementsCollection() {
-        return $(A4ResourceInventoryNegDetailsPage.NELIST_SEARCH_RESULT_TABLE_LOCATOR)
-                .findAll(By.xpath("tr/td"));
-    }
+
+
 
     @Step("Check details and table for network element group")
     public void checkNegDetailsAndTableContents(A4NetworkElementGroup negData) {
@@ -76,17 +74,6 @@ public class A4ResourceInventoryNegDetailsRobot {
 
         // check ne list  data in table
 
-/*
-        NetworkElementDetails neDetailsExpectedListOf1Row =  neDetailsExpectedList.get(0);
-        assertEquals(neDetailsExpectedListOf1Row.getLogicalLabel(), getTextOfElementInTable("tdLogicalLabel0"));
-        assertEquals(neDetailsExpectedListOf1Row.getPhysicalLabel(), getTextOfElementInTable("tdPhysicalLabel0"));
-        assertEquals(neDetailsExpectedListOf1Row.getLsz(), getTextOfElementInTable("tdLsz0"));
-        assertEquals(neDetailsExpectedListOf1Row.getUewegeId(), getTextOfElementInTable("tdUewegeId0"));
-        assertEquals(neDetailsExpectedListOf1Row.getLbz(), getTextOfElementInTable("tdLbz0"));
-        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleCategory(),getTextOfElementInTable("tdCategory0"));
-        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleVpsz(), getTextOfElementInTable("tdVpsz0"));
-
-*/
 
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeList4NEGCollection(); // UI result
         sleepForSeconds(4);  // wait for result
@@ -160,10 +147,6 @@ public class A4ResourceInventoryNegDetailsRobot {
     }
 
 
-
-    public String getUUiOfFirstNeOnUi() {
-       return getNeElementsCollection().get(1).innerHtml();
-    }
 
 }
 

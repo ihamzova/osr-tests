@@ -38,7 +38,7 @@ public class A4ResourceOrderSearchPage {
     public static final By RO_TABLE_ROW_1 = By.id("tr0");
 
     @Getter
-    public static final By RO_DETAIL_LINK_LOCATOR_1 = By.id("linkRO0");
+    public static final By RO_DETAIL_LINK_LOCATOR_1 = By.id("linkResourceOrderDetails0");
 
 
     @Getter
