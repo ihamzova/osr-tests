@@ -3,6 +3,8 @@ package com.tsystems.tm.acc.ta.pages.osr.networkswitching;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import com.tsystems.tm.acc.ta.data.osr.models.AccessLineManagementTableElement;
+import com.tsystems.tm.acc.ta.data.osr.models.NetworkSwitchingUplinkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
 import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import com.tsystems.tm.acc.ta.helpers.osr.logs.TimeoutBlock;
@@ -22,6 +24,7 @@ import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 @Slf4j
@@ -81,9 +84,11 @@ public class NetworkSwitchingPage {
     private static final By PROCESS_INFO_TAB = byQaData("process-tab");
 
     private static final By ACTIONS_DROPDOWN = byQaData("actions-dropdown");
+    private static final By DETAILED_INFO = byQaData("subpackages-tab");
 
     private static final By NOTIFICATION = byXpath("//h2[@role = 'alert']");
     private static final By CLOSE_NOTIFICATION_BUTTON = byXpath("//*[@role='alert']/button");
+    private static final By UPLINKS_ERROR_MESSAGE = byXpath("//*[contains(@class, 'error-message')]");
     private static final By PACKAGE_POLLING_PHASE = byXpath("//*[@class='package-polling--phase");
 
     private static final By PACKAGE_STATUS = byXpath("//*[@class='package-info']");
@@ -189,18 +194,41 @@ public class NetworkSwitchingPage {
     @Step("Start NE2 Preparation")
     public NetworkSwitchingPage startNe2Preparation(String endSz) {
         switchToNe2Switching();
-        getUplinkInformation(endSz);
+        clickGetUplinks(endSz);
         clickPrepareButton();
         assertTrue(getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"));
         closeNotificationButton();
         return this;
     }
 
-    @Step("Get Uplink information")
-    public NetworkSwitchingPage getUplinkInformation(String endSz) {
+    @Step("Click Get Uplinks button")
+    public NetworkSwitchingPage clickGetUplinks(String endSz) {
         fillInputField($(SOURCE_ENDSZ_INPUT), endSz);
         $(DEVICE_INFORMATION).click();
         return this;
+    }
+
+    @Step("Collect information about Uplinks")
+    public List<NetworkSwitchingUplinkElement> getUplinkInformation() {
+        ElementsCollection uplinks = $$x("//*[contains(@class, 'uplink-container')]");
+
+        return uplinks.stream().map(element ->{
+            NetworkSwitchingUplinkElement networkSwitchingUplinkElement = new NetworkSwitchingUplinkElement();
+            SelenideElement radio = element.$x(".//div[@class='radio']/input");
+     //       boolean checked = Boolean.parseBoolean(radio.$("input[type='radio']").getAttribute("checked"));
+            String state = element.$x(".//*[contains(@class, 'uplink')]//*[@class='state']//p").getText().trim();
+            String endSz = element.$$x(".//*[contains(@class, 'uplink')]//*[@class='device']//*[@class='device__item']//p").get(0).getText();
+            String port = element.$$x(".//*[contains(@class, 'uplink')]//*[@class='device']//*[@class='device__item']//p").get(2).getText();
+
+            PortProvisioning uplink = new PortProvisioning();
+            uplink.setEndSz(endSz);
+            uplink.setPortNumber(port);
+
+            networkSwitchingUplinkElement.setRadio(radio);
+            networkSwitchingUplinkElement.setUplink(uplink);
+            networkSwitchingUplinkElement.setState(state);
+            return networkSwitchingUplinkElement;
+        }).collect(Collectors.toList());
     }
 
     @Step("Click Prepare button")
@@ -299,6 +327,35 @@ public class NetworkSwitchingPage {
         return this;
     }
 
+    @Step("Click Detailed info button")
+    public NetworkSwitchingPage clickDetailedInfoButton() {
+        $(DETAILED_INFO).click();
+        return this;
+    }
+
+    @Step("Check Source and Target Devices")
+    public void checkSourceAndTargetDevices(List<NetworkSwitchingUplinkElement> uplinksInfo) {
+        NetworkSwitchingUplinkElement activeUplink = uplinksInfo.stream()
+                .filter(uplink -> uplink.getState().equals("ACTIVE")).collect(Collectors.toList()).get(0);
+        NetworkSwitchingUplinkElement plannedUplink = uplinksInfo.stream()
+                .filter(uplink -> uplink.getState().equals("PLANNED"))
+                .collect(Collectors.toList()).get(0);
+
+        PortProvisioning sourceBng = new PortProvisioning();
+        PortProvisioning targetBng = new PortProvisioning();
+        String sourceBngDevice = $x("//*[contains(text(), 'Von BNG')]/following-sibling::p").getText();
+        String targetBngDevice = $x("//*[contains(text(), 'Auf BNG')]/following-sibling::p").getText();
+
+        sourceBng.setEndSz(sourceBngDevice.split(" /")[0].trim());
+        sourceBng.setPortNumber(sourceBngDevice.split(" /")[2].trim());
+
+        targetBng.setEndSz(targetBngDevice.split(" /")[0].trim());
+        targetBng.setPortNumber(targetBngDevice.split(" /")[2].trim());
+
+        assertEquals(activeUplink.getUplink(), sourceBng);
+        assertEquals(plannedUplink.getUplink(), targetBng);
+    }
+
     @Step("Click search tab")
     public NetworkSwitchingPage clickSearchTab() {
         $(SEARCH_TAB).click();
@@ -329,6 +386,11 @@ public class NetworkSwitchingPage {
         return this;
     }
 
+    @Step("Get Preparation button")
+    public SelenideElement getPreparationButton() {
+        return $(VORBETEITUNG_STARTEN);
+    }
+
     @Step("Get Package Status")
     public String getPackageStatus() {
         return $(PACKAGE_STATUS).getText();
@@ -337,6 +399,10 @@ public class NetworkSwitchingPage {
     @Step("Close Notification button")
     public void closeNotificationButton() {
         $(CLOSE_NOTIFICATION_BUTTON).click();
+    }
+
+    public SelenideElement getUplinksErrorMessage() {
+        return $(UPLINKS_ERROR_MESSAGE);
     }
 
     @Step("Wait until needed status")
