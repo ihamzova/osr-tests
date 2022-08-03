@@ -46,7 +46,6 @@ public class A4InventarSuchePage {
     @Getter
     public static final By DEACTIVATING_CHECKBOX_LOCATOR = By.id("opsDEACTIVATING");
 
-
     // lcs checkboxes
     @Getter
     public static final By PLANNING_CHECKBOX_LOCATOR = By.id("lcsPLANNING");
@@ -85,7 +84,8 @@ public class A4InventarSuchePage {
 
     @Getter
     // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
-    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("SearchResultsNetworkElement");
+   // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
     @Getter
     // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
     public static final By NE_DETAILS_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
@@ -110,15 +110,15 @@ public class A4InventarSuchePage {
     public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElementGroup");
+    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("SearchResultsNetworkElementGroup");
 
 
     @Getter
-    public static final By NE_DETAIL_LINK_LOCATOR_1 = By.id("linkNe0");
+    public static final By NE_DETAIL_LINK_LOCATOR_1 = By.id("linkNetworkElementLink0");
 
 
     @Getter
-    public static final By NEG_DETAIL_LINK_LOCATOR_1 = By.id("linkNeg0");
+    public static final By NEG_DETAIL_LINK_LOCATOR_1 = By.id("linkNetworkElementGroupLink0");
 
 
 
