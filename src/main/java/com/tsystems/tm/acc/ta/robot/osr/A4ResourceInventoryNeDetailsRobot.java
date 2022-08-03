@@ -145,24 +145,16 @@ public class A4ResourceInventoryNeDetailsRobot {
         assertEquals(readNeOps(), neDataA.getOperationalState());
         assertEquals(readNeLcs(), neDataA.getLifecycleState());
 
-        // check port, link and gegenstelle data in table of 1 row
-
-        NetworkElementDetails neDetailsExpectedListOf1Row =  neDetailsExpectedList.get(0);
-        assertEquals(neDetailsExpectedListOf1Row.getLogicalLabel(), getTextOfElementInTable("tdLogicalLabel0"));
-        assertEquals(neDetailsExpectedListOf1Row.getPhysicalLabel(), getTextOfElementInTable("tdPhysicalLabel0"));
-        assertEquals(neDetailsExpectedListOf1Row.getLsz(), getTextOfElementInTable("tdLsz0"));
-        assertEquals(neDetailsExpectedListOf1Row.getUewegeId(), getTextOfElementInTable("tdUewegeId0"));
-        assertEquals(neDetailsExpectedListOf1Row.getLbz(), getTextOfElementInTable("tdLbz0"));
-        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleCategory(),getTextOfElementInTable("tdCategory0"));
-        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleVpsz(), getTextOfElementInTable("tdVpsz0"));
-
+        // check port, link and gegenstelle data in table
+        ElementsCollection elementsCollection = a4InventarSucheRobot.getNeDetailsCollection();
+        sleepForSeconds(4);  // wait for result
+        List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
+        sleepForSeconds(4);  // wait for result
+        assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
 
     }
 
-    private String getTextOfElementInTable(String id) {
-        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
-        return tableComponent.findElement(By.id(id)).getText();
-    }
+
 
     private List<NetworkElementDetails> createNeDetailList(ElementsCollection elementsCollection) {
         final int numberOfColumnsNeDetailList = 10;

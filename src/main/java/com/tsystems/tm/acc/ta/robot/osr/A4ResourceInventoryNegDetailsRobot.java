@@ -76,7 +76,7 @@ public class A4ResourceInventoryNegDetailsRobot {
 
         // check ne list  data in table
 
-
+/*
         NetworkElementDetails neDetailsExpectedListOf1Row =  neDetailsExpectedList.get(0);
         assertEquals(neDetailsExpectedListOf1Row.getLogicalLabel(), getTextOfElementInTable("tdLogicalLabel0"));
         assertEquals(neDetailsExpectedListOf1Row.getPhysicalLabel(), getTextOfElementInTable("tdPhysicalLabel0"));
@@ -86,7 +86,7 @@ public class A4ResourceInventoryNegDetailsRobot {
         assertEquals(neDetailsExpectedListOf1Row.getGegenstelleCategory(),getTextOfElementInTable("tdCategory0"));
         assertEquals(neDetailsExpectedListOf1Row.getGegenstelleVpsz(), getTextOfElementInTable("tdVpsz0"));
 
-
+*/
 
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeList4NEGCollection(); // UI result
         sleepForSeconds(4);  // wait for result

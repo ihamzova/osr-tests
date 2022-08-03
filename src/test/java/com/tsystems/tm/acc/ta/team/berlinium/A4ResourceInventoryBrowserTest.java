@@ -57,14 +57,5 @@ public class A4ResourceInventoryBrowserTest extends GigabitTest {
         a4InventarSuchePage.validate();
     }
 
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @TmsLink("DIGIHUB-xxxxx")
-    @Description("Test RI Browser")
-    public void testRiBrowserMobilUiButton() {
-        a4ResourceInventoryBrowserRobot.openRiBrowserPage();
-        a4ResourceInventoryBrowserRobot.clickMobilUiButton();
-        a4MobileNeSearchPage.validate();
-    }
 
 }
