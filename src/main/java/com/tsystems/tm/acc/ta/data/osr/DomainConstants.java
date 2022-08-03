@@ -50,6 +50,7 @@ public interface DomainConstants {
     String A4_QUEUE_DISPATCHER_QUEUE = "a4-queue-dispatcher-amq-ha";
     String FEATURE_TOGGLE_DPU_LIFECYCLE_USES_DPU_DEMANDS_NAME = "business.rori.dpu-lifecycle-uses-dpu-demands";
     String RORI_V1_PATH = "/resource-order-resource-inventory/v1/";
+    String RORI_V5_PATH = "/resource-order-resource-inventory/v5/";
     String DEFAULT = "default";
     String DEFAULT_B = "default-b";
 }

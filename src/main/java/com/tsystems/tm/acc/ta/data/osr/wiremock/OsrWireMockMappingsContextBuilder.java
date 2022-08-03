@@ -179,8 +179,13 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         return this;
     }
 
-    public OsrWireMockMappingsContextBuilder addOltBasicConfigurationErrorMock(OltDevice oltDevice) {
-        context.add(new SealStub().postOltBasicConfiguration202CallbackError(oltDevice, true));
-        return this;
-    }
+  public OsrWireMockMappingsContextBuilder addOltBasicConfigurationErrorMock(OltDevice oltDevice) {
+    context.add(new SealStub().postOltBasicConfiguration202CallbackError(oltDevice, true));
+    return this;
+  }
+
+  public OsrWireMockMappingsContextBuilder addUplinksMock(String endSz, String state1, String state2, String state3) {
+    context.add(new UplinkResourceInventoryStub().getUplinks(endSz, state1, state2, state3));
+    return this;
+  }
 }
