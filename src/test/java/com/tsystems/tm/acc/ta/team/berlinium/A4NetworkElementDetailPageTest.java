@@ -13,6 +13,7 @@ import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -100,6 +101,7 @@ public class A4NetworkElementDetailPageTest extends GigabitTest {
         WebDriver driver = WebDriverRunner.getWebDriver();
         driver.manage().window().maximize();
         sleepForSeconds(4);  // wait for result
+
 
         a4InventarSuche.clickDetailLinkForFirstNEInSearchResultTable();
 

@@ -35,6 +35,14 @@ public class A4ResourceInventoryNeDetailsPage {
     public static final By NE_LastSuccessfulSync_FIELD_LOCATOR = By.id("lastSuccessfulSyncTime");
     public static final By NEL_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
 
+
+    @Getter
+    public static final By CONTAINER_MAIN_DATA_NETWORKELEMENT = By.id("NetworkElementMainData");
+
+    @Getter
+    public static final By CONTAINER_MAIN_DATA_NETWORKELEMENT_GROUP = By.id("NetworkElemetGroupMainData");
+
+
     @Step("Validate NE detail page w/o uuid")
     public A4ResourceInventoryNeDetailsPage validate() {
         $(A4_UI_HEADER_LOCATOR).shouldBe(visible, Duration.ofMillis(3000));

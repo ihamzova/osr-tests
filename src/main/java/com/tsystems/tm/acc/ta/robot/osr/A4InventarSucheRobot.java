@@ -2,9 +2,11 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementGroup;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailsPage;
 import com.tsystems.tm.acc.ta.robot.utils.MiscUtils;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
@@ -38,8 +40,12 @@ public class A4InventarSucheRobot {
         // waitForTableToFullyLoad(elementsCollection.size());
         try {
             Thread.sleep(2000);
-            return $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
-                    .findAll(By.xpath("tr/td"));
+
+            SelenideElement table = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR());
+            return table
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trSearchResultsNetworkElement')]/td"));
+
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -51,8 +57,11 @@ public class A4InventarSucheRobot {
         // waitForTableToFullyLoad(elementsCollection.size());
         try {
             Thread.sleep(2000);
-            return $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
-                    .findAll(By.xpath("tr/td"));
+
+            SelenideElement table = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR());
+            return table
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trSearchResultsNetworkElementGroup')]/td"));
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -63,9 +72,12 @@ public class A4InventarSucheRobot {
     public ElementsCollection getNeDetailsCollection() {
         // waitForTableToFullyLoad(elementsCollection.size());
         try {
+
             Thread.sleep(2000);
-            return $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR())
-                    .findAll(By.xpath("tr/td"));
+
+            SelenideElement table = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
+            return table
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblNelNep4NeDetails')]/td"));
         } catch (InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -76,8 +88,10 @@ public class A4InventarSucheRobot {
         // waitForTableToFullyLoad(elementsCollection.size());
         try {
             Thread.sleep(2000);
-            return $(A4InventarSuchePage.getNEG_NE_LIST_TABLE_LOCATOR())
-                    .findAll(By.xpath("tr/td"));
+            SelenideElement table = $(A4InventarSuchePage.getNEG_NE_LIST_TABLE_LOCATOR());
+            return table
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblNeList')]/td"));
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -249,8 +263,12 @@ public class A4InventarSucheRobot {
 
     public void clickDetailLinkForFirstNEInSearchResultTable() {
         sleepForSeconds(2);
-        WebElement element = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR())
-                .toWebElement().findElement(A4InventarSuchePage.NE_DETAIL_LINK_LOCATOR_1);
+        // tableElement = fixture.debugElement.query(By.directive(TableComponentComponent));
+
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR());
+
+        WebElement element = tableComponent
+                .findElement(A4InventarSuchePage.NE_DETAIL_LINK_LOCATOR_1);
         sleepForSeconds(2);
         element.click();
 
@@ -262,11 +280,19 @@ public class A4InventarSucheRobot {
     public void clickDetailLinkForFirstNEGInSearchResultTable() {
 
         sleepForSeconds(2);
-        WebElement element = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR())
-                .toWebElement().findElement(A4InventarSuchePage.NEG_DETAIL_LINK_LOCATOR_1);
+
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR());
+
+        WebElement element = tableComponent
+                .findElement(A4InventarSuchePage.NEG_DETAIL_LINK_LOCATOR_1);
         sleepForSeconds(2);
         element.click();
 
+    }
+
+    private String getTextOfElementInTable(String id) {
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
+        return tableComponent.findElement(By.id(id)).getText();
     }
 
 

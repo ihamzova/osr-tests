@@ -75,6 +75,19 @@ public class A4ResourceInventoryNegDetailsRobot {
 
 
         // check ne list  data in table
+
+/*
+        NetworkElementDetails neDetailsExpectedListOf1Row =  neDetailsExpectedList.get(0);
+        assertEquals(neDetailsExpectedListOf1Row.getLogicalLabel(), getTextOfElementInTable("tdLogicalLabel0"));
+        assertEquals(neDetailsExpectedListOf1Row.getPhysicalLabel(), getTextOfElementInTable("tdPhysicalLabel0"));
+        assertEquals(neDetailsExpectedListOf1Row.getLsz(), getTextOfElementInTable("tdLsz0"));
+        assertEquals(neDetailsExpectedListOf1Row.getUewegeId(), getTextOfElementInTable("tdUewegeId0"));
+        assertEquals(neDetailsExpectedListOf1Row.getLbz(), getTextOfElementInTable("tdLbz0"));
+        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleCategory(),getTextOfElementInTable("tdCategory0"));
+        assertEquals(neDetailsExpectedListOf1Row.getGegenstelleVpsz(), getTextOfElementInTable("tdVpsz0"));
+
+*/
+
         ElementsCollection elementsCollection = a4InventarSucheRobot.getNeList4NEGCollection(); // UI result
         sleepForSeconds(4);  // wait for result
         List<A4NetworkElement> neResultListFromUi = createNeList4NEGFromUI(elementsCollection); // list of NetworkElements displayed on UI
