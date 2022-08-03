@@ -1,9 +1,11 @@
 package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementLink;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElementPort;
+import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4InventarSuchePage;
 import com.tsystems.tm.acc.ta.pages.osr.a4resourceinventory.A4ResourceInventoryNeDetailsPage;
 import io.qameta.allure.Step;
 import lombok.EqualsAndHashCode;
@@ -12,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,64 +30,88 @@ public class A4ResourceInventoryNeDetailsRobot {
 
     @Step("Read uuid ne")
     public String readNeUuid() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_UUID_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_UUID_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read vpsz ne")
     public String readNeVpsz() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_VPSZ_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_VPSZ_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read fsz ne")
     public String readNeFsz() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_FSZ_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_FSZ_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read category ne")
     public String readNeCategory() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_CATEGORY_FIELD_LOCATOR).innerHtml();
+
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_CATEGORY_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read type ne")
     public String readNeType() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_TYPE_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_TYPE_FIELD_LOCATOR)).innerHtml();
     }
 
 
     @Step("Read kls-id ne")
     public String readNeKlsId() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_KLSID_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_KLSID_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read ztp ident ne")
     public String readNeZtpid() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_ZTPID_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_ZTPID_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read ops ne")
     public String readNeOps() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_OPS_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_OPS_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read lcs ne")
     public String readNeLcs() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_LCS_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_LCS_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read creation time ne")
     public String readNeCreationTime() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_CreationTime_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_CreationTime_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Read last update time ne")
     public String readNeLastUpdateTime() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_LastUpdateTime_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_LastUpdateTime_FIELD_LOCATOR)).innerHtml();
     }
 
 
     @Step("Read last sync time ne")
     public String readNeLastSuccessfulSyncTime() {
-        return $(A4ResourceInventoryNeDetailsPage.NE_LastSuccessfulSync_FIELD_LOCATOR).innerHtml();
+        SelenideElement container = $(A4ResourceInventoryNeDetailsPage.getCONTAINER_MAIN_DATA_NETWORKELEMENT());
+
+        return $(container.findElement(A4ResourceInventoryNeDetailsPage.NE_LastSuccessfulSync_FIELD_LOCATOR)).innerHtml();
     }
 
     @Step("Open UI, log in")
@@ -124,7 +151,10 @@ public class A4ResourceInventoryNeDetailsRobot {
         List<NetworkElementDetails> neDetailsResultList = createNeDetailList(elementsCollection);
         sleepForSeconds(4);  // wait for result
         assertEquals(neDetailsResultList.toString(), neDetailsExpectedList.toString());
+
     }
+
+
 
     private List<NetworkElementDetails> createNeDetailList(ElementsCollection elementsCollection) {
         final int numberOfColumnsNeDetailList = 10;
@@ -155,15 +185,18 @@ public class A4ResourceInventoryNeDetailsRobot {
     }
 
     public void clickGegenStelleIcon() {
-        getNelElementsCollection().get(7).click();
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
+        tableComponent.findElement(By.id("tdNetworkElementGegenstelle0")).click();
     }
 
     public void clickNepIcon() {
-        getNelElementsCollection().get(0).click();
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
+        tableComponent.findElement(By.id("tdNetworkElementPort0")).click();
     }
 
     public void clickNelIcon() {
-        getNelElementsCollection().get(3).click();
+        SelenideElement tableComponent = $(A4InventarSuchePage.getNE_DETAILS_TABLE_LOCATOR());
+        tableComponent.findElement(By.id("tdNetworkElementLink0")).click();
     }
 
     public void checkLandedOnCorrectNeDetailsPage(A4NetworkElement neDataB) {

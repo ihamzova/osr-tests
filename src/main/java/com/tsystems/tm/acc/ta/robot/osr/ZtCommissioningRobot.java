@@ -39,17 +39,17 @@ public class ZtCommissioningRobot {
 
     @Step("Start the zero touch commissioning process")
     public void startZtCommissioning(OltDevice oltDevice, String acid) {
-        OltInstallationPage.openInstallationPage(acid)
-                .validateUrl()
-                .startZtCommissioningProcess(oltDevice)
+        OltInstallationPage oltInstallationPage = new OltInstallationPage().openInstallationPage(acid);
+        oltInstallationPage.validateUrl();
+        oltInstallationPage.startZtCommissioningProcess(oltDevice)
                 .checkForceProceedLinkExist(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 
     @Step("Start the zero touch commissioning process and wait for error message.")
     public void startZtCommissioningWithError(OltDevice oltDevice, String acid) {
-        OltInstallationPage.openInstallationPage(acid)
-                .validateUrl()
-                .startZtCommissioningProcess(oltDevice)
+        OltInstallationPage oltInstallationPage = new OltInstallationPage().openInstallationPage(acid);
+        oltInstallationPage.validateUrl();
+        oltInstallationPage.startZtCommissioningProcess(oltDevice)
                 .waitZtCommissioningProcessErrorMessage(TIMEOUT_FOR_ZTC_COMMISSIONING);
     }
 

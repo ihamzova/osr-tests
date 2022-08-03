@@ -1,7 +1,6 @@
 package com.tsystems.tm.acc.ta.pages.osr.oltcommissioning;
 
 import com.tsystems.tm.acc.ta.data.osr.models.OltDevice;
-import com.tsystems.tm.acc.ta.helpers.CommonHelper;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -11,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
-import static com.tsystems.tm.acc.ta.util.Assert.assertUrlContainsWithTimeout;
+import static com.tsystems.tm.acc.ta.util.AsyncAssert.assertUrlContainsWithTimeout;
 import static com.tsystems.tm.acc.ta.util.Locators.byQaData;
 import static org.openqa.selenium.By.cssSelector;
 import static org.testng.Assert.fail;
@@ -28,11 +27,11 @@ public class OltCommissioningPage {
 
     @Step("Validate Url")
     public void validateUrl() {
-        assertUrlContainsWithTimeout(APP, CommonHelper.commonTimeout);
-        assertUrlContainsWithTimeout(ENDPOINT, CommonHelper.commonTimeout);
+        assertUrlContainsWithTimeout(APP);
+        assertUrlContainsWithTimeout(ENDPOINT);
     }
 
-    @Step("Start OLT commissioning")
+    @Step("Start OLT commissioning and wait for result")
     public OltCommissioningPage startOltCommissioning(OltDevice olt, Integer timeout) {
         $(COMMISSIONING_START_BUTTON_LOCATOR).click();
         Instant start = Instant.now();
@@ -41,7 +40,7 @@ public class OltCommissioningPage {
             if ($$(ERROR_SECTION_LOCATOR).size() > 0 && $(ERROR_SECTION_LOCATOR).isDisplayed()) {
                 fail("Error happened during OLT commissioning");
             }
-            sleep(30 * 1000);
+            sleep(5 * 1000);
         }
         $(CARDS_DETAILS_TAB_LOCATOR).shouldBe(visible);
         return this;

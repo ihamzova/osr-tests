@@ -12,7 +12,7 @@ values:
   oltPort: "3"
   oltSlot: "8"
   tplnr: "000049-000911-110-002-001-001"
-  bezeichnung: "MA5800T"
+  bezeichnung: "MA5800-X7"
   hersteller: "HUAWEI"
   seriennummer: "unbekannt"
   firmwareVersion: "MA5800V800R016C00"
