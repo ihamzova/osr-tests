@@ -1,15 +1,20 @@
 package com.tsystems.tm.acc.ta.team.upiter.ne2switching;
 
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.ElementsCollection;
 import com.tsystems.tm.acc.data.upiter.models.credentials.CredentialsCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
 import com.tsystems.tm.acc.ta.data.osr.models.Credentials;
+import com.tsystems.tm.acc.ta.data.osr.models.NetworkSwitchingUplinkElement;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
+import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilder;
 import com.tsystems.tm.acc.ta.pages.osr.networkswitching.NetworkSwitchingPage;
 import com.tsystems.tm.acc.ta.robot.osr.AccessLineRiRobot;
 import com.tsystems.tm.acc.ta.robot.osr.NetworkSwitchingRobot;
 import com.tsystems.tm.acc.ta.team.upiter.UpiterTestContext;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
+import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
+import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -22,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.tsystems.tm.acc.ta.data.upiter.UpiterConstants.*;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.attachStubsToAllureReport;
+import static com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContextHooks.savePublishedToDefaultDir;
 import static org.testng.Assert.*;
 
 @ServiceLog({
@@ -39,6 +46,7 @@ public class FtthNetworkSwitching extends GigabitTest {
     private PortProvisioning endSz_49_30_179_76H2;
     private PortProvisioning endSz_49_30_179_76H3;
     private PortProvisioning endSz_49_911_1100_76H1;
+    private WireMockMappingsContext mappingsContext;
 
     @BeforeClass
     public void init() throws InterruptedException {
@@ -62,17 +70,30 @@ public class FtthNetworkSwitching extends GigabitTest {
     @Test
     @TmsLink("DIGIHUB-147818")
     @Description("NE2 FTTH Network Switching Preparation")
-    public void ne2FtthPreparationTest() {
-        List<String> expectedUplinksStates = Arrays.asList("ACTIVE", "PLANNED");
+    public void ne2FtthPreparationTest(){
+        String state1 = "ACTIVE";
+        String state2 = "PLANNED";
+        String state3 = "PLANNED";
+
+        List<String> expectedUplinksStates = Arrays.asList(state1, state2, state3);
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "GetUplinks"))
+                .addUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
 
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.switchToNe2Switching()
-                .getUplinkInformation(endSz_49_30_179_76H3.getEndSz());
-        networkSwitchingPage.getUplinks().should(CollectionCondition.size(2));
+                .clickGetUplinks(endSz_49_30_179_76H3.getEndSz());
+
+        networkSwitchingPage.getUplinks().should(CollectionCondition.size(3));
+        List<NetworkSwitchingUplinkElement> uplinks = networkSwitchingPage.getUplinkInformation();
         assertTrue(accessLineRiRobot.compareLists(networkSwitchingPage.getUplinksStates(), expectedUplinksStates), "Uplinks states are incorrect");
 
         networkSwitchingPage.clickPrepareButton();
+        mappingsContext.deleteStubs();
         assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"), "Notification is incorrect");
         networkSwitchingPage.closeNotificationButton();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
@@ -82,6 +103,9 @@ public class FtthNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getExecutionButton().isDisplayed(), "Execution button is not displayed after preparation phase");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation phase");
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after preparation phase");
+
+        networkSwitchingPage.clickDetailedInfoButton()
+                .checkSourceAndTargetDevices(uplinks);
     }
 
     @Test(dependsOnMethods = "ne2FtthPreparationTest")
@@ -176,7 +200,7 @@ public class FtthNetworkSwitching extends GigabitTest {
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.switchToNe2Switching()
-                .getUplinkInformation(endSz_49_911_1100_76H1.getEndSz())
+                .clickGetUplinks(endSz_49_911_1100_76H1.getEndSz())
                 .clickPrepareButton();
         assertTrue(networkSwitchingPage.getNotification().equals("Der Prozess kann nicht gestartet werden, weil eine DPU auf dem Gerät gefunden wurde"));
     }
