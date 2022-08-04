@@ -64,15 +64,15 @@ public class FttbNetworkSwitching extends GigabitTest {
         networkSwitchingRobot.changeFeatureToogleEnableFttbNe2NetworkSwitchingState(true);
         endSz_49_911_1100_76H1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
         endSz_49_812_179_71G1 = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
-        accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1, 1, endSz_49_812_179_71G1, endSz_49_911_1100_76H1);
+//        accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1, 1, endSz_49_812_179_71G1, endSz_49_911_1100_76H1);
 
         dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.dpuDemand);
         numberOfAccessLinesForProvisioning = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
         if (numberOfAccessLinesForProvisioning > 16) {
             numberOfAccessLinesForProvisioning = 16;
         }
-        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(endSz_49_812_179_71G1.getEndsz());
-        accessLineRiRobot.checkFttbLineParameters(endSz_49_911_1100_76H1, numberOfAccessLinesForProvisioning);
+//        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(endSz_49_812_179_71G1.getEndsz());
+//        accessLineRiRobot.checkFttbLineParameters(endSz_49_911_1100_76H1, numberOfAccessLinesForProvisioning);
     }
 
     @BeforeMethod
