@@ -41,6 +41,8 @@ public class OltAutoCommissioning extends GigabitTest {
     private final OltDevice oltDeviceGFNW = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z9_SDX_6320);
     private final OltDevice oltDeviceGFMM_MA5600 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76G1_MA5600);
     private final OltDevice oltDeviceGFMM_SDX_6320 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76G3_SDX_6320_16);
+    private final OltDevice oltDeviceGFPS_MA5600 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_711_0_76H1_MA5600);
+    private final OltDevice oltDeviceGFPS_SDX_6320 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_711_0_76H2_SDX_6320_16);
 
     private final OltCommissioningRobot oltCommissioningRobot = new OltCommissioningRobot();
     private final WireMockMappingsContext mappingsContextOsr = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
@@ -49,7 +51,7 @@ public class OltAutoCommissioning extends GigabitTest {
     @BeforeClass
     public void init() {
 
-        List<OltDevice> olts = Arrays.asList(oltDeviceDTAG, oltDeviceGFNW, oltDeviceGFMM_MA5600, oltDeviceGFMM_SDX_6320);
+        List<OltDevice> olts = Arrays.asList(oltDeviceDTAG, oltDeviceGFNW, oltDeviceGFMM_MA5600, oltDeviceGFMM_SDX_6320, oltDeviceGFPS_MA5600, oltDeviceGFPS_SDX_6320);
 
         olts.forEach(oltCommissioningRobot::clearResourceInventoryDataBase);
 
@@ -166,6 +168,30 @@ public class OltAutoCommissioning extends GigabitTest {
 
         oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFMM_SDX_6320, COMPOSITE_PARTY_ID_GFMM);
         oltCommissioningRobot.checkUplink(oltDeviceGFMM_SDX_6320);
+    }
+
+    @Test(description = "DIGIHUB-161016 OS&R UI. Auto Commissioning MA5600 for GFPS user.")
+    @TmsLink("DIGIHUB-161016") // Jira Id for this test in Xray
+    public void OltAutoCommissioningGFPS_MA5600Test() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFPS);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceGFPS_MA5600, TIMEOUT_FOR_OLT_COMMISSIONING);
+
+        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFPS_MA5600, COMPOSITE_PARTY_ID_GFPS);
+        oltCommissioningRobot.checkUplink(oltDeviceGFPS_MA5600);
+    }
+
+    @Test(description = "DIGIHUB-160997 OS&R UI. Auto Commissioning SDX_6320 for GFPS user.")
+    @TmsLink("DIGIHUB-160997") // Jira Id for this test in Xray
+    public void OltAutoCommissioningGFPS_SDX_6320Test() {
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFPS);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
+        oltCommissioningRobot.startAutomaticOltCommissioning(oltDeviceGFPS_SDX_6320, TIMEOUT_FOR_OLT_COMMISSIONING);
+
+        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFPS_SDX_6320, COMPOSITE_PARTY_ID_GFPS);
+        oltCommissioningRobot.checkUplink(oltDeviceGFPS_SDX_6320);
     }
 
 }

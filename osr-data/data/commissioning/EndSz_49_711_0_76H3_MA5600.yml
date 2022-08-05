@@ -1,0 +1,22 @@
+name: EndSz_49_711_0_76H3_MA5600
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/711/0"
+  fsz: "76H3"
+  bngEndsz: "49/711/0/7ZJ3"
+  bngDownlinkPort: "ge-1/1/3"
+  bngDownlinkSlot: "1"
+  lsz: "4C1"
+  orderNumber: "7112"
+  vst: "@DefaultVst"
+  oltPort: "0"
+  oltSlot: "19"
+  tplnr: "000049-008571-000-001-001-001"
+  bezeichnung: "MA5600T"
+  hersteller: "HUAWEI"
+  seriennummer: "unbekannt"
+  firmwareVersion: "MA5600V800R016C00"
+  ipAdresse: "10.187.13.196"
+  numberOfPonSlots: 1
+  numberOfEthernetSlots: 1
+  matNumber: 40247069
