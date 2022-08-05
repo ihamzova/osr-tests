@@ -1,0 +1,20 @@
+name: EndSz_49_711_0_76H2_SDX_6320_16
+template: com.tsystems.tm.acc.ta.data.osr.models.OltDevice
+values:
+  vpsz: "49/711/0"
+  fsz: "76H2"
+  bngEndsz: "49/711/0/7ZJ2"
+  bngDownlinkPort: "ge-1/1/2"
+  bngDownlinkSlot: "1"
+  lsz: "4C1"
+  orderNumber: "7111"
+  vst: "@DefaultVst"
+  oltPort: "1"
+  tplnr: "000049-008571-000-002-001-001"
+  bezeichnung: "SDX 6320-16"
+  hersteller: "ADTRAN"
+  firmwareVersion: "SDX632V100R031C10"
+  ipAdresse: "11.187.12.196"
+  matNumber: 40958960
+  numberOfPonPorts: 16
+  numberOfEthernetPorts: 1

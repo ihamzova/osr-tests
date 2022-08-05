@@ -43,6 +43,8 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     private final OltDevice oltDeviceGFNW = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_8571_0_76Z7_MA5600);
     private final OltDevice oltDeviceGFMM_MA5600 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76G2_MA5600);
     private final OltDevice oltDeviceGFMM_SDX_6320_16 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_911_1100_76G4_SDX_6320_16);
+    private final OltDevice oltDeviceGFPS_MA5600 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_711_0_76H3_MA5600);
+    private final OltDevice oltDeviceGFPS_SDX_6320_16 = context.getData().getOltDeviceDataProvider().get(OltDeviceCase.EndSz_49_711_0_76H4_SDX_6320_16);
 
     private final WireMockMappingsContext mappingsContextOsr = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
     private final WireMockMappingsContext mappingsContextTeam = new WireMockMappingsContext(WireMockFactory.get(), STUB_GROUP_ID);
@@ -50,7 +52,7 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
     @BeforeClass
     public void init() {
         //WireMockFactory.get().resetToDefaultMappings();
-        List<OltDevice> olts = Arrays.asList(oltDeviceDTAG, oltDeviceGFNW, oltDeviceGFMM_MA5600, oltDeviceGFMM_SDX_6320_16);
+        List<OltDevice> olts = Arrays.asList(oltDeviceDTAG, oltDeviceGFNW, oltDeviceGFMM_MA5600, oltDeviceGFMM_SDX_6320_16, oltDeviceGFPS_MA5600, oltDeviceGFPS_SDX_6320_16);
 
         olts.forEach(oltCommissioningRobot::clearResourceInventoryDataBase);
 
@@ -192,6 +194,59 @@ public class OltDeviceCommissioningManualProcess extends GigabitTest {
         oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFMM_SDX_6320_16.getEndsz());
         oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFMM_MA5600, oltDetailsPage);
     }
+
+    @Test(description = "DIGIHUB-161027 Manual commissioning for MA5600 as GFPS user")
+    @TmsLink("DIGIHUB-161027") // Jira Id for this test in Xray
+    public void SearchAndDiscoverOltGFPS_MA5600Test() throws InterruptedException {
+
+        OsrTestContext context = OsrTestContext.get();
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFPS);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
+        OltDetailsPage oltDetailsPage = oltCommissioningRobot.startManualOltCommissioningWithoutAccessLines(oltDeviceGFPS_MA5600);
+
+        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFPS_MA5600, COMPOSITE_PARTY_ID_GFPS);
+        oltCommissioningRobot.checkUplink(oltDeviceGFPS_MA5600);
+
+        //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+        oltDetailsPage.deconfigureAncpSession();
+        oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
+        // check uplink port life cycle state
+        oltDetailsPage.openPortView(oltDeviceGFPS_MA5600.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDeviceGFPS_MA5600.getOltSlot(), oltDeviceGFPS_MA5600.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
+        oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFPS_MA5600.getEndsz());
+        oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFPS_MA5600, oltDetailsPage);
+    }
+
+    @Test(description = "DIGIHUB-161036 Manual commissioning for Adtran SDX 6320-16 as GFPS user")
+    @TmsLink("DIGIHUB-161036") // Jira Id for this test in Xray
+    public void SearchAndDiscoverOltGFPS_SDX_6320Test() throws InterruptedException {
+
+        OsrTestContext context = OsrTestContext.get();
+        Credentials loginData = context.getData().getCredentialsDataProvider().get(CredentialsCase.RHSSOOltResourceInventoryUiGFPS);
+        setCredentials(loginData.getLogin(), loginData.getPassword());
+
+        OltDetailsPage oltDetailsPage = oltCommissioningRobot.startManualOltCommissioningWithoutAccessLines(oltDeviceGFPS_SDX_6320_16);
+
+        oltCommissioningRobot.checkOltCommissioningResultWithoutAccessLines(oltDeviceGFPS_SDX_6320_16, COMPOSITE_PARTY_ID_GFPS);
+        oltCommissioningRobot.checkUplink(oltDeviceGFPS_SDX_6320_16);
+
+        //Thread.sleep(1000); // prevent Init Deconfiguration of ANCP session runs in error
+        oltDetailsPage.deconfigureAncpSession();
+        oltDetailsPage.deleteUplinkConfiguration();
+        Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
+        // check uplink port life cycle state
+        oltDetailsPage.openPortView(oltDeviceGFPS_SDX_6320_16.getOltSlot());
+        Assert.assertEquals(oltDetailsPage.getPortLifeCycleState(oltDeviceGFPS_SDX_6320_16.getOltSlot(), oltDeviceGFPS_SDX_6320_16.getOltPort()), DevicePortLifeCycleStateUI.NOTOPERATING.toString());
+
+        oltDeCommissioningRobot.checkUplinkIsDeleted(oltDeviceGFPS_SDX_6320_16.getEndsz());
+        oltDeCommissioningRobot.startDeviceDeletion(oltDeviceGFPS_MA5600, oltDetailsPage);
+    }
+
 }
 
 
