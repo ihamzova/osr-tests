@@ -79,6 +79,7 @@ public class A4ResourceOrderDetailPageRobot {
     public String readStatus() {
         SelenideElement container = $(A4ResourceOrderDetailPage.getCONTAINER_MAIN_DATA_A10NSP_RO());
 
+
         return $(container.findElement(A4ResourceOrderDetailPage.getRO_STATUS_FIELD_LOCATOR())).innerHtml();
     }
 
@@ -88,7 +89,7 @@ public class A4ResourceOrderDetailPageRobot {
             Thread.sleep(2000);
             SelenideElement table = $(A4ResourceOrderDetailPage.getROI_TABLE_LOCATOR());
             return table
-                    .findAll(By.xpath(".//tr[starts-with(@id,'trroTableId')]/td"));
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblA10nspRoItems')]/td"));
 
         } catch (InterruptedException e) {
             e.printStackTrace();

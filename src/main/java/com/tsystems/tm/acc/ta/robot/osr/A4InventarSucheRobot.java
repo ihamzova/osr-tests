@@ -43,7 +43,7 @@ public class A4InventarSucheRobot {
 
             SelenideElement table = $(A4InventarSuchePage.getNE_SEARCH_RESULT_TABLE_LOCATOR());
             return table
-                    .findAll(By.xpath(".//tr[starts-with(@id,'trSearchResultsNetworkElement')]/td"));
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblSearchResultsNetworkElement')]/td"));
 
 
         } catch (InterruptedException e) {
@@ -60,7 +60,7 @@ public class A4InventarSucheRobot {
 
             SelenideElement table = $(A4InventarSuchePage.getNEG_SEARCH_RESULT_TABLE_LOCATOR());
             return table
-                    .findAll(By.xpath(".//tr[starts-with(@id,'trSearchResultsNetworkElementGroup')]/td"));
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblSearchResultsNetworkElementGroup')]/td"));
 
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -55,7 +55,7 @@ public class A4ResourceOrderSearchPageRobot {
 
             SelenideElement table = $(A4ResourceOrderSearchPage.getRO_SEARCH_RESULT_TABLE_LOCATOR());
             return table
-                    .findAll(By.xpath(".//tr[starts-with(@id,'trResourceOrderTable')]/td"));
+                    .findAll(By.xpath(".//tr[starts-with(@id,'trtblA10nspResourceOrder')]/td"));
 
         } catch (InterruptedException e) {
             fail("Unexpected exceoption: " + e.getMessage());

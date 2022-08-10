@@ -32,7 +32,7 @@ public class A4ResourceOrderSearchPage {
 
 
     @Getter
-    public static final By RO_SEARCH_RESULT_TABLE_LOCATOR = By.id("ResourceOrderTable");
+    public static final By RO_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblA10nspResourceOrder");
 
     @Getter
     public static final By RO_TABLE_ROW_1 = By.id("tr0");
