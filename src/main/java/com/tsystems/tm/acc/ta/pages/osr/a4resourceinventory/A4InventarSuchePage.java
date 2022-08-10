@@ -83,14 +83,10 @@ public class A4InventarSuchePage {
     public static final By NE_CATEGORY_FIELD_LOCATOR = By.id("category");    // value=<leer>, OLT, LEAF_SWITCH, SPINE_SWITCH, POD_SERVER, BOR
 
     @Getter
-    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
-    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("SearchResultsNetworkElement");
-   // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
+    public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElement");
     @Getter
-    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
     public static final By NE_DETAILS_TABLE_LOCATOR = By.id("tblNelNep4NeDetails");
     @Getter
-    // public static final By NE_SEARCH_RESULT_TABLE_LOCATOR = By.cssSelector(".w3-table-all");
     public static final By NEG_NE_LIST_TABLE_LOCATOR = By.id("tblNeList");
 
 
@@ -110,7 +106,7 @@ public class A4InventarSuchePage {
     public static final By NEG_SEARCH_BUTTON_LOCATOR = By.id("negSearchSubmit");
 
     @Getter
-    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("SearchResultsNetworkElementGroup");
+    public static final By NEG_SEARCH_RESULT_TABLE_LOCATOR = By.id("tblSearchResultsNetworkElementGroup");
 
 
     @Getter

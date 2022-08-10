@@ -43,7 +43,7 @@ public class A4ResourceOrderDetailPage {
     public static final By RO_STATUS_FIELD_LOCATOR = By.id("status");
 
     @Getter
-    public static final By ROI_TABLE_LOCATOR = By.id("roTableId");
+    public static final By ROI_TABLE_LOCATOR = By.id("tblA10nspRoItems");
 
 
 
