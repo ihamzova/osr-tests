@@ -28,7 +28,7 @@ import static org.testng.Assert.fail;
 public class A4ResilienceRobot {
 
     ObjectMapper objectMapper = new ObjectMapper();
-    static final String QUEUE_USER = "a4_user_autotest";
+    static final String QUEUE_USER = "a4_user";
     static final String QUEUE_PW = "a4_password_autotest";
     final String urlApiGw = new GigabitUrlBuilder(APIGW_MS).withoutSuffix().buildUri().toString();
 
@@ -193,13 +193,6 @@ public class A4ResilienceRobot {
     }
 
     private String getQueueUrl(String queue) {
-        // Activate this when using AMQ
-//        return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
-//                + "/console/jolokia/exec/org.apache.activemq.artemis:broker=%22broker%22,component=addresses,address=%22"
-//                + queue + "%22,subcomponent=queues,routing-type=%22anycast%22,queue=%22"
-//                + queue + "%22/";
-
-        // Activate this when using AMQ-HA
         return new GigabitUrlBuilder(A4_QUEUE_DISPATCHER_QUEUE).withoutSuffix().buildUri()
                 + "/console/jolokia/exec/org.apache.activemq.artemis:broker=!%22"
                 + A4_QUEUE_DISPATCHER_QUEUE + "!%22,component=addresses,address=!%22"
