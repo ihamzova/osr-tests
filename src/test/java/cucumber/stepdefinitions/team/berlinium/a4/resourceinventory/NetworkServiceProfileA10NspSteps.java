@@ -4,15 +4,19 @@ import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.VlanRangeDto;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
@@ -55,6 +59,11 @@ public class NetworkServiceProfileA10NspSteps {
     @Given("a NSP A10NSP {string} connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenNspA10nsp(String nspAlias, String tpAlias) {
         createNspA10Nsp(nspAlias, tpAlias);
+    }
+
+    @Given("a NSP A10NSP {string} with vlanRangeLower {string} and vlanRangeUpper {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nsp(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String tpAlias) {
+        createNspA10NspWithVlanRange(nspAlias, vlanRangeLower, vlanRangeUpper, tpAlias);
     }
 
     @Given("no NSP A10NSP( connected to the TP)( exists)( in A4 resource inventory)")
@@ -136,6 +145,24 @@ public class NetworkServiceProfileA10NspSteps {
     private void createNspA10Nsp(String nspAlias, String tpAlias) {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+
+        persistNspA10Nsp(nspAlias, nspA10nsp);
+    }
+
+    private void createNspA10NspWithVlanRange(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String tpAlias) {
+        // ACTION
+        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+
+        if(isNullOrEmpty(nspA10nsp.getsVlanRange())) {
+            List<VlanRangeDto> vlanRanges = new ArrayList<>();
+            vlanRanges.add(new VlanRangeDto()
+                    .vlanRangeLower(vlanRangeLower)
+                    .vlanRangeUpper(vlanRangeUpper));
+            nspA10nsp.setsVlanRange(vlanRanges);
+        }
+
+        nspA10nsp.getsVlanRange().get(0).setVlanRangeLower(vlanRangeLower);
+        nspA10nsp.getsVlanRange().get(0).setVlanRangeUpper(vlanRangeUpper);
 
         persistNspA10Nsp(nspAlias, nspA10nsp);
     }

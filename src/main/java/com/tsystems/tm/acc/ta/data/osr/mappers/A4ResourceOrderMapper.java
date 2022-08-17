@@ -26,7 +26,7 @@ public class A4ResourceOrderMapper {
                 .name("resource order name");
     }
 
-    public List<Characteristic> buildResourceCharacteristicList() {
+    public List<Characteristic> buildResourceCharacteristicList(String vlanRangeLower, String vlanRangeUpper) {
         List<Characteristic> cList = new ArrayList<>();
 
         addCharacteristic(FRAME_CONTRACT_ID, getRandomDigits(8), "valueTypeId", cList);
@@ -34,16 +34,16 @@ public class A4ResourceOrderMapper {
         addCharacteristic(PUBLIC_REFERENCE_ID, "A1000851", "valueTypePublic", cList);
         addCharacteristic(LACP_ACTIVE, "true", "valueTypeLacp", cList);
         addCharacteristic(MTU_SIZE, "1590", "valueTypeMtu", cList);
-        addCharacteristic(VLAN_RANGE, buildVlanRange(), "valueTypeVlan", cList);
+        addCharacteristic(VLAN_RANGE, buildVlanRange(vlanRangeLower, vlanRangeUpper), "valueTypeVlan", cList);
         addCharacteristic(QOS_LIST, buildQosList(), "valueTypeQos", cList);
         addCharacteristic(OVERALL_BANDWIDTH, "7777", "valueTypeBw", cList);
         return cList;
     }
 
-    private VlanRange buildVlanRange() {
+    private VlanRange buildVlanRange(String vlanRangeLower, String vlanRangeUpper) {
         return new VlanRange()
-                .vlanRangeLower("2")
-                .vlanRangeUpper("3999");
+                .vlanRangeLower(vlanRangeLower)
+                .vlanRangeUpper(vlanRangeUpper);
     }
 
     private QosList buildQosList() {List<QosClass> qosClasses = new ArrayList<>();
