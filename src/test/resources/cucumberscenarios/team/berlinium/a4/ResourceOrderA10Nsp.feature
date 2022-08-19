@@ -114,9 +114,9 @@ Feature: Receive and process Resource Orders for A10NSP
 
     Examples:
       | NumberTpsAndNsps | lcState  | VlanLower | VlanUpper |
-#      | 3               | PLANNING | 10        | 100       |
-      | 0               | PLANNING | 10        | 20        |
-#      | 30              | PLANNING | 10        | 10        |
+      | 3                | PLANNING | 10        | 100       |
+      | 0                | PLANNING | 10        | 20        |
+      | 30               | PLANNING | 10        | 10        |
 
   #@DIGIHUB-xxxxxx
   Scenario Outline: Sputnik sends resource order MODIFY with Vlan Range ROI < (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
@@ -129,6 +129,6 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order state is "rejected"
     And all order item states are "rejected"
     Examples:
-      | NumberTpsAndNsps | lcState  | VlanLower | VlanUpper |
-      | 3                | PLANNING | 10        | 10        |
-#      | 20              | INSTALLING | 10        | 20        |
+      | NumberTpsAndNsps | lcState    | VlanLower | VlanUpper |
+      | 3                | PLANNING   | 10        | 10        |
+      | 20               | INSTALLING | 10        | 20        |
