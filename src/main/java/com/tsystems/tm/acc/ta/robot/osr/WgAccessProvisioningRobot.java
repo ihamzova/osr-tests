@@ -16,10 +16,10 @@ import com.tsystems.tm.acc.tests.osr.device.resource.inventory.management.client
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Device;
 import com.tsystems.tm.acc.tests.osr.olt.resource.inventory.internal.v4_10_0.client.model.Port;
 import com.tsystems.tm.acc.tests.osr.ont.olt.orchestrator.v2_16_0.client.model.PortAndHomeIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.AccessLineIdDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.CardRequestDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.DeviceDto;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.model.PortDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.model.AccessLineIdDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.model.CardRequestDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.model.DeviceDto;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.model.PortDto;
 import de.telekom.it.t3a.kotlin.log.ServiceDiscoveryStrategy;
 import de.telekom.it.t3a.kotlin.log.query.ServiceDescriptor;
 import io.qameta.allure.Step;
@@ -48,7 +48,7 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start port provisioning")
     public void startPortProvisioning(PortProvisioning port) {
-        wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
+        wgAccessProvisioningClient.getClient().provisioningProcessV2().startPortProvisioningV2()
                 .body(new PortDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
@@ -57,8 +57,8 @@ public class WgAccessProvisioningRobot {
     }
 
     @Step("Start card provisioning for 1 card")
-    public void startCardProvisioningV2(PortProvisioning port) {
-        wgAccessProvisioningClient.getClient().provisioningProcess().startCardProvisioning()
+    public void startCardProvisioning(PortProvisioning port) {
+        wgAccessProvisioningClient.getClient().provisioningProcessV2().startCardProvisioningV2()
                 .body(new CardRequestDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber()))
@@ -67,7 +67,7 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start device provisioning")
     public void startDeviceProvisioning(PortProvisioning port) {
-        wgAccessProvisioningClient.getClient().provisioningProcess().startDeviceProvisioning()
+        wgAccessProvisioningClient.getClient().provisioningProcessV2().startDeviceProvisioningV2()
                 .body(new DeviceDto()
                         .endSz(port.getEndSz()))
                 .executeAs(checkStatus(HTTP_CODE_ACCEPTED_202));
@@ -75,8 +75,8 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start port deprovisioning")
     public void startPortDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
-        wgAccessProvisioningClient.getClient().deprovisioningProcess()
-                .startPortDeprovisioning()
+        wgAccessProvisioningClient.getClient().deprovisioningProcessV2()
+                .startPortDeprovisioningV2()
                 .noDeconfigInSEALQuery(noDeconfigInSEAL)
                 .body(new PortDto()
                         .endSz(port.getEndSz())
@@ -87,7 +87,7 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start port deprovisioning with deprovisioningForDpu flag")
     public void startPortDeprovisioningForDpu(PortProvisioning port, boolean deprovisioningForDpu) {
-        wgAccessProvisioningClient.getClient().deprovisioningProcess().startPortDeprovisioning()
+        wgAccessProvisioningClient.getClient().deprovisioningProcessV2().startPortDeprovisioningV2()
                 .body(new PortDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber())
@@ -98,7 +98,7 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start card deprovisioning for 1 card")
     public void startCardDeprovisioningV2(PortProvisioning port, boolean noDeconfigInSEAL) {
-        wgAccessProvisioningClient.getClient().deprovisioningProcess().startCardDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
+        wgAccessProvisioningClient.getClient().deprovisioningProcessV2().startCardDeprovisioningV2().noDeconfigInSEALQuery(noDeconfigInSEAL)
                 .body(new CardRequestDto()
                         .endSz(port.getEndSz())
                         .slotNumber(port.getSlotNumber()))
@@ -107,7 +107,7 @@ public class WgAccessProvisioningRobot {
 
     @Step("Start device deprovisioning")
     public void startDeviceDeprovisioning(PortProvisioning port, boolean noDeconfigInSEAL) {
-        wgAccessProvisioningClient.getClient().deprovisioningProcess().startDeviceDeprovisioning().noDeconfigInSEALQuery(noDeconfigInSEAL)
+        wgAccessProvisioningClient.getClient().deprovisioningProcessV2().startDeviceDeprovisioningV2().noDeconfigInSEALQuery(noDeconfigInSEAL)
                 .body(new DeviceDto()
                         .endSz(port.getEndSz()))
                 .executeAs(checkStatus(HTTP_CODE_ACCEPTED_202));
@@ -116,8 +116,8 @@ public class WgAccessProvisioningRobot {
     @Step("Start reconfiguration")
     public void startReconfiguration(String lineId) {
         wgAccessProvisioningClient.getClient()
-                .provisioningProcess()
-                .startUpdateLineProfiles()
+                .provisioningProcessV2()
+                .startUpdateLineProfilesV2()
                 .body(new AccessLineIdDto().lineId(lineId))
                 .execute(checkStatus(HTTP_CODE_ACCEPTED_202));
     }
@@ -145,13 +145,14 @@ public class WgAccessProvisioningRobot {
         return businessInformations;
     }
 
-    public UUID startPortProvisioningAndGetProcessId(Process process) {
-        return wgAccessProvisioningClient.getClient().provisioningProcess().startPortProvisioning()
+    @Step("Start port provisioning and get processId")
+    public String startPortProvisioningAndGetProcessId(Process process) {
+        return wgAccessProvisioningClient.getClient().provisioningProcessV2().startPortProvisioningV2()
                 .body(new PortDto()
                         .endSz(process.getEndSz())
                         .slotNumber(process.getSlotNumber())
                         .portNumber(process.getPortNumber()))
-                .executeAs(checkStatus(HTTP_CODE_ACCEPTED_202)).getId();
+                .executeAs(checkStatus(HTTP_CODE_ACCEPTED_202)).getProcessInstanceId();
     }
 
     @Step("Start postprovisioning")
@@ -248,7 +249,6 @@ public class WgAccessProvisioningRobot {
         return unleashClient.isToggleEnabled(FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING);
     }
 
-
     @Step("disable-home-id-pools-creation - сhange feature toggle state")
     public void changeFeatureToggleHomeIdPoolState(boolean toggleState) {
         if (toggleState) {
@@ -258,5 +258,4 @@ public class WgAccessProvisioningRobot {
         }
         log.info("toggleState for {} = {}", FEATURE_TOGGLE_CREATE_HOME_ID_POOL, toggleState);
     }
-
 }
