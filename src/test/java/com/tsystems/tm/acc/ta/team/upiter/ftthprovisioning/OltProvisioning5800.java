@@ -3,8 +3,6 @@ package com.tsystems.tm.acc.ta.team.upiter.ftthprovisioning;
 import com.tsystems.tm.acc.data.upiter.models.defaultneprofile.DefaultNeProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.defaultnetworklineprofile.DefaultNetworkLineProfileCase;
 import com.tsystems.tm.acc.data.upiter.models.portprovisioning.PortProvisioningCase;
-import com.tsystems.tm.acc.ta.api.osr.AccessLineResourceInventoryClient;
-import com.tsystems.tm.acc.ta.api.osr.WgAccessProvisioningClient;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNeProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile;
 import com.tsystems.tm.acc.ta.data.osr.models.PortProvisioning;
@@ -94,7 +92,7 @@ public class OltProvisioning5800 extends GigabitTest {
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 16);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(port).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioningV2(card5800v2);
+    wgAccessProvisioningRobot.startCardProvisioning(card5800v2);
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5800v2.getAccessLinesCount());
     accessLineRiRobot.checkDefaultNetworkLineProfiles(port, defaultNetworkLineProfile, card5800v2.getAccessLinesCount());

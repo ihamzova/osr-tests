@@ -29,7 +29,7 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     public static final By SUBMIT_BUTTON = byXpath("//*[contains(text(),'Anlegen')]");
     public static final By USERNAME_INPUT = byXpath("//input[@id='idmNameOfEmployee']");
     public static final By MENU_ICON = byXpath("//button[@title='Benutzermenü']");
-    public static final By CONFIRM_BUTTON = byXpath("//span[contains(text(), 'Ja')]");
+    public static final By CONFIRM_BUTTON = byXpath("//span[contains(@class, 'p-button-label') and contains(text(), 'Ja')]");
     public static final By ERRORMESSAGE = byXpath("//div[contains(@class,'notification')]/*[contains(text(),'Löschen in dem Status nicht möglich!')]");
     public static final By LOGIN_BUTTON = byId("kc-login");
     public static final By LOGOUT_BUTTON = byXpath("//button[@title='Ausloggen']");
@@ -45,7 +45,7 @@ public class OntUsagePage implements SupplierCockpitUiPage{
     @Step("Open Supplier ONT usage Page")
     public static OntUsagePage openPage(String acid) {
         URL url = new GigabitUrlBuilder(APP).withoutSuffix().withEndpoint(ENDPOINT).withParameter("a-cid", acid).buildExternal();
-        log.info("Opening url " + url.toString());
+        log.info("Opening url " + url);
         OntUsagePage page = open(url, OntUsagePage.class);
         return page;
     }
