@@ -131,4 +131,4 @@ Feature: Receive and process Resource Orders for A10NSP
     Examples:
       | NumberTpsAndNsps | lcState    | VlanLower | VlanUpper |
       | 3                | PLANNING   | 10        | 10        |
-      | 20               | INSTALLING | 10        | 20        |
+#      | 20               | INSTALLING | 10        | 20        |
