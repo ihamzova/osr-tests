@@ -26,11 +26,11 @@ public class A4ResourceOrderMapper {
                 .name("resource order name");
     }
 
-    public List<Characteristic> buildResourceCharacteristicList(String vlanRangeLower, String vlanRangeUpper) {
+    public List<Characteristic> buildResourceCharacteristicList(String carrierBsaReference, String vlanRangeLower, String vlanRangeUpper) {
         List<Characteristic> cList = new ArrayList<>();
 
         addCharacteristic(FRAME_CONTRACT_ID, getRandomDigits(8), "valueTypeId", cList);
-        addCharacteristic(CARRIER_BSA_REFERENCE, UUID.randomUUID().toString(), "valueTypeCbr", cList);
+        addCharacteristic(CARRIER_BSA_REFERENCE, carrierBsaReference, "valueTypeCbr", cList);
         addCharacteristic(PUBLIC_REFERENCE_ID, "A1000851", "valueTypePublic", cList);
         addCharacteristic(LACP_ACTIVE, "true", "valueTypeLacp", cList);
         addCharacteristic(MTU_SIZE, "1590", "valueTypeMtu", cList);
