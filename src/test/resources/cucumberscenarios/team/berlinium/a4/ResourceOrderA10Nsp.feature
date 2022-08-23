@@ -103,10 +103,10 @@ Feature: Receive and process Resource Orders for A10NSP
 
   #@DIGIHUB-xxxxxx
   Scenario Outline: Sputnik sends resource order MODIFY with vlan range Vlan Range ROI >= (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
-    Given <NumberTpsAndNsps> TPs with identical carrierBsaReference and NSPs L2BSA with lifecycleState "<lcState>" connected to NEG "A"
+    Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type | VLAN Range Lower | VLAN Range Upper |
-      | A             | MODIFY      | <VlanLower>      | <VlanUpper>      |
+      | NEL Reference | Action Type | CarrierBsaRef | VLAN Range Lower | VLAN Range Upper |
+      | A             | MODIFY      | cBsaRef123    | <VlanLower>      | <VlanUpper>      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -114,21 +114,22 @@ Feature: Receive and process Resource Orders for A10NSP
 
     Examples:
       | NumberTpsAndNsps | lcState  | VlanLower | VlanUpper |
-      | 3                | PLANNING | 10        | 100       |
-      | 0                | PLANNING | 10        | 20        |
+#      | 3                | PLANNING | 10        | 100       |
+#      | 0                | PLANNING | 10        | 20        |
       | 30               | PLANNING | 10        | 10        |
 
   #@DIGIHUB-xxxxxx
   Scenario Outline: Sputnik sends resource order MODIFY with Vlan Range ROI < (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
-    Given <NumberTpsAndNsps> TPs with identical carrierBsaReference and NSPs L2BSA with lifecycleState "<lcState>" connected to NEG "A"
+    Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type | VLAN Range Lower | VLAN Range Upper |
-      | A             | MODIFY      | <VlanLower>      | <VlanUpper>      |
+      | NEL Reference | Action Type | CarrierBsaRef | VLAN Range Lower | VLAN Range Upper |
+      | A             | MODIFY      | cBsaRef123    | <VlanLower>      | <VlanUpper>      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "rejected"
     And all order item states are "rejected"
+
     Examples:
       | NumberTpsAndNsps | lcState    | VlanLower | VlanUpper |
       | 3                | PLANNING   | 10        | 10        |
-#      | 20               | INSTALLING | 10        | 20        |
+      | 30               | INSTALLING | 10        | 10        |
