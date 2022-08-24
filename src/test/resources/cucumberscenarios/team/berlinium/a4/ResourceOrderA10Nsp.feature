@@ -5,7 +5,7 @@ Feature: Receive and process Resource Orders for A10NSP
   Note: These scenarios and steps are a first draft! Maybe this changes, to make them more understandable
   for stakeholders...
 
-  #@DIGIHUB-150008
+  #@DIGIHUB-150008 #@DIGIHUB-163474 #@DIGIHUB-163475
   Background:
     Given a NEG with type "POD"
     And a NE "A" with type "A4-A10NSP-Switch-v1" and category "A10NSP_SWITCH"
@@ -40,7 +40,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order state is "completed"
     And all order item states are "completed"
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163468
   @team:berlinium
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type Delete - Sunny Day
@@ -53,7 +53,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order state is "completed"
     And all order item states are "completed"
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163469
   @team:berlinium
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type Modify - Sunny Day
@@ -66,7 +66,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order state is "completed"
     And all order item states are "completed"
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163470
   @team:berlinium
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type NoChange - Sunny Day
@@ -79,7 +79,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order state is "completed"
     And all order item states are "completed"
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163471
   @team:berlinium
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with different Action Types
@@ -101,7 +101,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order is not saved in RO database
     And the RO is not added to A4 resource order queue
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163472
   Scenario Outline: Sputnik sends resource order MODIFY with vlan range Vlan Range ROI >= (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
     Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
@@ -118,7 +118,7 @@ Feature: Receive and process Resource Orders for A10NSP
       | 0                | PLANNING | 10        | 20        |
       | 30               | PLANNING | 10        | 10        |
 
-  #@DIGIHUB-xxxxxx
+  @DIGIHUB-163473
   Scenario Outline: Sputnik sends resource order MODIFY with Vlan Range ROI < (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
     Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
