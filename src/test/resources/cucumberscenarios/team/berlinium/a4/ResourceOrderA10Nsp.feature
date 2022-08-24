@@ -114,8 +114,8 @@ Feature: Receive and process Resource Orders for A10NSP
 
     Examples:
       | NumberTpsAndNsps | lcState  | VlanLower | VlanUpper |
-#      | 3                | PLANNING | 10        | 100       |
-#      | 0                | PLANNING | 10        | 20        |
+      | 3                | PLANNING | 10        | 100       |
+      | 0                | PLANNING | 10        | 20        |
       | 30               | PLANNING | 10        | 10        |
 
   #@DIGIHUB-xxxxxx
