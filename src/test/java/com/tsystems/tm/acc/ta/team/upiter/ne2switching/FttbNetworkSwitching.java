@@ -104,8 +104,8 @@ public class FttbNetworkSwitching extends GigabitTest {
         assertTrue(accessLineRiRobot.compareLists(networkSwitchingPage.getUplinksStates(), expectedUplinksStates), "Uplinks states are incorrect");
 
         networkSwitchingPage.clickPrepareButton();
-        mappingsContext.deleteStubs();
         assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"), "Notification is incorrect");
+        mappingsContext.deleteStubs();
         networkSwitchingPage.closeNotificationButton();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
