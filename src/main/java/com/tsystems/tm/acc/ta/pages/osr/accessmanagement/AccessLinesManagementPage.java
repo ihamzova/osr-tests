@@ -31,21 +31,21 @@ public class AccessLinesManagementPage {
 
     private static final By ACCESS_LINE_STATUS_DROPDOWN = byQaData("mp-status-input");
 
-    private static final By NE_DEFAULT_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Default Profile')]");
+    private static final By NE_DEFAULT_PROFILE = byQaData("ne-profile-default");
     private static final By NE_DEFAULT_PROFILE_STATE = byQaData("ne-def-state-input");
 
     private static final By ADD_SUBSCRIBER_NE_PROFILE_BUTTON = byQaData("btn-ne-profile-add");
     private static final By NE_SUBSCRIBER_PROFILE = byQaData("ne-profile-subscriber");
-    private static final By NE_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-ne-profile//*[contains(text(), 'Subscriber Profile')]");
     private static final By NE_SUBSCRIBER_PROFILE_STATE = byQaData("ne-sub-state-input");
     private static final By NE_SUBSCRIBER_PROFILE_ONT_STATE = byQaData("ne-sub-ontstate-input");
 
-    private static final By NL_DEFAULT_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Default Profile')]");
+    private static final By NL_DEFAULT_PROFILE = byQaData("nl-profile-default");
     private static final By NL_DEFAULT_PROFILE_STATE = byQaData("nl-def-state-input");
 
     private static final By ADD_SUBSCRIBER_NL_PROFILE_BUTTON = byQaData("btn-nl-profile-add");
-    private static final By NL_SUBSCRIBER_PROFILE_TITLE = byXpath("//am-al-nl-profile//*[contains(text(), 'Subscriber Profile')]");
+    private static final By NL_SUBSCRIBER_PROFILE = byQaData("nl-profile-subscriber");
     private static final By NL_SUBSCRIBER_PROFILE_KLSID = byQaData("nl-sub-klsid-input");
+    private static final By NL_SUBSCRIBER_ACCESS_NETWORK_TYPE = byQaData("nl-sub-accessnetworktype-input");
     private static final By NL_SUBSCRIBER_PROFILE_STATE = byQaData("nl-sub-state-input");
 
     private static final By SERIALNUMBER_IN_NSP = byQaData("nsp-ref-serialnumber-input");
@@ -168,7 +168,7 @@ public class AccessLinesManagementPage {
     }
 
     @Step("Add Serialnumber to NSP")
-    public AccessLinesManagementPage updateSerialNumberOnNsp(String serialnumber) {
+    public AccessLinesManagementPage changeSerialNumberOnNsp(String serialnumber) {
         $(SERIALNUMBER_IN_NSP).click();
         $(HOMEID_INPUT).sendKeys((Keys.CONTROL + "a"));
         $(HOMEID_INPUT).sendKeys(Keys.DELETE);
@@ -197,6 +197,15 @@ public class AccessLinesManagementPage {
         $(NL_DEFAULT_PROFILE_STATE).scrollIntoView(true).click();
         By STATE = byXpath("//li[@aria-label='" + state+"']");
         $(STATE).hover().shouldBe(visible).click();
+        return this;
+    }
+
+    @Step("Change AccessNetworkType")
+    public AccessLinesManagementPage changeAccessNetworkType(String accessNetworkType) {
+        $(NL_SUBSCRIBER_ACCESS_NETWORK_TYPE).click();
+        $(NL_SUBSCRIBER_ACCESS_NETWORK_TYPE).sendKeys((Keys.CONTROL + "a"));
+        $(NL_SUBSCRIBER_ACCESS_NETWORK_TYPE).sendKeys(Keys.DELETE);
+        $(NL_SUBSCRIBER_ACCESS_NETWORK_TYPE).val(accessNetworkType);
         return this;
     }
 
@@ -294,42 +303,58 @@ public class AccessLinesManagementPage {
 
     @Step("Get Default NE Profile state")
     public String getNeDefaultProfileState() {
-        String result = "NULL";
-        $(NE_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NE_DEFAULT_PROFILE_STATE).size() > 0) {
-            result = $$(NE_DEFAULT_PROFILE_STATE).get(0).getValue();
+        String result;
+        // wait for sunscriber_networkline_profile template to be displayed because it always exists even if there is not sunscriber_networkline_profile itself
+        $(NL_SUBSCRIBER_PROFILE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
+        if ($(NE_DEFAULT_PROFILE).exists() && $$(NE_DEFAULT_PROFILE_STATE).size() > 0) {
+            result = $(NE_DEFAULT_PROFILE_STATE).getValue();
+        } else {
+            result = "NULL";
         }
         return result;
     }
 
     @Step("Get Default NL Profile state")
     public String getNLDefaultProfileState() {
-        String result = "NULL";
-        $(NL_DEFAULT_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NL_DEFAULT_PROFILE_STATE).size() > 0) {
-            result = $$(NL_DEFAULT_PROFILE_STATE).get(0).getValue();
+        String result;
+        $(NL_SUBSCRIBER_PROFILE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
+        if ($(NL_DEFAULT_PROFILE).exists() && $$(NL_DEFAULT_PROFILE_STATE).size() > 0) {
+            result = $(NL_DEFAULT_PROFILE_STATE).getValue();
+        } else {
+            result = "NULL";
         }
         return result;
     }
 
     @Step("Get Subscriber NE Profile state")
     public String getNeSubscriberProfileState() {
-        String result = "NULL";
-        $(NE_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NE_SUBSCRIBER_PROFILE_STATE).size() > 0) {
-            result = $$(NE_SUBSCRIBER_PROFILE_STATE).get(0).getValue();
+        String result;
+        $(NL_SUBSCRIBER_PROFILE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
+        if ($(NE_SUBSCRIBER_PROFILE).exists() && $$(NE_SUBSCRIBER_PROFILE_STATE).size() > 0) {
+            result = $(NE_SUBSCRIBER_PROFILE_STATE).getValue();
+        } else {
+            result = "NULL";
         }
         return result;
     }
 
     @Step("Get Subscriber NL Profile state")
     public String getNLSubscriberProfileState() {
-        String result = "NULL";
-        $(NL_SUBSCRIBER_PROFILE_TITLE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
-        if ($$(NL_SUBSCRIBER_PROFILE_STATE).size() > 0) {
-            result = $$(NL_SUBSCRIBER_PROFILE_STATE).get(0).getValue();
+        String result;
+        $(NL_SUBSCRIBER_PROFILE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
+        System.out.println($(NL_SUBSCRIBER_PROFILE).exists() && $$(NL_SUBSCRIBER_PROFILE).size() > 0);
+        if ($(NL_SUBSCRIBER_PROFILE).exists() && $$(NL_SUBSCRIBER_PROFILE_STATE).size() > 0) {
+            result = $(NL_SUBSCRIBER_PROFILE_STATE).getValue();
+        } else {
+            result = "NULL";
         }
         return result;
+    }
+
+    @Step("Get AccessNetworkType")
+    public String getAccessNetworkType() {
+        $(NL_SUBSCRIBER_PROFILE).shouldBe(visible, Duration.ofMillis(TIMEOUT_MS));
+        return $(NL_SUBSCRIBER_ACCESS_NETWORK_TYPE).getValue();
     }
 
     @Step("Get Onu Access Id")
@@ -360,13 +385,6 @@ public class AccessLinesManagementPage {
                                               String nlExpectedSubscriberProfileState) {
         assertTrue(getNeDefaultProfileState().contains(neExpectedDefaultProfileState), "DefaultNeProfile State is incorrect");
         assertTrue(getNeSubscriberProfileState().contains(neExpectedSubscriberProfileState), "SubscriberNeProfile State is incorrect");
-        assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
-        assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
-    }
-
-    @Step("Check NL profiles states")
-    public void checkNlProfiles(String nlExpectedDefaultProfileState,
-                                String nlExpectedSubscriberProfileState) {
         assertTrue(getNLDefaultProfileState().contains(nlExpectedDefaultProfileState), "DefaultNetworkLineProfile State is incorrect");
         assertTrue(getNLSubscriberProfileState().contains(nlExpectedSubscriberProfileState), "SubscriberNetworkLineProfile State is incorrect");
     }
