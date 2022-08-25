@@ -61,9 +61,9 @@ public class NetworkServiceProfileA10NspSteps {
         createNspA10Nsp(nspAlias, tpAlias);
     }
 
-    @Given("a NSP A10NSP {string} with vlanRangeLower {string} and vlanRangeUpper {string} connected to TP {string}( is existing)( in A4 resource inventory)")
-    public void givenNspA10nsp(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String tpAlias) {
-        createNspA10NspWithVlanRange(nspAlias, vlanRangeLower, vlanRangeUpper, tpAlias);
+    @Given("a NSP A10NSP {string} with vlanRangeLower {string} and vlanRangeUpper {string} and lifeCycleState {string} connected to TP {string}( is existing)( in A4 resource inventory)")
+    public void givenNspA10nsp(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String lcState, String tpAlias) {
+        createNspA10NspWithVlanRangeAndLcState(nspAlias, vlanRangeLower, vlanRangeUpper, lcState, tpAlias);
     }
 
     @Given("no NSP A10NSP( connected to the TP)( exists)( in A4 resource inventory)")
@@ -167,6 +167,25 @@ public class NetworkServiceProfileA10NspSteps {
         persistNspA10Nsp(nspAlias, nspA10nsp);
     }
 
+    private void createNspA10NspWithVlanRangeAndLcState(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String lcState, String tpAlias) {
+        // ACTION
+        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
+
+        if(isNullOrEmpty(nspA10nsp.getsVlanRange())) {
+            List<VlanRangeDto> vlanRanges = new ArrayList<>();
+            vlanRanges.add(new VlanRangeDto()
+                    .vlanRangeLower(vlanRangeLower)
+                    .vlanRangeUpper(vlanRangeUpper));
+            nspA10nsp.setsVlanRange(vlanRanges);
+        }
+
+        nspA10nsp.getsVlanRange().get(0).setVlanRangeLower(vlanRangeLower);
+        nspA10nsp.getsVlanRange().get(0).setVlanRangeUpper(vlanRangeUpper);
+
+        nspA10nsp.setLifecycleState(lcState);
+
+        persistNspA10Nsp(nspAlias, nspA10nsp);
+    }
     private void createNspA10NspWithStates(String nspAlias, String opState, String lcState, String tpAlias) {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
