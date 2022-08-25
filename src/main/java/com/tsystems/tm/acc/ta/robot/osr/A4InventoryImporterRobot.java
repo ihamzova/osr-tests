@@ -4,13 +4,16 @@ import com.tsystems.tm.acc.ta.api.osr.A4RebellSyncClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.model.SyncRebellLinks;
 import io.qameta.allure.Step;
+import com.tsystems.tm.acc.ta.api.osr.A4InventoryImporterClient;
+import com.tsystems.tm.acc.ta.api.osr.A4RebellLinkEventClient;
 
 import static com.tsystems.tm.acc.ta.data.HttpConstants.HTTP_CODE_OK_200;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.checkStatus;
 
 public class A4InventoryImporterRobot {
     private final A4RebellSyncClient a4RebellSync = new A4RebellSyncClient();
-
+    private final A4InventoryImporterClient a4Importer = new A4InventoryImporterClient();
+    private final A4RebellLinkEventClient a4LinkEvent = new A4RebellLinkEventClient();
     @Step("Sync all NELs for NE (identified by VPSZ & FSZ) with Links from REBELL")
     public void doRebellSync(A4NetworkElement neData) {
         SyncRebellLinks srl = new SyncRebellLinks();
@@ -23,23 +26,21 @@ public class A4InventoryImporterRobot {
                 .body(srl)
                 .execute(checkStatus(HTTP_CODE_OK_200));
     }
-/*
-    @Step("import ne list of neg from Plural")
-    public void doPluralImport(String negName) {
+    @Step("Create Horizon Event for Importer")
+    public void sendNotification(A4NetworkElement neData) {
 
-        System.out.println("+++ A4InventoryImporter: frage folgende NEG bei Plural an: "+negName);
-        //  request an Importer
-        // /pluralAlignment?nameNeg=49/6808/1/POD/01
-        // https://a4-inventory-importer-app-berlinium-03.priv.cl01.tmagic-dev.telekom.de/pluralAlignment?nameNEG=49/30/111/POD/02
-
-        a4Plural
-                .syncRebellLinks()
-                .syncRebellLinks()
-                .
-                .execute(checkStatus(HTTP_CODE_OK_200));
+      //  a4LinkEvent.getClient().
 
 
- */
+        // bisher nur dummy
+        a4Importer.getClient().networkElements().findNetworkElementsByVpsz().vpszQuery(neData.getVpsz()); // is Spaß
+        System.out.println("+++ VPSZ: "+neData.getVpsz());
+    }
+
+
+
+
+
 
 
 }

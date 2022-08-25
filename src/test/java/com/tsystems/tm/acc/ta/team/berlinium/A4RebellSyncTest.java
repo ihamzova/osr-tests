@@ -87,6 +87,43 @@ public class A4RebellSyncTest extends GigabitTest {
     }
 
     @Test
+    public void testHorizonEventEndSzFoundRebelSync() {
+        // GIVEN / ARRANGE
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+        System.out.println("+++ uewegData: "+uewegData);
+        // +++ uewegData: UewegData(uewegId=764026, 299152, vendorPortNameA=ge-0/0/1, vendorPortNameB=PCI-1/0)
+        System.out.println("+++ ne1Data: "+ne1Data);
+        // +++ ne1Data: A4NetworkElement(uuid=93db293f-9b40-4b76-a2fd-64b2c26018f9, vpsz=49/4917/0, fsz=7KC1,
+        // klsId=17056514, category=BOR, operationalState=WORKING, lifecycleState=OPERATING, type=A4-BOR-v1,
+        // plannedMatNr=40318601, planningDeviceName=dmst.bor.2, ztpIdent=null)
+        System.out.println("+++ ne2Data: "+ne2Data);
+        // +++ ne2Data: A4NetworkElement(uuid=141a2562-96a4-4ddd-9dcb-a2bbb96eb4dc, vpsz=49/1343/0, fsz=7KD1,
+        // klsId=1234567, category=POD_SERVER, operationalState=WORKING, lifecycleState=RETIRING, type=A4-POD-SERVER-v1,
+        // plannedMatNr=40770140, planningDeviceName=dmst.server.1, ztpIdent=null)
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .build().publish();
+
+        // send notification to Importer
+        //      uewegId: I545253020
+        //      uewegStatus: InBetrieb
+        //  	endszA: 49/4917/0/7KC1
+        //  	endszB: 49/1343/0/7KD1
+
+        a4Importer.sendNotification(ne1Data);  // Funktion bauen, Übergabe Event
+
+
+        // WHEN / ACT
+        // a4Importer.doRebellSync(ne1Data);  // das soll jetzt der echte a4-Importer tun
+
+        // THEN / ASSERT
+       // a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+    }
+
+    @Test
     public void testRebelSyncLinkCreated() {
         // GIVEN / ARRANGE
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
