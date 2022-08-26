@@ -334,10 +334,10 @@ public class OltCommissioningRobot {
                     port -> {
                         Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Port " + port.getPortName() + " has no SFP Module");
                         if ( port.getPortType().equals(PortType.PON) ) {
-                            Assert.assertEquals("40958962", port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "Port " + port.getPortName() + " has wrong SFP Module");
+                            Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40958962", "Port " + port.getPortName() + " has wrong SFP Module");
                         }
                         if ( port.getPortType().equals(PortType.ETHERNET) ) {
-                            Assert.assertEquals("40958963", port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "Port " + port.getPortName() + " has wrong SFP Module");
+                            Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40958963", "Port " + port.getPortName() + " has wrong SFP Module");
                         }
                     }
             );
@@ -346,12 +346,15 @@ public class OltCommissioningRobot {
             deviceList.get(0).getContainsCardsRefOrValue().forEach(
                     card -> card.getContainsPortsRefOrValue().forEach(
                             port -> {
-                                Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + "has no SFP Module");
                                 if ( port.getPortType().equals(PortType.PON) ) {
-                                    Assert.assertEquals("40251140", port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + "has wrong SFP Module");
+                                    Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has no SFP Module");
+                                    Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40251140", "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has wrong SFP Module");
                                 }
                                 if ( port.getPortType().equals(PortType.ETHERNET) ) {
-                                    Assert.assertEquals("40251141", port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + "has wrong SFP Module");
+                                    if (card.getSlotName().equals(oltDevice.getOltSlot()) && port.getPortName().equals(oltDevice.getOltPort())) { // check appearance currently only for the specified uplink card and port
+                                        Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has no SFP Module");
+                                        Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40251141", "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has wrong SFP Module");
+                                    }
                                 }
                             }
                     )
