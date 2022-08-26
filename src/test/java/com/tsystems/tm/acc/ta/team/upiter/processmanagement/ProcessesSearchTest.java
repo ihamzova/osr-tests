@@ -72,7 +72,6 @@ public class ProcessesSearchTest extends GigabitTest {
         ftthProcess = context.getData().getProcessDataProvider().get(ProcessCase.ftthFailedProcess);
         fttbProcess = context.getData().getProcessDataProvider().get(ProcessCase.fttbFailedProcess);
         networkSwitchingProcess = context.getData().getProcessDataProvider().get(ProcessCase.networkSwitchingFailedProcess);
-        processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(ftthProcess).toString();
         today = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("dd MM"));
         dayAgo = OffsetDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd MM"));
         weekAgo = OffsetDateTime.now().minusDays(8).format(DateTimeFormatter.ofPattern("dd MM"));
@@ -93,6 +92,7 @@ public class ProcessesSearchTest extends GigabitTest {
     @TmsLink("DIGIHUB-45514")
     @Description("Search processes by EndSZ, Slot, Port in Access Process Management UI")
     public void searchProcessesByEndSzTest() throws Exception {
+        processUuid = wgAccessProvisioningRobot.startPortProvisioningAndGetProcessId(ftthProcess);
         ProcessSearchPage processSearchPage = ProcessSearchPage.openPage();
         processSearchPage.validateUrl();
         processSearchPage.searchProcessesByDevice(ftthProcess)

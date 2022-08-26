@@ -83,6 +83,13 @@ public class FtthNetworkSwitching extends GigabitTest {
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.switchToNe2Switching()
@@ -93,8 +100,8 @@ public class FtthNetworkSwitching extends GigabitTest {
         assertTrue(accessLineRiRobot.compareLists(networkSwitchingPage.getUplinksStates(), expectedUplinksStates), "Uplinks states are incorrect");
 
         networkSwitchingPage.clickPrepareButton();
-        mappingsContext.deleteStubs();
         assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"), "Notification is incorrect");
+        mappingsContext.deleteStubs();
         networkSwitchingPage.closeNotificationButton();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
@@ -148,9 +155,20 @@ public class FtthNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-154011")
     @Description("NE2 FTTH Network Switching Rollback after Preparation")
     public void ne2FtthRollbackAfterPreparationTest(){
+        String state1 = "ACTIVE";
+        String state2 = "PLANNED";
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.startNe2Preparation(endSz_49_30_179_76H2.getEndSz());
+        mappingsContext.deleteStubs();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
@@ -171,9 +189,20 @@ public class FtthNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-154013")
     @Description("NE2 FTTH Network Switching Rollback after Execution")
     public void ne2FtthRollbackAfterExecutionTest(){
+        String state1 = "ACTIVE";
+        String state2 = "PLANNED";
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.startNe2Preparation(endSz_49_30_179_76H2.getEndSz());
+        mappingsContext.deleteStubs();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
         networkSwitchingPage.waitUntilNeededStatus("PREPARED", packageId);
@@ -197,11 +226,22 @@ public class FtthNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-147827")
     @Description("NE2 FTTH Network Switching, DPU found, process runs into an error")
     public void ne2FtthPreparationDpuFoundTest() {
+        String state1 = "ACTIVE";
+        String state2 = "PLANNED";
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
+                .addFindAndImportUplinksMock(endSz_49_911_1100_76H1.getEndSz(), state1, state2, null)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
+
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
         networkSwitchingPage.switchToNe2Switching()
                 .clickGetUplinks(endSz_49_911_1100_76H1.getEndSz())
                 .clickPrepareButton();
+        mappingsContext.deleteStubs();
         assertTrue(networkSwitchingPage.getNotification().equals("Der Prozess kann nicht gestartet werden, weil eine DPU auf dem Gerät gefunden wurde"));
     }
 }

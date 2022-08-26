@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementGroupDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementPortDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import cucumber.Context;
@@ -17,16 +18,19 @@ public class TerminationPointSteps {
 
     private final A4ResourceInventoryRobot a4ResInv;
     private final A4ResourceInventoryMapper a4ResInvMapper;
+    private final NetworkElementGroupSteps a4NegSteps;
     private final NetworkElementPortSteps a4NepSteps;
     private final TestContext testContext;
 
     public TerminationPointSteps(TestContext testContext,
                                  A4ResourceInventoryRobot a4ResInv,
                                  A4ResourceInventoryMapper a4ResInvMapper,
+                                 NetworkElementGroupSteps a4NegSteps,
                                  NetworkElementPortSteps a4NepSteps) {
         this.testContext = testContext;
         this.a4ResInv = a4ResInv;
         this.a4ResInvMapper = a4ResInvMapper;
+        this.a4NegSteps = a4NegSteps;
         this.a4NepSteps = a4NepSteps;
     }
 
@@ -91,7 +95,7 @@ public class TerminationPointSteps {
 
     // -----=====[ HELPERS ]=====-----
 
-    private TerminationPointDto setupDefaultTpTestData(String nepAlias) {
+    protected TerminationPointDto setupDefaultTpTestData(String nepAlias) {
         final boolean NEP_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEP, nepAlias);
 
         // TP needs to be connected to a NEP, so if no NEP present, create one
@@ -103,7 +107,21 @@ public class TerminationPointSteps {
         return a4ResInvMapper.getTerminationPointDto(nep.getUuid());
     }
 
-    private void persistTp(String tpAlias, TerminationPointDto tp) {
+    protected TerminationPointDto setupDefaultTpTestDataConnectedToNeg(String negAlias) {
+        final boolean NEG_PRESENT = testContext.getScenarioContext().isContains(Context.A4_NEG, negAlias);
+
+        // TP needs to be connected to a NEP, so if no NEP present, create one
+        if (!NEG_PRESENT)
+            a4NegSteps.givenA4NegWithAlias(negAlias);
+
+        final NetworkElementGroupDto neg = (NetworkElementGroupDto) testContext.getScenarioContext().getContext(Context.A4_NEG, negAlias);
+
+        return a4ResInvMapper.getTerminationPointDto(neg.getUuid());
+    }
+
+    protected void persistTp(String tpAlias, TerminationPointDto tp) {
+        tp.setDescription(tp.getDescription() + " (TP Alias: " + tpAlias + ")");
+
         a4ResInv.createTerminationPoint(tp);
         testContext.getScenarioContext().setContext(Context.A4_TP, tpAlias, tp);
     }

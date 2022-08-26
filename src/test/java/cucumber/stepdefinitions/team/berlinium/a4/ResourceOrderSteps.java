@@ -63,7 +63,15 @@ public class ResourceOrderSteps {
         rows.forEach(r -> {
             final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL, r.get("NEL Reference"));
             final OrderItemActionType actionType = OrderItemActionType.valueOf(r.get("Action Type"));
-            resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
+
+            final String carrierBsaReference = r.get("CarrierBsaRef");
+            final String vlanRangeLower = r.get("VLAN Range Lower");
+            final String vlanRangeUpper = r.get("VLAN Range Upper");
+
+            if (carrierBsaReference != null || vlanRangeLower != null || vlanRangeUpper != null)
+                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro, carrierBsaReference, vlanRangeLower, vlanRangeUpper);
+            else
+                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
         });
 
         // ... and perform the request with the prepared RO

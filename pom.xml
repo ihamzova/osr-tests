@@ -6,16 +6,16 @@
     <packaging>jar</packaging>
     <name>osr-tests</name>
     <description>osr-tests</description>
-    <version>3361.0</version>
+    <version>3379.0</version>
     <parent>
         <groupId>com.tsystems.tm.acc.tests</groupId>
         <artifactId>acc-domain-tests-bom</artifactId>
-        <version>3.4.10</version>
+        <version>3.4.16</version>
     </parent>
 
     <properties>
         <framework.version>${project.parent.version}</framework.version>
-        <osr.models.version>3.0.0.171</osr.models.version>
+        <osr.models.version>3.0.0.172</osr.models.version>
         <oc.domain.name>telitcaas3.t-internal.com</oc.domain.name>
     </properties>
 

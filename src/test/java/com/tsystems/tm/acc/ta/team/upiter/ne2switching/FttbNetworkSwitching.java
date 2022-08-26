@@ -64,15 +64,15 @@ public class FttbNetworkSwitching extends GigabitTest {
         networkSwitchingRobot.changeFeatureToogleEnableFttbNe2NetworkSwitchingState(true);
         endSz_49_911_1100_76H1 = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningCoax);
         endSz_49_812_179_71G1 = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningCoax);
-//        accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1, 1, endSz_49_812_179_71G1, endSz_49_911_1100_76H1);
+        accessLineRiRobot.fillDatabaseForDpuPreprovisioningV2(1, 1, endSz_49_812_179_71G1, endSz_49_911_1100_76H1);
 
         dpuDemand = context.getData().getDpuDemandDataProvider().get(DpuDemandCase.dpuDemand);
         numberOfAccessLinesForProvisioning = Integer.parseInt(dpuDemand.getNumberOfNeededDpuPorts());
         if (numberOfAccessLinesForProvisioning > 16) {
             numberOfAccessLinesForProvisioning = 16;
         }
-//        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(endSz_49_812_179_71G1.getEndsz());
-//        accessLineRiRobot.checkFttbLineParameters(endSz_49_911_1100_76H1, numberOfAccessLinesForProvisioning);
+        wgFttbAccessProvisioningRobot.startWgFttbAccessProvisioningForDevice(endSz_49_812_179_71G1.getEndsz());
+        accessLineRiRobot.checkFttbLineParameters(endSz_49_911_1100_76H1, numberOfAccessLinesForProvisioning);
     }
 
     @BeforeMethod
@@ -85,7 +85,16 @@ public class FttbNetworkSwitching extends GigabitTest {
     @TmsLink("DIGIHUB-152728")
     @Description("NE2 FTTB Network Switching Preparation")
     public void ne2FttbPreparationTest() {
-        List<String> expectedUplinksStates = Arrays.asList("ACTIVE", "PLANNED");
+        String state1 = "ACTIVE";
+        String state2 = "PLANNED";
+        List<String> expectedUplinksStates = Arrays.asList(state1, state2);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
+                .addFindAndImportUplinksMock(endSz_49_911_1100_76H1.getEndSz(), state1, state2, null)
+                .build()
+                .publish()
+                .publishedHook(savePublishedToDefaultDir())
+                .publishedHook(attachStubsToAllureReport());
 
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -96,6 +105,7 @@ public class FttbNetworkSwitching extends GigabitTest {
 
         networkSwitchingPage.clickPrepareButton();
         assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"), "Notification is incorrect");
+        mappingsContext.deleteStubs();
         networkSwitchingPage.closeNotificationButton();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();

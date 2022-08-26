@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
@@ -45,6 +46,25 @@ public class NetworkServiceProfileL2BsaSteps {
     @Given("a NSP L2BSA connected to TP {string}( is existing)( in A4 resource inventory)")
     public void givenA4NspL2Bsa(String tpAlias) {
         createNspL2Bsa(DEFAULT, tpAlias);
+    }
+
+    @Given("{int} TP(s) with carrierBsaReference {string} and NSP(s) L2BSA with lifecycleState {string} connected to NEG {string}( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String carrierBsaReference, String lifecycleState, String negAlias) {
+
+        for (int i = 0; i < number; i++)
+            createTpAndNspL2BsaWithLcState(DEFAULT + i, carrierBsaReference, lifecycleState, negAlias);
+    }
+
+    @Given("{int} TP(s) with carrierBsaReference {string} and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String carrierBsaReference, String lifecycleState) {
+
+        for (int i = 0; i < number; i++)
+            createTpAndNspL2BsaWithLcState(DEFAULT + i, carrierBsaReference, lifecycleState, DEFAULT);
+    }
+
+    @Given("{int} TP(s)( with identical carrierBsaReference) and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String lifecycleState) {
+        givenMultipleA4TPAndNspL2Bsa(number, "carrier-" + getRandomDigits(6), lifecycleState, DEFAULT);
     }
 
     @Given("a/another NSP L2BSA {string} connected to TP {string}( is existing)( in A4 resource inventory)")
@@ -209,6 +229,17 @@ public class NetworkServiceProfileL2BsaSteps {
         nspL2Bsa.setLifecycleState(lcState);
 
         persistNspL2Bsa(nspAlias, nspL2Bsa);
+    }
+
+    private void createTpAndNspL2BsaWithLcState(String alias, String tpCarrierBsaReference, String nspLifecycleState, String negAlias) {
+        TerminationPointDto tp = a4TpSteps.setupDefaultTpTestDataConnectedToNeg(negAlias);
+        tp.setType("L2BSA_TP");
+        tp.setCarrierBsaReference(tpCarrierBsaReference);
+        a4TpSteps.persistTp(alias, tp);
+
+        NetworkServiceProfileL2BsaDto nspL2Bsa = setupDefaultNspL2BsaTestData(alias);
+        nspL2Bsa.setLifecycleState(nspLifecycleState);
+        persistNspL2Bsa(alias, nspL2Bsa);
     }
 
     private void createNspL2BsaWithOpState(String nspAlias, String opState, String tpAlias) {

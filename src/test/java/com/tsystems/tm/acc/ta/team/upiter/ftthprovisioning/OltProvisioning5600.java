@@ -56,7 +56,7 @@ public class OltProvisioning5600 extends GigabitTest {
     accessLineRiRobot = new AccessLineRiRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
 
-    //accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
+    accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H1");
     accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H2");
     accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H3");
     accessLineRiRobot.clearDatabaseByOlt("49/30/179/76H4");
@@ -125,7 +125,7 @@ public class OltProvisioning5600 extends GigabitTest {
     assertEquals(cardBeforeProvisioning.getContainsPortsRefOrValue().size(), 3);
     assertEquals(accessLineRiRobot.getAccessLinesByPort(card5600v2).size(), 0);
 
-    wgAccessProvisioningRobot.startCardProvisioningV2(card5600v2);
+    wgAccessProvisioningRobot.startCardProvisioning(card5600v2);
 
     accessLineRiRobot.checkFtthPortParameters(port);
     accessLineRiRobot.checkDefaultNeProfiles(port, defaultNeProfile, card5600v2.getAccessLinesCount());

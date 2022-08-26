@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.getRandomDigits;
 import static de.telekom.it.magic.api.restassured.ResponseSpecBuilders.voidCheck;
 import static com.tsystems.tm.acc.ta.data.HttpConstants.*;
 import static com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper.CARRIER_BSA_REFERENCE;
@@ -83,10 +84,6 @@ public class A4ResourceOrderRobot {
         addOrderItem(orderItemId, OrderItemActionType.ADD, nelData, ro);
     }
 
-    public void addOrderItemModify(String orderItemId, A4NetworkElementLink nelData, ResourceOrder ro) {
-        addOrderItem(orderItemId, OrderItemActionType.MODIFY, nelData, ro);
-    }
-
     public void addOrderItemDelete(String orderItemId, A4NetworkElementLink nelData, ResourceOrder ro) {
         addOrderItem(orderItemId, OrderItemActionType.DELETE, nelData, ro);
     }
@@ -96,9 +93,13 @@ public class A4ResourceOrderRobot {
     }
 
     public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro) {
+        addOrderItem(orderItemId, actionType, nelLbz, ro, "carrier-" + getRandomDigits(6), "2", "3999");
+    }
+
+    public void addOrderItem(String orderItemId, OrderItemActionType actionType, String nelLbz, ResourceOrder ro, String carrierBsaReference, String vlanRangeLower, String vlanRangeUpper) {
         final ResourceRefOrValue resource = new ResourceRefOrValue()
                 .name(nelLbz)
-                .resourceCharacteristic(resourceOrderMapper.buildResourceCharacteristicList());
+                .resourceCharacteristic(resourceOrderMapper.buildResourceCharacteristicList(carrierBsaReference, vlanRangeLower, vlanRangeUpper));
 
         final ResourceOrderItem orderItem = new ResourceOrderItem()
                 .action(actionType)
