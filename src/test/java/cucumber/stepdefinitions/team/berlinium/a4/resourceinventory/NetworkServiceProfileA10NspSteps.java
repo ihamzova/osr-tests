@@ -118,8 +118,9 @@ public class NetworkServiceProfileA10NspSteps {
 
         assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
     }
+
     @Then("the (new )A10NSP {string} lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
-    public void thenTheA10nspLifecycleStateIsUpdatedInA4ResInv(String  nspAlias, String lifecycleState) {
+    public void thenTheA10nspLifecycleStateIsUpdatedInA4ResInv(String nspAlias, String lifecycleState) {
         final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
         final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
@@ -173,11 +174,30 @@ public class NetworkServiceProfileA10NspSteps {
             roPublicReferenceId = cPublicReferenceId.get().getValue().toString();
         }
 
-        assertEquals(roMtuSize,nspA10nsp.getMtuSize());
+        assertEquals(roMtuSize, nspA10nsp.getMtuSize());
         assertEquals(roLacpActive, Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
         assertEquals(roPublicReferenceId, nspA10nsp.getItAccountingKey());
+
+        // todo: entsprechend dann für VLanRange casten und vergleichen
+        assertEquals((String)getcharacteristicValue(ro,"mtuSize"), nspA10nsp.getMtuSize());
+        assertEquals((String)getcharacteristicValue(ro,"lacpActive"), Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
+        assertEquals((String)getcharacteristicValue(ro,"publicReferenceId"), nspA10nsp.getItAccountingKey());
+
     }
 
+
+    private Object getcharacteristicValue(ResourceOrder ro, String key) {
+
+        Optional<Characteristic> characteristic = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
+                        .getResourceCharacteristic())
+
+                .stream().filter(c -> key.equalsIgnoreCase(c.getName())).findFirst();
+        Object value = "";
+        if (characteristic.isPresent()) {
+            value = characteristic.get().getValue();
+        }
+        return value;
+    }
 
 
     // -----=====[ HELPERS ]=====-----
@@ -210,7 +230,7 @@ public class NetworkServiceProfileA10NspSteps {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
 
-        if(isNullOrEmpty(nspA10nsp.getsVlanRange())) {
+        if (isNullOrEmpty(nspA10nsp.getsVlanRange())) {
             List<VlanRangeDto> vlanRanges = new ArrayList<>();
             vlanRanges.add(new VlanRangeDto()
                     .vlanRangeLower(vlanRangeLower)
@@ -228,7 +248,7 @@ public class NetworkServiceProfileA10NspSteps {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
 
-        if(isNullOrEmpty(nspA10nsp.getsVlanRange())) {
+        if (isNullOrEmpty(nspA10nsp.getsVlanRange())) {
             List<VlanRangeDto> vlanRanges = new ArrayList<>();
             vlanRanges.add(new VlanRangeDto()
                     .vlanRangeLower(vlanRangeLower)
@@ -243,6 +263,7 @@ public class NetworkServiceProfileA10NspSteps {
 
         persistNspA10Nsp(nspAlias, nspA10nsp);
     }
+
     private void createNspA10NspWithStates(String nspAlias, String opState, String lcState, String tpAlias) {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
