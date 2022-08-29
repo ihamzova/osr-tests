@@ -55,6 +55,8 @@ public class OltDetailsPage {
   public String portLifeCycleStateLocator = "slot_%s_port_%s_lifecyclestate";
   public String portLifeCycleStateLocatorEmptySlot = "port_%s_ethernet_lifecyclestate";
   public String ponPortLifeCycleStateLocatorEmptySlot = "port_%s_pon_lifecyclestate";
+  public String ponOpticalModuleEmptySlot = "optical_port_%s";
+  public String ponOpticalModule = "optical_slot_%s_port_%s";
 
   public static final By DEVICE_FUNCTION_BUTTON_LOCATOR = byQaData("device_functions");
   public static final By DELETE_DEVICE_BUTTON_LOCATOR = byQaData("device_functions_option_3");
@@ -65,6 +67,12 @@ public class OltDetailsPage {
 
   public static final By START_CARDS_DEPROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_2");
   public static final By START_CARDS_PROVISIONING_FROM_DEVICEBUTTON_LOCATOR = byQaData("device_functions_option_1");
+
+  private static final String SFP_MODULE_40958962 = "SFP MODUL FOR GPON OLT SDX 6320-16, Class B+, < 11 km";
+  private static final String SFP_MODULE_40958963 = "SFP MODUL FOR GPON OLT SDX 6320-16, Class C+, > 11 km";
+  private static final String SFP_MODULE_40251140 = "GPON SFP B+ max.28 dBm@1310 NM, Reichweite < 11 km";
+  private static final String SFP_MODULE_40251141 = "GPON SFP C+ max.32 dBm@1310 NM, Reichweite > 11 km";
+
 
   @Step("Validate Url")
   public void validateUrl() {
@@ -181,6 +189,7 @@ public class OltDetailsPage {
     if ($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, "1"))).exists()) {
       for (int port = 1; port < oltDevice.getNumberOfPonPorts(); ++port) {
         Assert.assertTrue($(byQaData(String.format(ponPortLifeCycleStateLocatorEmptySlot, port))).getText().contains(portLifeCycleState), "PON portLifeCycleState mismatch (device without slots)");
+        Assert.assertTrue($(byQaData(String.format(ponOpticalModuleEmptySlot, port))).getText().contains(SFP_MODULE_40958962), "Wrong SFP Module inserted");
       }
     } else {
       for (int slot : AVAILABLE_LINE_CARD_SLOTS_ARRAY) {
@@ -190,6 +199,7 @@ public class OltDetailsPage {
           }
           for (int port = 0; port < PORTS_PER_GPON_CARD; ++port) {
             Assert.assertTrue($(byQaData(String.format(portLifeCycleStateLocator, slot, port))).getText().contains(portLifeCycleState), "PON portLifeCycleState mismatch");
+            Assert.assertTrue($(byQaData(String.format(ponOpticalModule, slot, port))).getText().contains(SFP_MODULE_40251140), "Wrong SFP Module inserted");
           }
         }
       }
