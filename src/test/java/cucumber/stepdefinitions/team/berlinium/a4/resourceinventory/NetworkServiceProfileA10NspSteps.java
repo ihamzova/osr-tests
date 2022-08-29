@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.VlanRang
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.CharacteristicDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.Characteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
 import cucumber.Context;
 import cucumber.TestContext;
@@ -18,10 +19,7 @@ import io.cucumber.java.en.Then;
 import org.testng.Assert;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
@@ -146,25 +144,38 @@ public class NetworkServiceProfileA10NspSteps {
     @Then("all attributes from ResourceOrder for A10NSP {string} are saved in A4 resource inventory")
     public void thenAllAttributesFromRoForNspA10nspAreSaved(String nspAlias) {
         final ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-        //System.out.println(ro);
-        final A4ResourceOrderMapper mapper;
         final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
                 .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
         final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
                 .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
 
         // ACTION
-        final ResourceOrderDto roDb = resOrder.getResourceOrderFromDb(ro.getId());
-        List<ResourceOrderItemDto> roiList = roDb.getOrderItem();
 
-        assertTrue(roiList != null && !roiList.isEmpty());
-        roiList.forEach(roi -> Assert.assertEquals(roi.getState(), "completed"));
+        Optional<Characteristic> cMtuSize = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
+                        .getResourceCharacteristic())
+                .stream().filter(c -> "mtuSize".equalsIgnoreCase(c.getName())).findFirst();
+        String roMtuSize = "";
+        if (cMtuSize.isPresent()) {
+            roMtuSize = cMtuSize.get().getValue().toString();
+        }
+        Optional<Characteristic> cLacpActive = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
+                        .getResourceCharacteristic())
+                .stream().filter(c -> "lacpActive".equalsIgnoreCase(c.getName())).findFirst();
+        String roLacpActive = "";
+        if (cLacpActive.isPresent()) {
+            roLacpActive = cLacpActive.get().getValue().toString();
+        }
+        Optional<Characteristic> cPublicReferenceId = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
+                        .getResourceCharacteristic())
+                .stream().filter(c -> "publicReferenceId".equalsIgnoreCase(c.getName())).findFirst();
+        String roPublicReferenceId = "";
+        if (cPublicReferenceId.isPresent()) {
+            roPublicReferenceId = cPublicReferenceId.get().getValue().toString();
+        }
 
-        Optional <CharacteristicDto> roiMtuSize = roiList.get(0).getResourceCharacteristics().stream().filter(c -> "mtuSize".equalsIgnoreCase(c.getName())).findFirst();
-        if (roiMtuSize.isPresent())
-            System.out.println("ROI **************" + roiMtuSize);
-
-
+        assertEquals(roMtuSize,nspA10nsp.getMtuSize());
+        assertEquals(roLacpActive, Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
+        assertEquals(roPublicReferenceId, nspA10nsp.getItAccountingKey());
     }
 
 
