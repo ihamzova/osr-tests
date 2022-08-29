@@ -13,9 +13,13 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.Event;
+import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.EventData;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import org.testng.annotations.*;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
@@ -87,18 +91,19 @@ public class A4RebellSyncTest extends GigabitTest {
     }
 
     @Test
-    public void testHorizonEventEndSzFoundRebelSync() {
+    public void testHorizonEventBothEndSzFoundRebelSync() {
         // GIVEN / ARRANGE
+
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
         System.out.println("+++ uewegData: "+uewegData);
-        // +++ uewegData: UewegData(uewegId=764026, 299152, vendorPortNameA=ge-0/0/1, vendorPortNameB=PCI-1/0)
+        // +++ uewegData: UewegData(uewegId=xxxxxxxx, vendorPortNameA=ge-0/0/1, vendorPortNameB=PCI-1/0)
         System.out.println("+++ ne1Data: "+ne1Data);
-        // +++ ne1Data: A4NetworkElement(uuid=93db293f-9b40-4b76-a2fd-64b2c26018f9, vpsz=49/4917/0, fsz=7KC1,
+        // +++ ne1Data: A4NetworkElement(uuid=93db293f-9b40-4b76-a2fd-64b2c26018f9, vpsz=49/xxx/0, fsz=7xxx,
         // klsId=17056514, category=BOR, operationalState=WORKING, lifecycleState=OPERATING, type=A4-BOR-v1,
         // plannedMatNr=40318601, planningDeviceName=dmst.bor.2, ztpIdent=null)
         System.out.println("+++ ne2Data: "+ne2Data);
-        // +++ ne2Data: A4NetworkElement(uuid=141a2562-96a4-4ddd-9dcb-a2bbb96eb4dc, vpsz=49/1343/0, fsz=7KD1,
+        // +++ ne2Data: A4NetworkElement(uuid=141a2562-96a4-4ddd-9dcb-a2bbb96eb4dc, vpsz=49/xxx/0, fsz=7xxx,
         // klsId=1234567, category=POD_SERVER, operationalState=WORKING, lifecycleState=RETIRING, type=A4-POD-SERVER-v1,
         // plannedMatNr=40770140, planningDeviceName=dmst.server.1, ztpIdent=null)
 
@@ -107,20 +112,205 @@ public class A4RebellSyncTest extends GigabitTest {
                 .addRebellMock(uewegData, ne1Data, ne2Data)
                 .build().publish();
 
-        // send notification to Importer
-        //      uewegId: I545253020
-        //      uewegStatus: InBetrieb
-        //  	endszA: 49/4917/0/7KC1
-        //  	endszB: 49/1343/0/7KD1
 
-        a4Importer.sendNotification(ne1Data);  // Funktion bauen, Übergabe Event
+        OffsetDateTime starttime = OffsetDateTime.now();   // time for check later
 
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+       // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
+        //eventData.setEndszA("49/4917/0/7KC1");
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
+        //eventData.setEndszA("49/30/150/7KC2");   // in Mock bekannt, nicht in ri
+
+       // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
+        //eventData.setEndszB("49/1343/0/7KD1");
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
+        //eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
+
+       // eventData.setUewegId("I090988209");
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+
+        event.setData(eventData);
+        System.out.println("+++ event: "+event);
 
         // WHEN / ACT
-        // a4Importer.doRebellSync(ne1Data);  // das soll jetzt der echte a4-Importer tun
+        a4Importer.sendNotification(event);
+
+        // a4-importer at berlinium-03 do rebell sync
 
         // THEN / ASSERT
-       // a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .get(0).getUuid());
+
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+    }
+
+
+    @Test
+    public void testHorizonEventEndSzAFoundRebelSync() {
+        // GIVEN / ARRANGE
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+        System.out.println("+++ uewegData: "+uewegData);
+        System.out.println("+++ ne1Data: "+ne1Data);
+        System.out.println("+++ ne2Data: "+ne2Data);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .build().publish();
+
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
+        //eventData.setEndszA("49/4917/0/7KC1");
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
+        //eventData.setEndszA("49/30/150/7KC2");   // in Mock bekannt, nicht in ri
+
+        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
+        //eventData.setEndszB("49/1343/0/7KD1");
+        //eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
+        eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
+
+        // eventData.setUewegId("I090988209");
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+
+        event.setData(eventData);
+        System.out.println("+++ event: "+event);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);
+
+        // a4-importer at berlinium-03 do now rebell sync
+
+        // THEN / ASSERT
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .get(0).getUuid());
+
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+    }
+
+
+    @Test
+    public void testHorizonEventEndSzBFoundRebelSync() {
+        // GIVEN / ARRANGE
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+        System.out.println("+++ uewegData: "+uewegData);
+        System.out.println("+++ ne1Data: "+ne1Data);
+        System.out.println("+++ ne2Data: "+ne2Data);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .build().publish();
+
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
+        //eventData.setEndszA("49/4917/0/7KC1");
+        //eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
+        eventData.setEndszA("49/30/151/7KC3");   //  nicht in ri
+
+        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
+        //eventData.setEndszB("49/1343/0/7KD1");
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
+        //eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
+
+        // eventData.setUewegId("I090988209");
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+
+        event.setData(eventData);
+        System.out.println("+++ event: "+event);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);    // a4-importer at berlinium-03 do now rebell sync
+        System.out.println("+++ event gesendet!");
+
+
+        // THEN / ASSERT
+        System.out.println("+++ NE1 in DB: "+a4Inventory.getNetworkElementsByVpszFsz("49/30/151", "7KC3"));  // +++ NE1 in DB: []
+        System.out.println("+++ NE2 in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne2Data.getVpsz(),ne2Data.getFsz()));
+
+        /*
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz("49/30/151"+"/"+"7KC3", ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .get(0).getUuid());
+
+        System.out.println("+++ starttime: "+starttime);
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        //a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep2Data.getUuid(), nep1Data.getUuid());
+
+         */
+    }
+
+
+    @Test
+    public void testHorizonEventEndSzNotFoundNoSync() {
+        // GIVEN / ARRANGE
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
+        //eventData.setEndszA("49/4917/0/7KC1");
+        //eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
+        eventData.setEndszA("49/30/151/7KC2");   //  nicht in ri
+
+        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
+        //eventData.setEndszB("49/1343/0/7KD1");
+        //eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
+        eventData.setEndszB("49/30/151/7KD3");  //  nicht in ri
+
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+
+        event.setData(eventData);
+        System.out.println("+++ event: "+event);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
+
+        // THEN / ASSERT   // was checken? NE nicht da, damit auch nel nicht da?
+        a4Inventory.checkNetworkElementNotExist("49/30/151", "7KC2");
+        a4Inventory.checkNetworkElementNotExist("49/30/151", "7KD3");
     }
 
     @Test

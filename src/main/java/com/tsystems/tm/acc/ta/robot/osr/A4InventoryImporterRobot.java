@@ -2,6 +2,7 @@ package com.tsystems.tm.acc.ta.robot.osr;
 
 import com.tsystems.tm.acc.ta.api.osr.A4RebellSyncClient;
 import com.tsystems.tm.acc.ta.data.osr.models.A4NetworkElement;
+import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.Event;
 import com.tsystems.tm.acc.tests.osr.a4.rebell.sync.client.model.SyncRebellLinks;
 import io.qameta.allure.Step;
 import com.tsystems.tm.acc.ta.api.osr.A4InventoryImporterClient;
@@ -27,20 +28,13 @@ public class A4InventoryImporterRobot {
                 .execute(checkStatus(HTTP_CODE_OK_200));
     }
     @Step("Create Horizon Event for Importer")
-    public void sendNotification(A4NetworkElement neData) {
+    public void sendNotification(Event event) {
 
-      //  a4LinkEvent.getClient().
+        a4LinkEvent.getClient().event().linkImportEventCallback()
+                .body(event)
+                .execute(checkStatus(HTTP_CODE_OK_200));
 
-
-        // bisher nur dummy
-        a4Importer.getClient().networkElements().findNetworkElementsByVpsz().vpszQuery(neData.getVpsz()); // is Spaß
-        System.out.println("+++ VPSZ: "+neData.getVpsz());
     }
-
-
-
-
-
 
 
 }
