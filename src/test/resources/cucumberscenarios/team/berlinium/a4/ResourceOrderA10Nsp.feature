@@ -66,10 +66,10 @@ Feature: Receive and process Resource Orders for A10NSP
     And the resource order is saved in RO database
     And the resource order state is "completed"
     And all order item states are "completed"
-    And 2 "POST" request was sent to the REBELL wiremock for NE "A"
-    And all attributes from ResourceOrder for NSP A10NSPs are updated in A4 resource inventory
-    And the NSP A10NSP lifecycleState is still "PLANNING" in the A4 resource inventory
-    And 2 "PUT" NSP A10NSP update notification was sent to NEMO
+   # And 2 "POST" request was sent to the REBELL wiremock for NE "A"
+    And all attributes from ResourceOrder for A10NSP "A" are saved in A4 resource inventory
+    And the A10NSP "A" lifecycleState is still "PLANNING" in the A4 resource inventory
+   # And 2 "PUT" NSP A10NSP update notification was sent to NEMO
 
   @DIGIHUB-163470
   @team:berlinium

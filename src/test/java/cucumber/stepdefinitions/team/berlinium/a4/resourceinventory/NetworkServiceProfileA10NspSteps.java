@@ -1,18 +1,26 @@
 package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
+import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.VlanRangeDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.CharacteristicDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.testng.Assert;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
@@ -26,16 +34,19 @@ public class NetworkServiceProfileA10NspSteps {
     private final A4ResourceInventoryRobot a4ResInv;
     private final A4ResourceInventoryMapper a4ResInvMapper;
     private final TerminationPointSteps a4TpSteps;
+    private final A4ResourceOrderRobot resOrder;
     private final TestContext testContext;
 
     public NetworkServiceProfileA10NspSteps(TestContext testContext,
                                             A4ResourceInventoryRobot a4ResInv,
                                             A4ResourceInventoryMapper a4ResInvMapper,
-                                            TerminationPointSteps a4TpSteps) {
+                                            TerminationPointSteps a4TpSteps,
+                                            A4ResourceOrderRobot resOrder) {
         this.testContext = testContext;
         this.a4ResInv = a4ResInv;
         this.a4ResInvMapper = a4ResInvMapper;
         this.a4TpSteps = a4TpSteps;
+        this.resOrder = resOrder;
     }
 
 
@@ -109,6 +120,16 @@ public class NetworkServiceProfileA10NspSteps {
 
         assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
     }
+    @Then("the (new )A10NSP {string} lifecycleState is (now )(updated to )(still ){string}( in the A4 resource inventory)")
+    public void thenTheA10nspLifecycleStateIsUpdatedInA4ResInv(String  nspAlias, String lifecycleState) {
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+
+        assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
+    }
+
 
     @Then("the NSP A10NSP lastUpdateTime is updated")
     public void thenTheNspA10nspLastUpdateTimeIsUpdated() {
@@ -121,6 +142,31 @@ public class NetworkServiceProfileA10NspSteps {
         assertNotNull(nspA10nsp.getLastUpdateTime());
         assertTrue(nspA10nsp.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspA10nsp.getLastUpdateTime() + ") is older than " + oldDateTime + "!");
     }
+
+    @Then("all attributes from ResourceOrder for A10NSP {string} are saved in A4 resource inventory")
+    public void thenAllAttributesFromRoForNspA10nspAreSaved(String nspAlias) {
+        final ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
+        //System.out.println(ro);
+        final A4ResourceOrderMapper mapper;
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+
+        // ACTION
+        final ResourceOrderDto roDb = resOrder.getResourceOrderFromDb(ro.getId());
+        List<ResourceOrderItemDto> roiList = roDb.getOrderItem();
+
+        assertTrue(roiList != null && !roiList.isEmpty());
+        roiList.forEach(roi -> Assert.assertEquals(roi.getState(), "completed"));
+
+        Optional <CharacteristicDto> roiMtuSize = roiList.get(0).getResourceCharacteristics().stream().filter(c -> "mtuSize".equalsIgnoreCase(c.getName())).findFirst();
+        if (roiMtuSize.isPresent())
+            System.out.println("ROI **************" + roiMtuSize);
+
+
+    }
+
 
 
     // -----=====[ HELPERS ]=====-----
