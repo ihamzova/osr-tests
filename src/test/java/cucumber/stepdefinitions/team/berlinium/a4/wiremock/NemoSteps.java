@@ -104,4 +104,12 @@ public class NemoSteps {
         a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspA10nsp.getUuid(), method, count);
     }
 
+    @Then("{int} {string} NSP A10NSP {string} update notification(s) was/were sent to NEMO")
+    public void thenANspA10nspUpdateNotificationWasSentToNemo(int count, String method, String nspAlias) {
+        final NetworkServiceProfileA10NspDto nspA10nsp = (NetworkServiceProfileA10NspDto) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
+
+        a4NemoUpdater.checkLogicalResourceRequestToNemoWiremock(nspA10nsp.getUuid(), method, count);
+    }
+
 }
