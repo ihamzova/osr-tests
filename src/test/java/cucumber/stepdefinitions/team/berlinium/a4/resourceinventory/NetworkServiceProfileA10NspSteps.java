@@ -11,7 +11,9 @@ import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.Characteristic;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.QosList;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.VlanRange;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
@@ -152,36 +154,23 @@ public class NetworkServiceProfileA10NspSteps {
 
         // ACTION
 
-        Optional<Characteristic> cMtuSize = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
-                        .getResourceCharacteristic())
-                .stream().filter(c -> "mtuSize".equalsIgnoreCase(c.getName())).findFirst();
-        String roMtuSize = "";
-        if (cMtuSize.isPresent()) {
-            roMtuSize = cMtuSize.get().getValue().toString();
-        }
-        Optional<Characteristic> cLacpActive = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
-                        .getResourceCharacteristic())
-                .stream().filter(c -> "lacpActive".equalsIgnoreCase(c.getName())).findFirst();
-        String roLacpActive = "";
-        if (cLacpActive.isPresent()) {
-            roLacpActive = cLacpActive.get().getValue().toString();
-        }
-        Optional<Characteristic> cPublicReferenceId = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
-                        .getResourceCharacteristic())
-                .stream().filter(c -> "publicReferenceId".equalsIgnoreCase(c.getName())).findFirst();
-        String roPublicReferenceId = "";
-        if (cPublicReferenceId.isPresent()) {
-            roPublicReferenceId = cPublicReferenceId.get().getValue().toString();
-        }
-
-        assertEquals(roMtuSize, nspA10nsp.getMtuSize());
-        assertEquals(roLacpActive, Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
-        assertEquals(roPublicReferenceId, nspA10nsp.getItAccountingKey());
-
         // todo: entsprechend dann für VLanRange casten und vergleichen
         assertEquals((String)getcharacteristicValue(ro,"mtuSize"), nspA10nsp.getMtuSize());
+        assertEquals((String)getcharacteristicValue(ro,"carrierBsaReference"), nspA10nsp.getCarrierBsaReference());
         assertEquals((String)getcharacteristicValue(ro,"lacpActive"), Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
         assertEquals((String)getcharacteristicValue(ro,"publicReferenceId"), nspA10nsp.getItAccountingKey());
+        VlanRange roVlanRange;
+        roVlanRange = (VlanRange)  getcharacteristicValue(ro,"VLAN_Range");
+        assertNotNull(roVlanRange);
+        assertEquals(1, Objects.requireNonNull(nspA10nsp.getsVlanRange()).size());
+        assertEquals(roVlanRange.getVlanRangeLower(),nspA10nsp.getsVlanRange().get(0).getVlanRangeLower());
+        assertEquals(roVlanRange.getVlanRangeUpper(),nspA10nsp.getsVlanRange().get(0).getVlanRangeUpper());
+        assertEquals(Objects.requireNonNull(ro.getOrderItem()).size(),Integer.parseInt(Objects.requireNonNull(nspA10nsp.getNumberOfAssociatedNsps())));
+
+        QosList roQosList;
+        roQosList = (QosList) getcharacteristicValue(ro,"QoS_List");
+        assertNotNull(roQosList);
+        assertEquals(Objects.requireNonNull(roQosList.getQosClasses()).size(), Objects.requireNonNull(nspA10nsp.getQosClasses()).size());
 
     }
 

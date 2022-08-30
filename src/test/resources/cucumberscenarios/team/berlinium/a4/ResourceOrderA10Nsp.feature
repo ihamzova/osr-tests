@@ -54,22 +54,20 @@ Feature: Receive and process Resource Orders for A10NSP
     And all order item states are "completed"
 
   #DIGIHUB-77248 - build A10NSP "modify" use case for Resource Order Item
-  @DIGIHUB-163469
   @team:berlinium
   @ms:a4-resource-order-orchestrator @ms:a4-resource-inventory @ms:a4-inventory-importer @ms:a4-carrier-management @ms:a4-nemo-updater
-  Scenario: Receive RO, 2 items with Action Type Modify - Sunny Day
+  Scenario: Receive RO, 1 item with Action Type Modify - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Reference | Action Type |
       | A             | MODIFY      |
-    #  | B             | MODIFY      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
     And all order item states are "completed"
-   # And 2 "POST" request was sent to the REBELL wiremock for NE "A"
+    #And 1 "GET" request was sent to the REBELL wiremock for NE "A"
     And all attributes from ResourceOrder for A10NSP "A" are saved in A4 resource inventory
     And the A10NSP "A" lifecycleState is still "PLANNING" in the A4 resource inventory
-   # And 2 "PUT" NSP A10NSP update notification was sent to NEMO
+    And 1 "PUT" NSP A10NSP "A" update notification was sent to NEMO
 
   @DIGIHUB-163470
   @team:berlinium
