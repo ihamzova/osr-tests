@@ -18,6 +18,7 @@ import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.EventDa
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import org.testng.annotations.*;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -42,9 +43,6 @@ public class A4RebellSyncTest extends GigabitTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement ne1Data;
     private A4NetworkElement ne2Data;
-    private A4NetworkElement ne3Data;
-    private A4NetworkElement ne4Data;
-    private A4NetworkElement ne5Data;
     private A4NetworkElementPort nep1Data;
     private A4NetworkElementPort nep2Data;
     private A4NetworkElementLink nelData;
@@ -58,21 +56,12 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementOperatingBor02);
         ne2Data = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01);
-        ne3Data = new A4NetworkElement();
-        ne4Data = new A4NetworkElement();
-        ne5Data = new A4NetworkElement();
         nep1Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
         nep2Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-        ne3Data.setVpsz("49/30/150");
-        ne3Data.setFsz("7KD3");
-        ne4Data.setVpsz("49/30/150");
-        ne4Data.setFsz("7KCA");
-        ne5Data.setVpsz("49/30/150");
-        ne5Data.setFsz("7KDC");
         // Ensure that no old test data is in the way
         cleanup();
     }
@@ -98,9 +87,6 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
         a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
-        a4Inventory.deleteA4NetworkElementsRecursively(ne3Data);
-        a4Inventory.deleteA4NetworkElementsRecursively(ne4Data);
-       // a4Inventory.deleteA4NetworkElementsRecursively(ne5Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data, ne1Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data, ne2Data);
     }
@@ -112,7 +98,7 @@ public class A4RebellSyncTest extends GigabitTest {
 
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
-
+        uewegData.setVendorPortNameA("ge-0/0/1");
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
                 .addRebellMock(uewegData, ne1Data, ne2Data)
@@ -219,26 +205,17 @@ public class A4RebellSyncTest extends GigabitTest {
         eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
-
         event.setData(eventData);
-        System.out.println("+++ event: "+event);
 
         // WHEN / ACT
         a4Importer.sendNotification(event);    // a4-importer at berlinium-03 do now rebell sync
-        System.out.println("+++ event gesendet!");
 
         // THEN / ASSERT
-      // System.out.println("+++ NE_A in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne4Data.getVpsz(),ne4Data.getFsz()));  // +++ NE in DB: []
-       //  System.out.println("+++ NE_B in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne5Data.getVpsz(),ne5Data.getFsz()));
-
-
         nelData.setUuid(a4Inventory
                 .getNetworkElementLinksByNeEndSz(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), ne1Data.getVpsz()+"/"+ne1Data.getFsz())
                 .get(0).getUuid());
-
-        //System.out.println("+++ starttime: "+starttime);
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
-
+        uewegData.setVendorPortNameA("ge-0/0/1");
     }
 
 
