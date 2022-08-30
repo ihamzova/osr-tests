@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium.a4;
 
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkElementLinkDto;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.sleepForSeconds;
 import static com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType.ADD;
 import static java.util.stream.Collectors.toList;
@@ -61,17 +63,20 @@ public class ResourceOrderSteps {
         ResourceOrder ro = resOrder.buildResourceOrder();
 
         rows.forEach(r -> {
-            final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL, r.get("NEL Reference"));
-            final OrderItemActionType actionType = OrderItemActionType.valueOf(r.get("Action Type"));
-
-            final String carrierBsaReference = r.get("CarrierBsaRef");
+            final String nelAlias = r.get("NEL Ref (LBZ)");
+            final String nspA10NspAlias = r.get("NSP A10NSP Ref (carrierBsaRef)");
             final String vlanRangeLower = r.get("VLAN Range Lower");
             final String vlanRangeUpper = r.get("VLAN Range Upper");
 
-            if (carrierBsaReference != null || vlanRangeLower != null || vlanRangeUpper != null)
+            final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL, nelAlias);
+            final NetworkServiceProfileA10NspDto nspA10Nsp = (NetworkServiceProfileA10NspDto) testContext.getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspA10NspAlias);
+            final String carrierBsaReference = nspA10Nsp.getCarrierBsaReference();
+            final OrderItemActionType actionType = OrderItemActionType.valueOf(r.get("Action Type"));
+
+            if (!isNullOrEmpty(vlanRangeLower) || !isNullOrEmpty(vlanRangeUpper))
                 resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro, carrierBsaReference, vlanRangeLower, vlanRangeUpper);
             else
-                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
+                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), carrierBsaReference, ro);
         });
 
         // ... and perform the request with the prepared RO

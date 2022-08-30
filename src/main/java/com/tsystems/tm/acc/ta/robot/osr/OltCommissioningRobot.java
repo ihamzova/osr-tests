@@ -256,6 +256,8 @@ public class OltCommissioningRobot {
                 .map(Port::getLifeCycleState).allMatch(LifeCycleState.OPERATING::equals);
         assertTrue(allPortsInOperatingState, "Some port is in not OPERATING state");
 
+        checkAppearanceOfSfpModules(olt);
+
         List<AccessLineDto> wgAccessLines = accessLineResourceInventoryClient.getClient().accessLineController().searchAccessLines()
                 .body(new SearchAccessLineDto().endSz(oltEndSz)).executeAs(checkStatus(HTTP_CODE_OK_200))
                 .stream().filter(accessLineDto -> accessLineDto.getStatus().equals(AccessLineStatus.WALLED_GARDEN)).collect(Collectors.toList());
@@ -308,6 +310,8 @@ public class OltCommissioningRobot {
         Assert.assertEquals(device.getDeviceType(), DeviceType.OLT, "DeviceType does not match");
         Assert.assertEquals(device.getRelatedParty().get(0).getId(), compositePartyId.toString(), "composite partyId does not match");
 
+        checkAppearanceOfSfpModules(oltDevice);
+
         OltDetailsPage oltDetailsPage = new OltDetailsPage();
         oltDetailsPage.validateUrl();
         Assert.assertEquals(oltDetailsPage.getEndsz(), endSz);
@@ -316,6 +320,46 @@ public class OltCommissioningRobot {
             Assert.assertEquals(oltDetailsPage.getKlsID(), oltDevice.getVst().getAddress().getKlsId(), "KlsId coming from PSL (Mock)");
         }
         Assert.assertEquals(oltDetailsPage.getDeviceLifeCycleState(), DevicePortLifeCycleStateUI.OPERATING.toString());
+    }
+
+    @Owner("Mercury")
+    @Step("Check appearance of SFP modules on PON and ETHERNET ports")
+    public void checkAppearanceOfSfpModules(OltDevice oltDevice) {
+        List<Device> deviceList = deviceResourceInventoryManagementClient.getClient().device().listDevice()
+                .endSzQuery(oltDevice.getEndsz()).depthQuery(3).executeAs(checkStatus(HTTP_CODE_OK_200));
+        assertEquals(deviceList.size(), 1L, "Device is not present");
+
+        if ( oltDevice.getBezeichnung().equals(EMS_NBI_NAME_SDX6320_16) ) {
+            deviceList.get(0).getContainsPortsRefOrValue().forEach(
+                    port -> {
+                        Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Port " + port.getPortName() + " has no SFP Module");
+                        if ( port.getPortType().equals(PortType.PON) ) {
+                            Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40958962", "Port " + port.getPortName() + " has wrong SFP Module");
+                        }
+                        if ( port.getPortType().equals(PortType.ETHERNET) ) {
+                            Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40958963", "Port " + port.getPortName() + " has wrong SFP Module");
+                        }
+                    }
+            );
+        }
+        if ( oltDevice.getBezeichnung().equals(EMS_NBI_NAME_MA5600) ) {
+            deviceList.get(0).getContainsCardsRefOrValue().forEach(
+                    card -> card.getContainsPortsRefOrValue().forEach(
+                            port -> {
+                                if ( port.getPortType().equals(PortType.PON) ) {
+                                    Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has no SFP Module");
+                                    Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40251140", "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has wrong SFP Module");
+                                }
+                                if ( port.getPortType().equals(PortType.ETHERNET) ) {
+                                    if (card.getSlotName().equals(oltDevice.getOltSlot()) && port.getPortName().equals(oltDevice.getOltPort())) { // check appearance currently only for the specified uplink card and port
+                                        Assert.assertNotNull(port.getContainsOpticalModuleRefOrValue(), "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has no SFP Module");
+                                        Assert.assertEquals(port.getContainsOpticalModuleRefOrValue().getMaterialNumber(), "40251141", "Slot " + card.getSlotName() + " Port " + port.getPortName() + " has wrong SFP Module");
+                                    }
+                                }
+                            }
+                    )
+            );
+        }
     }
 
     @Step("Check uplink and ancp-session data from olt-uplink-management and ancp-configuration")

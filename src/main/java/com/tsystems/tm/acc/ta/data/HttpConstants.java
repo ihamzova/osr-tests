@@ -8,6 +8,7 @@ public interface HttpConstants {
     int HTTP_CODE_NO_CONTENT_204 = 204;
     int HTTP_CODE_BAD_REQUEST_400 = 400;
     int HTTP_CODE_NOT_FOUND_404 = 404;
+    int HTTP_CODE_CONFLICT_409 = 409;
     int HTTP_CODE_INTERNAL_SERVER_ERROR_500 = 500;
 
 }

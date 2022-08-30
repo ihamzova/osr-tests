@@ -12,12 +12,13 @@ public class A10nspInventoryStub extends AbstractStubMapping {
 
     public static final String A10NSP_A4CONTROLLER_URL = "/resource-order-resource-inventory/v1/a10nspA4";
 
-    public MappingBuilder postA10nspA4200(String carrierBsaReference, String rahmenvertragsnummer) {
+    public MappingBuilder postA10nspA4200(String carrierBsaReference, String rahmenvertragsNummer) {
         return get(urlPathEqualTo(A10NSP_A4CONTROLLER_URL))
                 .withName("postA10nspA4200")
-                .willReturn(aDefaultResponseWithBody(serialize(new A10nspA4DtoMapper().getA10nspA4Dto(carrierBsaReference, rahmenvertragsnummer)), HTTP_CODE_OK_200))
-                .withQueryParam("rahmenvertragsnummer", equalTo((rahmenvertragsnummer)))
-                .withQueryParam("carrierBsaReference", equalTo(carrierBsaReference));
+                .willReturn(aDefaultResponseWithBody(serialize(new A10nspA4DtoMapper().getA10nspA4Dto(carrierBsaReference, rahmenvertragsNummer)), HTTP_CODE_OK_200))
+                .withQueryParam("rahmenvertragsnummer", equalTo(rahmenvertragsNummer))
+                .withQueryParam("carrierBsaReference", equalTo(carrierBsaReference))
+                .atPriority(9);
     }
 
     private String serialize(Object obj) {
