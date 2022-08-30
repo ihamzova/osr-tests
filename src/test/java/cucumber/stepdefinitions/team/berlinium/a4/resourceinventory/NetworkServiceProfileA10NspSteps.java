@@ -1,15 +1,10 @@
 package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
-import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceOrderMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
-import com.tsystems.tm.acc.ta.robot.osr.A4ResourceOrderRobot;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.VlanRangeDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.CharacteristicDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.client.model.ResourceOrderItemDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.Characteristic;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.QosList;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
@@ -18,7 +13,6 @@ import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.testng.Assert;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -34,19 +28,16 @@ public class NetworkServiceProfileA10NspSteps {
     private final A4ResourceInventoryRobot a4ResInv;
     private final A4ResourceInventoryMapper a4ResInvMapper;
     private final TerminationPointSteps a4TpSteps;
-    private final A4ResourceOrderRobot resOrder;
     private final TestContext testContext;
 
     public NetworkServiceProfileA10NspSteps(TestContext testContext,
                                             A4ResourceInventoryRobot a4ResInv,
                                             A4ResourceInventoryMapper a4ResInvMapper,
-                                            TerminationPointSteps a4TpSteps,
-                                            A4ResourceOrderRobot resOrder) {
+                                            TerminationPointSteps a4TpSteps) {
         this.testContext = testContext;
         this.a4ResInv = a4ResInv;
         this.a4ResInvMapper = a4ResInvMapper;
         this.a4TpSteps = a4TpSteps;
-        this.resOrder = resOrder;
     }
 
 
@@ -154,7 +145,6 @@ public class NetworkServiceProfileA10NspSteps {
 
         // ACTION
 
-        // todo: entsprechend dann für VLanRange casten und vergleichen
         assertEquals((String)getcharacteristicValue(ro,"mtuSize"), nspA10nsp.getMtuSize());
         assertEquals((String)getcharacteristicValue(ro,"carrierBsaReference"), nspA10nsp.getCarrierBsaReference());
         assertEquals((String)getcharacteristicValue(ro,"lacpActive"), Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
@@ -211,24 +201,6 @@ public class NetworkServiceProfileA10NspSteps {
     private void createNspA10Nsp(String nspAlias, String tpAlias) {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
-
-        persistNspA10Nsp(nspAlias, nspA10nsp);
-    }
-
-    private void createNspA10NspWithVlanRange(String nspAlias, String vlanRangeLower, String vlanRangeUpper, String tpAlias) {
-        // ACTION
-        NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
-
-        if (isNullOrEmpty(nspA10nsp.getsVlanRange())) {
-            List<VlanRangeDto> vlanRanges = new ArrayList<>();
-            vlanRanges.add(new VlanRangeDto()
-                    .vlanRangeLower(vlanRangeLower)
-                    .vlanRangeUpper(vlanRangeUpper));
-            nspA10nsp.setsVlanRange(vlanRanges);
-        }
-
-        nspA10nsp.getsVlanRange().get(0).setVlanRangeLower(vlanRangeLower);
-        nspA10nsp.getsVlanRange().get(0).setVlanRangeUpper(vlanRangeUpper);
 
         persistNspA10Nsp(nspAlias, nspA10nsp);
     }
