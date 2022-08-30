@@ -181,11 +181,15 @@ public class NetworkServiceProfileA10NspSteps {
         return value;
     }
 
+
     private boolean checkQosClassValues(QosList roQosList, List<A10NspQosDto> a10NspQosDtos, String qosBandwidth, String qosospBit) {
 
         boolean sameCounts = false;
+
         List<QosClass> qosClassStream = Objects.requireNonNull(roQosList.getQosClasses())
-                .stream().filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidth())).filter(c -> qosospBit.equalsIgnoreCase(c.getQospBit())).collect(Collectors.toList());
+                .stream()
+                .filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidth()))
+                .filter(c -> qosospBit.equalsIgnoreCase(c.getQospBit())).collect(Collectors.toList());
 
         List<A10NspQosDto> a10NspQosDtoStream = Objects.requireNonNull(a10NspQosDtos)
                 .stream()
@@ -193,7 +197,6 @@ public class NetworkServiceProfileA10NspSteps {
                 .filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidthUp()))
                 .filter(c -> qosospBit.equalsIgnoreCase(c.getQosPriority())).collect(Collectors.toList());
 
-        Object value = "";
         if (qosClassStream != null && a10NspQosDtoStream != null ) {
             if (qosClassStream.size() == a10NspQosDtoStream.size())
                 sameCounts = true;
