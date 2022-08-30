@@ -42,6 +42,9 @@ public class A4RebellSyncTest extends GigabitTest {
     private A4NetworkElementGroup negData;
     private A4NetworkElement ne1Data;
     private A4NetworkElement ne2Data;
+    private A4NetworkElement ne3Data;
+    private A4NetworkElement ne4Data;
+    private A4NetworkElement ne5Data;
     private A4NetworkElementPort nep1Data;
     private A4NetworkElementPort nep2Data;
     private A4NetworkElementLink nelData;
@@ -55,13 +58,21 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(A4NetworkElementCase.networkElementOperatingBor02);
         ne2Data = osrTestContext.getData().getA4NetworkElementDataProvider()
                 .get(A4NetworkElementCase.networkElementRetiringPodServer01);
+        ne3Data = new A4NetworkElement();
+        ne4Data = new A4NetworkElement();
+        ne5Data = new A4NetworkElement();
         nep1Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_1G_002);
         nep2Data = osrTestContext.getData().getA4NetworkElementPortDataProvider()
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-
+        ne3Data.setVpsz("49/30/150");
+        ne3Data.setFsz("7KD3");
+        ne4Data.setVpsz("49/30/150");
+        ne4Data.setFsz("7KCA");
+        ne5Data.setVpsz("49/30/150");
+        ne5Data.setFsz("7KDC");
         // Ensure that no old test data is in the way
         cleanup();
     }
@@ -71,6 +82,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.createNetworkElementGroup(negData);
         a4Inventory.createNetworkElement(ne1Data, negData);
         a4Inventory.createNetworkElement(ne2Data, negData);
+        //a4Inventory.createNetworkElement(ne5Data, negData);
         a4Inventory.createNetworkElementPort(nep1Data, ne1Data);
         a4Inventory.createNetworkElementPort(nep2Data, ne2Data);
     }
@@ -86,6 +98,9 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementGroupsRecursively(negData);
         a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
         a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne3Data);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne4Data);
+       // a4Inventory.deleteA4NetworkElementsRecursively(ne5Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data, ne1Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data, ne2Data);
     }
@@ -93,27 +108,15 @@ public class A4RebellSyncTest extends GigabitTest {
     @Test
     public void testHorizonEventBothEndSzFoundRebelSync() {
         // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();   // time for check later
 
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
-        System.out.println("+++ uewegData: "+uewegData);
-        // +++ uewegData: UewegData(uewegId=xxxxxxxx, vendorPortNameA=ge-0/0/1, vendorPortNameB=PCI-1/0)
-        System.out.println("+++ ne1Data: "+ne1Data);
-        // +++ ne1Data: A4NetworkElement(uuid=93db293f-9b40-4b76-a2fd-64b2c26018f9, vpsz=49/xxx/0, fsz=7xxx,
-        // klsId=17056514, category=BOR, operationalState=WORKING, lifecycleState=OPERATING, type=A4-BOR-v1,
-        // plannedMatNr=40318601, planningDeviceName=dmst.bor.2, ztpIdent=null)
-        System.out.println("+++ ne2Data: "+ne2Data);
-        // +++ ne2Data: A4NetworkElement(uuid=141a2562-96a4-4ddd-9dcb-a2bbb96eb4dc, vpsz=49/xxx/0, fsz=7xxx,
-        // klsId=1234567, category=POD_SERVER, operationalState=WORKING, lifecycleState=RETIRING, type=A4-POD-SERVER-v1,
-        // plannedMatNr=40770140, planningDeviceName=dmst.server.1, ztpIdent=null)
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
                 .addRebellMock(uewegData, ne1Data, ne2Data)
                 .build().publish();
-
-
-        OffsetDateTime starttime = OffsetDateTime.now();   // time for check later
 
         // create and send event
         Event event = new Event();
@@ -123,17 +126,8 @@ public class A4RebellSyncTest extends GigabitTest {
         event.setSpecversion("1.0");
 
         EventData eventData = new EventData();
-       // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
-        //eventData.setEndszA("49/4917/0/7KC1");
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
-        //eventData.setEndszA("49/30/150/7KC2");   // in Mock bekannt, nicht in ri
-
-       // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
-        //eventData.setEndszB("49/1343/0/7KD1");
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
-        //eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
-
-       // eventData.setUewegId("I090988209");
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
 
@@ -141,9 +135,7 @@ public class A4RebellSyncTest extends GigabitTest {
         System.out.println("+++ event: "+event);
 
         // WHEN / ACT
-        a4Importer.sendNotification(event);
-
-        // a4-importer at berlinium-03 do rebell sync
+        a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do rebell sync
 
         // THEN / ASSERT
         nelData.setUuid(a4Inventory
@@ -158,19 +150,17 @@ public class A4RebellSyncTest extends GigabitTest {
     @Test
     public void testHorizonEventEndSzAFoundRebelSync() {
         // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
 
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
-        System.out.println("+++ uewegData: "+uewegData);
-        System.out.println("+++ ne1Data: "+ne1Data);
-        System.out.println("+++ ne2Data: "+ne2Data);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
-                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .addRebellMock(uewegData, ne1Data, ne2Data)     // ne2 in a4-ri unknown
                 .build().publish();
-
-        OffsetDateTime starttime = OffsetDateTime.now();
 
         // create and send event
         Event event = new Event();
@@ -180,17 +170,9 @@ public class A4RebellSyncTest extends GigabitTest {
         event.setSpecversion("1.0");
 
         EventData eventData = new EventData();
-        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
-        //eventData.setEndszA("49/4917/0/7KC1");
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
-        //eventData.setEndszA("49/30/150/7KC2");   // in Mock bekannt, nicht in ri
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  // unknown in a4
 
-        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
-        //eventData.setEndszB("49/1343/0/7KD1");
-        //eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
-        eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
-
-        // eventData.setUewegId("I090988209");
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
 
@@ -198,9 +180,7 @@ public class A4RebellSyncTest extends GigabitTest {
         System.out.println("+++ event: "+event);
 
         // WHEN / ACT
-        a4Importer.sendNotification(event);
-
-        // a4-importer at berlinium-03 do now rebell sync
+        a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do now rebell sync
 
         // THEN / ASSERT
         nelData.setUuid(a4Inventory
@@ -208,25 +188,24 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(0).getUuid());
 
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
-        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
     }
 
 
     @Test
     public void testHorizonEventEndSzBFoundRebelSync() {
         // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
+
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
-        System.out.println("+++ uewegData: "+uewegData);
-        System.out.println("+++ ne1Data: "+ne1Data);
-        System.out.println("+++ ne2Data: "+ne2Data);
+        uewegData.setVendorPortNameA("PCI-1/0");
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
                 wiremockScenarioName))
-                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .addRebellMock(uewegData, ne2Data, ne1Data)   // ne1 unknown in a4
                 .build().publish();
-
-        OffsetDateTime starttime = OffsetDateTime.now();
 
         // create and send event
         Event event = new Event();
@@ -236,17 +215,8 @@ public class A4RebellSyncTest extends GigabitTest {
         event.setSpecversion("1.0");
 
         EventData eventData = new EventData();
-        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
-        //eventData.setEndszA("49/4917/0/7KC1");
-        //eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
-        eventData.setEndszA("49/30/151/7KC3");   //  nicht in ri
-
-        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
-        //eventData.setEndszB("49/1343/0/7KD1");
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
-        //eventData.setEndszB("49/30/150/7KD3");  // in Mock bekannt, nicht in ri
-
-        // eventData.setUewegId("I090988209");
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  unknown in a4
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
 
@@ -257,27 +227,27 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Importer.sendNotification(event);    // a4-importer at berlinium-03 do now rebell sync
         System.out.println("+++ event gesendet!");
 
-
         // THEN / ASSERT
-        System.out.println("+++ NE1 in DB: "+a4Inventory.getNetworkElementsByVpszFsz("49/30/151", "7KC3"));  // +++ NE1 in DB: []
-        System.out.println("+++ NE2 in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne2Data.getVpsz(),ne2Data.getFsz()));
+      // System.out.println("+++ NE_A in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne4Data.getVpsz(),ne4Data.getFsz()));  // +++ NE in DB: []
+       //  System.out.println("+++ NE_B in DB: "+a4Inventory.getNetworkElementsByVpszFsz(ne5Data.getVpsz(),ne5Data.getFsz()));
 
-        /*
+
         nelData.setUuid(a4Inventory
-                .getNetworkElementLinksByNeEndSz("49/30/151"+"/"+"7KC3", ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .getNetworkElementLinksByNeEndSz(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), ne1Data.getVpsz()+"/"+ne1Data.getFsz())
                 .get(0).getUuid());
 
-        System.out.println("+++ starttime: "+starttime);
+        //System.out.println("+++ starttime: "+starttime);
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
-        //a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep2Data.getUuid(), nep1Data.getUuid());
 
-         */
     }
 
 
     @Test
     public void testHorizonEventEndSzNotFoundNoSync() {
         // GIVEN / ARRANGE
+        a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
+
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
 
@@ -289,15 +259,8 @@ public class A4RebellSyncTest extends GigabitTest {
         event.setSpecversion("1.0");
 
         EventData eventData = new EventData();
-        // eventData.setEndszA("49/6501/129/7MA1");  // Sweta
-        //eventData.setEndszA("49/4917/0/7KC1");
-        //eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());  // in before erzeugt
-        eventData.setEndszA("49/30/151/7KC2");   //  nicht in ri
-
-        // eventData.setEndszB("49/651/0/7ZJA");     // Sweta
-        //eventData.setEndszB("49/1343/0/7KD1");
-        //eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());      // in before erzeugt
-        eventData.setEndszB("49/30/151/7KD3");  //  nicht in ri
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  nicht in ri
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  //  nicht in ri
 
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
@@ -309,8 +272,9 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
 
         // THEN / ASSERT   // was checken? NE nicht da, damit auch nel nicht da?
-        a4Inventory.checkNetworkElementNotExist("49/30/151", "7KC2");
-        a4Inventory.checkNetworkElementNotExist("49/30/151", "7KD3");
+        a4Inventory.checkNetworkElementNotExist(ne1Data.getVpsz(), ne1Data.getFsz());
+        a4Inventory.checkNetworkElementNotExist(ne2Data.getVpsz(), ne2Data.getFsz());
+
     }
 
     @Test

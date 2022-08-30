@@ -749,7 +749,7 @@ public class A4ResourceInventoryRobot {
     @Step("Check that lastSuccessfulSyncTime has been set for network element link")
     public void checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementLink nelData, OffsetDateTime timeBeforeSync) {
         NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
-
+System.out.println("+++ nelData: "+nelData);
         assertTrue(Objects.requireNonNull(networkElementLinkDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
     }
 
