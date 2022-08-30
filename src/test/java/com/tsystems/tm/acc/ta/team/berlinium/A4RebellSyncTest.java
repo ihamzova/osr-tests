@@ -90,7 +90,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data, ne2Data);
     }
 
-    @Test
+    @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
     public void testHorizonEventBothEndSzFoundRebelSync() {
         // GIVEN / ARRANGE
         OffsetDateTime starttime = OffsetDateTime.now();   // time for check later
@@ -115,9 +115,7 @@ public class A4RebellSyncTest extends GigabitTest {
         eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
-
         event.setData(eventData);
-        System.out.println("+++ event: "+event);
 
         // WHEN / ACT
         a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do rebell sync
@@ -131,8 +129,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
     }
 
-
-    @Test
+    @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
     public void testHorizonEventEndSzAFoundRebelSync() {
         // GIVEN / ARRANGE
         OffsetDateTime starttime = OffsetDateTime.now();
@@ -157,12 +154,9 @@ public class A4RebellSyncTest extends GigabitTest {
         EventData eventData = new EventData();
         eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
         eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  // unknown in a4
-
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
-
         event.setData(eventData);
-        System.out.println("+++ event: "+event);
 
         // WHEN / ACT
         a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do now rebell sync
@@ -175,8 +169,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
     }
 
-
-    @Test
+    @Test(description = "DIGIHUB-129851 Scenario 2: EndSz B is found in A4 RI")
     public void testHorizonEventEndSzBFoundRebelSync() {
         // GIVEN / ARRANGE
         OffsetDateTime starttime = OffsetDateTime.now();
@@ -217,8 +210,7 @@ public class A4RebellSyncTest extends GigabitTest {
         uewegData.setVendorPortNameA("ge-0/0/1");
     }
 
-
-    @Test
+    @Test(description = "DIGIHUB-129850 Scenario 1: EndSz are not found in A4 RI")
     public void testHorizonEventEndSzNotFoundNoSync() {
         // GIVEN / ARRANGE
         a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
@@ -237,12 +229,9 @@ public class A4RebellSyncTest extends GigabitTest {
         EventData eventData = new EventData();
         eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  nicht in ri
         eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  //  nicht in ri
-
         eventData.setUewegId(uewegData.getUewegId());
         eventData.setUewegStatus("InBetrieb");
-
         event.setData(eventData);
-        System.out.println("+++ event: "+event);
 
         // WHEN / ACT
         a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
@@ -250,7 +239,6 @@ public class A4RebellSyncTest extends GigabitTest {
         // THEN / ASSERT   // was checken? NE nicht da, damit auch nel nicht da?
         a4Inventory.checkNetworkElementNotExist(ne1Data.getVpsz(), ne1Data.getFsz());
         a4Inventory.checkNetworkElementNotExist(ne2Data.getVpsz(), ne2Data.getFsz());
-
     }
 
     @Test
@@ -328,5 +316,4 @@ public class A4RebellSyncTest extends GigabitTest {
         // THEN / ASSERT
         a4Inventory.getExistingNetworkElementLink(nelData.getUuid());
     }
-
 }
