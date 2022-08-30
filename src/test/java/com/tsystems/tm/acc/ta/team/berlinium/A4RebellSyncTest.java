@@ -71,7 +71,6 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.createNetworkElementGroup(negData);
         a4Inventory.createNetworkElement(ne1Data, negData);
         a4Inventory.createNetworkElement(ne2Data, negData);
-        //a4Inventory.createNetworkElement(ne5Data, negData);
         a4Inventory.createNetworkElementPort(nep1Data, ne1Data);
         a4Inventory.createNetworkElementPort(nep2Data, ne2Data);
     }
