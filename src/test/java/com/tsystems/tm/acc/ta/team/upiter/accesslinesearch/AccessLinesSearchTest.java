@@ -288,14 +288,14 @@ public class AccessLinesSearchTest extends GigabitTest {
             accessLinesManagementPage =
                     accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
                             .clickEditButton()
-                            .updateSerialNumberOnNsp("9995874854785478")
+                            .changeSerialNumberOnNsp("9995874854785478")
                             .changeAccessLineStatus("WALLED_GARDEN")
                             .clickSaveLocallyButton();
         } else {
             accessLinesManagementPage =
                     accessLineSearchPage.clickMagnifyingGlassForLine(accessLine.getLineId())
                             .clickEditButton()
-                            .updateSerialNumberOnNsp("9995874854785478")
+                            .changeSerialNumberOnNsp("9995874854785478")
                             .clickSaveLocallyButton();
         }
 
@@ -379,6 +379,33 @@ public class AccessLinesSearchTest extends GigabitTest {
     }
 
     @Test
+    @TmsLink("DIGIHUB-*****")
+    @Description("Update Wholebuy AccessLine and Save and Reconfigure")
+    public void saveAndReconfigureWholebuyAccessLineTest() {
+        String accessNetworkType = "Ethernet";
+        accessLine.setLineId(accessLineRiRobot
+                .getAccessLinesByType(AccessLineProductionPlatform.WHOLEBUY, AccessLineTechnology.GPON, AccessLineStatus.ASSIGNED).get(0).getLineId());
+
+        AccessLineSearchPage accessLineSearchPage = AccessLineSearchPage.openPage();
+        accessLineSearchPage.validateUrl();
+        AccessLinesManagementPage accessLinesManagementPage = accessLineSearchPage.searchAccessLinesByLineID(accessLine.getLineId()).clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+        accessLinesManagementPage.clickEditButton()
+                .changeAccessNetworkType(accessNetworkType)
+                .clickSaveAndReconfigureButton();
+        accessLinesManagementPage.closeCurrentTab();
+        accessLinesManagementPage.returnToAccessLinesSearchPage()
+                .searchAccessLinesByLineID(accessLine.getLineId())
+                .clickSearchButton()
+                .clickMagnifyingGlassForLine(0);
+
+        assertEquals(accessLinesManagementPage.getAccessNetworkType(), accessNetworkType);
+        accessLinesManagementPage.getUnsynchronTooltip("nl-profile-subscriber").shouldNotBe(visible);
+        accessLinesManagementPage.checkAccessLineProfilesStates("NULL", "NULL",
+                "NULL", "ACTIVE");
+    }
+
+    @Test
     @TmsLink("DIGIHUB-125083")
     @Description("Terminate Ftth AccessLine. AccessLine is set to Walled_Garden")
     public void terminateAssignedFtthAlTest() {
@@ -411,7 +438,7 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .clickMagnifyingGlassForLine(0);
         accessLinesManagementPage.clickEditButton()
                 .changeAccessLineStatus("ASSIGNED")
-                .updateSerialNumberOnNsp(ontSerialNumber)
+                .changeSerialNumberOnNsp(ontSerialNumber)
                 .changeDefaultNlProfileState("INACTIVE")
                 .addSubscriberNlProfile("123456", "ACTIVE")
                 .clickSaveLocallyButton()
@@ -420,7 +447,7 @@ public class AccessLinesSearchTest extends GigabitTest {
                 .searchAccessLinesByLineID(accessLine.getLineId())
                 .clickSearchButton()
                 .clickMagnifyingGlassForLine(0);
-        accessLinesManagementPage.checkNlProfiles("INACTIVE", "ACTIVE");
+        accessLinesManagementPage.checkAccessLineProfilesStates("NULL", "NULL", "INACTIVE", "ACTIVE");
         assertEquals(accessLineRiRobot.getAccessLinesByLineId(accessLine.getLineId()).get(0).getNetworkServiceProfileReference().getNspOntSerialNumber(), ontSerialNumber);
     }
 

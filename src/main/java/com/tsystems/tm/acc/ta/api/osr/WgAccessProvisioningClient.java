@@ -1,8 +1,8 @@
 package com.tsystems.tm.acc.ta.api.osr;
 
 import com.tsystems.tm.acc.ta.url.GigabitUrlBuilder;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.invoker.ApiClient;
-import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_3_0.client.invoker.JSON;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.invoker.ApiClient;
+import com.tsystems.tm.acc.tests.osr.wg.access.provisioning.v2_9_1.client.invoker.JSON;
 import de.telekom.it.magic.api.IAccessTokenProvider;
 import de.telekom.it.magic.api.keycloak.TokenProviderFactory;
 import de.telekom.it.magic.api.restassured.ApiClientBuilder;

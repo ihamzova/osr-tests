@@ -48,12 +48,23 @@ public class NetworkServiceProfileL2BsaSteps {
         createNspL2Bsa(DEFAULT, tpAlias);
     }
 
-    @Given("{int} TP(s)( with identical carrierBsaReference) and NSP(s) L2BSA with lifecycleState {string} connected to NEG {string}( is existing)( are existing)( in A4 resource inventory)")
-    public void givenMultipleA4TPAndNspL2Bsa(int number, String lifecycleState, String negAlias) {
-        final String carrierBsaReference = "CarrierBsaReference" + getRandomDigits(6);
+    @Given("{int} TP(s) with carrierBsaReference {string} and NSP(s) L2BSA with lifecycleState {string} connected to NEG {string}( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String carrierBsaReference, String lifecycleState, String negAlias) {
 
         for (int i = 0; i < number; i++)
             createTpAndNspL2BsaWithLcState(DEFAULT + i, carrierBsaReference, lifecycleState, negAlias);
+    }
+
+    @Given("{int} TP(s) with carrierBsaReference {string} and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String carrierBsaReference, String lifecycleState) {
+
+        for (int i = 0; i < number; i++)
+            createTpAndNspL2BsaWithLcState(DEFAULT + i, carrierBsaReference, lifecycleState, DEFAULT);
+    }
+
+    @Given("{int} TP(s)( with identical carrierBsaReference) and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2Bsa(int number, String lifecycleState) {
+        givenMultipleA4TPAndNspL2Bsa(number, "carrier-" + getRandomDigits(6), lifecycleState, DEFAULT);
     }
 
     @Given("a/another NSP L2BSA {string} connected to TP {string}( is existing)( in A4 resource inventory)")

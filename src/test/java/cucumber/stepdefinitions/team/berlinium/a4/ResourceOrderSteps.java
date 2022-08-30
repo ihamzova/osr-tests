@@ -64,11 +64,12 @@ public class ResourceOrderSteps {
             final NetworkElementLinkDto nel = (NetworkElementLinkDto) testContext.getScenarioContext().getContext(Context.A4_NEL, r.get("NEL Reference"));
             final OrderItemActionType actionType = OrderItemActionType.valueOf(r.get("Action Type"));
 
+            final String carrierBsaReference = r.get("CarrierBsaRef");
             final String vlanRangeLower = r.get("VLAN Range Lower");
             final String vlanRangeUpper = r.get("VLAN Range Upper");
 
-            if (vlanRangeLower != null || vlanRangeUpper != null)
-                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro, vlanRangeLower, vlanRangeUpper);
+            if (carrierBsaReference != null || vlanRangeLower != null || vlanRangeUpper != null)
+                resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro, carrierBsaReference, vlanRangeLower, vlanRangeUpper);
             else
                 resOrder.addOrderItem(UUID.randomUUID().toString(), actionType, nel.getLbz(), ro);
         });

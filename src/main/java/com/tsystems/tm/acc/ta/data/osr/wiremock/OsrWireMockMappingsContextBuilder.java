@@ -188,4 +188,9 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     context.add(new UplinkResourceInventoryStub().getUplinks(endSz, state1, state2, state3));
     return this;
   }
+
+    public OsrWireMockMappingsContextBuilder addFindAndImportUplinksMock(String endSz, String state1, String state2, String state3) {
+        context.add(new UplinkResourceInventoryStub().findAndImportUplinks(endSz, state1, state2, state3));
+        return this;
+    }
 }

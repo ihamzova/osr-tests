@@ -25,7 +25,7 @@ public class OntUsageSupportPage {
 
     public static final By SUPPLIER_SELECTION = byXpath("//*[contains(@data-qa,'suppliers-select')]");
     public static final By SUPPLIER_SEARCH = byXpath("//input[contains(@role, 'textbox')]");
-    public static final By MENU_ICON = byXpath("//button[contains(@title,'header.user-menu-title')]");
+    public static final By MENU_ICON = byXpath("//button[contains(@title,'Benutzermenü')]");
     public static final By ONT_SEARCH_FIELD = byXpath("//*[contains(@data-qa, 'search-input')]");
     public static final By DETAIL_STATE = byXpath("//div[contains(text(),'Status')]/following-sibling::div[contains(@class,'field-value')]");
     public static final By DETAIL_SUPPLIER = byXpath("//div[contains(text(),'Giga Vertragspartner')]/following-sibling::div[contains(@class,'field-value')]");
@@ -33,7 +33,7 @@ public class OntUsageSupportPage {
     public static final By LOGOUT_BUTTON = byXpath("//button[@title='Ausloggen']");
     public static final By LOGIN_BUTTON = byId("kc-login");
     public static final By ERRORMESSAGE = byXpath("//div[contains(@role,'alert')]");
-    public static final By CONFIRM_BUTTON = byXpath("//span[contains(text(), 'Ja')]");
+    public static final By CONFIRM_BUTTON = byXpath("//span[contains(@class, 'p-button-label') and contains(text(), 'Ja')]");
 
     @Step("Validate Url")
     public OntUsageSupportPage validate() {
@@ -79,7 +79,7 @@ public class OntUsageSupportPage {
 
     @Step("delete ONT via support ui")
     public OntUsageSupportPage deleteOnt(Ont ont){
-        By DELETE_ONT_BUTTON = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber()+"')]/parent::td/following-sibling::td[contains(@class, 'button-cell')]/i");
+        By DELETE_ONT_BUTTON = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber()+"')]/parent::td/following-sibling::td[contains(@class, 'button-cell')]");
         $(DELETE_ONT_BUTTON).shouldBe(Condition.visible).click();
         $(CONFIRM_BUTTON).shouldBe(visible, Duration.ofMillis(1000)).click();
         By ONT_FIELD = byXpath("//td/a[contains(text(),'"+ont.getSerialNumber() + "')]");
