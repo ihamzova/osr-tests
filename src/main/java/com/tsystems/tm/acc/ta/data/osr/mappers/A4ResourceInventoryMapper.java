@@ -165,7 +165,7 @@ public class A4ResourceInventoryMapper {
                 .lacpActive(true)
                 .minActiveLagLinks("1")
                 .qosMode("TOLERANT")
-                .carrierBsaReference("CarrierBsaReference")
+                .carrierBsaReference(UUID.randomUUID().toString())
                 .numberOfAssociatedNsps("noAssoNsps")
                 .itAccountingKey(UNDEFINED)
                 .lacpMode("ACTIVE")

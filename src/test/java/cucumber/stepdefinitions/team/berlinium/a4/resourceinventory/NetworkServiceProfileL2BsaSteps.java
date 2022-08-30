@@ -2,6 +2,7 @@ package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileL2BsaDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import cucumber.Context;
@@ -65,6 +66,12 @@ public class NetworkServiceProfileL2BsaSteps {
     @Given("{int} TP(s)( with identical carrierBsaReference) and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
     public void givenMultipleA4TPAndNspL2Bsa(int number, String lifecycleState) {
         givenMultipleA4TPAndNspL2Bsa(number, "carrier-" + getRandomDigits(6), lifecycleState, DEFAULT);
+    }
+
+    @Given("{int} TP(s) with carrierBsaReference of NSP A10NSP {string} and NSP(s) L2BSA with lifecycleState {string} connected to the NEG( is existing)( are existing)( in A4 resource inventory)")
+    public void givenMultipleA4TPAndNspL2BsaForDefaultNeg(int number, String nspA10NspAlias, String lifecycleState) {
+        final NetworkServiceProfileA10NspDto nspA10Nsp = (NetworkServiceProfileA10NspDto) testContext.getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspA10NspAlias);
+        givenMultipleA4TPAndNspL2Bsa(number, nspA10Nsp.getCarrierBsaReference(), lifecycleState, DEFAULT);
     }
 
     @Given("a/another NSP L2BSA {string} connected to TP {string}( is existing)( in A4 resource inventory)")

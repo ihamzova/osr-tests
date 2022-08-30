@@ -8,6 +8,7 @@ import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.*;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.OrderItemActionType;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrderStateType;
 import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.VlanRange;
@@ -130,27 +131,36 @@ public class A4ResourceOrderTest {
     @BeforeMethod
     public void setup() {
         DataBundle data = OsrTestContext.get().getData();
+
         orderItemId = getPrefixWithRandom("orderItemId-", 6);
         orderItemId2 = getPrefixWithRandom("orderItemId-", 6);
+
         a4NEG = data.getA4NetworkElementGroupDataProvider().get(NetworkElementGroupL2Bsa);
         a4NEG.setName(replaceLast(4, a4NEG.getName(), getRandomDigits(4)));
+
         a4NE = data.getA4NetworkElementDataProvider().get(networkElementA10NspSwitch01);
-        a4NEP = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_100G_001);
         a4NE2 = data.getA4NetworkElementDataProvider().get(defaultNetworkElement);
-        a4NEP2 = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_10G_002);
         a4NE3 = data.getA4NetworkElementDataProvider().get(networkElementA10NspSwitch02);
+
+        a4NEP = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_100G_001);
+        a4NEP2 = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_10G_002);
         a4NEP3 = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_10G_001);
         a4NEP4 = data.getA4NetworkElementPortDataProvider().get(networkElementPort_logicalLabel_1G_002);
+
         a4NEL = data.getA4NetworkElementLinkDataProvider().get(networkElementLinkLcsInstalling);
         a4NEL2 = data.getA4NetworkElementLinkDataProvider().get(defaultNetworkElementLink);
+
         a4A10Nsp = data.getA4NetworkServiceProfileA10NspDataProvider().get(defaultNetworkServiceProfileA10Nsp);
         A4NetworkServiceProfileA10Nsp nspA10Data2 = data.getA4NetworkServiceProfileA10NspDataProvider().get(networkServiceProfileA10NspPrePro);
         A4NetworkServiceProfileA10Nsp nspA10Data3 = data.getA4NetworkServiceProfileA10NspDataProvider().get(networkServiceProfileA10NspPrePro2);
         A4NetworkServiceProfileA10Nsp nspA10Data4 = data.getA4NetworkServiceProfileA10NspDataProvider().get(networkServiceProfileA10NspPrePro3);
+
         a4TP = data.getA4TerminationPointDataProvider().get(defaultTerminationPointA10Nsp);
+        a4TP.setCarrierBsaReference(UUID.randomUUID().toString());
         A4TerminationPoint tpData2 = data.getA4TerminationPointDataProvider().get(terminationPointA10NspPrePro);
         A4TerminationPoint tpData3 = data.getA4TerminationPointDataProvider().get(terminationPointA10NspPrePro2);
         A4TerminationPoint tpData4 = data.getA4TerminationPointDataProvider().get(terminationPointA10NspPrePro3);
+
         UewegData uewegData1 = data.getUewegDataDataProvider().get(uewegA);
         UewegData uewegData2 = data.getUewegDataDataProvider().get(uewegB);
 
@@ -174,8 +184,8 @@ public class A4ResourceOrderTest {
         a4RobotRI.createNetworkServiceProfileA10Nsp(nspA10Data3, tpData3);
         a4RobotRI.createNetworkServiceProfileA10Nsp(nspA10Data4, tpData4);
         ro = a4RobotRO.buildResourceOrder();
+
         wiremock = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), WIREMOCK_SCENARIO_NAME))
-                .addMerlinMock()
                 .addRebellMock(a4NE, uewegData1, a4NE2, uewegData2, a4NE3)
                 .build();
         wiremock.publish()
@@ -235,7 +245,8 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with -add- and get -completed-")
     public void testRoAddItem() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // THEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
     }
@@ -245,8 +256,9 @@ public class A4ResourceOrderTest {
     @Description("add-case: send RO with two ROI -add- and get Callback with -completed-")
     public void testRo2AddItems() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+        a4RobotRO.addOrderItem(orderItemId2, OrderItemActionType.ADD, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // THEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), orderItemId2, COMPLETED);
@@ -257,21 +269,11 @@ public class A4ResourceOrderTest {
     @Description("ro without vlan-range values (=null)")
     public void testRoWithoutVlanRangeValues(VlanRange vlanRange) {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
         a4RobotRO.setCharacteristicValue(VLAN_RANGE, vlanRange, orderItemId, ro);
+
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
-    }
-
-    @Test
-    @Owner("heiko.schwanke@t-systems.com")
-    @Description("ro without vlan-range")
-    public void testRoWithoutVlanRange() {
-        // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
-        // WHEN
-        sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
     }
 
     @Test
@@ -279,18 +281,21 @@ public class A4ResourceOrderTest {
     @Description("ro without characteristic vlan-range")
     public void testRoWithoutVlanRangeCharacteristic() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
         a4RobotRO.removeCharacteristic(VLAN_RANGE, orderItemId, ro);
+
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
     }
 
+    // TODO This test doesn't mock a 409 from Mercury!
     @Test
     @Owner("heiko.schwanke@t-systems.com")
     @Description("Post to Mercury is impossible")
     public void testRoNoPostToMercury() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // erzeugt Mercury-Fehler 409
         a4RobotRO.setCharacteristicValue(CARRIER_BSA_REFERENCE, "f26bd5de/2150/47c7/8235/a688438973a4", orderItemId, ro);
         // WHEN
@@ -302,7 +307,8 @@ public class A4ResourceOrderTest {
     @Description("rebell-link for resource order from Merlin is unknown")
     public void testRoUnknownNel() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // Link is unknown
         a4RobotRO.setResourceName("4N1/10001-49/30/124/7KCB-49/30/125/7KCA", orderItemId, ro);
         // WHEN
@@ -315,7 +321,8 @@ public class A4ResourceOrderTest {
     @Description("error-case: send RO with Id and get Response with -400- from roo")
     public void testRoAddItemWithId() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL2, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         ro.setId(UUID.randomUUID().toString());
         log.info("+++ RO mit uuid: " + ro);
         // WHEN
@@ -332,7 +339,8 @@ public class A4ResourceOrderTest {
     @Description("error-case: send RO with invalid structure and get Response with -400- from swagger")
     public void testRoAddItemWithInvalidStructure() {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL2, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         assertNotNull(ro.getOrderItem());
         ro.getOrderItem().get(0).setId(null);
         log.info("+++ RO mit uuid: " + ro);
@@ -350,7 +358,8 @@ public class A4ResourceOrderTest {
     @Description("delete-case: send RO with -delete- and get Callback with -completed-")
     public void testRoDeleteItem() {
         // GIVEN
-        a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.DELETE, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // WHEN
         a4RobotRO.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
@@ -370,8 +379,9 @@ public class A4ResourceOrderTest {
     @Description("delete-case: send RO with two -delete- and get Callback with -completed-")
     public void testRo2DeleteItems() {
         // GIVEN
-        a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
-        a4RobotRO.addOrderItemDelete(orderItemId2, a4NEL2, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.DELETE, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+        a4RobotRO.addOrderItem(orderItemId2, OrderItemActionType.DELETE, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // WHEN
         a4RobotRO.sendPostResourceOrder(ro);
         sleepForSeconds(SLEEP_TIMER);
@@ -392,8 +402,9 @@ public class A4ResourceOrderTest {
     @Description("mixed-case: send RO with -add- and -delete- and get Callback with -rejected-")
     public void testRoDeleteItemAndAddItem() {
         // GIVEN
-        a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
-        a4RobotRO.addOrderItemAdd(orderItemId2, a4NEL2, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.DELETE, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+        a4RobotRO.addOrderItem(orderItemId2, OrderItemActionType.ADD, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
     }
@@ -404,7 +415,8 @@ public class A4ResourceOrderTest {
     @Description("DIGIHUB-xxx Resource order: Characteristic in delete-order item has wrong value \"\"")
     public void testRoDeleteWithEmptyValues(String cName) {
         // GIVEN
-        a4RobotRO.addOrderItemDelete(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.DELETE, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
@@ -416,8 +428,9 @@ public class A4ResourceOrderTest {
     public void testRoWithDuplicateLbzInRoi() {
         // GIVEN
         final String roiId2 = "roiId2";
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.addOrderItemAdd(roiId2, a4NEL, ro); // uses same nelData, therefore same LBZ mapped to resource.name
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+        a4RobotRO.addOrderItem(roiId2, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro); // uses same nelData, therefore same LBZ mapped to resource.name
+
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), roiId2, REJECTED);
@@ -429,8 +442,9 @@ public class A4ResourceOrderTest {
     public void testRoWithoutDuplicateLbzInRoi() {
         // GIVEN
         final String roiId2 = "roiId2";
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
-        a4RobotRO.addOrderItemAdd(roiId2, a4NEL2, ro); // uses other nelData, therefore other LBZ mapped to resource.name
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+        a4RobotRO.addOrderItem(roiId2, OrderItemActionType.ADD, a4NEL2.getLbz(), a4TP.getCarrierBsaReference(), ro); // uses other nelData, therefore other LBZ mapped to resource.name
+
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.COMPLETED);
         a4RobotRO.checkResourceOrderItemState(ro.getId(), roiId2, COMPLETED);
@@ -441,7 +455,8 @@ public class A4ResourceOrderTest {
     @Description("DIGIHUB-112658 Resource order: Characteristic in order item has value empty string \"\"")
     public void testRoWithCharacteristicWithEmtpyString(String cName) {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         a4RobotRO.setCharacteristicValue(cName, "", orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
@@ -452,9 +467,11 @@ public class A4ResourceOrderTest {
     @Description("DIGIHUB-112658 Resource order: Characteristic in order item has value empty list []")
     public void testRoWithCharacteristicWithEmtpyList(String cName) {
         // GIVEN
-        a4RobotRO.addOrderItemAdd(orderItemId, a4NEL, ro);
+        a4RobotRO.addOrderItem(orderItemId, OrderItemActionType.ADD, a4NEL.getLbz(), a4TP.getCarrierBsaReference(), ro);
+
         a4RobotRO.setCharacteristicValue(cName, new ArrayList<>(), orderItemId, ro);
         // WHEN
         sendRoAndCheckState(ResourceOrderStateType.REJECTED);
     }
+
 }
