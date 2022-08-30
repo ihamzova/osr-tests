@@ -21,29 +21,20 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
         super(context);
     }
 
-  /*
-  public OsrWireMockMappingsContextBuilder addPluralTnpMock(PluralTnpData pluralTnpData) {
-    context.add(new PluralStub().postPluralResponce201(pluralTnpData));
-    return this;
-  }
-  public OsrWireMockMappingsContextBuilder addPluralMock() {
-    context.add(new PluralStub().postPluralResponce());
-    return this;
-  }
-   */
-
     public OsrWireMockMappingsContextBuilder addRebellMock(UewegData uewegData, A4NetworkElement neA, A4NetworkElement neB) {
         context.add(new RebellStub().getUeweg200(uewegData, neA, neB));
         return this;
     }
 
     public OsrWireMockMappingsContextBuilder addRebellMock(A4NetworkElement neA, UewegData uewegData, A4NetworkElement neB, UewegData uewegData2, A4NetworkElement neB2) {
-        List<UewegData> ueWegeList = new ArrayList<>();
+        final List<UewegData> ueWegeList = new ArrayList<>();
         ueWegeList.add(uewegData);
         ueWegeList.add(uewegData2);
-        List<A4NetworkElement> a4NetworkElements = new ArrayList<>();
+
+        final List<A4NetworkElement> a4NetworkElements = new ArrayList<>();
         a4NetworkElements.add(neB);
         a4NetworkElements.add(neB2);
+
         context.add(new RebellStub().getUewegMultiple200(neA, ueWegeList, a4NetworkElements));
         return this;
     }
@@ -101,11 +92,6 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     public OsrWireMockMappingsContextBuilder addNemoMock() {
         context.add(new NemoStub().putNemoUpdate201());
         context.add(new NemoStub().deleteNemoUpdate204());
-        return this;
-    }
-
-    public OsrWireMockMappingsContextBuilder addMerlinMock() {
-        context.add(new MerlinStub().postMerlinCallbackResponce202());
         return this;
     }
 

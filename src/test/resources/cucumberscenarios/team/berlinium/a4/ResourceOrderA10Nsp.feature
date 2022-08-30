@@ -32,9 +32,9 @@ Feature: Receive and process Resource Orders for A10NSP
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type Add - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type |
-      | A             | ADD         |
-      | B             | ADD         |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type |
+      | A             | A                              | ADD         |
+      | B             | A                              | ADD         |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -45,9 +45,9 @@ Feature: Receive and process Resource Orders for A10NSP
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type Delete - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type |
-      | A             | DELETE      |
-      | B             | DELETE      |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type |
+      | A             | A                              | DELETE      |
+      | B             | A                              | DELETE      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -58,9 +58,9 @@ Feature: Receive and process Resource Orders for A10NSP
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type Modify - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type |
-      | A             | MODIFY      |
-      | B             | MODIFY      |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type |
+      | A             | A                              | MODIFY      |
+      | B             | A                              | MODIFY      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -71,9 +71,9 @@ Feature: Receive and process Resource Orders for A10NSP
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with Action Type NoChange - Sunny Day
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type |
-      | A             | NOCHANGE    |
-      | B             | NOCHANGE    |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type |
+      | A             | A                              | NOCHANGE    |
+      | B             | A                              | NOCHANGE    |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -84,9 +84,9 @@ Feature: Receive and process Resource Orders for A10NSP
   @ms:a4-resource-order-orchestrator
   Scenario: Receive RO, 2 items with different Action Types
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type |
-      | A             | ADD         |
-      | B             | DELETE      |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type |
+      | A             | A                              | ADD         |
+      | B             | A                              | DELETE      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "rejected"
@@ -103,10 +103,10 @@ Feature: Receive and process Resource Orders for A10NSP
 
   @DIGIHUB-163472
   Scenario Outline: Sputnik sends resource order MODIFY with vlan range Vlan Range ROI >= (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
-    Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
+    Given <NumberTpsAndNsps> TPs with carrierBsaReference of NSP A10NSP "A" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type | CarrierBsaRef | VLAN Range Lower | VLAN Range Upper |
-      | A             | MODIFY      | cBsaRef123    | <VlanLower>      | <VlanUpper>      |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type | VLAN Range Lower | VLAN Range Upper |
+      | A             | A                              | MODIFY      | <VlanLower>      | <VlanUpper>      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "completed"
@@ -120,10 +120,10 @@ Feature: Receive and process Resource Orders for A10NSP
 
   @DIGIHUB-163473
   Scenario Outline: Sputnik sends resource order MODIFY with Vlan Range ROI < (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
-    Given <NumberTpsAndNsps> TPs with carrierBsaReference "cBsaRef123" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
+    Given <NumberTpsAndNsps> TPs with carrierBsaReference of NSP A10NSP "A" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
-      | NEL Reference | Action Type | CarrierBsaRef | VLAN Range Lower | VLAN Range Upper |
-      | A             | MODIFY      | cBsaRef123    | <VlanLower>      | <VlanUpper>      |
+      | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type | VLAN Range Lower | VLAN Range Upper |
+      | A             | A                              | MODIFY      | <VlanLower>      | <VlanUpper>      |
     Then the request is responded with HTTP error code 201
     And the resource order is saved in RO database
     And the resource order state is "rejected"

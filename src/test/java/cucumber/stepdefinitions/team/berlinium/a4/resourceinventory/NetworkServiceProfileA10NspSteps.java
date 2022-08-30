@@ -153,7 +153,7 @@ public class NetworkServiceProfileA10NspSteps {
         // ACTION
         NetworkServiceProfileA10NspDto nspA10nsp = setupDefaultNspA10NspTestData(tpAlias);
 
-        if(isNullOrEmpty(nspA10nsp.getsVlanRange())) {
+        if (isNullOrEmpty(nspA10nsp.getsVlanRange())) {
             List<VlanRangeDto> vlanRanges = new ArrayList<>();
             vlanRanges.add(new VlanRangeDto()
                     .vlanRangeLower(vlanRangeLower)
