@@ -16,6 +16,11 @@
             <class name="com.tsystems.tm.acc.ta.team.upiter.processmanagement.ProcessesSearchTest"/>
         </classes>
     </test>
+    <test thread-count="1" name="Osr Support UI Tests">
+        <classes>
+            <class name="com.tsystems.tm.acc.ta.team.upiter.osrsupport.OsrSupportTest"/>
+        </classes>
+    </test>
     <test thread-count="1" name="Ont commissioning Tests">
         <classes>
             <class name="com.tsystems.tm.acc.ta.team.upiter.ontcommissioning.OntCommissioning"/>

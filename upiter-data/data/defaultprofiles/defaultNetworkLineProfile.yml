@@ -45,5 +45,27 @@ values:
   maxDownBandwidth: 1168256
   maxUpBandwidth: 292096
   state: "ACTIVE"
-
-
+---
+name: defaultNLProfileFtthAssigned
+template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile
+values:
+  accessType: "FTTH"
+  minDownBandwidth: 63680
+  minUpBandwidth: 21312
+  guaranteedDownBandwidth: 63680
+  guaranteedUpBandwidth: 21312
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  state: "INACTIVE"
+---
+name: defaultNLProfileFtthAssignedV2
+template: com.tsystems.tm.acc.ta.data.osr.models.DefaultNetworkLineProfile
+values:
+  accessType: "FTTH"
+  minDownBandwidth: 31808
+  minUpBandwidth: 12032
+  guaranteedDownBandwidth: 31808
+  guaranteedUpBandwidth: 12032
+  maxDownBandwidth: 1168192
+  maxUpBandwidth: 584064
+  state: "INACTIVE"

@@ -21,14 +21,14 @@ public interface UpiterConstants {
     String OSR_PROCESS_LOG = "osr-process-log";
     String ACCESS_LINE_MANAGEMENT_MS = "access-line-management";
     String APIGW_MS = "apigw";
-    String RI_ABSTRACTION_LAYER_MS ="ri-abstraction-layer";
-    String ACCESS_LINE_PROFILE_CATALOG_MS ="access-line-profile-catalog";
-    String ONT_USAGE_MS ="ont-usage";
-    String ONT_USAGE_BFF_PROXY_MS ="ont-usage-bff-proxy";
-    String ONT_USAGE_SUPPLIER_UI ="ont-usage-supplier-ui";
-    String ONT_USAGE_SUPPORT_UI ="ont-usage-support-ui";
-    String NETWORK_SWITCHING_CONGIF_MGT_MS ="network-switching-config-mgt";
-
+    String RI_ABSTRACTION_LAYER_MS = "ri-abstraction-layer";
+    String ACCESS_LINE_PROFILE_CATALOG_MS = "access-line-profile-catalog";
+    String ONT_USAGE_MS = "ont-usage";
+    String ONT_USAGE_BFF_PROXY_MS = "ont-usage-bff-proxy";
+    String ONT_USAGE_SUPPLIER_UI = "ont-usage-supplier-ui";
+    String ONT_USAGE_SUPPORT_UI = "ont-usage-support-ui";
+    String NETWORK_SWITCHING_CONGIF_MGT_MS = "network-switching-config-mgt";
+    String OSR_SUPPORT_UI = "osr-support-ui";
     String FEATURE_TOGGLE_ENABLE_64_PON_SPLITTING = "business.resource-order-resource-inventory.enable-64-pon-splitting";
     String FEATURE_TOGGLE_CREATE_HOME_ID_POOL = "business.resource-order-resource-inventory.disable-home-id-pools-creation";
     String FEATURE_TOGGLE_ENABLE_FTTB_NE2_NETWORK_SWITCHING = "service.network-switching-config-mgt.enable-fttb-ne2-network-switching";

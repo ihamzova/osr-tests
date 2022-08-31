@@ -947,6 +947,17 @@ public class AccessLineRiRobot {
         return line.get(0).getSubscriberNetworkLineProfile();
     }
 
+    @Step("Search physical resource reference by criteria")
+    public List<ReferenceDto> getPhysicalResourceRef(String endsz, String port, String portType) {
+        List<ReferenceDto> references = accessLineResourceInventory.getClient()
+                .physicalResourceReferenceInternalController()
+                .searchPhysicalResourceReference()
+                .body(new SearchPhysicalResourceReferenceDto().endSz(endsz).portNumber(port).portType(PortType.valueOf(portType)))
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+        return references;
+
+    }
+
     @Step("Get all AccessLine entities")
     public List<com.tsystems.tm.acc.tests.osr.access.line.resource.inventory.v5_38_1.client.model.AccessLine> getAllAccessLineEntities() {
         return accessLineResourceInventory.getClient().accessLineControllerExternal()
