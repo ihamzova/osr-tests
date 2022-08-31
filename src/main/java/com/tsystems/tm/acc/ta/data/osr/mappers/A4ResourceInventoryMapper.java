@@ -421,6 +421,9 @@ public class A4ResourceInventoryMapper {
         nspA10.setItAccountingKey(nspData.getItAccountingKey());
         nspA10.setNetworkElementLinkUuid(nspData.getNetworkElementLinkUuid());
 
+        if (tpData.getCarrierBsaReference() != null)
+            nspA10.setCarrierBsaReference(tpData.getCarrierBsaReference());
+
         return nspA10;
     }
 
