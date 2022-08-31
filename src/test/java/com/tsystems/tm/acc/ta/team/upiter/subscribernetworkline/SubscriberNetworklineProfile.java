@@ -101,7 +101,7 @@ public class SubscriberNetworklineProfile extends GigabitTest {
     networkLineProfileManagementRobot = new NetworkLineProfileManagementRobot();
     wgAccessProvisioningRobot = new WgAccessProvisioningRobot();
 
-    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(true);
+    wgAccessProvisioningRobot.changeFeatureToogleEnable64PonSplittingState(false);
 
     oltDeviceTwistedPair = context.getData().getPortProvisioningDataProvider().get(PortProvisioningCase.oltDeviceForFttbProvisioningTwistedPair);
     dpuDeviceTwistedPair = context.getData().getDpuDeviceDataProvider().get(DpuDeviceCase.dpuDeviceForFttbProvisioningTwistedPair);
