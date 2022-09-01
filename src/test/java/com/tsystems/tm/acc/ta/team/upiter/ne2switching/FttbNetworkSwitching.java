@@ -105,7 +105,6 @@ public class FttbNetworkSwitching extends GigabitTest {
 
         networkSwitchingPage.clickPrepareButton();
         assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung für den Zielport hat begonnen"), "Notification is incorrect");
-        mappingsContext.deleteStubs();
         networkSwitchingPage.closeNotificationButton();
         String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
         networkSwitchingPage.clickPackageId();
@@ -114,6 +113,48 @@ public class FttbNetworkSwitching extends GigabitTest {
         assertTrue(networkSwitchingPage.getExecutionButton().isDisplayed(), "Execution button is not displayed after preparation phase");
         assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after preparation phase");
         assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after preparation phase");
+    }
+
+    @Test(dependsOnMethods = "ne2FttbPreparationTest")
+    @TmsLink("DIGIHUB-158285")
+    @Description("NE2 FTTH Network Switching Execution")
+    public void ne2FttbExecutionTest(){
+        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+        networkSwitchingPage.validateUrl();
+        networkSwitchingPage.switchToNe2Switching()
+                .clickGetUplinks(endSz_49_911_1100_76H1.getEndSz()).clickPrepareButton();
+        assertTrue(networkSwitchingPage.getNotification().equals("Die Vorbereitung ist bereits abgeschlossen"), "Notification is incorrect");
+        networkSwitchingPage.closeNotificationButton();
+        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+
+        networkSwitchingPage.startNe2Execution(packageId);
+        networkSwitchingPage.waitUntilNeededStatus("IN_EXECUTION", packageId);
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed during execution phase");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed during execution phase");
+
+        networkSwitchingPage.waitUntilNeededStatus("EXECUTED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("EXECUTED"));
+        assertTrue(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is not displayed after execution phase");
+        assertTrue(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is not displayed after execution phase");
+    }
+
+    @Test(dependsOnMethods = {"ne2FttbPreparationTest", "ne2FttbExecutionTest"})
+    @TmsLink("DIGIHUB-163877")
+    @Description("NE2 FTTH Network Switching Commit")
+    public void ne2FttbCommitTest(){
+        NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
+        networkSwitchingPage.validateUrl();
+        networkSwitchingPage.switchToNe2Switching()
+                .clickGetUplinks(endSz_49_911_1100_76H1.getEndSz()).clickPrepareButton();
+        assertTrue(networkSwitchingPage.getNotification().equals("Der Vorbereitungsprozess für das angegebene Paket kann nicht gestartet werden"), "Notification is incorrect");
+        networkSwitchingPage.closeNotificationButton();
+        String packageId = networkSwitchingPage.getPackageIdOnPreparationTab();
+        networkSwitchingPage.startNe2Commit(packageId);
+        mappingsContext.deleteStubs();
+        networkSwitchingPage.waitUntilNeededStatus("FINISHED", packageId);
+        assertTrue(networkSwitchingPage.getPackageStatus().contains("FINISHED"));
+        assertFalse(networkSwitchingPage.getCommitButton().isDisplayed(), "Commit button is displayed after commit phase");
+        assertFalse(networkSwitchingPage.getRollbackButton().isDisplayed(), "Rollback button is displayed after commit phase");
     }
 
     @Test
