@@ -125,11 +125,9 @@ public class NetworkServiceProfileA10NspSteps {
 
     @Then("the NSP A10NSP lastUpdateTime is updated")
     public void thenTheNspA10nspLastUpdateTimeIsUpdated() {
-        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
-                .getScenarioContext().getContext(Context.A4_NSP_A10NSP);
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext.getScenarioContext().getContext(Context.A4_NSP_A10NSP);
         final OffsetDateTime oldDateTime = (OffsetDateTime) testContext.getScenarioContext().getContext(Context.TIMESTAMP);
-        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
-                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv.getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
 
         assertNotNull(nspA10nsp.getLastUpdateTime());
         assertTrue(nspA10nsp.getLastUpdateTime().isAfter(oldDateTime), "lastUpdateTime (" + nspA10nsp.getLastUpdateTime() + ") is older than " + oldDateTime + "!");

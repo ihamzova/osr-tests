@@ -120,7 +120,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the RO is not added to A4 resource order queue
 
   @DIGIHUB-163472
-  Scenario Outline: Sputnik sends resource order MODIFY with vlan range Vlan Range ROI >= (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
+  Scenario Outline: Sputnik sends resource order MODIFY with (Vlan Range ROI - Vlan Range NSP A10NSP) + number of NSPs L2BSA in state PLANNING >= 0
     Given <NumberTpsAndNsps> TPs with carrierBsaReference of NSP A10NSP "A" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type | VLAN Range Lower | VLAN Range Upper |
@@ -137,7 +137,7 @@ Feature: Receive and process Resource Orders for A10NSP
       | 30               | PLANNING | 10        | 10        |
 
   @DIGIHUB-163473
-  Scenario Outline: Sputnik sends resource order MODIFY with Vlan Range ROI < (Vlan Range NSP A10NSP + NSPs L2BSA in state PLANNING)
+  Scenario Outline: Sputnik sends resource order MODIFY with (Vlan Range ROI - Vlan Range NSP A10NSP) + number of NSPs L2BSA in state PLANNING < 0
     Given <NumberTpsAndNsps> TPs with carrierBsaReference of NSP A10NSP "A" and NSPs L2BSA with lifecycleState "<lcState>" connected to the NEG
     When CAD@Sputnik sends a resource order with the following order items:
       | NEL Ref (LBZ) | NSP A10NSP Ref (carrierBsaRef) | Action Type | VLAN Range Lower | VLAN Range Upper |

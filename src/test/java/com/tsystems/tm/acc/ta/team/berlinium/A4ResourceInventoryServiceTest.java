@@ -18,6 +18,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.UUID;
+
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_SERVICE_MS;
 
@@ -39,6 +41,7 @@ public class A4ResourceInventoryServiceTest extends GigabitTest {
     private A4TerminationPoint tpA10NspData;
     private A4NetworkServiceProfileL2Bsa nspL2Data;
     private A4NetworkServiceProfileA10Nsp nspA10NspData;
+    private String carrierBsaReference;
 
     @BeforeClass
     public void init() {
@@ -63,6 +66,9 @@ public class A4ResourceInventoryServiceTest extends GigabitTest {
 
     @BeforeMethod
     public void setup() {
+        carrierBsaReference = UUID.randomUUID().toString();
+        tpA10NspData.setCarrierBsaReference(carrierBsaReference);
+
         a4Inventory.createNetworkElementGroup(negData);
         a4Inventory.createNetworkElement(neData, negData);
         a4Inventory.createNetworkElementPort(nepDataA, neData);
@@ -103,7 +109,7 @@ public class A4ResourceInventoryServiceTest extends GigabitTest {
     @Description("CarrierBSAReference should be included in logicalResource representation of NSP A10NSP")
     public void testCarrierBSAReferenceIsInNspA10Nsp() {
         // THEN
-        a4Nemo.checkLogicalResourceHasCharacteristic(nspA10NspData.getUuid(), "carrierBsaReference", "CarrierBsaReference");
+        a4Nemo.checkLogicalResourceHasCharacteristic(nspA10NspData.getUuid(), "carrierBsaReference", carrierBsaReference);
     }
 
 }
