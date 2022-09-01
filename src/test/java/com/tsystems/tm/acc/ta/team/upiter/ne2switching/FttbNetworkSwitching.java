@@ -117,7 +117,7 @@ public class FttbNetworkSwitching extends GigabitTest {
 
     @Test(dependsOnMethods = "ne2FttbPreparationTest")
     @TmsLink("DIGIHUB-158285")
-    @Description("NE2 FTTH Network Switching Execution")
+    @Description("NE2 FTTB Network Switching Execution")
     public void ne2FttbExecutionTest(){
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -140,7 +140,7 @@ public class FttbNetworkSwitching extends GigabitTest {
 
     @Test(dependsOnMethods = {"ne2FttbPreparationTest", "ne2FttbExecutionTest"})
     @TmsLink("DIGIHUB-163877")
-    @Description("NE2 FTTH Network Switching Commit")
+    @Description("NE2 FTTB Network Switching Commit")
     public void ne2FttbCommitTest(){
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
