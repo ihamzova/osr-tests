@@ -9,5 +9,5 @@ values:
   operationalState: "WORKING"
   lifecycleState: "OPERATING"
   type: "A4-BOR-v1"
-  plannedMatNr: ""
+  plannedMatNr: "40318601"
   planningDeviceName: "dmst.bor.1"
