@@ -2,20 +2,20 @@ package cucumber.stepdefinitions.team.berlinium.a4.resourceinventory;
 
 import com.tsystems.tm.acc.ta.data.osr.mappers.A4ResourceInventoryMapper;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.A10NspQosDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.NetworkServiceProfileA10NspDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.TerminationPointDto;
 import com.tsystems.tm.acc.tests.osr.a4.resource.inventory.client.model.VlanRangeDto;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.Characteristic;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.QosList;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.ResourceOrder;
-import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.VlanRange;
+import com.tsystems.tm.acc.tests.osr.a4.resource.order.orchestrator.tmf652.client.model.*;
 import cucumber.Context;
 import cucumber.TestContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.testng.Assert;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.DEFAULT;
 import static com.tsystems.tm.acc.ta.robot.utils.MiscUtils.isNullOrEmpty;
@@ -122,6 +122,7 @@ public class NetworkServiceProfileA10NspSteps {
         assertEquals(lifecycleState, nspA10nsp.getLifecycleState());
     }
 
+
     @Then("the NSP A10NSP lastUpdateTime is updated")
     public void thenTheNspA10nspLastUpdateTimeIsUpdated() {
         final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext.getScenarioContext().getContext(Context.A4_NSP_A10NSP);
@@ -135,29 +136,41 @@ public class NetworkServiceProfileA10NspSteps {
     @Then("all attributes from ResourceOrder for A10NSP {string} are saved in A4 resource inventory")
     public void thenAllAttributesFromRoForNspA10nspAreSaved(String nspAlias) {
         final ResourceOrder ro = (ResourceOrder) testContext.getScenarioContext().getContext(Context.A4_RESOURCE_ORDER);
-        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext.getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
-        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv.getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
+        final NetworkServiceProfileA10NspDto nspA10nspData = (NetworkServiceProfileA10NspDto) testContext
+                .getScenarioContext().getContext(Context.A4_NSP_A10NSP, nspAlias);
+        final NetworkServiceProfileA10NspDto nspA10nsp = a4ResInv
+                .getExistingNetworkServiceProfileA10Nsp(nspA10nspData.getUuid());
 
-        assertEquals((String) getcharacteristicValue(ro, "mtuSize"), nspA10nsp.getMtuSize());
-        assertEquals((String) getcharacteristicValue(ro, "carrierBsaReference"), nspA10nsp.getCarrierBsaReference());
-        assertEquals((String) getcharacteristicValue(ro, "lacpActive"), Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
-        assertEquals((String) getcharacteristicValue(ro, "publicReferenceId"), nspA10nsp.getItAccountingKey());
+        // ACTION
+
+        assertEquals((String)getcharacteristicValue(ro,"mtuSize"), nspA10nsp.getMtuSize());
+        assertEquals((String)getcharacteristicValue(ro,"carrierBsaReference"), nspA10nsp.getCarrierBsaReference());
+        assertEquals((String)getcharacteristicValue(ro,"lacpActive"), Objects.requireNonNull(nspA10nsp.getLacpActive()).toString());
+        assertEquals((String)getcharacteristicValue(ro,"publicReferenceId"), nspA10nsp.getItAccountingKey());
         VlanRange roVlanRange;
-        roVlanRange = (VlanRange) getcharacteristicValue(ro, "VLAN_Range");
+        roVlanRange = (VlanRange)  getcharacteristicValue(ro,"VLAN_Range");
         assertNotNull(roVlanRange);
         assertEquals(1, Objects.requireNonNull(nspA10nsp.getsVlanRange()).size());
-        assertEquals(roVlanRange.getVlanRangeLower(), nspA10nsp.getsVlanRange().get(0).getVlanRangeLower());
-        assertEquals(roVlanRange.getVlanRangeUpper(), nspA10nsp.getsVlanRange().get(0).getVlanRangeUpper());
-        assertEquals(Objects.requireNonNull(ro.getOrderItem()).size(), Integer.parseInt(Objects.requireNonNull(nspA10nsp.getNumberOfAssociatedNsps())));
+        assertEquals(roVlanRange.getVlanRangeLower(),nspA10nsp.getsVlanRange().get(0).getVlanRangeLower());
+        assertEquals(roVlanRange.getVlanRangeUpper(),nspA10nsp.getsVlanRange().get(0).getVlanRangeUpper());
+        assertEquals(Objects.requireNonNull(ro.getOrderItem()).size(),Integer.parseInt(Objects.requireNonNull(nspA10nsp.getNumberOfAssociatedNsps())));
 
         QosList roQosList;
-        roQosList = (QosList) getcharacteristicValue(ro, "QoS_List");
+        roQosList = (QosList) getcharacteristicValue(ro,"QoS_List");
         assertNotNull(roQosList);
         assertEquals(Objects.requireNonNull(roQosList.getQosClasses()).size(), Objects.requireNonNull(nspA10nsp.getQosClasses()).size());
+
+        roQosList.getQosClasses().forEach(roq -> Assert.assertTrue(checkQosClassValues(roQosList,nspA10nsp.getQosClasses(),roq.getQosBandwidth(),roq.getQospBit())));
+        nspA10nsp.getQosClasses().forEach(nspQosDto -> Assert.assertTrue(checkQosClassValues(roQosList,nspA10nsp.getQosClasses(),nspQosDto.getQosBandwidthUp(),nspQosDto.getQosPriority())));
+
     }
 
+
     private Object getcharacteristicValue(ResourceOrder ro, String key) {
-        Optional<Characteristic> characteristic = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource()).getResourceCharacteristic())
+
+        Optional<Characteristic> characteristic = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(ro.getOrderItem()).get(0).getResource())
+                        .getResourceCharacteristic())
+
                 .stream().filter(c -> key.equalsIgnoreCase(c.getName())).findFirst();
         Object value = "";
         if (characteristic.isPresent()) {
@@ -166,6 +179,30 @@ public class NetworkServiceProfileA10NspSteps {
         return value;
     }
 
+
+    private boolean checkQosClassValues(QosList roQosList, List<A10NspQosDto> a10NspQosDtos, String qosBandwidth, String qosospBit) {
+
+        boolean sameCounts = false;
+
+        List<QosClass> qosClassStream = Objects.requireNonNull(roQosList.getQosClasses())
+                .stream()
+                .filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidth()))
+                .filter(c -> qosospBit.equalsIgnoreCase(c.getQospBit())).collect(Collectors.toList());
+
+        List<A10NspQosDto> a10NspQosDtoStream = Objects.requireNonNull(a10NspQosDtos)
+                .stream()
+                .filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidthDown()))
+                .filter(c -> qosBandwidth.equalsIgnoreCase(c.getQosBandwidthUp()))
+                .filter(c -> qosospBit.equalsIgnoreCase(c.getQosPriority())).collect(Collectors.toList());
+
+        if (qosClassStream != null && a10NspQosDtoStream != null ) {
+            if (qosClassStream.size() == a10NspQosDtoStream.size())
+                sameCounts = true;
+        } else if (qosClassStream == null && a10NspQosDtoStream == null ) {
+                sameCounts = true;
+        }
+        return sameCounts;
+    }
 
     // -----=====[ HELPERS ]=====-----
 

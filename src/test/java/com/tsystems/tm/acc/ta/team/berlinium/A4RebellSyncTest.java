@@ -13,9 +13,14 @@ import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
+import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.Event;
+import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.EventData;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import org.testng.annotations.*;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_INVENTORY_IMPORTER_MS;
 import static com.tsystems.tm.acc.ta.data.osr.DomainConstants.A4_RESOURCE_INVENTORY_MS;
@@ -57,7 +62,6 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(A4NetworkElementPortCase.networkElementPort_logicalLabel_10G_001);
         nelData = osrTestContext.getData().getA4NetworkElementLinkDataProvider()
                 .get(A4NetworkElementLinkCase.defaultNetworkElementLink);
-
         // Ensure that no old test data is in the way
         cleanup();
     }
@@ -84,6 +88,157 @@ public class A4RebellSyncTest extends GigabitTest {
         a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep1Data, ne1Data);
         a4Inventory.deleteA4NetworkElementPortsRecursively(nep2Data, ne2Data);
+    }
+
+    @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
+    public void testHorizonEventBothEndSzFoundRebelSync() {
+        // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();   // time for check later
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+        uewegData.setVendorPortNameA("ge-0/0/1");
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne1Data, ne2Data)
+                .build().publish();
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+        event.setData(eventData);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do rebell sync
+
+        // THEN / ASSERT
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .get(0).getUuid());
+
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+    }
+
+    @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
+    public void testHorizonEventEndSzAFoundRebelSync() {
+        // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne1Data, ne2Data)     // ne2 in a4-ri unknown
+                .build().publish();
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  // unknown in a4
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+        event.setData(eventData);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do now rebell sync
+
+        // THEN / ASSERT
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), ne2Data.getVpsz()+"/"+ne2Data.getFsz())
+                .get(0).getUuid());
+
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+    }
+
+    @Test(description = "DIGIHUB-129851 Scenario 2: EndSz B is found in A4 RI")
+    public void testHorizonEventEndSzBFoundRebelSync() {
+        // GIVEN / ARRANGE
+        OffsetDateTime starttime = OffsetDateTime.now();
+
+        a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+        uewegData.setVendorPortNameA("PCI-1/0");
+
+        mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(),
+                wiremockScenarioName))
+                .addRebellMock(uewegData, ne2Data, ne1Data)   // ne1 unknown in a4
+                .build().publish();
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  unknown in a4
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+        event.setData(eventData);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);    // a4-importer at berlinium-03 do now rebell sync
+
+        // THEN / ASSERT
+        nelData.setUuid(a4Inventory
+                .getNetworkElementLinksByNeEndSz(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), ne1Data.getVpsz()+"/"+ne1Data.getFsz())
+                .get(0).getUuid());
+        a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        uewegData.setVendorPortNameA("ge-0/0/1");
+    }
+
+    @Test(description = "DIGIHUB-129850 Scenario 1: EndSz are not found in A4 RI")
+    public void testHorizonEventEndSzNotFoundNoSync() {
+        // GIVEN / ARRANGE
+        a4Inventory.deleteA4NetworkElementsRecursively(ne1Data);
+        a4Inventory.deleteA4NetworkElementsRecursively(ne2Data);
+
+        uewegData = osrTestContext.getData().getUewegDataDataProvider()
+                .get(UewegDataCase.defaultUeweg);
+
+        // create and send event
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  nicht in ri
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  //  nicht in ri
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+        event.setData(eventData);
+
+        // WHEN / ACT
+        a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
+
+        // THEN / ASSERT   // was checken? NE nicht da, damit auch nel nicht da?
+        a4Inventory.checkNetworkElementNotExist(ne1Data.getVpsz(), ne1Data.getFsz());
+        a4Inventory.checkNetworkElementNotExist(ne2Data.getVpsz(), ne2Data.getFsz());
     }
 
     @Test
@@ -161,5 +316,4 @@ public class A4RebellSyncTest extends GigabitTest {
         // THEN / ASSERT
         a4Inventory.getExistingNetworkElementLink(nelData.getUuid());
     }
-
 }

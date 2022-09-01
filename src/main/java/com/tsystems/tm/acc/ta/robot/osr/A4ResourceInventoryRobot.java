@@ -181,6 +181,13 @@ public class A4ResourceInventoryRobot {
         assertNull(getExistingNetworkElement(uuidNe).getZtpIdent());
     }
 
+    // checkNetworkElementNotExist
+    @Step("Check if Network Element does not exist")
+    public void checkNetworkElementNotExist(String vpsz, String fsz) {
+        assertEquals(getNetworkElementsByVpszFsz(vpsz, fsz).size(), 0);
+
+    }
+
     @Step("Delete existing Network Service Profile (FTTH Access) from A4 resource inventory")
     public void deleteNetworkServiceProfileFtthAccess(String uuid) {
         a4ResourceInventory.getClient()
@@ -293,6 +300,16 @@ public class A4ResourceInventoryRobot {
                 .networkElementLinks()
                 .listNetworkElementLinks()
                 .networkElementPortUuidQuery(uuidNep)
+                .executeAs(checkStatus(HTTP_CODE_OK_200));
+    }
+
+    @Step("Get a list of Network Element Links by EndSz A and B")
+    public List<NetworkElementLinkDto> getNetworkElementLinksByNeEndSz(String endSzA, String endSzB) {
+        return a4ResourceInventory.getClient()
+                .networkElementLinks()
+                .listNetworkElementLinks()
+                .endszAQuery(endSzA)
+                .endszBQuery(endSzB)
                 .executeAs(checkStatus(HTTP_CODE_OK_200));
     }
 
@@ -732,7 +749,7 @@ public class A4ResourceInventoryRobot {
     @Step("Check that lastSuccessfulSyncTime has been set for network element link")
     public void checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(A4NetworkElementLink nelData, OffsetDateTime timeBeforeSync) {
         NetworkElementLinkDto networkElementLinkDto = getExistingNetworkElementLink(nelData.getUuid());
-
+System.out.println("+++ nelData: "+nelData);
         assertTrue(Objects.requireNonNull(networkElementLinkDto.getLastSuccessfulSyncTime()).isAfter(timeBeforeSync));
     }
 

@@ -84,6 +84,7 @@ Feature: Receive and process Resource Orders for A10NSP
     And the A10NSP "A" lifecycleState is still "PLANNING" in the A4 resource inventory
     And 1 "PUT" NSP A10NSP "A" update notification was sent to NEMO
 
+
   @DIGIHUB-163470
   @team:berlinium
   @ms:a4-resource-order-orchestrator
