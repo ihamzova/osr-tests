@@ -18,6 +18,7 @@ import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.Event;
 import com.tsystems.tm.acc.tests.osr.a4.link.event.importer.client.model.EventData;
 import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
+import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.*;
 
 import javax.ws.rs.HttpMethod;
@@ -105,19 +106,7 @@ public class A4RebellSyncTest extends GigabitTest {
                 .addRebellMock(uewegData, ne1Data, ne2Data)
                 .build().publish();
 
-        // create and send event
-        Event event = new Event();
-        event.setType("com.telekom.net4f.irtafel.v1");
-        event.setId(UUID.randomUUID());
-        event.setSource("http://tafel-url-tbd");
-        event.setSpecversion("1.0");
-
-        EventData eventData = new EventData();
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
-        eventData.setUewegId(uewegData.getUewegId());
-        eventData.setUewegStatus("InBetrieb");
-        event.setData(eventData);
+        Event event = createEvent();
 
         // WHEN / ACT
         a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do rebell sync
@@ -132,6 +121,7 @@ public class A4RebellSyncTest extends GigabitTest {
         a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 1);
         a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 0); // ne1 found, ne2 not requested
     }
+
 
     @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
     public void testHorizonEventEndSzAFoundRebelSync() {
@@ -148,19 +138,7 @@ public class A4RebellSyncTest extends GigabitTest {
                 .addRebellMock(uewegData, ne1Data, ne2Data)     // ne2 in a4-ri unknown
                 .build().publish();
 
-        // create and send event
-        Event event = new Event();
-        event.setType("com.telekom.net4f.irtafel.v1");
-        event.setId(UUID.randomUUID());
-        event.setSource("http://tafel-url-tbd");
-        event.setSpecversion("1.0");
-
-        EventData eventData = new EventData();
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  // unknown in a4
-        eventData.setUewegId(uewegData.getUewegId());
-        eventData.setUewegStatus("InBetrieb");
-        event.setData(eventData);
+        Event event = createEvent();
 
         // WHEN / ACT
         a4Importer.sendNotification(event);   // a4-importer at berlinium-03 do now rebell sync
@@ -191,19 +169,7 @@ public class A4RebellSyncTest extends GigabitTest {
                 .addRebellMock(uewegData, ne2Data, ne1Data)   // ne1 unknown in a4
                 .build().publish();
 
-        // create and send event
-        Event event = new Event();
-        event.setType("com.telekom.net4f.irtafel.v1");
-        event.setId(UUID.randomUUID());
-        event.setSource("http://tafel-url-tbd");
-        event.setSpecversion("1.0");
-
-        EventData eventData = new EventData();
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  unknown in a4
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
-        eventData.setUewegId(uewegData.getUewegId());
-        eventData.setUewegStatus("InBetrieb");
-        event.setData(eventData);
+        Event event = createEvent();
 
         // WHEN / ACT
         a4Importer.sendNotification(event);    // a4-importer at berlinium-03 do now rebell sync
@@ -227,19 +193,7 @@ public class A4RebellSyncTest extends GigabitTest {
         uewegData = osrTestContext.getData().getUewegDataDataProvider()
                 .get(UewegDataCase.defaultUeweg);
 
-        // create and send event
-        Event event = new Event();
-        event.setType("com.telekom.net4f.irtafel.v1");
-        event.setId(UUID.randomUUID());
-        event.setSource("http://tafel-url-tbd");
-        event.setSpecversion("1.0");
-
-        EventData eventData = new EventData();
-        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());   //  nicht in ri
-        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());  //  nicht in ri
-        eventData.setUewegId(uewegData.getUewegId());
-        eventData.setUewegStatus("InBetrieb");
-        event.setData(eventData);
+        Event event = createEvent();
 
         // WHEN / ACT
         a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
@@ -250,6 +204,24 @@ public class A4RebellSyncTest extends GigabitTest {
         a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
         a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
     }
+
+    @NotNull
+    private Event createEvent() {
+        Event event = new Event();
+        event.setType("com.telekom.net4f.irtafel.v1");
+        event.setId(UUID.randomUUID());
+        event.setSource("http://tafel-url-tbd");
+        event.setSpecversion("1.0");
+
+        EventData eventData = new EventData();
+        eventData.setEndszA(ne1Data.getVpsz()+"/"+ne1Data.getFsz());
+        eventData.setEndszB(ne2Data.getVpsz()+"/"+ne2Data.getFsz());
+        eventData.setUewegId(uewegData.getUewegId());
+        eventData.setUewegStatus("InBetrieb");
+        event.setData(eventData);
+        return event;
+    }
+
 
     @Test
     public void testRebelSyncLinkCreated() {
