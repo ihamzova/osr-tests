@@ -9,10 +9,6 @@ import java.util.*;
 
 public class UplinkResourceInventoryMapper {
 
-    public static final String PLANNED = "PLANNED";
-    public static final String ACTIVE = "ACTIVE";
-    public static final String INACTIVE = "INACTIVE";
-
     public List <Uplink> getUplinks (String endSz, String state1, String state2, String state3, String manufacturer) {
         List <Uplink> uplinks = new ArrayList<>();
         uplinks.add(getUplink1(endSz, state1, manufacturer));
@@ -84,22 +80,16 @@ public class UplinkResourceInventoryMapper {
             .type("RelatedParty");
 
     public EquipmentBusinessRef getPortEquipmentBusinesRefOlt(String endSz, String manufacturer) {
+        EquipmentBusinessRef equipmentBusinessRef = new EquipmentBusinessRef()
+                .endSz(endSz)
+                .portName("0")
+                .deviceType("OLT")
+                .portType("ETHERNET")
+                .type("EquipmentBusinessRef");
         if (manufacturer == "Huawei") {
-            return new EquipmentBusinessRef()
-                    .endSz(endSz)
-                    .portName("0")
-                    .slotName("19")
-                    .deviceType("OLT")
-                    .portType("ETHERNET")
-                    .type("EquipmentBusinessRef");
-        } else {
-            return new EquipmentBusinessRef()
-                    .endSz(endSz)
-                    .portName("0")
-                    .deviceType("OLT")
-                    .portType("ETHERNET")
-                    .type("EquipmentBusinessRef");
+            equipmentBusinessRef.slotName("19");
         }
+        return equipmentBusinessRef;
     }
 
     EquipmentBusinessRef portEquipmentBusinesRefBng1 = new EquipmentBusinessRef()
