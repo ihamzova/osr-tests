@@ -157,7 +157,7 @@ public class FtthNetworkSwitching extends GigabitTest {
     public void ne2FtthRollbackAfterPreparationTest(){
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
-        List<String> stateList = List.of(state1, state2);
+        List<String> stateList = Arrays.asList(state1, state2);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
                 .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(),stateList, "Huawei")
@@ -192,7 +192,7 @@ public class FtthNetworkSwitching extends GigabitTest {
     public void ne2FtthRollbackAfterExecutionTest(){
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
-        List<String> stateList = List.of(state1, state2);
+        List<String> stateList = Arrays.asList(state1, state2);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
                 .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), stateList, "Huawei")
@@ -230,7 +230,7 @@ public class FtthNetworkSwitching extends GigabitTest {
     public void ne2FtthPreparationDpuFoundTest() {
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
-        List<String> stateList = List.of(state1, state2);
+        List<String> stateList = Arrays.asList(state1, state2);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
                 .addFindAndImportUplinksMock(endSz_49_911_1100_76H1.getEndSz(), stateList,  "Huawei")
