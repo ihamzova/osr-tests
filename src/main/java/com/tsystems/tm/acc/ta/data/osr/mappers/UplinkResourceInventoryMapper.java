@@ -9,14 +9,11 @@ import java.util.*;
 
 public class UplinkResourceInventoryMapper {
 
-    public List<Uplink> getUplinks(String endSz, String state1, String state2, String state3, String manufacturer) {
+    public List<Uplink> getUplinks(String endSz, List<String> states, String manufacturer) {
         List<Uplink> uplinks = new ArrayList<>();
-        uplinks.add(getUplinkWithParams(endSz,state1,manufacturer,1));
-        if (state2 != null) {
-            uplinks.add(getUplinkWithParams(endSz,state2,manufacturer,2));
-        }
-        if (state3 != null) {
-            uplinks.add(getUplinkWithParams(endSz,state3,manufacturer,3));
+        for (int i = 0; i < states.size(); i++) {
+            String state = states.get(i);
+            uplinks.add(getUplinkWithParams(endSz,state,manufacturer,i));
         }
         return uplinks;
     }
@@ -26,16 +23,16 @@ public class UplinkResourceInventoryMapper {
         EquipmentBusinessRef equipmentBusinessRef;
 
         switch (version) {
-            case 1:
+            case 0:
             default:
                 href = "/resource-order-resource-inventory/v5/uplink/1226";
                 equipmentBusinessRef = portEquipmentBusinesRefBng1;
                 break;
-            case 2:
+            case 1:
                 href = "/resource-order-resource-inventory/v5/uplink/1227";
                 equipmentBusinessRef = portEquipmentBusinesRefBng2;
                 break;
-            case 3:
+            case 2:
                 href = "/resource-order-resource-inventory/v5/uplink/1228";
                 equipmentBusinessRef = portEquipmentBusinesRefBng3;
                 break;

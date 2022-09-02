@@ -170,13 +170,13 @@ public class OsrWireMockMappingsContextBuilder extends WireMockMappingsContextBu
     return this;
   }
 
-  public OsrWireMockMappingsContextBuilder addUplinksMock(String endSz, String state1, String state2, String state3, String manufacturer) {
-    context.add(new UplinkResourceInventoryStub().getUplinks(endSz, state1, state2, state3, manufacturer));
+  public OsrWireMockMappingsContextBuilder addUplinksMock(String endSz, List<String> states, String manufacturer) {
+    context.add(new UplinkResourceInventoryStub().getUplinks(endSz, states, manufacturer));
     return this;
   }
 
-    public OsrWireMockMappingsContextBuilder addFindAndImportUplinksMock(String endSz, String state1, String state2, String state3, String manufacturer) {
-        context.add(new UplinkResourceInventoryStub().findAndImportUplinks(endSz, state1, state2, state3, manufacturer));
+    public OsrWireMockMappingsContextBuilder addFindAndImportUplinksMock(String endSz, List<String> states, String manufacturer) {
+        context.add(new UplinkResourceInventoryStub().findAndImportUplinks(endSz, states, manufacturer));
         return this;
     }
 }

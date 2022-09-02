@@ -92,14 +92,14 @@ public class FttbNetworkSwitching extends GigabitTest {
         List<String> expectedUplinksStates = Arrays.asList(state1, state2);
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "GetUplinks"))
-                .addUplinksMock(endSz_49_911_1100_76H3.getEndSz(), state1, state2, null, "Adtran")
+                .addUplinksMock(endSz_49_911_1100_76H3.getEndSz(), expectedUplinksStates, "Adtran")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
-                .addFindAndImportUplinksMock(endSz_49_911_1100_76H3.getEndSz(), state1, state2, null, "Adtran")
+                .addFindAndImportUplinksMock(endSz_49_911_1100_76H3.getEndSz(), expectedUplinksStates, "Adtran")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -177,7 +177,7 @@ public class FttbNetworkSwitching extends GigabitTest {
 
         List<String> expectedUplinksStates = Arrays.asList(state1, state2, state3);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "GetUplinks"))
-                .addUplinksMock(endSz_49_911_1100_76H1.getEndSz(), state1, state2, state3, "Huawei")
+                .addUplinksMock(endSz_49_911_1100_76H1.getEndSz(), expectedUplinksStates, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
