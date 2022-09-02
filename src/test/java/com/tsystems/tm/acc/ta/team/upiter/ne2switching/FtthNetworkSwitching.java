@@ -69,7 +69,7 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test
     @TmsLink("DIGIHUB-147818")
-    @Description("NE2 FTTH Network Switching Preparation")
+    @Description("NE2 FTTH Network Switching Preparation, Huawei OLT")
     public void ne2FtthPreparationTest(){
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
@@ -77,14 +77,14 @@ public class FtthNetworkSwitching extends GigabitTest {
 
         List<String> expectedUplinksStates = Arrays.asList(state1, state2, state3);
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "GetUplinks"))
-                .addUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3)
+                .addUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
                 .publishedHook(attachStubsToAllureReport());
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
-                .addFindAndImportUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3)
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H3.getEndSz(), state1, state2, state3, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -117,7 +117,7 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test(dependsOnMethods = "ne2FtthPreparationTest")
     @TmsLink("DIGIHUB-147819")
-    @Description("NE2 FTTH Network Switching Execution")
+    @Description("NE2 FTTH Network Switching Execution, Huawei OLT")
     public void ne2FtthExecutionTest(){
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -137,7 +137,7 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test(dependsOnMethods = {"ne2FtthPreparationTest", "ne2FtthExecutionTest"})
     @TmsLink("DIGIHUB-147820")
-    @Description("NE2 FTTH Network Switching Commit")
+    @Description("NE2 FTTH Network Switching Commit, Huawei OLT")
     public void ne2FtthCommitTest(){
         NetworkSwitchingPage networkSwitchingPage = NetworkSwitchingPage.openPage();
         networkSwitchingPage.validateUrl();
@@ -153,13 +153,13 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test
     @TmsLink("DIGIHUB-154011")
-    @Description("NE2 FTTH Network Switching Rollback after Preparation")
+    @Description("NE2 FTTH Network Switching Rollback after Preparation, Huawei OLT")
     public void ne2FtthRollbackAfterPreparationTest(){
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
-                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null)
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -187,13 +187,13 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test
     @TmsLink("DIGIHUB-154013")
-    @Description("NE2 FTTH Network Switching Rollback after Execution")
+    @Description("NE2 FTTH Network Switching Rollback after Execution, Huawei OLT")
     public void ne2FtthRollbackAfterExecutionTest(){
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
-                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null)
+                .addFindAndImportUplinksMock(endSz_49_30_179_76H2.getEndSz(), state1, state2, null, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
@@ -224,13 +224,13 @@ public class FtthNetworkSwitching extends GigabitTest {
 
     @Test
     @TmsLink("DIGIHUB-147827")
-    @Description("NE2 FTTH Network Switching, DPU found, process runs into an error")
+    @Description("NE2 FTTH Network Switching, DPU found, process runs into an error, Huawei OLT")
     public void ne2FtthPreparationDpuFoundTest() {
         String state1 = "ACTIVE";
         String state2 = "PLANNED";
 
         mappingsContext = new OsrWireMockMappingsContextBuilder(new WireMockMappingsContext(WireMockFactory.get(), "findAndImportUplinks"))
-                .addFindAndImportUplinksMock(endSz_49_911_1100_76H1.getEndSz(), state1, state2, null)
+                .addFindAndImportUplinksMock(endSz_49_911_1100_76H1.getEndSz(), state1, state2, null, "Huawei")
                 .build()
                 .publish()
                 .publishedHook(savePublishedToDefaultDir())
