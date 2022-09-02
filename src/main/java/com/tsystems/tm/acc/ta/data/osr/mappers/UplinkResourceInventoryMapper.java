@@ -9,67 +9,55 @@ import java.util.*;
 
 public class UplinkResourceInventoryMapper {
 
-    public List <Uplink> getUplinks (String endSz, String state1, String state2, String state3, String manufacturer) {
-        List <Uplink> uplinks = new ArrayList<>();
-        uplinks.add(getUplink1(endSz, state1, manufacturer));
-        if (state2!=null) {
-            uplinks.add(getUplink2(endSz, state2, manufacturer));
+    public List<Uplink> getUplinks(String endSz, String state1, String state2, String state3, String manufacturer) {
+        List<Uplink> uplinks = new ArrayList<>();
+        uplinks.add(getUplinkWithParams(endSz,state1,manufacturer,1));
+        if (state2 != null) {
+            uplinks.add(getUplinkWithParams(endSz,state2,manufacturer,2));
         }
-        if (state3!=null) {
-            uplinks.add(getUplink3(endSz, state3, manufacturer));
+        if (state3 != null) {
+            uplinks.add(getUplinkWithParams(endSz,state3,manufacturer,3));
         }
         return uplinks;
     }
 
-    public Uplink getUplink1(String endSz, String state, String manufacturer) {
-        return new Uplink()
-                .id(Integer.toString(0 + (int) (Math.random() * 9999)))
-                .href("/resource-order-resource-inventory/v5/uplink/1226")
-                .creationDate(OffsetDateTime.now())
-                .modificationDate(OffsetDateTime.now())
-                .ordnungsnummer(10)
-                .resourceId(UUID.randomUUID().toString())
-                .lsz("4C1")
-                .state(state)
-                .baseType("PhysicalResource")
-                .type("Uplink")
-                .addRelatedPartyItem(relatedParty10001)
+    private Uplink getUplinkWithParams(String endSz, String state, String manufacturer, int version) {
+        String href;
+        EquipmentBusinessRef equipmentBusinessRef;
+
+        switch (version) {
+            case 1:
+            default:
+                href = "/resource-order-resource-inventory/v5/uplink/1226";
+                equipmentBusinessRef = portEquipmentBusinesRefBng1;
+                break;
+            case 2:
+                href = "/resource-order-resource-inventory/v5/uplink/1227";
+                equipmentBusinessRef = portEquipmentBusinesRefBng2;
+                break;
+            case 3:
+                href = "/resource-order-resource-inventory/v5/uplink/1228";
+                equipmentBusinessRef = portEquipmentBusinesRefBng3;
+                break;
+        }
+        return getCommonUplink()
                 .addPortsEquipmentBusinessRefItem(getPortEquipmentBusinesRefOlt(endSz, manufacturer))
-                .addPortsEquipmentBusinessRefItem(portEquipmentBusinesRefBng1);
+                .state(state)
+                .href(href)
+                .addPortsEquipmentBusinessRefItem(equipmentBusinessRef);
     }
 
-    public Uplink getUplink2(String endSz, String state, String manufacturer) {
+    private Uplink getCommonUplink() {
         return new Uplink()
-                .id(Integer.toString(0 + (int) (Math.random() * 9999)))
-                .href("/resource-order-resource-inventory/v5/uplink/1227")
+                .id(String.valueOf(new Random().nextInt()))
                 .creationDate(OffsetDateTime.now())
                 .modificationDate(OffsetDateTime.now())
                 .ordnungsnummer(10)
                 .resourceId(UUID.randomUUID().toString())
                 .lsz("4C1")
-                .state(state)
                 .baseType("PhysicalResource")
                 .type("Uplink")
-                .addRelatedPartyItem(relatedParty10001)
-                .addPortsEquipmentBusinessRefItem(getPortEquipmentBusinesRefOlt(endSz, manufacturer))
-                .addPortsEquipmentBusinessRefItem(portEquipmentBusinesRefBng2);
-    }
-
-    public Uplink getUplink3(String endSz, String state, String manufacturer) {
-        return new Uplink()
-                .id("1228")
-                .href("/resource-order-resource-inventory/v5/uplink/1228")
-                .creationDate(OffsetDateTime.now())
-                .modificationDate(OffsetDateTime.now())
-                .ordnungsnummer(10)
-                .resourceId(UUID.randomUUID().toString())
-                .lsz("4C1")
-                .state(state)
-                .baseType("PhysicalResource")
-                .type("Uplink")
-                .addRelatedPartyItem(relatedParty10001)
-                .addPortsEquipmentBusinessRefItem(getPortEquipmentBusinesRefOlt(endSz, manufacturer))
-                .addPortsEquipmentBusinessRefItem(portEquipmentBusinesRefBng3);
+                .addRelatedPartyItem(relatedParty10001);
     }
 
     RelatedParty relatedParty10001 = new RelatedParty()
@@ -86,7 +74,7 @@ public class UplinkResourceInventoryMapper {
                 .deviceType("OLT")
                 .portType("ETHERNET")
                 .type("EquipmentBusinessRef");
-        if (manufacturer == "Huawei") {
+        if (Objects.equals(manufacturer, "Huawei")) {
             equipmentBusinessRef.slotName("19");
         }
         return equipmentBusinessRef;
