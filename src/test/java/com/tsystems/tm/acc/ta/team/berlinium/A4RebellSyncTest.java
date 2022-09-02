@@ -10,6 +10,7 @@ import com.tsystems.tm.acc.ta.data.osr.wiremock.OsrWireMockMappingsContextBuilde
 import com.tsystems.tm.acc.ta.domain.OsrTestContext;
 import com.tsystems.tm.acc.ta.robot.osr.A4InventoryImporterRobot;
 import com.tsystems.tm.acc.ta.robot.osr.A4ResourceInventoryRobot;
+import com.tsystems.tm.acc.ta.robot.osr.A4WiremockRebellRobot;
 import com.tsystems.tm.acc.ta.testng.GigabitTest;
 import com.tsystems.tm.acc.ta.wiremock.WireMockFactory;
 import com.tsystems.tm.acc.ta.wiremock.WireMockMappingsContext;
@@ -19,6 +20,7 @@ import de.telekom.it.t3a.kotlin.log.annotations.ServiceLog;
 import io.qameta.allure.Epic;
 import org.testng.annotations.*;
 
+import javax.ws.rs.HttpMethod;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -39,7 +41,7 @@ public class A4RebellSyncTest extends GigabitTest {
     private final A4InventoryImporterRobot a4Importer = new A4InventoryImporterRobot();
     private WireMockMappingsContext mappingsContext = new OsrWireMockMappingsContextBuilder(
             new WireMockMappingsContext(WireMockFactory.get(), wiremockScenarioName)).build();
-
+    private final A4WiremockRebellRobot a4WmRobotRebell = new A4WiremockRebellRobot();
     private A4NetworkElementGroup negData;
     private A4NetworkElement ne1Data;
     private A4NetworkElement ne2Data;
@@ -127,6 +129,8 @@ public class A4RebellSyncTest extends GigabitTest {
 
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
         a4Inventory.checkNetworkElementLinkConnectedToNePortExists(uewegData, nep1Data.getUuid(), nep2Data.getUuid());
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 1);
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 0); // ne1 found, ne2 not requested
     }
 
     @Test(description = "DIGIHUB-129851 Scenario 1: EndSz A is found in A4 RI")
@@ -167,6 +171,8 @@ public class A4RebellSyncTest extends GigabitTest {
                 .get(0).getUuid());
 
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 1);
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
     }
 
     @Test(description = "DIGIHUB-129851 Scenario 2: EndSz B is found in A4 RI")
@@ -207,6 +213,8 @@ public class A4RebellSyncTest extends GigabitTest {
                 .getNetworkElementLinksByNeEndSz(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), ne1Data.getVpsz()+"/"+ne1Data.getFsz())
                 .get(0).getUuid());
         a4Inventory.checkNetworkElementLinkIsUpdatedWithLastSuccessfulSyncTime(nelData, starttime);
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 1);
         uewegData.setVendorPortNameA("ge-0/0/1");
     }
 
@@ -236,9 +244,11 @@ public class A4RebellSyncTest extends GigabitTest {
         // WHEN / ACT
         a4Importer.sendNotification(event);  // a4-importer at berlinium-03 do now rebell sync
 
-        // THEN / ASSERT   // was checken? NE nicht da, damit auch nel nicht da?
-        a4Inventory.checkNetworkElementNotExist(ne1Data.getVpsz(), ne1Data.getFsz());
+        // THEN / ASSERT
+        a4Inventory.checkNetworkElementNotExist(ne1Data.getVpsz(), ne1Data.getFsz()); // no ne, then no nel
         a4Inventory.checkNetworkElementNotExist(ne2Data.getVpsz(), ne2Data.getFsz());
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne1Data.getVpsz()+"/"+ne1Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
+        a4WmRobotRebell.checkSyncRequestToRebellWiremock(ne2Data.getVpsz()+"/"+ne2Data.getFsz(), HttpMethod.GET, 0); // no request to Rebell
     }
 
     @Test
