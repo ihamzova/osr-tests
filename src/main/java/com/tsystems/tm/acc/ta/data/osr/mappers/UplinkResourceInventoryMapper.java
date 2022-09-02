@@ -46,7 +46,7 @@ public class UplinkResourceInventoryMapper {
 
     private Uplink getCommonUplink() {
         return new Uplink()
-                .id(String.valueOf(new Random().nextInt()))
+                .id(Integer.toString(0 + (int) (Math.random() * 9999)))
                 .creationDate(OffsetDateTime.now())
                 .modificationDate(OffsetDateTime.now())
                 .ordnungsnummer(10)
